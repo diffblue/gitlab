@@ -55,6 +55,8 @@ module Security
 
       raise RevocationFailedError, result[:message] if result[:status] == :error
 
+      return unless token[:vulnerability].present?
+
       SystemNoteService.change_vulnerability_state(
         token[:vulnerability],
         User.security_bot,

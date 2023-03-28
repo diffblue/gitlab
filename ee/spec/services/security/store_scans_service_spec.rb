@@ -34,6 +34,7 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
 
     before do
       allow(StoreSecurityReportsWorker).to receive(:perform_async)
+      allow(ScanSecurityReportSecretsWorker).to receive(:perform_async)
       allow(Security::StoreGroupedScansService).to receive(:execute)
 
       stub_licensed_features(sast: true, dast: false)
@@ -92,6 +93,65 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           store_group_of_artifacts
 
           expect(StoreSecurityReportsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      shared_examples 'does not revoke secret detection tokens' do
+        it 'does not schedule the `ScanSecurityReportSecretsWorker`' do
+          store_group_of_artifacts
+
+          expect(ScanSecurityReportSecretsWorker).not_to have_received(:perform_async)
+        end
+      end
+
+      describe 'scheduling the `ScanSecurityReportSecretsWorker `' do
+        context 'when no secret detection security scans exist for the pipeline' do
+          before do
+            pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+            allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(true)
+          end
+
+          include_examples 'does not revoke secret detection tokens'
+        end
+
+        context 'when secret detection security scans exist for the pipeline' do
+          let_it_be(:scan) { create(:security_scan, scan_type: :secret_detection, build: sast_build) }
+          let_it_be(:finding) { create(:security_finding, :with_finding_data, scan: scan) }
+
+          context 'and the pipeline is in a private project' do
+            before do
+              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+
+              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(false)
+            end
+
+            include_examples 'does not revoke secret detection tokens'
+          end
+
+          context 'and secret detection token revocation setting is disabled' do
+            before do
+              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(false)
+            end
+
+            include_examples 'does not revoke secret detection tokens'
+          end
+
+          context 'and the pipeline is in a public project and the setting is enabled' do
+            before do
+              pipeline.project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+              allow(Gitlab::CurrentSettings).to receive(:secret_detection_token_revocation_enabled?).and_return(true)
+            end
+
+            it 'schedules the `ScanSecurityReportSecretsWorker`' do
+              store_group_of_artifacts
+
+              expect(ScanSecurityReportSecretsWorker).to have_received(:perform_async).with(pipeline.id)
+            end
+          end
         end
       end
     end

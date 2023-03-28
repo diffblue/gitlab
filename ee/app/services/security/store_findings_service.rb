@@ -86,7 +86,8 @@ module Security
         assets: report_finding.assets,
         evidence: report_finding.evidence&.data,
         details: report_finding.details,
-        remediation_byte_offsets: report_finding.remediation_byte_offsets
+        remediation_byte_offsets: report_finding.remediation_byte_offsets,
+        raw_source_code_extract: report_finding.raw_source_code_extract
       }
     end
 

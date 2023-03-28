@@ -15,7 +15,8 @@ module Security
 
     MAX_PARTITION_SIZE = 100.gigabyte
     ATTRIBUTES_DELEGATED_TO_FINDING_DATA = %i[name description solution location identifiers links false_positive?
-                                              assets evidence details remediation_byte_offsets].freeze
+                                              assets evidence details remediation_byte_offsets
+                                              raw_source_code_extract].freeze
 
     self.table_name = 'security_findings'
     self.primary_key = :id # As ActiveRecord does not support compound PKs
