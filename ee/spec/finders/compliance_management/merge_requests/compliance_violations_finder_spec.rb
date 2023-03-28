@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsFinder do
+RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsFinder, feature_category: :compliance_management do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:current_user) { create(:user) }
@@ -13,9 +13,22 @@ RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsFinder d
   let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, state: :merged, title: 'abcd') }
   let_it_be(:merge_request2) { create(:merge_request, source_project: project2, target_project: project2, state: :merged, title: 'zyxw') }
   let_it_be(:merge_request_outside_group) { create(:merge_request, source_project: project_outside_group, target_project: project_outside_group, state: :merged) }
-  let_it_be(:compliance_violation) { create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request) }
-  let_it_be(:compliance_violation2) { create(:compliance_violation, :approved_by_merge_request_author, severity_level: :high, merge_request: merge_request2) }
-  let_it_be(:compliance_violation_outside_group) { create(:compliance_violation, :approved_by_committer, merge_request: merge_request_outside_group) }
+  let_it_be(:compliance_violation) do
+    create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request,
+      title: 'abcd', target_project_id: project.id, target_branch: merge_request.target_branch, merged_at: 3.days.ago)
+  end
+
+  let_it_be(:compliance_violation2) do
+    create(:compliance_violation, :approved_by_merge_request_author, severity_level: :high,
+      merge_request: merge_request2, title: 'zyxw', target_project_id: project2.id,
+      target_branch: merge_request2.target_branch, merged_at: 1.day.ago)
+  end
+
+  let_it_be(:compliance_violation_outside_group) do
+    create(:compliance_violation, :approved_by_committer, merge_request: merge_request_outside_group,
+      title: merge_request_outside_group.title, target_project_id: project_outside_group.id,
+      target_branch: merge_request_outside_group.target_branch)
+  end
 
   let(:params) { {} }
 

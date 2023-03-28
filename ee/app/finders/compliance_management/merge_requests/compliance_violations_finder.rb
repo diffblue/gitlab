@@ -28,57 +28,38 @@ module ComplianceManagement
       def execute
         return unless allowed?
 
-        items = init_collection
-
-        items = filter_by_projects(items)
-        items = filter_by_merged_before(items)
-        items = filter_by_merged_after(items)
-
-        sort(items)
+        Gitlab::Pagination::Keyset::InOperatorOptimization::QueryBuilder.new(
+          scope: in_operator_scope,
+          array_scope: array_scope,
+          array_mapping_scope: ::MergeRequests::ComplianceViolation.method(:in_optimization_array_mapping_scope),
+          finder_query: ::MergeRequests::ComplianceViolation.method(:in_optimization_finder_query)
+        ).execute
       end
 
       private
 
       attr_reader :current_user, :group, :params
 
+      def array_scope
+        if params[:project_ids].present?
+          group.all_projects.id_in(params[:project_ids]).select(:id)
+        else
+          group.all_projects.select(:id)
+        end
+      end
+
+      def in_operator_scope
+        base_scope = ::MergeRequests::ComplianceViolation.with_violating_user
+
+        base_scope = base_scope.merged_before(params[:merged_before].end_of_day) if params[:merged_before].present?
+
+        base_scope = base_scope.merged_after(params[:merged_after].beginning_of_day) if params[:merged_after].present?
+
+        base_scope.sort_by_attribute(params[:sort])
+      end
+
       def allowed?
         Ability.allowed?(current_user, :read_group_compliance_dashboard, group)
-      end
-
-      def init_collection
-        ::MergeRequests::ComplianceViolation.with_violating_user.by_group(group)
-      end
-
-      def filter_by_projects(items)
-        return items unless params[:project_ids].present?
-
-        items.by_projects(params[:project_ids])
-      end
-
-      def filter_by_merged_before(items)
-        return items unless params[:merged_before].present?
-
-        items.merged_before(params[:merged_before]) if params[:merged_before].present?
-      end
-
-      def filter_by_merged_after(items)
-        return items unless params[:merged_after].present?
-
-        items.merged_after(params[:merged_after]) if params[:merged_after].present?
-      end
-
-      def sort(items)
-        case params[:sort]
-        when 'SEVERITY_LEVEL_ASC' then items.order_by_severity_level(:asc)
-        when 'SEVERITY_LEVEL_DESC' then items.order_by_severity_level(:desc)
-        when 'VIOLATION_REASON_ASC' then items.order_by_reason(:asc)
-        when 'VIOLATION_REASON_DESC' then items.order_by_reason(:desc)
-        when 'MERGE_REQUEST_TITLE_ASC' then items.order_by_merge_request_title(:asc)
-        when 'MERGE_REQUEST_TITLE_DESC' then items.order_by_merge_request_title(:desc)
-        when 'MERGED_AT_ASC' then items.order_by_merged_at(:asc)
-        when 'MERGED_AT_DESC' then items.order_by_merged_at(:desc)
-        else items.order_by_severity_level(:desc)
-        end
       end
     end
   end

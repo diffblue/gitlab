@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::ComplianceViolation, type: :model do
+RSpec.describe MergeRequests::ComplianceViolation, type: :model, feature_category: :compliance_management do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:merge_request) { create(:merge_request, state: :merged, title: 'zyxw') }
@@ -99,13 +99,9 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     let_it_be(:alt_merge_request) { create(:merge_request, state: :merged) }
     let_it_be(:violations) do
       [
-        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user), merged_at: 2.days.ago),
         create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
       ]
-    end
-
-    before do
-      alt_merge_request.metrics.update!(merged_at: 2.days.ago)
     end
 
     it 'returns the correct collection of violations' do
@@ -117,13 +113,9 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model do
     let_it_be(:alt_merge_request) { create(:merge_request, state: :merged) }
     let_it_be(:violations) do
       [
-        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_committer, merge_request: alt_merge_request, violating_user: create(:user), merged_at: Date.current),
         create(:compliance_violation, :approved_by_committer, merge_request: merge_request, violating_user: create(:user))
       ]
-    end
-
-    before do
-      alt_merge_request.metrics.update!(merged_at: Date.current)
     end
 
     it 'returns the correct collection of violations' do
