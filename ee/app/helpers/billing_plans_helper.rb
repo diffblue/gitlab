@@ -29,7 +29,8 @@ module BillingPlansHelper
     [:upgrade_for_offer, :no_offer].include?(upgrade_offer)
   end
 
-  def show_upgrade_button?(purchase_link_action, upgrade_offer)
+  def show_upgrade_button?(purchase_link_action, upgrade_offer, allow_upgrade)
+    return false if allow_upgrade == false
     return false unless purchase_link_action == 'upgrade'
 
     [:no_offer, :upgrade_for_free].include?(upgrade_offer)
