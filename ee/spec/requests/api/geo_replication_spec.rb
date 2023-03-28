@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GeoReplication, :request_store, :geo, api: true, feature_category: :geo_replication do
+RSpec.describe API::GeoReplication, :aggregate_failures, :request_store, :geo, api: true, feature_category: :geo_replication do
   include ApiHelpers
   include ::EE::GeoHelpers
 
@@ -21,7 +21,7 @@ RSpec.describe API::GeoReplication, :request_store, :geo, api: true, feature_cat
 
   describe 'GET /geo_replication/designs' do
     it 'retrieves the designs if admin is logged in' do
-      get api("/geo_replication/designs", admin)
+      get api("/geo_replication/designs", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('public_api/v4/geo_designs', dir: 'ee')
@@ -36,7 +36,7 @@ RSpec.describe API::GeoReplication, :request_store, :geo, api: true, feature_cat
       create(:design, project: project1)
       create(:geo_design_registry, project: project1)
 
-      get api("/geo_replication/designs", admin), params: { search: 'bla' }
+      get api("/geo_replication/designs", admin, admin_mode: true), params: { search: 'bla' }
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('public_api/v4/geo_designs', dir: 'ee')
@@ -57,7 +57,7 @@ RSpec.describe API::GeoReplication, :request_store, :geo, api: true, feature_cat
       create(:design, project: project)
       design_registry = create(:geo_design_registry, :synced, project: project)
 
-      put api("/geo_replication/designs/#{project.id}/resync", admin)
+      put api("/geo_replication/designs/#{project.id}/resync", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(design_registry.reload.state).to eq('pending')
@@ -75,7 +75,7 @@ RSpec.describe API::GeoReplication, :request_store, :geo, api: true, feature_cat
       create(:geo_design_registry, :synced)
       create(:geo_design_registry, :synced)
 
-      post api("/geo_replication/designs/resync", admin)
+      post api("/geo_replication/designs/resync", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:created)
 

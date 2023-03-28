@@ -239,6 +239,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
         project.reload
 
         expect(page).to have_content('Mirroring settings were successfully updated')
+        expect(page).to have_css('.badge[title="text"]', text: 'Specific branches')
         expect(project.mirror_branches_setting).to eq('regex')
         expect(project.mirror_branch_regex).to eq('text')
       end

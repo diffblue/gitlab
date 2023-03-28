@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Geo, feature_category: :geo_replication do
+RSpec.describe API::Geo, :aggregate_failures, feature_category: :geo_replication do
   include GitlabShellHelpers
   include TermsHelper
   include ApiHelpers
@@ -637,7 +637,7 @@ RSpec.describe API::Geo, feature_category: :geo_replication do
     end
 
     it_behaves_like '404 response' do
-      let(:request) { post api("/geo/node_proxy/#{unexisting_node_id}/graphql", admin) }
+      let(:request) { post api("/geo/node_proxy/#{unexisting_node_id}/graphql", admin, admin_mode: true) }
     end
 
     it 'denies access if not admin' do
@@ -651,7 +651,7 @@ RSpec.describe API::Geo, feature_category: :geo_replication do
         .with(body: { input: 'test' })
         .to_return(status: 200, body: { testResponse: 'result' }.to_json, headers: headers)
 
-      post api("/geo/node_proxy/#{secondary_node.id}/graphql", admin), params: { input: 'test' }.to_json, headers: headers
+      post api("/geo/node_proxy/#{secondary_node.id}/graphql", admin, admin_mode: true), params: { input: 'test' }.to_json, headers: headers
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to eq('testResponse' => 'result')
@@ -662,7 +662,7 @@ RSpec.describe API::Geo, feature_category: :geo_replication do
         .with(body: { input: 'test' })
         .to_return(status: 500)
 
-      post api("/geo/node_proxy/#{secondary_node.id}/graphql", admin), params: { input: 'test' }.to_json, headers: headers
+      post api("/geo/node_proxy/#{secondary_node.id}/graphql", admin, admin_mode: true), params: { input: 'test' }.to_json, headers: headers
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to be_empty

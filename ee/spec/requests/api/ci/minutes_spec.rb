@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ci::Minutes, feature_category: :purchase do
+RSpec.describe API::Ci::Minutes, :aggregate_failures, feature_category: :purchase do
   shared_examples 'not found error' do
     it 'returns an error' do
       subject
@@ -14,6 +14,7 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
   describe 'POST /namespaces/:id/minutes' do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:admin_mode) { false }
 
     let(:namespace_id) { namespace.id }
     let(:minutes_pack) do
@@ -26,7 +27,7 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
 
     let(:payload) { { packs: [minutes_pack] } }
 
-    subject(:post_minutes) { post api("/namespaces/#{namespace_id}/minutes", user), params: payload }
+    subject(:post_minutes) { post api("/namespaces/#{namespace_id}/minutes", user, admin_mode: admin_mode), params: payload }
 
     context 'with insufficient access' do
       it 'returns an error' do
@@ -38,6 +39,7 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
 
     context 'with admin user' do
       let_it_be(:user) { create(:admin) }
+      let_it_be(:admin_mode) { true }
 
       context 'when the namespace cannot be found' do
         let(:namespace_id) { non_existing_record_id }
@@ -46,7 +48,7 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
       end
 
       context 'when the additional pack does not exist' do
-        it 'creates a new additional pack', :aggregate_failures do
+        it 'creates a new additional pack' do
           expect { post_minutes }.to change(Ci::Minutes::AdditionalPack, :count).by(1)
 
           response_pack = json_response.first
@@ -118,11 +120,12 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
     let_it_be(:target) { create(:group, owner: namespace.owner) }
     let_it_be(:child_namespace) { create(:group, :nested) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:admin_mode) { false }
 
     let(:namespace_id) { namespace.id }
     let(:target_id) { target.id }
 
-    subject(:move_packs) { patch api("/namespaces/#{namespace_id}/minutes/move/#{target_id}", user) }
+    subject(:move_packs) { patch api("/namespaces/#{namespace_id}/minutes/move/#{target_id}", user, admin_mode: admin_mode) }
 
     context 'when unauthorized' do
       it 'returns an error' do
@@ -134,6 +137,7 @@ RSpec.describe API::Ci::Minutes, feature_category: :purchase do
 
     context 'when authorized' do
       let_it_be(:user) { create(:admin) }
+      let_it_be(:admin_mode) { true }
 
       context 'when the namespace cannot be found' do
         let(:namespace_id) { non_existing_record_id }
