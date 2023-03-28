@@ -249,6 +249,29 @@ Example 2:
 1. A job that has no tags defined is executed and run.
 1. A second job that has a `docker` tag defined is stuck.
 
+### A runner and a job have multiple tags
+
+The selection logic that matches the job and runner is based on the list of `tags`
+defined in the job.
+
+The following examples illustrate the impact of a runner and a job having multiple tags. For a runner to be
+selected to run a job, it must have all of the tags defined in the job script block.
+
+Example 1:
+
+1. The runner is configured with the tags `[docker, shell, gpu]`.
+1. The job has the tags `[docker, shell, gpu]` and is executed and run.
+
+Example 2:
+
+1. The runner is configured with the tags `[docker, shell, gpu]`.
+1. The job has the tags `[docker, shell,]` and is executed and run.
+
+Example 3:
+
+1. The runner is configured with the tags `[docker, shell]`.
+1. The job has the tags `[docker, shell, gpu]` and is not executed.
+
 ### Use tags to run jobs on different platforms
 
 You can use tags to run different jobs on different platforms. For
