@@ -140,7 +140,6 @@ module EE
     def mergeability_checks
       [
         ::MergeRequests::Mergeability::CheckApprovedService,
-        ::MergeRequests::Mergeability::CheckStaleCodeOwnerApprovalsService,
         ::MergeRequests::Mergeability::CheckDeniedPoliciesService,
         ::MergeRequests::Mergeability::CheckBlockedByOtherMrsService,
         ::MergeRequests::Mergeability::CheckExternalStatusChecksPassedService
