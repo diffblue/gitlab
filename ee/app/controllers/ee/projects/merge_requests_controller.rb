@@ -18,10 +18,12 @@ module EE
           push_frontend_feature_flag(:suggested_reviewers_control, @project)
         end
 
-        before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,
-                                                        :sast_reports, :secret_detection_reports,
-                                                        :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports,
-                                                        :metrics_reports]
+        before_action :authorize_read_pipeline!, only: [:metrics_reports]
+        before_action :authorize_read_security_resource!, only: [
+          :container_scanning_reports, :dependency_scanning_reports,
+          :sast_reports, :secret_detection_reports,
+          :dast_reports, :coverage_fuzzing_reports, :api_fuzzing_reports
+        ]
         before_action :authorize_read_licenses!, only: [:license_scanning_reports, :license_scanning_reports_collapsed]
 
         before_action :authorize_read_security_reports!, only: [:security_reports]
