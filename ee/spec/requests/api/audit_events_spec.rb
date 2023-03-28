@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::AuditEvents, feature_category: :audit_events do
+RSpec.describe API::AuditEvents, :aggregate_failures, feature_category: :audit_events do
   describe 'Unique usage tracking', :clean_gitlab_redis_shared_state do
     let_it_be(:current_user) { create(:admin) }
     let_it_be(:group) { create(:group, owner_id: current_user) }
@@ -12,7 +12,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
       project.add_member(current_user, :maintainer)
     end
 
-    context 'after calling all audit_events APIs as a single licensed user' do
+    context 'after calling all audit_events APIs as a single licensed user', :enable_admin_mode do
       before do
         stub_licensed_features(admin_audit_log: true)
       end
@@ -58,7 +58,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
       context 'audit events feature is not available' do
         it_behaves_like '403 response' do
-          let(:request) { get api(url, admin) }
+          let(:request) { get api(url, admin, admin_mode: true) }
         end
       end
 
@@ -72,7 +72,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
         end
 
         it 'returns 200 response' do
-          get api(url, admin)
+          get api(url, admin, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
         end
@@ -80,7 +80,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
         it 'includes the correct pagination headers' do
           audit_events_counts = AuditEvent.count
 
-          get api(url, admin)
+          get api(url, admin, admin_mode: true)
 
           expect(response).to include_pagination_headers
           expect(response.headers['X-Total']).to eq(audit_events_counts.to_s)
@@ -95,7 +95,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
             let_it_be(:audit_event_2) { create(:project_audit_event, entity_id: project.id) }
 
             it 'paginates the records correctly' do
-              get api(url, admin), params: { pagination: 'keyset', per_page: 1 }
+              get api(url, admin, admin_mode: true), params: { pagination: 'keyset', per_page: 1 }
 
               expect(response).to have_gitlab_http_status(:ok)
               records = json_response
@@ -132,7 +132,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
             context 'on making requests with unsupported ordering structure' do
               it 'returns error' do
-                get api(url, admin), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
+                get api(url, admin, admin_mode: true), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
 
                 expect(response).to have_gitlab_http_status(:method_not_allowed)
                 expect(json_response['error']).to eq('Keyset pagination is not yet available for this type of request')
@@ -142,7 +142,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
           context 'entity_type parameter' do
             it "returns audit events of the provided entity type" do
-              get api(url, admin), params: { entity_type: 'User' }
+              get api(url, admin, admin_mode: true), params: { entity_type: 'User' }
 
               expect(json_response.size).to eq 1
               expect(json_response.first["id"]).to eq(user_audit_event.id)
@@ -152,12 +152,12 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
           context 'entity_id parameter' do
             context 'requires entity_type parameter to be present' do
               it_behaves_like '400 response' do
-                let(:request) { get api(url, admin), params: { entity_id: 1 } }
+                let(:request) { get api(url, admin, admin_mode: true), params: { entity_id: 1 } }
               end
             end
 
             it 'returns audit_events of the provided entity id' do
-              get api(url, admin), params: { entity_type: 'User', entity_id: user_audit_event.entity_id }
+              get api(url, admin, admin_mode: true), params: { entity_type: 'User', entity_id: user_audit_event.entity_id }
 
               expect(json_response.size).to eq 1
               expect(json_response.first["id"]).to eq(user_audit_event.id)
@@ -168,7 +168,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
             it "returns audit events created before the given parameter" do
               created_before = '2000-01-20T00:00:00.060Z'
 
-              get api(url, admin), params: { created_before: created_before }
+              get api(url, admin, admin_mode: true), params: { created_before: created_before }
 
               expect(json_response.size).to eq 3
               expect(json_response.first["id"]).to eq(group_audit_event.id)
@@ -180,7 +180,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
             it "returns audit events created after the given parameter" do
               created_after = '2000-01-12T00:00:00.060Z'
 
-              get api(url, admin), params: { created_after: created_after }
+              get api(url, admin, admin_mode: true), params: { created_after: created_after }
 
               expect(json_response.size).to eq 2
               expect(json_response.first["id"]).to eq(group_audit_event.id)
@@ -191,7 +191,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
         context 'attributes' do
           it 'exposes the right attributes' do
-            get api(url, admin), params: { entity_type: 'User' }
+            get api(url, admin, admin_mode: true), params: { entity_type: 'User' }
 
             response = json_response.first
             details = response['details']
@@ -226,7 +226,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
       context 'audit events feature is not available' do
         it_behaves_like '403 response' do
-          let(:request) { get api(url, admin) }
+          let(:request) { get api(url, admin, admin_mode: true) }
         end
       end
 
@@ -237,14 +237,14 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
 
         context 'audit event exists' do
           it 'returns 200 response' do
-            get api(url, admin)
+            get api(url, admin, admin_mode: true)
 
             expect(response).to have_gitlab_http_status(:ok)
           end
 
           context 'attributes' do
             it 'exposes the right attributes' do
-              get api(url, admin)
+              get api(url, admin, admin_mode: true)
               details = json_response['details']
 
               expect(json_response["id"]).to eq(user_audit_event.id)
@@ -260,7 +260,7 @@ RSpec.describe API::AuditEvents, feature_category: :audit_events do
         context 'audit event does not exist' do
           it_behaves_like '404 response' do
             let(:url) { "/audit_events/10001" }
-            let(:request) { get api(url, admin) }
+            let(:request) { get api(url, admin, admin_mode: true) }
           end
         end
       end

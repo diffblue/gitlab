@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::ElasticsearchIndexedNamespaces, feature_category: :global_search do
+RSpec.describe API::ElasticsearchIndexedNamespaces, :aggregate_failures, feature_category: :global_search do
   let_it_be(:admin) { create(:admin) }
   let_it_be(:non_admin) { create(:user) }
 
@@ -20,7 +20,7 @@ RSpec.describe API::ElasticsearchIndexedNamespaces, feature_category: :global_se
 
       with_them do
         it 'errs' do
-          put api(path, admin), params: { plan: plan, percentage: percentage }
+          put api(path, admin, admin_mode: true), params: { plan: plan, percentage: percentage }
           expect(response).to have_gitlab_http_status(:bad_request)
         end
       end
@@ -40,7 +40,7 @@ RSpec.describe API::ElasticsearchIndexedNamespaces, feature_category: :global_se
     it 'invokes ElasticNamespaceRolloutWorker rollout' do
       expect(ElasticNamespaceRolloutWorker).to receive(:perform_async).with('ultimate', 50, ElasticNamespaceRolloutWorker::ROLLOUT)
 
-      put api(path, admin), params: { plan: 'ultimate', percentage: 50 }
+      put api(path, admin, admin_mode: true), params: { plan: 'ultimate', percentage: 50 }
 
       expect(response).to have_gitlab_http_status(:ok)
     end
@@ -54,7 +54,7 @@ RSpec.describe API::ElasticsearchIndexedNamespaces, feature_category: :global_se
     it 'invokes ElasticNamespaceRolloutWorker rollback' do
       expect(ElasticNamespaceRolloutWorker).to receive(:perform_async).with('ultimate', 50, ElasticNamespaceRolloutWorker::ROLLBACK)
 
-      put api(path, admin), params: { plan: 'ultimate', percentage: 50 }
+      put api(path, admin, admin_mode: true), params: { plan: 'ultimate', percentage: 50 }
 
       expect(response).to have_gitlab_http_status(:ok)
     end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Epics, feature_category: :portfolio_management do
+RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
 
   let_it_be(:group, reload: true) { create(:group) }
@@ -824,7 +824,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
         it 'sets the creation time on the new epic if the user is an admin' do
           admin = create(:user, :admin)
 
-          post api(url, admin), params: params
+          post api(url, admin, admin_mode: true), params: params
 
           expect(response).to have_gitlab_http_status(:created)
           expect(Time.parse(json_response['created_at'])).to be_like_time(creation_time)
@@ -1049,7 +1049,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
           it 'sets the update time on the epic when run by an admin' do
             admin = create(:user, :admin)
 
-            put api(url, admin), params: { title: 'updated by admin', updated_at: update_time }
+            put api(url, admin, admin_mode: true), params: { title: 'updated by admin', updated_at: update_time }
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(Time.parse(json_response['updated_at'])).to be_like_time(update_time)
