@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::VariablesController, feature_category: :pipeline_composition do
+RSpec.describe Projects::VariablesController, feature_category: :secrets_management do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 
