@@ -1,5 +1,6 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
+import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -7,6 +8,8 @@ import waitForPromises from 'helpers/wait_for_promises';
 import App from 'ee/analytics/contribution_analytics/components/app.vue';
 import contributionsQuery from 'ee/analytics/contribution_analytics/graphql/contributions.query.graphql';
 import { MOCK_CONTRIBUTIONS_RESPONSE } from '../mock_data';
+
+jest.mock('@sentry/browser');
 
 Vue.use(VueApollo);
 
@@ -47,6 +50,7 @@ describe('Contribution Analytics App', () => {
     createWrapper({ mockApollo });
     await waitForPromises();
 
+    expect(Sentry.captureException).toHaveBeenCalled();
     expect(findErrorAlert().exists()).toBe(true);
     expect(findErrorAlert().text()).toEqual(wrapper.vm.$options.i18n.error);
   });
