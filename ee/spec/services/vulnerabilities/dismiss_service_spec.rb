@@ -15,6 +15,7 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
   let!(:pipeline) { create(:ee_ci_pipeline, :with_dast_report, :success, project: project) }
   let!(:build) { create(:ee_ci_build, :sast, pipeline: pipeline) }
   let(:vulnerability) { create(:vulnerability, :detected, :with_findings, project: project) }
+  let(:state_transition) { create(:vulnerability_state_transition, vulnerability: vulnerability) }
   let(:dismiss_findings) { true }
   let(:service) { described_class.new(user, vulnerability, dismiss_findings: dismiss_findings) }
 
@@ -26,15 +27,16 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
     let(:service) { described_class.new(user, vulnerability, comment, dismissal_reason, dismiss_findings: dismiss_findings) }
 
     it 'creates a vulnerability state transition record' do
-      expect { dismiss_vulnerability }.to change(Vulnerabilities::StateTransition, :count).from(0).to(1)
+      expect(::Vulnerabilities::StateTransition).to receive(:create!).with(
+        vulnerability: vulnerability,
+        from_state: vulnerability.state,
+        to_state: :dismissed,
+        author: user,
+        dismissal_reason: dismissal_reason,
+        comment: comment
+      )
 
-      state_transition = Vulnerabilities::StateTransition.last
-
-      expect(state_transition.from_state).to eq("detected")
-      expect(state_transition.to_state).to eq("dismissed")
-      expect(state_transition.comment).to eq(comment)
-      expect(state_transition.dismissal_reason).to eq(dismissal_reason)
-      expect(state_transition.author).to eq(user)
+      dismiss_vulnerability
     end
   end
 
