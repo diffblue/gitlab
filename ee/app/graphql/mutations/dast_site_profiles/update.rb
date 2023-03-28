@@ -5,7 +5,6 @@ module Mutations
     class Update < BaseMutation
       graphql_name 'DastSiteProfileUpdate'
 
-      include FindsProject
       include Mutations::AppSec::Dast::SiteProfiles::SharedArguments
 
       field :id, SiteProfileID,
@@ -33,7 +32,7 @@ module Mutations
       authorize :create_on_demand_dast_scan
 
       def resolve(id:, profile_name:, full_path: nil, target_url: nil, **params)
-        dast_site_profile = authorized_find!(id)
+        dast_site_profile = authorized_find!(id: id)
 
         auth_params = params[:auth] || {}
 
@@ -59,12 +58,6 @@ module Mutations
         result = ::AppSec::Dast::SiteProfiles::UpdateService.new(dast_site_profile.project, current_user).execute(**dast_site_profile_params)
 
         { id: result.payload.try(:to_global_id), dast_site_profile: result.payload, errors: result.errors }
-      end
-
-      private
-
-      def find_object(id)
-        GitlabSchema.find_by_gid(id)
       end
     end
   end

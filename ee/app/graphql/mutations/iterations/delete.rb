@@ -35,10 +35,6 @@ module Mutations
 
         raise Gitlab::Graphql::Errors::MutationError, AUTOMATIC_CADENCE_ERROR
       end
-
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
     end
   end
 end

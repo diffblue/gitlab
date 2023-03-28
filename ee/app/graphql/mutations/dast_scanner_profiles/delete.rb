@@ -5,8 +5,6 @@ module Mutations
     class Delete < BaseMutation
       graphql_name 'DastScannerProfileDelete'
 
-      include FindsProject
-
       ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 
       argument :full_path, GraphQL::Types::ID,
@@ -21,7 +19,7 @@ module Mutations
       authorize :create_on_demand_dast_scan
 
       def resolve(id:, full_path: nil)
-        dast_scanner_profile = authorized_find!(id)
+        dast_scanner_profile = authorized_find!(id: id)
 
         service = ::AppSec::Dast::ScannerProfiles::DestroyService.new(dast_scanner_profile.project, current_user)
         result = service.execute(id: dast_scanner_profile.id)
@@ -31,12 +29,6 @@ module Mutations
         else
           { errors: result.errors }
         end
-      end
-
-      private
-
-      def find_object(id)
-        GitlabSchema.find_by_gid(id)
       end
     end
   end

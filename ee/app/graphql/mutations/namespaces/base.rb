@@ -11,12 +11,6 @@ module Mutations
             Types::NamespaceType,
             null: true,
             description: 'Namespace after mutation.'
-
-      private
-
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
     end
   end
 end

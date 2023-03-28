@@ -19,7 +19,7 @@ module Mutations
       authorize :create_on_demand_dast_scan
 
       def resolve(id:, full_path: nil)
-        dast_site_profile = authorized_find!(id)
+        dast_site_profile = authorized_find!(id: id)
 
         service = ::AppSec::Dast::SiteProfiles::DestroyService.new(dast_site_profile.project, current_user)
         result = service.execute(id: dast_site_profile.id)
@@ -27,12 +27,6 @@ module Mutations
         return { errors: result.errors } unless result.success?
 
         { errors: [] }
-      end
-
-      private
-
-      def find_object(id)
-        GitlabSchema.find_by_gid(id)
       end
     end
   end
