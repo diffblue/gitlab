@@ -229,11 +229,14 @@ RSpec.describe GroupsHelper do
   describe '#show_delayed_project_removal_setting?' do
     before do
       stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
+      stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
     end
 
-    where(:licensed?, :result) do
-      true  | true
-      false | false
+    where(:licensed?, :always_perform_delayed_deletion, :result) do
+      true  | true  | false
+      false | true  | false
+      true  | false | true
+      false | false | false
     end
 
     with_them do

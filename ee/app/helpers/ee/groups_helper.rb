@@ -54,7 +54,8 @@ module EE
     end
 
     def show_delayed_project_removal_setting?(group)
-      group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
+      group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups) &&
+        ::Feature.disabled?(:always_perform_delayed_deletion)
     end
 
     def show_product_purchase_success_alert?
