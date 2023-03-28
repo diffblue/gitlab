@@ -69,7 +69,7 @@ module Gitlab
 
       def load_code_owners_file
         code_owners_blob = @project.repository.code_owners_blob(ref: @ref)
-        Gitlab::CodeOwners::File.new(code_owners_blob, @project)
+        Gitlab::CodeOwners::File.new(code_owners_blob)
       end
     end
   end
