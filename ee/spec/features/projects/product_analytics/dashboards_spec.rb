@@ -13,7 +13,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
   let(:cube_api_url) { "https://cube.example.com/cubejs-api/v1/load" }
 
   before do
-    stub_feature_flags(product_analytics_internal_preview: true)
+    stub_feature_flags(product_analytics_dashboards: true)
     project.add_owner(user)
     sign_in(user)
   end
@@ -75,7 +75,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
 
     context 'with the feature flag disabled' do
       before do
-        stub_feature_flags(product_analytics_internal_preview: false)
+        stub_feature_flags(product_analytics_dashboards: false)
       end
 
       it_behaves_like 'renders product analytics 404'
@@ -83,7 +83,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
 
     context 'with the feature flag enabled' do
       before do
-        stub_feature_flags(product_analytics_internal_preview: true)
+        stub_feature_flags(product_analytics_dashboards: true)
       end
 
       context 'with the licensed feature disabled' do

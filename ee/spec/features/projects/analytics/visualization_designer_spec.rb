@@ -21,7 +21,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
   context 'with all required access and analytics settings configured' do
     before do
       sign_in(user)
-      stub_feature_flags(combined_analytics_dashboards: true, product_analytics_internal_preview: true)
+      stub_feature_flags(combined_analytics_dashboards: true, product_analytics_dashboards: true)
       stub_licensed_features(combined_project_analytics_dashboards: true, product_analytics: true)
 
       stub_application_setting(product_analytics_enabled?: true)

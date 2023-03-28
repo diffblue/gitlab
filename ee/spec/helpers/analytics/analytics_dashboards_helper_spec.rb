@@ -46,7 +46,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
 
-        stub_feature_flags(product_analytics_internal_preview: feature_flag_enabled)
+        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
         stub_licensed_features(product_analytics: licensed_feature_enabled)
 
         allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
