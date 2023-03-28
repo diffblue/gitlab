@@ -32512,6 +32512,12 @@ msgstr ""
 msgid "Plan:"
 msgstr ""
 
+msgid "PlanLimits|Free Tier"
+msgstr ""
+
+msgid "PlanLimit|Storage Phased Notification"
+msgstr ""
+
 msgid "Planning hierarchy"
 msgstr ""
 
