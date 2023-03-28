@@ -3,6 +3,7 @@ import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { namespaceContainerRegistryPopoverContent } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
@@ -46,6 +47,7 @@ export default {
           fullPath: this.namespacePath,
           searchTerm: this.searchTerm,
           first: this.defaultPerPage,
+          sortKey: this.sortKey,
         };
       },
       update: parseGetStorageResults,
@@ -82,6 +84,7 @@ export default {
       firstFetch: true,
       dependencyProxyTotalSize: '',
       loadingError: false,
+      sortKey: 'STORAGE_SIZE_DESC',
     };
   },
   computed: {
@@ -142,6 +145,15 @@ export default {
       } else {
         this.searchTerm = searchTerm;
       }
+    },
+    onSortChanged({ sortBy, sortDesc }) {
+      if (sortBy !== 'storage') {
+        return;
+      }
+
+      const sortDir = sortDesc ? 'desc' : 'asc';
+      const sortKey = `${convertToSnakeCase(sortBy)}_size_${sortDir}`.toUpperCase();
+      this.sortKey = sortKey;
     },
     fetchMoreProjects(vars) {
       this.$apollo.queries.namespace.fetchMore({
@@ -216,6 +228,9 @@ export default {
         :projects="namespaceProjects"
         :is-loading="isQueryLoading"
         :help-links="helpLinks"
+        sort-by="storage"
+        :sort-desc="true"
+        @sortChanged="onSortChanged($event)"
       />
 
       <div class="gl-display-flex gl-justify-content-center gl-mt-5">
