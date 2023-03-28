@@ -31032,6 +31032,15 @@ msgstr ""
 msgid "PackageRegistry|There are no packages yet"
 msgstr ""
 
+msgid "PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled."
+msgstr ""
+
+msgid "PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled. %{docLinkStart}What are the risks?%{docLinkEnd}"
+msgstr ""
+
+msgid "PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled. %{docs_link_start}What are the risks?%{docs_link_end}"
+msgstr ""
+
 msgid "PackageRegistry|There was a problem fetching the details for this package."
 msgstr ""
 
