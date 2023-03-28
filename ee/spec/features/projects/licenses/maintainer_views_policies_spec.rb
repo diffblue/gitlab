@@ -39,14 +39,14 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
       end
 
       it 'displays a link to the documentation to configure license compliance' do
-        expect(page).to have_content('License Compliance')
+        expect(page).to have_content('License compliance')
         expect(page).to have_content('More Information')
       end
     end
 
     context 'when the license_scanning_sbom_scanner feature flag is true' do
       it 'displays a link to the documentation to configure license compliance' do
-        expect(page).to have_content('License Compliance')
+        expect(page).to have_content('License compliance')
         expect(page).to have_content('More Information')
       end
     end

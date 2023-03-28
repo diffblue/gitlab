@@ -6,7 +6,7 @@ exports[`Security Dashboard default states sets up group-level 1`] = `
     <h2
       class="gl-mb-6"
     >
-      Security Dashboard
+      Security dashboard
     </h2>
     <div
       class="security-charts gl-display-grid"
@@ -118,7 +118,7 @@ exports[`Security Dashboard default states sets up instance-level 1`] = `
     <h2
       class="gl-mb-6"
     >
-      Security Dashboard
+      Security dashboard
     </h2>
     <div
       class="security-charts gl-display-grid"
