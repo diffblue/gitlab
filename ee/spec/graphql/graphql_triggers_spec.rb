@@ -48,16 +48,6 @@ RSpec.describe GraphqlTriggers do
 
         ::GraphqlTriggers.issuable_epic_updated(work_item)
       end
-
-      context 'when real_time_issue_epic_links feature is disabled' do
-        it 'does not trigger the issuableEpicUpdated subscription' do
-          stub_feature_flags(real_time_issue_epic_links: false)
-
-          expect(GitlabSchema.subscriptions).not_to receive(:trigger)
-
-          ::GraphqlTriggers.issuable_epic_updated(work_item)
-        end
-      end
     end
   end
 end

@@ -18,8 +18,6 @@ module EE
       end
 
       def self.issuable_epic_updated(issuable)
-        return unless ::Feature.enabled?(:real_time_issue_epic_links, issuable.project)
-
         ::GitlabSchema.subscriptions.trigger('issuableEpicUpdated', { issuable_id: issuable.to_gid }, issuable)
       end
     end

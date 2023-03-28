@@ -85,11 +85,7 @@ module Ci
       def consumption_since_last_update
         last_tracking = time_last_tracked_consumption!(Time.current.utc)
         duration = Time.current.utc - last_tracking
-        if Feature.enabled?(:refactor_ci_minutes_consumption, build.project)
-          ::Gitlab::Ci::Minutes::Consumption.new(pipeline: build.pipeline, runner_matcher: build.runner.runner_matcher, duration: duration).amount
-        else
-          ::Gitlab::Ci::Minutes::BuildConsumption.new(build, duration).amount
-        end
+        ::Gitlab::Ci::Minutes::Consumption.new(pipeline: build.pipeline, runner_matcher: build.runner.runner_matcher, duration: duration).amount
       end
 
       def last_build_update_key

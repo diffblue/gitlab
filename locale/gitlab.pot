@@ -14056,9 +14056,6 @@ msgstr ""
 msgid "Dependencies|Vulnerable components"
 msgstr ""
 
-msgid "Dependency List"
-msgstr ""
-
 msgid "Dependency List has no entries"
 msgstr ""
 
@@ -39719,7 +39716,7 @@ msgstr ""
 msgid "SecurityReports|Scan details"
 msgstr ""
 
-msgid "SecurityReports|Security Dashboard"
+msgid "SecurityReports|Security dashboard"
 msgstr ""
 
 msgid "SecurityReports|Security reports can only be accessed by authorized users."
@@ -39824,7 +39821,7 @@ msgstr ""
 msgid "SecurityReports|Upgrade to manage vulnerabilities"
 msgstr ""
 
-msgid "SecurityReports|Vulnerability Report"
+msgid "SecurityReports|Vulnerability report"
 msgstr ""
 
 msgid "SecurityReports|Warning parsing security reports"

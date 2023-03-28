@@ -11,13 +11,9 @@ module Ci
         return unless build.shared_runner_build?
 
         ci_minutes_consumed =
-          if Feature.enabled?(:refactor_ci_minutes_consumption, build.project)
-            ::Gitlab::Ci::Minutes::Consumption
-              .new(pipeline: build.pipeline, runner_matcher: build.runner.runner_matcher, duration: build.duration)
-              .amount
-          else
-            ::Gitlab::Ci::Minutes::BuildConsumption.new(build, build.duration).amount
-          end
+          ::Gitlab::Ci::Minutes::Consumption
+            .new(pipeline: build.pipeline, runner_matcher: build.runner.runner_matcher, duration: build.duration)
+            .amount
 
         update_usage(build, ci_minutes_consumed)
       end
