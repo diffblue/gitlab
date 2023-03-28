@@ -797,6 +797,19 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
             expect(json_response['message']['confidential'])
               .to include('A non-confidential epic cannot be assigned to a confidential parent epic')
           end
+
+          context 'when user has no access to parent epic' do
+            let_it_be(:external_epic) { create(:epic, group: create(:group, :private)) }
+
+            let(:params) { { title: 'new epic', parent_id: external_epic.id } }
+
+            it 'creates epic without parent' do
+              expect(response).to have_gitlab_http_status(:success)
+              new_epic = Epic.last
+
+              expect(new_epic.parent).to be_nil
+            end
+          end
         end
       end
 
@@ -881,7 +894,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
 
   describe 'PUT /groups/:id/epics/:epic_iid' do
     let(:url) { "/groups/#{group.path}/epics/#{epic.iid}" }
-    let!(:epic2) { create(:epic) }
+    let!(:epic2) { create(:epic, group: group) }
     let(:params) do
       {
         title: 'new title',
@@ -898,7 +911,7 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
 
     context 'when epics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when a user does not have permissions to create an epic' do
@@ -916,6 +929,20 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
           put api(url, user)
 
           expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when user has no access to parent epic' do
+        let!(:epic2) { create(:epic, group: create(:group, :private)) }
+
+        it 'does not update parent' do
+          group.add_developer(user)
+
+          put api(url, user), params: params
+
+          expect(response).to have_gitlab_http_status(:success)
+
+          expect(epic.reload.parent).to be_nil
         end
       end
 

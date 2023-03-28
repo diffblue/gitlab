@@ -9,7 +9,7 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
   describe '#execute' do
     before do
-      stub_licensed_features(epics: true)
+      stub_licensed_features(epics: true, subepics: true)
       group.add_maintainer(user)
     end
 
@@ -632,6 +632,120 @@ RSpec.describe Epics::UpdateService, feature_category: :portfolio_management do
 
             update_epic(description: "/child_epic #{child_epic.to_reference(group)}")
             expect(epic.reload.children).to be_empty
+          end
+        end
+      end
+    end
+
+    context 'when updating parent' do
+      let(:new_parent) { create(:epic, group: group) }
+
+      subject { update_epic(parent: new_parent) }
+
+      context 'when user cannot update parent' do
+        shared_examples 'updates epic without changing parent' do
+          it 'does not change parent' do
+            expect { subject }.not_to change { epic.parent }
+          end
+
+          it 'does not create notes or track change' do
+            expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
+              .not_to receive(:track_epic_parent_updated_action)
+
+            expect { subject }.not_to change { Note.count }
+          end
+        end
+
+        context 'when subepics are disabled' do
+          before do
+            stub_licensed_features(epics: true, subepics: false)
+          end
+
+          it_behaves_like 'updates epic without changing parent'
+        end
+
+        context 'when user lacks admin_epic_tree_relation permissions' do
+          before do
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?)
+              .with(user, :admin_epic_tree_relation, new_parent).and_return(false)
+          end
+
+          it_behaves_like 'updates epic without changing parent'
+
+          context 'when using parent_id' do
+            subject { update_epic(parent_id: new_parent.id) }
+
+            it 'does not change parent' do
+              expect { subject }.not_to change { epic.parent }
+            end
+          end
+        end
+      end
+
+      context 'when user can update parent' do
+        shared_examples 'records parent changed after saving' do
+          it 'tracks parent change' do
+            expect(::Gitlab::UsageDataCounters::EpicActivityUniqueCounter)
+              .to receive(:track_epic_parent_updated_action)
+                    .with(author: user, namespace: group)
+
+            subject
+          end
+        end
+
+        it 'creates system notes' do
+          expect { subject }.to change { epic.parent }.from(nil).to(new_parent)
+                                                      .and change { Note.count }.by(2)
+
+          child_ref = epic.to_reference(group)
+          new_ref = new_parent.to_reference(group)
+
+          epic.reload
+          expect(epic.notes.first.note).to eq("added epic #{new_ref} as parent epic")
+          expect(new_parent.notes.first.note).to eq("added epic #{child_ref} as child epic")
+        end
+
+        it_behaves_like 'records parent changed after saving'
+
+        context 'when parent is already present' do
+          let(:existing_parent) { create(:epic, group: group) }
+
+          before do
+            epic.update!(parent: existing_parent)
+          end
+
+          it 'changes parent and creates system notes' do
+            expect { subject }.to change { epic.parent }.from(existing_parent).to(new_parent)
+                                                        .and change { Note.count }.by(3)
+
+            child_ref = epic.to_reference(group)
+            new_ref = new_parent.to_reference(group)
+
+            epic.reload
+            expect(epic.notes.first.note).to eq("added epic #{new_ref} as parent epic")
+            expect(new_parent.notes.first.note).to eq("added epic #{child_ref} as child epic")
+            expect(existing_parent.notes.first.note).to eq("moved child epic #{child_ref} to epic #{new_ref}")
+          end
+
+          it_behaves_like 'records parent changed after saving'
+
+          context 'when removing parent' do
+            subject { update_epic(parent: nil) }
+
+            it 'removed parent and creates system notes' do
+              expect { subject }.to change { epic.parent }.from(existing_parent).to(nil)
+                                                          .and change { Note.count }.by(2)
+
+              child_ref = epic.to_reference(group)
+              existing_ref = existing_parent.to_reference(group)
+
+              epic.reload
+              expect(epic.notes.first.note).to eq("removed parent epic #{existing_ref}")
+              expect(existing_parent.notes.first.note).to eq("removed child epic #{child_ref}")
+            end
+
+            it_behaves_like 'records parent changed after saving'
           end
         end
       end
