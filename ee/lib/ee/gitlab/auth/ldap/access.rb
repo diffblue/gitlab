@@ -98,11 +98,15 @@ module EE
 
             attrs = { user: user }
             attrs[:email] = ldap_email if ldap_email.present?
-            attrs[:name] = ldap_name if ldap_name.present?
+            attrs[:name] = ldap_name if ldap_name.present? && sync_ldap_name?
 
             ::Users::UpdateService.new(user, attrs).execute do |user|
               user.skip_reconfirmation!
             end
+          end
+
+          def sync_ldap_name?
+            adapter.config.enabled? && adapter.config.sync_name
           end
 
           def update_identity
