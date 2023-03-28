@@ -17,11 +17,8 @@ options:
     operator: OR
     attribute: user_id
   events:
-    - 'i_testing_web_performance_widget_total'
     - 'i_testing_full_code_quality_report_total'
     - 'i_testing_group_code_coverage_visit_total'
-    - 'i_testing_load_performance_widget_total'
-    - 'i_testing_metrics_report_widget_total'
 distribution:
 - ee
 tier:
