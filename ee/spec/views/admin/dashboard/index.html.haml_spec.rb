@@ -68,11 +68,19 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
   describe 'license expirations' do
     shared_examples_for 'expiration message' do |start_date:, expire_date:, is_trial:, message:|
       before do
-        assign(:license, create(:license,
-                                restrictions: { trial: is_trial },
-                                data: create(:gitlab_license,
-                                             licensee: { 'Company' => 'GitLab', 'Email' => 'test@gitlab.com' },
-                                             starts_at: start_date, expires_at: expire_date).export))
+        assign(
+          :license,
+          create(
+            :license,
+            restrictions: { trial: is_trial },
+            data: create(
+              :gitlab_license,
+              licensee: { 'Company' => 'GitLab', 'Email' => 'test@gitlab.com' },
+              starts_at: start_date,
+              expires_at: expire_date
+            ).export
+          )
+        )
       end
 
       it "shows '#{message}'" do
@@ -85,28 +93,28 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
       context 'when is active' do
         today = Date.current
         it_behaves_like 'expiration message',
-                        start_date: today - 30.days,
-                        expire_date: today + 30.days,
-                        is_trial: false,
-                        message: "#{s_('Subscriptions|End date:')} #{(today + 30.days).strftime('%b %-d, %Y')}"
+          start_date: today - 30.days,
+          expire_date: today + 30.days,
+          is_trial: false,
+          message: "#{s_('Subscriptions|End date:')} #{(today + 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when is expired' do
         today = Date.current
         it_behaves_like 'expiration message',
-                        start_date: today - 60.days,
-                        expire_date: today - 30.days,
-                        is_trial: false,
-                        message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
+          start_date: today - 60.days,
+          expire_date: today - 30.days,
+          is_trial: false,
+          message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when never expires' do
         today = Date.current
         it_behaves_like 'expiration message',
-                        start_date: today - 30.days,
-                        expire_date: nil,
-                        is_trial: false,
-                        message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
+          start_date: today - 30.days,
+          expire_date: nil,
+          is_trial: false,
+          message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
       end
     end
 
@@ -115,28 +123,28 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
         today = Date.current
         days_left = 23
         it_behaves_like 'expiration message',
-                        start_date: today - 30.days,
-                        expire_date: today + days_left.days,
-                        is_trial: true,
-                        message: "#{s_('Subscriptions|End date:')} Free trial will expire in #{days_left} days"
+          start_date: today - 30.days,
+          expire_date: today + days_left.days,
+          is_trial: true,
+          message: "#{s_('Subscriptions|End date:')} Free trial will expire in #{days_left} days"
       end
 
       context 'when is expired' do
         today = Date.current
         it_behaves_like 'expiration message',
-                        start_date: today - 60.days,
-                        expire_date: today - 30.days,
-                        is_trial: true,
-                        message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
+          start_date: today - 60.days,
+          expire_date: today - 30.days,
+          is_trial: true,
+          message: "#{_('Expired:')} #{(today - 30.days).strftime('%b %-d, %Y')}"
       end
 
       context 'when never expires' do
         today = Date.current
         it_behaves_like 'expiration message',
-                        start_date: today - 30.days,
-                        expire_date: nil,
-                        is_trial: true,
-                        message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
+          start_date: today - 30.days,
+          expire_date: nil,
+          is_trial: true,
+          message: "#{s_('Subscriptions|End date:')} #{s_('Subscriptions|None')}"
       end
     end
   end
