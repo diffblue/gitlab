@@ -145,10 +145,13 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
   end
 
   context 'when vulnerability state is not different from the requested state' do
-    let(:state) { :dismissed }
-    let(:action) { dismiss_vulnerability }
+    let(:vulnerability) { create(:vulnerability, :with_state_transition, :dismissed, project: project, to_state: :dismissed) }
 
-    it_behaves_like 'does not create state transition for same state'
+    before do
+      project.add_developer(user)
+    end
+
+    it { expect { dismiss_vulnerability }.to raise_error Gitlab::Graphql::Errors::ArgumentError, 'To state must not be the same as from_state for the same dismissal_reason' }
   end
 
   describe 'permissions' do

@@ -40,7 +40,22 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
       expect(subject).to be_invalid
       expect do
         subject.save!
-      end.to raise_error ActiveRecord::RecordInvalid, "Validation failed: To state must not be the same as from_state"
+      end.to raise_error(
+        ActiveRecord::RecordInvalid,
+        'Validation failed: To state must not be the same as from_state for the same dismissal_reason')
+    end
+
+    context 'when the last record contains a different dismissal_reason' do
+      before do
+        create(:vulnerability_state_transition, vulnerability: vulnerability, dismissal_reason: 'false_positive')
+      end
+
+      it 'does not fail the validation' do
+        subject.from_state = subject.to_state
+        subject.dismissal_reason = 'acceptable_risk'
+
+        expect(subject).to be_valid
+      end
     end
   end
 
