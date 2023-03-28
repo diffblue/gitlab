@@ -4,64 +4,55 @@ require 'spec_helper'
 
 # Interim feature category experimentation_activation used here while waiting for
 # https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_requests/113300 to merge
-RSpec.describe Namespaces::FreeUserCap::OverLimitNotificationWorker, feature_category: :experimentation_activation,
-  type: :worker,
-  ee: true do
-  let(:frozen_time) { Time.zone.parse "2022-09-22T00:00+0" }
+RSpec.describe Namespaces::FreeUserCap::OverLimitNotificationWorker, :saas, feature_category: :experimentation_activation, type: :worker do
+  using RSpec::Parameterized::TableSyntax
 
-  around do |example|
-    travel_to(frozen_time) { example.run }
-  end
-
-  describe '#perform', :saas do
-    subject(:worker) { described_class.new.perform }
-
-    let(:group) { create :group_with_plan, :private, plan: :free_plan }
-    let(:owner) { create :owner }
-
-    before do
-      group.add_owner owner
-      group.namespace_details.update! next_over_limit_check_at: 2.days.ago
+  describe '#perform' do
+    let(:frozen_time) { Time.zone.parse '2022-09-22T00:00+0' }
+    let_it_be(:namespace) do
+      create(:group_with_plan, :private, plan: :free_plan).tap do |record|
+        record.add_owner(create(:user))
+      end
     end
 
-    context 'when on gitlab.com', :saas do
-      before do
-        stub_ee_application_setting should_check_namespace_plan: true
-        stub_ee_application_setting dashboard_limit_enabled: true
-      end
+    around do |example|
+      travel_to(frozen_time) { example.run }
+    end
 
-      it 'runs notifiy service and marks next check for group' do
-        expect(::Namespaces::FreeUserCap::NotifyOverLimitGroupsService).to receive(:execute)
+    subject(:worker) { described_class.new.perform }
 
-        next_check_time = frozen_time + described_class::SCHEDULE_BUFFER_IN_HOURS.hours
+    before do
+      namespace.namespace_details.update! next_over_limit_check_at: 2.days.ago
+      stub_ee_application_setting should_check_namespace_plan: true
+    end
 
-        expect { subject }.to change { group.reload.namespace_details.next_over_limit_check_at }.to(next_check_time)
-      end
+    it 'runs notify service and marks next check for the namespace' do
+      stub_ee_application_setting dashboard_limit_enabled: true
+
+      expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(root_namespace: namespace)
+
+      next_check_time = frozen_time + described_class::SCHEDULE_BUFFER_IN_HOURS.hours
+
+      expect { worker }.to change { namespace.reload.namespace_details.next_over_limit_check_at }.to(next_check_time)
     end
 
     context 'with feature flags enabled/disabled' do
-      where(
-        limit_enabled: [true, false, false],
-        free_user_cap_over_user_limit_mails: [false, true, false]
-      )
-
-      before do
-        stub_ee_application_setting dashboard_limit_enabled: limit_enabled
-        stub_ee_application_setting should_check_namespace_plan: true
-        stub_feature_flags free_user_cap_over_user_limit_mails: free_user_cap_over_user_limit_mails
+      where(:limit_enabled, :free_user_cap_over_user_limit_mails, :call_service, :job_count) do
+        true  | true  | 1 | described_class::MAX_RUNNING_JOBS
+        true  | false | 0 | 0
+        false | true  | 0 | 0
+        false | false | 0 | 0
       end
 
       with_them do
-        it 'triggers mail the namespace owners', :aggregate_failures do
-          if limit_enabled && free_user_cap_over_user_limit_mails
-            expect(::Namespaces::FreeUserCap::NotifyOverLimitGroupsService).to receive(:execute)
-            expect(described_class.new.max_running_jobs).to eq(5)
-          else
-            expect(::Namespaces::FreeUserCap::NotifyOverLimitGroupsService).not_to receive(:execute)
-            expect(described_class.new.max_running_jobs).to eq(0)
-          end
+        it 'triggers the namespace owners mail', :aggregate_failures do
+          stub_ee_application_setting dashboard_limit_enabled: limit_enabled
+          stub_feature_flags free_user_cap_over_user_limit_mails: free_user_cap_over_user_limit_mails
 
-          subject
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).exactly(call_service).times
+          expect(described_class.new.max_running_jobs).to eq(job_count)
+
+          worker
         end
       end
     end

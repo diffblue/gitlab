@@ -12,7 +12,3 @@ resource :subscriptions, only: [:new, :create] do
     resources :hand_raise_leads, only: :create
   end
 end
-
-# Deprecated route as part of the move after deployment and traffic is drained
-# https://gitlab.com/gitlab-org/gitlab/-/issues/393970
-post '/trials/create_hand_raise_lead' => 'subscriptions/hand_raise_leads#create'
