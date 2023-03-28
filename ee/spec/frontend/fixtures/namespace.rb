@@ -97,7 +97,8 @@ RSpec.describe 'Namespace (JavaScript fixtures)', type: :controller do
             current_user: user,
             variables: {
               fullPath: namespace.full_path,
-              first: 10
+              first: 10,
+              sortKey: 'STORAGE_SIZE_DESC'
             }
           )
 

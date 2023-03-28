@@ -416,7 +416,7 @@ module Gitlab
         meta_info = {
           _meta: {
             created_by: Gitlab::VERSION
-          }
+          }.merge(options.fetch(:meta, {}))
         }
 
         create_index_options = {

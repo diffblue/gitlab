@@ -56,10 +56,10 @@ describe('calculateUsedAndRemStorage', () => {
     description                                       | project                | purchasedStorageRemaining | totalCalculatedUsedStorage | totalCalculatedStorageLimit
     ${'project in error state and purchased 0'}       | ${mockProjectsData[0]} | ${0}                      | ${419430}                  | ${419430}
     ${'project in error state and purchased 10000'}   | ${mockProjectsData[0]} | ${100000}                 | ${419430}                  | ${519430}
-    ${'project within limit and purchased 0'}         | ${mockProjectsData[1]} | ${0}                      | ${41943}                   | ${100000}
-    ${'project within limit and purchased 10000'}     | ${mockProjectsData[1]} | ${100000}                 | ${41943}                   | ${200000}
-    ${'project in warning state and purchased 0'}     | ${mockProjectsData[2]} | ${0}                      | ${0}                       | ${100000}
-    ${'project in warning state and purchased 10000'} | ${mockProjectsData[2]} | ${100000}                 | ${0}                       | ${200000}
+    ${'project in warning state and purchased 0'}     | ${mockProjectsData[1]} | ${0}                      | ${0}                       | ${100000}
+    ${'project in warning state and purchased 10000'} | ${mockProjectsData[1]} | ${100000}                 | ${0}                       | ${200000}
+    ${'project within limit and purchased 0'}         | ${mockProjectsData[2]} | ${0}                      | ${41943}                   | ${100000}
+    ${'project within limit and purchased 10000'}     | ${mockProjectsData[2]} | ${100000}                 | ${41943}                   | ${200000}
   `(
     'returns used: $totalCalculatedUsedStorage and remaining: $totalCalculatedStorageLimit storage for $description',
     ({

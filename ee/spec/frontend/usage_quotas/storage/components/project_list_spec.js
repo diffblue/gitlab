@@ -16,6 +16,8 @@ const createComponent = ({ props = {} } = {}) => {
       projects,
       helpLinks: projectHelpLinks,
       isLoading: false,
+      sortBy: 'storage',
+      sortDesc: true,
       ...props,
     },
   });
@@ -84,8 +86,8 @@ describe('ProjectList', () => {
       it.each`
         project        | projectUrlWithUsageQuotas
         ${projects[0]} | ${'http://localhost/frontend-fixtures/twitter/-/usage_quotas'}
-        ${projects[1]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
-        ${projects[2]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
+        ${projects[1]} | ${'http://localhost/frontend-fixtures/html5-boilerplate/-/usage_quotas'}
+        ${projects[2]} | ${'http://localhost/frontend-fixtures/dummy-project/-/usage_quotas'}
       `('renders project link as usage_quotas URL', ({ project, projectUrlWithUsageQuotas }) => {
         createComponent({ props: { projects: [project] } });
 

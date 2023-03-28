@@ -1,5 +1,5 @@
 import { GlSprintf } from '@gitlab/ui';
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import component from 'ee/vue_shared/security_reports/components/dismissal_note.vue';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 
@@ -22,9 +22,12 @@ describe('dismissal note', () => {
   };
   let wrapper;
 
-  const mountComponent = (options, mountFn = shallowMount) => {
+  const mountComponent = (options, mountFn = shallowMountExtended) => {
     wrapper = mountFn(component, { ...options, stubs: { GlSprintf } });
   };
+
+  const findPipelineLink = () => wrapper.findByTestId('pipeline-link');
+  const findProjectLink = () => wrapper.findByTestId('project-link');
 
   describe('with no attached project or pipeline', () => {
     beforeEach(() => {
@@ -56,6 +59,10 @@ describe('dismissal note', () => {
     it('should return the event text with project data', () => {
       expect(wrapper.text()).toBe(`Dismissed at ${project.value}`);
     });
+
+    it('should link to the project', () => {
+      expect(findProjectLink().attributes('href')).toBe(project.url);
+    });
   });
 
   describe('with an attached pipeline', () => {
@@ -68,6 +75,10 @@ describe('dismissal note', () => {
     it('should return the event text with project data', () => {
       expect(wrapper.text()).toBe(`Dismissed on pipeline #${pipeline.id}`);
     });
+
+    it('should link to the pipeline', () => {
+      expect(findPipelineLink().attributes('href')).toBe(pipeline.path);
+    });
   });
 
   describe('with an attached pipeline and project', () => {
@@ -79,6 +90,14 @@ describe('dismissal note', () => {
 
     it('should return the event text with project data', () => {
       expect(wrapper.text()).toBe(`Dismissed on pipeline #${pipeline.id} at ${project.value}`);
+    });
+
+    it('should link to the pipeline', () => {
+      expect(findPipelineLink().attributes('href')).toBe(pipeline.path);
+    });
+
+    it('should link to the project', () => {
+      expect(findProjectLink().attributes('href')).toBe(project.url);
     });
   });
 
@@ -154,7 +173,7 @@ describe('dismissal note', () => {
               isShowingDeleteButtons: true,
             },
           },
-          mount,
+          mountExtended,
         );
         commentItem = wrapper.findAllComponents(EventItem).at(1);
       });

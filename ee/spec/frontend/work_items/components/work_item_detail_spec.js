@@ -6,7 +6,7 @@ import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
 import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
-import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
+import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {

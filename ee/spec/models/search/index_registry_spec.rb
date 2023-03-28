@@ -9,18 +9,28 @@ RSpec.describe Search::IndexRegistry, feature_category: :global_search do
     let(:namespace) { create(:namespace) }
     let(:cache_backend) { Gitlab::ProcessMemoryCache.cache_backend }
 
-    before do
-      allow(Search::NamespaceIndexAssignment).to receive(:assign_index)
+    context 'when an index is already assigned to a namespace' do
+      let!(:assignment) { Search::NamespaceIndexAssignment.assign_index(namespace: namespace, index: assigned_index) }
+      let(:assigned_index) { create(:search_index, type: type, path: 'assigned-index-path') }
+
+      it 'returns the index in the index assignment' do
+        expect(described_class.index_for_namespace(namespace: namespace, type: type)).to eq(assigned_index)
+      end
     end
 
-    it 'returns routed index for a namespace' do
-      expect(type).to receive(:route).with(hash: namespace.hashed_root_namespace_id).and_return(index)
-      expect(described_class.index_for_namespace(namespace: namespace, type: type)).to eq(index)
+    context 'when there is not an index assignment' do
+      let(:index) { create(:search_index, type: type) }
+
+      it 'makes a new assignment and returns routed index for a namespace' do
+        expect(type).to receive(:route).with(hash: namespace.hashed_root_namespace_id).and_return(index)
+        expect(::Search::NamespaceIndexAssignment).to receive(:assign_index).with(namespace: namespace, index: index)
+        expect(described_class.index_for_namespace(namespace: namespace, type: type)).to eq(index)
+      end
     end
 
     it 'uses cache correctly' do
       expect(cache_backend).to receive(:fetch).with(
-        [described_class.name, :index_pattern_for_namespace, namespace.id, type.name],
+        [described_class.name, :index_for_namespace, namespace.id, type.name],
         expires_in: 1.minute
       ).and_call_original
 

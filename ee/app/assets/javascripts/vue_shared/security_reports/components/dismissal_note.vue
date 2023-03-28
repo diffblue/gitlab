@@ -93,10 +93,10 @@ export default {
       <div v-if="feedback.created_at">
         <gl-sprintf :message="eventText">
           <template v-if="pipeline" #pipelineLink>
-            <gl-link :href="pipeline.path">#{{ pipeline.id }}</gl-link>
+            <gl-link :href="pipeline.path" data-testid="pipeline-link">#{{ pipeline.id }}</gl-link>
           </template>
           <template v-if="project" #projectLink>
-            <gl-link :href="project.value">{{ project.value }}</gl-link>
+            <gl-link :href="project.url" data-testid="project-link">{{ project.value }}</gl-link>
           </template>
         </gl-sprintf>
       </div>

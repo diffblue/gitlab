@@ -1,7 +1,6 @@
 - add_page_specific_style 'page_bundles/admin/geo_replicable'
 = render "admin/geo/shared/replication_nav"
 #js-geo-replicable{ data: { "geo-replicable-empty-svg-path" => image_path("illustrations/empty-state/geo-replication-empty.svg"),
-  "geo-troubleshooting-link" => help_page_path("administration/geo/replication/troubleshooting.md"),
   "replicable-type" => @replicator_class.replicable_name_plural,
   "graphql-field-name" => @replicator_class.graphql_field_name,
   "verification-enabled" => @replicator_class.verification_enabled?&.to_s,

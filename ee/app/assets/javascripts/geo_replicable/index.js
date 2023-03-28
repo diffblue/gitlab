@@ -9,7 +9,6 @@ export default () => {
   const el = document.getElementById('js-geo-replicable');
   const {
     replicableType,
-    geoTroubleshootingLink,
     geoReplicableEmptySvgPath,
     graphqlFieldName,
     verificationEnabled,
@@ -26,14 +25,10 @@ export default () => {
       geoCurrentSiteId,
       geoTargetSiteId,
     }),
-    components: {
-      GeoReplicableApp,
-    },
 
     render(createElement) {
-      return createElement('geo-replicable-app', {
+      return createElement(GeoReplicableApp, {
         props: {
-          geoTroubleshootingLink,
           geoReplicableEmptySvgPath,
         },
       });

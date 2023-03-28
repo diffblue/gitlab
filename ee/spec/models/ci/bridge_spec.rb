@@ -8,9 +8,7 @@ RSpec.describe Ci::Bridge do
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
 
   let(:bridge) do
-    create(:ci_bridge, :variables, status: :created,
-                                   options: options,
-                                   pipeline: pipeline)
+    create(:ci_bridge, :variables, status: :created, options: options, pipeline: pipeline)
   end
 
   let(:options) do
