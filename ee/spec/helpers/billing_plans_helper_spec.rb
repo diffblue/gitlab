@@ -329,17 +329,29 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   describe '#show_upgrade_button?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:link_action, :upgrade_offer, :result) do
-      'upgrade' | :no_offer | true
-      'upgrade' | :upgrade_for_free | true
-      'upgrade' | :upgrade_for_offer | false
-      'no_upgrade' | :no_offer | false
-      'no_upgrade' | :upgrade_for_free | false
-      'no_upgrade' | :upgrade_for_offer | false
+    where(:link_action, :upgrade_offer, :allow_upgrade, :result) do
+      'upgrade' | :no_offer             | true  | true
+      'upgrade' | :upgrade_for_free     | true  | true
+      'upgrade' | :upgrade_for_offer    | true  | false
+      'upgrade' | :no_offer             | false | false
+      'upgrade' | :upgrade_for_free     | false | false
+      'upgrade' | :upgrade_for_offer    | false | false
+      'upgrade' | :no_offer             | nil   | true
+      'upgrade' | :upgrade_for_free     | nil   | true
+      'upgrade' | :upgrade_for_offer    | nil   | false
+      'no_upgrade' | :no_offer          | true  | false
+      'no_upgrade' | :upgrade_for_free  | true  | false
+      'no_upgrade' | :upgrade_for_offer | true  | false
+      'no_upgrade' | :no_offer          | false | false
+      'no_upgrade' | :upgrade_for_free  | false | false
+      'no_upgrade' | :upgrade_for_offer | false | false
+      'no_upgrade' | :no_offer          | nil   | false
+      'no_upgrade' | :upgrade_for_free  | nil   | false
+      'no_upgrade' | :upgrade_for_offer | nil   | false
     end
 
     with_them do
-      subject { helper.show_upgrade_button?(link_action, upgrade_offer) }
+      subject { helper.show_upgrade_button?(link_action, upgrade_offer, allow_upgrade) }
 
       it { is_expected.to eq(result) }
     end

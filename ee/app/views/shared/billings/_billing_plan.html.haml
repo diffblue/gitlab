@@ -68,7 +68,7 @@
 
     - unless read_only
       .card-footer
-        - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
+        - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type, plan.allow_upgrade)
         .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
           = render "shared/billings/billing_plan_actions", namespace: namespace, plan: plan,
                                                            purchase_link: purchase_link, show_upgrade_button: show_upgrade_button,
