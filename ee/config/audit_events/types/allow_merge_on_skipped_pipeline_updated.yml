@@ -1,0 +1,9 @@
+---
+name: allow_merge_on_skipped_pipeline_updated
+description: There is a project setting which toggles the ability to merge when a pipeline is skipped. This audit event tracks changes to that setting. This MR adds a setting to allow this (like previous Gitlab versions).
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/301124
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83922
+milestone: '14.10'
+feature_category: continuous_integration
+saved_to_database: true
+streamed: true

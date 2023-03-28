@@ -1,0 +1,9 @@
+---
+name: project_name_updated
+description: Create this audit event whenever a project has its name updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/commit/8c0b52247e717cf84bc7b248d817f8baa55b18a4
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/commit/8c0b52247e717cf84bc7b248d817f8baa55b18a4
+milestone: '10.2'
+feature_category: projects
+saved_to_database: true
+streamed: true

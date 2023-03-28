@@ -1,0 +1,9 @@
+---
+name: project_merge_requests_template_updated
+description: Whenever a MR template is updated for a project, this audit event is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/355805
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/84624
+milestone: '15.0'
+feature_category: code_review_workflow
+saved_to_database: true
+streamed: true
