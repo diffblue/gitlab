@@ -27,9 +27,9 @@ RSpec.describe 'Issue promotion', :js, feature_category: :portfolio_management d
     end
   end
 
-  context 'when epics feature is enabled' do
+  context 'when epics and subepics features are enabled' do
     before do
-      stub_licensed_features(epics: true)
+      stub_licensed_features(epics: true, subepics: true)
     end
 
     context 'when current user does not have permissions to promote an issue' do
