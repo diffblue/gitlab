@@ -575,9 +575,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: available)
       end
 
-      context 'when feature is available' do
-        let(:available) { true }
-
+      shared_examples_for 'allows storing of settings' do
         it 'allows storing of settings' do
           subject
 
@@ -587,9 +585,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         end
       end
 
-      context 'when feature is not available' do
-        let(:available) { false }
-
+      shared_examples_for 'does not allow storing of settings' do
         it 'does not allow storing of settings' do
           subject
 
@@ -597,6 +593,26 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           expect(group.reload.namespace_settings.delayed_project_removal).not_to eq(params[:delayed_project_removal])
           expect(group.reload.namespace_settings.lock_delayed_project_removal).not_to eq(params[:lock_delayed_project_removal])
         end
+      end
+
+      context 'when feature is available' do
+        let(:available) { true }
+
+        context 'when the feature flag `always_perform_delayed_deletion` is disabled' do
+          before do
+            stub_feature_flags(always_perform_delayed_deletion: false)
+          end
+
+          it_behaves_like 'allows storing of settings'
+        end
+
+        it_behaves_like 'does not allow storing of settings'
+      end
+
+      context 'when feature is not available' do
+        let(:available) { false }
+
+        it_behaves_like 'does not allow storing of settings'
       end
     end
 
