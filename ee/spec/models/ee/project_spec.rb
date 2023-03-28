@@ -1094,7 +1094,16 @@ RSpec.describe Project, feature_category: :projects do
     end
 
     describe '#require_password_to_approve?' do
+      let_it_be(:root_ancestor) { create(:group) }
+      let_it_be(:sub_group) { create(:group, parent: root_ancestor) }
+
+      before do
+        allow(project).to receive(:group).and_return(sub_group)
+      end
+
       it 'returns true when the resolver returns true' do
+        expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:require_password_to_approve)
                                .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
@@ -1106,6 +1115,8 @@ RSpec.describe Project, feature_category: :projects do
       end
 
       it 'returns false when the resolver returns false' do
+        expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:require_password_to_approve)
                                .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
@@ -1724,7 +1735,16 @@ RSpec.describe Project, feature_category: :projects do
   end
 
   describe "#reset_approvals_on_push?" do
+    let_it_be(:root_ancestor) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: root_ancestor) }
+
+    before do
+      allow(project).to receive(:group).and_return(sub_group)
+    end
+
     it 'returns false when the resolver returns true' do
+      expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
       allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
         allow(resolver).to receive(:retain_approvals_on_push)
                              .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
@@ -1736,6 +1756,8 @@ RSpec.describe Project, feature_category: :projects do
     end
 
     it 'returns true when the resolver returns false' do
+      expect(ComplianceManagement::MergeRequestApprovalSettings::Resolver).to receive(:new).with(root_ancestor, project: project)
+
       allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
         allow(resolver).to receive(:retain_approvals_on_push)
                              .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
