@@ -13,7 +13,7 @@ module Projects
 
     def dashboards_enabled!
       render_404 unless all_application_settings_defined? &&
-        ::Feature.enabled?(:product_analytics_internal_preview, project) &&
+        ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics)
     end
 

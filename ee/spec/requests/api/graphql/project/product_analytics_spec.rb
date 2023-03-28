@@ -45,7 +45,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
     with_them do
       before do
         stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_internal_preview: enabled)
+        stub_feature_flags(product_analytics_dashboards: enabled)
         project.add_role(user, user_role)
         project.project_setting.update!(jitsu_key: jitsu_key)
         project.reload
@@ -79,7 +79,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
     it 'will query state correctly' do
       stub_application_setting(product_analytics_enabled?: true)
       stub_licensed_features(product_analytics: true)
-      stub_feature_flags(product_analytics_internal_preview: true)
+      stub_feature_flags(product_analytics_dashboards: true)
 
       expect_next_instance_of(ProjectSetting) do |instance|
         expect(instance).to receive(:jitsu_key).and_return('test key')
