@@ -30,6 +30,14 @@ export default {
       type: Object,
       required: true,
     },
+    sortBy: {
+      type: String,
+      required: true,
+    },
+    sortDesc: {
+      type: Boolean,
+      required: true,
+    },
   },
   methods: {
     /**
@@ -45,7 +53,7 @@ export default {
   },
   fields: [
     { key: 'name', label: __('Project') },
-    { key: 'storage', label: __('Total') },
+    { key: 'storage', label: __('Total'), sortable: true },
     { key: 'repository', label: __('Repository') },
     { key: 'snippets', label: __('Snippets') },
     { key: 'buildArtifacts', label: __('Artifacts') },
@@ -69,10 +77,15 @@ export default {
     :fields="$options.fields"
     :items="projects"
     :busy="isLoading"
-    :show-empty="true"
+    show-empty
     :empty-text="s__('UsageQuota|No projects to display.')"
     small
     stacked="lg"
+    :sort-by="sortBy"
+    :sort-desc="sortDesc"
+    no-local-sorting
+    no-sort-reset
+    @sort-changed="$emit('sortChanged', $event)"
   >
     <template v-for="field in $options.fields" #[getHeaderSlotName(field.key)]>
       <div :key="field.key" :data-testid="'th-' + field.key">

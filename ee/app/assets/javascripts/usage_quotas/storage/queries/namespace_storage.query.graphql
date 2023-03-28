@@ -7,6 +7,7 @@ query getNamespaceStorageStatistics(
   $last: Int
   $after: String
   $before: String
+  $sortKey: NamespaceProjectSort
 ) {
   namespace(fullPath: $fullPath) {
     id
@@ -36,7 +37,7 @@ query getNamespaceStorageStatistics(
       last: $last
       after: $after
       before: $before
-      sort: STORAGE
+      sort: $sortKey
     ) {
       nodes {
         id

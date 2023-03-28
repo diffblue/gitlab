@@ -61,6 +61,7 @@ describe('NamespaceStorageApp', () => {
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
+  const findProjectList = () => wrapper.findComponent(ProjectList);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
@@ -86,18 +87,6 @@ describe('NamespaceStorageApp', () => {
   };
 
   let mockApollo;
-
-  describe('project list', () => {
-    beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
-      createComponent({ mockApollo });
-      await waitForPromises();
-    });
-
-    it('renders the 2 projects', () => {
-      expect(wrapper.findComponent(ProjectList).props('projects')).toHaveLength(2);
-    });
-  });
 
   describe('Dependency proxy usage', () => {
     beforeEach(async () => {
@@ -140,6 +129,72 @@ describe('NamespaceStorageApp', () => {
         containerRegistrySize:
           mockedNamespaceStorageResponse.data.namespace.rootStorageStatistics.containerRegistrySize,
       });
+    });
+  });
+
+  describe('project list', () => {
+    beforeEach(async () => {
+      mockApollo = createMockApolloProvider();
+      createComponent({ mockApollo });
+      await waitForPromises();
+    });
+
+    it('renders the 2 projects', () => {
+      const projectList = findProjectList();
+      expect(projectList.props('projects')).toHaveLength(2);
+    });
+  });
+
+  describe('sorting projects', () => {
+    let namespaceQuerySuccessHandler;
+
+    function createSpiedMockApolloProvider(response = mockedNamespaceStorageResponse) {
+      namespaceQuerySuccessHandler = jest.fn().mockResolvedValue(response);
+      const requestHandlers = [
+        [getNamespaceStorageQuery, namespaceQuerySuccessHandler],
+        [
+          getDependencyProxyTotalSizeQuery,
+          jest.fn().mockResolvedValue(mockDependencyProxyResponse),
+        ],
+      ];
+
+      return createMockApollo(requestHandlers);
+    }
+
+    beforeEach(() => {
+      mockApollo = createSpiedMockApolloProvider();
+      createComponent({
+        mockApollo,
+      });
+    });
+
+    it('sets default sorting', () => {
+      expect(namespaceQuerySuccessHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortKey: 'STORAGE_SIZE_DESC',
+        }),
+      );
+      const projectList = findProjectList();
+      expect(projectList.props('sortBy')).toBe('storage');
+      expect(projectList.props('sortDesc')).toBe(true);
+    });
+
+    it('forms a sorting order string for STORAGE sorting', async () => {
+      const projectList = findProjectList();
+      projectList.vm.$emit('sortChanged', { sortBy: 'storage', sortDesc: false });
+      await waitForPromises();
+      expect(namespaceQuerySuccessHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          sortKey: 'STORAGE_SIZE_ASC',
+        }),
+      );
+    });
+
+    it('ignores invalid sorting types', async () => {
+      const projectList = findProjectList();
+      projectList.vm.$emit('sortChanged', { sortBy: 'yellow', sortDesc: false });
+      await waitForPromises();
+      expect(namespaceQuerySuccessHandler).toHaveBeenCalledTimes(1);
     });
   });
 
