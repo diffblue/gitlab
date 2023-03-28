@@ -88,8 +88,8 @@ module Gitlab
             project_id: response.project_id,
             deregistered_at: response.deregistered_at
           }
-        rescue GRPC::FailedPrecondition => e
-          raise Errors::ProjectAlreadyDeregistered, e
+        rescue GRPC::NotFound => e
+          raise Errors::ProjectNotFound, e
         rescue GRPC::BadStatus => e
           raise Errors::ResourceNotAvailable, e
         end

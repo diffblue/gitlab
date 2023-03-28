@@ -324,13 +324,13 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: 
       it_behaves_like 'respecting channel credentials'
     end
 
-    context 'when a grpc already exists is received' do
+    context 'when a grpc not found is received' do
       before do
-        allow_next(stub_class).to receive(:deregister_project).and_raise(GRPC::FailedPrecondition)
+        allow_next(stub_class).to receive(:deregister_project).and_raise(GRPC::NotFound)
       end
 
       it 'raises a new error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ProjectAlreadyDeregistered)
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ProjectNotFound)
       end
     end
 
