@@ -111,7 +111,7 @@ export default {
 </script>
 
 <template>
-  <div class="detail-page-header gl-flex-wrap">
+  <div class="detail-page-header gl-flex-wrap-wrap">
     <div class="detail-page-header-body">
       <gl-badge
         class="issuable-status-badge gl-mr-3"
@@ -158,7 +158,7 @@ export default {
       @click="toggleSidebar({ sidebarCollapsed })"
     />
     <div
-      class="detail-page-header-actions gl-display-flex gl-flex-wrap gl-align-items-center gl-w-full gl-sm-w-auto!"
+      class="detail-page-header-actions gl-display-flex gl-flex-wrap-wrap gl-align-items-center gl-w-full gl-sm-w-auto!"
       data-testid="action-buttons"
     >
       <gl-dropdown

@@ -123,7 +123,7 @@ export default {
       {{ $options.i18n.introduction }}
     </p>
 
-    <section class="gl-display-flex gl-flex-wrap gl-mb-6">
+    <section class="gl-display-flex gl-flex-wrap-wrap gl-mb-6">
       <analytics-clipboard-input
         class="gl-mr-6 gl-mb-6 gl-md-mb-0"
         :label="$options.i18n.sdkHost"

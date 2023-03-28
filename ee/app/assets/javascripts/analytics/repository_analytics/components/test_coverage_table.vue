@@ -199,7 +199,7 @@ export default {
 <template>
   <gl-card>
     <template #header>
-      <div class="gl-display-flex gl-flex-wrap gl-align-items-center gl-justify-content-end">
+      <div class="gl-display-flex gl-flex-wrap-wrap gl-align-items-center gl-justify-content-end">
         <div class="gl-flex-grow-1">
           <h5 class="gl-display-inline-block">{{ $options.i18n.header }}</h5>
           <gl-icon

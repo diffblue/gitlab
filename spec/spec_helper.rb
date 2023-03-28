@@ -357,11 +357,6 @@ RSpec.configure do |config|
     # All API specs will be adapted continuously. The following list contains the specs that have not yet been adapted.
     # The feature flag is disabled for these specs as long as they are not yet adapted.
     admin_mode_for_api_feature_flag_paths = %w[
-      ./spec/requests/api/broadcast_messages_spec.rb
-      ./spec/requests/api/deploy_keys_spec.rb
-      ./spec/requests/api/deploy_tokens_spec.rb
-      ./spec/requests/api/keys_spec.rb
-      ./spec/requests/api/namespaces_spec.rb
       ./spec/requests/api/project_export_spec.rb
       ./spec/requests/api/project_repository_storage_moves_spec.rb
       ./spec/requests/api/project_snapshots_spec.rb
