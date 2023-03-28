@@ -19,6 +19,7 @@ module EE
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
           push_frontend_feature_flag(:real_time_issue_epic_links, project)
+          push_frontend_feature_flag(:real_time_issue_weight, project)
         end
 
         before_action :redirect_if_test_case, only: [:show]

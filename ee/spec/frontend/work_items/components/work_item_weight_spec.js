@@ -2,7 +2,7 @@ import { GlForm, GlFormInput } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
-import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
+import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
