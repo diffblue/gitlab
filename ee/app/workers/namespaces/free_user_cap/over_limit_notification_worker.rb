@@ -17,7 +17,7 @@ module Namespaces
 
       def perform_work(*args)
         next_batch.map(&:namespace_id).each do |namespace_id|
-          notify group_id: namespace_id
+          notify namespace_id: namespace_id
         end
       end
 
@@ -33,12 +33,12 @@ module Namespaces
 
       private
 
-      def notify(group_id:, checked_at: Time.current)
+      def notify(namespace_id:)
         return unless enforce_over_limit_mails?
 
-        @group = Group.find_by id: group_id # rubocop: disable CodeReuse/ActiveRecord
+        namespace = Namespace.find_by id: namespace_id # rubocop: disable CodeReuse/ActiveRecord
 
-        NotifyOverLimitGroupsService.execute(group: @group) if @group
+        NotifyOverLimitService.execute(root_namespace: namespace) if namespace
       end
 
       def next_batch

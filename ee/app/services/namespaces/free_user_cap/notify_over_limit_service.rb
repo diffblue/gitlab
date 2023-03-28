@@ -2,17 +2,15 @@
 
 module Namespaces
   module FreeUserCap
-    class NotifyOverLimitGroupsService
+    class NotifyOverLimitService
       ServiceError = Class.new(StandardError)
 
-      attr_accessor :group
-
-      def self.execute(group:)
-        new(group: group).execute
+      def self.execute(root_namespace:)
+        new(root_namespace: root_namespace).execute
       end
 
-      def initialize(group:)
-        @group = group.root_ancestor
+      def initialize(root_namespace:)
+        @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
       def execute
@@ -22,14 +20,16 @@ module Namespaces
         notify
 
         ServiceResponse.success
-      rescue StandardError => e
+      rescue ServiceError => e
         ServiceResponse.error message: e.message
       end
 
       private
 
+      attr_reader :root_namespace
+
       def over_limit?
-        Namespaces::FreeUserCap::Enforcement.new(@group).over_limit?
+        Namespaces::FreeUserCap::Enforcement.new(root_namespace).over_limit?
       end
 
       def notify
@@ -46,11 +46,13 @@ module Namespaces
       end
 
       def email_owners
-        @group.owners.each { |owner| ::Notify.over_free_user_limit_email(owner, @group, checked_at).deliver_now }
+        root_namespace.owners.each do |owner|
+          ::Notify.over_free_user_limit_email(owner, root_namespace, checked_at).deliver_now
+        end
       end
 
       def mark_group_as_notified!
-        @group.namespace_details.update free_user_cap_over_limit_notified_at: checked_at
+        root_namespace.namespace_details.update free_user_cap_over_limit_notified_at: checked_at
       end
     end
   end
