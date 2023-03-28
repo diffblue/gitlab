@@ -16,7 +16,7 @@ export default {
     },
   },
   i18n: {
-    title: s__('SecurityReports|Security Dashboard'),
+    title: s__('SecurityReports|Security dashboard'),
   },
 };
 </script>
