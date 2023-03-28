@@ -419,6 +419,8 @@ reasons are:
   to remove these. This script should always find work to do, as it also removes empty directories (see above).
 - [Artifact housekeeping was changed significantly](#artifacts-housekeeping-disabled-in-gitlab-146-to-152),
   and you might need to enable a feature flag to used the updated system.
+- The [keep latest artifacts from most recent success jobs](../ci/pipelines/job_artifacts.md#keep-artifacts-from-most-recent-successful-jobs)
+  feature is enabled.
 
 In these and other cases, identify the projects most responsible
 for disk space usage, figure out what types of artifacts are using the most

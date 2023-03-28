@@ -9,8 +9,9 @@ RSpec.describe 'admin/identities/index.html.haml', :aggregate_failures do
   let_it_be(:saml_provider) { create(:saml_provider, group: group) }
   let_it_be(:saml_user, refind: true) { create(:user) }
   let_it_be(:saml_identity) do
-    create(:identity, provider: 'group_saml', saml_provider_id: saml_provider.id, user: saml_user,
-                      extern_uid: 'saml-uid')
+    create(
+      :identity, provider: 'group_saml', saml_provider_id: saml_provider.id, user: saml_user, extern_uid: 'saml-uid'
+    )
   end
 
   before do

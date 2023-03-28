@@ -4,11 +4,12 @@ require 'spec_helper'
 
 RSpec.describe 'admin/application_settings/_deletion_protection_settings' do
   let_it_be(:application_setting) do
-    build(:application_setting,
-          deletion_adjourned_period: 1,
-          delayed_group_deletion: false,
-          delayed_project_deletion: false
-         )
+    build(
+      :application_setting,
+      deletion_adjourned_period: 1,
+      delayed_group_deletion: false,
+      delayed_project_deletion: false
+    )
   end
 
   before do
