@@ -297,6 +297,7 @@ export default {
                 findings: [...added, ...fixed],
                 numberOfNewFindings: added.length,
                 numberOfFixedFindings: fixed.length,
+                qaSelector: this.$options.qaSelectors[reportType],
               },
             };
           })
@@ -569,6 +570,14 @@ export default {
       }),
     },
   },
+  qaSelectors: {
+    SAST: 'sast_scan_report',
+    DAST: 'dast_scan_report',
+    DEPENDENCY_SCANNING: 'dependency_scan_report',
+    CONTAINER_SCANNING: 'container_scan_report',
+    COVERAGE_FUZZING: 'coverage_fuzzing_report',
+    API_FUZZING: 'api_fuzzing_report',
+  },
 };
 </script>
 
@@ -583,6 +592,7 @@ export default {
     :help-popover="$options.widgetHelpPopover"
     :action-buttons="actionButtons"
     multi-polling
+    data-qa-selector="vulnerability_report_grouped"
     @is-loading="handleIsLoading"
   >
     <template #summary>
@@ -637,6 +647,7 @@ export default {
               :error="report.error"
               :scanner="report.reportTypeDescription"
               :data-testid="`${report.reportType}-report-header`"
+              :data-qa-selector="report.qaSelector"
             />
             <summary-highlights
               v-if="report.numberOfNewFindings > 0"

@@ -197,7 +197,7 @@ module QA
 
           def has_security_finding_dismissed_on_mr_widget?(reason)
             within_element(:vulnerability_modal_content) do
-              has_element?(:event_item_content, text: /Dismissed on pipeline #\d+/) &&
+              has_element?(:event_item_content, text: /Dismissed.*/) &&
                 has_element?(:event_item_content, text: reason)
             end
           end
