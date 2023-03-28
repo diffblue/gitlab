@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::AuditVariableChangeService, feature_category: :pipeline_composition do
+RSpec.describe Ci::AuditVariableChangeService, feature_category: :secrets_management do
   subject(:execute) { service.execute }
 
   let_it_be(:user) { create(:user) }
