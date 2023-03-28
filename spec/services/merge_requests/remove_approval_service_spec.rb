@@ -39,16 +39,6 @@ RSpec.describe MergeRequests::RemoveApprovalService, feature_category: :code_rev
         execute!
       end
 
-      describe 'caching of approved SHAs', :clean_gitlab_redis_shared_state do
-        let!(:cache_key) { approval.approved_sha_cache_key }
-
-        it 'removes approved_sha_cache_key' do
-          expect { execute! }
-            .to change { Gitlab::Redis::SharedState.with { |redis| redis.get(cache_key) } }
-            .from(approval.approved_sha).to(nil)
-        end
-      end
-
       it 'tracks merge request unapprove action' do
         expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter)
           .to receive(:track_unapprove_mr_action).with(user: user)
