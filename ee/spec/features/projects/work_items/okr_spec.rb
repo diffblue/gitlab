@@ -189,6 +189,80 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       expect(find('[data-testid="work-item-tree"]')).to have_content('Objective 2')
     end
 
+    it 'removes direct child of objective with undoing' do
+      create_okr('objective', 'Objective 2')
+
+      page.within('[data-testid="links-child"]') do
+        find('[data-testid="work_items_links_menu"]').click
+        click_button 'Remove'
+
+        wait_for_all_requests
+      end
+
+      page.within('[data-testid="work-item-tree"]') do
+        expect(page).not_to have_content('Objective 2')
+      end
+
+      page.within('.gl-toast') do
+        expect(find('.toast-body')).to have_content(_('Child removed'))
+        find('.b-toaster a', text: 'Undo').click
+      end
+
+      wait_for_all_requests
+
+      page.within('[data-testid="work-item-tree"]') do
+        expect(page).to have_content('Objective 2')
+      end
+    end
+
+    it 'removes indirect child of objective with undoing' do
+      create_okr('objective', 'Objective 2')
+
+      page.within('[data-testid="work-item-tree"]') do
+        click_link 'Objective 2'
+
+        wait_for_all_requests
+      end
+
+      page.within('[data-testid="work-item-detail-modal"]') do
+        create_okr('objective', 'Child objective 1')
+        expect(page).to have_content('Child objective 1')
+
+        click_button 'Close'
+      end
+
+      visit project_work_items_path(project, objective.iid, iid_path: true)
+      wait_for_all_requests
+
+      page.within('[data-testid="widget-body"]') do
+        click_button 'Expand'
+
+        wait_for_all_requests
+
+        expect(page).to have_content('Child objective 1')
+      end
+
+      page.within('[data-testid="tree-children"]') do
+        find('[data-testid="work_items_links_menu"]').click
+        click_button 'Remove'
+
+        wait_for_all_requests
+
+        expect(page).not_to have_content('Child objective 1')
+      end
+
+      page.within('.gl-toast') do
+        expect(find('.toast-body')).to have_content(_('Child removed'))
+        find('.b-toaster a', text: 'Undo').click
+      end
+
+      wait_for_all_requests
+
+      page.within('[data-testid="work-item-tree"]') do
+        expect(page).to have_content('Child objective 1')
+      end
+    end
+
     it 'creates key result' do
       create_okr('key result', 'KR 2')
 

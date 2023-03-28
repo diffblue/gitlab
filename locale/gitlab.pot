@@ -8936,6 +8936,9 @@ msgstr ""
 msgid "Child issues and epics"
 msgstr ""
 
+msgid "Child removed"
+msgstr ""
+
 msgid "Chinese language support using"
 msgstr ""
 
@@ -21267,9 +21270,6 @@ msgid "Hierarchy|Planning hierarchy"
 msgstr ""
 
 msgid "Hierarchy|Something went wrong while fetching children."
-msgstr ""
-
-msgid "Hierarchy|Something went wrong while removing a child item."
 msgstr ""
 
 msgid "Hierarchy|Take the work items survey"
