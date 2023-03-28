@@ -22024,6 +22024,8 @@ CREATE TABLE search_indices (
     bucket_number integer,
     path text NOT NULL,
     type text NOT NULL,
+    number_of_shards integer DEFAULT 2 NOT NULL,
+    number_of_replicas integer DEFAULT 1 NOT NULL,
     CONSTRAINT check_75c11e6d37 CHECK ((char_length(type) <= 255)),
     CONSTRAINT check_ab47e7ff85 CHECK ((char_length(path) <= 255))
 );
