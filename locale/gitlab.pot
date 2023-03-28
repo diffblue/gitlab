@@ -21246,6 +21246,9 @@ msgstr ""
 msgid "Hide file browser"
 msgstr ""
 
+msgid "Hide file contents"
+msgstr ""
+
 msgid "Hide group projects"
 msgstr ""
 
