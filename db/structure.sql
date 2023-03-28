@@ -23986,7 +23986,6 @@ CREATE TABLE vulnerability_state_transitions (
     comment text,
     dismissal_reason smallint,
     state_changed_at_pipeline_id bigint,
-    CONSTRAINT check_d1ca8ec043 CHECK ((from_state <> to_state)),
     CONSTRAINT check_fe2eb6a0f3 CHECK ((char_length(comment) <= 50000))
 );
 

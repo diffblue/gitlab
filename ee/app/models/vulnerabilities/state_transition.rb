@@ -25,7 +25,11 @@ module Vulnerabilities
     private
 
     def to_state_and_from_state_differ
-      errors.add(:to_state, "must not be the same as from_state") if to_state == from_state
+      last_state_transition = self.class.where(vulnerability: vulnerability).where.not(id: id).last
+
+      return unless to_state == from_state && last_state_transition&.dismissal_reason == dismissal_reason
+
+      errors.add(:to_state, "must not be the same as from_state for the same dismissal_reason")
     end
   end
 end
