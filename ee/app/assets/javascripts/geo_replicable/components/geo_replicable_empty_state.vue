@@ -2,6 +2,7 @@
 import { GlEmptyState, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapGetters } from 'vuex';
 import { __, s__, sprintf } from '~/locale';
+import { GEO_TROUBLESHOOTING_LINK } from '../constants';
 
 export default {
   name: 'GeoReplicableEmptyState',
@@ -12,10 +13,6 @@ export default {
   },
   props: {
     geoReplicableEmptySvgPath: {
-      type: String,
-      required: true,
-    },
-    geoTroubleshootingLink: {
       type: String,
       required: true,
     },
@@ -37,6 +34,7 @@ export default {
           );
     },
   },
+  GEO_TROUBLESHOOTING_LINK,
 };
 </script>
 
@@ -48,7 +46,7 @@ export default {
           <span>{{ replicableTypeName }}</span>
         </template>
         <template #link="{ content }">
-          <gl-link :href="geoTroubleshootingLink" target="_blank">{{ content }}</gl-link>
+          <gl-link :href="$options.GEO_TROUBLESHOOTING_LINK" target="_blank">{{ content }}</gl-link>
         </template>
       </gl-sprintf>
     </template>
