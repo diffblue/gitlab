@@ -12,6 +12,7 @@ import {
   epicIidPattern,
 } from '~/sidebar/constants';
 import updateStatusMutation from '~/sidebar/queries/update_status.mutation.graphql';
+import issuableWeightSubscription from '../graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import epicAncestorsQuery from './queries/epic_ancestors.query.graphql';
 import groupEpicsQuery from './queries/group_epics.query.graphql';
 import groupIterationsQuery from './queries/group_iterations.query.graphql';
@@ -204,6 +205,7 @@ export const weightQueries = {
   [TYPE_ISSUE]: {
     query: issueWeightQuery,
     mutation: updateIssueWeightMutation,
+    subscription: issuableWeightSubscription,
   },
 };
 

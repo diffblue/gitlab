@@ -11,11 +11,13 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
 import { createAlert } from '~/alert';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
+import issueWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import {
   issueNoWeightResponse,
   issueWeightResponse,
   setWeightResponse,
   removeWeightResponse,
+  issueWeightSubscriptionResponse,
   mockIssueId,
 } from '../../mock_data';
 
@@ -37,10 +39,13 @@ describe('Sidebar Weight Widget', () => {
   const createComponent = ({
     weightQueryHandler = jest.fn().mockResolvedValue(issueNoWeightResponse()),
     weightMutationHandler = jest.fn().mockResolvedValue(setWeightResponse()),
+    weightSubscriptionHandler = jest.fn().mockResolvedValue(issueWeightSubscriptionResponse()),
+    realTimeIssueWeight = true,
   } = {}) => {
     fakeApollo = createMockApollo([
       [issueWeightQuery, weightQueryHandler],
       [updateIssueWeightMutation, weightMutationHandler],
+      [issueWeightSubscription, weightSubscriptionHandler],
     ]);
 
     wrapper = extendedWrapper(
@@ -48,6 +53,9 @@ describe('Sidebar Weight Widget', () => {
         apolloProvider: fakeApollo,
         provide: {
           canUpdate: true,
+          glFeatures: {
+            realTimeIssueWeight,
+          },
         },
         propsData: {
           fullPath: 'group/project',
@@ -101,7 +109,7 @@ describe('Sidebar Weight Widget', () => {
   describe('when issue has weight', () => {
     beforeEach(() => {
       createComponent({
-        weightQueryHandler: jest.fn().mockResolvedValue(issueWeightResponse(true)),
+        weightQueryHandler: jest.fn().mockResolvedValue(issueWeightResponse()),
         weightMutationHandler: jest.fn().mockResolvedValue(removeWeightResponse()),
       });
       return waitForPromises();
@@ -132,5 +140,31 @@ describe('Sidebar Weight Widget', () => {
     await waitForPromises();
 
     expect(createAlert).toHaveBeenCalled();
+  });
+
+  describe('real time issue weight feature flag', () => {
+    describe('when :real_time_issue_weight feature flag is enabled', () => {
+      it('should call the subscription', async () => {
+        const weightSubscriptionHandler = jest
+          .fn()
+          .mockResolvedValue(issueWeightSubscriptionResponse());
+        createComponent({ realTimeIssueWeight: true, weightSubscriptionHandler });
+        await waitForPromises();
+
+        expect(weightSubscriptionHandler).toHaveBeenCalled();
+      });
+    });
+
+    describe('when :real_time_issue_weight feature flag is disabled', () => {
+      it('should call the subscription', async () => {
+        const weightSubscriptionHandler = jest
+          .fn()
+          .mockResolvedValue(issueWeightSubscriptionResponse());
+        createComponent({ realTimeIssueWeight: false, weightSubscriptionHandler });
+        await waitForPromises();
+
+        expect(weightSubscriptionHandler).not.toHaveBeenCalled();
+      });
+    });
   });
 });

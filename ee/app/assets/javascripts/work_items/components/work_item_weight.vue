@@ -1,7 +1,7 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
+import workItemWeightSubscription from 'ee/graphql_shared/subscriptions/issuable_weight.subscription.graphql';
 import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import {

@@ -8,9 +8,11 @@ import {
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
+import { TYPE_ISSUE } from '~/issues/constants';
 import { createAlert } from '~/alert';
 import { __, sprintf } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Tracking } from '~/sidebar/constants';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import { weightQueries, MAX_DISPLAY_WEIGHT } from '../../constants';
@@ -34,6 +36,7 @@ export default {
     autofocusonshow,
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['canUpdate'],
   props: {
     iid: {
@@ -51,13 +54,14 @@ export default {
   },
   data() {
     return {
-      weight: null,
+      issuable: {},
       loading: false,
       oldIid: null,
+      localWeight: '',
     };
   },
   apollo: {
-    weight: {
+    issuable: {
       query() {
         return weightQueries[this.issuableType].query;
       },
@@ -68,7 +72,7 @@ export default {
         };
       },
       update(data) {
-        return data.workspace?.issuable?.weight;
+        return data.workspace?.issuable || {};
       },
       error() {
         createAlert({
@@ -77,14 +81,33 @@ export default {
           }),
         });
       },
+      result({ data }) {
+        this.localWeight = data?.workspace.issuable.weight ?? '';
+      },
+      subscribeToMore: {
+        document() {
+          return weightQueries[this.issuableType].subscription;
+        },
+        variables() {
+          return {
+            issuableId: this.issuableId,
+          };
+        },
+        skip() {
+          return this.skipIssueWeightSubscription;
+        },
+      },
     },
   },
   computed: {
+    weight() {
+      return this.issuable.weight ?? null;
+    },
     isLoading() {
-      return this.$apollo.queries?.weight?.loading || this.loading;
+      return this.$apollo.queries?.issuable?.loading || this.loading;
     },
     hasWeight() {
-      return this.weight != null;
+      return this.weight !== null;
     },
     weightLabel() {
       return this.hasWeight ? this.weight : this.$options.i18n.noWeightLabel;
@@ -103,6 +126,17 @@ export default {
         ? this.weight.toString().substr(0, 5)
         : this.$options.i18n.noWeightLabel;
     },
+    issuableId() {
+      return this.issuable.id;
+    },
+    skipIssueWeightSubscription() {
+      return (
+        this.issuableType !== TYPE_ISSUE ||
+        !this.issuableId ||
+        this.isLoading ||
+        !this.glFeatures?.realTimeIssueWeight
+      );
+    },
   },
   watch: {
     iid(_, oldVal) {
@@ -111,8 +145,8 @@ export default {
   },
   methods: {
     setWeight(remove) {
-      const shouldRemoveWeight = remove || this.weight === '';
-      const weight = shouldRemoveWeight ? null : this.weight;
+      const shouldRemoveWeight = remove || this.localWeight === '';
+      const weight = shouldRemoveWeight ? null : this.localWeight;
       const currentIid = shouldRemoveWeight ? this.iid : this.oldIid || this.iid;
       this.loading = true;
       this.$apollo
@@ -222,7 +256,7 @@ export default {
         <gl-form-group :label="__('Weight')" label-for="weight-input" label-sr-only>
           <gl-form-input
             id="weight-input"
-            v-model.number="weight"
+            v-model.number="localWeight"
             v-autofocusonshow
             type="number"
             min="0"

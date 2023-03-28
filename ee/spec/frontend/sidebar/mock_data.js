@@ -235,6 +235,17 @@ export const removeWeightResponse = () => ({
   },
 });
 
+export const issueWeightSubscriptionResponse = () => ({
+  data: {
+    issuableWeightUpdated: {
+      issue: {
+        id: 'gid://gitlab/Issue/4',
+        weight: 1,
+      },
+    },
+  },
+});
+
 export const getHealthStatusMutationResponse = ({ healthStatus = null }) => {
   return {
     data: {

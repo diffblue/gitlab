@@ -9,5 +9,9 @@ subscription issuableWeightUpdated($issuableId: IssuableID!) {
         }
       }
     }
+    ... on Issue {
+      id
+      weight
+    }
   }
 }
