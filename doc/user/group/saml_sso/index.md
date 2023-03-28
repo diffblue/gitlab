@@ -187,27 +187,19 @@ Check your identity provider's documentation to see if it supports the GitLab me
 
 After you have set up your identity provider, you can:
 
-- Change the identity provider users sign in with.
-- Migrate to a different identity provider.
+- Change the identity provider.
 - Change email domains.
 
 #### Change the identity provider
 
-To change the identity provider:
-
-- If the **NameID** is not identical in the existing and new identity providers, [change the **NameID** for users](#change-nameid-for-one-or-more-users).
-- If the **NameID** is identical, users do not have to make any changes.
-
-#### Migrate to a different identity provider
-
-You can migrate to a different identity provider. During the migration process,
+You can change to a different identity provider. During the change process,
 users cannot access any of the SAML groups. To mitigate this, you can disable
 [SSO enforcement](#sso-enforcement).
 
-To migrate identity providers:
+To change identity providers:
 
 1. [Configure](#configure-your-identity-provider) the group with the new identity provider.
-1. [Change the **NameID** for users](#change-nameid-for-one-or-more-users).
+1. Optional. If the **NameID** is not identical, [change the **NameID** for users](#change-nameid-for-one-or-more-users).
 
 #### Change email domains
 
