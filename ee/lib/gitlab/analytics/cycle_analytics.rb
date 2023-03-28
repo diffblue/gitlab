@@ -8,7 +8,9 @@ module Gitlab
       def self.licensed?(subject)
         case subject
         when Namespaces::ProjectNamespace
-          subject.project.licensed_feature_available?(:cycle_analytics_for_projects)
+          project = subject.project
+          # Only available within groups
+          project.licensed_feature_available?(:cycle_analytics_for_projects) && project.root_ancestor.group_namespace?
         when Group
           subject.licensed_feature_available?(:cycle_analytics_for_groups)
         else
