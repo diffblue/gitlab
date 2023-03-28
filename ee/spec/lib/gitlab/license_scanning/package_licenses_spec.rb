@@ -64,10 +64,19 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :lice
           stub_const("Gitlab::LicenseScanning::PackageLicenses::BATCH_SIZE", 1)
         end
 
-        it 'fetches in batches of BATCH_SIZE' do
+        it 'executes 2 queries for each batch' do
+          number_of_queries_per_batch = 2
           control = ActiveRecord::QueryRecorder.new { fetch }
 
-          expect(control.count).to be(components_to_fetch.count)
+          expect(control.count).to be(components_to_fetch.count * number_of_queries_per_batch)
+        end
+
+        it 'does not query more than BATCH_SIZE component tuples at a time' do
+          query_with_a_single_component_tuple = /\(VALUES \(([^,]+), '([^']+)', '[^']+'\)\) SELECT DISTINCT/i
+          expect(ApplicationRecord.connection).to receive(:execute)
+            .with(query_with_a_single_component_tuple).at_least(:once).and_call_original
+
+          fetch
         end
 
         it 'still returns only the items that matched the fetched components' do
