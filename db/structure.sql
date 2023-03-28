@@ -15493,6 +15493,25 @@ CREATE SEQUENCE dora_daily_metrics_id_seq
 
 ALTER SEQUENCE dora_daily_metrics_id_seq OWNED BY dora_daily_metrics.id;
 
+CREATE TABLE dora_performance_scores (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    date date NOT NULL,
+    deployment_frequency smallint,
+    lead_time_for_changes smallint,
+    time_to_restore_service smallint,
+    change_failure_rate smallint
+);
+
+CREATE SEQUENCE dora_performance_scores_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE dora_performance_scores_id_seq OWNED BY dora_performance_scores.id;
+
 CREATE TABLE draft_notes (
     id bigint NOT NULL,
     merge_request_id integer NOT NULL,
@@ -24762,6 +24781,8 @@ ALTER TABLE ONLY dora_configurations ALTER COLUMN id SET DEFAULT nextval('dora_c
 
 ALTER TABLE ONLY dora_daily_metrics ALTER COLUMN id SET DEFAULT nextval('dora_daily_metrics_id_seq'::regclass);
 
+ALTER TABLE ONLY dora_performance_scores ALTER COLUMN id SET DEFAULT nextval('dora_performance_scores_id_seq'::regclass);
+
 ALTER TABLE ONLY draft_notes ALTER COLUMN id SET DEFAULT nextval('draft_notes_id_seq'::regclass);
 
 ALTER TABLE ONLY elastic_index_settings ALTER COLUMN id SET DEFAULT nextval('elastic_index_settings_id_seq'::regclass);
@@ -26729,6 +26750,9 @@ ALTER TABLE ONLY dora_configurations
 
 ALTER TABLE ONLY dora_daily_metrics
     ADD CONSTRAINT dora_daily_metrics_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY dora_performance_scores
+    ADD CONSTRAINT dora_performance_scores_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY draft_notes
     ADD CONSTRAINT draft_notes_pkey PRIMARY KEY (id);
@@ -30215,6 +30239,8 @@ CREATE INDEX index_dingtalk_tracker_data_on_integration_id ON dingtalk_tracker_d
 CREATE UNIQUE INDEX index_dora_configurations_on_project_id ON dora_configurations USING btree (project_id);
 
 CREATE UNIQUE INDEX index_dora_daily_metrics_on_environment_id_and_date ON dora_daily_metrics USING btree (environment_id, date);
+
+CREATE UNIQUE INDEX index_dora_performance_scores_on_project_id_and_date ON dora_performance_scores USING btree (project_id, date);
 
 CREATE INDEX index_draft_notes_on_author_id ON draft_notes USING btree (author_id);
 
@@ -35605,6 +35631,9 @@ ALTER TABLE ONLY packages_dependency_links
 
 ALTER TABLE ONLY project_auto_devops
     ADD CONSTRAINT fk_rails_45436b12b2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY dora_performance_scores
+    ADD CONSTRAINT fk_rails_455f9acc65 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY merge_requests_closing_issues
     ADD CONSTRAINT fk_rails_458eda8667 FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
