@@ -39464,7 +39464,10 @@ msgstr ""
 msgid "SecurityOrchestration|branches"
 msgstr ""
 
-msgid "SecurityOrchestration|group level branch"
+msgid "SecurityOrchestration|group level branch input"
+msgstr ""
+
+msgid "SecurityOrchestration|group level branch selector"
 msgstr ""
 
 msgid "SecurityOrchestration|or from:"

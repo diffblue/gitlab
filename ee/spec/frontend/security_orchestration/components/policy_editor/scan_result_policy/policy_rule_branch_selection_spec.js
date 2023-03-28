@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
@@ -32,92 +33,91 @@ describe('PolicyRuleBranchSelection', () => {
     });
   };
 
-  const findBranches = () => wrapper.findComponent(ProtectedBranchesSelector);
+  const findProjectLevelProtectedBranchesSelector = () =>
+    wrapper.findComponent(ProtectedBranchesSelector);
+  const findGroupLevelProtectedBranchesSelector = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findSpecificBranchInput = () => wrapper.findComponent(GlFormInput);
   const findBranchesLabel = () => wrapper.findByTestId('branches-label');
-  const findGroupLevelBranches = () => wrapper.findByTestId('group-level-branch');
 
-  describe('initial rendering', () => {
-    beforeEach(() => {
-      factory();
+  describe('project-level', () => {
+    describe('default', () => {
+      beforeEach(() => {
+        factory();
+      });
+
+      it.each`
+        title         | component                                      | findFn                                       | output
+        ${'does'}     | ${'project-level protected branches selector'} | ${findProjectLevelProtectedBranchesSelector} | ${true}
+        ${'does not'} | ${'group-level protected branches selector'}   | ${findGroupLevelProtectedBranchesSelector}   | ${false}
+      `('$title render the $component', ({ findFn, output }) => {
+        expect(findFn().exists()).toBe(output);
+      });
+
+      it('renders default selected branch', () => {
+        expect(
+          findProjectLevelProtectedBranchesSelector().props('selectedBranchesNames'),
+        ).toStrictEqual([]);
+      });
+
+      it('does render branches label when a branch is selected', async () => {
+        factory({ initRule: UPDATED_RULE });
+        await nextTick();
+        expect(findBranchesLabel().exists()).toBe(true);
+      });
     });
 
-    it('renders one field for each attribute of the rule', () => {
-      expect(findBranches().exists()).toBe(true);
-    });
+    describe('protected branches selector', () => {
+      beforeEach(async () => {
+        factory();
+        findProjectLevelProtectedBranchesSelector().vm.$emit('input', PROTECTED_BRANCHES_MOCK[0]);
+        await nextTick();
+      });
 
-    it('does not render branches label when targeting all branches', () => {
-      expect(findBranchesLabel().exists()).toBe(false);
-    });
+      it('triggers a changed event with the updated branches', async () => {
+        expect(wrapper.emitted().changed).toEqual([
+          [expect.objectContaining({ branches: UPDATED_RULE.branches })],
+        ]);
+      });
 
-    it('renders default selected branch', () => {
-      expect(findBranches().props('selectedBranchesNames')).toStrictEqual([]);
+      it('does not add to branches if "All Protected Branches" is selected', async () => {
+        findProjectLevelProtectedBranchesSelector().vm.$emit('input', ALL_PROTECTED_BRANCHES);
+        await nextTick();
+        expect(wrapper.emitted().changed[1]).toEqual([expect.objectContaining({ branches: [] })]);
+      });
     });
   });
 
-  describe('when editing any attribute of the rule', () => {
-    it('triggers a changed event (by findBranches) with the updated rule', async () => {
-      factory();
-      await nextTick();
-      findBranches().vm.$emit('input', PROTECTED_BRANCHES_MOCK[0]);
-      await nextTick();
+  describe('group-level', () => {
+    describe('default', () => {
+      beforeEach(() => {
+        factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+      });
 
-      expect(wrapper.emitted().changed).toEqual([
-        [expect.objectContaining({ branches: UPDATED_RULE.branches })],
-      ]);
+      it.each`
+        title         | component                                      | findFn                                       | output
+        ${'does not'} | ${'project-level protected branches selector'} | ${findProjectLevelProtectedBranchesSelector} | ${false}
+        ${'does'}     | ${'group-level protected branches selector'}   | ${findGroupLevelProtectedBranchesSelector}   | ${true}
+        ${'does not'} | ${'group-level specific branches input'}       | ${findSpecificBranchInput}                   | ${false}
+      `('$title render the $component', ({ findFn, output }) => {
+        expect(findFn().exists()).toBe(output);
+      });
     });
 
-    it('does not add to branches if "All Protected Branches" is selected', async () => {
-      factory();
-      await nextTick();
-      findBranches().vm.$emit('input', PROTECTED_BRANCHES_MOCK[0]);
-      await nextTick();
-      findBranches().vm.$emit('input', ALL_PROTECTED_BRANCHES);
-      await nextTick();
-      expect(wrapper.emitted().changed[1]).toEqual([expect.objectContaining({ branches: [] })]);
-    });
-  });
+    describe('specific branches input', () => {
+      beforeEach(async () => {
+        factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+        findGroupLevelProtectedBranchesSelector().vm.$emit('select', 'SPECIFIC_BRANCHES');
+        await nextTick();
+      });
 
-  it('does render branches label when a branch is selected', async () => {
-    factory({ initRule: UPDATED_RULE });
-    await nextTick();
-    expect(findBranchesLabel().exists()).toBe(true);
-  });
-
-  describe('when namespaceType is other than project', () => {
-    it('does not display group level branches', () => {
-      factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
-
-      expect(findBranches().exists()).toBe(true);
-      expect(findGroupLevelBranches().exists()).toBe(false);
-    });
-
-    describe('when groupLevelScanResultPolicies feature flag is enabled', () => {
-      it('displays group level branches', () => {
-        factory(
-          {},
-          {
-            namespaceType: NAMESPACE_TYPES.GROUP,
-            glFeatures: { groupLevelScanResultPolicies: true },
-          },
-        );
-
-        expect(findBranches().exists()).toBe(false);
-        expect(findGroupLevelBranches().exists()).toBe(true);
+      it('shows the specific branch input when "Specific Branches" is selected', async () => {
+        expect(findSpecificBranchInput().exists()).toBe(true);
       });
 
       it('triggers a changed event with the updated rule', async () => {
-        factory(
-          {},
-          {
-            namespaceType: NAMESPACE_TYPES.GROUP,
-            glFeatures: { groupLevelScanResultPolicies: true },
-          },
-        );
-
-        const INPUT_BRANCHES = 'main, test';
-        const EXPECTED_BRANCHES = ['main', 'test'];
-        findGroupLevelBranches().vm.$emit('input', INPUT_BRANCHES);
-
+        const INPUT_BRANCHES = 'main, release, staging';
+        const EXPECTED_BRANCHES = ['main', 'release', 'staging'];
+        findSpecificBranchInput().vm.$emit('input', INPUT_BRANCHES);
         await nextTick();
 
         expect(wrapper.emitted().changed).toEqual([
@@ -125,16 +125,15 @@ describe('PolicyRuleBranchSelection', () => {
         ]);
       });
 
-      it('group level branches is invalid when empty', () => {
-        factory(
-          { initRule: { ...DEFAULT_RULE, branches: [''] } },
-          {
-            namespaceType: NAMESPACE_TYPES.GROUP,
-            glFeatures: { groupLevelScanResultPolicies: true },
-          },
-        );
+      it('does not trigger changes with "*" branches', async () => {
+        const INPUT_BRANCHES = 'main, *';
+        const EXPECTED_BRANCHES = ['main'];
+        findSpecificBranchInput().vm.$emit('input', INPUT_BRANCHES);
+        await nextTick();
 
-        expect(findGroupLevelBranches().props('state')).toBe(undefined);
+        expect(wrapper.emitted().changed).toEqual([
+          [expect.objectContaining({ branches: EXPECTED_BRANCHES })],
+        ]);
       });
     });
   });
