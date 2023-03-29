@@ -6,14 +6,14 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
 >
   <div>
     <div
-      class="gl-clearfix"
+      class="gl-clearfix gl-border-t"
     >
       <span
-        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center gl-pl-3"
+        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
       >
         <span
           aria-label="Rotation 242"
-          class="gl-text-truncate"
+          class="gl-text-truncate gl-text-gray-700"
           data-testid="rotation-name-gid://gitlab/IncidentManagement::OncallRotation/2"
         >
           Rotation 242
@@ -71,7 +71,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
       </span>
        
       <span
-        class="timeline-cell gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-overflow-hidden"
+        class="timeline-cell gl-overflow-hidden"
         data-testid="timeline-cell"
         style="width: calc(100% - 180px);"
       >
@@ -83,17 +83,17 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
          
         <div>
           <div
-            class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
+            class="rotation-asignee-container gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
             style="left: 0px; width: 0px;"
           >
             <div
-              class="gl-h-6 gl-display-flex gl-justify-content-center gl-align-items-center"
+              class="gl-h-6 gl-rounded-base gl-display-flex gl-align-items-center gl-justify-content-center"
               data-testid="rotation-assignee"
               id="rotation-assignee-2"
               style="background-color: rgb(97, 122, 226);"
             >
               <div
-                class="gl-text-white gl-display-flex gl-justify-content-center gl-align-items-center"
+                class="gl-text-white gl-rounded-base gl-display-flex gl-align-items-center"
               >
                 <!---->
                  
@@ -124,17 +124,17 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
             </div>
           </div>
           <div
-            class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
+            class="rotation-asignee-container gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
             style="left: 0px; width: 0px;"
           >
             <div
-              class="gl-h-6 gl-display-flex gl-justify-content-center gl-align-items-center"
+              class="gl-h-6 gl-rounded-base gl-display-flex gl-align-items-center gl-justify-content-center"
               data-testid="rotation-assignee"
               id="rotation-assignee-3"
               style="background-color: rgb(201, 93, 46);"
             >
               <div
-                class="gl-text-white gl-display-flex gl-justify-content-center gl-align-items-center"
+                class="gl-text-white gl-rounded-base gl-display-flex gl-align-items-center"
               >
                 <!---->
                  

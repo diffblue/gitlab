@@ -47,26 +47,8 @@ describe('WeeksHeaderItemComponent', () => {
   });
 
   describe('timelineHeaderLabel', () => {
-    it('returns string containing Year, Month and Date for the first timeframe item in the entire timeframe', () => {
-      expect(findHeaderLabel().text()).toBe('Jan 1');
-    });
-
-    it('returns string containing Year, Month and Date for timeframe item that is the first week of the year', () => {
-      mountComponent({
-        timeframeIndex: 3,
-        timeframeItem: new Date(2019, 0, 6),
-      });
-
-      expect(findHeaderLabel().text()).toBe('Jan 6');
-    });
-
-    it('returns string containing only Month and Date when timeframe item is somewhere in the middle of the timeframe', () => {
-      mountComponent({
-        timeframeIndex: mockTimeframeIndex + 1,
-        timeframeItem: mockTimeframeWeeks[mockTimeframeIndex + 1],
-      });
-
-      expect(findHeaderLabel().text()).toBe('Jan 8');
+    it('returns string containing Month item in the timeframe', () => {
+      expect(findHeaderLabel().text()).toBe('Jan');
     });
   });
 
@@ -76,15 +58,11 @@ describe('WeeksHeaderItemComponent', () => {
         timeframeIndex: 3,
         timeframeItem: new Date(2017, 0, 6),
       });
-      expect(findHeaderLabel().classes()).not.toEqual(
-        expect.arrayContaining(['label-dark', 'label-bold']),
-      );
+      expect(findHeaderLabel().classes()).not.toContain('label-bold');
     });
 
-    it('returns string containing `label-dark label-bold` when current week is same as timeframeItem week', () => {
-      expect(findHeaderLabel().classes()).toEqual(
-        expect.arrayContaining(['label-dark', 'label-bold']),
-      );
+    it('returns string containing `label-bold` when current week is same as timeframeItem week', () => {
+      expect(findHeaderLabel().classes()).toContain('label-bold');
     });
   });
 });
