@@ -19984,7 +19984,8 @@ CREATE TABLE plan_limits (
     enforcement_limit integer DEFAULT 0 NOT NULL,
     notification_limit integer DEFAULT 0 NOT NULL,
     dashboard_limit_enabled_at timestamp with time zone,
-    web_hook_calls integer DEFAULT 0 NOT NULL
+    web_hook_calls integer DEFAULT 0 NOT NULL,
+    project_access_token_limit integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE plan_limits_id_seq
