@@ -196,7 +196,6 @@ module EE
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
-      before_validation :ensure_product_analytics_data_collector_host!, if: :product_analytics_enabled
     end
 
     class_methods do
@@ -263,6 +262,7 @@ module EE
           product_analytics_enabled: false,
           jitsu_host: nil,
           jitsu_project_xid: nil,
+          product_analytics_data_collector_host: nil,
           product_analytics_clickhouse_connection_string: nil,
           jitsu_administrator_email: nil,
           jitsu_administrator_password: nil,
@@ -595,13 +595,6 @@ module EE
       # This is the only way to update lock_delayed_project_removal and it is used to
       # enforce the cascading setting when delayed deletion is disabled on a instance.
       self.lock_delayed_project_removal = !self.delayed_group_deletion
-    end
-
-    # this method will be removed after a migration will backfill null product_analytics_data_collector_host
-    def ensure_product_analytics_data_collector_host!
-      if self.product_analytics_data_collector_host.nil? && self.jitsu_host.present?
-        self.product_analytics_data_collector_host = self.jitsu_host.gsub(%r{(://\w+.)}, '://collector.')
-      end
     end
   end
 end
