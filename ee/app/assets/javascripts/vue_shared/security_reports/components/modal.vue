@@ -215,6 +215,7 @@ export default {
     data-qa-selector="vulnerability_modal_content"
     class="modal-security-report-dast"
     v-bind="$attrs"
+    @hidden="$emit('hidden')"
   >
     <slot>
       <vulnerability-details :vulnerability="vulnerability" class="js-vulnerability-details" />
