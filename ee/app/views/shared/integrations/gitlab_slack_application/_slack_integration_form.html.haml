@@ -27,6 +27,6 @@
   .gl-my-5
     = render 'shared/integrations/gitlab_slack_application/slack_button', project: @project, label: s_('SlackIntegration|Reinstall GitLab for Slack app')
   %p
-    = html_escape(s_('SlackIntegration|You may need to reinstall the GitLab for Slack app when we %{linkStart}make updates or change permissions%{linkEnd}.')) % { linkStart: %(<a href="#{help_page_path('user/project/integrations/gitlab_slack_application.md', anchor: 'version-history')}">).html_safe, linkEnd: '</a>'.html_safe}
+    = html_escape(s_('SlackIntegration|You may need to reinstall the GitLab for Slack app when we %{linkStart}make updates or change permissions%{linkEnd}.')) % { linkStart: %(<a href="#{help_page_path('user/project/integrations/gitlab_slack_application.md', anchor: 'update-the-gitlab-for-slack-app')}">).html_safe, linkEnd: '</a>'.html_safe}
 - else
   = render 'shared/integrations/gitlab_slack_application/slack_button', project: @project, label: s_('SlackIntegration|Install GitLab for Slack app')
