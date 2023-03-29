@@ -14,9 +14,6 @@ const i18n = {
   selectPolicy: s__('SecurityOrchestration|Select policy'),
   scanResultPolicyTitle: s__('SecurityOrchestration|Scan result policy'),
   scanResultPolicyDesc: s__(
-    'SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request.',
-  ),
-  scanResultPolicyDescV2: s__(
     'SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
   ),
   scanResultPolicyExample: s__(
@@ -47,9 +44,7 @@ export default {
         {
           urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
           title: i18n.scanResultPolicyTitle,
-          description: this.glFeatures.licenseScanningPolicies
-            ? i18n.scanResultPolicyDescV2
-            : i18n.scanResultPolicyDesc,
+          description: i18n.scanResultPolicyDesc,
           example: i18n.scanResultPolicyExample,
           svg: shieldCheckIllustration,
         },

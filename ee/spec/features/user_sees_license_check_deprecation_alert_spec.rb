@@ -21,29 +21,41 @@ RSpec.describe 'Display license check deprecation alert', :js, feature_category:
     sign_in(user)
   end
 
-  context 'when license_scanning_policies is enabled' do
+  context 'with a license check approval rule' do
+    it 'does show the alert' do
+      visit project_path(project)
+
+      expect(page).to have_css('.js-license-check-deprecation-alert')
+    end
+  end
+
+  context 'without a license check approval rule' do
+    let_it_be(:non_license_check_project) { create(:project, :repository) }
+
     before do
-      stub_feature_flags(license_scanning_policies: true)
+      non_license_check_project.add_guest(user)
+      sign_in(user)
     end
 
-    context 'with a license check approval rule' do
-      it 'does show the alert' do
+    it 'does not show the alert' do
+      visit project_path(non_license_check_project)
+
+      expect(page).to have_css('.js-show-on-project-root')
+
+      expect(page).not_to have_css('.js-license-check-deprecation-alert')
+    end
+  end
+
+  context 'when user dimisses the alert' do
+    context 'in the same project' do
+      it 'does not show the alert' do
         visit project_path(project)
 
         expect(page).to have_css('.js-license-check-deprecation-alert')
-      end
-    end
 
-    context 'without a license check approval rule' do
-      let_it_be(:non_license_check_project) { create(:project, :repository) }
+        close_callout
 
-      before do
-        non_license_check_project.add_guest(user)
-        sign_in(user)
-      end
-
-      it 'does not show the alert' do
-        visit project_path(non_license_check_project)
+        page.refresh
 
         expect(page).to have_css('.js-show-on-project-root')
 
@@ -51,62 +63,30 @@ RSpec.describe 'Display license check deprecation alert', :js, feature_category:
       end
     end
 
-    context 'when user dimisses the alert' do
-      context 'in the same project' do
-        it 'does not show the alert' do
-          visit project_path(project)
+    context 'in a different project' do
+      let_it_be(:other_project) { create(:project, :repository) }
 
-          expect(page).to have_css('.js-license-check-deprecation-alert')
-
-          close_callout
-
-          page.refresh
-
-          expect(page).to have_css('.js-show-on-project-root')
-
-          expect(page).not_to have_css('.js-license-check-deprecation-alert')
-        end
+      before do
+        other_project.add_guest(user)
+        create(:approval_project_rule,
+          :license_scanning,
+          name: "License-Check",
+          project: other_project,
+          users: project_approvers,
+          approvals_required: 1)
       end
 
-      context 'in a different project' do
-        let_it_be(:other_project) { create(:project, :repository) }
+      it 'does not show the callout' do
+        visit project_path(project)
 
-        before do
-          other_project.add_guest(user)
-          create(:approval_project_rule,
-            :license_scanning,
-            name: "License-Check",
-            project: other_project,
-            users: project_approvers,
-            approvals_required: 1)
-        end
+        expect(page).to have_css('.js-license-check-deprecation-alert')
 
-        it 'does not show the callout' do
-          visit project_path(project)
+        close_callout
 
-          expect(page).to have_css('.js-license-check-deprecation-alert')
+        visit project_path(other_project)
 
-          close_callout
-
-          visit project_path(other_project)
-
-          expect(page).to have_css('.js-license-check-deprecation-alert')
-        end
+        expect(page).to have_css('.js-license-check-deprecation-alert')
       end
-    end
-  end
-
-  context 'when license_scanning_policies is disabled' do
-    before do
-      stub_feature_flags(license_scanning_policies: false)
-    end
-
-    it 'requires approval' do
-      visit project_path(project)
-
-      expect(page).to have_css('.js-show-on-project-root')
-
-      expect(page).not_to have_css('.js-license-check-deprecation-alert')
     end
   end
 
