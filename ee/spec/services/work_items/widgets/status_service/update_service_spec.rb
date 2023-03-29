@@ -7,6 +7,7 @@ RSpec.describe WorkItems::Widgets::StatusService::UpdateService, feature_categor
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:work_item) { create(:work_item, :requirement, project: project, author: user) }
 
+  let(:service) { described_class.new(widget: widget, current_user: user) }
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Status) } }
 
   def work_item_status
@@ -15,7 +16,7 @@ RSpec.describe WorkItems::Widgets::StatusService::UpdateService, feature_categor
   end
 
   describe '#update' do
-    subject { described_class.new(widget: widget, current_user: user).before_update_in_transaction(params: params) }
+    subject { service.before_update_in_transaction(params: params) }
 
     shared_examples 'work item and status is unchanged' do
       it 'does not change work item status value' do
@@ -77,6 +78,31 @@ RSpec.describe WorkItems::Widgets::StatusService::UpdateService, feature_categor
                 expect { subject }.to raise_error(ArgumentError, /is not a valid state/)
               end
             end
+          end
+        end
+
+        context 'when widget does not exist in new type' do
+          let(:params) { {} }
+
+          let_it_be(:test_report1) { create(:test_report, requirement_issue: work_item) }
+          let_it_be(:test_report2) { create(:test_report, requirement_issue: work_item) }
+          let_it_be(:other_test_report) do
+            create(:test_report, requirement_issue: create(:work_item, :requirement, project: project))
+          end
+
+          before do
+            allow(service).to receive(:new_type_excludes_widget?).and_return(true)
+          end
+
+          it "deletes the associated test report and requirement" do
+            requirement = work_item.requirement
+
+            expect { subject }.to change { work_item.test_reports.count }.from(2).to(0)
+
+            expect(RequirementsManagement::TestReport.exists?(test_report1.id)).to eq(false)
+            expect(RequirementsManagement::TestReport.exists?(test_report2.id)).to eq(false)
+            expect(RequirementsManagement::Requirement.exists?(requirement.id)).to eq(false)
+            expect(RequirementsManagement::TestReport.exists?(other_test_report.id)).to eq(true)
           end
         end
 

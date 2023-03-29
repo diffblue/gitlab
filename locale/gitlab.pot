@@ -49330,6 +49330,9 @@ msgstr ""
 msgid "Won't fix / Accept risk"
 msgstr ""
 
+msgid "Work Item type with id %{id} was not found"
+msgstr ""
+
 msgid "Work in progress (open and unassigned)"
 msgstr ""
 
@@ -49752,6 +49755,9 @@ msgid "You are not allowed to %{action} a user"
 msgstr ""
 
 msgid "You are not allowed to approve a user"
+msgstr ""
+
+msgid "You are not allowed to change the Work Item type to %{name}."
 msgstr ""
 
 msgid "You are not allowed to create this tag as it is protected."

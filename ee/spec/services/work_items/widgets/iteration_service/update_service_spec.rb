@@ -13,7 +13,9 @@ RSpec.describe WorkItems::Widgets::IterationService::UpdateService, feature_cate
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Iteration) } }
 
   describe '#before_update_callback' do
-    subject { described_class.new(widget: widget, current_user: user).before_update_callback(params: params) }
+    let(:service) { described_class.new(widget: widget, current_user: user) }
+
+    subject { service.before_update_callback(params: params) }
 
     before do
       stub_licensed_features(iterations: true)
@@ -38,6 +40,19 @@ RSpec.describe WorkItems::Widgets::IterationService::UpdateService, feature_cate
           it 'sets a new iteration value for the work item' do
             expect { subject }
               .to change(work_item, :iteration).to(new_iteration).from(iteration)
+          end
+        end
+
+        context 'when widget does not exist in new type' do
+          let(:params) { {} }
+
+          before do
+            allow(service).to receive(:new_type_excludes_widget?).and_return(true)
+            work_item.iteration = iteration
+          end
+
+          it "resets the work item's iteration" do
+            expect { subject }.to change(work_item, :iteration).from(iteration).to(nil)
           end
         end
       end
