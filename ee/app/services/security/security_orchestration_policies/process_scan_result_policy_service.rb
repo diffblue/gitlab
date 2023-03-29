@@ -39,7 +39,7 @@ module Security
       end
 
       def license_finding?(rule)
-        license_scanning_policies_enabled && rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
+        rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
       end
 
       def create_scan_result_policy_read?(action_info, rule)
@@ -116,10 +116,6 @@ module Security
         return policy_name if rule_index == 0
 
         "#{policy_name} #{rule_index + 1}"
-      end
-
-      def license_scanning_policies_enabled
-        @license_scanning_policies_enabled ||= Feature.enabled?(:license_scanning_policies, project)
       end
 
       def scan_result_role_action_enabled

@@ -17,14 +17,12 @@ describe('PolicySelection component', () => {
   };
 
   describe.each`
-    id                                                          | title                                            | description                                     | licenseScanFlag
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDesc}    | ${false}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc} | ${false}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDescV2}  | ${true}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc} | ${true}
-  `('selection card: $title', ({ id, title, description, licenseScanFlag }) => {
+    id                                                          | title                                            | description
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDesc}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc}
+  `('selection card: $title', ({ id, title, description }) => {
     beforeEach(() => {
-      factory({ glFeatures: { licenseScanningPolicies: licenseScanFlag } });
+      factory();
     });
 
     it(`should display the title`, () => {

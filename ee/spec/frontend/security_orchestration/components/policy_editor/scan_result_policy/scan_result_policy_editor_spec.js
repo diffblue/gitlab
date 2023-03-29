@@ -8,7 +8,6 @@ import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
-  DEFAULT_SCAN_RESULT_POLICY_V2,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_result_policy_editor.vue';
@@ -135,22 +134,11 @@ describe('ScanResultPolicyEditor', () => {
   });
 
   describe('default', () => {
-    it.each`
-      policyConfig                     | licenseScanningPoliciesFlag
-      ${DEFAULT_SCAN_RESULT_POLICY}    | ${false}
-      ${DEFAULT_SCAN_RESULT_POLICY_V2} | ${true}
-    `(
-      'with licenseScanningPolices flag set to $licenseScanningPoliciesFlag it loads the correct policy config',
-      async ({ policyConfig, licenseScanningPoliciesFlag }) => {
-        factory({
-          provide: {
-            glFeatures: { licenseScanningPolicies: licenseScanningPoliciesFlag },
-          },
-        });
-        await nextTick();
-        expect(findPolicyEditorLayout().props('yamlEditorValue')).toEqual(policyConfig);
-      },
-    );
+    it('loads the correct policy config', async () => {
+      factory();
+      await nextTick();
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toEqual(DEFAULT_SCAN_RESULT_POLICY);
+    });
 
     it('does not display an error', async () => {
       factory();

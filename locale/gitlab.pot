@@ -38530,9 +38530,6 @@ msgstr ""
 msgid "ScanResultPolicy|%{count} licenses"
 msgstr ""
 
-msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
-msgstr ""
-
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}"
 msgstr ""
 
@@ -39528,9 +39525,6 @@ msgid "SecurityOrchestration|Use a scan execution policy to create rules which e
 msgstr ""
 
 msgid "SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request."
-msgstr ""
-
-msgid "SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request."
 msgstr ""
 
 msgid "SecurityOrchestration|View policy project"
