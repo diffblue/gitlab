@@ -18108,6 +18108,9 @@ msgstr ""
 msgid "Filter..."
 msgstr ""
 
+msgid "Finalizing"
+msgstr ""
+
 msgid "Find File"
 msgstr ""
 
