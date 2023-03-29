@@ -1,0 +1,8 @@
+name: ban_user
+description: Event triggered on user ban action 
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/377620
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/116103
+feature_category: "user_management"
+milestone: "15.11"
+saved_to_database: true
+streamed: true
