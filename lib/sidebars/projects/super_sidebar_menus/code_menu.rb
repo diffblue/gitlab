@@ -13,6 +13,20 @@ module Sidebars
         def sprite_icon
           'code'
         end
+
+        override :configure_menu_items
+        def configure_menu_items
+          [
+            :files,
+            :branches,
+            :commits,
+            :tags,
+            :graphs,
+            :compare,
+            :project_snippets,
+            :file_locks
+          ].each { |id| add_item(::Sidebars::NilMenuItem.new(item_id: id)) }
+        end
       end
     end
   end

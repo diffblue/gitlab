@@ -36936,6 +36936,9 @@ msgstr ""
 msgid "Repository files count over the limit"
 msgstr ""
 
+msgid "Repository graph"
+msgstr ""
+
 msgid "Repository has an invalid default branch name."
 msgstr ""
 
