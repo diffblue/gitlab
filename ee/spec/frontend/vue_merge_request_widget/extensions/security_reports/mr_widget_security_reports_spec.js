@@ -28,6 +28,25 @@ jest.mock('~/lib/utils/downloader');
 
 Vue.use(VueApollo);
 
+const DISMISSAL_RESPONSE = {
+  securityFindingDismiss: {
+    errors: [],
+    securityFinding: {
+      vulnerability: {
+        id: 1,
+        stateTransitions: {
+          nodes: {
+            author: null,
+            comment: 'comment',
+            createdAt: '',
+            toState: 'DISMISSED',
+          },
+        },
+      },
+    },
+  },
+};
+
 describe('MR Widget Security Reports', () => {
   let wrapper;
   let mockAxios;
@@ -701,16 +720,7 @@ describe('MR Widget Security Reports', () => {
       it('handles dismissing finding - success', async () => {
         await createComponentExpandWidgetAndOpenModal({
           additionalHandlers: [
-            [
-              dismissFindingMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingDismiss: {
-                    errors: [],
-                  },
-                },
-              }),
-            ],
+            [dismissFindingMutation, jest.fn().mockResolvedValue({ data: DISMISSAL_RESPONSE })],
           ],
         });
 
@@ -729,18 +739,7 @@ describe('MR Widget Security Reports', () => {
 
       it('handles dismissing finding - error', async () => {
         await createComponentExpandWidgetAndOpenModal({
-          additionalHandlers: [
-            [
-              dismissFindingMutation,
-              jest.fn().mockRejectedValue({
-                data: {
-                  securityFindingDismiss: {
-                    errors: [],
-                  },
-                },
-              }),
-            ],
-          ],
+          additionalHandlers: [[dismissFindingMutation, jest.fn().mockRejectedValue()]],
         });
 
         findModal().vm.$emit('dismissVulnerability');
@@ -792,16 +791,7 @@ describe('MR Widget Security Reports', () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
           additionalHandlers: [
-            [
-              dismissFindingMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingDismiss: {
-                    errors: [],
-                  },
-                },
-              }),
-            ],
+            [dismissFindingMutation, jest.fn().mockResolvedValue({ data: DISMISSAL_RESPONSE })],
           ],
         });
 
@@ -825,16 +815,7 @@ describe('MR Widget Security Reports', () => {
             }),
           ],
           additionalHandlers: [
-            [
-              dismissFindingMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingDismiss: {
-                    errors: [],
-                  },
-                },
-              }),
-            ],
+            [dismissFindingMutation, jest.fn().mockResolvedValue({ data: DISMISSAL_RESPONSE })],
           ],
         });
 
@@ -871,16 +852,7 @@ describe('MR Widget Security Reports', () => {
         await createComponentExpandWidgetAndOpenModal({
           mockDataProps,
           additionalHandlers: [
-            [
-              dismissFindingMutation,
-              jest.fn().mockResolvedValue({
-                data: {
-                  securityFindingDismiss: {
-                    errors: [],
-                  },
-                },
-              }),
-            ],
+            [dismissFindingMutation, jest.fn().mockResolvedValue({ data: DISMISSAL_RESPONSE })],
           ],
         });
 
@@ -954,6 +926,19 @@ describe('MR Widget Security Reports', () => {
                 data: {
                   securityFindingRevertToDetected: {
                     errors: [],
+                    securityFinding: {
+                      vulnerability: {
+                        id: 1,
+                        stateTransitions: {
+                          nodes: {
+                            author: null,
+                            comment: 'comment',
+                            createdAt: '',
+                            toState: 'DETECTED',
+                          },
+                        },
+                      },
+                    },
                   },
                 },
               }),

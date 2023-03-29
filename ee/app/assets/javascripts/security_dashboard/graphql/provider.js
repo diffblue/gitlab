@@ -21,6 +21,6 @@ export const cacheConfig = {
   },
 };
 
-const defaultClient = createDefaultClient({}, { cacheConfig });
+export const defaultClient = createDefaultClient({}, { cacheConfig });
 
 export default new VueApollo({ defaultClient });

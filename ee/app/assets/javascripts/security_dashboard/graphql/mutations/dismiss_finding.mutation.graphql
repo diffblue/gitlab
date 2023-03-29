@@ -1,5 +1,23 @@
 mutation dismissFinding($uuid: String!, $comment: String) {
   securityFindingDismiss(input: { uuid: $uuid, comment: $comment }) {
     errors
+    securityFinding {
+      vulnerability {
+        id
+        stateTransitions(last: 1) {
+          nodes {
+            author {
+              id
+              name
+              username
+              webUrl
+            }
+            comment
+            createdAt
+            toState
+          }
+        }
+      }
+    }
   }
 }
