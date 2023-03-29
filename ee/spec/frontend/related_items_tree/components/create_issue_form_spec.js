@@ -1,5 +1,4 @@
 import {
-  GlButton,
   GlDropdown,
   GlDropdownItem,
   GlFormInput,
@@ -8,10 +7,14 @@ import {
   GlDropdownDivider,
   GlDropdownSectionHeader,
 } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
+import MockAdapter from 'axios-mock-adapter';
+
+import axios from '~/lib/utils/axios_utils';
 import { ENTER_KEY } from '~/lib/utils/keys';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 
 import Api from 'ee/api';
 import mockProjects from 'test_fixtures_static/projects.json';
@@ -32,18 +35,37 @@ Vue.use(Vuex);
 describe('CreateIssueForm', () => {
   const mockProject = mockProjects[1];
   let wrapper;
+  let store;
+  let mockAxios;
 
   const createComponent = ({ defaultProjectForIssueCreation = null } = {}) => {
-    const store = createDefaultStore();
-
+    store = createDefaultStore();
     store.dispatch('setInitialConfig', mockInitialConfig);
     store.dispatch('setInitialParentItem', mockParentItem);
     store.dispatch('setDefaultProjectForIssueCreation', defaultProjectForIssueCreation);
 
-    wrapper = shallowMount(CreateIssueForm, {
+    wrapper = shallowMountExtended(CreateIssueForm, {
       store,
+      stubs: {
+        GlSearchBoxByType,
+      },
     });
   };
+
+  const findCancelBtn = () => wrapper.findByTestId('cancel-btn');
+  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findDropdownContentDivider = () => wrapper.findComponent(GlDropdownDivider);
+  const findDropdownHeader = () => wrapper.findComponent(GlDropdownSectionHeader);
+  const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findDropdownItem = (index) => findDropdownItems().at(index);
+  const findIssueTitleInput = () => wrapper.findComponent(GlFormInput);
+  const findIssueTitleLabel = () => wrapper.findAll('label').at(0);
+  const findProjectItem = (project) => wrapper.findByTestId(`project-item-${project.id}`);
+  const findProjectsDropdownLabel = () => wrapper.findAll('label').at(1);
+  const findRecentDropdown = () => wrapper.findByTestId('recent-items-content');
+  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
+  const findSubmitButton = () => wrapper.findByTestId('submit-button');
+  const findTitleInput = () => wrapper.findByTestId('title-input');
 
   const getLocalstorageKey = () => {
     return 'root/frequent-projects';
@@ -58,63 +80,67 @@ describe('CreateIssueForm', () => {
   };
 
   const selectProject = async (project = mockProject) => {
-    wrapper.vm.$store.dispatch('receiveProjectsSuccess', mockProjects);
-    await nextTick();
+    await store.dispatch('receiveProjectsSuccess', mockProjects);
 
-    const item = wrapper.find(`[data-testid="project-item-${project.id}"]`);
-    item.vm.$emit('click');
+    findProjectItem(project).vm.$emit('click');
   };
 
-  const findSubmitButton = () => wrapper.find('[data-testid="submit-button"]');
-  const findTitleInput = () => wrapper.find('[data-testid="title-input"]');
-
   beforeEach(() => {
-    createComponent();
+    mockAxios = new MockAdapter(axios);
     gon.current_username = 'root';
   });
 
-  describe('data', () => {
-    it('initializes data props with default values', () => {
-      expect(wrapper.vm.selectedProject).toBeNull();
-      expect(wrapper.vm.searchKey).toBe('');
-      expect(wrapper.vm.title).toBe('');
-    });
-  });
-
-  describe('computed', () => {
-    describe('dropdownToggleText', () => {
-      it('returns project name with name_with_namespace when `selectedProject` is not empty', async () => {
-        await selectProject();
-
-        expect(wrapper.vm.dropdownToggleText).toBe(mockProject.name_with_namespace);
-      });
-      it('returns project name with namespace when `selectedProject` is not empty and dont have name_with_namespace', async () => {
-        const project = {
-          ...mockProject,
-          name_with_namespace: undefined,
-          namespace: 'H5bp / Html5 Boilerplate',
-        };
-
-        await selectProject(project);
-
-        expect(wrapper.vm.dropdownToggleText).toBe(project.namespace);
-      });
-      it('returns project name of default project', async () => {
+  describe('Project name', () => {
+    describe('when no name property is found', () => {
+      beforeEach(() => {
         createComponent({ defaultProjectForIssueCreation: mockDefaultProjectForIssueCreation });
+      });
 
-        expect(wrapper.vm.dropdownToggleText).toBe(
+      it('returns project name of default project', async () => {
+        expect(findDropdown().props().text).toBe(
           mockDefaultProjectForIssueCreation.nameWithNamespace,
         );
       });
     });
+
+    describe('when `selectedProject` is not empty', () => {
+      it('returns project name from name_with_namespace property', async () => {
+        createComponent();
+
+        await selectProject();
+
+        expect(findDropdown().props().text).toBe(mockProject.name_with_namespace);
+      });
+
+      describe('and does not have name_with_namespace property', () => {
+        beforeEach(() => {
+          createComponent();
+        });
+
+        it('returns project name from namespace property', async () => {
+          const project = {
+            ...mockProject,
+            name_with_namespace: undefined,
+            namespace: 'H5bp / Html5 Boilerplate',
+          };
+
+          await selectProject(project);
+
+          expect(findDropdown().props().text).toBe(project.namespace);
+        });
+      });
+    });
   });
 
-  describe('methods', () => {
-    describe('cancel', () => {
-      it('emits event `cancel` on component', async () => {
-        wrapper.vm.cancel();
+  describe('events', () => {
+    beforeEach(() => {
+      createComponent();
+    });
 
-        await nextTick();
+    describe('when clicking the cancel button', () => {
+      it('emits event `cancel` event', async () => {
+        await findCancelBtn().vm.$emit('click');
+
         expect(wrapper.emitted('cancel')).toEqual([[]]);
       });
     });
@@ -179,175 +205,172 @@ describe('CreateIssueForm', () => {
         expect(wrapper.emitted('submit')).toBeUndefined();
       });
     });
+  });
 
-    describe('handleDropdownShow', () => {
-      it('sets `searchKey` prop to empty string and calls action `fetchProjects`', () => {
-        const handleDropdownShow = jest
-          .spyOn(wrapper.vm, 'fetchProjects')
-          .mockImplementation(jest.fn());
+  describe('When dropdown is shown', () => {
+    beforeEach(async () => {
+      createComponent();
+      await findDropdown().vm.$emit('show');
+      await waitForPromises();
+    });
 
-        wrapper.vm.handleDropdownShow();
+    it('sets `searchKey` prop to empty string', () => {
+      expect(findSearchBox().props().value).toBe('');
+    });
 
-        expect(wrapper.vm.searchKey).toBe('');
-        expect(handleDropdownShow).toHaveBeenCalled();
-      });
+    it('calls action `fetchProjects`', () => {
+      expect(mockAxios.history.get).toHaveLength(1);
     });
   });
 
   describe('templates', () => {
-    it('renders Issue title input field', () => {
-      const issueTitleFieldLabel = wrapper.findAll('label').at(0);
-      const issueTitleFieldInput = wrapper.findComponent(GlFormInput);
+    beforeEach(() => {
+      createComponent();
+    });
 
-      expect(issueTitleFieldLabel.text()).toBe('Title');
-      expect(issueTitleFieldInput.attributes('placeholder')).toBe('New issue title');
+    afterEach(() => {
+      removeLocalstorageFrequentItems();
+    });
+
+    it('renders Issue title input field', () => {
+      expect(findIssueTitleLabel().text()).toBe('Title');
+      expect(findIssueTitleInput().attributes('placeholder')).toBe('New issue title');
     });
 
     it('renders Projects dropdown field', () => {
-      const projectsDropdownLabel = wrapper.findAll('label').at(1);
-      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
-
-      expect(projectsDropdownLabel.text()).toBe('Project');
-      expect(projectsDropdownButton.props('text')).toBe('Select a project');
+      expect(findProjectsDropdownLabel().text()).toBe('Project');
+      expect(findDropdown().props('text')).toBe('Select a project');
     });
 
     it('renders Projects dropdown contents', async () => {
-      wrapper.vm.$store.dispatch('receiveProjectsSuccess', mockProjects);
+      await store.dispatch('receiveProjectsSuccess', mockProjects);
 
-      await nextTick();
-      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
-      const dropdownItems = projectsDropdownButton.findAllComponents(GlDropdownItem);
-      const dropdownItem = dropdownItems.at(0);
+      const projectsDropdownButton = findDropdown();
+      const dropdownItem = findDropdownItem(0);
 
       expect(projectsDropdownButton.findComponent(GlSearchBoxByType).exists()).toBe(true);
       expect(projectsDropdownButton.findComponent(GlLoadingIcon).exists()).toBe(true);
-      expect(dropdownItems).toHaveLength(mockProjects.length);
+
+      expect(findDropdownItems()).toHaveLength(mockProjects.length);
+
       expect(dropdownItem.text()).toContain(mockProjects[0].name);
       expect(dropdownItem.text()).toContain(mockProjects[0].namespace.name);
-      expect(dropdownItem.findComponent(ProjectAvatar).props()).toMatchObject({
-        projectId: mockProjects[0].id,
-        projectName: mockProjects[0].name,
-        projectAvatarUrl: mockProjects[0].avatar_url,
-      });
+      expect(dropdownItem.findComponent(ProjectAvatar).props()).toMatchObject(
+        expect.objectContaining({
+          projectId: mockProjects[0].id,
+          projectName: mockProjects[0].name,
+          projectAvatarUrl: mockProjects[0].avatar_url,
+        }),
+      );
     });
 
     it('renders dropdown contents without recent items when `recentItems` are empty', () => {
-      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
-      expect(projectsDropdownButton.findComponent(GlDropdownSectionHeader).exists()).toBe(false);
-      expect(projectsDropdownButton.findComponent(GlDropdownDivider).exists()).toBe(false);
-      expect(projectsDropdownButton.find('[data-testid="recent-items-content"]').exists()).toBe(
-        false,
-      );
+      expect(findDropdownContentDivider().exists()).toBe(false);
+      expect(findDropdownHeader().exists()).toBe(false);
+      expect(findRecentDropdown().exists()).toBe(false);
     });
 
     it('renders recent items when localStorage has recent items', async () => {
       setLocalstorageFrequentItems();
 
-      wrapper.vm.setRecentItems();
+      expect(findDropdownContentDivider().exists()).toBe(false);
+      expect(findDropdownHeader().exists()).toBe(false);
 
-      await nextTick();
+      await findDropdown().vm.$emit('show');
 
-      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
+      expect(findDropdownContentDivider().exists()).toBe(true);
+      expect(findDropdownHeader().exists()).toBe(true);
 
-      expect(projectsDropdownButton.findComponent(GlDropdownSectionHeader).exists()).toBe(true);
-      expect(projectsDropdownButton.findComponent(GlDropdownDivider).exists()).toBe(true);
-
-      const content = projectsDropdownButton.find('[data-testid="recent-items-content"]');
+      const content = findRecentDropdown();
       expect(content.exists()).toBe(true);
       expect(content.findAllComponents(GlDropdownItem)).toHaveLength(
         mockFrequentlyUsedProjects.length,
       );
-
-      removeLocalstorageFrequentItems();
     });
 
     it('renders recent items from the group when localStorage has recent items with mixed groups', async () => {
       setLocalstorageFrequentItems(mockMixedFrequentlyUsedProjects);
 
-      wrapper.vm.setRecentItems();
+      await findDropdown().vm.$emit('show');
 
-      await nextTick();
-
-      const projectsDropdownButton = wrapper.findComponent(GlDropdown);
-
-      expect(
-        projectsDropdownButton
-          .find('[data-testid="recent-items-content"]')
-          .findAllComponents(GlDropdownItem),
-      ).toHaveLength(mockMixedFrequentlyUsedProjects.length - 1);
-
-      removeLocalstorageFrequentItems();
+      expect(findRecentDropdown().findAllComponents(GlDropdownItem)).toHaveLength(
+        mockMixedFrequentlyUsedProjects.length - 1,
+      );
     });
 
     it('renders Projects dropdown contents containing only matching project when searchKey is provided', async () => {
       const searchKey = 'Underscore';
       const filteredMockProjects = mockProjects.filter((project) => project.name === searchKey);
-      jest.spyOn(wrapper.vm, 'fetchProjects').mockImplementation(jest.fn());
 
-      wrapper.findComponent(GlDropdown).trigger('click');
+      await findDropdown().vm.$emit('show');
+      await findSearchBox().vm.$emit('input', searchKey);
 
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        searchKey,
-      });
-
-      await nextTick();
-      await wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
+      await store.dispatch('receiveProjectsSuccess', filteredMockProjects);
       expect(wrapper.findAllComponents(GlDropdownItem)).toHaveLength(1);
     });
 
     it('renders Projects dropdown contents containing string string "No matches found" when searchKey provided does not match any project', async () => {
       const searchKey = "this-project-shouldn't exist";
       const filteredMockProjects = mockProjects.filter((project) => project.name === searchKey);
-      jest.spyOn(wrapper.vm, 'fetchProjects').mockImplementation(jest.fn());
 
-      wrapper.findComponent(GlDropdown).trigger('click');
+      await findDropdown().vm.$emit('show');
+      await findSearchBox().vm.$emit('input', searchKey);
 
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        searchKey,
-      });
-
-      await nextTick();
-      await wrapper.vm.$store.dispatch('receiveProjectsSuccess', filteredMockProjects);
-      expect(wrapper.find('.dropdown-contents').text()).toContain('No matches found');
+      await store.dispatch('receiveProjectsSuccess', filteredMockProjects);
+      expect(findDropdown().text()).toContain('No matches found');
     });
 
     it('renders `Create issue` button', () => {
-      const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
+      const createIssueButton = findSubmitButton();
 
       expect(createIssueButton.exists()).toBe(true);
       expect(createIssueButton.text()).toBe('Create issue');
     });
 
-    it('renders loading icon within `Create issue` button when `itemCreateInProgress` is true', async () => {
-      wrapper.vm.$store.dispatch('requestCreateItem');
+    describe('when `itemCreateInProgress` is true', () => {
+      beforeEach(async () => {
+        await store.dispatch('requestCreateItem');
+      });
 
-      await nextTick();
-      const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
+      it('renders loading icon within `Create issue` button', () => {
+        const createIssueButton = findSubmitButton();
 
-      expect(createIssueButton.exists()).toBe(true);
-      expect(createIssueButton.props('disabled')).toBe(true);
-      expect(createIssueButton.props('loading')).toBe(true);
+        expect(createIssueButton.exists()).toBe(true);
+        expect(createIssueButton.props('disabled')).toBe(true);
+        expect(createIssueButton.props('loading')).toBe(true);
+      });
     });
 
-    it('renders loading icon within `Create issue` button when `recentItemFetchInProgress` is true', async () => {
-      wrapper.vm.recentItemFetchInProgress = true;
+    describe('when selecting recent items', () => {
+      beforeEach(async () => {
+        setLocalstorageFrequentItems();
+        await findDropdown().vm.$emit('show');
+      });
 
-      await nextTick();
-      const createIssueButton = wrapper.findAllComponents(GlButton).at(0);
+      it('renders loading icon within `Create issue` button', async () => {
+        const recentDropdown = findRecentDropdown();
+        const createIssueButton = findSubmitButton();
 
-      expect(createIssueButton.exists()).toBe(true);
-      expect(createIssueButton.props()).toMatchObject({
-        disabled: true,
-        loading: true,
+        expect(recentDropdown.exists()).toBe(true);
+
+        expect(createIssueButton.exists()).toBe(true);
+        expect(createIssueButton.props()).toMatchObject({
+          disabled: true,
+          loading: false,
+        });
+
+        const dropdownItem = recentDropdown.findAllComponents(GlDropdownItem).at(0);
+        await dropdownItem.vm.$emit('click');
+
+        expect(createIssueButton.props()).toMatchObject({
+          disabled: true,
+          loading: true,
+        });
       });
     });
 
     it('renders `Cancel` button', () => {
-      const cancelButton = wrapper.findAllComponents(GlButton).at(1);
+      const cancelButton = findCancelBtn();
 
       expect(cancelButton.exists()).toBe(true);
       expect(cancelButton.text()).toBe('Cancel');
