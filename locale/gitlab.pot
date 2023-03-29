@@ -31612,7 +31612,13 @@ msgstr ""
 msgid "Pipeline durations for the last 30 commits"
 msgstr ""
 
+msgid "Pipeline editor"
+msgstr ""
+
 msgid "Pipeline ran in fork of project"
+msgstr ""
+
+msgid "Pipeline schedules"
 msgstr ""
 
 msgid "Pipeline status emails"
