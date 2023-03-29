@@ -90,7 +90,7 @@ module Sidebars
             link: group_boards_path(context.group),
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
             active_routes: { path: %w[boards#index boards#show] },
-            item_id: :boards
+            item_id: context.is_super_sidebar ? :issue_boards : :boards
           )
         end
 
