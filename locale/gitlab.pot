@@ -18465,6 +18465,9 @@ msgstr ""
 msgid "ForksDivergence|Create a merge request to your project's default branch."
 msgstr ""
 
+msgid "ForksDivergence|Create merge request"
+msgstr ""
+
 msgid "ForksDivergence|Failed to fetch fork details. Try again later."
 msgstr ""
 
