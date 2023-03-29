@@ -42,8 +42,22 @@ describe('Form group component', () => {
       expect(findGlFormGroup().attributes('label')).toBe(I18N_DELETION_PROTECTION.heading);
     });
 
-    it('displays the help text', () => {
-      expect(findHelpText().text()).toContain(I18N_DELETION_PROTECTION.helpText);
+    describe('when `alwaysPerformDelayedDeletion` feature flag is disabled', () => {
+      it('displays the help text', () => {
+        expect(findHelpText().text()).toContain(I18N_DELETION_PROTECTION.helpText);
+      });
+    });
+
+    describe('when `alwaysPerformDelayedDeletion` feature flag is enabled', () => {
+      beforeEach(() => {
+        createComponent({ provide: { glFeatures: { alwaysPerformDelayedDeletion: true } } });
+      });
+
+      it('displays the help text', () => {
+        expect(findHelpText().text()).toContain(
+          I18N_DELETION_PROTECTION.helpTextFeatureFlagEnabled,
+        );
+      });
     });
 
     it('displays the help link', () => {

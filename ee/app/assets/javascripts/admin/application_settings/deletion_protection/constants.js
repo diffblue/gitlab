@@ -5,6 +5,9 @@ export const I18N_DELETION_PROTECTION = {
   helpText: s__(
     'DeletionSettings|Retention period that deleted groups and projects will remain restorable. Personal projects are always deleted immediately. Some groups can opt-out their projects.',
   ),
+  helpTextFeatureFlagEnabled: s__(
+    'DeletionSettings|Period that deleted groups and projects will remain restorable for. Personal projects are always deleted immediately.',
+  ),
   learnMore: __('Learn more.'),
   keepDeleted: s__('DeletionSettings|Keep deleted'),
   deleteImmediately: s__('DeletionSettings|None, delete immediately'),

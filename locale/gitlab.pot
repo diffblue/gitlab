@@ -13957,6 +13957,9 @@ msgstr ""
 msgid "DeletionSettings|Owners and administrators can delete projects."
 msgstr ""
 
+msgid "DeletionSettings|Period that deleted groups and projects will remain restorable for. Personal projects are always deleted immediately."
+msgstr ""
+
 msgid "DeletionSettings|Retention period that deleted groups and projects will remain restorable. Personal projects are always deleted immediately. Some groups can opt-out their projects."
 msgstr ""
 
