@@ -63,6 +63,19 @@ describe('Order Summary', () => {
     groupData: mockNamespaces,
   };
 
+  const invalidPromoCodeResponse = {
+    data: {},
+    errors: [
+      {
+        extensions: {
+          message: 'Error',
+          code: INVALID_PROMO_CODE_ERROR_CODE,
+          attributes: [PROMO_CODE_ERROR_ATTRIBUTE],
+        },
+      },
+    ],
+  };
+
   const findTaxHelpLink = () => wrapper.findByTestId('tax-help-link');
   const findPromoCodeInput = () => wrapper.findComponent(PromoCodeInput);
 
@@ -559,18 +572,7 @@ describe('Order Summary', () => {
       let promoCodeInput;
       let invoicePreviewSpy;
       beforeEach(async () => {
-        invoicePreviewSpy = jest.fn().mockResolvedValue({
-          data: {},
-          errors: [
-            {
-              extensions: {
-                message: 'Error',
-                code: INVALID_PROMO_CODE_ERROR_CODE,
-                attributes: [PROMO_CODE_ERROR_ATTRIBUTE],
-              },
-            },
-          ],
-        });
+        invoicePreviewSpy = jest.fn().mockResolvedValue(invalidPromoCodeResponse);
         await createComponent(invoicePreviewSpy);
         await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
         promoCodeInput = findPromoCodeInput();
@@ -592,6 +594,19 @@ describe('Order Summary', () => {
         expect(invoicePreviewSpy).toHaveBeenLastCalledWith({ planId: 'secondPlanId', quantity: 1 });
       });
 
+      it('when plan is changed, invoice preview spy is not called with promo code', async () => {
+        // switching from firstPlan to secondPlan to make sure we are on a plan that is eligible to use a promo code
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
+        await waitForPromises();
+        invoicePreviewSpy.mockClear();
+
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+        await waitForPromises();
+
+        expect(invoicePreviewSpy).toHaveBeenCalledWith({ planId: 'secondPlanId', quantity: 1 });
+        expect(invoicePreviewSpy).toHaveBeenCalledTimes(1);
+      });
+
       it('tracks events for failing to apply a promo code', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_button', {
           label: 'apply_coupon_code_saas',
@@ -605,20 +620,48 @@ describe('Order Summary', () => {
       });
     });
 
+    describe('when applying an invalid promo code', () => {
+      let promoCodeInput;
+      let invoicePreviewSpy;
+
+      beforeEach(async () => {
+        invoicePreviewSpy = jest
+          .fn()
+          .mockResolvedValueOnce(mockInvoicePreviewWithDiscount) // { planId: 'thirdPlanId', quantity: 1 }
+          .mockResolvedValueOnce(mockInvoicePreviewWithDiscount) // { planId: 'secondPlanId', quantity: 1 }
+          .mockResolvedValueOnce(invalidPromoCodeResponse) // { planId: 'secondPlanId', quantity: 1, promoCode: 'promoCode' }
+          .mockResolvedValueOnce(invalidPromoCodeResponse) // Extra mock that shouldn't happen to catch potential infinite loop
+          .mockResolvedValueOnce(invalidPromoCodeResponse); // Extra mock that shouldn't happen to catch potential infinite loop
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+
+        promoCodeInput = findPromoCodeInput();
+        promoCodeInput.vm.$emit('apply-promo-code', 'promoCode');
+
+        await waitForPromises();
+      });
+
+      it('calls invoice preview API appropriately', () => {
+        expect(invoicePreviewSpy).toHaveBeenCalledTimes(3);
+        expect(invoicePreviewSpy).toHaveBeenNthCalledWith(1, {
+          planId: 'thirdPlanId',
+          quantity: 1,
+        });
+        expect(invoicePreviewSpy).toHaveBeenNthCalledWith(2, {
+          planId: 'secondPlanId',
+          quantity: 1,
+        });
+        expect(invoicePreviewSpy).toHaveBeenNthCalledWith(3, {
+          planId: 'secondPlanId',
+          quantity: 1,
+          promoCode: 'promoCode',
+        });
+      });
+    });
+
     describe('when promo code is updated after an invalid promo code is applied', () => {
       let promoCodeInput;
-      const invoicePreviewSpy = jest.fn().mockResolvedValue({
-        data: {},
-        errors: [
-          {
-            extensions: {
-              message: 'Error',
-              code: INVALID_PROMO_CODE_ERROR_CODE,
-              attributes: [PROMO_CODE_ERROR_ATTRIBUTE],
-            },
-          },
-        ],
-      });
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(invalidPromoCodeResponse);
 
       beforeEach(async () => {
         await createComponent(invoicePreviewSpy);
