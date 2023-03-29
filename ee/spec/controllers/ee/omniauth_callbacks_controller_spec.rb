@@ -112,9 +112,6 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
       mock_auth_hash(provider, extern_uid, user_email)
       stub_omniauth_saml_config(external_providers: [provider], block_auto_created_users: false)
       stub_omniauth_provider(provider, context: request)
-
-      allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-        .to receive(:identity_verification_enabled?).and_return(true)
     end
 
     shared_examples 'identity verification required' do
@@ -150,6 +147,12 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
 
     context 'on sign up' do
+      before do
+        allow_next_instance_of(User) do |user|
+          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        end
+      end
+
       let_it_be(:user_email) { 'test@example.com' }
 
       it_behaves_like 'identity verification required'
@@ -164,6 +167,12 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
 
     context 'on sign in' do
+      before do
+        allow_next_found_instance_of(User) do |user|
+          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        end
+      end
+
       let_it_be(:user) { create(:omniauth_user, extern_uid: extern_uid, provider: provider) }
       let_it_be(:user_email) { user.email }
 

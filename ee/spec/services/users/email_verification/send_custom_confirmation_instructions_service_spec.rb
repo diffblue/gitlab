@@ -71,81 +71,33 @@ feature_category: :system_access do
   end
 
   describe '#send_instructions' do
-    where(enabled?: [true, false],
-          token_present?: [true, false],
-          token_saved?: [true, false])
+    where(confirmed?: [true, false],
+      identity_verification_enabled?: [true, false],
+      token_present?: [true, false],
+      token_saved?: [true, false])
 
     with_them do
       before do
         user.restore_confirmation_token!
-        allow(service).to receive(:enabled?).and_return(enabled?)
+        allow(user).to receive(:confirmed?).and_return(confirmed?)
+        allow(user).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
         allow(service).to receive(:token).and_return('xxx') if token_present?
         user.confirmation_token = 'yyy' unless token_saved?
       end
 
       it 'sends the instructions when expected' do
-        if enabled? && token_present? && token_saved?
+        if !confirmed? && identity_verification_enabled? && token_present? && token_saved?
           expect(::Notify).to receive(:confirmation_instructions_email)
               .with(user.email, token: 'xxx').once.and_call_original
 
           service.send_instructions
-        elsif enabled?
+        elsif !confirmed? && identity_verification_enabled?
           expect { service.send_instructions }.to raise_error service.class::SendConfirmationInstructionsError
         else
           expect(::Notify).not_to receive(:confirmation_instructions_email)
 
           service.send_instructions
         end
-      end
-    end
-  end
-
-  describe '#enabled?' do
-    where(:confirmed?, :identity_verification_enabled?, :result) do
-      true  | true  | false
-      true  | false | false
-      false | true  | true
-      false | false | false
-    end
-
-    with_them do
-      before do
-        allow(user).to receive(:confirmed?).and_return(confirmed?)
-        allow(service.class).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
-      end
-
-      it 'returns the expected result' do
-        expect(service.enabled?).to eq(result)
-      end
-    end
-  end
-
-  describe '.identity_verification_enabled?' do
-    where(:identity_verification,
-      :require_admin_approval_after_user_signup, :email_confirmation_setting, :enabled?) do
-      true  | true  | 'hard' | false
-      true  | true  | 'off'  | false
-      true  | true  | 'soft' | false
-      true  | false | 'hard' | true
-      true  | false | 'off'  | false
-      true  | false | 'soft' | false
-      false | true  | 'hard' | false
-      false | true  | 'off'  | false
-      false | true  | 'soft' | false
-      false | false | 'hard' | false
-      false | false | 'off'  | false
-      false | false | 'soft' | false
-    end
-
-    with_them do
-      before do
-        stub_feature_flags(identity_verification: identity_verification)
-        stub_application_setting(require_admin_approval_after_user_signup: require_admin_approval_after_user_signup)
-        stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
-      end
-
-      it 'returns the expected result' do
-        expect(!!service.class.identity_verification_enabled?(user.email)).to eq(enabled?)
       end
     end
   end

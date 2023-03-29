@@ -12,7 +12,7 @@ module EE
       before_action only: [:new] do
         push_frontend_feature_flag(:arkose_labs_login_challenge)
       end
-      prepend_before_action :check_user_confirmation, only: :create
+      prepend_before_action :complete_identity_verification, only: :create
     end
 
     override :new
@@ -132,14 +132,12 @@ module EE
       respond_with_navigational(resource) { render :new }
     end
 
-    def check_user_confirmation
+    def complete_identity_verification
       user = ::User.find_by_login(user_params[:login])
 
-      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.identity_verified?
+      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked?
       return if ::Gitlab::Qa.request?(request.user_agent)
-
-      service_class = ::Users::EmailVerification::SendCustomConfirmationInstructionsService
-      return unless service_class.identity_verification_enabled?(user.email)
+      return if !user.identity_verification_enabled? || user.identity_verified?
 
       # When identity verification is enabled, store the user id in the session and redirect to the
       # identity verification page instead of displaying a Devise flash alert on the sign in page.

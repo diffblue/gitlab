@@ -2,12 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_resiliency do
-  include SubscriptionPortalHelpers
+RSpec.describe 'Identity Verification', :js, feature_category: :instance_resiliency do
   include IdentityVerificationHelpers
 
   before do
-    stub_feature_flags(soft_email_confirmation: false)
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(
       require_admin_approval_after_user_signup: false,
@@ -21,7 +19,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
   let(:user_email) { 'onboardinguser@example.com' }
   let(:user) { User.find_by_email(user_email) }
 
-  shared_examples 'registering the user with low risk identity verification' do
+  shared_examples 'registering a low risk user with identity verification' do
     let(:risk) { :low }
 
     it 'verifies the user' do
@@ -35,7 +33,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
     end
   end
 
-  shared_examples 'registering the user with medium risk identity verification' do |skip_email_validation: false|
+  shared_examples 'registering a medium risk user with identity verification' do |skip_email_validation: false|
     let(:risk) { :medium }
 
     it 'verifies the user' do
@@ -51,7 +49,7 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
     end
   end
 
-  shared_examples 'registering the user with high risk identity verification' do |skip_email_validation: false|
+  shared_examples 'registering a high risk user with identity verification' do |skip_email_validation: false|
     let(:risk) { :high }
 
     it 'verifies the user' do
@@ -75,9 +73,9 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
       sign_up
     end
 
-    it_behaves_like 'registering the user with low risk identity verification'
-    it_behaves_like 'registering the user with medium risk identity verification'
-    it_behaves_like 'registering the user with high risk identity verification'
+    it_behaves_like 'registering a low risk user with identity verification'
+    it_behaves_like 'registering a medium risk user with identity verification'
+    it_behaves_like 'registering a high risk user with identity verification'
   end
 
   describe 'Invite flow' do
@@ -96,19 +94,19 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
       end
     end
 
-    it_behaves_like 'registering the user with medium risk identity verification', skip_email_validation: true
-    it_behaves_like 'registering the user with high risk identity verification', skip_email_validation: true
+    it_behaves_like 'registering a medium risk user with identity verification', skip_email_validation: true
+    it_behaves_like 'registering a high risk user with identity verification', skip_email_validation: true
   end
 
-  describe 'Trial flow' do
+  describe 'Trial flow', :saas do
     before do
       visit new_trial_registration_path
       trial_sign_up
     end
 
-    it_behaves_like 'registering the user with low risk identity verification'
-    it_behaves_like 'registering the user with medium risk identity verification'
-    it_behaves_like 'registering the user with high risk identity verification'
+    it_behaves_like 'registering a low risk user with identity verification'
+    it_behaves_like 'registering a medium risk user with identity verification'
+    it_behaves_like 'registering a high risk user with identity verification'
   end
 
   describe 'SAML flow' do
@@ -126,23 +124,20 @@ RSpec.describe 'Identity Verification', :js, :saas, feature_category: :instance_
       with_omniauth_full_host { example.run }
     end
 
-    it_behaves_like 'registering the user with low risk identity verification'
-    it_behaves_like 'registering the user with medium risk identity verification'
-    it_behaves_like 'registering the user with high risk identity verification'
+    it_behaves_like 'registering a low risk user with identity verification'
+    it_behaves_like 'registering a medium risk user with identity verification'
+    it_behaves_like 'registering a high risk user with identity verification'
   end
 
   describe 'Subscription flow' do
     before do
-      stub_signing_key
-      stub_invoice_preview
-
       visit new_subscriptions_path
       sign_up
     end
 
-    it_behaves_like 'registering the user with low risk identity verification'
-    it_behaves_like 'registering the user with medium risk identity verification'
-    it_behaves_like 'registering the user with high risk identity verification'
+    it_behaves_like 'registering a low risk user with identity verification'
+    it_behaves_like 'registering a medium risk user with identity verification'
+    it_behaves_like 'registering a high risk user with identity verification'
   end
 
   private

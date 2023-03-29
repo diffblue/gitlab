@@ -40,22 +40,12 @@ module Users
         ::Notify.confirmation_instructions_email(user.email, token: token).deliver_later
       end
 
+      private
+
       def enabled?
-        !user.confirmed? && self.class.identity_verification_enabled?(user.email)
+        !user.confirmed? && user.identity_verification_enabled?
       end
       strong_memoize_attr :enabled?
-
-      def self.identity_verification_enabled?(email)
-        return false unless ::Gitlab::CurrentSettings.email_confirmation_setting_hard?
-        return false if ::Gitlab::CurrentSettings.require_admin_approval_after_user_signup
-
-        # Since we might not have a persisted user yet, we cannot scope the feature flag on the user,
-        # but since we do have an email, use this wrapper that implements `flipper_id` for email addresses.
-        email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(email)
-        ::Feature.enabled?(:identity_verification, email_wrapper)
-      end
-
-      private
 
       attr_reader :user, :token
     end
