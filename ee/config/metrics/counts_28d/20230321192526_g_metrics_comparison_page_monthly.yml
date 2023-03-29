@@ -1,0 +1,23 @@
+---
+key_path: redis_hll_counters.analytics.g_metrics_comparison_page_monthly
+description: Count of unique visits to group value streams dashboards page
+product_section: dev
+product_stage: plan
+product_group: optimize
+product_category:
+value_type: number
+status: active
+milestone: "15.11"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115416
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- ultimate
+options:
+  events:
+    - g_metrics_comparison_page
