@@ -8,6 +8,7 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:meta_response_with_data) { fixture_file('cube_js/meta_with_data.json', dir: 'ee') }
   let_it_be(:query_response_with_data) { fixture_file('cube_js/query_with_data.json', dir: 'ee') }
+  let_it_be(:query_response_with_error) { fixture_file('cube_js/query_with_error.json', dir: 'ee') }
 
   let(:cube_meta_api_url) { "https://cube.example.com/cubejs-api/v1/meta" }
   let(:cube_dry_run_api_url) { "https://cube.example.com/cubejs-api/v1/dry-run" }
@@ -39,80 +40,103 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
 
       stub_request(:get, cube_meta_api_url)
         .to_return(status: 200, body: meta_response_with_data, headers: {})
-      stub_request(:post, cube_dry_run_api_url)
-        .to_return(status: 200, body: query_response_with_data, headers: {})
-      stub_request(:post, cube_load_api_url)
-        .to_return(status: 200, body: query_response_with_data, headers: {})
     end
 
-    it 'renders the measure selection, preview, and visualization selection panels' do
-      visit_page
-
-      expect(page).to have_content('What do you want to measure?')
-      expect(page).to have_content('Choose a measurement to start')
-      expect(page).to have_content('Visualization Type')
-    end
-
-    context 'with a measure selected' do
+    context 'with valid data' do
       before do
+        stub_request(:post, cube_dry_run_api_url)
+          .to_return(status: 200, body: query_response_with_data, headers: {})
+        stub_request(:post, cube_load_api_url)
+          .to_return(status: 200, body: query_response_with_data, headers: {})
+      end
+
+      it 'renders the measure selection, preview, and visualization selection panels' do
         visit_page
-        click_button 'Page Views'
-        click_button 'All Pages'
+
+        expect(page).to have_content('What do you want to measure?')
+        expect(page).to have_content('Choose a measurement to start')
+        expect(page).to have_content('Visualization Type')
       end
 
-      it 'shows the selected measure data' do
-        expect(find('[data-testid="grid-stack-panel"]')).to have_content('Tracked Events.count 335')
-      end
+      context 'with a measure selected' do
+        before do
+          visit_page
+          select_all_views_measure
+        end
 
-      [
-        {
-          name: 'LineChart',
-          button_text: 'Line Chart',
-          content: 'TrackedEvents Count Avg: 335 · Max: 335'
-        },
-        {
-          name: 'ColumnChart',
-          button_text: 'Column Chart',
-          selector: 'dashboard-visualization-column-chart'
-        },
-        {
-          name: 'DataTable',
-          button_text: 'Data Table',
-          content: 'Count 335'
-        },
-        {
-          name: 'SingleStat',
-          button_text: 'Single Statistic',
-          content: '335'
-        }
-      ].each do |visualization|
-        context "with #{visualization[:button_text]} visualization selected" do
-          before do
-            click_button visualization[:button_text]
-          end
+        it 'shows the selected measure data' do
+          expect(find('[data-testid="grid-stack-panel"]')).to have_content('Tracked Events.count 335')
+        end
 
-          it "shows the #{visualization[:button_text]} preview" do
-            preview_panel = find('[data-testid="preview-visualization"]')
-
-            if visualization[:content].nil?
-              expect(preview_panel).to have_selector("[data-testid=\"#{visualization[:selector]}\"]")
-            else
-              expect(preview_panel).to have_content(visualization[:content])
-            end
-          end
-
-          context 'with the code tab selected' do
+        [
+          {
+            name: 'LineChart',
+            button_text: 'Line Chart',
+            content: 'TrackedEvents Count Avg: 335 · Max: 335'
+          },
+          {
+            name: 'ColumnChart',
+            button_text: 'Column Chart',
+            selector: 'dashboard-visualization-column-chart'
+          },
+          {
+            name: 'DataTable',
+            button_text: 'Data Table',
+            content: 'Count 335'
+          },
+          {
+            name: 'SingleStat',
+            button_text: 'Single Statistic',
+            content: '335'
+          }
+        ].each do |visualization|
+          context "with #{visualization[:button_text]} visualization selected" do
             before do
-              click_button 'Code'
+              click_button visualization[:button_text]
             end
 
-            it 'shows the visualization code' do
-              json_snippet = "\"type\": \"#{visualization[:name]}\","
-              expect(find('[data-testid="preview-code"]')).to have_content(json_snippet)
+            it "shows the #{visualization[:button_text]} preview" do
+              preview_panel = find('[data-testid="preview-visualization"]')
+
+              if visualization[:content].nil?
+                expect(preview_panel).to have_selector("[data-testid=\"#{visualization[:selector]}\"]")
+              else
+                expect(preview_panel).to have_content(visualization[:content])
+              end
+            end
+
+            context 'with the code tab selected' do
+              before do
+                click_button 'Code'
+              end
+
+              it 'shows the visualization code' do
+                json_snippet = "\"type\": \"#{visualization[:name]}\","
+                expect(find('[data-testid="preview-code"]')).to have_content(json_snippet)
+              end
             end
           end
         end
       end
     end
+
+    context 'when data fails to load' do
+      it 'shows error when selecting a measure fails' do
+        stub_request(:post, cube_dry_run_api_url)
+          .to_return(status: 200, body: query_response_with_error, headers: {})
+        stub_request(:post, cube_load_api_url)
+          .to_return(status: 200, body: query_response_with_error, headers: {})
+
+        visit_page
+        select_all_views_measure
+
+        expect(page).to have_content('An error occurred while loading data')
+      end
+    end
+  end
+
+  def select_all_views_measure
+    click_button 'Page Views'
+    click_button 'All Pages'
   end
 end
