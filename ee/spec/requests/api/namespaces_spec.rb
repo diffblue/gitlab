@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Namespaces, feature_category: :subgroups do
+RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroups do
   include AfterNextHelpers
 
   let(:admin) { create(:admin) }
@@ -22,7 +22,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       end
 
       it "returns correct attributes" do
-        get api("/namespaces", admin)
+        get api("/namespaces", admin, admin_mode: true)
 
         group_kind_json_response = json_response.find { |resource| resource['kind'] == 'group' }
         user_kind_json_response = json_response.find { |resource| resource['kind'] == 'user' }
@@ -216,10 +216,10 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
     end
 
     context 'when authenticated as admin' do
-      subject { put api("/namespaces/#{group1.id}", admin), params: params }
+      subject { put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params }
 
       it 'updates namespace using full_path when full_path contains dots' do
-        put api("/namespaces/#{group1.full_path}", admin), params: params
+        put api("/namespaces/#{group1.full_path}", admin, admin_mode: true), params: params
 
         aggregate_failures do
           expect(response).to have_gitlab_http_status(:ok)
@@ -247,7 +247,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       context 'when current CI minutes notification level is set' do
         it 'resets the current CI minutes notification level' do
           expect do
-            put api("/namespaces/#{group1.id}", admin), params: params
+            put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params
           end.to change { usage.reload.notification_level }
              .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
         end
@@ -287,7 +287,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         context 'when current CI minutes notification level is set' do
           it 'resets the current CI minutes notification level' do
             expect do
-              put api("/namespaces/#{group1.id}", admin), params: params
+              put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params
             end.to change { usage.reload.notification_level }
               .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
           end
@@ -324,7 +324,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
     context 'when namespace not found' do
       it 'returns 404' do
-        put api("/namespaces/#{non_existing_record_id}", admin), params: params
+        put api("/namespaces/#{non_existing_record_id}", admin, admin_mode: true), params: params
 
         expect(response).to have_gitlab_http_status(:not_found)
         expect(json_response).to eq('message' => '404 Namespace Not Found')
@@ -333,7 +333,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
     context 'when project namespace is passed' do
       it 'returns 404' do
-        put api("/namespaces/#{project_namespace.id}", admin), params: params
+        put api("/namespaces/#{project_namespace.id}", admin, admin_mode: true), params: params
 
         expect(response).to have_gitlab_http_status(:not_found)
         expect(json_response).to eq('message' => '404 Namespace Not Found')
@@ -366,7 +366,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
         it 'resets that value when assigning extra CI minutes' do
           expect do
-            put api("/namespaces/#{group1.full_path}", admin), params: { extra_shared_runners_minutes_limit: 1000 }
+            put api("/namespaces/#{group1.full_path}", admin, admin_mode: true), params: { extra_shared_runners_minutes_limit: 1000 }
           end.to change { group1.reload.send(attr) }.to(nil)
         end
       end
@@ -401,7 +401,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       it "creates the gitlab_subscription record" do
         expect(group1.gitlab_subscription).to be_nil
 
-        put api("/namespaces/#{group1.id}", admin), params: {
+        put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: {
           gitlab_subscription_attributes: gitlab_subscription
         }
 
@@ -422,7 +422,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       it "updates the gitlab_subscription record" do
         existing_subscription = group1.create_gitlab_subscription!
 
-        put api("/namespaces/#{group1.id}", admin), params: {
+        put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: {
           gitlab_subscription_attributes: gitlab_subscription
         }
 
@@ -432,7 +432,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when params are invalid' do
         it 'returns a 400 error' do
-          put api("/namespaces/#{group1.id}", admin), params: {
+          put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: {
             gitlab_subscription_attributes: { start_date: nil, seats: nil }
           }
 
@@ -454,8 +454,8 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         end_date: '01/01/2019' }
     end
 
-    def do_post(current_user, payload)
-      post api("/namespaces/#{group1.id}/gitlab_subscription", current_user), params: payload
+    def do_post(current_user, payload, admin_mode: false)
+      post api("/namespaces/#{group1.id}/gitlab_subscription", current_user, admin_mode: admin_mode), params: payload
     end
 
     context 'when authenticated as a regular user' do
@@ -474,27 +474,27 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
       end
 
       it 'fails when the record is invalid' do
-        do_post(admin, params.merge(start_date: nil))
+        do_post(admin, params.merge(start_date: nil), admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
 
       it 'creates a subscription for the Group' do
-        do_post(admin, params)
+        do_post(admin, params, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:created)
         expect(group1.gitlab_subscription).to be_present
       end
 
       it 'sets the trial_starts_on to the start_date' do
-        do_post(admin, params.merge(trial: true))
+        do_post(admin, params.merge(trial: true), admin_mode: true)
 
         expect(group1.gitlab_subscription.trial_starts_on).to be_present
         expect(group1.gitlab_subscription.trial_starts_on.strftime('%d/%m/%Y')).to eq(params[:start_date])
       end
 
       it 'creates a subscription using full_path when the namespace path contains dots' do
-        post api("/namespaces/#{group1.full_path}/gitlab_subscription", admin), params: params
+        post api("/namespaces/#{group1.full_path}/gitlab_subscription", admin, admin_mode: true), params: params
 
         aggregate_failures do
           expect(response).to have_gitlab_http_status(:created)
@@ -504,7 +504,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when namespace does not exist' do
         it 'creates a subscription using full_path when the namespace path contains dots' do
-          post api("/namespaces/#{non_existing_record_id}/gitlab_subscription", admin), params: params
+          post api("/namespaces/#{non_existing_record_id}/gitlab_subscription", admin, admin_mode: true), params: params
 
           aggregate_failures do
             expect(response).to have_gitlab_http_status(:not_found)
@@ -515,7 +515,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when creating subscription for project namespace' do
         it 'creates a subscription using full_path when the namespace path contains dots' do
-          post api("/namespaces/#{project_namespace.id}/gitlab_subscription", admin), params: params
+          post api("/namespaces/#{project_namespace.id}/gitlab_subscription", admin, admin_mode: true), params: params
 
           aggregate_failures do
             expect(response).to have_gitlab_http_status(:not_found)
@@ -532,7 +532,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
     end
 
     it 'is successful using full_path when namespace path contains dots' do
-      get api("/namespaces/#{group1.full_path}/gitlab_subscription", admin)
+      get api("/namespaces/#{group1.full_path}/gitlab_subscription", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
     end
@@ -678,8 +678,8 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
   end
 
   describe 'PUT :id/gitlab_subscription', :saas do
-    def do_put(namespace_id, current_user, payload)
-      put api("/namespaces/#{namespace_id}/gitlab_subscription", current_user), params: payload
+    def do_put(namespace_id, current_user, payload, admin_mode: false)
+      put api("/namespaces/#{namespace_id}/gitlab_subscription", current_user, admin_mode: admin_mode), params: payload
     end
 
     let_it_be(:premium_plan) { create(:premium_plan) }
@@ -706,7 +706,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
     context 'when authenticated as an admin' do
       context 'when namespace is not found' do
         it 'returns a 404 error' do
-          do_put(non_existing_record_id, admin, params)
+          do_put(non_existing_record_id, admin, params, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
@@ -716,7 +716,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         let_it_be(:namespace_2) { create(:group) }
 
         it 'returns a 404 error' do
-          do_put(namespace_2.id, admin, params)
+          do_put(namespace_2.id, admin, params, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
@@ -724,7 +724,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when namespace is a project namespace' do
         it 'returns a 404 error' do
-          do_put(project_namespace.id, admin, params)
+          do_put(project_namespace.id, admin, params, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:not_found)
           expect(json_response).to eq('message' => '404 Namespace Not Found')
@@ -733,7 +733,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when params are invalid' do
         it 'returns a 400 error' do
-          do_put(namespace.id, admin, params.merge(seats: nil))
+          do_put(namespace.id, admin, params.merge(seats: nil), admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:bad_request)
         end
@@ -741,7 +741,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
       context 'when params are valid' do
         it 'updates the subscription for the Group' do
-          do_put(namespace.id, admin, params)
+          do_put(namespace.id, admin, params, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(gitlab_subscription.reload.seats).to eq(150)
@@ -751,7 +751,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         end
 
         it 'is successful using full_path when namespace path contains dots' do
-          do_put(namespace.id, admin, params)
+          do_put(namespace.id, admin, params, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
         end
@@ -759,7 +759,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         it 'does not clear out existing data because of defaults' do
           gitlab_subscription.update!(seats: 20, max_seats_used: 42)
 
-          do_put(namespace.id, admin, params.except(:seats))
+          do_put(namespace.id, admin, params.except(:seats), admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(gitlab_subscription.reload).to have_attributes(
@@ -770,7 +770,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
         it 'updates the timestamp when the attributes are the same' do
           expect do
-            do_put(namespace.id, admin, gitlab_subscription.attributes)
+            do_put(namespace.id, admin, gitlab_subscription.attributes, admin_mode: true)
           end.to change { gitlab_subscription.reload.updated_at }
         end
 
@@ -784,7 +784,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
 
             expect(gitlab_subscription.seats_in_use).to eq 0
 
-            do_put(namespace.id, admin, new_term_params)
+            do_put(namespace.id, admin, new_term_params, admin_mode: true)
 
             expect(response).to have_gitlab_http_status(:ok)
             expect(gitlab_subscription.reload).to have_attributes(
@@ -801,7 +801,7 @@ RSpec.describe API::Namespaces, feature_category: :subgroups do
         it 'updates the trial expiration date' do
           date = 30.days.from_now.to_date
 
-          do_put(namespace.id, admin, params.merge(trial_ends_on: date))
+          do_put(namespace.id, admin, params.merge(trial_ends_on: date), admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(gitlab_subscription.reload.trial_ends_on).to eq(date)

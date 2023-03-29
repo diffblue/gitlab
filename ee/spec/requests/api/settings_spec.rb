@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
+RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_category: :shared do
   include StubENV
 
   let(:user) { create(:user) }
@@ -17,7 +17,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
     it 'sets EE specific settings' do
       stub_licensed_features(custom_file_templates: true)
 
-      put api("/application/settings", admin),
+      put api("/application/settings", admin, admin_mode: true),
         params: {
           help_text: 'Help text',
           file_template_project_id: project.id
@@ -33,7 +33,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
         namespace_ids = create_list(:namespace, 2).map(&:id)
         project_ids = create_list(:project, 2).map(&:id)
 
-        put api('/application/settings', admin),
+        put api('/application/settings', admin, admin_mode: true),
             params: {
               elasticsearch_limit_indexing: true,
               elasticsearch_project_ids: project_ids.join(','),
@@ -53,7 +53,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
         create(:elasticsearch_indexed_namespace).namespace.id
         create(:elasticsearch_indexed_project).project.id
 
-        put api('/application/settings', admin),
+        put api('/application/settings', admin, admin_mode: true),
             params: {
               elasticsearch_namespace_ids: []
             }.to_json,
@@ -70,7 +70,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
 
     context 'slack app settings' do
       it 'updates slack app settings' do
-        put api('/application/settings', admin),
+        put api('/application/settings', admin, admin_mode: true),
           params: {
             slack_app_enabled: true,
             slack_app_id: 'SLACK_APP_ID',
@@ -95,7 +95,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
         let(:revocation_token) { 'AKDD345$%^^' }
 
         it 'updates secret_detection_token_revocation_url' do
-          put api('/application/settings', admin),
+          put api('/application/settings', admin, admin_mode: true),
             params: {
               secret_detection_token_revocation_enabled: true,
               secret_detection_token_revocation_url: revocation_url,
@@ -113,7 +113,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
 
       context 'missing secret_detection_token_revocation_url value' do
         it 'returns a blank parameter error message' do
-          put api('/application/settings', admin), params: { secret_detection_token_revocation_enabled: true }
+          put api('/application/settings', admin, admin_mode: true), params: { secret_detection_token_revocation_enabled: true }
 
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(json_response['error']).to include('secret_detection_token_revocation_url is missing, secret_detection_revocation_token_types_url is missing')
@@ -127,7 +127,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
 
     before do
       # Make sure the settings exist before the specs
-      get api("/application/settings", admin)
+      get api("/application/settings", admin, admin_mode: true)
     end
 
     context 'when the feature is not available' do
@@ -136,7 +136,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
       end
 
       it 'hides the attributes in the API' do
-        get api("/application/settings", admin)
+        get api("/application/settings", admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:ok)
         attribute_names.each do |attribute|
@@ -145,7 +145,11 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
       end
 
       it 'does not update application settings' do
-        expect { put api("/application/settings", admin), params: settings }
+        put api("/application/settings", admin, admin_mode: true), params: settings
+
+        expect(response).to have_gitlab_http_status(:ok)
+
+        expect { put api("/application/settings", admin, admin_mode: true), params: settings }
           .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
       end
     end
@@ -156,7 +160,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
       end
 
       it 'includes the attributes in the API' do
-        get api("/application/settings", admin)
+        get api("/application/settings", admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:ok)
         attribute_names.each do |attribute|
@@ -165,7 +169,7 @@ RSpec.describe API::Settings, 'EE Settings', feature_category: :shared do
       end
 
       it 'allows updating the settings' do
-        put api("/application/settings", admin), params: settings
+        put api("/application/settings", admin, admin_mode: true), params: settings
         expect(response).to have_gitlab_http_status(:ok)
 
         settings.each do |attribute, value|

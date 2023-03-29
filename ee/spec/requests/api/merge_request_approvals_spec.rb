@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::MergeRequestApprovals, feature_category: :source_code_management do
+RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be(:admin) { create(:user, :admin) }
@@ -118,7 +118,7 @@ RSpec.describe API::MergeRequestApprovals, feature_category: :source_code_manage
 
       context 'when admin' do
         it 'shows all approver groups' do
-          get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", admin)
+          get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", admin, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['approver_groups'].size).to eq(1)
@@ -282,7 +282,7 @@ RSpec.describe API::MergeRequestApprovals, feature_category: :source_code_manage
 
         it 'allows you to set approvals required' do
           expect do
-            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user), params: { approvals_required: 5 }
+            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user, admin_mode: true), params: { approvals_required: 5 }
           end.to change { merge_request.reload.approvals_before_merge }.from(nil).to(5)
 
           expect(response).to have_gitlab_http_status(:created)
@@ -297,7 +297,7 @@ RSpec.describe API::MergeRequestApprovals, feature_category: :source_code_manage
 
         it 'does not allow you to set approvals_before_merge' do
           expect do
-            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user), params: { approvals_required: 5 }
+            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user, admin_mode: true), params: { approvals_required: 5 }
           end.not_to change { merge_request.reload.approvals_before_merge }
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
