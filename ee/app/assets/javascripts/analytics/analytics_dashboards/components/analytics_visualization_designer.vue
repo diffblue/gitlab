@@ -2,9 +2,14 @@
 import { QueryBuilder } from '@cubejs-client/vue';
 import { GlButton } from '@gitlab/ui';
 
+import { createAlert } from '~/alert';
+
 import { createCubeJsApi } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { getPanelOptions } from 'ee/analytics/analytics_dashboards/utils/visualization_panel_options';
-import { PANEL_DISPLAY_TYPES } from '../constants';
+import {
+  PANEL_DISPLAY_TYPES,
+  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
+} from '../constants';
 
 import MeasureSelector from './visualization_designer/selectors/product_analytics/measure_selector.vue';
 import DimensionSelector from './visualization_designer/selectors/product_analytics/dimension_selector.vue';
@@ -33,6 +38,7 @@ export default {
         measureType: '',
         measureSubType: '',
       },
+      cubeJsErrorAlert: null,
       defaultTitle: '',
       selectedDisplayType: PANEL_DISPLAY_TYPES.DATA,
       selectedVisualizationType: '',
@@ -75,6 +81,18 @@ export default {
     });
   },
   methods: {
+    onQueryStatusChange({ error }) {
+      if (!error) {
+        this.cubeJsErrorAlert?.dismiss();
+        return;
+      }
+
+      this.cubeJsErrorAlert = createAlert({
+        message: I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
+        captureError: true,
+        error,
+      });
+    },
     onVizStateChange(state) {
       this.hasTimeDimension = Boolean(state.query.timeDimensions?.length);
     },
@@ -93,6 +111,7 @@ export default {
       this.selectDisplayType(PANEL_DISPLAY_TYPES.CODE);
     },
   },
+  I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR,
 };
 </script>
 
@@ -124,6 +143,7 @@ export default {
         :wrap-with-query-renderer="true"
         :disable-heuristics="true"
         data-testid="query-builder"
+        @queryStatus="onQueryStatusChange"
         @vizStateChange="onVizStateChange"
       >
         <template

@@ -17,6 +17,9 @@ export const I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION = s__(
   'ProductAnalytics|Identifies the sender of tracking events',
 );
 export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visualization Designer');
+export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR = s__(
+  'Analytics|An error occurred while loading data',
+);
 
 export const I18N_ALERT_NO_POINTER_TITLE = s__('Analytics|Custom dashboards');
 export const I18N_ALERT_NO_POINTER_BUTTON = s__('Analytics|Configure Dashboard Project');
