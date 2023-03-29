@@ -1,6 +1,6 @@
 import { GlLoadingIcon, GlEmptyState, GlBadge, GlPagination } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import CodeReviewAnalyticsApp from 'ee/analytics/code_review_analytics/components/app.vue';
 import FilterBar from 'ee/analytics/code_review_analytics/components/filter_bar.vue';
@@ -176,13 +176,15 @@ describe('CodeReviewAnalyticsApp component', () => {
   });
 
   describe('changing the page', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       vuexStore = createStore(
         { mergeRequests: { isLoading: false, pageInfo } },
         { showMrCount: () => true },
       );
       wrapper = createComponent(vuexStore);
-      wrapper.vm.currentPage = 2;
+
+      findPagination().vm.$emit('input', 2);
+      await nextTick();
     });
 
     it('should call the setPage action', () => {
@@ -190,7 +192,7 @@ describe('CodeReviewAnalyticsApp component', () => {
     });
 
     it('should call fetchMergeRequests action', () => {
-      expect(fetchMergeRequests).toHaveBeenCalled();
+      expect(fetchMergeRequests).toHaveBeenCalledTimes(2);
     });
   });
 });
