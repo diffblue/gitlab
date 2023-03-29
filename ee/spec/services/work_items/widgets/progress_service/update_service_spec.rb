@@ -15,7 +15,9 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
   end
 
   describe '#before_update_in_transaction' do
-    subject { described_class.new(widget: widget, current_user: user).before_update_in_transaction(params: params) }
+    let(:service) { described_class.new(widget: widget, current_user: user) }
+
+    subject { service.before_update_in_transaction(params: params) }
 
     shared_examples 'work item and progress is unchanged' do
       it 'does not change work item progress value' do
@@ -72,6 +74,22 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
             let(:params) { { progress: 20 } }
 
             it_behaves_like 'progress is updated', 20
+          end
+
+          context 'when widget does not exist in new type' do
+            let(:params) { {} }
+
+            before do
+              allow(service).to receive(:new_type_excludes_widget?).and_return(true)
+              work_item.progress = progress
+            end
+
+            it "removes the work item's progress" do
+              expect { subject }.to change { work_item.reload.progress }.from(progress).to(nil)
+
+              work_item_note = work_item.notes.last
+              expect(work_item_note.note).to eq("removed the progress **5**")
+            end
           end
 
           context 'when progress param is invalid' do

@@ -12,9 +12,9 @@ RSpec.describe WorkItems::Widgets::HealthStatusService::UpdateService, feature_c
   let(:params) { { health_status: new_health_status } }
 
   describe '#update' do
-    subject(:update_health_status) do
-      described_class.new(widget: widget, current_user: user).before_update_callback(params: params)
-    end
+    let(:service) { described_class.new(widget: widget, current_user: user) }
+
+    subject(:update_health_status) { service.before_update_callback(params: params) }
 
     before do
       stub_licensed_features(issuable_health_status: true)
@@ -51,6 +51,19 @@ RSpec.describe WorkItems::Widgets::HealthStatusService::UpdateService, feature_c
           update_health_status
 
           expect(work_item.health_status).to eq('on_track')
+        end
+
+        context 'when widget does not exist in new type' do
+          let(:params) { {} }
+
+          before do
+            allow(service).to receive(:new_type_excludes_widget?).and_return(true)
+            work_item.health_status = 'on_track'
+          end
+
+          it "resets the work item's health status" do
+            expect { subject }.to change { work_item.health_status }.from('on_track').to(nil)
+          end
         end
       end
     end

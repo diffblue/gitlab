@@ -10,7 +10,9 @@ RSpec.describe WorkItems::Widgets::WeightService::UpdateService, feature_categor
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Weight) } }
 
   describe '#update' do
-    subject { described_class.new(widget: widget, current_user: user).before_update_callback(params: params) }
+    let(:service) { described_class.new(widget: widget, current_user: user) }
+
+    subject { service.before_update_callback(params: params) }
 
     shared_examples 'weight is unchanged' do
       it 'does not change work item weight value' do
@@ -59,6 +61,20 @@ RSpec.describe WorkItems::Widgets::WeightService::UpdateService, feature_categor
           let(:params) { {} }
 
           it_behaves_like 'weight is unchanged'
+        end
+
+        context 'when widget does not exist in new type' do
+          let(:params) { {} }
+
+          before do
+            allow(service).to receive(:new_type_excludes_widget?).and_return(true)
+          end
+
+          it "removes the work item's weight" do
+            subject
+
+            expect(work_item.weight).to eq(nil)
+          end
         end
       end
     end
