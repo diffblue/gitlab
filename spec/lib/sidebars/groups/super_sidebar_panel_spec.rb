@@ -34,10 +34,9 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
         Sidebars::Groups::SuperSidebarMenus::MonitorMenu,
         Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
         Sidebars::Groups::Menus::CiCdMenu,
-        (Sidebars::Groups::Menus::SecurityComplianceMenu if Gitlab.ee?),
         Sidebars::UncategorizedMenu,
         Sidebars::Groups::Menus::SettingsMenu
-      ].compact
+      ]
     end
 
     it "is exposed as a renderable menu" do
