@@ -3,15 +3,15 @@
 module Sidebars
   module Projects
     module SuperSidebarMenus
-      class OperationsMenu < ::Sidebars::Menu
+      class SecureMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('Navigation|Operate')
+          s_('Navigation|Secure')
         end
 
         override :sprite_icon
         def sprite_icon
-          'deployments'
+          'shield'
         end
       end
     end

@@ -3,15 +3,15 @@
 module Sidebars
   module Projects
     module SuperSidebarMenus
-      class OperationsMenu < ::Sidebars::Menu
+      class AnalyzeMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('Navigation|Operate')
+          s_('Navigation|Analyze')
         end
 
         override :sprite_icon
         def sprite_icon
-          'deployments'
+          'chart'
         end
       end
     end

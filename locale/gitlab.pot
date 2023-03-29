@@ -28516,6 +28516,15 @@ msgstr ""
 msgid "Navigation|Admin"
 msgstr ""
 
+msgid "Navigation|Analyze"
+msgstr ""
+
+msgid "Navigation|Build"
+msgstr ""
+
+msgid "Navigation|Code"
+msgstr ""
+
 msgid "Navigation|Context navigation"
 msgstr ""
 
@@ -28534,10 +28543,22 @@ msgstr ""
 msgid "Navigation|Groups you visit often will appear here."
 msgstr ""
 
+msgid "Navigation|Manage"
+msgstr ""
+
+msgid "Navigation|Monitor"
+msgstr ""
+
 msgid "Navigation|No group matches found"
 msgstr ""
 
 msgid "Navigation|No project matches found"
+msgstr ""
+
+msgid "Navigation|Operate"
+msgstr ""
+
+msgid "Navigation|Plan"
 msgstr ""
 
 msgid "Navigation|Projects"
@@ -28550,6 +28571,9 @@ msgid "Navigation|Retrieving search results"
 msgstr ""
 
 msgid "Navigation|Search for projects or groups"
+msgstr ""
+
+msgid "Navigation|Secure"
 msgstr ""
 
 msgid "Navigation|Switch to..."
