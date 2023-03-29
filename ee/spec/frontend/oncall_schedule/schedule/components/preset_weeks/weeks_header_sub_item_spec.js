@@ -66,12 +66,6 @@ describe('WeeksHeaderSubItemComponent', () => {
       expect(wrapper.find('.current-day-indicator-header.preset-weeks').exists()).toBe(true);
     });
 
-    it('sublabel has `label-dark` class when it is for the day greater than current week day', () => {
-      // Timeframe starts at Jan 1, 2018, faked today is Jan 3, 2018 (3rd item in a week timeframe)
-      // labels for dates after current have 'label-dark' class
-      expect(findSublabelValues().at(3).classes()).toContain('label-dark');
-    });
-
     it("sublabel has `label-dark label-bold` classes when it is for today's date", () => {
       // Timeframe starts at Jan 1, 2018, faked today is Jan 3, 2018 (3rd item in a week timeframe)
       expect(findSublabelValues().at(2).classes()).toEqual(

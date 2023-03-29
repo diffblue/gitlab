@@ -21362,6 +21362,9 @@ msgstr ""
 msgid "Hostname used in private commit emails. %{learn_more}"
 msgstr ""
 
+msgid "Hour"
+msgstr ""
+
 msgid "Hour (UTC)"
 msgstr ""
 
@@ -29877,7 +29880,7 @@ msgstr ""
 msgid "OnCallSchedules|Create on-call schedules in GitLab"
 msgstr ""
 
-msgid "OnCallSchedules|Currently no rotation."
+msgid "OnCallSchedules|Currently no rotation"
 msgstr ""
 
 msgid "OnCallSchedules|Delete rotation"

@@ -53,7 +53,11 @@ export default {
 
 <template>
   <div class="timeline-section clearfix">
-    <span class="timeline-header-blank"></span>
+    <div>
+      <span class="timeline-header-label gl-text-gray-700">{{
+        presetIsDay ? __('Hour') : __('Date')
+      }}</span>
+    </div>
     <div
       ref="timelineHeaderWrapper"
       v-gl-resize-observer="updateShiftStyles"
