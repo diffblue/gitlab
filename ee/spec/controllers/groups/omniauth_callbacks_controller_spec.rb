@@ -317,8 +317,9 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
 
     describe 'identity verification', feature_category: :insider_threat do
       before do
-        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-          .to receive(:identity_verification_enabled?).and_return(true)
+        allow_next_instance_of(User) do |user|
+          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        end
       end
 
       shared_examples 'identity verification not required' do

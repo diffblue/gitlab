@@ -12,8 +12,9 @@ RSpec.describe SessionsController, feature_category: :system_access do
 
     context 'when identity verification is turned off' do
       before do
-        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-          .to receive(:identity_verification_enabled?).with(user.email).and_return(false)
+        allow_next_found_instance_of(User) do |user|
+          allow(user).to receive(:identity_verification_enabled?).and_return(false)
+        end
       end
 
       it { is_expected.to redirect_to(root_path) }
@@ -27,8 +28,9 @@ RSpec.describe SessionsController, feature_category: :system_access do
 
     context 'when identity verification is turned on' do
       before do
-        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
-          .to receive(:identity_verification_enabled?).with(user.email).and_return(true)
+        allow_next_found_instance_of(User) do |user|
+          allow(user).to receive(:identity_verification_enabled?).and_return(true)
+        end
       end
 
       it { is_expected.to redirect_to(identity_verification_path) }
