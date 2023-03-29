@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Users, feature_category: :user_profile do
+RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
 
   context 'updating name' do
     shared_examples_for 'admin can update the name of a user' do
       it 'updates the user with new name' do
-        put api("/users/#{user.id}", admin), params: { name: 'New Name' }
+        put api("/users/#{user.id}", admin, admin_mode: true), params: { name: 'New Name' }
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['name']).to eq('New Name')
@@ -71,7 +71,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
     describe "PUT /users/:id" do
       it "creates audit event when updating user with new password" do
-        put api("/users/#{user.id}", admin), params: { password: User.random_password }
+        put api("/users/#{user.id}", admin, admin_mode: true), params: { password: User.random_password }
 
         expect(AuditEvent.count).to eq(1)
       end
@@ -80,7 +80,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
     describe 'POST /users/:id/block' do
       it 'creates audit event when blocking user' do
         expect do
-          post api("/users/#{user.id}/block", admin)
+          post api("/users/#{user.id}/block", admin, admin_mode: true)
         end.to change { AuditEvent.count }.by(1)
       end
     end
@@ -100,7 +100,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
         key = attributes_for(:key)
 
         expect do
-          post api("/users/#{user.id}/keys", admin), params: key
+          post api("/users/#{user.id}/keys", admin, admin_mode: true), params: key
         end.to change { AuditEvent.count }.by(1)
       end
     end
@@ -111,7 +111,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
       context 'when user is an admin' do
         it "updates shared_runners_minutes_limit" do
           expect do
-            put api("/users/#{user.id}", admin), params: { shared_runners_minutes_limit: 133 }
+            put api("/users/#{user.id}", admin, admin_mode: true), params: { shared_runners_minutes_limit: 133 }
           end.to change { user.reload.shared_runners_minutes_limit }
                    .from(nil).to(133)
 
@@ -141,7 +141,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
         it "updates auditor status for the user" do
           expect do
-            put api("/users/#{user.id}", admin), params: { auditor: true }
+            put api("/users/#{user.id}", admin, admin_mode: true), params: { auditor: true }
           end.to change { user.reload.auditor }
                    .from(false)
                    .to(true)
@@ -157,7 +157,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
           it "cannot update auditor status for the user" do
             expect do
-              put api("/users/#{user.id}", admin), params: { auditor: true }
+              put api("/users/#{user.id}", admin, admin_mode: true), params: { auditor: true }
             end.not_to change { user.reload.auditor }
 
             expect(response).to have_gitlab_http_status(:bad_request)
@@ -188,7 +188,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
         it "creates user with auditor status" do
           optional_attributes = { auditor: true }
-          post api("/users", admin), params: attributes_for(:user).merge(optional_attributes)
+          post api("/users", admin, admin_mode: true), params: attributes_for(:user).merge(optional_attributes)
 
           expect(response).to have_gitlab_http_status(:created)
           expect(json_response['is_auditor']).to eq(true)
@@ -201,7 +201,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
           it "cannot create user with auditor status" do
             optional_attributes = { auditor: true }
-            post api("/users", admin), params: attributes_for(:user).merge(optional_attributes)
+            post api("/users", admin, admin_mode: true), params: attributes_for(:user).merge(optional_attributes)
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(json_response['is_auditor']).to be_nil
@@ -232,7 +232,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
     let(:saml_provider) { create(:saml_provider) }
 
     it 'creates user with new identity' do
-      post api("/users", admin), params: attributes_for(:user, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id)
+      post api("/users", admin, admin_mode: true), params: attributes_for(:user, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id)
 
       expect(response).to have_gitlab_http_status(:created)
       expect(json_response['identities'].first['extern_uid']).to eq('67890')
@@ -241,7 +241,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
     end
 
     it 'creates user with new identity without sending reset password email' do
-      post api("/users", admin), params: attributes_for(:user, reset_password: false, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id)
+      post api("/users", admin, admin_mode: true), params: attributes_for(:user, reset_password: false, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id)
 
       expect(response).to have_gitlab_http_status(:created)
 
@@ -250,7 +250,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
     end
 
     it 'updates user with new identity' do
-      put api("/users/#{user.id}", admin), params: { provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id }
+      put api("/users/#{user.id}", admin, admin_mode: true), params: { provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id }
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['identities'].first['extern_uid']).to eq('67890')
@@ -259,20 +259,20 @@ RSpec.describe API::Users, feature_category: :user_profile do
     end
 
     it 'fails to update user with nonexistent identity' do
-      put api("/users/#{user.id}", admin), params: { provider: 'group_saml', extern_uid: '67890', group_id_for_saml: 15 }
+      put api("/users/#{user.id}", admin, admin_mode: true), params: { provider: 'group_saml', extern_uid: '67890', group_id_for_saml: 15 }
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response['message']).to eq({ "identities.saml_provider_id" => ["can't be blank"] })
     end
 
     it 'fails to update user with nonexistent provider' do
-      put api("/users/#{user.id}", admin), params: { provider: nil, extern_uid: '67890', group_id_for_saml: saml_provider.group.id }
+      put api("/users/#{user.id}", admin, admin_mode: true), params: { provider: nil, extern_uid: '67890', group_id_for_saml: saml_provider.group.id }
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response['message']).to eq({ "identities.provider" => ["can't be blank"] })
     end
 
     it 'contains provisioned_by_group_id parameter' do
       user.update!(provisioned_by_group: saml_provider.group)
-      get api("/users/#{user.id}", admin)
+      get api("/users/#{user.id}", admin, admin_mode: true)
 
       expect(json_response).to have_key('provisioned_by_group_id')
     end
@@ -306,7 +306,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
           context 'and user is not a trial user' do
             it 'contains plan and trial' do
-              get api("/users/#{user.id}", admin)
+              get api("/users/#{user.id}", admin, admin_mode: true)
 
               expect(json_response).to include('plan' => 'ultimate', 'trial' => false)
             end
@@ -318,14 +318,14 @@ RSpec.describe API::Users, feature_category: :user_profile do
             end
 
             it 'contains plan and trial' do
-              get api("/users/#{user.id}", admin)
+              get api("/users/#{user.id}", admin, admin_mode: true)
 
               expect(json_response).to include('plan' => 'ultimate', 'trial' => true)
             end
           end
 
           it 'contains is_auditor parameter' do
-            get api("/users/#{user.id}", admin)
+            get api("/users/#{user.id}", admin, admin_mode: true)
 
             expect(json_response).to have_key('is_auditor')
           end
@@ -333,7 +333,7 @@ RSpec.describe API::Users, feature_category: :user_profile do
 
         context 'and user has no plan' do
           it 'returns `nil` for both plan and trial' do
-            get api("/users/#{user.id}", admin)
+            get api("/users/#{user.id}", admin, admin_mode: true)
 
             expect(json_response).to include('plan' => nil, 'trial' => false)
           end
