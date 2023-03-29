@@ -60,6 +60,13 @@ export default {
     isAlwaysPerformDelayedDeletionFeatureFlagEnabled() {
       return this.glFeatures.alwaysPerformDelayedDeletion;
     },
+    helpText() {
+      if (this.isAlwaysPerformDelayedDeletionFeatureFlagEnabled) {
+        return this.$options.i18n.helpTextFeatureFlagEnabled;
+      }
+
+      return this.$options.i18n.helpText;
+    },
   },
   i18n: I18N_DELETION_PROTECTION,
   selectOptions: [
@@ -74,7 +81,7 @@ export default {
 <template>
   <gl-form-group :label="$options.i18n.heading">
     <p class="text-muted" data-testid="help-text">
-      <span>{{ $options.i18n.helpText }}</span>
+      <span>{{ helpText }}</span>
       <gl-link :href="$options.helpPath" target="_blank">{{ $options.i18n.learnMore }}</gl-link>
     </p>
     <div
