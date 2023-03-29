@@ -10,7 +10,7 @@ import EmptyState from 'ee/groups/settings/compliance_frameworks/components/tabl
 import TableActions from 'ee/groups/settings/compliance_frameworks/components/table_actions.vue';
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
 import { PIPELINE_CONFIGURATION_PATH_FORMAT } from 'ee/groups/settings/compliance_frameworks/constants';
-import getComplianceFrameworkQuery from 'ee/groups/settings/compliance_frameworks/graphql/queries/get_compliance_framework.query.graphql';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import updateComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql//queries/update_compliance_framework.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';

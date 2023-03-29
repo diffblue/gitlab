@@ -7,7 +7,7 @@ import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_f
 import FormStatus from 'ee/groups/settings/compliance_frameworks/components/form_status.vue';
 import SharedForm from 'ee/groups/settings/compliance_frameworks/components/shared_form.vue';
 import { FETCH_ERROR, SAVE_ERROR } from 'ee/groups/settings/compliance_frameworks/constants';
-import getComplianceFrameworkQuery from 'ee/groups/settings/compliance_frameworks/graphql/queries/get_compliance_framework.query.graphql';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import updateComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/queries/update_compliance_framework.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';

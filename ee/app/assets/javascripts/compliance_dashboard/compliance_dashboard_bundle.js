@@ -10,7 +10,12 @@ import ReportsApp from './components/reports_app.vue';
 export default () => {
   const el = document.getElementById('js-compliance-report');
 
-  const { basePath, mergeCommitsCsvExportPath, groupPath } = el.dataset;
+  const {
+    basePath,
+    mergeCommitsCsvExportPath,
+    groupPath,
+    newGroupComplianceFrameworkPath,
+  } = el.dataset;
 
   Vue.use(VueApollo);
   Vue.use(VueRouter);
@@ -21,6 +26,7 @@ export default () => {
 
   const router = createRouter(basePath, {
     mergeCommitsCsvExportPath,
+    newGroupComplianceFrameworkPath,
     groupPath,
   });
 
@@ -33,6 +39,7 @@ export default () => {
       createElement(ReportsApp, {
         props: {
           mergeCommitsCsvExportPath,
+          newGroupComplianceFrameworkPath,
         },
       }),
   });

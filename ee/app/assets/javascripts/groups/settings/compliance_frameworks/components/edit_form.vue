@@ -4,8 +4,8 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { __ } from '~/locale';
 
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { FETCH_ERROR, SAVE_ERROR } from '../constants';
-import getComplianceFrameworkQuery from '../graphql/queries/get_compliance_framework.query.graphql';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
 import { getSubmissionParams, initialiseFormData } from '../utils';
 import FormStatus from './form_status.vue';
