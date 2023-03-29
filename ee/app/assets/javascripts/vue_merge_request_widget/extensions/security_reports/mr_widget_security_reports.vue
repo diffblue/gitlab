@@ -559,6 +559,10 @@ export default {
     hideModal() {
       this.$root.$emit(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);
     },
+
+    clearModalData() {
+      this.modalData = null;
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -625,6 +629,7 @@ export default {
         @dismissVulnerability="dismissFinding"
         @showDismissalDeleteButtons="showDismissalDeleteButtons"
         @hideDismissalDeleteButtons="hideDismissalDeleteButtons"
+        @hidden="clearModalData"
       />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"

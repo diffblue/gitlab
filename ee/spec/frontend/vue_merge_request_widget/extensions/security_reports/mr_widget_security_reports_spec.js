@@ -491,6 +491,17 @@ describe('MR Widget Security Reports', () => {
       expect(findModal().exists()).toBe(false);
     });
 
+    it('clears modal data when the modal is closed', async () => {
+      await createComponentExpandWidgetAndOpenModal();
+
+      expect(findModal().props('modal')).not.toBe(null);
+
+      findModal().vm.$emit('hidden');
+      await nextTick();
+
+      expect(findModal().exists()).toBe(false);
+    });
+
     it('renders the modal when the finding is clicked', async () => {
       await createComponentExpandWidgetAndOpenModal({
         findingHandler: [

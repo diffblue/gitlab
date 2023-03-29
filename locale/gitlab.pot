@@ -4762,6 +4762,9 @@ msgstr ""
 msgid "Analytics|Add to Dashboard"
 msgstr ""
 
+msgid "Analytics|An error occurred while loading data"
+msgstr ""
+
 msgid "Analytics|An error occurred while loading the %{visualizationTitle} visualization."
 msgstr ""
 
