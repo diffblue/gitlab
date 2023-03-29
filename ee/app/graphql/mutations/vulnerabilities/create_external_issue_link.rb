@@ -41,10 +41,6 @@ module Mutations
       def create_external_issue_link(vulnerability, link_type, external_tracker)
         ::VulnerabilityExternalIssueLinks::CreateService.new(current_user, vulnerability, external_tracker, link_type: link_type).execute
       end
-
-      def find_object(id:)
-        GitlabSchema.find_by_gid(id)
-      end
     end
   end
 end

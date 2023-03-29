@@ -28,12 +28,6 @@ module Mutations
             errors: response.errors
           }
         end
-
-        private
-
-        def find_object(id:)
-          GitlabSchema.find_by_gid(id)
-        end
       end
     end
   end

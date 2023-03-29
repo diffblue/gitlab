@@ -5,8 +5,6 @@ module Mutations
     class Update < BaseMutation
       graphql_name 'DastScannerProfileUpdate'
 
-      include FindsProject
-
       ScannerProfileID = ::Types::GlobalIDType[::DastScannerProfile]
 
       field :id, ScannerProfileID,
@@ -62,7 +60,7 @@ module Mutations
       authorize :create_on_demand_dast_scan
 
       def resolve(id:, full_path: nil, **service_args)
-        dast_scanner_profile = authorized_find!(id)
+        dast_scanner_profile = authorized_find!(id: id)
 
         params = { **service_args, id: dast_scanner_profile.id }
         service = ::AppSec::Dast::ScannerProfiles::UpdateService.new(project: dast_scanner_profile.project, current_user: current_user, params: params)
@@ -73,12 +71,6 @@ module Mutations
         else
           { errors: result.errors }
         end
-      end
-
-      private
-
-      def find_object(id)
-        GitlabSchema.find_by_gid(id)
       end
     end
   end

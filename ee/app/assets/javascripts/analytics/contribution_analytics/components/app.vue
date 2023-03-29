@@ -1,5 +1,6 @@
 <script>
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
 import { filterIssues, filterMergeRequests, filterPushes } from '../utils';
 import { MAX_REQUEST_COUNT } from '../constants';
@@ -60,9 +61,6 @@ export default {
     await this.fetchContributions();
   },
   methods: {
-    handleError() {
-      this.loadError = true;
-    },
     async fetchContributions(endCursor = '') {
       this.isLoading = true;
 
@@ -85,8 +83,9 @@ export default {
         if (this.requestCount < MAX_REQUEST_COUNT && pageInfo?.hasNextPage) {
           await this.fetchContributions(pageInfo.endCursor);
         }
-      } catch {
-        this.handleError();
+      } catch (error) {
+        Sentry.captureException(error);
+        this.loadError = true;
       } finally {
         this.isLoading = false;
       }
