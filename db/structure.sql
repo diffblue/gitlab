@@ -21346,7 +21346,8 @@ CREATE TABLE protected_environment_deploy_access_levels (
     protected_environment_id integer NOT NULL,
     user_id integer,
     group_id integer,
-    group_inheritance_type smallint DEFAULT 0 NOT NULL
+    group_inheritance_type smallint DEFAULT 0 NOT NULL,
+    CONSTRAINT check_deploy_access_levels_user_group_access_level_any_not_null CHECK ((num_nonnulls(user_id, group_id, access_level) = 1))
 );
 
 CREATE SEQUENCE protected_environment_deploy_access_levels_id_seq
