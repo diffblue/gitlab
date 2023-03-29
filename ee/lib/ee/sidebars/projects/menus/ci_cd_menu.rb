@@ -36,6 +36,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Test cases'),
               link: project_quality_test_cases_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::BuildMenu,
               container_html_options: { class: 'shortcuts-test-cases' },
               active_routes: { controller: :test_cases },
               item_id: :test_cases
