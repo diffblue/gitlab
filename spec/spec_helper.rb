@@ -377,11 +377,7 @@ RSpec.configure do |config|
       ./ee/spec/requests/api/internal/upcoming_reconciliations_spec.rb
       ./ee/spec/requests/api/invitations_spec.rb
       ./ee/spec/requests/api/license_spec.rb
-      ./ee/spec/requests/api/merge_request_approvals_spec.rb
-      ./ee/spec/requests/api/namespaces_spec.rb
       ./ee/spec/requests/api/notes_spec.rb
-      ./ee/spec/requests/api/settings_spec.rb
-      ./ee/spec/requests/api/users_spec.rb
       ./ee/spec/support/shared_examples/requests/api/project_approval_rules_api_shared_examples.rb
     ]
 
