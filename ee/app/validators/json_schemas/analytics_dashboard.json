@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "#/definitions/ProductAnalyticsDashboard",
+  "$ref": "#/definitions/AnalyticsDashboard",
   "definitions": {
     "Welcome6": {
       "type": "object",
@@ -28,7 +28,7 @@
         "version",
         "panels"
       ],
-      "title": "ProductAnalyticsDashboard"
+      "title": "AnalyticsDashboard"
     },
     "Panel": {
       "type": "object",
@@ -45,6 +45,9 @@
         },
         "queryOverrides": {
           "$ref": "#/definitions/QueryOverrides"
+        },
+        "options": {
+          "$ref": "#/definitions/PanelOptions"
         }
       },
       "required": [
@@ -91,6 +94,19 @@
         "yPos"
       ],
       "title": "GridAttributes"
+    },
+    "PanelOptions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "decimalPlaces": {
+          "type": "integer"
+        }
+      },
+      "required": [
+
+      ],
+      "title": "PanelOptions"
     },
     "QueryOverrides": {
       "type": "object",

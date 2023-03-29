@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "#/definitions/ProductAnalyticsVisualization",
+  "$ref": "#/definitions/AnalyticsVisualization",
   "definitions": {
     "Welcome7": {
       "type": "object",
@@ -30,7 +30,7 @@
         "type",
         "version"
       ],
-      "title": "ProductAnalyticsVisualization"
+      "title": "AnalyticsVisualization"
     },
     "Data": {
       "type": "object",
@@ -92,6 +92,9 @@
         },
         "type": {
           "type": "string"
+        },
+        "min": {
+          "type": "integer"
         }
       },
       "required": [
