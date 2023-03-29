@@ -3,15 +3,15 @@
 module Sidebars
   module Projects
     module SuperSidebarMenus
-      class PlanMenu < ::Sidebars::Menu
+      class BuildMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Plan')
+          s_('SidebarNavigation|Build')
         end
 
         override :sprite_icon
         def sprite_icon
-          'planning'
+          'rocket'
         end
       end
     end

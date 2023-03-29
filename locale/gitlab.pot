@@ -40788,6 +40788,30 @@ msgstr ""
 msgid "Side-by-side"
 msgstr ""
 
+msgid "SidebarNavigation|Analyze"
+msgstr ""
+
+msgid "SidebarNavigation|Build"
+msgstr ""
+
+msgid "SidebarNavigation|Code"
+msgstr ""
+
+msgid "SidebarNavigation|Manage"
+msgstr ""
+
+msgid "SidebarNavigation|Monitor"
+msgstr ""
+
+msgid "SidebarNavigation|Operate"
+msgstr ""
+
+msgid "SidebarNavigation|Plan"
+msgstr ""
+
+msgid "SidebarNavigation|Secure"
+msgstr ""
+
 msgid "Sidebar|%{name}: %{value}"
 msgstr ""
 

@@ -3,15 +3,15 @@
 module Sidebars
   module Projects
     module SuperSidebarMenus
-      class PlanMenu < ::Sidebars::Menu
+      class CodeMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Plan')
+          s_('SidebarNavigation|Code')
         end
 
         override :sprite_icon
         def sprite_icon
-          'planning'
+          'code'
         end
       end
     end
