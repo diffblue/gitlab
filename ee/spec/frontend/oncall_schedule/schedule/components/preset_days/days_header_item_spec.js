@@ -29,11 +29,11 @@ describe('ee/oncall_schedules/components/schedule/components/preset_days/days_he
     }
   });
 
-  const findHeaderLabel = () => wrapper.findByTestId('timeline-header-label');
+  const findHeaderItem = () => wrapper.findByTestId('timeline-header-item');
 
-  describe('timelineHeaderLabel', () => {
-    it('returns string containing Year, Month and Date for the current timeframe item', () => {
-      expect(findHeaderLabel().text()).toBe('January 1, 2018');
+  describe('timelineHeaderStyles', () => {
+    it('returns string containing width calculated based on timeline cell width', () => {
+      expect(findHeaderItem().attributes('style')).toContain('width: calc(');
     });
   });
 });

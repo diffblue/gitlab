@@ -31,14 +31,7 @@ export default {
       return lastDayOfCurrentWeek;
     },
     timelineHeaderLabel() {
-      const timeframeItemMonth = this.timeframeItem.getMonth();
-      const timeframeItemDate = this.timeframeItem.getDate();
-
-      if (this.timeframeIndex === 0 || (timeframeItemMonth === 0 && timeframeItemDate <= 7)) {
-        return `${monthInWords(this.timeframeItem, true)} ${timeframeItemDate}`;
-      }
-
-      return `${monthInWords(this.timeframeItem, true)} ${timeframeItemDate}`;
+      return monthInWords(this.timeframeItem, true);
     },
     timelineHeaderClass() {
       const currentDateTime = this.$options.currentDate.getTime();
@@ -66,7 +59,7 @@ export default {
   <span class="timeline-header-item" :style="timelineHeaderStyles">
     <div
       :class="timelineHeaderClass"
-      class="item-label label-dark gl-pl-5 gl-py-4"
+      class="gl-font-weight-bold gl-text-gray-500 gl-pl-6"
       data-testid="timeline-header-label"
     >
       {{ timelineHeaderLabel }}

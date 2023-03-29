@@ -11,7 +11,7 @@ export const SHIFT_WIDTHS = {
   xs: 20,
 };
 
-const ROTATION_CENTER_CLASS = 'gl-display-flex gl-justify-content-center gl-align-items-center';
+const ROTATION_CENTER_CLASS = 'gl-rounded-base gl-display-flex gl-align-items-center';
 export const TIME_DATE_FORMAT = 'mmmm d, yyyy, HH:MM ("UTC:" o)';
 
 export default {
@@ -84,15 +84,27 @@ export default {
 </script>
 
 <template>
-  <div class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1" :style="containerStyle">
+  <div
+    class="rotation-asignee-container gl-absolute gl-h-7 gl-mt-3 gl-pr-1"
+    :style="containerStyle"
+  >
     <div
       :id="rotationAssigneeUniqueID"
       class="gl-h-6"
       :style="backgroundStyle"
-      :class="$options.ROTATION_CENTER_CLASS"
+      :class="[
+        $options.ROTATION_CENTER_CLASS,
+        { 'gl-justify-content-center': hasRotationMobileViewText },
+      ]"
       data-testid="rotation-assignee"
     >
-      <div :class="[textClass, $options.ROTATION_CENTER_CLASS]">
+      <div
+        :class="[
+          textClass,
+          $options.ROTATION_CENTER_CLASS,
+          { 'gl-pl-2': !hasRotationMobileViewText },
+        ]"
+      >
         <gl-avatar v-if="!hasRotationMobileViewAvatar" :src="assignee.user.avatarUrl" :size="16" />
         <span
           v-if="!hasRotationMobileViewText"
@@ -102,7 +114,11 @@ export default {
         >
       </div>
     </div>
-    <gl-popover :target="rotationAssigneeUniqueID" :title="assignee.user.username" placement="top">
+    <gl-popover
+      :target="rotationAssigneeUniqueID"
+      :title="assignee.user.username"
+      placement="right"
+    >
       <p class="gl-m-0" data-testid="rotation-assignee-starts-at">
         {{ startsAtString }}
       </p>

@@ -12,15 +12,27 @@ export default {
       required: true,
     },
   },
+  methods: {
+    getSubItemValueClass(hour) {
+      // Show dark color text only for the current hour
+      const currentDate = new Date();
+      if (hour - 1 !== currentDate.getHours()) {
+        return '';
+      }
+
+      return 'label-dark label-bold';
+    },
+  },
 };
 </script>
 
 <template>
-  <div class="item-sublabel" data-testid="day-item-sublabel">
+  <div class="item-sublabel gl-pb-3" data-testid="day-item-sublabel">
     <span
       v-for="hour in $options.HOURS_IN_DAY"
       :key="hour"
       ref="dailyHourCell"
+      :class="getSubItemValueClass(hour)"
       class="sublabel-value"
       data-testid="sublabel-value"
       >{{ hour - 1 }}</span

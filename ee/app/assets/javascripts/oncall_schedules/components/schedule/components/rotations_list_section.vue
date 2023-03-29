@@ -18,7 +18,7 @@ import CurrentDayIndicator from './current_day_indicator.vue';
 export const i18n = {
   editRotationLabel: s__('OnCallSchedules|Edit rotation'),
   deleteRotationLabel: s__('OnCallSchedules|Delete rotation'),
-  addRotationLabel: s__('OnCallSchedules|Currently no rotation.'),
+  addRotationLabel: s__('OnCallSchedules|Currently no rotation'),
 };
 
 export default {
@@ -90,14 +90,14 @@ export default {
 <template>
   <div class="list-section">
     <gl-loading-icon v-if="loading" size="sm" />
-    <div v-else-if="rotations.length === 0 && !loading" class="gl-clearfix">
+    <div v-else-if="rotations.length === 0 && !loading" class="gl-clearfix gl-border-t">
       <span
-        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center gl-pl-3"
+        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
       >
-        <span class="gl-text-truncate">{{ $options.i18n.addRotationLabel }}</span>
+        <span class="gl-text-truncate gl-text-gray-700">{{ $options.i18n.addRotationLabel }}</span>
       </span>
       <span
-        class="timeline-cell gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-overflow-hidden"
+        class="timeline-cell gl-overflow-hidden"
         :style="timelineStyles"
         data-testid="empty-timeline-cell"
       >
@@ -109,13 +109,13 @@ export default {
       </span>
     </div>
     <div v-else>
-      <div v-for="rotation in rotations" :key="rotation.id" class="gl-clearfix">
+      <div v-for="rotation in rotations" :key="rotation.id" class="gl-clearfix gl-border-t">
         <span
-          class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center gl-pl-3"
+          class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
         >
           <span
             v-gl-tooltip="{ boundary: 'viewport', title: rotation.name }"
-            class="gl-text-truncate"
+            class="gl-text-truncate gl-text-gray-700"
             :aria-label="rotation.name"
             :data-testid="`rotation-name-${rotation.id}`"
             >{{ rotation.name }}</span
@@ -146,7 +146,7 @@ export default {
           </gl-button-group>
         </span>
         <span
-          class="timeline-cell gl-border-b-solid gl-border-b-gray-100 gl-border-b-1 gl-overflow-hidden"
+          class="timeline-cell gl-overflow-hidden"
           :style="timelineStyles"
           data-testid="timeline-cell"
         >

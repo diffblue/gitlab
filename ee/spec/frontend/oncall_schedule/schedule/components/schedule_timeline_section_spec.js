@@ -35,8 +35,8 @@ describe('TimelineSectionComponent', () => {
     expect(wrapper.html()).toContain('timeline-section');
   });
 
-  it('renders empty header cell element with class `timeline-header-blank`', () => {
-    expect(wrapper.find('.timeline-header-blank').exists()).toBe(true);
+  it('renders empty header cell element with class `timeline-header-label`', () => {
+    expect(wrapper.find('.timeline-header-label').exists()).toBe(true);
   });
 
   it('renders weeks header items based on timeframe data', () => {

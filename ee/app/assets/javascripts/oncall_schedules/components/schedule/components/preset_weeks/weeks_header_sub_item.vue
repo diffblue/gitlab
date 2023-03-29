@@ -30,12 +30,11 @@ export default {
   },
   methods: {
     getSubItemValueClass(subItem) {
-      // Show dark color text only for current & upcoming dates
+      // Show dark color text only for the current date
       if (subItem.getTime() === this.$options.currentDate.getTime()) {
         return 'label-dark label-bold';
-      } else if (subItem > this.$options.currentDate) {
-        return 'label-dark';
       }
+
       return '';
     },
     getSubItemValue(subItem) {
@@ -46,7 +45,7 @@ export default {
 </script>
 
 <template>
-  <div class="item-sublabel" data-testid="week-item-sublabel">
+  <div class="item-sublabel week-item-sublabel gl-pb-3" data-testid="week-item-sublabel">
     <span
       v-for="(subItem, index) in headerSubItems"
       :key="index"

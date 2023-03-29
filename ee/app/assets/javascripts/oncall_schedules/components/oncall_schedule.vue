@@ -281,7 +281,7 @@ export default {
           </div>
           <gl-disclosure-dropdown
             v-if="userCanCreateSchedule"
-            v-gl-tooltip
+            v-gl-tooltip.hover
             :title="$options.i18n.moreActions"
             toggle-class="gl-mr-2 gl-py-2!"
             class="gl-border-r"
@@ -305,7 +305,7 @@ export default {
             />
           </gl-disclosure-dropdown>
           <gl-button
-            v-gl-tooltip
+            v-gl-tooltip.hover
             :title="scheduleVisibleAriaLabel"
             :aria-label="scheduleVisibleAriaLabel"
             category="tertiary"
@@ -365,7 +365,7 @@ export default {
 
         <hr class="gl-my-3" />
 
-        <div class="schedule-shell gl-mb-3" data-testid="rotations-body">
+        <div class="schedule-shell" data-testid="rotations-body">
           <schedule-timeline-section :preset-type="presetType" :timeframe="timeframe" />
           <rotations-list-section
             :preset-type="presetType"
