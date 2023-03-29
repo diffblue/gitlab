@@ -1,8 +1,8 @@
 <script>
 import { GlTable, GlLink } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { namespaceContainerRegistryPopoverContent } from '../constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import NumberToHumanSize from './number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
@@ -58,17 +58,30 @@ export default {
     { key: 'snippets', label: __('Snippets') },
     { key: 'buildArtifacts', label: __('Job artifacts') },
     { key: 'pipelineArtifacts', label: __('Pipeline artifacts') },
-    { key: 'containerRegistry', label: __('Container Registry') },
     { key: 'lfsObjects', label: __('LFS') },
     { key: 'packages', label: __('Packages') },
     { key: 'wiki', label: __('Wiki') },
+    {
+      key: 'containerRegistry',
+      label: __('Container Registry'),
+      thClass: 'gl-border-l!',
+      tdClass: 'gl-border-l!',
+    },
   ].map((f) => ({
     ...f,
-    tdClass: 'gl-px-3!',
-    thClass: 'gl-px-3!',
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    thClass: `${f.thClass ?? ''} gl-px-3!`,
+    // eslint-disable-next-line @gitlab/require-i18n-strings
+    tdClass: `${f.tdClass ?? ''} gl-px-3!`,
   })),
-  i18n: {
-    namespaceContainerRegistryPopoverContent,
+  containerRegistryPopover: {
+    content: s__(
+      'UsageQuotas|Container Registry storage statistics are not used to calculate the total project storage. After namespace container deduplication, the total of all unique containers is added to the namespace storage total.',
+    ),
+    docsLink: helpPagePath(
+      'user/packages/container_registry/reduce_container_registry_storage.html',
+      { anchor: 'check-container-registry-storage-use' },
+    ),
   },
 };
 </script>
@@ -96,7 +109,17 @@ export default {
           v-if="field.key in helpLinks"
           :storage-type="field.key"
           :help-links="helpLinks"
-        />
+        /><storage-type-warning v-if="field.key == 'containerRegistry'">
+          {{ $options.containerRegistryPopover.content }}
+
+          <gl-link
+            :href="$options.containerRegistryPopover.docsLink"
+            target="_blank"
+            class="gl-reset-font-size"
+          >
+            {{ __('Learn more.') }}
+          </gl-link>
+        </storage-type-warning>
       </div>
     </template>
 
@@ -130,14 +153,6 @@ export default {
       <number-to-human-size :value="project.statistics.lfsObjectsSize" />
     </template>
 
-    <template #cell(containerRegistry)="{ item: project }">
-      <div :data-testid="`cell-${project.id}-storage-type-container-registry`">
-        <number-to-human-size :value="project.statistics.containerRegistrySize" />
-
-        <storage-type-warning :content="$options.i18n.namespaceContainerRegistryPopoverContent" />
-      </div>
-    </template>
-
     <template #cell(buildArtifacts)="{ item: project }">
       <number-to-human-size :value="project.statistics.buildArtifactsSize" />
     </template>
@@ -156,6 +171,10 @@ export default {
 
     <template #cell(snippets)="{ item: project }">
       <number-to-human-size :value="project.statistics.snippetsSize" />
+    </template>
+
+    <template #cell(containerRegistry)="{ item: project }">
+      <number-to-human-size :value="project.statistics.containerRegistrySize" />
     </template>
   </gl-table>
 </template>

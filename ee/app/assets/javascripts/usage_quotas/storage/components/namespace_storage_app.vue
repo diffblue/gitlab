@@ -4,7 +4,6 @@ import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import { namespaceContainerRegistryPopoverContent } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { parseGetStorageResults } from '../utils';
@@ -36,9 +35,6 @@ export default {
     'canShowInlineAlert',
     'userNamespace',
   ],
-  provide: {
-    containerRegistryPopoverContent: namespaceContainerRegistryPopoverContent,
-  },
   apollo: {
     namespace: {
       query,

@@ -4,7 +4,6 @@ import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
 import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_warning.vue';
-import { namespaceContainerRegistryPopoverContent } from 'ee/usage_quotas/storage/constants';
 import { projectHelpLinks } from 'jest/usage_quotas/storage/mock_data';
 import { projects } from '../mock_data';
 
@@ -24,10 +23,6 @@ const createComponent = ({ props = {} } = {}) => {
 };
 
 const findTable = () => wrapper.findComponent(GlTable);
-const findStorageTypeWarning = (projectId, storageType) =>
-  wrapper
-    .findByTestId(`cell-${projectId}-storage-type-${storageType}`)
-    .findComponent(StorageTypeWarning);
 
 const storageTypes = [
   { key: 'storage' },
@@ -39,10 +34,6 @@ const storageTypes = [
   { key: 'lfsObjects' },
   { key: 'packages' },
   { key: 'wiki' },
-];
-
-const storageTypesWithPopover = [
-  { key: 'container-registry', content: namespaceContainerRegistryPopoverContent },
 ];
 
 describe('ProjectList', () => {
@@ -57,6 +48,14 @@ describe('ProjectList', () => {
         const hasHelpLink = Boolean(projectHelpLinks[key]);
 
         expect(th.findComponent(StorageTypeHelpLink).exists()).toBe(hasHelpLink);
+      });
+
+      it('show warning icon for container registry type', () => {
+        const storageTypeWarning = wrapper
+          .findByTestId('th-containerRegistry')
+          .findComponent(StorageTypeWarning);
+
+        expect(storageTypeWarning.exists()).toBe(true);
       });
     });
 
@@ -74,13 +73,6 @@ describe('ProjectList', () => {
         it.each(storageTypes)('$key', ({ key }) => {
           const expectedText = numberToHumanSize(project.statistics[`${key}Size`], 1);
           expect(tableText).toContain(expectedText);
-        });
-
-        it.each(storageTypesWithPopover)('show warning icon for $key type', ({ key, content }) => {
-          const storageTypeWarning = findStorageTypeWarning(project.id, key);
-
-          expect(storageTypeWarning.exists()).toBe(true);
-          expect(storageTypeWarning.props('content')).toBe(content);
         });
       });
 
