@@ -32,7 +32,12 @@ module EE
       # Returns the created Note object
       def change_progress_note
         progress = noteable.progress&.progress
-        body = "changed progress to **#{progress}**"
+
+        body = if noteable.progress.destroyed?
+                 "removed the progress **#{progress}**"
+               else
+                 "changed progress to **#{progress}**"
+               end
 
         create_note(NoteSummary.new(noteable, project, author, body, action: 'progress'))
       end

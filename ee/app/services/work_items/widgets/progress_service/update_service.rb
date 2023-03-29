@@ -5,6 +5,8 @@ module WorkItems
     module ProgressService
       class UpdateService < WorkItems::Widgets::BaseService
         def before_update_in_transaction(params:)
+          return delete_progress if work_item.progress.present? && new_type_excludes_widget?
+
           return unless params.present? && params.key?(:progress)
           return unless has_permission?(:admin_work_item)
 
@@ -19,6 +21,14 @@ module WorkItems
         end
 
         private
+
+        def delete_progress
+          work_item.progress.destroy!
+
+          create_notes
+
+          work_item.touch
+        end
 
         def create_notes
           ::SystemNoteService.change_progress_note(work_item, current_user)
