@@ -18,23 +18,36 @@ describe('ColumnChart Visualization', () => {
   };
 
   describe('when mounted', () => {
-    beforeEach(() => {
+    it('should render the column chart with the provided data and option', () => {
       createWrapper({
         data: [{ name: 'foo' }],
-        options: { yAxis: { name: 'y axis' }, xAxis: { name: 'x axis', type: 'category' } },
+        options: {
+          yAxis: { name: 'y axis', min: 23 },
+          xAxis: { name: 'x axis', type: 'category' },
+        },
       });
-    });
 
-    it('should render the column chart with the provided data and option', () => {
       expect(findColumnChart().props()).toMatchObject({
         bars: [{ name: 'foo' }],
-        option: { yAxis: { name: 'y axis' }, xAxis: { name: 'x axis', type: 'category' } },
+        option: { yAxis: { name: 'y axis', min: 23 }, xAxis: { name: 'x axis', type: 'category' } },
         xAxisType: 'category',
         xAxisTitle: 'x axis',
         yAxisTitle: 'y axis',
         height: 'auto',
       });
       expect(findColumnChart().attributes('responsive')).toBe('');
+    });
+
+    it('should add minimum y-axis option when not defined', () => {
+      createWrapper({
+        data: [{ name: 'foo' }],
+        options: { yAxis: { name: 'y axis' }, xAxis: { name: 'x axis', type: 'category' } },
+      });
+
+      expect(findColumnChart().props().option).toMatchObject({
+        yAxis: { name: 'y axis', min: 0 },
+        xAxis: { name: 'x axis', type: 'category' },
+      });
     });
   });
 });
