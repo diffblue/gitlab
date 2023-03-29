@@ -2,8 +2,17 @@ import Vue from 'vue';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, __ } from '~/locale';
 import { getCreatedIssueForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
+import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import * as types from './mutation_types';
 import { isSameVulnerability } from './utils';
+
+const updateFindingFromGraphqlResponse = (finding, updated) => {
+  const f = finding; // Avoids eslint no-param-reassign error.
+  const stateTransitions = updated.stateTransitions.nodes;
+
+  f.state = stateTransitions.at(-1).toState.toLowerCase();
+  f.state_transitions = stateTransitions.map(convertObjectPropsToSnakeCase);
+};
 
 export default {
   [types.SET_PIPELINE_ID](state, payload) {
@@ -71,7 +80,16 @@ export default {
     const vulnerability = state.vulnerabilities.find((vuln) =>
       isSameVulnerability(vuln, payload.vulnerability),
     );
-    vulnerability.dismissal_feedback = payload.data;
+    // When the feature flag is on, the payload is the entire updated vulnerability. When it's off, the payload is only
+    // the dismissal feedback object.
+    if (gon.features.deprecateVulnerabilitiesFeedback) {
+      const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+      updateFindingFromGraphqlResponse(vulnerability, updated);
+    } else {
+      vulnerability.state = 'dismissed';
+      vulnerability.dismissal_feedback = payload.data;
+    }
+
     state.isDismissingVulnerability = false;
     Vue.set(state.modal.vulnerability, 'isDismissed', true);
   },
@@ -154,7 +172,16 @@ export default {
     const vulnerability = state.vulnerabilities.find((vuln) =>
       isSameVulnerability(vuln, payload.vulnerability),
     );
-    vulnerability.dismissal_feedback = null;
+    // When the feature flag is on, the payload is the entire updated vulnerability. When it's off, the payload is only
+    // the dismissal feedback object.
+    if (gon.features.deprecateVulnerabilitiesFeedback) {
+      const updated = payload.data.securityFindingRevertToDetected.securityFinding.vulnerability;
+      updateFindingFromGraphqlResponse(vulnerability, updated);
+    } else {
+      vulnerability.state = 'detected';
+      vulnerability.dismissal_feedback = null;
+    }
+
     state.isDismissingVulnerability = false;
     Vue.set(state.modal.vulnerability, 'isDismissed', false);
   },

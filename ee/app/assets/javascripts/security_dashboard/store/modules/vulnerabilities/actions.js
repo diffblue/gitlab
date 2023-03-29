@@ -15,9 +15,18 @@ import {
   FEEDBACK_TYPE_MERGE_REQUEST,
 } from '~/vue_shared/security_reports/constants';
 import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
+import { defaultClient } from 'ee/security_dashboard/graphql/provider';
+import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
+import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import * as types from './mutation_types';
 
 let vulnerabilitiesSource;
+
+const dismissFinding = (vulnerability, comment) =>
+  defaultClient.mutate({
+    mutation: dismissFindingMutation,
+    variables: { uuid: vulnerability.uuid, comment },
+  });
 
 /**
  * A lot of this file has duplicate actions in
@@ -176,18 +185,20 @@ export const dismissSelectedVulnerabilities = (
   dispatch('requestDismissSelectedVulnerabilities');
 
   const promises = dismissibleVulnerabilities.map((vulnerability) =>
-    axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
-      vulnerability_feedback: {
-        category: vulnerability.report_type,
-        comment,
-        feedback_type: FEEDBACK_TYPE_DISMISSAL,
-        project_fingerprint: vulnerability.project_fingerprint,
-        finding_uuid: vulnerability.uuid,
-        vulnerability_data: {
-          id: vulnerability.id,
-        },
-      },
-    }),
+    gon.features.deprecateVulnerabilitiesFeedback
+      ? dismissFinding(vulnerability, comment)
+      : axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
+          vulnerability_feedback: {
+            category: vulnerability.report_type,
+            comment,
+            feedback_type: FEEDBACK_TYPE_DISMISSAL,
+            project_fingerprint: vulnerability.project_fingerprint,
+            finding_uuid: vulnerability.uuid,
+            vulnerability_data: {
+              id: vulnerability.id,
+            },
+          },
+        }),
   );
 
   return Promise.all(promises)
@@ -266,21 +277,24 @@ export const dismissVulnerability = (
       }
     : {};
 
-  return axios
-    .post(vulnerability.create_vulnerability_feedback_dismissal_path, {
-      vulnerability_feedback: {
-        category: vulnerability.report_type,
-        comment,
-        feedback_type: FEEDBACK_TYPE_DISMISSAL,
-        pipeline_id: state.pipelineId,
-        project_fingerprint: vulnerability.project_fingerprint,
-        finding_uuid: vulnerability.uuid,
-        vulnerability_data: {
-          ...vulnerability,
+  const action = gon.features.deprecateVulnerabilitiesFeedback
+    ? dismissFinding(vulnerability, comment)
+    : axios.post(vulnerability.create_vulnerability_feedback_dismissal_path, {
+        vulnerability_feedback: {
           category: vulnerability.report_type,
+          comment,
+          feedback_type: FEEDBACK_TYPE_DISMISSAL,
+          pipeline_id: state.pipelineId,
+          project_fingerprint: vulnerability.project_fingerprint,
+          finding_uuid: vulnerability.uuid,
+          vulnerability_data: {
+            ...vulnerability,
+            category: vulnerability.report_type,
+          },
         },
-      },
-    })
+      });
+
+  action
     .then(({ data }) => {
       dispatch('closeDismissalCommentBox');
       dispatch('receiveDismissVulnerabilitySuccess', { vulnerability, data });
@@ -406,14 +420,18 @@ export const hideDismissalDeleteButtons = ({ commit }) => {
 };
 
 export const revertDismissVulnerability = ({ dispatch }, { vulnerability, flashError }) => {
-  const { destroy_vulnerability_feedback_dismissal_path } = vulnerability.dismissal_feedback;
-
   dispatch('requestUndoDismiss');
 
-  return axios
-    .delete(destroy_vulnerability_feedback_dismissal_path)
-    .then(() => {
-      dispatch('receiveUndoDismissSuccess', { vulnerability });
+  const action = gon.features.deprecateVulnerabilitiesFeedback
+    ? defaultClient.mutate({
+        mutation: revertFindingToDetectedMutation,
+        variables: { uuid: vulnerability.uuid },
+      })
+    : axios.delete(vulnerability.dismissal_feedback.destroy_vulnerability_feedback_dismissal_path);
+
+  action
+    .then(({ data }) => {
+      dispatch('receiveUndoDismissSuccess', { vulnerability, data });
     })
     .catch(() => {
       dispatch('receiveUndoDismissError', { flashError });

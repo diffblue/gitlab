@@ -20,5 +20,5 @@ export const getCreatedIssueForVulnerability = (vulnerability) =>
 
 export const getDismissalTransitionForVulnerability = (vulnerability) => {
   const latestTransition = vulnerability.state_transitions?.at(-1);
-  return latestTransition?.to_state === 'dismissed' ? latestTransition : null;
+  return latestTransition?.to_state.toLowerCase() === 'dismissed' ? latestTransition : null;
 };
