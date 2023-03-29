@@ -61,7 +61,6 @@ module EE
               title: _('Requirements'),
               link: project_requirements_management_requirements_path(context.project),
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
-              super_sidebar_before: :service_desk,
               active_routes: { path: 'requirements#index' },
               item_id: :requirements
             )
@@ -77,6 +76,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: s_('JiraService|Jira issues'),
               link: project_integrations_jira_issues_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
               active_routes: { controller: 'projects/integrations/jira/issues' },
               item_id: :jira_issue_list
             )
@@ -88,9 +88,10 @@ module EE
             ::Sidebars::MenuItem.new(
               title: s_('JiraService|Open Jira'),
               link: external_issue_tracker.issue_tracker_path,
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
               active_routes: {},
               item_id: :jira_external_link,
-              sprite_icon: 'external-link',
+              sprite_icon: context.is_super_sidebar ? nil : 'external-link',
               container_html_options: {
                 target: '_blank',
                 rel: 'noopener noreferrer'
@@ -108,6 +109,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: s_('ZentaoIntegration|ZenTao issues'),
               link: project_integrations_zentao_issues_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
               active_routes: { controller: 'projects/integrations/zentao/issues' },
               item_id: :zentao_issue_list
             )
@@ -123,9 +125,10 @@ module EE
             ::Sidebars::MenuItem.new(
               title: s_('ZentaoIntegration|Open ZenTao'),
               link: zentao_integration.url,
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
               active_routes: {},
               item_id: :zentao_external_link,
-              sprite_icon: 'external-link',
+              sprite_icon: context.is_super_sidebar ? nil : 'external-link',
               container_html_options: {
                 target: '_blank',
                 rel: 'noopener noreferrer'
