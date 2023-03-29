@@ -33,7 +33,6 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
         Sidebars::Groups::SuperSidebarMenus::OperationsMenu,
         Sidebars::Groups::SuperSidebarMenus::MonitorMenu,
         Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
-        Sidebars::Groups::Menus::CiCdMenu,
         Sidebars::UncategorizedMenu,
         Sidebars::Groups::Menus::SettingsMenu
       ]
