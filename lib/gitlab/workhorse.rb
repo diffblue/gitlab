@@ -77,10 +77,6 @@ module Gitlab
         format ||= 'tar.gz'
         format = format.downcase
 
-        # prefer tag if available
-        tag = repository.find_tag(ref)
-        ref = tag.dereferenced_target.sha if tag
-
         metadata = repository.archive_metadata(
           ref,
           Gitlab.config.gitlab.repository_downloads_path,

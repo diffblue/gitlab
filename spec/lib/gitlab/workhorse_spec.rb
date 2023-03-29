@@ -79,25 +79,6 @@ RSpec.describe Gitlab::Workhorse do
         expect { subject }.to raise_error(RuntimeError)
       end
     end
-
-    context 'when ref matches a tag or branch' do
-      let(:user) { project.creator }
-      # set ref to name of merged branch
-      let(:ref) { 'refs/heads/branch-merged' }
-      let(:branch_merged_commit_id) { project.repository.find_branch('branch-merged').dereferenced_target.id }
-      let(:branch_master_commit_id) { project.repository.find_branch('master').dereferenced_target.id }
-
-      before do
-        # add a tag for master branch but with name of merged branch
-        project.repository.add_tag(user, ref, 'master', 'foo')
-      end
-
-      it 'returns the tag' do
-        _, _, params = decode_workhorse_header(subject)
-        expect(params['ArchivePath']).not_to include(branch_merged_commit_id)
-        expect(params['ArchivePath']).to include(branch_master_commit_id)
-      end
-    end
   end
 
   describe '.send_git_patch' do

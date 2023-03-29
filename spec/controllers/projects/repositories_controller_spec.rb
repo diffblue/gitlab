@@ -64,57 +64,6 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
         end
       end
 
-      context 'when tag name' do
-        let(:branch_merged_commit_id) { project.repository.find_branch('branch-merged').dereferenced_target.id }
-        let(:archive_request) do
-          _command_, encoded_params = response.header[Gitlab::Workhorse::SEND_DATA_HEADER].split(":")
-          params = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_params))
-          Base64.decode64(params['GetArchiveRequest'])
-        end
-
-        let(:get_tag_archive) do
-          get :archive, params: { namespace_id: project.namespace, project_id: project, id: "#{tag_name}/#{archive_name}" }, format: 'zip'
-        end
-
-        let(:branch_master_commit_id) { project.repository.find_branch('master').dereferenced_target.id }
-
-        before do
-          project.repository.add_tag(user, tag_name, 'master', 'foo')
-        end
-
-        context 'as a ref path' do
-          let(:tag_name) { 'refs/heads/branch-merged' }
-
-          it 'retrieves the archive of the tag commit' do
-            get_tag_archive
-
-            expect(archive_request).not_to include(branch_merged_commit_id)
-            expect(archive_request).to include(branch_master_commit_id)
-          end
-        end
-
-        context 'as a commit id' do
-          let(:tag_name) { branch_merged_commit_id }
-
-          it 'retrieves the archive of the tag commit' do
-            get_tag_archive
-
-            expect(archive_request).not_to include(branch_merged_commit_id)
-            expect(archive_request).to include(branch_master_commit_id)
-          end
-        end
-
-        context 'as a version number' do
-          let(:tag_name) { 'v0.0.0' }
-
-          it 'retrieves the archive of the tag commit' do
-            get_tag_archive
-
-            expect(archive_request).to include(branch_master_commit_id)
-          end
-        end
-      end
-
       it "uses Gitlab::Workhorse" do
         get :archive, params: { namespace_id: project.namespace, project_id: project, id: "master" }, format: "zip"
 
