@@ -1110,7 +1110,7 @@ RSpec.describe Issue, feature_category: :team_planning do
       before do
         stub_licensed_features(incident_sla: license_available)
         issue_type = incident_type ? 'incident' : 'issue'
-        issue.update!(issue_type: issue_type)
+        issue.update!(issue_type: issue_type, work_item_type: WorkItems::Type.default_by_type(issue_type))
       end
 
       it 'returns the expected value' do
@@ -1305,7 +1305,7 @@ RSpec.describe Issue, feature_category: :team_planning do
     context 'when it is part of an epic' do
       it 'is not possible to change from issue to incident' do
         issue = create(:issue, :issue, epic: epic)
-        issue.work_item_type_id = WorkItems::Type.default_by_type(:incident).id
+        issue.assign_attributes(work_item_type: WorkItems::Type.default_by_type(:incident), issue_type: :incident)
 
         expect(issue).not_to be_valid
         expect(issue.errors[:work_item_type_id])
@@ -1314,7 +1314,7 @@ RSpec.describe Issue, feature_category: :team_planning do
 
       it 'is possible to change back from incident to issue' do
         issue = create(:issue, :incident, epic: epic)
-        issue.work_item_type_id = WorkItems::Type.default_by_type(:issue).id
+        issue.assign_attributes(work_item_type: WorkItems::Type.default_by_type(:issue), issue_type: :issue)
 
         expect(issue).to be_valid
       end
@@ -1323,7 +1323,7 @@ RSpec.describe Issue, feature_category: :team_planning do
     context 'when it is not part of an epic' do
       it 'is possible to change between types' do
         issue = create(:issue, :issue)
-        issue.work_item_type_id = WorkItems::Type.default_by_type(:incident).id
+        issue.assign_attributes(work_item_type: WorkItems::Type.default_by_type(:incident), issue_type: :incident)
 
         expect(issue).to be_valid
       end

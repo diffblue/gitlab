@@ -65,7 +65,7 @@ RSpec.describe IncidentManagement::ApplyIncidentSlaExceededLabelWorker, feature_
 
   context 'for plain issues' do
     before_all do
-      incident.update!(issue_type: 'issue')
+      incident.update!(issue_type: 'issue', work_item_type: WorkItems::Type.default_by_type(:issue))
     end
 
     it 'does not add a label', :aggregate_failures do

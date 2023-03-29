@@ -99,7 +99,7 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
     end
 
     context 'for an incident' do
-      let_it_be(:issue) { create(:issue, author: user, description: 'issue text', issue_type: :incident) }
+      let_it_be(:issue) { create(:issue, :incident, author: user, description: 'issue text') }
 
       let(:params) do
         ActionController::Parameters.new({

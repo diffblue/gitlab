@@ -195,7 +195,7 @@ RSpec.describe Notes::QuickActionsService do
 
       context 'on a test case' do
         before do
-          issue.assign_attributes(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:test_case))
+          issue.assign_attributes(issue_type: :test_case, work_item_type: WorkItems::Type.default_by_type(:test_case))
           issue.save!(validate: false)
         end
 
