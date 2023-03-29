@@ -10745,7 +10745,9 @@ CREATE TABLE abuse_reports (
     links_to_spam text[] DEFAULT '{}'::text[] NOT NULL,
     status smallint DEFAULT 1 NOT NULL,
     resolved_at timestamp with time zone,
+    screenshot text,
     CONSTRAINT abuse_reports_links_to_spam_length_check CHECK ((cardinality(links_to_spam) <= 20)),
+    CONSTRAINT check_4b0a5120e0 CHECK ((char_length(screenshot) <= 255)),
     CONSTRAINT check_ab1260fa6c CHECK ((char_length(reported_from_url) <= 512))
 );
 

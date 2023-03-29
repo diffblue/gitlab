@@ -6,6 +6,10 @@ RSpec.shared_examples 'reports the user with an abuse category' do
     choose "They're posting spam."
     click_button 'Next'
 
+    page.attach_file('spec/fixtures/dk.png') do
+      click_button "Choose file"
+    end
+
     fill_in 'abuse_report_message', with: 'This user sends spam'
     click_button 'Send report'
 

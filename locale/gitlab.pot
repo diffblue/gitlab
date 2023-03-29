@@ -36636,6 +36636,12 @@ msgstr ""
 msgid "ReportAbuse|Report abuse to administrator"
 msgstr ""
 
+msgid "ReportAbuse|Screenshot"
+msgstr ""
+
+msgid "ReportAbuse|Screenshot of abuse"
+msgstr ""
+
 msgid "ReportAbuse|Something else."
 msgstr ""
 
@@ -38549,6 +38555,9 @@ msgid "Scopes can't be blank"
 msgstr ""
 
 msgid "Scopes: %{scope_list}"
+msgstr ""
+
+msgid "Screenshot must be less than 1 MB."
 msgstr ""
 
 msgid "Scroll down"
@@ -52485,6 +52494,9 @@ msgid "must have a repository"
 msgstr ""
 
 msgid "must match %{association}.project_id"
+msgstr ""
+
+msgid "must match one of the following file types: %{extension_list}"
 msgstr ""
 
 msgid "must not be an owner of the namespace"
