@@ -31,6 +31,7 @@ module EE
         mount_mutation ::Mutations::RequirementsManagement::ExportRequirements
         mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement
         mount_mutation ::Mutations::Security::Finding::CreateIssue
+        mount_mutation ::Mutations::Security::Finding::CreateMergeRequest
         mount_mutation ::Mutations::Security::Finding::Dismiss
         mount_mutation ::Mutations::Security::Finding::RevertToDetected
         mount_mutation ::Mutations::Vulnerabilities::Create
