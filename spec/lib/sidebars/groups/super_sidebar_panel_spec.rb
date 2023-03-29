@@ -36,7 +36,6 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
         Sidebars::Groups::Menus::CiCdMenu,
         (Sidebars::Groups::Menus::SecurityComplianceMenu if Gitlab.ee?),
         Sidebars::Groups::Menus::ObservabilityMenu,
-        (Sidebars::Groups::Menus::AnalyticsMenu if Gitlab.ee?),
         Sidebars::UncategorizedMenu,
         Sidebars::Groups::Menus::SettingsMenu
       ].compact

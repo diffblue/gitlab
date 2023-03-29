@@ -44,9 +44,9 @@ module Sidebars
           'chart'
         end
 
-        override :pick_into_super_sidebar?
-        def pick_into_super_sidebar?
-          true
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          nil
         end
 
         private
@@ -57,8 +57,9 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('CI/CD'),
+            title: context.is_super_sidebar ? _('CI/CD analytics') : _('CI/CD'),
             link: group_analytics_ci_cd_analytics_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'groups/analytics/ci_cd_analytics#show' },
             item_id: :ci_cd_analytics
           )
@@ -75,8 +76,9 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Contribution'),
+            title: context.is_super_sidebar ? _('Contribution analytics') : _('Contribution'),
             link: group_contribution_analytics_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'groups/contribution_analytics#show' },
             container_html_options: { data: { placement: 'right' } },
             item_id: :contribution_analytics
@@ -95,6 +97,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('DevOps adoption'),
             link: group_analytics_devops_adoption_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'groups/analytics/devops_adoption#show' },
             item_id: :devops_adoption
           )
@@ -109,6 +112,7 @@ module Sidebars
             title: _('Insights'),
             link: group_insights_path(context.group),
             active_routes: { path: 'groups/insights#show' },
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             container_html_options: { class: 'shortcuts-group-insights' },
             item_id: :insights
           )
@@ -120,8 +124,9 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Issue'),
+            title: context.is_super_sidebar ? _('Issue analytics') : _('Issue'),
             link: group_issues_analytics_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'issues_analytics#show' },
             item_id: :issues_analytics
           )
@@ -133,8 +138,9 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Productivity'),
+            title: context.is_super_sidebar ? _('Productivity analytics') : _('Productivity'),
             link: group_analytics_productivity_analytics_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'groups/analytics/productivity_analytics#show' },
             item_id: :productivity_analytics
           )
@@ -151,8 +157,9 @@ module Sidebars
           end
 
           ::Sidebars::MenuItem.new(
-            title: _('Repository'),
+            title: context.is_super_sidebar ? _('Repository analytics') : _('Repository'),
             link: group_analytics_repository_analytics_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
             active_routes: { path: 'groups/analytics/repository_analytics#show' },
             item_id: :repository_analytics
           )
@@ -170,8 +177,9 @@ module Sidebars
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Value stream'),
+              title: context.is_super_sidebar ? _('Value stream analytics') : _('Value stream'),
               link: group_analytics_cycle_analytics_path(context.group),
+              super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'groups/analytics/cycle_analytics#show' },
               item_id: :cycle_analytics
             )
