@@ -13002,7 +13002,7 @@ CREATE TABLE ci_builds (
     scheduling_type smallint,
     id bigint NOT NULL,
     stage_id bigint,
-    partition_id bigint DEFAULT 100 NOT NULL,
+    partition_id bigint NOT NULL,
     CONSTRAINT check_1e2fbd1b39 CHECK ((lock_version IS NOT NULL)),
     CONSTRAINT partitioning_constraint CHECK ((partition_id = 100))
 );
