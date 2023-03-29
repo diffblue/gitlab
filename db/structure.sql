@@ -273,15 +273,6 @@ BEGIN
 END;
 $$;
 
-CREATE FUNCTION trigger_3207b8d0d6f3() RETURNS trigger
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-  NEW."id_convert_to_bigint" := NEW."id";
-  RETURN NEW;
-END;
-$$;
-
 CREATE FUNCTION trigger_3dc62927cae8() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12891,7 +12882,6 @@ CREATE SEQUENCE chat_teams_id_seq
 ALTER SEQUENCE chat_teams_id_seq OWNED BY chat_teams.id;
 
 CREATE TABLE ci_build_needs (
-    id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     name text NOT NULL,
     artifacts boolean DEFAULT true NOT NULL,
     optional boolean DEFAULT false NOT NULL,
@@ -34132,8 +34122,6 @@ CREATE TRIGGER trigger_0e214b8a14f2 BEFORE INSERT OR UPDATE ON vulnerability_use
 CREATE TRIGGER trigger_17c3a95ee58a BEFORE INSERT OR UPDATE ON commit_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_17c3a95ee58a();
 
 CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occurrences FOR EACH ROW EXECUTE FUNCTION trigger_1a857e8db6cd();
-
-CREATE TRIGGER trigger_3207b8d0d6f3 BEFORE INSERT OR UPDATE ON ci_build_needs FOR EACH ROW EXECUTE FUNCTION trigger_3207b8d0d6f3();
 
 CREATE TRIGGER trigger_3dc62927cae8 BEFORE INSERT OR UPDATE ON design_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_3dc62927cae8();
 
