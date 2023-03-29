@@ -15,6 +15,28 @@ import { EMPTY_BODY_MESSAGE } from './constants';
  */
 export const bodyWithFallBack = (body) => (body === '' ? '' : body || EMPTY_BODY_MESSAGE);
 
+/**
+ * Returns a string representation of the HTTP request
+ *
+ * @param {Object} httpData
+ * @param {String} httpData.body
+ * @param {String} httpData.method
+ * @param {String} httpData.url
+ * @param {{name: String, value: String}[]} httpData.headers
+ *
+ * @returns {String}
+ */
+export const getHttpString = (httpData) => {
+  if (!httpData) {
+    return '';
+  }
+
+  const { body, method, url, headers } = httpData;
+  const headerString = headers.map(({ name, value }) => `${name}: ${value}`).join('\n');
+
+  return `${method} ${url}\n${headerString}\n\n${bodyWithFallBack(body)}`;
+};
+
 export const getCreatedIssueForVulnerability = (vulnerability) =>
   vulnerability.issue_links?.find((link) => link.link_type === 'created');
 
