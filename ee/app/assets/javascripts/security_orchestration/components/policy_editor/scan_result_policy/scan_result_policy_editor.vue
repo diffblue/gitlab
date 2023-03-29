@@ -21,16 +21,12 @@ import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
-import PolicyRuleBuilderV2 from './policy_rule_builder_v2.vue';
 
 import {
   DEFAULT_SCAN_RESULT_POLICY,
-  DEFAULT_SCAN_RESULT_POLICY_V2,
-  DEFAULT_SCAN_RESULT_POLICY_V3,
   DEFAULT_SCAN_RESULT_POLICY_V4,
   fromYaml,
   toYaml,
-  securityScanBuildRule,
   emptyBuildRule,
   approversOutOfSync,
   approversOutOfSyncV2,
@@ -60,7 +56,6 @@ export default {
     PolicyActionBuilder,
     PolicyActionBuilderV2,
     PolicyRuleBuilder,
-    PolicyRuleBuilderV2,
     PolicyEditorLayout,
     DimDisableContainer,
   },
@@ -93,18 +88,10 @@ export default {
   data() {
     let yamlEditorValue;
 
-    if (this.glFeatures.scanResultRoleAction && this.glFeatures.licenseScanningPolicies) {
+    if (this.glFeatures.scanResultRoleAction) {
       yamlEditorValue = this.existingPolicy
         ? toYaml(this.existingPolicy)
         : DEFAULT_SCAN_RESULT_POLICY_V4;
-    } else if (this.glFeatures.scanResultRoleAction) {
-      yamlEditorValue = this.existingPolicy
-        ? toYaml(this.existingPolicy)
-        : DEFAULT_SCAN_RESULT_POLICY_V3;
-    } else if (this.glFeatures.licenseScanningPolicies) {
-      yamlEditorValue = this.existingPolicy
-        ? toYaml(this.existingPolicy)
-        : DEFAULT_SCAN_RESULT_POLICY_V2;
     } else {
       yamlEditorValue = this.existingPolicy
         ? toYaml(this.existingPolicy)
@@ -149,9 +136,6 @@ export default {
     areRolesAvailable() {
       return this.glFeatures.scanResultRoleAction;
     },
-    hasLicenseScanningPolicies() {
-      return this.glFeatures.licenseScanningPolicies;
-    },
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
     },
@@ -171,11 +155,7 @@ export default {
       this.policy.actions.splice(actionIndex, 1, values);
     },
     addRule() {
-      if (this.hasLicenseScanningPolicies) {
-        this.policy.rules.push(emptyBuildRule());
-      } else {
-        this.policy.rules.push(securityScanBuildRule());
-      }
+      this.policy.rules.push(emptyBuildRule());
     },
     removeRule(ruleIndex) {
       this.policy.rules.splice(ruleIndex, 1);
@@ -317,27 +297,14 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <template v-if="hasLicenseScanningPolicies">
-          <policy-rule-builder-v-2
-            v-for="(rule, index) in policy.rules"
-            :key="index"
-            class="gl-mb-4"
-            :init-rule="rule"
-            @changed="updateRule(index, $event)"
-            @remove="removeRule(index)"
-          />
-        </template>
-
-        <template v-else>
-          <policy-rule-builder
-            v-for="(rule, index) in policy.rules"
-            :key="index"
-            class="gl-mb-4"
-            :init-rule="rule"
-            @changed="updateRule(index, $event)"
-            @remove="removeRule(index)"
-          />
-        </template>
+        <policy-rule-builder
+          v-for="(rule, index) in policy.rules"
+          :key="index"
+          class="gl-mb-4"
+          :init-rule="rule"
+          @changed="updateRule(index, $event)"
+          @remove="removeRule(index)"
+        />
 
         <div v-if="isWithinLimit" class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">

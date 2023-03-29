@@ -283,8 +283,6 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
 
     before do
       allow(helper).to receive(:user_dismissed?).and_return(false)
-
-      stub_feature_flags(license_scanning_policies: true)
     end
 
     context 'when user already dismissed callout' do
@@ -336,8 +334,6 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
 
     before do
       allow(helper).to receive(:user_dismissed?).and_return(false)
-
-      stub_feature_flags(license_scanning_policies: true)
     end
 
     context 'when user already dismissed callout' do

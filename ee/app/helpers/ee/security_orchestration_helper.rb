@@ -11,7 +11,6 @@ module EE::SecurityOrchestrationHelper
   end
 
   def show_license_check_settings_alert?(project)
-    return false unless Feature.enabled?(:license_scanning_policies, project)
     return false if user_dismissed?(LICENSE_CHECK_DEPRECATION_ALERT, object: project)
 
     project

@@ -97,95 +97,71 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
           scan_result_policy_read: scan_result_policy_read)
       end
 
-      context 'when license_scanning_policies is disabled' do
-        before do
-          stub_feature_flags(license_scanning_policies: false)
-        end
+      let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
+      let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
+      let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
+      let(:case2) { [['GPL v3', 'A']] }
+      let(:case1) { [] }
 
-        let!(:software_license_policy) do
-          create(:software_license_policy, :denied,
-            project: project,
-            software_license: denied_license,
-            scan_result_policy_read: scan_result_policy_read
-          )
-        end
-
-        let(:denied_license) { create(:software_license, name: license_report.license_names[0]) }
-
-        it 'requires approval' do
-          expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
+      context 'when target branch pipeline is empty' do
+        it 'does not require approval' do
+          expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
         end
       end
 
-      context 'when license_scanning_policies is enabled' do
-        let(:case5) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C'], ['Apache 2', 'D']] }
-        let(:case4) { [['GPL v3', 'A'], ['MIT', 'B'], ['GPL v3', 'C']] }
-        let(:case3) { [['GPL v3', 'A'], ['MIT', 'B']] }
-        let(:case2) { [['GPL v3', 'A']] }
-        let(:case1) { [] }
+      using RSpec::Parameterized::TableSyntax
 
-        context 'when target branch pipeline is empty' do
-          it 'does not require approval' do
+      where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
+        ref(:case1) | ref(:case2) | ['newly_detected'] | 'GPL v3' | :denied  | true
+        ref(:case2) | ref(:case3) | ['newly_detected'] | 'GPL v3' | :denied  | false
+        ref(:case3) | ref(:case4) | ['newly_detected'] | 'GPL v3' | :denied  | true
+        ref(:case4) | ref(:case5) | ['newly_detected'] | 'GPL v3' | :denied  | false
+        ref(:case1) | ref(:case2) | ['detected'] | 'GPL v3' | :denied  | false
+        ref(:case2) | ref(:case3) | ['detected'] | 'GPL v3' | :denied  | true
+        ref(:case3) | ref(:case4) | ['detected'] | 'GPL v3' | :denied  | true
+        ref(:case4) | ref(:case5) | ['detected'] | 'GPL v3' | :denied  | true
+
+        ref(:case1) | ref(:case2) | ['newly_detected'] | 'MIT' | :allowed  | true
+        ref(:case2) | ref(:case3) | ['newly_detected'] | 'MIT' | :allowed  | false
+        ref(:case3) | ref(:case4) | ['newly_detected'] | 'MIT' | :allowed  | true
+        ref(:case4) | ref(:case5) | ['newly_detected'] | 'MIT' | :allowed  | true
+        ref(:case1) | ref(:case2) | ['detected'] | 'MIT' | :allowed  | false
+        ref(:case2) | ref(:case3) | ['detected'] | 'MIT' | :allowed  | true
+        ref(:case3) | ref(:case4) | ['detected'] | 'MIT' | :allowed  | true
+        ref(:case4) | ref(:case5) | ['detected'] | 'MIT' | :allowed  | true
+      end
+
+      with_them do
+        let(:match_on_inclusion) { policy_state == :denied }
+        let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
+        let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
+        let(:license_states) { states }
+        let(:license) { create(:software_license, name: policy_license) }
+
+        before do
+          target_branch.each do |ld|
+            target_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
+          end
+
+          pipeline_branch.each do |ld|
+            pipeline_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
+          end
+
+          create(:software_license_policy, policy_state,
+            project: project,
+            software_license: license,
+            scan_result_policy_read: scan_result_policy_read
+          )
+
+          allow(service).to receive(:report).and_return(pipeline_report)
+          allow(service).to receive(:target_branch_report).and_return(target_branch_report)
+        end
+
+        it 'sync approvals_required' do
+          if result
+            expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
+          else
             expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-          end
-        end
-
-        using RSpec::Parameterized::TableSyntax
-
-        where(:target_branch, :pipeline_branch, :states, :policy_license, :policy_state, :result) do
-          ref(:case1) | ref(:case2) | ['newly_detected'] | 'GPL v3' | :denied  | true
-          ref(:case2) | ref(:case3) | ['newly_detected'] | 'GPL v3' | :denied  | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | 'GPL v3' | :denied  | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | 'GPL v3' | :denied  | false
-          ref(:case1) | ref(:case2) | ['detected'] | 'GPL v3' | :denied  | false
-          ref(:case2) | ref(:case3) | ['detected'] | 'GPL v3' | :denied  | true
-          ref(:case3) | ref(:case4) | ['detected'] | 'GPL v3' | :denied  | true
-          ref(:case4) | ref(:case5) | ['detected'] | 'GPL v3' | :denied  | true
-
-          ref(:case1) | ref(:case2) | ['newly_detected'] | 'MIT' | :allowed  | true
-          ref(:case2) | ref(:case3) | ['newly_detected'] | 'MIT' | :allowed  | false
-          ref(:case3) | ref(:case4) | ['newly_detected'] | 'MIT' | :allowed  | true
-          ref(:case4) | ref(:case5) | ['newly_detected'] | 'MIT' | :allowed  | true
-          ref(:case1) | ref(:case2) | ['detected'] | 'MIT' | :allowed  | false
-          ref(:case2) | ref(:case3) | ['detected'] | 'MIT' | :allowed  | true
-          ref(:case3) | ref(:case4) | ['detected'] | 'MIT' | :allowed  | true
-          ref(:case4) | ref(:case5) | ['detected'] | 'MIT' | :allowed  | true
-        end
-
-        with_them do
-          let(:match_on_inclusion) { policy_state == :denied }
-          let(:target_branch_report) { create(:ci_reports_license_scanning_report) }
-          let(:pipeline_report) { create(:ci_reports_license_scanning_report) }
-          let(:license_states) { states }
-          let(:license) { create(:software_license, name: policy_license) }
-
-          before do
-            stub_feature_flags(license_scanning_policies: true)
-
-            target_branch.each do |ld|
-              target_branch_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
-            end
-
-            pipeline_branch.each do |ld|
-              pipeline_report.add_license(id: nil, name: ld[0]).add_dependency(name: ld[1])
-            end
-
-            create(:software_license_policy, policy_state,
-              project: project,
-              software_license: license,
-              scan_result_policy_read: scan_result_policy_read
-            )
-
-            allow(service).to receive(:report).and_return(pipeline_report)
-            allow(service).to receive(:target_branch_report).and_return(target_branch_report)
-          end
-
-          it 'sync approvals_required' do
-            if result
-              expect { execute }.not_to change { license_finding_rule.reload.approvals_required }
-            else
-              expect { execute }.to change { license_finding_rule.reload.approvals_required }.from(1).to(0)
-            end
           end
         end
       end

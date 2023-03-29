@@ -90,7 +90,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
       context 'when scan_result_role_action is enabled' do
         before do
-          stub_feature_flags(license_scanning_policies: false)
           stub_feature_flags(scan_result_role_action: true)
         end
 
@@ -324,48 +323,25 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
     context 'with license_finding rule_type' do
       let(:policy) { build(:scan_result_policy, :license_finding) }
 
-      context 'when license_scanning_policies is enabled' do
-        before do
-          stub_feature_flags(license_scanning_policies: true)
-        end
+      it 'creates scan_result_policy_read' do
+        subject
 
-        it 'creates scan_result_policy_read' do
-          subject
-
-          scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
-          expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
-          expect(scan_result_policy_read.match_on_inclusion).to be_truthy
-          expect(scan_result_policy_read.license_states).to match_array(%w[newly_detected detected])
-        end
-
-        it 'creates software_license_policies' do
-          expect { subject }.to change { project.software_license_policies.count }.by(2)
-        end
-
-        it 'creates approval_rules with valid params' do
-          subject
-
-          approval_rule = project.approval_rules.first
-
-          expect(approval_rule.severity_levels).to be_empty
-        end
+        scan_result_policy_read = project.approval_rules.first.scan_result_policy_read
+        expect(scan_result_policy_read).to eq(Security::ScanResultPolicyRead.first)
+        expect(scan_result_policy_read.match_on_inclusion).to be_truthy
+        expect(scan_result_policy_read.license_states).to match_array(%w[newly_detected detected])
       end
 
-      context 'when license_scanning_policies is disabled' do
-        before do
-          stub_feature_flags(license_scanning_policies: false)
-          stub_feature_flags(scan_result_role_action: false)
-        end
+      it 'creates software_license_policies' do
+        expect { subject }.to change { project.software_license_policies.count }.by(2)
+      end
 
-        it 'does not create scan_result_policy_read' do
-          subject
+      it 'creates approval_rules with valid params' do
+        subject
 
-          expect(project.approval_rules.first.scan_result_policy_read).to be_nil
-        end
+        approval_rule = project.approval_rules.first
 
-        it 'does not create software_license_policies' do
-          expect { subject }.not_to change { project.software_license_policies.count }
-        end
+        expect(approval_rule.severity_levels).to be_empty
       end
     end
 

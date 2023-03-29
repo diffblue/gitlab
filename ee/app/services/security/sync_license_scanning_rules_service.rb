@@ -19,7 +19,7 @@ module Security
       merge_requests = pipeline.merge_requests_as_head_pipeline
 
       sync_license_check_rule(merge_requests)
-      sync_license_finding_rules(merge_requests) if Feature.enabled?(:license_scanning_policies, project)
+      sync_license_finding_rules(merge_requests)
     end
 
     private
