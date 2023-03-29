@@ -26,7 +26,7 @@
         =  s_('UsageQuota|Pipelines')
     = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
       = s_('UsageQuota|Storage')
-    - if Feature.enabled?(:data_transfer_monitoring)
+    - if Feature.enabled?(:data_transfer_monitoring, @group)
       = gl_tab_link_to '#transfer-quota-tab', data: { qa_selector: 'transfer_tab' } do
         = s_('UsageQuota|Transfer')
 
@@ -45,6 +45,6 @@
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
     .tab-pane#storage-quota-tab
       #js-storage-counter-app{ data: storage_usage_app_data(@group) }
-    - if Feature.enabled?(:data_transfer_monitoring)
+    - if Feature.enabled?(:data_transfer_monitoring, @group)
       .tab-pane#transfer-quota-tab
         #js-group-transfer-app{ data: group_transfer_app_data(@group) }
