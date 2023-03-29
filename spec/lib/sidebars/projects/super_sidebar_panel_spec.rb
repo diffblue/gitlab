@@ -38,7 +38,6 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
         Sidebars::Projects::Menus::CiCdMenu,
         Sidebars::Projects::Menus::SecurityComplianceMenu,
         Sidebars::Projects::Menus::MonitorMenu,
-        Sidebars::Projects::Menus::AnalyticsMenu,
         Sidebars::UncategorizedMenu,
         Sidebars::Projects::Menus::SettingsMenu
       ]

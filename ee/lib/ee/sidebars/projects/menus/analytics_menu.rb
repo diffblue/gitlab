@@ -34,6 +34,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Insights'),
               link: project_insights_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'insights#show' },
               container_html_options: { class: 'shortcuts-project-insights' },
               item_id: :insights
@@ -46,8 +47,9 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Code review'),
+              title: context.is_super_sidebar ? _('Code review analytics') : _('Code review'),
               link: project_analytics_code_reviews_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'projects/analytics/code_reviews#index' },
               item_id: :code_review
             )
@@ -59,8 +61,9 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Issue'),
+              title: context.is_super_sidebar ? _('Issue analytics') : _('Issue'),
               link: project_analytics_issues_analytics_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'issues_analytics#show' },
               item_id: :issues
             )
@@ -77,8 +80,9 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Merge request'),
+              title: context.is_super_sidebar ? _('Merge request analytics') : _('Merge request'),
               link: project_analytics_merge_request_analytics_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'projects/analytics/merge_request_analytics#show' },
               item_id: :merge_requests
             )
@@ -92,8 +96,9 @@ module EE
             end
 
             ::Sidebars::MenuItem.new(
-              title: _('Dashboards'),
+              title: context.is_super_sidebar ? _('Application analytics') : _('Dashboards'),
               link: project_analytics_dashboards_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               container_html_options: { class: 'shortcuts-project-dashboards-analytics' },
               active_routes: { path: 'projects/analytics/dashboards#index' },
               item_id: :dashboards_analytics

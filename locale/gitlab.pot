@@ -4999,6 +4999,9 @@ msgstr ""
 msgid "Application ID"
 msgstr ""
 
+msgid "Application analytics"
+msgstr ""
+
 msgid "Application limits saved successfully"
 msgstr ""
 
@@ -7964,6 +7967,9 @@ msgstr ""
 msgid "CI/CD Settings"
 msgstr ""
 
+msgid "CI/CD analytics"
+msgstr ""
+
 msgid "CI/CD configuration"
 msgstr ""
 
@@ -10336,6 +10342,9 @@ msgid "Code owners"
 msgstr ""
 
 msgid "Code review"
+msgstr ""
+
+msgid "Code review analytics"
 msgstr ""
 
 msgid "Code snippet"
@@ -23967,6 +23976,9 @@ msgstr ""
 msgid "Issue already promoted to epic."
 msgstr ""
 
+msgid "Issue analytics"
+msgstr ""
+
 msgid "Issue board"
 msgstr ""
 
@@ -36897,6 +36909,9 @@ msgstr ""
 msgid "Repository already read-only"
 msgstr ""
 
+msgid "Repository analytics"
+msgstr ""
+
 msgid "Repository by URL"
 msgstr ""
 
@@ -47720,6 +47735,9 @@ msgid "Value might contain a variable reference"
 msgstr ""
 
 msgid "Value stream"
+msgstr ""
+
+msgid "Value stream analytics"
 msgstr ""
 
 msgid "ValueStreamAnalyticsStage|We don't have enough data to show this stage."
