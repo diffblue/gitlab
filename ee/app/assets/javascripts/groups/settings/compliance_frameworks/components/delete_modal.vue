@@ -3,8 +3,8 @@ import { GlModal, GlSprintf } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { __, s__, sprintf } from '~/locale';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import deleteComplianceFrameworkMutation from '../graphql/mutations/delete_compliance_framework.mutation.graphql';
-import getComplianceFrameworkQuery from '../graphql/queries/get_compliance_framework.query.graphql';
 
 export default {
   components: {

@@ -1,0 +1,21 @@
+mutation projectSetComplianceFramework(
+  $projectId: ProjectID!
+  $frameworkId: ComplianceManagementFrameworkID
+) {
+  projectSetComplianceFramework(
+    input: { projectId: $projectId, complianceFrameworkId: $frameworkId }
+  ) {
+    clientMutationId
+    errors
+    project {
+      id
+      complianceFrameworks {
+        nodes {
+          id
+          name
+          color
+        }
+      }
+    }
+  }
+}

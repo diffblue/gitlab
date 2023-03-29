@@ -22,6 +22,10 @@ export default {
       type: String,
       required: true,
     },
+    newGroupComplianceFrameworkPath: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
@@ -125,7 +129,13 @@ export default {
       {{ $options.i18n.queryError }}
     </gl-alert>
 
-    <projects-table v-else :is-loading="isLoading" :projects="projects.list" />
+    <projects-table
+      v-else
+      :is-loading="isLoading"
+      :projects="projects.list"
+      :group-path="groupPath"
+      :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+    />
 
     <pagination
       v-if="showPagination"

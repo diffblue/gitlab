@@ -20,6 +20,7 @@ Vue.use(VueApollo);
 describe('ComplianceFrameworksReport component', () => {
   let wrapper;
   const groupPath = 'group-path';
+  const newGroupComplianceFrameworkPath = 'new-framework-path';
   let $router;
 
   const sentryError = new Error('GraphQL networkError');
@@ -50,6 +51,7 @@ describe('ComplianceFrameworksReport component', () => {
         apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
           groupPath,
+          newGroupComplianceFrameworkPath,
           ...props,
         },
         mocks: {
