@@ -12,7 +12,7 @@ module EE
 
       prepended do
         before_action only: [:index] do
-          push_frontend_feature_flag(:data_transfer_monitoring)
+          push_frontend_feature_flag(:data_transfer_monitoring, group)
         end
       end
 
