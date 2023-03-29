@@ -44,8 +44,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Iterations'),
               link: project_iteration_cadences_path(context.project),
-              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
-              super_sidebar_before: :service_desk,
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::ManageMenu,
               active_routes: { controller: :iteration_cadences },
               item_id: :iterations
             )
