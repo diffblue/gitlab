@@ -32,10 +32,11 @@ module EE
 
       after_save :save_verification_details
 
-      before_create do
+      around_save :ignore_save_verification_details_in_transaction, prepend: true
+
+      def ignore_save_verification_details_in_transaction(&blk)
         ::Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
-          %w[upload_states], url: "https://gitlab.com/gitlab-org/gitlab/-/issues/398199"
-        )
+          %w[upload_states], url: "https://gitlab.com/gitlab-org/gitlab/-/issues/398199", &blk)
       end
 
       def verification_state_object

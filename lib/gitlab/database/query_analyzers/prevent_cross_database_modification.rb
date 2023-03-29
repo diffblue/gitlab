@@ -24,10 +24,16 @@ module Gitlab
 
         # This method will temporary ignore the given tables in a current transaction
         # This is meant to disable `PreventCrossDB` check for some well known failures
-        def self.temporary_ignore_tables_in_transaction(tables, url:)
-          return unless context&.dig(:ignored_tables)
+        def self.temporary_ignore_tables_in_transaction(tables, url:, &blk)
+          return yield unless context&.dig(:ignored_tables)
 
-          context[:ignored_tables] += tables
+          begin
+            prev_ignored_tables = context[:ignored_tables]
+            context[:ignored_tables] = prev_ignored_tables + tables
+            yield
+          ensure
+            context[:ignored_tables] = prev_ignored_tables
+          end
         end
 
         def self.begin!
@@ -65,7 +71,6 @@ module Gitlab
             context[:transaction_depth_by_db][database] -= 1
             if context[:transaction_depth_by_db][database] == 0
               context[:modified_tables_by_db][database].clear
-              context[:ignored_tables].clear
 
               # Attempt to troubleshoot https://gitlab.com/gitlab-org/gitlab/-/issues/351531
               ::CrossDatabaseModification::TransactionStackTrackRecord.log_gitlab_transactions_stack(action: :end_of_transaction)

@@ -25,10 +25,11 @@ module WithUploads
   FILE_UPLOADERS = %w(PersonalFileUploader NamespaceFileUploader FileUploader).freeze
 
   included do
-    before_destroy do
+    around_destroy :ignore_uploads_table_in_transaction
+
+    def ignore_uploads_table_in_transaction(&blk)
       Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModification.temporary_ignore_tables_in_transaction(
-        %w[uploads], url: "https://gitlab.com/gitlab-org/gitlab/-/issues/398199"
-      )
+        %w[uploads], url: "https://gitlab.com/gitlab-org/gitlab/-/issues/398199", &blk)
     end
 
     has_many :uploads, as: :model

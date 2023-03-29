@@ -122,8 +122,9 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::PreventCrossDatabaseModificatio
         it 'does not raise error' do
           Project.transaction do
             expect do
-              described_class.temporary_ignore_tables_in_transaction(%w[ci_pipelines], url: 'TODO')
-              run_queries
+              described_class.temporary_ignore_tables_in_transaction(%w[ci_pipelines], url: 'TODO') do
+                run_queries
+              end
             end.not_to raise_error
           end
         end
