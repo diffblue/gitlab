@@ -90,4 +90,6 @@ namespace :admin do
     post :cancel_index_deletion
     post :retry_migration
   end
+
+  resources :plan_limits, only: :index
 end
