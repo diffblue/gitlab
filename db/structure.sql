@@ -22851,7 +22851,8 @@ CREATE TABLE terraform_states (
     uuid character varying(32) NOT NULL,
     name character varying(255) NOT NULL,
     versioning_enabled boolean DEFAULT true NOT NULL,
-    deleted_at timestamp with time zone
+    deleted_at timestamp with time zone,
+    activerecord_lock_version integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE terraform_states_id_seq
