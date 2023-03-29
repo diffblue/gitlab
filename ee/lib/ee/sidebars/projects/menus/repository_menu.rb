@@ -26,6 +26,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Locked files'),
               link: project_path_locks_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::CodeMenu,
               active_routes: { controller: :path_locks },
               item_id: :file_locks
             )

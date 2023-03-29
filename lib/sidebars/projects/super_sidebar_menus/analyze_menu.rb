@@ -13,6 +13,21 @@ module Sidebars
         def sprite_icon
           'chart'
         end
+
+        override :configure_menu_items
+        def configure_menu_items
+          [
+            :dashboards_analytics,
+            :cycle_analytics,
+            :contributors,
+            :ci_cd_analytics,
+            :repository_analytics,
+            :code_review,
+            :merge_requests,
+            :issues,
+            :insights
+          ].each { |id| add_item(::Sidebars::NilMenuItem.new(item_id: id)) }
+        end
       end
     end
   end

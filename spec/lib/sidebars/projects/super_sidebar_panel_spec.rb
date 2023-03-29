@@ -34,10 +34,8 @@ RSpec.describe Sidebars::Projects::SuperSidebarPanel, feature_category: :navigat
         Sidebars::Projects::SuperSidebarMenus::OperationsMenu,
         Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
         Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
-        Sidebars::Projects::Menus::RepositoryMenu,
         Sidebars::Projects::Menus::CiCdMenu,
         Sidebars::Projects::Menus::MonitorMenu,
-        Sidebars::Projects::Menus::AnalyticsMenu,
         Sidebars::UncategorizedMenu,
         Sidebars::Projects::Menus::SettingsMenu
       ]
