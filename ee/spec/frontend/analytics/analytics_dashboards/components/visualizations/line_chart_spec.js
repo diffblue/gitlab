@@ -18,20 +18,29 @@ describe('LineChart Visualization', () => {
   };
 
   describe('when mounted', () => {
-    beforeEach(() => {
+    it('should render the line chart with the provided data and option', () => {
       createWrapper({
         data: [{ name: 'foo' }],
         options: { yAxis: {}, xAxis: {} },
       });
-    });
 
-    it('should render the line chart with the provided data and option', () => {
       expect(findLineChart().props()).toMatchObject({
         data: [{ name: 'foo' }],
         option: { yAxis: {}, xAxis: {} },
         height: 'auto',
       });
       expect(findLineChart().attributes('responsive')).toBe('');
+    });
+
+    it('should add minimum y-axis option when not defined', () => {
+      createWrapper({
+        data: [{ name: 'foo' }],
+        options: { yAxis: {}, xAxis: {} },
+      });
+
+      expect(findLineChart().props().option).toMatchObject({
+        yAxis: { min: 0 },
+      });
     });
   });
 });
