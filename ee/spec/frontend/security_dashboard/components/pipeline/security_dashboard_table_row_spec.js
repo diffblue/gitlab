@@ -156,7 +156,6 @@ describe('Security Dashboard Table Row', () => {
       ${[{ to_state: 'dismissed', comment: 'comment' }]} | ${true}      | ${true}
       ${[{}, {}, { to_state: 'dismissed' }]}             | ${true}      | ${false}
       ${[]}                                              | ${false}     | ${false}
-      ${[{ to_state: 'dismissed' }, {}, {}]}             | ${false}     | ${false}
       ${[{ to_state: 'detected' }]}                      | ${false}     | ${false}
     `(
       'shows dismissal badge: $isLabelShown, shows dismissal comment icon: $isIconShown',

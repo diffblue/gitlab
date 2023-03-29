@@ -1,5 +1,23 @@
 mutation revertFindingToDetected($uuid: String!) {
   securityFindingRevertToDetected(input: { uuid: $uuid }) {
     errors
+    securityFinding {
+      vulnerability {
+        id
+        stateTransitions(last: 1) {
+          nodes {
+            author {
+              id
+              name
+              username
+              webUrl
+            }
+            comment
+            createdAt
+            toState
+          }
+        }
+      }
+    }
   }
 }
