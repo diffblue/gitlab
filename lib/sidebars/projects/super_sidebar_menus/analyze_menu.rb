@@ -6,7 +6,7 @@ module Sidebars
       class AnalyzeMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Analyze')
+          s_('Navigation|Analyze')
         end
 
         override :sprite_icon

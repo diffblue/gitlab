@@ -6,7 +6,7 @@ module Sidebars
       class OperationsMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Operate')
+          s_('Navigation|Operate')
         end
 
         override :sprite_icon

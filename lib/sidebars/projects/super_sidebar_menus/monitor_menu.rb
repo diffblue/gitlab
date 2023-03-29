@@ -6,7 +6,7 @@ module Sidebars
       class MonitorMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Monitor')
+          s_('Navigation|Monitor')
         end
 
         override :sprite_icon

@@ -6,7 +6,7 @@ module Sidebars
       class CodeMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Code')
+          s_('Navigation|Code')
         end
 
         override :sprite_icon

@@ -6,7 +6,7 @@ module Sidebars
       class ManageMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Manage')
+          s_('Navigation|Manage')
         end
 
         override :sprite_icon

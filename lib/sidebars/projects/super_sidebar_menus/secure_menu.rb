@@ -6,7 +6,7 @@ module Sidebars
       class SecureMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Secure')
+          s_('Navigation|Secure')
         end
 
         override :sprite_icon

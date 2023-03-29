@@ -6,7 +6,7 @@ RSpec.describe Sidebars::Projects::SuperSidebarMenus::BuildMenu, feature_categor
   subject { described_class.new({}) }
 
   it 'has title and sprite_icon' do
-    expect(subject.title).to eq(s_("SidebarNavigation|Build"))
+    expect(subject.title).to eq(s_("Navigation|Build"))
     expect(subject.sprite_icon).to eq("rocket")
   end
 end

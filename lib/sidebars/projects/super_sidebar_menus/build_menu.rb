@@ -6,7 +6,7 @@ module Sidebars
       class BuildMenu < ::Sidebars::Menu
         override :title
         def title
-          s_('SidebarNavigation|Build')
+          s_('Navigation|Build')
         end
 
         override :sprite_icon
