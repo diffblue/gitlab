@@ -1,5 +1,5 @@
 import { GlButton, GlCollapsibleListbox } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { mount, ErrorWrapper } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -22,17 +22,17 @@ describe('SelectionOperations component', () => {
   let projectSetComplianceFrameworkMutation;
   let toastMock;
 
-  const findOperationDropdown = () =>
-    wrapper
-      .findAllComponents(GlCollapsibleListbox)
-      .wrappers.find((w) => w.text().includes(SelectionOperations.i18n.dropdownActionPlaceholder));
+  const findByText = (Component, text) =>
+    wrapper.findAllComponents(Component).wrappers.find((w) => w.text().match(text)) ??
+    new ErrorWrapper();
 
+  const findOperationDropdown = () =>
+    findByText(GlCollapsibleListbox, SelectionOperations.i18n.dropdownActionPlaceholder);
   const findFrameworkSelectionDropdown = () =>
-    wrapper
-      .findAllComponents(GlCollapsibleListbox)
-      .wrappers.find((w) =>
-        w.text().includes(SelectionOperations.i18n.frameworksDropdownPlaceholder),
-      );
+    findByText(GlCollapsibleListbox, SelectionOperations.i18n.frameworksDropdownPlaceholder);
+
+  const findApplyButton = () => findByText(GlButton, /^Apply$/);
+  const findRemoveButton = () => findByText(GlButton, /^Remove$/);
 
   const select = (glDropdown, value) => {
     glDropdown.vm.$emit(GlCollapsibleListbox.model.event, value);
@@ -81,7 +81,7 @@ describe('SelectionOperations component', () => {
     });
 
     it('framework selection dropdown is not available', () => {
-      expect(findFrameworkSelectionDropdown()).toBe(undefined);
+      expect(findFrameworkSelectionDropdown().exists()).toBe(false);
     });
 
     it('displays correct text', () => {
@@ -103,9 +103,6 @@ describe('SelectionOperations component', () => {
     });
 
     describe('when selecting remove operation', () => {
-      const findRemoveButton = () =>
-        wrapper.findAllComponents(GlButton).wrappers.find((w) => w.text() === 'Remove');
-
       beforeEach(() =>
         select(findOperationDropdown(), SelectionOperations.operations.REMOVE_OPERATION),
       );
@@ -115,7 +112,7 @@ describe('SelectionOperations component', () => {
       });
 
       it('framework selection dropdown is not available', () => {
-        expect(findFrameworkSelectionDropdown()).toBe(undefined);
+        expect(findFrameworkSelectionDropdown().exists()).toBe(false);
       });
 
       it('clicking remove button calls mutation', async () => {
@@ -133,9 +130,6 @@ describe('SelectionOperations component', () => {
     });
 
     describe('when selecting apply operation', () => {
-      const findApplyButton = () =>
-        wrapper.findAllComponents(GlButton).wrappers.find((w) => w.text() === 'Apply');
-
       beforeEach(() =>
         select(findOperationDropdown(), SelectionOperations.operations.APPLY_OPERATION),
       );
@@ -168,7 +162,7 @@ describe('SelectionOperations component', () => {
           await nextTick();
 
           expect(findOperationDropdown().props(GlCollapsibleListbox.model.prop)).toBe(null);
-          expect(findFrameworkSelectionDropdown()).toBe(undefined);
+          expect(findFrameworkSelectionDropdown().exists()).toBe(false);
           expect(findApplyButton().exists()).toBe(true);
           expect(findApplyButton().props('disabled')).toBe(true);
         });

@@ -52,10 +52,6 @@ export default {
     hasSelectedAllProjects() {
       return this.selectedRows.length === this.projects.length;
     },
-
-    emptyStateIsVisible() {
-      return !this.isLoading && !this.hasProjects;
-    },
   },
   methods: {
     updateSelectedRows(selection) {
@@ -163,13 +159,11 @@ export default {
           $options.i18n.noFrameworkMessage
         }}</template>
       </template>
+      <template #table-busy>
+        <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
+      </template>
       <template #empty>
-        <gl-loading-icon v-if="isLoading" size="lg" color="dark" class="gl-my-5" />
-        <div
-          v-else-if="emptyStateIsVisible"
-          class="gl-my-5 gl-text-center"
-          data-testid="projects-table-empty-state"
-        >
+        <div class="gl-my-5 gl-text-center" data-testid="projects-table-empty-state">
           {{ $options.i18n.noProjectsFound }}
         </div>
       </template>
