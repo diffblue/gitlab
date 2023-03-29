@@ -1,0 +1,9 @@
+---
+name: project_reset_approvals_on_push_updated
+description: Create this audit event whenever a project has its setting on whether approvals are reset on a push is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/336211
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/66234
+milestone: '14.2'
+feature_category: code_review_workflow
+saved_to_database: true
+streamed: true

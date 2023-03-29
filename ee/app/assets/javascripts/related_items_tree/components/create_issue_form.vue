@@ -298,7 +298,9 @@ export default {
         >
       </div>
       <div class="col-sm flex-sm-grow-0 ml-auto">
-        <gl-button class="w-100" @click="cancel">{{ __('Cancel') }}</gl-button>
+        <gl-button class="w-100" data-testId="cancel-btn" @click="cancel">{{
+          __('Cancel')
+        }}</gl-button>
       </div>
     </div>
   </div>

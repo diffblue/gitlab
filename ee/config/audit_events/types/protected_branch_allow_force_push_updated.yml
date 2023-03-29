@@ -1,0 +1,9 @@
+---
+name: protected_branch_allow_force_push_updated
+description: This audit event is created when a protected branch has its ability to allow force pushes is toggled
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/338873
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68869
+milestone: '14.3'
+feature_category: compliance_management
+saved_to_database: true
+streamed: true

@@ -1,0 +1,9 @@
+---
+name: user_admin_status_updated
+description: Adds an audit event when a user is either made an administrator, or removed as an administrator
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/323905
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65168
+milestone: '14.1'
+feature_category: user_profile
+saved_to_database: true
+streamed: true
