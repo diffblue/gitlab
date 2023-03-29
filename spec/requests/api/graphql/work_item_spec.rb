@@ -556,91 +556,26 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
         GRAPHQL
       end
 
-      it 'fetches notes that require gitaly call to parse note' do
-        # this 9 digit long weight triggers a gitaly call when parsing the system note
-        create(:resource_weight_event, user: current_user, issue: work_item, weight: 123456789)
-
-        post_graphql(query, current_user: current_user)
-
-        expect_graphql_errors_to_be_empty
-      end
-
-      context 'when fetching description version diffs' do
-        shared_examples 'description change diff' do |description_diffs_enabled: true|
-          it 'returns previous description change diff' do
-            post_graphql(query, current_user: developer)
-
-            # check that system note is added
-            note = find_note(work_item, 'changed the description') # system note about changed description
-            expect(work_item.reload.description).to eq('updated description')
-            expect(note.note).to eq('changed the description')
-
-            # check that diff is returned
-            all_widgets = graphql_dig_at(work_item_data, :widgets)
-            notes_widget = all_widgets.find { |x| x["type"] == "NOTES" }
-
-            system_notes = graphql_dig_at(notes_widget["system"], :nodes)
-            description_changed_note = graphql_dig_at(system_notes.first["notes"], :nodes).first
-            description_version = graphql_dig_at(description_changed_note['systemNoteMetadata'], :descriptionVersion)
-
-            id = GitlabSchema.parse_gid(description_version['id'], expected_type: ::DescriptionVersion).model_id
-            diff = description_version['diff']
-            diff_path = description_version['diffPath']
-            delete_path = description_version['deletePath']
-            can_delete = description_version['canDelete']
-            deleted = description_version['deleted']
-
-            url_helpers = ::Gitlab::Routing.url_helpers
-            url_args = [work_item.project, work_item, id]
-
-            if description_diffs_enabled
-              expect(diff).to eq("<span class=\"idiff addition\">updated description</span>")
-              expect(diff_path).to eq(url_helpers.description_diff_project_issue_path(*url_args))
-              expect(delete_path).to eq(url_helpers.delete_description_version_project_issue_path(*url_args))
-              expect(can_delete).to be true
-            else
-              expect(diff).to be_nil
-              expect(diff_path).to be_nil
-              expect(delete_path).to be_nil
-              expect(can_delete).to be_nil
-            end
-
-            expect(deleted).to be false
-          end
-
-          def find_note(work_item, starting_with)
-            work_item.notes.find do |note|
-              break note if note && note.note.start_with?(starting_with)
-            end
-          end
-        end
-
-        let_it_be_with_reload(:work_item) { create(:work_item, project: project) }
-
+      context 'when fetching award emoji from notes' do
         let(:work_item_fields) do
           <<~GRAPHQL
             id
             widgets {
               type
               ... on WorkItemWidgetNotes {
-                system: discussions(filter: ONLY_ACTIVITY, first: 10) {
+                discussions(filter: ONLY_COMMENTS, first: 10) {
                   nodes {
                     id
                     notes {
                       nodes {
                         id
-                        system
-                        internal
                         body
-                        systemNoteMetadata {
-                          id
-                          descriptionVersion {
-                            id
-                            diff(versionId: #{version_gid})
-                            diffPath
-                            deletePath
-                            canDelete
-                            deleted
+                        awardEmoji {
+                          nodes {
+                            name
+                            user {
+                              name
+                            }
                           }
                         }
                       }
@@ -652,40 +587,45 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
           GRAPHQL
         end
 
-        let(:version_gid) { "null" }
-        let(:opts) { {} }
-        let(:spam_params) { double }
-        let(:widget_params) { { description_widget: { description: "updated description" } } }
+        let_it_be(:note) { create(:note, project: work_item.project, noteable: work_item) }
 
-        let(:service) do
-          WorkItems::UpdateService.new(
-            container: project,
-            current_user: developer,
-            params: opts,
-            spam_params: spam_params,
-            widget_params: widget_params
+        before_all do
+          create(:award_emoji, awardable: note, name: 'rocket', user: developer)
+        end
+
+        it 'returns award emoji data' do
+          all_widgets = graphql_dig_at(work_item_data, :widgets)
+          notes_widget = all_widgets.find { |x| x['type'] == 'NOTES' }
+          notes = graphql_dig_at(notes_widget['discussions'], :nodes).flat_map { |d| d['notes']['nodes'] }
+
+          note_with_emoji = notes.find { |n| n['id'] == note.to_gid.to_s }
+
+          expect(note_with_emoji).to include(
+            'awardEmoji' => {
+              'nodes' => include(
+                hash_including(
+                  'name' => 'rocket',
+                  'user' => {
+                    'name' => developer.name
+                  }
+                )
+              )
+            }
           )
         end
 
-        before do
-          stub_spam_services
-          service.execute(work_item)
-        end
+        it 'avoids N+1 queries' do
+          post_graphql(query, current_user: developer)
 
-        it_behaves_like 'description change diff'
+          control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: developer) }
 
-        context 'with passed description version id' do
-          let(:version_gid) { "\"#{work_item.description_versions.first.to_global_id}\"" }
+          expect_graphql_errors_to_be_empty
 
-          it_behaves_like 'description change diff'
-        end
+          another_note = create(:note, project: work_item.project, noteable: work_item)
+          create(:award_emoji, awardable: another_note, name: 'star', user: guest)
 
-        context 'with description_diffs disabled' do
-          before do
-            stub_licensed_features(description_diffs: false)
-          end
-
-          it_behaves_like 'description change diff', description_diffs_enabled: false
+          expect { post_graphql(query, current_user: developer) }.not_to exceed_query_limit(control)
+          expect_graphql_errors_to_be_empty
         end
       end
     end
