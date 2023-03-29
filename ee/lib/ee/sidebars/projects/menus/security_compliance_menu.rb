@@ -55,6 +55,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Security capabilities'),
               link: project_security_discover_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: 'projects/security/discover#show' },
               item_id: :discover_project_security
             )
@@ -68,6 +69,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Security dashboard'),
               link: project_security_dashboard_index_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: 'projects/security/dashboard#index' },
               item_id: :dashboard
             )
@@ -81,6 +83,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Vulnerability report'),
               link: project_security_vulnerability_report_index_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: %w[projects/security/vulnerability_report#index projects/security/vulnerabilities#show] },
               item_id: :vulnerability_report
             )
@@ -96,6 +99,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: s_('OnDemandScans|On-demand scans'),
               link: link,
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               item_id: :on_demand_scans,
               active_routes: { path: %w[
                 projects/on_demand_scans#index
@@ -113,6 +117,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Dependency list'),
               link: project_dependencies_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: 'projects/dependencies#index' },
               item_id: :dependency_list
             )
@@ -126,6 +131,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('License compliance'),
               link: project_licenses_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { path: 'projects/licenses#index' },
               item_id: :license_compliance
             )
@@ -139,6 +145,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Policies'),
               link: project_security_policies_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { controller: ['projects/security/policies'] },
               item_id: :scan_policies
             )
@@ -152,6 +159,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Audit events'),
               link: project_audit_events_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::SecureMenu,
               active_routes: { controller: :audit_events },
               item_id: :audit_events
             )
