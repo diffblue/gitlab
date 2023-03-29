@@ -1,0 +1,9 @@
+---
+name: user_email_address_updated
+description: Adds an audit event when a user updates their email address
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab-ee/issues/1370
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/2103
+milestone: '10.1'
+feature_category: user_profile
+saved_to_database: true
+streamed: true

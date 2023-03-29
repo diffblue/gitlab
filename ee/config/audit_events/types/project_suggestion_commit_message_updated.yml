@@ -1,0 +1,9 @@
+---
+name: project_suggestion_commit_message_updated
+description: Create this audit event whenever a project has its suggested commit message updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/301124
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83922
+milestone: '14.10'
+feature_category: code_suggestions
+saved_to_database: true
+streamed: true

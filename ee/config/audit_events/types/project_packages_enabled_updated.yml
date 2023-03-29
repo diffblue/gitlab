@@ -1,0 +1,9 @@
+---
+name: project_packages_enabled_updated
+description: When the setting that controls packages for a project is toggled, this audit event is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369288
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/7962
+milestone: '11.5'
+feature_category: projects
+saved_to_database: true
+streamed: true
