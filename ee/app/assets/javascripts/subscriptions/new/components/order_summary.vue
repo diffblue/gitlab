@@ -69,6 +69,7 @@ export default {
     return {
       invoicePreview: undefined,
       promoCodeErrorMessage: undefined,
+      isPromoCodeValid: true,
     };
   },
   computed: {
@@ -110,7 +111,7 @@ export default {
       };
     },
     sendPromoCodeToPreviewInvoice() {
-      return this.isEligibleToUsePromoCode && !isEmpty(this.promoCode) && !this.isPromoCodeInvalid;
+      return this.isEligibleToUsePromoCode && !isEmpty(this.promoCode) && this.isPromoCodeValid;
     },
     showPromoCode() {
       return this.isEligibleToUsePromoCode && this.glFeatures.useInvoicePreviewApiInSaasPurchase;
@@ -123,9 +124,6 @@ export default {
     },
     showSuccessAlert() {
       return this.showAmount && this.hasDiscount;
-    },
-    isPromoCodeInvalid() {
-      return this.promoCodeErrorMessage === INVALID_PROMO_CODE_ERROR_MESSAGE;
     },
   },
   watch: {
@@ -177,6 +175,7 @@ export default {
         const { message } = gqlErrorExtensions || {};
 
         if (isInvalidPromoCodeError(gqlErrorExtensions)) {
+          this.isPromoCodeValid = false;
           this.promoCodeErrorMessage = INVALID_PROMO_CODE_ERROR_MESSAGE;
           this.track('failure_response', { label: 'apply_coupon_code_failure_saas' });
           return;
@@ -213,6 +212,7 @@ export default {
       if (this.usersPresent) {
         this.clearError();
         this.resetPromoCodeErrorMessage();
+        this.isPromoCodeValid = true;
         this.updatePromoCode(promoCode);
 
         if (this.sendPromoCodeToPreviewInvoice) {
