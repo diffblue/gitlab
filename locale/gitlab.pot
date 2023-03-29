@@ -18036,6 +18036,9 @@ msgstr ""
 msgid "File name"
 msgstr ""
 
+msgid "File permissions"
+msgstr ""
+
 msgid "File renamed with no changes."
 msgstr ""
 
