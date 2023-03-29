@@ -27,6 +27,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('On-call Schedules'),
               link: project_incident_management_oncall_schedules_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
               active_routes: { controller: :oncall_schedules },
               item_id: :on_call_schedules
             )
@@ -40,6 +41,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Escalation Policies'),
               link: project_incident_management_escalation_policies_path(context.project),
+              super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::MonitorMenu,
               active_routes: { controller: :escalation_policies },
               item_id: :escalation_policies
             )
