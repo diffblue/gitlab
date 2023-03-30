@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe UsersStatistics do
-  let(:users_statistics) { build(:users_statistics, with_highest_role_minimal_access: 5) }
+  let(:users_statistics) do
+    build(:users_statistics, with_highest_role_minimal_access: 5, with_highest_role_guest_with_custom_role: 2)
+  end
 
   describe '#billable' do
     it 'sums users statistics values excluding blocked users and bots' do
@@ -17,7 +19,7 @@ RSpec.describe UsersStatistics do
       end
 
       it 'excludes blocked users, bots, guest users, users without a group or project and minimal access users' do
-        expect(users_statistics.billable).to eq(41)
+        expect(users_statistics.billable).to eq(43)
       end
     end
   end
@@ -30,7 +32,13 @@ RSpec.describe UsersStatistics do
 
   describe '#non_billable' do
     it 'sums bots and guests values' do
-      expect(users_statistics.non_billable).to eq(7)
+      expect(users_statistics.non_billable).to eq(5)
+    end
+  end
+
+  describe '#non_billable_guests' do
+    it 'sums only guests without an elevating custom role' do
+      expect(users_statistics.non_billable_guests).to eq(3)
     end
   end
 
@@ -45,6 +53,10 @@ RSpec.describe UsersStatistics do
       expect(described_class.create_current_stats!).to have_attributes(
         with_highest_role_minimal_access: 1
       )
+    end
+
+    it 'includes guests with custom role in current statistics values' do
+      expect(described_class.create_current_stats!).to have_attributes(with_highest_role_guest_with_custom_role: 0)
     end
   end
 end

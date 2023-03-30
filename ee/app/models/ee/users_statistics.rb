@@ -10,7 +10,11 @@ module EE
     end
 
     def non_billable
-      bots + with_highest_role_guest
+      bots + non_billable_guests
+    end
+
+    def non_billable_guests
+      with_highest_role_guest - with_highest_role_guest_with_custom_role
     end
 
     override :active
@@ -31,7 +35,7 @@ module EE
 
     def guest_billable_users
       if License.current&.exclude_guests_from_active_count?
-        []
+        [with_highest_role_guest_with_custom_role]
       else
         [without_groups_and_projects, with_highest_role_guest, with_highest_role_minimal_access]
       end
@@ -44,7 +48,13 @@ module EE
 
       override :highest_role_stats
       def highest_role_stats
-        super.merge(with_highest_role_minimal_access: batch_count_for_access_level(::Gitlab::Access::MINIMAL_ACCESS))
+        super.merge(
+          with_highest_role_minimal_access: batch_count_for_access_level(::Gitlab::Access::MINIMAL_ACCESS),
+          with_highest_role_guest_with_custom_role: count_guests_with_elevating_custom_role)
+      end
+
+      def count_guests_with_elevating_custom_role
+        ::Gitlab::Database::BatchCount.batch_count(::User.guests_with_elevating_role)
       end
     end
   end

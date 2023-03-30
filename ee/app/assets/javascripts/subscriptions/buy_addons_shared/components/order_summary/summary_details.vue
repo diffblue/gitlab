@@ -132,7 +132,7 @@ export default {
           :title="$options.i18n.tooltipNote"
           :aria-label="$options.i18n.tooltipNote"
           role="tooltip"
-          name="question"
+          name="question-o"
         />
       </div>
     </div>

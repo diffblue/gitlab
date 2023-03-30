@@ -212,7 +212,7 @@ export default {
         class="gl-display-flex gl-align-items-center gl-flex-wrap-wrap gl-flex-grow-1 flex-xl-nowrap"
       >
         <div class="item-title-wrapper gl-flex-grow-1 gl-mr-3">
-          <div class="item-title gl-display-flex gl-mb-0 gl-pt-2 gl-pb-2">
+          <div class="item-title gl-display-flex gl-mb-0 gl-py-1">
             <gl-icon
               ref="stateIconMd"
               class="gl-display-block gl-mr-3"
