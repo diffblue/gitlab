@@ -246,7 +246,8 @@ module EE
         enable :read_group_repository_analytics
         enable :read_group_contribution_analytics
         enable :read_group_cycle_analytics
-        enable :read_cluster
+        enable :read_cluster # Deprecated as certificate-based cluster integration (`Clusters::Cluster`).
+        enable :read_cluster_agent
         enable :read_dependency_proxy
         enable :read_wiki
 
