@@ -45,9 +45,9 @@ module Sidebars
           { page: link }
         end
 
-        override :pick_into_super_sidebar?
-        def pick_into_super_sidebar?
-          true
+        override :serialize_as_menu_item_args
+        def serialize_as_menu_item_args
+          nil
         end
 
         private
@@ -60,6 +60,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Security dashboard'),
             link: group_security_dashboard_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'dashboard#show' },
             item_id: :security_dashboard
           )
@@ -73,6 +74,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Vulnerability report'),
             link: group_security_vulnerabilities_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'vulnerabilities#index' },
             item_id: :vulnerability_report
           )
@@ -86,6 +88,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Compliance report'),
             link: group_security_compliance_dashboard_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'compliance_dashboards#show' },
             item_id: :compliance
           )
@@ -104,6 +107,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Credentials'),
             link: group_security_credentials_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'credentials#index' },
             item_id: :credentials
           )
@@ -123,6 +127,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Policies'),
             link: group_security_policies_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { controller: ['groups/security/policies'] },
             item_id: :scan_policies
           )
@@ -140,6 +145,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Audit events'),
             link: group_audit_events_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'audit_events#index' },
             item_id: :audit_events
           )

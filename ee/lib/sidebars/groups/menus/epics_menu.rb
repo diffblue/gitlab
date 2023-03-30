@@ -76,10 +76,9 @@ module Sidebars
             title: context.is_super_sidebar ? _('Epic boards') : _('Boards'),
             link: group_epic_boards_path(context.group),
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
-            super_sidebar_before: :milestones,
             active_routes: { path: %w[epic_boards#index epic_boards#show] },
             container_html_options: { class: 'home' },
-            item_id: :boards
+            item_id: context.is_super_sidebar ? :epic_boards : :boards
           )
         end
 
@@ -88,7 +87,6 @@ module Sidebars
             title: _('Roadmap'),
             link: group_roadmap_path(context.group),
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
-            super_sidebar_before: :wiki,
             active_routes: { path: 'roadmap#show' },
             container_html_options: { class: 'home' },
             item_id: :roadmap
