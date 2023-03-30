@@ -12671,7 +12671,13 @@ msgstr ""
 msgid "Custom range (UTC)"
 msgstr ""
 
+msgid "Customer contacts"
+msgstr ""
+
 msgid "Customer experience improvement and third-party offers"
+msgstr ""
+
+msgid "Customer organizations"
 msgstr ""
 
 msgid "Customer relations"
