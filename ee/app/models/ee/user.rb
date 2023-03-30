@@ -113,6 +113,10 @@ module EE
         where('EXISTS (?)', subquery)
       end
 
+      scope :guests_with_elevating_role, -> do
+        joins(:user_highest_role).joins(:elevated_members).where(user_highest_role: { highest_access_level: ::Gitlab::Access::GUEST })
+      end
+
       scope :subscribed_for_admin_email, -> { where(admin_email_unsubscribed_at: nil) }
       scope :ldap, -> { joins(:identities).where('identities.provider LIKE ?', 'ldap%') }
       scope :with_provider, ->(provider) do

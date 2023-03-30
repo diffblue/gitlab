@@ -23522,7 +23522,8 @@ CREATE TABLE users_statistics (
     with_highest_role_owner integer DEFAULT 0 NOT NULL,
     bots integer DEFAULT 0 NOT NULL,
     blocked integer DEFAULT 0 NOT NULL,
-    with_highest_role_minimal_access integer DEFAULT 0 NOT NULL
+    with_highest_role_minimal_access integer DEFAULT 0 NOT NULL,
+    with_highest_role_guest_with_custom_role integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE users_statistics_id_seq
