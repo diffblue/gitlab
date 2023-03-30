@@ -595,6 +595,7 @@ gem 'app_store_connect'
 gem 'telesignenterprise', '~> 2.2'
 
 # BufferedIO patch
+# Updating this version will require updating scripts/allowed_warnings.txt
 gem 'net-protocol', '~> 0.1.3'
 
 gem 'duo_api', '~> 1.3'
