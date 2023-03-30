@@ -60,11 +60,23 @@ module Epics
       [].freeze
     end
 
+    override :handle_changes
+    def handle_changes(epic, options)
+      handle_parent_epic_change(epic, options)
+    end
+
     override :handle_quick_actions
     def handle_quick_actions(epic)
       super
 
       set_quick_action_params
+    end
+
+    override :filter_params
+    def filter_params(epic)
+      filter_parent_epic(epic)
+
+      super
     end
 
     def set_quick_action_params
@@ -122,6 +134,59 @@ module Epics
         author: current_user,
         namespace: group
       )
+    end
+
+    def filter_parent_epic(epic)
+      return unless parent_param_present?
+
+      new_parent = params[:parent] || Epic.find_by_id(params[:parent_id])
+      return unless new_parent
+
+      if can_link_epics?(epic, new_parent)
+        params[:parent] = new_parent
+      else
+        params.delete(:parent)
+      end
+
+      params.delete(:parent_id)
+    end
+
+    def can_link_epics?(epic, parent)
+      can?(current_user, :admin_epic_tree_relation, epic) &&
+        can?(current_user, :admin_epic_tree_relation, parent)
+    end
+
+    def handle_parent_epic_change(epic, options)
+      return unless parent_param_present?
+
+      old_parent = options.dig(:old_associations, :parent)
+      new_parent = epic.parent
+
+      return if old_parent == new_parent
+
+      create_parent_notes(epic, new_parent, old_parent)
+      track_epic_parent_updated
+    end
+
+    def create_parent_notes(epic, new_parent, old_parent)
+      if new_parent
+        SystemNoteService.change_epics_relation(new_parent, epic, current_user, 'relate_epic')
+
+        return unless old_parent
+
+        SystemNoteService.move_child_epic_to_new_parent(
+          previous_parent_epic: old_parent,
+          child_epic: epic,
+          new_parent_epic: new_parent,
+          user: current_user
+        )
+      elsif old_parent
+        SystemNoteService.change_epics_relation(old_parent, epic, current_user, 'unrelate_epic')
+      end
+    end
+
+    def parent_param_present?
+      params.key?(:parent) || params.key?(:parent_id)
     end
   end
 end

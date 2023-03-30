@@ -5,16 +5,20 @@ require 'spec_helper'
 RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management do
   include GraphqlHelpers
 
-  let(:current_user) { create(:user) }
+  let_it_be(:private_group) { create(:group, :private) }
+  let_it_be(:private_project) { create(:project, :private, group: private_group) }
   let(:group) { create(:group) }
+  let(:current_user) { create(:user) }
   let(:project) { create(:project, group: group) }
   let(:base_epic) { create(:epic, group: group) }
   let(:epic1) { create(:epic, group: group, parent: base_epic, relative_position: 10) }
   let(:epic2) { create(:epic, group: group, parent: base_epic, relative_position: 20) }
   let(:issue1) { create(:issue, project: project) }
   let(:issue2) { create(:issue, project: project) }
+  let(:private_issue) { create(:issue, project: private_project) }
   let(:epic_issue1) { create(:epic_issue, epic: base_epic, issue: issue1, relative_position: 10) }
   let(:epic_issue2) { create(:epic_issue, epic: base_epic, issue: issue2, relative_position: 20) }
+  let(:epic_issue3) { create(:epic_issue, epic: base_epic, issue: private_issue, relative_position: 30) }
 
   let(:mutation) do
     graphql_mutation(:epic_tree_reorder, variables)
@@ -63,10 +67,27 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
         expect(mutation_response['errors']).to contain_exactly('You don\'t have permissions to move the objects.')
       end
 
-      context 'when moving an issue' do
+      context 'when user cannot reorder issue' do
         before do
-          variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
+          group.add_guest(current_user)
+          variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue3).to_s
           variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue1).to_s
+        end
+
+        it_behaves_like 'a mutation that does not update the tree'
+
+        it 'returns the error message' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(mutation_response['errors']).to contain_exactly('You don\'t have permissions to move the objects.')
+        end
+      end
+
+      context 'when user cannot reorder adjacent reference' do
+        before do
+          group.add_guest(current_user)
+          variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
+          variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue3).to_s
         end
 
         it_behaves_like 'a mutation that does not update the tree'
@@ -147,7 +168,11 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
         end
 
         context 'when moving an epic fails due to the parents of the relative position object and the moving object mismatching' do
-          let(:epic2) { create(:epic, relative_position: 20) }
+          let(:epic2) { create(:epic, relative_position: 20, group: private_group) }
+
+          before do
+            private_group.add_guest(current_user)
+          end
 
           it_behaves_like 'a mutation that does not update the tree'
 
@@ -220,10 +245,11 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
       end
 
       context 'when moving an issue fails due to the parents of the relative position object and the moving object mismatching' do
-        let(:epic_issue2) { create(:epic_issue, relative_position: 20) }
+        let(:epic_issue2) { create(:epic_issue, relative_position: 20, issue: create(:issue, project: private_project)) }
 
         before do
           group.add_guest(current_user)
+          private_group.add_guest(current_user)
           variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
           variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue1).to_s
         end

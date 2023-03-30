@@ -29,9 +29,9 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
       end
     end
 
-    context 'when epics are enabled' do
+    context 'when epics and subepics are enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when a user can not promote the issue' do
@@ -201,6 +201,23 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures, feature_category
               expect(epic.author).to eq(user)
               expect(epic.group).to eq(new_group)
               expect(epic.parent).to eq(parent_epic)
+            end
+
+            context 'when subepics are disabled' do
+              before do
+                stub_licensed_features(epics: true, subepics: false)
+              end
+
+              it 'creates a new epic without the parent' do
+                epic = subject.execute(issue, new_group)
+
+                expect(issue.reload.promoted_to_epic_id).to eq(epic.id)
+                expect(epic.title).to eq(issue.title)
+                expect(epic.description).to eq(issue.description)
+                expect(epic.author).to eq(user)
+                expect(epic.group).to eq(new_group)
+                expect(epic.parent).to be_nil
+              end
             end
           end
 

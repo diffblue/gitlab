@@ -40,7 +40,10 @@ module Epics
       epic
     end
 
+    override :handle_changes
     def handle_changes(epic, options)
+      super
+
       old_associations = options.fetch(:old_associations, {})
       old_mentioned_users = old_associations.fetch(:mentioned_users, [])
 
@@ -49,6 +52,15 @@ module Epics
       if epic.saved_change_to_attribute?(:confidential)
         handle_confidentiality_change(epic)
       end
+    end
+
+    override :associations_before_update
+    def associations_before_update(epic)
+      associations = super
+
+      associations[:parent] = epic.parent
+
+      associations
     end
 
     def handle_label_changes(epic, old_labels)
