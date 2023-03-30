@@ -88,6 +88,28 @@ RSpec.describe 'License-Scanning.gitlab-ci.yml', feature_category: :continuous_i
             'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
+
+      context 'when LICENSE_MANAGEMENT_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'LICENSE_MANAGEMENT_DISABLED', value: 'true')
+        end
+
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when LICENSE_MANAGEMENT_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'LICENSE_MANAGEMENT_DISABLED', value: 'false')
+        end
+
+        it 'includes job' do
+          expect(build_names).to match_array(%w[license_scanning])
+        end
+      end
     end
   end
 end
