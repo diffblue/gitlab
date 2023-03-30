@@ -19561,6 +19561,28 @@ CREATE TABLE packages_npm_metadata (
     CONSTRAINT chk_rails_e5cbc301ae CHECK ((char_length((package_json)::text) < 20000))
 );
 
+CREATE TABLE packages_npm_metadata_caches (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    last_downloaded_at timestamp with time zone,
+    project_id bigint,
+    file_store integer DEFAULT 1,
+    size integer NOT NULL,
+    file text NOT NULL,
+    package_name text NOT NULL,
+    CONSTRAINT check_57aa07a4b2 CHECK ((char_length(file) <= 255))
+);
+
+CREATE SEQUENCE packages_npm_metadata_caches_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE packages_npm_metadata_caches_id_seq OWNED BY packages_npm_metadata_caches.id;
+
 CREATE TABLE packages_nuget_dependency_link_metadata (
     dependency_link_id bigint NOT NULL,
     target_framework text NOT NULL,
@@ -25149,6 +25171,8 @@ ALTER TABLE ONLY packages_dependency_links ALTER COLUMN id SET DEFAULT nextval('
 
 ALTER TABLE ONLY packages_maven_metadata ALTER COLUMN id SET DEFAULT nextval('packages_maven_metadata_id_seq'::regclass);
 
+ALTER TABLE ONLY packages_npm_metadata_caches ALTER COLUMN id SET DEFAULT nextval('packages_npm_metadata_caches_id_seq'::regclass);
+
 ALTER TABLE ONLY packages_package_file_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_package_file_build_infos_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_package_files ALTER COLUMN id SET DEFAULT nextval('packages_package_files_id_seq'::regclass);
@@ -27378,6 +27402,9 @@ ALTER TABLE ONLY packages_helm_file_metadata
 
 ALTER TABLE ONLY packages_maven_metadata
     ADD CONSTRAINT packages_maven_metadata_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY packages_npm_metadata_caches
+    ADD CONSTRAINT packages_npm_metadata_caches_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY packages_npm_metadata
     ADD CONSTRAINT packages_npm_metadata_pkey PRIMARY KEY (package_id);
@@ -31223,6 +31250,8 @@ CREATE INDEX index_notification_settings_on_source_and_level_and_user ON notific
 
 CREATE UNIQUE INDEX index_notifications_on_user_id_and_source_id_and_source_type ON notification_settings USING btree (user_id, source_id, source_type);
 
+CREATE UNIQUE INDEX index_npm_metadata_caches_on_package_name_project_id_unique ON packages_npm_metadata_caches USING btree (package_name, project_id) WHERE (project_id IS NOT NULL);
+
 CREATE INDEX index_ns_root_stor_stats_on_registry_size_estimated ON namespace_root_storage_statistics USING btree (registry_size_estimated);
 
 CREATE UNIQUE INDEX index_ns_user_callouts_feature ON user_namespace_callouts USING btree (user_id, feature_name, namespace_id);
@@ -31372,6 +31401,8 @@ CREATE INDEX index_packages_helm_file_metadata_on_pf_id_and_channel ON packages_
 CREATE INDEX index_packages_maven_metadata_on_package_id_and_path ON packages_maven_metadata USING btree (package_id, path);
 
 CREATE INDEX index_packages_maven_metadata_on_path ON packages_maven_metadata USING btree (path);
+
+CREATE INDEX index_packages_npm_metadata_caches_on_project_id ON packages_npm_metadata_caches USING btree (project_id);
 
 CREATE INDEX index_packages_nuget_dl_metadata_on_dependency_link_id ON packages_nuget_dependency_link_metadata USING btree (dependency_link_id);
 
@@ -34825,6 +34856,9 @@ ALTER TABLE ONLY merge_requests
 
 ALTER TABLE ONLY ml_experiments
     ADD CONSTRAINT fk_ad89c59858 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY packages_npm_metadata_caches
+    ADD CONSTRAINT fk_ada23b1d30 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY merge_request_metrics
     ADD CONSTRAINT fk_ae440388cc FOREIGN KEY (latest_closed_by_id) REFERENCES users(id) ON DELETE SET NULL;
