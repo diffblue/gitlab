@@ -536,6 +536,9 @@ export const pipelineSecurityReportFinding = {
     { url: 'http://example.com/asset-2', name: 'assets name - 2' },
   ],
   details: Object.values(vulnerabilityDetails),
+  dismissedAt: null,
+  dismissedBy: null,
+  stateComment: null,
 };
 
 export const getPipelineSecurityReportFindingResponse = ({
@@ -545,6 +548,8 @@ export const getPipelineSecurityReportFindingResponse = ({
   data: {
     project: {
       id: '1',
+      nameWithNamespace: 'Security / Security Reports',
+      webUrl: 'http://gdk.test:3000/security/security-reports',
       pipeline: {
         id: '1',
         securityReportFinding: withoutFindingData

@@ -3,6 +3,8 @@
 query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findingUuid: String!) {
   project(fullPath: $projectFullPath) {
     id
+    webUrl
+    nameWithNamespace
     pipeline(iid: $pipelineIid) {
       id
       securityReportFinding(uuid: $findingUuid) {
@@ -100,6 +102,14 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           ...List
           ...Table
         }
+        dismissedAt
+        dismissedBy {
+          id
+          name
+          username
+          webUrl
+        }
+        stateComment
       }
     }
   }
