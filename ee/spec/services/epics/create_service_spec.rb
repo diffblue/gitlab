@@ -63,6 +63,38 @@ RSpec.describe Epics::CreateService, feature_category: :portfolio_management do
           expect(epic.notes).to be_empty
         end
       end
+
+      context 'when user has not access to parent epic' do
+        let_it_be(:external_epic) { create(:epic, group: create(:group, :private)) }
+
+        shared_examples 'creates epic without parent' do
+          it 'does not set parent' do
+            subject
+
+            epic = Epic.last
+            expect(epic.parent).to be_nil
+            expect(epic.notes).to be_empty
+          end
+        end
+
+        context 'when parent_id param is set' do
+          let(:params) { { title: 'new epic', parent_id: external_epic.id } }
+
+          it_behaves_like 'creates epic without parent'
+        end
+
+        context 'when parent param is set' do
+          let(:params) { { title: 'new epic', parent: external_epic } }
+
+          it_behaves_like 'creates epic without parent'
+        end
+
+        context 'when both parent and parent_id params are set' do
+          let(:params) { { title: 'new epic', parent: external_epic, parent_id: external_epic.id } }
+
+          it_behaves_like 'creates epic without parent'
+        end
+      end
     end
 
     context 'handling fixed dates' do

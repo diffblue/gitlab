@@ -59,7 +59,7 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
     context 'when epics feature is enabled' do
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
       end
 
       context 'when user does not have permissions to admin the base epic' do
@@ -148,6 +148,19 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
             let(:adjacent_reference_id) { GitlabSchema.id_from_object(issue2) }
 
             it_behaves_like 'error for the tree update', 'Only epics and epic_issues are supported.'
+          end
+
+          context 'when user does not have permissions to move issue' do
+            let_it_be(:private_project) { create(:project, :private) }
+            let_it_be(:private_issue1) { create(:issue, project: private_project) }
+            let_it_be(:private_issue2) { create(:issue, project: private_project) }
+            let!(:private_epic_issue1) { create(:epic_issue, epic: epic, issue: private_issue1, relative_position: 50) }
+            let!(:private_epic_issue2) { create(:epic_issue, epic: epic, issue: private_issue2, relative_position: 60) }
+
+            let!(:tree_object_1) { private_epic_issue1 }
+            let!(:tree_object_2) { private_epic_issue2 }
+
+            it_behaves_like 'error for the tree update', 'You don\'t have permissions to move the objects.'
           end
 
           context 'when user does not have permissions to admin the previous parent' do
