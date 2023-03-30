@@ -12,7 +12,51 @@ module Search
       return unless Feature.enabled?(:search_index_integrity)
       return unless project.should_check_index_integrity?
 
-      blob_count = client.count(index: index_name, body: blobs_query(project.id))['count']
+      check_index_for_blobs(project)
+
+      check_index_for_project(project)
+    end
+
+    private
+
+    def check_index_for_project(project)
+      query = {
+        query: {
+          bool: {
+            filter: [
+              { term: { type: 'project' } },
+              { term: { id: project.id } }
+            ]
+          }
+        }
+      }
+
+      project_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
+      return if project_count > 0
+
+      logger.warn(
+        build_structured_payload(
+          message: 'project document missing from index',
+          namespace_id: project.namespace_id,
+          root_namespace_id: project.root_namespace.id,
+          project_id: project.id
+        )
+      )
+    end
+
+    def check_index_for_blobs(project)
+      query = {
+        query: {
+          bool: {
+            filter: [
+              { term: { type: 'blob' } },
+              { term: { project_id: project.id } }
+            ]
+          }
+        }
+      }
+
+      blob_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
       return if blob_count > 0
 
       logger.warn(
@@ -27,29 +71,6 @@ module Search
           repository_size: project.statistics&.repository_size
         )
       )
-    end
-
-    private
-
-    def blobs_query(project_id)
-      {
-        query: {
-          bool: {
-            filter: [
-              {
-                term: {
-                  type: 'blob'
-                }
-              },
-              {
-                term: {
-                  project_id: project_id
-                }
-              }
-            ]
-          }
-        }
-      }
     end
 
     def client
