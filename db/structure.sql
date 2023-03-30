@@ -29059,6 +29059,8 @@ CREATE INDEX i_dast_profiles_tags_on_scanner_profiles_id ON dast_profiles_tags U
 
 CREATE INDEX i_dast_scanner_profiles_tags_on_scanner_profiles_id ON dast_scanner_profiles_tags USING btree (dast_scanner_profile_id);
 
+CREATE INDEX i_pkgs_deb_file_meta_on_updated_at_package_file_id_when_unknown ON packages_debian_file_metadata USING btree (updated_at, package_file_id) WHERE (file_type = 1);
+
 CREATE UNIQUE INDEX i_pm_licenses_on_spdx_identifier ON pm_licenses USING btree (spdx_identifier);
 
 CREATE UNIQUE INDEX i_pm_package_version_licenses_join_ids ON pm_package_version_licenses USING btree (pm_package_version_id, pm_license_id);
