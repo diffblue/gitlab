@@ -209,6 +209,7 @@ export default [
       project_fingerprint: '4e5b6966dd100170b4b1ad599c7058cce91b57b4',
       destroy_vulnerability_feedback_dismissal_path: 'https://example.com/feedback_dismissal_path',
     },
+    state_transitions: [{ to_state: 'dismissed' }],
     issue_feedback: null,
     issue_links: [],
     create_vulnerability_feedback_issue_path: 'https://example.com/vulnerability_feedback',

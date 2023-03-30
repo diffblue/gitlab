@@ -8,10 +8,24 @@ import mockData from './data/mock_data_vulnerabilities';
 
 jest.mock('~/lib/utils/url_utility');
 
+const DISMISSAL_STATE_TRANSITION = { toState: 'DISMISSED' };
+const GRAPHQL_DISMISS_MUTATION_RESPONSE = {
+  securityFindingDismiss: {
+    securityFinding: {
+      vulnerability: {
+        stateTransitions: { nodes: [DISMISSAL_STATE_TRANSITION] },
+      },
+    },
+  },
+};
+const EXPECTED_DISMISSAL_TRANSITIONS = [convertObjectPropsToSnakeCase(DISMISSAL_STATE_TRANSITION)];
+const EXPECTED_DISMISSAL_STATE = DISMISSAL_STATE_TRANSITION.toState.toLowerCase();
+
 describe('vulnerabilities module mutations', () => {
   let state;
 
   beforeEach(() => {
+    gon.features = { deprecateVulnerabilitiesFeedback: true };
     state = createState();
   });
 
@@ -159,7 +173,6 @@ describe('vulnerabilities module mutations', () => {
 
   describe('RECEIVE_CREATE_ISSUE_SUCCESS', () => {
     it('should visit the issue URL', () => {
-      gon.features = { deprecateVulnerabilitiesFeedback: true };
       const path = 'fakepath.html';
       const payload = { issue_links: [{ link_type: 'created', issue_url: path }] };
       mutations[types.RECEIVE_CREATE_ISSUE_SUCCESS](state, payload);
@@ -206,7 +219,6 @@ describe('vulnerabilities module mutations', () => {
 
   describe('RECEIVE_CREATE_MERGE_REQUEST_SUCCESS', () => {
     it('should visit the merge request URL', () => {
-      gon.features = { deprecateVulnerabilitiesFeedback: true };
       const path = 'fakepath.html';
       const payload = { merge_request_links: [{ merge_request_path: path }] };
       mutations[types.RECEIVE_CREATE_MERGE_REQUEST_SUCCESS](state, payload);
@@ -255,7 +267,6 @@ describe('vulnerabilities module mutations', () => {
   describe('RECEIVE_DISMISS_VULNERABILITY_SUCCESS', () => {
     let vulnerability;
     let data;
-    const dismissalTransition = { toState: 'DISMISSED' };
 
     beforeEach(() => {
       state.vulnerabilities = mockData;
@@ -264,25 +275,15 @@ describe('vulnerabilities module mutations', () => {
 
     describe('deprecateVulnerabilitiesFeedback feature flag enabled', () => {
       beforeEach(() => {
-        data = {
-          securityFindingDismiss: {
-            securityFinding: {
-              vulnerability: {
-                stateTransitions: { nodes: [dismissalTransition] },
-              },
-            },
-          },
-        };
-
-        gon.features = { deprecateVulnerabilitiesFeedback: true };
-        mutations[types.RECEIVE_DISMISS_VULNERABILITY_SUCCESS](state, { vulnerability, data });
+        mutations[types.RECEIVE_DISMISS_VULNERABILITY_SUCCESS](state, {
+          vulnerability,
+          data: GRAPHQL_DISMISS_MUTATION_RESPONSE,
+        });
       });
 
-      it('should set state and state_transitions on the passed vulnerability', () => {
-        expect(vulnerability.state).toBe(dismissalTransition.toState.toLowerCase());
-        expect(vulnerability.state_transitions).toEqual([
-          convertObjectPropsToSnakeCase(dismissalTransition),
-        ]);
+      it('should set the dismissal feedback on the passed vulnerability', () => {
+        expect(vulnerability.state).toBe(EXPECTED_DISMISSAL_STATE);
+        expect(vulnerability.state_transitions).toEqual(EXPECTED_DISMISSAL_TRANSITIONS);
       });
 
       it('should set isDismissingVulnerability to false', () => {
@@ -443,28 +444,56 @@ describe('vulnerabilities module mutations', () => {
   });
 
   describe('RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS', () => {
-    let payload;
-    let vulnerability;
-    let data;
-
     beforeEach(() => {
       state.vulnerabilities = mockData;
-      [vulnerability] = mockData;
-      data = { name: '' };
-      payload = { id: vulnerability.id, data };
-      mutations[types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, payload);
     });
 
-    it('should set the dismissal feedback on the passed vulnerability to an empty string', () => {
-      expect(state.vulnerabilities[0].dismissal_feedback).toEqual({ name: '' });
+    describe('deprecateVulnerabilitiesFeedback feature flag enabled', () => {
+      beforeEach(() => {
+        mutations[types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, {
+          id: state.vulnerabilities[0].id,
+          data: GRAPHQL_DISMISS_MUTATION_RESPONSE,
+        });
+      });
+
+      it('should update the vulnerability state and state_transitions with payload data', () => {
+        const vulnerability = state.vulnerabilities[0];
+
+        expect(vulnerability.state).toBe(EXPECTED_DISMISSAL_STATE);
+        expect(vulnerability.state_transitions).toEqual(EXPECTED_DISMISSAL_TRANSITIONS);
+      });
+
+      it('should set isDismissingVulnerability to false', () => {
+        expect(state.isDismissingVulnerability).toBe(false);
+      });
+
+      it('should set isDismissed on the modal vulnerability to be true', () => {
+        expect(state.modal.vulnerability.isDismissed).toBe(true);
+      });
     });
 
-    it('should set isDismissingVulnerability to false', () => {
-      expect(state.isDismissingVulnerability).toBe(false);
-    });
+    describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+      const data = {};
 
-    it('should set isDismissed on the modal vulnerability to be true', () => {
-      expect(state.modal.vulnerability.isDismissed).toBe(true);
+      beforeEach(() => {
+        gon.features.deprecateVulnerabilitiesFeedback = false;
+        mutations[types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, {
+          id: state.vulnerabilities[0].id,
+          data,
+        });
+      });
+
+      it('should set the dismissal feedback to the payload data', () => {
+        expect(state.vulnerabilities[0].dismissal_feedback).toEqual(data);
+      });
+
+      it('should set isDismissingVulnerability to false', () => {
+        expect(state.isDismissingVulnerability).toBe(false);
+      });
+
+      it('should set isDismissed on the modal vulnerability to be true', () => {
+        expect(state.modal.vulnerability.isDismissed).toBe(true);
+      });
     });
   });
 
@@ -517,28 +546,56 @@ describe('vulnerabilities module mutations', () => {
   });
 
   describe('RECEIVE_ADD_DISMISSAL_COMMENT_SUCCESS', () => {
-    let payload;
-    let vulnerability;
-    let data;
-
     beforeEach(() => {
       state.vulnerabilities = mockData;
-      [vulnerability] = mockData;
-      data = { name: 'dismissal feedback' };
-      payload = { vulnerability, data };
-      mutations[types.RECEIVE_ADD_DISMISSAL_COMMENT_SUCCESS](state, payload);
     });
 
-    it('should set the dismissal feedback on the passed vulnerability', () => {
-      expect(state.vulnerabilities[0].dismissal_feedback).toEqual(data);
+    describe('deprecateVulnerabilitiesFeedback feature flag enabled', () => {
+      beforeEach(() => {
+        mutations[types.RECEIVE_ADD_DISMISSAL_COMMENT_SUCCESS](state, {
+          vulnerability: state.vulnerabilities[0],
+          data: GRAPHQL_DISMISS_MUTATION_RESPONSE,
+        });
+      });
+
+      it('should update the vulnerability state and state_transitions with payload data', () => {
+        const vulnerability = state.vulnerabilities[0];
+
+        expect(vulnerability.state).toBe(EXPECTED_DISMISSAL_STATE);
+        expect(vulnerability.state_transitions).toEqual(EXPECTED_DISMISSAL_TRANSITIONS);
+      });
+
+      it('should set isDismissingVulnerability to false', () => {
+        expect(state.isDismissingVulnerability).toBe(false);
+      });
+
+      it('should set isDismissed on the modal vulnerability to be true', () => {
+        expect(state.modal.vulnerability.isDismissed).toBe(true);
+      });
     });
 
-    it('should set isDismissingVulnerability to false', () => {
-      expect(state.isDismissingVulnerability).toBe(false);
-    });
+    describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+      const data = {};
 
-    it('should set isDismissed on the modal vulnerability to be true', () => {
-      expect(state.modal.vulnerability.isDismissed).toBe(true);
+      beforeEach(() => {
+        gon.features.deprecateVulnerabilitiesFeedback = false;
+        mutations[types.RECEIVE_ADD_DISMISSAL_COMMENT_SUCCESS](state, {
+          vulnerability: state.vulnerabilities[0],
+          data,
+        });
+      });
+
+      it('should set the dismissal feedback on the passed vulnerability', () => {
+        expect(state.vulnerabilities[0].dismissal_feedback).toEqual(data);
+      });
+
+      it('should set isDismissingVulnerability to false', () => {
+        expect(state.isDismissingVulnerability).toBe(false);
+      });
+
+      it('should set isDismissed on the modal vulnerability to be true', () => {
+        expect(state.modal.vulnerability.isDismissed).toBe(true);
+      });
     });
   });
 
@@ -572,7 +629,6 @@ describe('vulnerabilities module mutations', () => {
 
   describe('RECEIVE_REVERT_DISMISSAL_SUCCESS', () => {
     let vulnerability;
-    let data;
     const detectedTransition = { toState: 'DETECTED' };
 
     beforeEach(() => {
@@ -582,18 +638,18 @@ describe('vulnerabilities module mutations', () => {
 
     describe('deprecateVulnerabilitiesFeedback feature flag enabled', () => {
       beforeEach(() => {
-        data = {
-          securityFindingRevertToDetected: {
-            securityFinding: {
-              vulnerability: {
-                stateTransitions: { nodes: [detectedTransition] },
+        mutations[types.RECEIVE_REVERT_DISMISSAL_SUCCESS](state, {
+          vulnerability,
+          data: {
+            securityFindingRevertToDetected: {
+              securityFinding: {
+                vulnerability: {
+                  stateTransitions: { nodes: [detectedTransition] },
+                },
               },
             },
           },
-        };
-
-        gon.features = { deprecateVulnerabilitiesFeedback: true };
-        mutations[types.RECEIVE_REVERT_DISMISSAL_SUCCESS](state, { vulnerability, data });
+        });
       });
 
       it('should set state and state_transitions on the passed vulnerability', () => {

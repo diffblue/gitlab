@@ -18,6 +18,7 @@ import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/co
 import { defaultClient } from 'ee/security_dashboard/graphql/provider';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
+import { getDismissalTransitionForVulnerability } from 'ee/vue_shared/security_reports/components/helpers';
 import * as types from './mutation_types';
 
 let vulnerabilitiesSource;
@@ -332,13 +333,14 @@ export const receiveDismissVulnerabilityError = ({ commit }, { flashError }) => 
 
 export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) => {
   dispatch('requestAddDismissalComment');
-  const { dismissal_feedback: dismissalFeedback } = vulnerability;
-  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissalFeedback.id}`;
+  const dismissalFeedback = vulnerability.dismissal_feedback;
+  const isEditingComment = Boolean(
+    gon.features.deprecateVulnerabilitiesFeedback
+      ? getDismissalTransitionForVulnerability(vulnerability).comment
+      : dismissalFeedback.comment_details?.comment,
+  );
 
-  const editingDismissalContent =
-    dismissalFeedback.comment_details && dismissalFeedback.comment_details.comment;
-
-  const toastMsg = editingDismissalContent
+  const toastMsg = isEditingComment
     ? sprintf(s__("SecurityReports|Comment edited on '%{vulnerabilityName}'"), {
         vulnerabilityName: vulnerability.name,
       })
@@ -346,12 +348,15 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
         vulnerabilityName: vulnerability.name,
       });
 
-  return axios
-    .patch(url, {
-      project_id: dismissalFeedback.project_id,
-      id: dismissalFeedback.id,
-      comment,
-    })
+  const action = gon.features.deprecateVulnerabilitiesFeedback
+    ? dismissFinding(vulnerability, comment)
+    : axios.patch(dismissalFeedback.destroy_vulnerability_feedback_dismissal_path, {
+        project_id: dismissalFeedback.project_id,
+        id: dismissalFeedback.id,
+        comment,
+      });
+
+  action
     .then(({ data }) => {
       dispatch('closeDismissalCommentBox');
       dispatch('receiveAddDismissalCommentSuccess', { vulnerability, data });
@@ -364,22 +369,22 @@ export const addDismissalComment = ({ dispatch }, { vulnerability, comment }) =>
 
 export const deleteDismissalComment = ({ dispatch }, { vulnerability }) => {
   dispatch('requestDeleteDismissalComment');
-
-  const { dismissal_feedback: dismissalFeedback } = vulnerability;
-  const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${dismissalFeedback.id}`;
+  const dismissalFeedback = vulnerability.dismissal_feedback;
   const toastMsg = sprintf(s__("SecurityReports|Comment deleted on '%{vulnerabilityName}'"), {
     vulnerabilityName: vulnerability.name,
   });
 
-  return axios
-    .patch(url, {
-      project_id: dismissalFeedback.project_id,
-      comment: '',
-    })
+  const action = gon.features.deprecateVulnerabilitiesFeedback
+    ? dismissFinding(vulnerability, '')
+    : axios.patch(dismissalFeedback.destroy_vulnerability_feedback_dismissal_path, {
+        project_id: dismissalFeedback.project_id,
+        comment: '',
+      });
+
+  action
     .then(({ data }) => {
-      const { id } = vulnerability;
       dispatch('closeDismissalCommentBox');
-      dispatch('receiveDeleteDismissalCommentSuccess', { id, data });
+      dispatch('receiveDeleteDismissalCommentSuccess', { id: vulnerability.id, data });
       toast(toastMsg);
     })
     .catch(() => {
