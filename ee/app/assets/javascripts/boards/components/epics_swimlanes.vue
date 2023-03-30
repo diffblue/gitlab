@@ -14,7 +14,7 @@ import {
   DRAGGABLE_TAG,
   EPIC_LANE_BASE_HEIGHT,
   DraggableItemTypes,
-} from 'ee_else_ce/boards/constants';
+} from 'ee/boards/constants';
 import { calculateSwimlanesBufferSize } from '../boards_util';
 import epicsSwimlanesQuery from '../graphql/epics_swimlanes.query.graphql';
 import EpicLane from './epic_lane.vue';
@@ -64,6 +64,8 @@ export default {
       isUnassignedCollapsed: true,
       rawEpics: {},
       isLoadingMore: false,
+      hasMoreUnassignedIssuables: {},
+      isLoadingMoreIssues: false,
     };
   },
   apollo: {
@@ -122,9 +124,6 @@ export default {
     addColumnFormVisible() {
       return this.addColumnForm?.visible;
     },
-    unassignedIssues() {
-      return (listId) => this.getUnassignedIssues(listId);
-    },
     treeRootWrapper() {
       return this.canAdminList ? Draggable : DRAGGABLE_TAG;
     },
@@ -142,6 +141,9 @@ export default {
       return this.canAdminList ? options : {};
     },
     hasMoreUnassignedIssues() {
+      if (this.isApolloBoard) {
+        return this.lists.some((list) => this.hasMoreUnassignedIssuables[list.id]);
+      }
       return this.lists.some((list) => this.pageInfoByListId[list.id]?.hasNextPage);
     },
     isLoading() {
@@ -165,13 +167,18 @@ export default {
         ? s__('Board|Loading epics')
         : s__('Board|Load more epics');
     },
+    shouldShowLoadMoreUnassignedIssues() {
+      return !this.isUnassignedCollapsed && this.hasMoreUnassignedIssues;
+    },
   },
   watch: {
     filterParams: {
       handler() {
-        Promise.all(this.epics.map((epic) => this.fetchIssuesForEpic(epic.id)))
-          .then(() => this.doneLoadingSwimlanesItems())
-          .catch(() => {});
+        if (!this.isApolloBoard) {
+          Promise.all(this.epics.map((epic) => this.fetchIssuesForEpic(epic.id)))
+            .then(() => this.doneLoadingSwimlanesItems())
+            .catch(() => {});
+        }
       },
       deep: true,
       immediate: true,
@@ -210,6 +217,10 @@ export default {
       }
     },
     fetchMoreUnassignedIssues() {
+      if (this.isApolloBoard) {
+        this.isLoadingMoreIssues = true;
+        return;
+      }
       this.lists.forEach((list) => {
         if (this.pageInfoByListId[list.id]?.hasNextPage) {
           this.fetchItemsForList({ listId: list.id, fetchNext: true, noEpicIssues: true });
@@ -244,6 +255,15 @@ export default {
     },
     openUnassignedLane() {
       this.isUnassignedCollapsed = false;
+    },
+    unassignedIssues(listId) {
+      return this.getUnassignedIssues(listId);
+    },
+    updatePageInfo(pageInfo, listId) {
+      this.hasMoreUnassignedIssuables = {
+        ...this.hasMoreUnassignedIssuables,
+        [listId]: pageInfo.hasNextPage,
+      };
     },
   },
 };
@@ -348,19 +368,25 @@ export default {
                 :issues="unassignedIssues(list.id)"
                 :is-unassigned-issues-lane="true"
                 :can-admin-list="canAdminList"
+                :board-id="boardId"
+                :filter-params="filtersToUse"
+                :is-loading-more-issues="isLoadingMoreIssues"
+                @updatePageInfo="updatePageInfo"
+                @issuesLoaded="isLoadingMoreIssues = false"
               />
             </div>
           </div>
         </div>
       </div>
       <div
-        v-if="hasMoreUnassignedIssues && !isUnassignedCollapsed"
+        v-if="shouldShowLoadMoreUnassignedIssues"
         class="swimlanes-button gl-p-3 gl-pr-0 gl-sticky gl-left-0"
       >
         <gl-button
           category="tertiary"
           variant="confirm"
           class="gl-w-full"
+          data-testid="board-lane-load-more-issues-button"
           @click="fetchMoreUnassignedIssues()"
         >
           {{ s__('Board|Load more issues') }}

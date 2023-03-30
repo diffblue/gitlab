@@ -224,6 +224,8 @@ export default {
         :epic-id="epic.id"
         :epic-is-confidential="epic.confidential"
         :can-admin-list="canAdminList"
+        :board-id="boardId"
+        :filter-params="filterParams"
       />
     </div>
   </div>
