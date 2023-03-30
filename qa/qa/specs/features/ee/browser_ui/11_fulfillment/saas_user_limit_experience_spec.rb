@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin,
-                 only: { subdomain: :staging },
-                 product_group: :billing_and_subscription_management,
-                 feature_flag: { name: 'free_user_cap', scope: :group } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
+    product_group: :billing_and_subscription_management do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: group_owner) }
@@ -54,28 +52,34 @@ module QA
       end
 
       after do
-        Runtime::Feature.disable(:preview_free_user_cap, group: private_group)
-        Runtime::Feature.disable(:notification_free_user_cap_show_over_limit, group: private_group)
-        Runtime::Feature.disable(:free_user_cap, group: private_group)
-        Runtime::Feature.disable(:free_user_cap_new_namespaces, group: private_group)
-
         remove_resources(group_owner, user_2, user_3, user_4, user_5, user_6, user_7)
       end
 
-      context 'when Saas user limit experience feature flags are enabled' do
-        it(
-          'preview notification displayed for private group when over limit',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387825'
-        ) do
-          create_private_group_with_members
-          Runtime::Feature.enable(:preview_free_user_cap, group: private_group)
-          Runtime::Feature.enable(:notification_free_user_cap_show_over_limit, group: private_group)
-          private_group.add_member(user_6)
-          page.refresh
+      context 'when Saas user limit experience ' do
+        context 'when group is in notification' do
+          before do
+            # Since we have logic for 'reached' the limit, we need to go over the notification_limit by going to 4
+            # and still be under the dashboard_limit of 5 to see the notification message.
+            # We also want to keep a matching scenario of production in staging, we we don't want to have this
+            # setting be permanent.
+            Runtime::ApplicationSettings.set_application_settings(dashboard_notification_limit: 3)
+          end
 
-          expect { page.text.squish }
-            .to eventually_include(notifications(private_group, :limit_overage_preview_msg))
-                  .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          after do
+            Runtime::ApplicationSettings.restore_application_settings(:dashboard_notification_limit)
+          end
+
+          it(
+            'preview notification displayed for private group when over limit',
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387825'
+          ) do
+            add_members(private_group, user_2, user_3, user_4)
+            page.refresh
+
+            expect { page.text.squish }
+              .to eventually_include(notifications(private_group, :limit_overage_preview_msg))
+                    .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
+          end
         end
 
         it(
@@ -84,10 +88,8 @@ module QA
         ) do
           # Check enforcement notification for limit overage
           create_private_group_with_members
-          private_group.add_member(user_6)
-          Runtime::Feature.enable(:free_user_cap, group: private_group)
-          Runtime::Feature.enable(:free_user_cap_new_namespaces, group: private_group)
-          page.refresh
+          send_private_group_over_limit
+          private_group.visit!
 
           expect { page }
             .to eventually_have_content(notifications(private_group, :limit_overage_enforcement_msg))
@@ -95,22 +97,25 @@ module QA
 
           # Remove the enforcement by starting a free Ultimate Trial
           Gitlab::Page::Trials::New.perform(&:visit)
-          Flow::Trial.register_for_trial
-          private_group.add_member(user_7)
+          # due to invited group used here we have more than one group so we have to select
+          Flow::Trial.register_for_trial(group: private_group)
           private_group.visit!
 
           aggregate_failures do
             expect(page).not_to have_content(notifications(private_group, :limit_overage_enforcement_msg))
-            expect { private_group.list_members.count }.to eventually_eq(7)
+            # total user is 6, but 1 is an invited group member
+            expect { private_group.list_members.count }.to eventually_eq(5)
           end
+
+          private_group.add_member(user_7)
+
+          expect { private_group.list_members.count }.to eventually_eq(6)
         end
 
         it(
           'new group enforcement removed when trial started',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387827'
         ) do
-          Runtime::Feature.enable(:free_user_cap, group: private_group)
-          Runtime::Feature.enable(:free_user_cap_new_namespaces, group: private_group)
           create_private_group_with_members
           page.refresh
 
@@ -130,12 +135,10 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387828'
         ) do
           create_private_group_with_members
-          Runtime::Feature.enable(:free_user_cap, group: private_group)
-          Runtime::Feature.enable(:free_user_cap_new_namespaces, group: private_group)
 
           # Checks that it fails to add an additional member due to enforcement
           begin
-            private_group.add_member(user_6)
+            private_group.add_member(user_7)
           rescue Support::Repeater::RetriesExceededError
             expect { private_group.list_members.count }.to eventually_eq(5)
           end
@@ -145,9 +148,6 @@ module QA
           'enforcement limit counts includes invited group and project members',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387829'
         ) do
-          Runtime::Feature.enable(:free_user_cap, group: private_group)
-          Runtime::Feature.enable(:free_user_cap_new_namespaces, group: private_group)
-
           add_members(project, user_2)
           add_members(private_group, user_3)
           add_members(invitee_group, user_4, user_5, user_6)
@@ -177,9 +177,14 @@ module QA
         end
       end
 
-      # group_owner is also counted, free user member limit for private group is 5
+      # group_owner is also counted, free user member limit for a new private group is 5
       def create_private_group_with_members
         add_members(private_group, user_2, user_3, user_4, user_5)
+      end
+
+      def send_private_group_over_limit
+        add_members(invitee_group, user_6)
+        private_group.invite_group(invitee_group)
       end
 
       # Clean up resources
