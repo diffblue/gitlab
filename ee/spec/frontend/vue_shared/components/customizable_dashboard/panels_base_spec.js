@@ -5,6 +5,7 @@ import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_b
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import waitForPromises from 'helpers/wait_for_promises';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
+import { I18N_PANEL_EMPTY_STATE_MESSAGE } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { dashboard } from './mock_data';
 
 jest.mock('ee/analytics/analytics_dashboards/data_sources', () => ({
@@ -70,22 +71,45 @@ describe('PanelsBase', () => {
   });
 
   describe('when the data has been fetched', () => {
-    const mockData = [{ name: 'foo' }];
+    describe('and there is data', () => {
+      const mockData = [{ name: 'foo' }];
 
-    beforeEach(() => {
-      jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
-      createWrapper();
-      return waitForPromises();
+      beforeEach(() => {
+        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);
+        createWrapper();
+        return waitForPromises();
+      });
+
+      it('should not render the loading icon', () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('should not render the empty state', () => {
+        expect(wrapper.text()).not.toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
+      });
+
+      it('should render the visualization with the fetched data', () => {
+        expect(findVisualization().props()).toMatchObject({
+          data: mockData,
+          options: panelConfig.visualization.options,
+        });
+      });
     });
 
-    it('should not render the loading icon', () => {
-      expect(findLoadingIcon().exists()).toBe(false);
-    });
+    describe('and there is no data', () => {
+      beforeEach(() => {
+        jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(undefined);
+        createWrapper();
+        return waitForPromises();
+      });
 
-    it('should render the visualization with the fetched data', () => {
-      expect(findVisualization().props()).toMatchObject({
-        data: mockData,
-        options: panelConfig.visualization.options,
+      it('should not render the loading icon', () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+      });
+
+      it('should render the empty state', () => {
+        const text = wrapper.text();
+        expect(text).toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
       });
     });
   });
@@ -101,6 +125,10 @@ describe('PanelsBase', () => {
 
     it('should not render the loading icon', () => {
       expect(findLoadingIcon().exists()).toBe(false);
+    });
+
+    it('should not render the empty state', () => {
+      expect(wrapper.text()).not.toContain(I18N_PANEL_EMPTY_STATE_MESSAGE);
     });
 
     it('should not render the visualization', () => {

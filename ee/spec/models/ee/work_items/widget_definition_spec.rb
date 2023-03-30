@@ -22,7 +22,8 @@ RSpec.describe WorkItems::WidgetDefinition, feature_category: :team_planning do
         ::WorkItems::Widgets::Progress,
         ::WorkItems::Widgets::RequirementLegacy,
         ::WorkItems::Widgets::TestReports,
-        ::WorkItems::Widgets::Notifications
+        ::WorkItems::Widgets::Notifications,
+        ::WorkItems::Widgets::CurrentUserTodos
       )
     end
   end

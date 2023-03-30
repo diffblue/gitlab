@@ -47,7 +47,7 @@ module Projects
       end
 
       data[:code_added] = {
-        url: CGI.unescape(ide_project_edit_path(project.full_path, learn_gitlab_source: true)),
+        url: CGI.unescape(ide_project_edit_path(project.full_path)),
         completed: onboarding_completion.completed?(:code_added),
         enabled: true
       }

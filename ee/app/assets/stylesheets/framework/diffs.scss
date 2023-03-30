@@ -108,3 +108,13 @@
     text-transform: capitalize;
   }
 }
+
+.findings-drawer {
+  .drawer-body {
+    line-height: $gl-line-height-20;
+
+    h2 {
+      font-size: $gl-font-size-large;
+    }
+  }
+}

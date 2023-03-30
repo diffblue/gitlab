@@ -54,6 +54,13 @@ module Epics
       log_extra_metadata_on_done(:total_closed_issue_weight, epic.total_closed_issue_weight)
 
       epic.save!(touch: false)
+    rescue ActiveRecord::RecordInvalid
+      logger.error(
+        structured_payload(
+          message: "skipping cache update, validation failed: #{epic.errors.full_messages.to_sentence}",
+          epic_id: epic.id
+        )
+      )
     end
 
     def lease_key

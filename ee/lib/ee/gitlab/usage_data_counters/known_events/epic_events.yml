@@ -4,118 +4,153 @@
 # epic events to allow data aggregation.
 # More information in: https://gitlab.com/gitlab-org/gitlab/-/issues/322405
 - name: g_project_management_epic_created
+  redis_slot: project_management
   aggregation: daily
 
 # content change events
 
 - name: project_management_users_unchecking_epic_task
+  redis_slot: project_management
   aggregation: daily
 
 - name: project_management_users_checking_epic_task
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_epic_titles
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_epic_descriptions
+  redis_slot: project_management
   aggregation: daily
 
 # epic notes
 
 - name: g_project_management_users_creating_epic_notes
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_epic_notes
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_destroying_epic_notes
+  redis_slot: project_management
   aggregation: daily
 
 # emoji
 
 - name: g_project_management_users_awarding_epic_emoji
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_removing_epic_emoji
+  redis_slot: project_management
   aggregation: daily
 
 # start date events
 
 - name: g_project_management_users_setting_epic_start_date_as_fixed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_fixed_epic_start_date
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_setting_epic_start_date_as_inherited
+  redis_slot: project_management
   aggregation: daily
 
 # due date events
 
 - name: g_project_management_users_setting_epic_due_date_as_fixed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_fixed_epic_due_date
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_setting_epic_due_date_as_inherited
+  redis_slot: project_management
   aggregation: daily
 
 # relationships
 
 - name: g_project_management_epic_issue_added
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_issue_removed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_issue_moved_from_project
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_epic_parent
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_closed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_reopened
+  redis_slot: project_management
   aggregation: daily
 
 - name: 'g_project_management_issue_promoted_to_epic'
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_setting_epic_confidential
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_setting_epic_visible
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_users_changing_labels
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_destroyed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_cross_referenced
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_epic_issue_added_from_epic
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_related_added
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_related_removed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_blocking_added
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_blocking_removed
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_blocked_added
+  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_epic_blocked_removed
+  redis_slot: project_management
   aggregation: daily

@@ -6,8 +6,8 @@ RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_m
   include ExclusiveLeaseHelpers
 
   describe '#perform', :sidekiq_inline do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:project) { create(:project, group: group) }
+    let_it_be_with_reload(:group) { create(:group) }
+    let_it_be_with_reload(:project) { create(:project, group: group) }
     let_it_be_with_reload(:parent_epic) { create(:epic, group: group) }
     let_it_be_with_reload(:epic) { create(:epic, parent: parent_epic, group: group) }
     let_it_be_with_reload(:other_epic) { create(:epic) }
@@ -130,6 +130,28 @@ RSpec.describe Epics::UpdateCachedMetadataWorker, feature_category: :portfolio_m
           expect(worker).to receive(:update_epic).with(other_epic)
           expect(worker).not_to receive(:update_epic).with(epic)
           expect(described_class).to receive(:perform_in).with(described_class::LEASE_TIMEOUT, [epic.id])
+
+          perform
+        end
+      end
+
+      context "when epic's group was deleted during cache update" do
+        before do
+          allow(worker).to receive(:update_epic).with(other_epic).and_wrap_original do |method, *args|
+            other_epic.group.destroy!
+
+            method.call(*args)
+          end
+        end
+
+        it 'skips invalid epic and logs an error' do
+          expect(worker).to receive(:update_epic).with(epic).and_call_original
+          expect(Sidekiq.logger).to receive(:error).with(
+            hash_including(
+              'epic_id' => other_epic.id,
+              'message' => "skipping cache update, validation failed: Group can't be blank"
+            )
+          ).and_call_original
 
           perform
         end
