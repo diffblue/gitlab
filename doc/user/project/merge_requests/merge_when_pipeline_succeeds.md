@@ -152,6 +152,6 @@ For details on avoiding two pipelines for a single merge request, read the
 
 When [the **Pipelines must succeed** setting](#require-a-successful-pipeline-for-merge)
 is combined with
-[the **Merged results pipelines** feature](doc/ci/pipelines/merged_results_pipelines.md),
+[the **Merged results pipelines** feature](../../../ci/pipelines/merged_results_pipelines.md),
 failed branch pipeline may be ignored.
 [Issue 385841](https://gitlab.com/gitlab-org/gitlab/-/issues/385841) is open to track this.
