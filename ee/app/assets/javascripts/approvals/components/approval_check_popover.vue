@@ -35,7 +35,7 @@ export default {
     iconName: {
       type: String,
       required: false,
-      default: 'question',
+      default: 'question-o',
     },
   },
 };

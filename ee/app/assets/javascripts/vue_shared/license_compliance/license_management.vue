@@ -105,7 +105,7 @@ export default {
             {{ s__('Licenses|Policy') }}
             <gl-icon
               ref="reportInfo"
-              name="question"
+              name="question-o"
               class="text-info gl-ml-2 gl-cursor-pointer"
               :aria-label="__('help')"
               :size="14"

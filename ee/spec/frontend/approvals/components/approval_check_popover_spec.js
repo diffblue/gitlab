@@ -57,7 +57,7 @@ describe('Approval Check Popover', () => {
   });
 
   it('renders the default icon', () => {
-    expect(wrapper.findComponent(GlIcon).props('name')).toBe('question');
+    expect(wrapper.findComponent(GlIcon).props('name')).toBe('question-o');
   });
 
   describe('with a name for icon', () => {

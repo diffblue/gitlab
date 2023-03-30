@@ -181,7 +181,7 @@ export default {
             data-testid="security-approval-help-link"
             target="_blank"
           >
-            <gl-icon :size="12" name="question" />
+            <gl-icon :size="12" name="question-o" />
           </gl-link>
         </div>
       </template>

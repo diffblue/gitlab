@@ -47,7 +47,7 @@ export default {
     <template #modal-footer="{ ok, cancel }">
       <section class="gl-display-flex gl-w-full">
         <p>
-          <gl-icon name="question" :size="12" class="gl-text-blue-600" />
+          <gl-icon name="question-o" :size="12" class="gl-text-blue-600" />
           <gl-sprintf
             :message="
               s__('LicenseCompliance|Learn more about %{linkStart}License Approvals%{linkEnd}')
