@@ -1479,7 +1479,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
 
       context 'for requirements' do
         it 'fails supports confidentiality condition' do
-          issuable = create(:issue, issue_type: :requirement, project: project)
+          issuable = create(:issue, :requirement, project: project)
 
           _, updates, message = service.execute('/confidential', issuable)
 

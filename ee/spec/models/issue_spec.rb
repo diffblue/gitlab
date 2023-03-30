@@ -1053,7 +1053,7 @@ RSpec.describe Issue, feature_category: :team_planning do
 
         context 'when issue is an incident' do
           before do
-            issue.update!(issue_type: :incident)
+            issue.update!(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:incident))
           end
 
           it { is_expected.to be_falsey }
@@ -1130,7 +1130,8 @@ RSpec.describe Issue, feature_category: :team_planning do
 
     with_them do
       before do
-        issue.update!(issue_type: issue_type)
+        issue.assign_attributes(issue_type: issue_type, work_item_type: WorkItems::Type.default_by_type(issue_type))
+        issue.save!(validate: false)
       end
 
       it do
@@ -1150,7 +1151,8 @@ RSpec.describe Issue, feature_category: :team_planning do
 
     with_them do
       before do
-        issue.update!(issue_type: issue_type)
+        issue.assign_attributes(issue_type: issue_type, work_item_type: WorkItems::Type.default_by_type(issue_type))
+        issue.save!(validate: false)
       end
 
       it do

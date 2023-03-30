@@ -91,7 +91,7 @@ RSpec.describe Notes::QuickActionsService do
 
       context 'on an incident' do
         before do
-          issue.update!(issue_type: :incident)
+          issue.update!(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:incident))
         end
 
         it 'leaves the note empty' do
@@ -184,7 +184,8 @@ RSpec.describe Notes::QuickActionsService do
 
       context 'on an incident' do
         before do
-          issue.update!(issue_type: :incident)
+          issue.assign_attributes(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:incident))
+          issue.save!(validate: false)
         end
 
         it 'leaves the note empty' do
@@ -194,7 +195,8 @@ RSpec.describe Notes::QuickActionsService do
 
       context 'on a test case' do
         before do
-          issue.update!(issue_type: :test_case)
+          issue.assign_attributes(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:test_case))
+          issue.save!(validate: false)
         end
 
         it 'leaves the note empty' do
@@ -540,7 +542,7 @@ RSpec.describe Notes::QuickActionsService do
 
         context 'on an incident' do
           before do
-            issue.update!(issue_type: :incident)
+            issue.update!(issue_type: :incident, work_item_type: WorkItems::Type.default_by_type(:incident))
           end
 
           it 'does not promote to an epic' do
