@@ -44,6 +44,7 @@ const initRefSwitcher = () => {
           projectId,
           value: refType ? joinPaths('refs', refType, ref) : ref,
           useSymbolicRefNames: true,
+          queryParams: { sort: 'updated_desc' },
         },
         on: {
           input(selectedRef) {
