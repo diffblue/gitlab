@@ -15400,9 +15400,6 @@ msgstr ""
 msgid "Download this directory"
 msgstr ""
 
-msgid "DownloadCommit|Email Patches"
-msgstr ""
-
 msgid "DownloadCommit|Plain Diff"
 msgstr ""
 
@@ -15788,9 +15785,6 @@ msgid "Email notification for unknown sign-ins"
 msgstr ""
 
 msgid "Email patch"
-msgstr ""
-
-msgid "Email patches"
 msgstr ""
 
 msgid "Email sent"
@@ -31349,6 +31343,9 @@ msgid "Paste this DSN into your Sentry SDK"
 msgstr ""
 
 msgid "Patch to apply"
+msgstr ""
+
+msgid "Patches"
 msgstr ""
 
 msgid "Path"
