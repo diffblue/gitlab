@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Display license check deprecation alert', :js, feature_category: :projects do
+RSpec.describe 'Display license check deprecation alert', :js, feature_category: :security_policy_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { project.owner }
   let_it_be(:project_approvers) { create_list(:user, 3) }
@@ -29,7 +29,7 @@ RSpec.describe 'Display license check deprecation alert', :js, feature_category:
   end
 
   context 'when user dismisses callout by clicking on the close button' do
-    it 'hides callout' do
+    it 'hides callout', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/403207' do
       visit project_settings_merge_requests_path(project)
 
       expect(page).to have_css('[data-testid="settings-license-check-deprecation-alert"]')
