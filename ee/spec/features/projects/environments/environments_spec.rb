@@ -137,9 +137,9 @@ RSpec.describe 'Environments page', :js, feature_category: :environment_manageme
 
       it 'show a disabled play button' do
         find(actions_button_selector).click
-        disabled_play_button = %Q{#{action_link_selector}[disabled="disabled"]}
+        disabled_play_button = page.find('button[disabled="disabled"]')
 
-        expect(page).to have_selector(disabled_play_button)
+        expect(disabled_play_button.text).to eq('deploy to production')
       end
 
       it 'does not show a stop button' do
