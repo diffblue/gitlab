@@ -57,9 +57,9 @@ module ApprovalRuleLike
   # @return [Array<User>]
   def approvers
     @approvers ||= if Feature.enabled?(:scan_result_role_action, project)
-                     with_role_approvers
+                     filter_inactive_approvers(with_role_approvers)
                    else
-                     direct_approvers
+                     filter_inactive_approvers(direct_approvers)
                    end
   end
 
@@ -114,5 +114,13 @@ module ApprovalRuleLike
     return User.none unless scan_result_policy_read
 
     project.team.members_with_access_levels(scan_result_policy_read.role_approvers)
+  end
+
+  def filter_inactive_approvers(approvers)
+    if approvers.respond_to?(:with_state)
+      approvers.with_state(:active)
+    else
+      approvers.select(&:active?)
+    end
   end
 end
