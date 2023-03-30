@@ -182,6 +182,42 @@ RSpec.describe Project, feature_category: :projects do
       end
     end
 
+    describe '#product_analytics_dashboards' do
+      it 'returns nothing if product analytics disabled' do
+        stub_licensed_features(product_analytics: false)
+        expect(project.product_analytics_dashboards).to be_empty
+      end
+
+      context 'with configuration project' do
+        let_it_be(:config_project) { create(:project) }
+
+        before do
+          stub_feature_flags(product_analytics_internal_preview: true)
+          stub_licensed_features(product_analytics: true)
+          expect(project).to receive(:analytics_dashboards_configuration_project).and_return(config_project)
+        end
+
+        it 'includes configuration project dashboards' do
+          expect(::ProductAnalytics::Dashboard).to receive(:for_project).with(config_project).and_return(['test2'])
+
+          expect(project.product_analytics_dashboards).to match_array(%w[test2])
+        end
+      end
+
+      context 'without configuration project' do
+        before do
+          stub_feature_flags(product_analytics_internal_preview: true)
+          stub_licensed_features(product_analytics: true)
+        end
+
+        it 'includes configuration project dashboards' do
+          expect(::ProductAnalytics::Dashboard).to receive(:for_project).with(project).and_return(['test'])
+
+          expect(project.product_analytics_dashboards).to match_array(%w[test])
+        end
+      end
+    end
+
     describe '#product_analytics_funnels' do
       subject { create(:project, :with_product_analytics_funnel).product_analytics_funnels }
 
