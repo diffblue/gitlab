@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe BuildDetailsEntity do
+RSpec.describe BuildDetailsEntity, feature_category: :continuous_integration do
   let_it_be(:user) { create(:user) }
 
   let(:namespace) { create(:namespace, :with_ci_minutes, ci_minutes_used: 800) }

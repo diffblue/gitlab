@@ -115,6 +115,65 @@ RSpec.describe Projects::JobsController, feature_category: :continuous_integrati
           end
         end
       end
+
+      context 'when project is private' do
+        let_it_be(:project) { create(:project, :private) }
+
+        subject { get_show(id: job.id, format: :json) }
+
+        shared_examples 'returns nil quota' do
+          it 'returns no quota for the runner' do
+            subject
+
+            expect(json_response['runners']['quota']).to eq nil
+          end
+        end
+
+        shared_examples 'returns quota' do
+          it 'returns a quota' do
+            subject
+
+            expect(json_response['runners']['quota']).to eq(
+              { 'used' => 0, 'limit' => project.root_namespace.shared_runners_minutes_limit }
+            )
+          end
+        end
+
+        shared_context 'with quota enabled' do
+          before do
+            project.update!(shared_runners_enabled: true)
+            project.root_namespace.update!(shared_runners_minutes_limit: 500)
+          end
+        end
+
+        context 'when user has read_ci_minutes_limited_summary permissions' do
+          before do
+            project.add_reporter(user)
+          end
+
+          it_behaves_like 'returns nil quota'
+
+          context 'with shared_runners_minutes_limit_enabled' do
+            include_context 'with quota enabled'
+
+            it_behaves_like 'returns quota'
+          end
+        end
+
+        context 'when user does not have read_ci_minutes_limited_summary permissions' do
+          before do
+            project.add_guest(user)
+          end
+
+          it_behaves_like 'returns nil quota'
+
+          context 'with shared_runners_minutes_limit_enabled' do
+            include_context 'with quota enabled'
+
+            it_behaves_like 'returns nil quota'
+          end
+        end
+      end
     end
 
     private
