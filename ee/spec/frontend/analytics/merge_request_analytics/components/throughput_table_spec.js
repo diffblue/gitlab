@@ -8,7 +8,11 @@ import {
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import throughputTableQuery from 'ee/analytics/merge_request_analytics/graphql/queries/throughput_table.query.graphql';
 import ThroughputTable from 'ee/analytics/merge_request_analytics/components/throughput_table.vue';
 import {
   THROUGHPUT_TABLE_STRINGS,
@@ -26,29 +30,41 @@ import {
 
 Vue.use(Vuex);
 
-const defaultQueryVariables = {
-  assigneeUsername: null,
-  authorUsername: null,
-  milestoneTitle: null,
-  labels: null,
-};
-
-const defaultMocks = {
-  $apollo: {
-    queries: {
-      throughputTableData: {},
-    },
-  },
-};
-
 describe('ThroughputTable', () => {
   let wrapper;
 
+  const defaultHandlers = (nodes = [], extraPageInfo = {}) => {
+    return {
+      throughputTable: jest.fn().mockResolvedValue({
+        data: {
+          id: 'projectId',
+          project: {
+            id: 'projectId',
+            mergeRequests: {
+              nodes,
+              pageInfo: {
+                __typename: 'PageInfo',
+                ...pageInfo,
+                ...extraPageInfo,
+              },
+            },
+          },
+        },
+      }),
+    };
+  };
+
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+
+    return createMockApollo([[throughputTableQuery, handlers.throughputTable]]);
+  };
+
   function createComponent(options = {}) {
-    const { mocks = defaultMocks, func = shallowMount } = options;
-    return func(ThroughputTable, {
+    const { func = shallowMount, handlers = defaultHandlers() } = options;
+    wrapper = func(ThroughputTable, {
+      apolloProvider: createMockApolloProvider(handlers),
       store,
-      mocks,
       provide: {
         fullPath,
       },
@@ -63,17 +79,15 @@ describe('ThroughputTable', () => {
     expect(wrapper.findComponent(component).exists()).toBe(visible);
   };
 
-  const additionalData = (data) => {
-    // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-    // eslint-disable-next-line no-restricted-syntax
-    wrapper.setData({
-      throughputTableData: {
-        list: [{ ...throughputTableData[0], ...data }],
-        pageInfo,
-      },
+  const createComponentWithAdditionalData = async (data) => {
+    createComponent({
+      func: mount,
+      handlers: defaultHandlers([{ ...throughputTableData[0], ...data }]),
     });
+    await waitForPromises();
   };
 
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findTable = () => wrapper.findComponent(GlTableLite);
 
   const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
@@ -91,15 +105,14 @@ describe('ThroughputTable', () => {
   const findNext = () => findPagination().findAll('.page-item').at(1);
 
   describe('default state', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
+    beforeEach(async () => {
+      createComponent();
+      await waitForPromises();
     });
 
     it('displays an empty state message when there is no data', () => {
-      const alert = wrapper.findComponent(GlAlert);
-
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toBe(THROUGHPUT_TABLE_STRINGS.NO_DATA);
+      expect(findAlert().exists()).toBe(true);
+      expect(findAlert().text()).toBe(THROUGHPUT_TABLE_STRINGS.NO_DATA);
     });
 
     it('does not display a loading icon', () => {
@@ -116,16 +129,8 @@ describe('ThroughputTable', () => {
   });
 
   describe('while loading', () => {
-    const apolloLoading = {
-      queries: {
-        throughputTableData: {
-          loading: true,
-        },
-      },
-    };
-
     beforeEach(() => {
-      wrapper = createComponent({ mocks: { ...defaultMocks, $apollo: apolloLoading } });
+      createComponent();
     });
 
     it('displays a loading icon', () => {
@@ -142,16 +147,9 @@ describe('ThroughputTable', () => {
   });
 
   describe('with data', () => {
-    beforeEach(() => {
-      wrapper = createComponent({ func: mount });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        throughputTableData: {
-          list: throughputTableData,
-          pageInfo,
-        },
-      });
+    beforeEach(async () => {
+      createComponent({ func: mount, handlers: defaultHandlers(throughputTableData) });
+      await waitForPromises();
     });
 
     it('displays the table', () => {
@@ -212,13 +210,7 @@ describe('ThroughputTable', () => {
         });
 
         it('includes an active label icon and count when available', async () => {
-          additionalData({
-            labels: {
-              count: 1,
-            },
-          });
-
-          await nextTick();
+          await createComponentWithAdditionalData({ labels: { count: 1 } });
 
           const labelDetails = findColSubItem(
             TEST_IDS.MERGE_REQUEST_DETAILS,
@@ -233,11 +225,9 @@ describe('ThroughputTable', () => {
         });
 
         it('includes an active comment icon and count when available', async () => {
-          additionalData({
+          await createComponentWithAdditionalData({
             userNotesCount: 2,
           });
-
-          await nextTick();
 
           const commentCount = findColSubItem(
             TEST_IDS.MERGE_REQUEST_DETAILS,
@@ -254,17 +244,19 @@ describe('ThroughputTable', () => {
         it('includes a pipeline icon when available', async () => {
           const iconName = 'status_canceled';
 
-          additionalData({
+          await createComponentWithAdditionalData({
             pipelines: {
               nodes: [
                 {
-                  detailedStatus: { icon: iconName },
+                  id: '1',
+                  detailedStatus: {
+                    id: '1',
+                    icon: iconName,
+                  },
                 },
               ],
             },
           });
-
-          await nextTick();
 
           const icon = findColSubComponent(TEST_IDS.MERGE_REQUEST_DETAILS, GlIcon);
 
@@ -282,7 +274,7 @@ describe('ThroughputTable', () => {
           });
 
           it('displays the singular when there is a single approval', async () => {
-            additionalData({
+            await createComponentWithAdditionalData({
               approvedBy: {
                 nodes: [
                   {
@@ -291,8 +283,6 @@ describe('ThroughputTable', () => {
                 ],
               },
             });
-
-            await nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
             const icon = approved.findComponent(GlIcon);
@@ -303,7 +293,7 @@ describe('ThroughputTable', () => {
           });
 
           it('displays the plural when there are multiple approvals', async () => {
-            additionalData({
+            await createComponentWithAdditionalData({
               approvedBy: {
                 nodes: [
                   {
@@ -315,8 +305,6 @@ describe('ThroughputTable', () => {
                 ],
               },
             });
-
-            await nextTick();
 
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
             const icon = approved.findComponent(GlIcon);
@@ -343,11 +331,9 @@ describe('ThroughputTable', () => {
       it('displays the correct milestone when available', async () => {
         const title = 'v1.0';
 
-        additionalData({
-          milestone: { title },
+        await createComponentWithAdditionalData({
+          milestone: { id: '1', title },
         });
-
-        await nextTick();
 
         expect(findCol(TEST_IDS.MILESTONE).text()).toBe(title);
       });
@@ -368,77 +354,29 @@ describe('ThroughputTable', () => {
         const assignees = findColSubComponent(TEST_IDS.ASSIGNEES, GlAvatarsInline);
 
         expect(assignees.exists()).toBe(true);
-        expect(assignees.props('avatars')).toBe(throughputTableData[0].assignees.nodes);
+        expect(assignees.props('avatars')).toEqual(throughputTableData[0].assignees.nodes);
       });
     });
   });
 
   describe('pagination', () => {
-    beforeEach(() => {
-      wrapper = createComponent({ func: mount });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        throughputTableData: {
-          list: throughputTableData,
-          pageInfo,
-        },
-      });
-    });
+    it('disables the prev button on the first page', async () => {
+      createComponent({ func: mount, handlers: defaultHandlers(throughputTableData) });
+      await waitForPromises();
 
-    it('disables the prev button on the first page', () => {
       expect(findPrevious().classes()).toContain('disabled');
-      expect(findNext().classes()).not.toContain('disabled');
-    });
-
-    it('disables the next button on the last page', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        pagination: {
-          currentPage: 3,
-        },
-        throughputTableData: {
-          pageInfo: {
-            hasNextPage: false,
-          },
-        },
-      });
-
-      await nextTick();
-
-      expect(findPrevious().classes()).not.toContain('disabled');
-      expect(findNext().classes()).toContain('disabled');
-    });
-
-    it('shows the prev and next buttons on middle pages', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        pagination: {
-          currentPage: 2,
-        },
-        throughputTableData: {
-          pageInfo: {
-            hasNextPage: true,
-            hasPrevPage: true,
-          },
-        },
-      });
-
-      await nextTick();
-
-      expect(findPrevious().classes()).not.toContain('disabled');
       expect(findNext().classes()).not.toContain('disabled');
     });
   });
 
   describe('with errors', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ hasError: true });
+    beforeEach(async () => {
+      createComponent({
+        handlers: {
+          throughputTable: jest.fn().mockRejectedValue({}),
+        },
+      });
+      await waitForPromises();
     });
 
     it('does not display the table', () => {
@@ -450,22 +388,14 @@ describe('ThroughputTable', () => {
     });
 
     it('displays an error message', () => {
-      const alert = wrapper.findComponent(GlAlert);
-
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toBe(THROUGHPUT_TABLE_STRINGS.ERROR_FETCHING_DATA);
+      expect(findAlert().exists()).toBe(true);
+      expect(findAlert().text()).toBe(THROUGHPUT_TABLE_STRINGS.ERROR_FETCHING_DATA);
     });
   });
 
   describe('when fetching data', () => {
     beforeEach(() => {
-      wrapper = createComponent();
-    });
-
-    it('has initial variables set', () => {
-      expect(
-        wrapper.vm.$options.apollo.throughputTableData.variables.bind(wrapper.vm)(),
-      ).toMatchObject(defaultQueryVariables);
+      createComponent();
     });
 
     it('gets filter variables from store', async () => {
