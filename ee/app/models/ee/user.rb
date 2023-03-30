@@ -8,6 +8,7 @@ module EE
   module User
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     include AuditorUserHelper
 
@@ -404,28 +405,23 @@ module EE
     end
 
     def gitlab_employee?
-      strong_memoize(:gitlab_employee) do
-        ::Gitlab.com? && gitlab_team_member?
-      end
+      gitlab_team_member?
     end
 
     def gitlab_team_member?
-      strong_memoize(:gitlab_team_member) do
-        ::Gitlab::Com.gitlab_com_group_member?(id) && human?
-      end
+      human? && gitlab_com_member?
     end
+    strong_memoize_attr :gitlab_team_member?
 
     def gitlab_service_user?
-      strong_memoize(:gitlab_service_user) do
-        service_user? && ::Gitlab::Com.gitlab_com_group_member?(id)
-      end
+      service_user? && gitlab_com_member?
     end
+    strong_memoize_attr :gitlab_service_user?
 
     def gitlab_bot?
-      strong_memoize(:gitlab_bot) do
-        bot? && ::Gitlab::Com.gitlab_com_group_member_id?(id)
-      end
+      bot? && gitlab_com_member?
     end
+    strong_memoize_attr :gitlab_bot?
 
     def security_dashboard
       InstanceSecurityDashboard.new(self)
@@ -533,6 +529,11 @@ module EE
     end
 
     private
+
+    def gitlab_com_member?
+      ::Gitlab::Com.gitlab_com_group_member_id?(id)
+    end
+    strong_memoize_attr :gitlab_com_member?
 
     def group_provisioned_user?(group)
       self.provisioned_by_group_id == group.id
