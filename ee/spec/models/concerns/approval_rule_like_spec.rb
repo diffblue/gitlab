@@ -34,6 +34,19 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
 
           expect(rule.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
         end
+
+        context 'when some users are inactive' do
+          before do
+            user2.block!
+            group2_user.block!
+          end
+
+          it 'returns users that are only active' do
+            rule = subject.class.find(subject.id)
+
+            expect(rule.approvers).to contain_exactly(user1, group1_user)
+          end
+        end
       end
 
       it_behaves_like 'approvers contains the right users'

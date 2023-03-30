@@ -37,19 +37,22 @@ module QA
       end
 
       it 'dependency list has empty state',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
         Page::Project::Menu.perform(&:go_to_dependency_list)
 
         EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
-          expect(dependency_list)
-            .to have_empty_state_description('The dependency list details information about the components used within your project.') # rubocop:disable Layout/LineLength
-          expect(dependency_list)
-            .to have_link('More Information', href: %r{/help/user/application_security/dependency_list/index})
+          expect(dependency_list).to have_empty_state_description(
+            'The dependency list details information about the components used within your project.'
+          )
+          expect(dependency_list).to have_link(
+            'More Information',
+            href: %r{/help/user/application_security/dependency_list/index}
+          )
         end
       end
 
       it 'displays security reports in the pipeline',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
         push_security_reports
         Flow::Pipeline.visit_latest_pipeline
         Page::Project::Pipeline::Show.perform do |pipeline|
@@ -75,7 +78,7 @@ module QA
       end
 
       it 'displays security reports in the project security dashboard',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
@@ -102,12 +105,11 @@ module QA
       end
 
       it 'displays security reports in the group security dashboard',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
-        Page::Main::Menu.perform(&:go_to_groups)
-        Page::Dashboard::Groups.perform do |groups|
-          groups.click_group project.group.path
-        end
+
+        project.group.visit!
+
         Page::Group::Menu.perform(&:click_group_security_link)
 
         EE::Page::Group::Secure::Show.perform do |dashboard|
@@ -138,7 +140,7 @@ module QA
       end
 
       it 'displays false positives for the vulnerabilities',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Support::Waiter.wait_until(sleep_interval: 3) do
@@ -154,8 +156,12 @@ module QA
         end
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
-          Support::Retrier.retry_on_exception(max_attempts: 2, sleep_interval: 3, reload_page: page,
-                                              message: 'False positive vuln retry') do
+          Support::Retrier.retry_on_exception(
+            max_attempts: 2,
+            sleep_interval: 3,
+            reload_page: page,
+            message: 'False positive vuln retry'
+          ) do
             security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
           end
         end
@@ -188,11 +194,13 @@ module QA
       end
 
       def push_security_reports
-        Resource::Repository::ProjectPush.fabricate! do |project_push|
-          project_push.project = project
-          project_push.directory = Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_premade_reports'))
-          project_push.commit_message = 'Create Secure compatible application to serve premade reports'
-        end.project.visit!
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.project = project
+          commit.commit_message = 'Create Secure compatible application to serve premade reports'
+          commit.add_directory(Pathname.new(File.join(EE::Runtime::Path.fixtures_path, 'secure_premade_reports')))
+        end
+
+        project.visit!
 
         Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
       end

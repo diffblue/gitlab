@@ -6,6 +6,7 @@ module QA
       module Group
         module Menu
           extend QA::Page::PageConcern
+          include SubMenus::SuperSidebar::Plan if QA::Runtime::Env.super_sidebar_enabled?
 
           def self.prepended(base)
             super
@@ -16,6 +17,8 @@ module QA
           end
 
           def go_to_issue_boards
+            return go_to_issue_board if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_issues do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Boards')

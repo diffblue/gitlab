@@ -177,6 +177,7 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml', feature_category: :co
 
     context 'when project has Ultimate license' do
       let(:license) { build(:license, plan: License::ULTIMATE_PLAN) }
+      let(:files) { { 'conan.lock' => '', 'Gemfile.lock' => '', 'package.json' => '', 'pom.xml' => '', 'Pipfile' => '' } }
 
       before do
         allow(License).to receive(:current).and_return(license)
@@ -194,9 +195,30 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml', feature_category: :co
         end
       end
 
-      context 'when DS_EXCLUDED_ANALYZERS set to' do
-        let(:files) { { 'conan.lock' => '', 'Gemfile.lock' => '', 'package.json' => '', 'pom.xml' => '', 'Pipfile' => '' } }
+      context 'when DEPENDENCY_SCANNING_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'DEPENDENCY_SCANNING_DISABLED', value: 'true')
+        end
 
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when DEPENDENCY_SCANNING_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'DEPENDENCY_SCANNING_DISABLED', value: 'false')
+        end
+
+        it 'includes jobs' do
+          expect(pipeline.errors.full_messages).to be_empty
+          expect(build_names).not_to be_empty
+        end
+      end
+
+      context 'when DS_EXCLUDED_ANALYZERS set to' do
         describe 'exclude' do
           using RSpec::Parameterized::TableSyntax
 

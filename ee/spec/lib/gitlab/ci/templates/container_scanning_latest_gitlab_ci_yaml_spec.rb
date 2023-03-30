@@ -84,6 +84,28 @@ RSpec.describe 'Container-Scanning.latest.gitlab-ci.yml', feature_category: :con
             'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
+
+      context 'when CONTAINER_SCANNING_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'CONTAINER_SCANNING_DISABLED', value: 'true')
+        end
+
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when CONTAINER_SCANNING_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'CONTAINER_SCANNING_DISABLED', value: 'false')
+        end
+
+        it 'includes job' do
+          expect(build_names).to match_array(%w[container_scanning])
+        end
+      end
     end
   end
 end

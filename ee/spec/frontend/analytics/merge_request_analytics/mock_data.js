@@ -136,6 +136,7 @@ export const pageInfo = {
 
 export const throughputTableData = [
   {
+    id: '1',
     iid: '1',
     title: 'Update README.md',
     createdAt: '2020-08-06T16:53:50Z',
@@ -145,6 +146,7 @@ export const throughputTableData = [
     assignees: {
       nodes: [
         {
+          id: '1',
           avatarUrl:
             'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
           name: 'Administrator',
