@@ -12,13 +12,6 @@ module ProtectedEnvironments
     validates :group_inheritance_type, inclusion: { in: GROUP_INHERITANCE_TYPE.values }
     validate :authorizable_attributes_presence
 
-    # `access_level` column has `DEFAULT 40`, therefore it sets the default value even if it's user-base or group-base
-    # authorization, however, this value should be NULL in these cases.
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/330483 for more information.
-    def access_level
-      super if role?
-    end
-
     def authorizable_attributes_presence
       return if [read_attribute(:access_level), read_attribute(:group_id), read_attribute(:user_id)].compact.count == 1
 
