@@ -2,6 +2,8 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import dataSources from 'ee/analytics/analytics_dashboards/data_sources';
 import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
+import { isEmptyPanelData } from 'ee/vue_shared/components/customizable_dashboard/utils';
+import { I18N_PANEL_EMPTY_STATE_MESSAGE } from './constants';
 
 export default {
   name: 'AnalyticsDashboardPanel',
@@ -46,6 +48,11 @@ export default {
       loading: true,
     };
   },
+  computed: {
+    showEmptyState() {
+      return !this.error && isEmptyPanelData(this.visualization.type, this.data);
+    },
+  },
   watch: {
     visualization: {
       handler: 'fetchData',
@@ -78,6 +85,7 @@ export default {
       }
     },
   },
+  I18N_PANEL_EMPTY_STATE_MESSAGE,
 };
 </script>
 
@@ -94,8 +102,16 @@ export default {
     >
       <strong>{{ title }}</strong>
     </tooltip-on-truncate>
-    <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
+    <div
+      class="gl-overflow-y-auto gl-h-full"
+      :class="{ 'gl--flex-center': loading || showEmptyState }"
+    >
       <gl-loading-icon v-if="loading" size="lg" />
+
+      <div v-else-if="showEmptyState" class="gl-text-center gl-text-secondary">
+        {{ $options.I18N_PANEL_EMPTY_STATE_MESSAGE }}
+      </div>
+
       <component
         :is="visualization.type"
         v-else-if="!error"
