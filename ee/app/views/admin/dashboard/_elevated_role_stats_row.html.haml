@@ -1,0 +1,9 @@
+- return unless License.feature_available?(:custom_roles)
+
+- users_statistics = local_assigns.fetch(:users_statistics)
+
+%tr
+  %td.gl-p-5!
+    = html_escape(s_('AdminArea|Users with highest role guest and with a %{strongOpen}Custom Role%{strongClose}.')) % { strongOpen: '<strong>'.html_safe, strongClose: '</strong>'.html_safe }
+  %td.gl-text-right{ class: 'gl-p-5!' }
+    = users_statistics&.with_highest_role_guest_with_custom_role

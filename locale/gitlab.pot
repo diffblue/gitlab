@@ -2775,6 +2775,9 @@ msgstr ""
 msgid "AdminArea|Users with highest role"
 msgstr ""
 
+msgid "AdminArea|Users with highest role guest and with a %{strongOpen}Custom Role%{strongClose}."
+msgstr ""
+
 msgid "AdminArea|Users without a Group and Project"
 msgstr ""
 

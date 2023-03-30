@@ -100,6 +100,32 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
 
+    describe '.guests_with_elevating_role' do
+      let(:group) { create(:group) }
+      let(:member_role_elevating) { create(:member_role, :guest, namespace: group) }
+      let(:member_role_basic) { create(:member_role, :guest, namespace: group) }
+      let(:expected_user) { create(:group_member, :guest, source: group, member_role: member_role_elevating).user }
+
+      before do
+        user = create(:user)
+        [
+          expected_user,
+          create(:group_member, :developer, source: group).user,
+          _elevated_guest_who_is_also_developer = create(:group_member, :guest, user: user, source: group, member_role: member_role_elevating).user,
+          create(:group_member, :guest, source: group, member_role: member_role_basic).user,
+          create(:group_member, :developer, user: user).user
+        ].each do |user|
+          Users::UpdateHighestMemberRoleService.new(user).execute
+        end
+      end
+
+      it 'returns only guests with elevated role' do
+        expect(MemberRole).to receive(:elevating).at_least(:once).and_return(MemberRole.where(id: member_role_elevating.id))
+
+        expect(described_class.guests_with_elevating_role).to contain_exactly(expected_user)
+      end
+    end
+
     describe '.managed_by' do
       let!(:group) { create(:group_with_managed_accounts) }
       let!(:managed_users) { create_list(:user, 2, managing_group: group) }
