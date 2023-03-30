@@ -7,8 +7,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :license_complian
     let(:version_format) { 'v1' }
     let(:purl_type) { :composer }
     let(:connector) { instance_double(Gitlab::PackageMetadata::Connector::Gcp, data_after: [file1, file2]) }
-    let(:file1) {  data_objects }
-    let(:file2) {  data_objects }
+    let(:file1) { data_objects }
+    let(:file2) { data_objects }
     let(:should_stop) { false }
     let(:stop_signal) { double('stop signal', stop?: should_stop) } # rubocop:disable RSpec/VerifiedDoubles
 
@@ -30,6 +30,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :license_complian
       allow(file1).to receive(:chunk).and_return(0)
       allow(file2).to receive(:sequence).and_return(1675366673)
       allow(file2).to receive(:chunk).and_return(0)
+      allow(service).to receive(:sleep)
     end
 
     shared_examples_for 'it syncs imported data' do
@@ -45,6 +46,11 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :license_complian
       it 'calls ingestion service to store the data' do
         execute
         expect(PackageMetadata::Ingestion::IngestionService).to have_received(:execute).with(data_objects).twice
+      end
+
+      it 'throttles calls to ingestion service after each ingested slice' do
+        expect(service).to receive(:sleep).with(described_class::THROTTLE_RATE).twice
+        service.execute
       end
     end
 
