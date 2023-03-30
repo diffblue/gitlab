@@ -7,6 +7,8 @@ module ProductAnalytics
     DASHBOARD_ROOT_LOCATION = '.gitlab/product_analytics/dashboards'
 
     def self.for_project(project)
+      raise ArgumentError, 'Project not provided' unless project.present?
+
       root_trees = project.repository.tree(:head, DASHBOARD_ROOT_LOCATION)
       return [] unless root_trees&.entries&.any?
 
