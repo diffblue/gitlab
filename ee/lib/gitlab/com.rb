@@ -20,7 +20,7 @@ module Gitlab
           group = Group.find_by(path: GITLAB_COM_GROUP, parent_id: nil)
 
           if group
-            GroupMembersFinder.new(group).execute.pluck(:user_id)
+            group.members.pluck_user_ids.to_set
           else
             []
           end
