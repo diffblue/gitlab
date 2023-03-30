@@ -1,22 +1,32 @@
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Draggable from 'vuedraggable';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import IssuesLaneList from 'ee/boards/components/issues_lane_list.vue';
 import { mockList } from 'jest/boards/mock_data';
 import BoardCard from '~/boards/components/board_card.vue';
 import { ListType } from '~/boards/constants';
+import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import { createStore } from '~/boards/stores';
-import { mockIssues } from '../mock_data';
+import { mockIssues, mockGroupIssuesResponse } from '../mock_data';
+
+Vue.use(VueApollo);
 
 describe('IssuesLaneList', () => {
   let wrapper;
   let store;
+  let mockApollo;
+
+  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse);
 
   const createComponent = ({
     listType = ListType.backlog,
     listProps = {},
     collapsed = false,
     isUnassignedIssuesLane = false,
+    isApolloBoard = false,
   } = {}) => {
     const listMock = {
       ...mockList,
@@ -30,13 +40,23 @@ describe('IssuesLaneList', () => {
       listMock.user = {};
     }
 
+    mockApollo = createMockApollo([[listsIssuesQuery, listIssuesQueryHandlerSuccess]]);
+
     wrapper = shallowMount(IssuesLaneList, {
+      apolloProvider: mockApollo,
       store,
       propsData: {
+        boardId: 'gid://gitlab/Board/1',
         list: listMock,
         issues: mockIssues,
         canAdminList: true,
         isUnassignedIssuesLane,
+        filterParams: {},
+      },
+      provide: {
+        fullPath: 'gitlab-org',
+        boardType: 'group',
+        isApolloBoard,
       },
     });
   };
@@ -187,5 +207,26 @@ describe('IssuesLaneList', () => {
         expect(wrapper.find('.gl-bg-red-100').exists()).toBe(false);
       });
     });
+  });
+
+  describe('Apollo boards', () => {
+    it.each`
+      isUnassignedIssuesLane | performsQuery
+      ${true}                | ${true}
+      ${false}               | ${false}
+    `(
+      'fetches issues $performsQuery when isUnassignedIssuesLane is $isUnassignedIssuesLane',
+      async ({ isUnassignedIssuesLane, performsQuery }) => {
+        createComponent({ isUnassignedIssuesLane, isApolloBoard: true });
+
+        await waitForPromises();
+
+        if (performsQuery) {
+          expect(listIssuesQueryHandlerSuccess).toHaveBeenCalled();
+        } else {
+          expect(listIssuesQueryHandlerSuccess).not.toHaveBeenCalled();
+        }
+      },
+    );
   });
 });
