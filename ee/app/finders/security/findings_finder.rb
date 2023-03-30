@@ -20,7 +20,7 @@ module Security
 
     ResultSet = Struct.new(:relation, :findings) do
       delegate :current_page, :limit_value, :total_pages, :total_count,
-               :next_page, :prev_page, :page, :empty?, to: :relation
+        :next_page, :prev_page, :page, :empty?, to: :relation
     end
 
     DEFAULT_PAGE = 1

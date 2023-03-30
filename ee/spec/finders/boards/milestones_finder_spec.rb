@@ -28,9 +28,11 @@ RSpec.describe Boards::MilestonesFinder do
 
         results = finder.execute
 
-        expect(results).to contain_exactly(nested_group_project_milestone,
-                                           nested_group_milestone,
-                                           group_milestone)
+        expect(results).to contain_exactly(
+          nested_group_project_milestone,
+          nested_group_milestone,
+          group_milestone
+        )
       end
     end
 
@@ -42,8 +44,7 @@ RSpec.describe Boards::MilestonesFinder do
 
         results = finder.execute
 
-        expect(results).to contain_exactly(group_milestone,
-                                           nested_group_milestone)
+        expect(results).to contain_exactly(group_milestone, nested_group_milestone)
       end
     end
   end

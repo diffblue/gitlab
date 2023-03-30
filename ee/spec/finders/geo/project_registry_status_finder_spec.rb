@@ -26,10 +26,12 @@ RSpec.describe Geo::ProjectRegistryStatusFinder, :geo, :geo_tracking_db, feature
     it 'returns all registries' do
       result = subject.all_projects
 
-      expect(result).to contain_exactly(synced_registry, synced_and_verified_registry, sync_pending_registry,
-                                        sync_failed_registry, verify_outdated_registry, verify_failed_registry,
-                                        verify_checksum_mismatch_registry, never_synced_registry,
-                                        never_synced_registry_with_failure)
+      expect(result).to contain_exactly(
+        synced_registry, synced_and_verified_registry, sync_pending_registry,
+        sync_failed_registry, verify_outdated_registry, verify_failed_registry,
+        verify_checksum_mismatch_registry, never_synced_registry,
+        never_synced_registry_with_failure
+      )
     end
   end
 

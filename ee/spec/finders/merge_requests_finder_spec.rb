@@ -7,8 +7,10 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
     include_context 'MergeRequestsFinder multiple projects with merge requests context'
 
     let_it_be(:merged_merge_request) do
-      create(:merge_request, :simple, author: user, source_project: project4, target_project: project4,
-                                      state: :merged, merge_commit_sha: 'rurebf')
+      create(
+        :merge_request, :simple, author: user, source_project: project4, target_project: project4,
+        state: :merged, merge_commit_sha: 'rurebf'
+      )
     end
 
     let_it_be(:approver) { create(:approver, target: merged_merge_request, user: user) }
