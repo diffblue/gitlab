@@ -11,7 +11,7 @@ module AuditEvents
     # attempt to deduplicate based on this to allow this job to be idempotent.
     idempotent!
     worker_has_external_dependencies!
-    data_consistency :always
+    data_consistency :sticky, feature_flag: :db_load_balance_audit_event_streaming_worker
     feature_category :audit_events
 
     def perform(audit_operation, audit_event_id, audit_event_json = nil)
