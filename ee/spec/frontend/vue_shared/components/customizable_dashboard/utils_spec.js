@@ -1,13 +1,14 @@
 import {
-  getDateRangeOption,
-  dateRangeOptionToFilter,
   buildDefaultDashboardFilters,
+  dateRangeOptionToFilter,
   filtersToQueryParams,
+  getDateRangeOption,
+  isEmptyPanelData,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 import {
-  DATE_RANGE_OPTIONS,
   CUSTOM_DATE_RANGE_KEY,
+  DATE_RANGE_OPTIONS,
   DEFAULT_SELECTED_OPTION_INDEX,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 import { mockDateRangeFilterChangePayload } from './mock_data';
@@ -98,4 +99,20 @@ describe('filtersToQueryParams', () => {
       end_date: '2016-02-01',
     });
   });
+});
+
+describe('isEmptyPanelData', () => {
+  it.each`
+    visualizationType | value  | expected
+    ${'SingleStat'}   | ${[]}  | ${false}
+    ${'SingleStat'}   | ${1}   | ${false}
+    ${'LineChart'}    | ${[]}  | ${true}
+    ${'LineChart'}    | ${[1]} | ${false}
+  `(
+    'returns $expected for visualization "$visualizationType" with value "$value"',
+    async ({ visualizationType, value, expected }) => {
+      const result = isEmptyPanelData(visualizationType, value);
+      expect(result).toBe(expected);
+    },
+  );
 });
