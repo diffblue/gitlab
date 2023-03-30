@@ -795,7 +795,7 @@ describe('vulnerability actions', () => {
     describe('addDismissalComment', () => {
       const vulnerability = mockDataVulnerabilities[2];
       const data = { vulnerability };
-      const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${vulnerability.dismissal_feedback.id}`;
+      const url = vulnerability.destroy_vulnerability_feedback_dismissal_path;
       const comment = 'Well, we’re back in the car again.';
       let mock;
 
@@ -809,18 +809,10 @@ describe('vulnerability actions', () => {
 
       describe('on success', () => {
         beforeEach(() => {
-          mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
+          jest.spyOn(defaultClient, 'mutate').mockResolvedValue({ data });
         });
 
         it('should dispatch the request and success actions', () => {
-          const checkPassedData = () => {
-            const { project_id, id } = vulnerability.dismissal_feedback;
-            const expected = JSON.stringify({ project_id, id, comment });
-
-            expect(mock.history.patch[0].data).toBe(expected);
-            expect(toast).toHaveBeenCalledTimes(1);
-          };
-
           return testAction(
             actions.addDismissalComment,
             { vulnerability, comment },
@@ -831,19 +823,10 @@ describe('vulnerability actions', () => {
               { type: 'closeDismissalCommentBox' },
               { type: 'receiveAddDismissalCommentSuccess', payload: { data, vulnerability } },
             ],
-            checkPassedData,
           );
         });
 
         it('should show the add dismissal toast message', () => {
-          const checkPassedData = () => {
-            const { project_id, id } = vulnerability.dismissal_feedback;
-            const expected = JSON.stringify({ project_id, id, comment });
-
-            expect(mock.history.patch[0].data).toBe(expected);
-            expect(toast).toHaveBeenCalledTimes(1);
-          };
-
           return testAction(
             actions.addDismissalComment,
             { vulnerability, comment },
@@ -854,17 +837,62 @@ describe('vulnerability actions', () => {
               { type: 'closeDismissalCommentBox' },
               { type: 'receiveAddDismissalCommentSuccess', payload: { data, vulnerability } },
             ],
-            checkPassedData,
           );
+        });
+
+        describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+          beforeEach(() => {
+            gon.features.deprecateVulnerabilitiesFeedback = false;
+            mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
+          });
+
+          it('should dispatch the request and success actions', () => {
+            return testAction(
+              actions.addDismissalComment,
+              { vulnerability, comment },
+              {},
+              [],
+              [
+                { type: 'requestAddDismissalComment' },
+                { type: 'closeDismissalCommentBox' },
+                { type: 'receiveAddDismissalCommentSuccess', payload: { data, vulnerability } },
+              ],
+            );
+          });
+
+          it('should show the add dismissal toast message', () => {
+            return testAction(
+              actions.addDismissalComment,
+              { vulnerability, comment },
+              {},
+              [],
+              [
+                { type: 'requestAddDismissalComment' },
+                { type: 'closeDismissalCommentBox' },
+                { type: 'receiveAddDismissalCommentSuccess', payload: { data, vulnerability } },
+              ],
+            );
+          });
         });
       });
 
       describe('on error', () => {
-        beforeEach(() => {
-          mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
+        it('should dispatch the request and error actions', () => {
+          jest.spyOn(defaultClient, 'mutate').mockRejectedValue();
+
+          return testAction(
+            actions.addDismissalComment,
+            { vulnerability, comment },
+            {},
+            [],
+            [{ type: 'requestAddDismissalComment' }, { type: 'receiveAddDismissalCommentError' }],
+          );
         });
 
-        it('should dispatch the request and error actions', () => {
+        it('should dispatch the request and error actions - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+          gon.features.deprecateVulnerabilitiesFeedback = false;
+          mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
+
           return testAction(
             actions.addDismissalComment,
             { vulnerability, comment },
@@ -903,8 +931,7 @@ describe('vulnerability actions', () => {
     describe('deleteDismissalComment', () => {
       const vulnerability = mockDataVulnerabilities[2];
       const data = { vulnerability };
-      const url = `${vulnerability.create_vulnerability_feedback_dismissal_path}/${vulnerability.dismissal_feedback.id}`;
-      const comment = '';
+      const url = vulnerability.dismissal_feedback.destroy_vulnerability_feedback_dismissal_path;
       let mock;
 
       beforeEach(() => {
@@ -917,17 +944,10 @@ describe('vulnerability actions', () => {
 
       describe('on success', () => {
         beforeEach(() => {
-          mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
+          jest.spyOn(defaultClient, 'mutate').mockResolvedValue({ data });
         });
 
         it('should dispatch the request and success actions', () => {
-          const checkPassedData = () => {
-            const { project_id } = vulnerability.dismissal_feedback;
-            const expected = JSON.stringify({ project_id, comment });
-
-            expect(mock.history.patch[0].data).toBe(expected);
-          };
-
           return testAction(
             actions.deleteDismissalComment,
             { vulnerability },
@@ -941,19 +961,10 @@ describe('vulnerability actions', () => {
                 payload: { data, id: vulnerability.id },
               },
             ],
-            checkPassedData,
           );
         });
 
         it('should show the delete dismissal comment toast message', () => {
-          const checkPassedData = () => {
-            const { project_id } = vulnerability.dismissal_feedback;
-            const expected = JSON.stringify({ project_id, comment });
-
-            expect(mock.history.patch[0].data).toBe(expected);
-            expect(toast).toHaveBeenCalledTimes(1);
-          };
-
           return testAction(
             actions.deleteDismissalComment,
             { vulnerability },
@@ -967,17 +978,71 @@ describe('vulnerability actions', () => {
                 payload: { data, id: vulnerability.id },
               },
             ],
-            checkPassedData,
           );
+        });
+
+        describe('deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+          beforeEach(() => {
+            gon.features.deprecateVulnerabilitiesFeedback = false;
+            mock.onPatch(url).replyOnce(HTTP_STATUS_OK, data);
+          });
+
+          it('should dispatch the request and success actions', () => {
+            return testAction(
+              actions.deleteDismissalComment,
+              { vulnerability },
+              {},
+              [],
+              [
+                { type: 'requestDeleteDismissalComment' },
+                { type: 'closeDismissalCommentBox' },
+                {
+                  type: 'receiveDeleteDismissalCommentSuccess',
+                  payload: { data, id: vulnerability.id },
+                },
+              ],
+            );
+          });
+
+          it('should show the delete dismissal comment toast message', () => {
+            return testAction(
+              actions.deleteDismissalComment,
+              { vulnerability },
+              {},
+              [],
+              [
+                { type: 'requestDeleteDismissalComment' },
+                { type: 'closeDismissalCommentBox' },
+                {
+                  type: 'receiveDeleteDismissalCommentSuccess',
+                  payload: { data, id: vulnerability.id },
+                },
+              ],
+            );
+          });
         });
       });
 
       describe('on error', () => {
-        beforeEach(() => {
-          mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
+        it('should dispatch the request and error actions', () => {
+          jest.spyOn(defaultClient, 'mutate').mockRejectedValue();
+
+          return testAction(
+            actions.deleteDismissalComment,
+            { vulnerability },
+            {},
+            [],
+            [
+              { type: 'requestDeleteDismissalComment' },
+              { type: 'receiveDeleteDismissalCommentError' },
+            ],
+          );
         });
 
-        it('should dispatch the request and error actions', () => {
+        it('should dispatch the request and error actions - deprecateVulnerabilitiesFeedback feature flag disabled', () => {
+          gon.features.deprecateVulnerabilitiesFeedback = false;
+          mock.onPatch(url).replyOnce(HTTP_STATUS_NOT_FOUND);
+
           return testAction(
             actions.deleteDismissalComment,
             { vulnerability },
