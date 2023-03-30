@@ -4,6 +4,7 @@ module PackageMetadata
   class SyncService
     UnknownAdapterError = Class.new(StandardError)
     INGEST_SLICE_SIZE = 1000
+    THROTTLE_RATE = 0.75.seconds
 
     def self.execute(signal)
       SyncConfiguration.all.each do |config|
@@ -43,6 +44,7 @@ module PackageMetadata
 
         csv_file.each_slice(INGEST_SLICE_SIZE) do |data_objects|
           ingest(data_objects)
+          sleep(THROTTLE_RATE)
         end
 
         checkpoint.update(sequence: csv_file.sequence, chunk: csv_file.chunk)
@@ -59,7 +61,7 @@ module PackageMetadata
     attr_accessor :connector, :version_format, :purl_type, :signal
 
     def ingest(data)
-      Ingestion::IngestionService.execute(data)
+      PackageMetadata::Ingestion::IngestionService.execute(data)
     end
 
     def checkpoint
