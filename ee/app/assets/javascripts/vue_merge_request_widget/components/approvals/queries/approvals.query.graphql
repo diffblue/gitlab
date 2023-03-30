@@ -9,11 +9,6 @@ query approvedByEE($projectPath: ID!, $iid: String!) {
       approvalsLeft
       approvalsRequired
       approvalState {
-        suggestedApprovers {
-          nodes {
-            ...User
-          }
-        }
         invalidApproversRules {
           id
           name

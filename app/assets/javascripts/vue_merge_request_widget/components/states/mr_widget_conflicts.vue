@@ -72,7 +72,13 @@ export default {
 };
 </script>
 <template>
-  <state-container :mr="mr" status="failed" :is-loading="isLoading">
+  <state-container
+    status="failed"
+    :is-loading="isLoading"
+    is-collapsible
+    :collapsed="mr.mergeDetailsCollapsed"
+    @toggle="() => mr.toggleMergeDetails()"
+  >
     <template #loading>
       <gl-skeleton-loader :width="334" :height="30">
         <rect x="0" y="7" width="150" height="16" rx="4" />

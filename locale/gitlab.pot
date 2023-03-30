@@ -10356,7 +10356,7 @@ msgstr ""
 msgid "Collapse all threads"
 msgstr ""
 
-msgid "Collapse approvers"
+msgid "Collapse eligible approvers"
 msgstr ""
 
 msgid "Collapse issues"
@@ -17187,7 +17187,7 @@ msgstr ""
 msgid "Expand all threads"
 msgstr ""
 
-msgid "Expand approvers"
+msgid "Expand eligible approvers"
 msgstr ""
 
 msgid "Expand file"
@@ -47926,9 +47926,6 @@ msgid "View details: %{details_url}"
 msgstr ""
 
 msgid "View documentation"
-msgstr ""
-
-msgid "View eligible approvers"
 msgstr ""
 
 msgid "View exposed artifact"
