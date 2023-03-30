@@ -1,0 +1,3 @@
+- if Feature.enabled?(:data_transfer_monitoring, @project)
+  .tab-pane#transfer-quota-tab
+    #js-project-transfer-app{ data: project_transfer_app_data(@project) }

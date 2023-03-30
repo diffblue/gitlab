@@ -1,0 +1,3 @@
+- if Feature.enabled?(:data_transfer_monitoring, @project)
+  = gl_tab_link_to '#transfer-quota-tab' do
+    = s_('UsageQuota|Transfer')
