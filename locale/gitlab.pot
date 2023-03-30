@@ -18159,6 +18159,18 @@ msgstr ""
 msgid "FindFile|Switch branch/tag"
 msgstr ""
 
+msgid "FindingsDrawer|Category:"
+msgstr ""
+
+msgid "FindingsDrawer|Engine:"
+msgstr ""
+
+msgid "FindingsDrawer|Other locations:"
+msgstr ""
+
+msgid "FindingsDrawer|Severity:"
+msgstr ""
+
 msgid "Fingerprint (MD5)"
 msgstr ""
 
