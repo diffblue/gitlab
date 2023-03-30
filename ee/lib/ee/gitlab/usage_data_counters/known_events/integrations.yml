@@ -1,18 +1,27 @@
 - name: i_integrations_gitlab_for_slack_app_issue_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_push_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_deployment_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_wiki_page_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_merge_request_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_note_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_tag_push_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_confidential_note_notification
+  redis_slot: integrations
   aggregation: weekly
 - name: i_integrations_gitlab_for_slack_app_confidential_issue_notification
+  redis_slot: integrations
   aggregation: weekly

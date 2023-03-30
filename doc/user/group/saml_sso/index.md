@@ -478,10 +478,6 @@ For example, to unlink the `MyOrg` account:
 
 For information on automatically managing GitLab group membership, see [SAML Group Sync](group_sync.md).
 
-## Passwords for users created via SAML SSO for Groups
-
-The [Generated passwords for users created through integrated authentication](../../../security/passwords_for_integrated_authentication_methods.md) guide provides an overview of how GitLab generates and sets passwords for users created via SAML SSO for Groups.
-
 ## NameID
 
 GitLab.com uses the SAML **NameID** to identify users. The **NameID** is:
@@ -519,14 +515,10 @@ You can use any format except `Transient`.
 
 ## Related topics
 
-For more information on:
-
-- Setting up SAML on self-managed GitLab instances, see
-  [SAML SSO for self-managed GitLab instances](../../../integration/saml.md).
-- Commonly-used terms, see the
-  [glossary of common terms](../../../integration/saml.md#glossary-of-common-terms).
-- The differences between SaaS and self-managed authentication and authorization,
-  see the [SaaS vs. Self-Managed comparison](../../../administration/auth/index.md#saas-vs-self-managed-comparison).
+- [SAML SSO for self-managed GitLab instances](../../../integration/saml.md)
+- [Glossary of common terms](../../../integration/saml.md#glossary-of-common-terms)
+- [Authentication comparison between SaaS and self-managed](../../../administration/auth/index.md#saas-vs-self-managed-comparison)
+- [Passwords for users created through integrated authentication](../../../security/passwords_for_integrated_authentication_methods.md)
 
 ## Troubleshooting
 

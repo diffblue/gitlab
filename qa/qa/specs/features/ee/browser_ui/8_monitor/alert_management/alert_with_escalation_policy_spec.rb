@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Monitor', :orchestrated, :smtp, product_group: :respond do
+  RSpec.describe 'Monitor', :orchestrated, :smtp, product_group: :respond,
+    quarantine: {
+      type: :bug,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/397133'
+    } do
     describe 'Alert with escalation policy' do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|

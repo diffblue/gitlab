@@ -83,7 +83,7 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           git_write: a_hash_including(url: %r{/#{project.name}\z}),
           user_added: a_hash_including(url: %r{#\z}),
           merge_request_created: a_hash_including(url: %r{/#{project.name}/-/merge_requests\z}),
-          code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\?learn_gitlab_source=true\z}),
+          code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\z}),
           code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
           required_mr_approvals_enabled: a_hash_including(
             url: %r{/ci/pipelines/settings#coverage-check-approval-rule\z}

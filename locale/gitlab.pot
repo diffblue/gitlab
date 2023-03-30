@@ -4834,6 +4834,9 @@ msgstr ""
 msgid "Analytics|No dashboard matches the specified URL path."
 msgstr ""
 
+msgid "Analytics|No results match your query or filter"
+msgstr ""
+
 msgid "Analytics|OS"
 msgstr ""
 
@@ -18162,6 +18165,18 @@ msgstr ""
 msgid "FindFile|Switch branch/tag"
 msgstr ""
 
+msgid "FindingsDrawer|Category:"
+msgstr ""
+
+msgid "FindingsDrawer|Engine:"
+msgstr ""
+
+msgid "FindingsDrawer|Other locations:"
+msgstr ""
+
+msgid "FindingsDrawer|Severity:"
+msgstr ""
+
 msgid "Fingerprint (MD5)"
 msgstr ""
 
@@ -27313,6 +27328,9 @@ msgstr ""
 msgid "MergeRequest|Compare %{target} and %{source}"
 msgstr ""
 
+msgid "MergeRequest|Encountered an issue while trying to fetch the single file diff."
+msgstr ""
+
 msgid "MergeRequest|Error dismissing suggestion popover. Please try again."
 msgstr ""
 
@@ -29223,6 +29241,9 @@ msgid "Normal text"
 msgstr ""
 
 msgid "NorthstarNavigation|Alpha"
+msgstr ""
+
+msgid "NorthstarNavigation|Beta"
 msgstr ""
 
 msgid "NorthstarNavigation|Could not update the new navigation preference. Please try again later."
@@ -43131,9 +43152,6 @@ msgid "TagsPage|Tags"
 msgstr ""
 
 msgid "TagsPage|Tags give the ability to mark specific points in history as being important"
-msgstr ""
-
-msgid "TagsPage|This tag has no release notes."
 msgstr ""
 
 msgid "TagsPage|Unable to load tags"

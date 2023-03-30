@@ -1,62 +1,89 @@
 ---
 # Incident management
 - name: incident_management_incident_published
+  redis_slot: incident_management
   aggregation: weekly
 # Incident management on-call
 - name: i_incident_management_oncall_notification_sent
+  redis_slot: incident_management
   aggregation: weekly
 - name: i_testing_full_code_quality_report_total
+  redis_slot: testing
   aggregation: weekly
 - name: i_testing_group_code_coverage_project_click_total
+  redis_slot: testing
   aggregation: weekly
 - name: i_testing_group_code_coverage_visit_total
+  redis_slot: testing
   aggregation: weekly
 - name: i_testing_metrics_report_artifact_uploaders
+  redis_slot: testing
   aggregation: weekly
 - name: i_search_advanced
+  redis_slot: search
   aggregation: weekly
 - name: i_search_paid
+  redis_slot: search
   aggregation: weekly
 - name: a_compliance_audit_events_api
+  redis_slot: compliance
   aggregation: weekly
 - name: g_compliance_audit_events
+  redis_slot: compliance
   aggregation: weekly
 - name: g_compliance_dashboard
+  redis_slot: compliance
   aggregation: weekly
 - name: i_compliance_audit_events
+  redis_slot: compliance
   aggregation: weekly
 - name: i_compliance_credential_inventory
+  redis_slot: compliance
   aggregation: weekly
 - name: approval_project_rule_created
+  redis_slot: approval_project_rule
   aggregation: daily
 # Incident management linked resources
 - name: incident_management_issuable_resource_link_created
+  redis_slot: incident_management
   aggregation: weekly
 - name: incident_management_issuable_resource_link_deleted
+  redis_slot: incident_management
   aggregation: weekly
 - name: incident_management_issuable_resource_link_visited
+  redis_slot: incident_management
   aggregation: weekly
 # Project Management group
 - name: g_project_management_issue_added_to_epic
+  redis_slot: project_management
   aggregation: daily
 - name: g_project_management_issue_changed_epic
+  redis_slot: project_management
   aggregation: daily
 - name: g_project_management_issue_health_status_changed
+  redis_slot: project_management
   aggregation: daily
 - name: g_project_management_issue_iteration_changed
+  redis_slot: project_management
   aggregation: daily
 - name: g_project_management_issue_removed_from_epic
+  redis_slot: project_management
   aggregation: daily
 - name: g_project_management_issue_weight_changed
+  redis_slot: project_management
   aggregation: daily
 - name: i_ci_secrets_management_vault_build_created
+  redis_slot: ci_secrets_management
   aggregation: weekly
 # Container Security - Network Policies
 - name: clusters_using_network_policies_ui
+  redis_slot: network_policies
   aggregation: weekly
 # Geo group
 - name: g_geo_proxied_requests
+  redis_slot: geo
   aggregation: daily
 # Growth
 - name: users_clicking_registration_features_offer
+  redis_slot: users
   aggregation: weekly

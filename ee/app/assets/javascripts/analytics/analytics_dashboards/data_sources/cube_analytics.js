@@ -44,10 +44,10 @@ const convertToSingleValue = (resultSet, query) => {
   const [row] = resultSet.rawData();
 
   if (!row) {
-    return undefined;
+    return 0;
   }
 
-  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0] ?? undefined;
+  return row[measure ?? DEFAULT_COUNT_KEY] ?? Object.values(row)[0] ?? 0;
 };
 
 const buildDateRangeFilter = (query, queryOverrides, { startDate, endDate }) => {

@@ -200,7 +200,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
       let!(:notes) { create_list(:note, 2, noteable: epic) }
 
       context 'when sorted by `Oldest first`' do
-        it 'shows comments in the correct order' do
+        it 'shows comments in the correct order', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/403208' do
           items = all('.timeline-entry .timeline-discussion-body .note-text')
           expect(items[0]).to have_content(notes[0].note)
           expect(items[1]).to have_content(notes[1].note)

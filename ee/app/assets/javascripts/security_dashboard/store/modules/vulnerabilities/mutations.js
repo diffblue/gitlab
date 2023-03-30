@@ -139,7 +139,13 @@ export default {
       isSameVulnerability(vuln, payload.vulnerability),
     );
     if (vulnerability) {
-      vulnerability.dismissal_feedback = payload.data;
+      if (gon.features.deprecateVulnerabilitiesFeedback) {
+        const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+        updateFindingFromGraphqlResponse(vulnerability, updated);
+      } else {
+        vulnerability.dismissal_feedback = payload.data;
+      }
+
       state.isDismissingVulnerability = false;
       Vue.set(state.modal.vulnerability, 'isDismissed', true);
     }
@@ -155,7 +161,13 @@ export default {
   [types.RECEIVE_DELETE_DISMISSAL_COMMENT_SUCCESS](state, payload) {
     const vulnerability = state.vulnerabilities.find((vuln) => vuln.id === payload.id);
     if (vulnerability) {
-      vulnerability.dismissal_feedback = payload.data;
+      if (gon.features.deprecateVulnerabilitiesFeedback) {
+        const updated = payload.data.securityFindingDismiss.securityFinding.vulnerability;
+        updateFindingFromGraphqlResponse(vulnerability, updated);
+      } else {
+        vulnerability.dismissal_feedback = payload.data;
+      }
+
       state.isDismissingVulnerability = false;
       Vue.set(state.modal.vulnerability, 'isDismissed', true);
     }
