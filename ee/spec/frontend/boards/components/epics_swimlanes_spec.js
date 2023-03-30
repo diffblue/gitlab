@@ -4,6 +4,7 @@ import Draggable from 'vuedraggable';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import * as BoardUtils from 'ee/boards/boards_util';
 import EpicLane from 'ee/boards/components/epic_lane.vue';
 import EpicsSwimlanes from 'ee/boards/components/epics_swimlanes.vue';
@@ -33,7 +34,10 @@ describe('EpicsSwimlanes', () => {
 
   const findDraggable = () => wrapper.findComponent(Draggable);
   const findLoadMoreEpicsButton = () => wrapper.findByTestId('load-more-epics');
+  const findUnassignedLaneList = () => wrapper.findComponent(IssueLaneList);
   const findLaneUnassignedIssues = () => wrapper.findByTestId('board-lane-unassigned-issues-title');
+  const findToggleUnassignedLaneButton = () => wrapper.findByTestId('unassigned-lane-toggle');
+  const findLoadMoreIssuesButton = () => wrapper.findByTestId('board-lane-load-more-issues-button');
 
   const fetchItemsForListSpy = jest.fn();
   const fetchIssuesForEpicSpy = jest.fn();
@@ -143,7 +147,7 @@ describe('EpicsSwimlanes', () => {
     });
 
     it('does not display IssueLaneList component by default', () => {
-      expect(wrapper.findComponent(IssueLaneList).exists()).toBe(false);
+      expect(findUnassignedLaneList().exists()).toBe(false);
     });
 
     it('renders virtual-list', () => {
@@ -171,12 +175,12 @@ describe('EpicsSwimlanes', () => {
 
     it('displays IssueLaneList component when toggling unassigned issues lane', async () => {
       expect(findLaneUnassignedIssues().classes()).not.toContain('board-epic-lane-shadow');
-      wrapper.findByTestId('unassigned-lane-toggle').vm.$emit('click');
+      findToggleUnassignedLaneButton().vm.$emit('click');
 
       await nextTick();
 
       expect(findLaneUnassignedIssues().classes()).toContain('board-epic-lane-shadow');
-      expect(wrapper.findComponent(IssueLaneList).exists()).toBe(true);
+      expect(findUnassignedLaneList().exists()).toBe(true);
     });
 
     it('makes non preset lists draggable', () => {
@@ -228,12 +232,40 @@ describe('EpicsSwimlanes', () => {
   });
 
   describe('Apollo boards', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({ isApolloBoard: true });
+      await waitForPromises();
     });
 
     it('fetches epics swimlanes', () => {
       expect(epicsSwimlanesQueryHandlerSuccess).toHaveBeenCalled();
+    });
+
+    describe('unassigned issues lane', () => {
+      it('load more issues button does not display when all issues are loaded', async () => {
+        expect(findUnassignedLaneList().exists()).toBe(false);
+        expect(findLaneUnassignedIssues().exists()).toBe(true);
+
+        findToggleUnassignedLaneButton().vm.$emit('click');
+
+        await nextTick();
+
+        expect(findUnassignedLaneList().exists()).toBe(true);
+        expect(findLoadMoreIssuesButton().exists()).toBe(false);
+      });
+
+      it('load more issues button displays when there are more issues to load', async () => {
+        findToggleUnassignedLaneButton().vm.$emit('click');
+        await nextTick();
+
+        wrapper
+          .findComponent(IssueLaneList)
+          .vm.$emit('updatePageInfo', { hasNextPage: true, endCursor: 'xyz' }, mockLists[0].id);
+
+        await nextTick();
+
+        expect(findLoadMoreIssuesButton().exists()).toBe(true);
+      });
     });
   });
 });
