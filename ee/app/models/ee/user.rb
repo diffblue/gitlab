@@ -411,17 +411,14 @@ module EE
     def gitlab_team_member?
       human? && gitlab_com_member?
     end
-    strong_memoize_attr :gitlab_team_member?
 
     def gitlab_service_user?
       service_user? && gitlab_com_member?
     end
-    strong_memoize_attr :gitlab_service_user?
 
     def gitlab_bot?
       bot? && gitlab_com_member?
     end
-    strong_memoize_attr :gitlab_bot?
 
     def security_dashboard
       InstanceSecurityDashboard.new(self)
