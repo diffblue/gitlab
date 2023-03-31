@@ -20,13 +20,7 @@ module Analytics
     private
 
     def collector_host
-      if ::Gitlab::CurrentSettings.product_analytics_data_collector_host.present?
-        return ::Gitlab::CurrentSettings.product_analytics_data_collector_host
-      end
-
-      return unless ::Gitlab::CurrentSettings.jitsu_host.present?
-
-      ::Gitlab::CurrentSettings.current_application_settings.jitsu_host.gsub(%r{(://\w+.)}, '://collector.')
+      ::Gitlab::CurrentSettings.product_analytics_data_collector_host
     end
 
     def enabled_analytics_features(project)
@@ -48,6 +42,7 @@ module Analytics
       return false unless ::Gitlab::CurrentSettings.jitsu_project_xid.present?
       return false unless ::Gitlab::CurrentSettings.jitsu_administrator_email.present?
       return false unless ::Gitlab::CurrentSettings.jitsu_administrator_password.present?
+      return false unless ::Gitlab::CurrentSettings.product_analytics_data_collector_host.present?
       return false unless ::Gitlab::CurrentSettings.product_analytics_clickhouse_connection_string.present?
       return false unless ::Gitlab::CurrentSettings.cube_api_base_url.present?
       return false unless ::Gitlab::CurrentSettings.cube_api_key.present?
