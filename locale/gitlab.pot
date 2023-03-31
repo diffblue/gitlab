@@ -40872,6 +40872,9 @@ msgstr ""
 msgid "Showing data for workflow items completed in this date range. Date range limited to %{maxDateRange} days."
 msgstr ""
 
+msgid "Showing first 50 actions."
+msgstr ""
+
 msgid "Showing last %{size} of log -"
 msgstr ""
 
