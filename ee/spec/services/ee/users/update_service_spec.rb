@@ -69,6 +69,17 @@ RSpec.describe Users::UpdateService, feature_category: :user_profile do
               let(:current_user) { admin }
             end
           end
+
+          context 'when force: true parameter is passed to service' do
+            let(:current_user) { user }
+
+            it 'updates the name' do
+              result = update_user_as(current_user, user, { user: user, name: 'New Name', force_name_change: true })
+
+              expect(result).to be_truthy
+              expect(user.name).to eq('New Name')
+            end
+          end
         end
       end
 

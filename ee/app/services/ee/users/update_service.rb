@@ -52,7 +52,7 @@ module EE
       end
 
       def name_updatable?
-        can?(current_user, :update_name, model)
+        params.delete(:force_name_change) || can?(current_user, :update_name, model)
       end
 
       override :identity_params

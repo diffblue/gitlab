@@ -201,6 +201,13 @@ RSpec.describe Gitlab::Auth::Ldap::Access, feature_category: :system_access do
           it 'does not update the email if the user name is different' do
             expect { access.update_user }.not_to change(user, :email)
           end
+
+          it 'updates the name if the user name is different and user cannot change name manually in GitLab' do
+            stub_licensed_features(disable_name_update_for_users: true)
+            stub_application_setting(updating_name_disabled_for_users: true)
+
+            expect { access.update_user }.to change(user, :name)
+          end
         end
 
         context 'when first and last name attributes passed' do
