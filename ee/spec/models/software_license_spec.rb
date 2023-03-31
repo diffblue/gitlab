@@ -15,6 +15,11 @@ RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
   describe '.create_policy_for!' do
     subject { described_class }
 
+    before do
+      # We disable the check because the specs are wrapped in a transaction
+      allow(described_class).to receive(:transaction_open?).and_return(false)
+    end
+
     let(:project) { create(:project) }
 
     context 'when a software license with a given name has already been created' do
@@ -45,6 +50,49 @@ RSpec.describe SoftwareLicense, feature_category: :security_policy_management do
       specify { expect(result).to be_allowed }
       specify { expect(result.scan_result_policy_read).to eq(scan_result_policy_read) }
       specify { expect(result.software_license).to eql(mit_license) }
+    end
+
+    context 'with an open database transaction' do
+      it 'raises an exception and does not create policy' do
+        expect(described_class).to receive(:transaction_open?).and_return(true)
+
+        expect { subject.create_policy_for!(project: project, name: 'name', classification: :allowed) }
+          .to raise_error(SoftwareLicense::TransactionInProgressError)
+          .and not_change { SoftwareLicensePolicy.count }
+      end
+    end
+  end
+
+  describe '.unsafe_create_policy_for!' do
+    subject { described_class.unsafe_create_policy_for!(project: project, name: mit_license.name, classification: :allowed) }
+
+    let_it_be(:project) { create(:project) }
+    let_it_be(:mit_license) { create(:software_license, :mit) }
+
+    it 'calls find_or_create_by!' do
+      expect(described_class).to receive(:find_or_create_by!).with(name: mit_license.name).and_call_original
+
+      subject
+    end
+  end
+
+  describe '.transaction_open?' do
+    subject { described_class.transaction_open? }
+
+    before do
+      allow(ApplicationRecord.connection).to receive(:transaction_open?).and_return(transaction_open)
+    end
+
+    context 'when transaction_open is true' do
+      let(:transaction_open) { true }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when transaction_open is false' do
+      let(:transaction_open) { false }
+
+      it { is_expected.to be_falsey }
     end
   end
 

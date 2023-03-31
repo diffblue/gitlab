@@ -162,6 +162,11 @@ RSpec.describe API::ManagedLicenses, feature_category: :security_policy_manageme
   end
 
   describe 'POST /projects/:id/managed_licenses' do
+    before do
+      # We disable the check because the specs are wrapped in a transaction
+      allow(SoftwareLicense).to receive(:transaction_open?).and_return(false)
+    end
+
     context 'authorized user with proper permissions' do
       it 'creates managed license' do
         expect do

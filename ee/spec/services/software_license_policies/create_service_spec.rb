@@ -30,6 +30,11 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
     end
 
     context 'with a user who is allowed to admin' do
+      before do
+        # We disable the check because the specs are wrapped in a transaction
+        allow(SoftwareLicense).to receive(:transaction_open?).and_return(false)
+      end
+
       context 'when valid parameters are specified' do
         let(:params) { { name: 'MIT', approval_status: 'allowed' } }
         let(:result) { subject.execute }
@@ -106,6 +111,17 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
           expect(result[:software_license_policy].name).to eq(params[:name])
           expect(result[:software_license_policy].classification).to eq(params[:approval_status])
           expect(RefreshLicenseComplianceChecksWorker).not_to have_received(:perform_async)
+        end
+
+        it 'calls unsafe_create_policy_for' do
+          expect(SoftwareLicense).to receive(:unsafe_create_policy_for!).with(
+            project: project,
+            classification: 'denied',
+            name: params[:name],
+            scan_result_policy_read: params[:scan_result_policy_read]
+          ).and_call_original
+
+          subject.execute(is_scan_result_policy: true)
         end
       end
     end
