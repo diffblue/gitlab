@@ -159,19 +159,26 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
     end
 
     it 'returns "Create new" menu groups without headers', :use_clean_rails_memory_store_caching do
+      extra_attrs = { "data-track-action": "click_link", "data-track-property": "nav_create_menu" }
+
       expect(subject[:create_new_menu_groups]).to eq([
         {
           name: "",
           items: [
-            { href: "/projects/new", text: "New project/repository" },
-            { href: "/groups/new", text: "New group" },
-            { href: "/-/snippets/new", text: "New snippet" }
+            { href: "/projects/new", text: "New project/repository",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_project") },
+            { href: "/groups/new", text: "New group",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_group") },
+            { href: "/-/snippets/new", text: "New snippet",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_snippet") }
           ]
         }
       ])
     end
 
     it 'returns "Create new" menu groups with headers', :use_clean_rails_memory_store_caching do
+      extra_attrs = { "data-track-action": "click_link", "data-track-property": "nav_create_menu" }
+
       allow(group).to receive(:persisted?).and_return(true)
       allow(helper).to receive(:can?).and_return(true)
 
@@ -179,17 +186,23 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
         a_hash_including(
           name: "In this group",
           items: array_including(
-            { href: "/projects/new", text: "New project/repository" },
-            { href: "/groups/new#create-group-pane", text: "New subgroup" },
-            { href: '', text: "Invite members" }
+            { href: "/projects/new", text: "New project/repository",
+              extraAttrs: extra_attrs.merge("data-track-label": "new_project") },
+            { href: "/groups/new#create-group-pane", text: "New subgroup",
+              extraAttrs: extra_attrs.merge("data-track-label": "new_subgroup") },
+            { href: "", text: "Invite members",
+              extraAttrs: extra_attrs.merge("data-track-label": "invite") }
           )
         ),
         a_hash_including(
           name: "In GitLab",
           items: array_including(
-            { href: "/projects/new", text: "New project/repository" },
-            { href: "/groups/new", text: "New group" },
-            { href: "/-/snippets/new", text: "New snippet" }
+            { href: "/projects/new", text: "New project/repository",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_project") },
+            { href: "/groups/new", text: "New group",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_group") },
+            { href: "/-/snippets/new", text: "New snippet",
+              extraAttrs: extra_attrs.merge("data-track-label": "general_new_snippet") }
           )
         )
       )
