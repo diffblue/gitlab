@@ -12155,9 +12155,6 @@ msgstr ""
 msgid "Create issue"
 msgstr ""
 
-msgid "Create issue to resolve all threads"
-msgstr ""
-
 msgid "Create label"
 msgstr ""
 
@@ -37336,6 +37333,9 @@ msgstr ""
 msgid "Resolve"
 msgstr ""
 
+msgid "Resolve all with new issue"
+msgstr ""
+
 msgid "Resolve any conflicts. %{linkStart}How do I fix them?%{linkEnd}"
 msgstr ""
 
@@ -52506,9 +52506,6 @@ msgid_plural "mrWidget|Closes issues"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "mrWidget|Create issue to resolve all threads"
-msgstr ""
-
 msgid "mrWidget|Delete source branch"
 msgstr ""
 
@@ -52587,6 +52584,9 @@ msgid "mrWidget|Refreshing now"
 msgstr ""
 
 msgid "mrWidget|Remove from merge train"
+msgstr ""
+
+msgid "mrWidget|Resolve all with new issue"
 msgstr ""
 
 msgid "mrWidget|Resolve conflicts"
