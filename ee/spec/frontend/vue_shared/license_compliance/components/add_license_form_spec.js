@@ -8,11 +8,9 @@ import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/consta
 const KNOWN_LICENSES = [{ name: 'BSD' }, { name: 'Apache' }];
 
 let wrapper;
-let vm;
 
 const createComponent = (props = {}, mountFn = shallowMount) => {
   wrapper = mountFn(LicenseIssueBody, { propsData: { knownLicenses: KNOWN_LICENSES, ...props } });
-  vm = wrapper.vm;
 };
 
 describe('AddLicenseForm', () => {
@@ -20,14 +18,12 @@ describe('AddLicenseForm', () => {
   const findCancelButton = () => wrapper.find('.js-cancel');
   const findRadioInputs = () =>
     wrapper.findComponent(GlFormRadioGroup).findAllComponents(GlFormRadio);
+  const findRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findAddLicenseFormDropdown = () => wrapper.findComponent(AddLicenseFormDropdown);
+  const findFeedbackElement = () => wrapper.find('.invalid-feedback');
 
   beforeEach(() => {
     createComponent();
-  });
-
-  afterEach(() => {
-    vm = undefined;
   });
 
   describe('interaction', () => {
@@ -35,17 +31,13 @@ describe('AddLicenseForm', () => {
       const name = 'LICENSE_TEST';
 
       createComponent({}, mount);
-      jest.spyOn(vm, '$emit').mockImplementation(() => {});
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED, licenseName: name });
-
+      findAddLicenseFormDropdown().vm.$emit('update-selected-license', name);
+      findRadioGroup().vm.$emit('input', LICENSE_APPROVAL_STATUS.ALLOWED);
       await nextTick();
 
-      const linkEl = findSubmitButton();
-      linkEl.trigger('click');
+      findSubmitButton().trigger('click');
 
-      expect(vm.$emit).toHaveBeenCalledWith('addLicense', {
+      expect(wrapper.emitted('addLicense')[0][0]).toEqual({
         newStatus: LICENSE_APPROVAL_STATUS.ALLOWED,
         license: { name },
       });
@@ -53,59 +45,57 @@ describe('AddLicenseForm', () => {
 
     it('clicking the Cancel button closes the form', () => {
       createComponent({}, mount);
-      const linkEl = findCancelButton();
-      jest.spyOn(vm, '$emit').mockImplementation(() => {});
-      linkEl.trigger('click');
+      expect(wrapper.emitted('closeForm')).toBeUndefined();
 
-      expect(vm.$emit).toHaveBeenCalledWith('closeForm');
+      findCancelButton().trigger('click');
+
+      expect(wrapper.emitted('closeForm')).toHaveLength(1);
     });
   });
 
   describe('computed', () => {
     describe('submitDisabled', () => {
-      it('is true if the approvalStatus is empty', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ licenseName: 'FOO', approvalStatus: '' });
+      it('is true if the approvalStatus is empty', async () => {
+        findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO');
+        findRadioGroup().vm.$emit('input', '');
+        await nextTick();
 
-        expect(vm.submitDisabled).toBe(true);
+        expect(findSubmitButton().props('disabled')).toBe(true);
       });
 
-      it('is true if the licenseName is empty', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ licenseName: '', approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED });
+      it('is true if the licenseName is empty', async () => {
+        findAddLicenseFormDropdown().vm.$emit('update-selected-license', '');
+        findRadioGroup().vm.$emit('input', LICENSE_APPROVAL_STATUS.ALLOWED);
+        await nextTick();
 
-        expect(vm.submitDisabled).toBe(true);
+        expect(findSubmitButton().props('disabled')).toBe(true);
       });
 
-      it('is true if the entered license is duplicated', () => {
+      it('is true if the entered license is duplicated', async () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ licenseName: 'FOO', approvalStatus: LICENSE_APPROVAL_STATUS.ALLOWED });
+        findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO');
+        findRadioGroup().vm.$emit('input', LICENSE_APPROVAL_STATUS.ALLOWED);
+        await nextTick();
 
-        expect(vm.submitDisabled).toBe(true);
+        expect(findSubmitButton().props('disabled')).toBe(true);
       });
     });
 
     describe('isInvalidLicense', () => {
-      it('is true if the entered license is duplicated', () => {
+      it('is true if the entered license is duplicated', async () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ licenseName: 'FOO' });
+        findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO');
+        await nextTick();
 
-        expect(vm.isInvalidLicense).toBe(true);
+        expect(findFeedbackElement().classes()).toContain('d-block');
       });
 
-      it('is false if the entered license is unique', () => {
+      it('is false if the entered license is unique', async () => {
         createComponent({ managedLicenses: [{ name: 'FOO' }] });
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({ licenseName: 'FOO2' });
+        findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO2');
+        await nextTick();
 
-        expect(vm.isInvalidLicense).toBe(false);
+        expect(findFeedbackElement().classes()).not.toContain('d-block');
       });
     });
   });
@@ -138,12 +128,10 @@ describe('AddLicenseForm', () => {
 
     it('renders error text, if there is a duplicate license', async () => {
       createComponent({ managedLicenses: [{ name: 'FOO' }] });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ licenseName: 'FOO' });
+      findAddLicenseFormDropdown().vm.$emit('update-selected-license', 'FOO');
       await nextTick();
 
-      const feedbackElement = wrapper.find('.invalid-feedback');
+      const feedbackElement = findFeedbackElement();
 
       expect(feedbackElement.exists()).toBe(true);
       expect(feedbackElement.classes()).toContain('d-block');
@@ -170,12 +158,10 @@ describe('AddLicenseForm', () => {
     });
 
     it('disables submit, if the form is invalid', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ licenseName: '' });
+      findAddLicenseFormDropdown().vm.$emit('update-selected-license', '');
       await nextTick();
 
-      expect(vm.submitDisabled).toBe(true);
+      expect(findSubmitButton().props().disabled).toBe(true);
 
       const submitButton = findSubmitButton();
 
