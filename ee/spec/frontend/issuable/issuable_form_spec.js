@@ -20,7 +20,6 @@ describe('IssuableForm', () => {
       <form>
         <input name="[title]" />
         <input type="checkbox" class="js-toggle-draft" />
-        <textarea name="[description]"></textarea>
       </form>
     `);
     $form = $('form');
