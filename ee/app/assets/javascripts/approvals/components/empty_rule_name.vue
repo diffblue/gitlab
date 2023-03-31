@@ -24,7 +24,7 @@ export default {
       <gl-icon
         id="pop-approver"
         tabindex="0"
-        name="question"
+        name="question-o"
         :aria-label="__('help')"
         :size="14"
         class="author-link gl-cursor-help"

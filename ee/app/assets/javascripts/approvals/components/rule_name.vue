@@ -60,7 +60,7 @@ export default {
     <span v-if="description" class="gl-ml-3">
       <gl-icon
         ref="helpIcon"
-        name="question"
+        name="question-o"
         :aria-label="__('Help')"
         :size="14"
         class="author-link gl-cursor-help"

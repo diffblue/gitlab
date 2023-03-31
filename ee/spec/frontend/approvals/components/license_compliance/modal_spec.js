@@ -70,7 +70,7 @@ describe('EE Approvals LicenseCompliance Modal', () => {
   const findByHref = (href) => wrapper.find(`[href="${href}"`);
   const findModal = () => wrapper.findComponent(GlModalVuex);
   const findRuleForm = () => wrapper.findComponent(mocks.RuleForm);
-  const findInformationIcon = () => wrapper.find('[name="question"]');
+  const findInformationIcon = () => wrapper.find('[name="question-o"]');
   const findOkButton = () => wrapper.find('[name="ok"]');
   const findCancelButton = () => wrapper.find('[name="cancel"]');
 

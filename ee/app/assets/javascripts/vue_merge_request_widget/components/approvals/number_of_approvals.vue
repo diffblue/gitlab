@@ -52,7 +52,7 @@ export default {
     <span v-if="hasInvalidRules" class="gl-vertical-align-middle gl-text-gray-600 js-help gl-ml-3">
       <gl-icon
         :id="rule.name"
-        name="question"
+        name="question-o"
         class="author-link gl-cursor-help"
         :aria-label="__('help')"
         :size="14"
