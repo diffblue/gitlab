@@ -35,6 +35,7 @@ module EE
 
         delete_scan_result_policies
         unassign_policy_project
+        delete_compliance_framework_setting
       end
 
       override :remove_paid_features
@@ -79,6 +80,10 @@ module EE
         return if new_namespace.licensed_feature_available?(:quality_management)
 
         project.issues.with_issue_type(:test_case).delete_all
+      end
+
+      def delete_compliance_framework_setting
+        project.compliance_framework_setting&.delete
       end
     end
   end
