@@ -30,9 +30,13 @@ button[disabled] {
 }
 
 .diff-file:not(.discussion-wrapper) .note.draft-note {
-  border: 0;
   background: $orange-50;
+  margin: 0 -1px;
   border-radius: 3px;
+
+  .timeline-entry-inner {
+    border: 1px solid $orange-400;
+  }
 
   &.is-editing {
     margin-bottom: 0;
