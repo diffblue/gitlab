@@ -10,7 +10,9 @@ module Gitlab
         when Namespaces::ProjectNamespace
           project = subject.project
           # Only available within groups
-          project.licensed_feature_available?(:cycle_analytics_for_projects) && project.root_ancestor.group_namespace?
+          project.licensed_feature_available?(:cycle_analytics_for_projects) &&
+            Feature.enabled?(:vsa_group_and_project_parity, project) &&
+            project.root_ancestor.group_namespace?
         when Group
           subject.licensed_feature_available?(:cycle_analytics_for_groups)
         else
