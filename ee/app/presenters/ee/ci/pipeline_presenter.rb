@@ -21,7 +21,8 @@ module EE
 
       delegator_override :retryable?
       def retryable?
-        !merge_train_pipeline? && super
+        # The merge_train_pipeline? is more expensive and less frequent condition
+        super && !merge_train_pipeline?
       end
     end
   end
