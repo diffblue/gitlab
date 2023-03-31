@@ -39671,6 +39671,9 @@ msgstr ""
 msgid "SecurityReports|Activity"
 msgstr ""
 
+msgid "SecurityReports|Add a comment or reason for dismissal"
+msgstr ""
+
 msgid "SecurityReports|Add comment and dismiss"
 msgstr ""
 
@@ -39876,6 +39879,9 @@ msgid "SecurityReports|Report has expired"
 msgstr ""
 
 msgid "SecurityReports|Results show vulnerabilities introduced by the merge request, in addition to existing vulnerabilities from the latest successful pipeline in your project's default branch."
+msgstr ""
+
+msgid "SecurityReports|Save comment"
 msgstr ""
 
 msgid "SecurityReports|Scan details"
