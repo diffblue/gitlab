@@ -2,6 +2,19 @@
 
 module EE
   module Feature
+    extend ActiveSupport::Concern
+
+    class_methods do
+      extend ::Gitlab::Utils::Override
+
+      override :register_feature_groups
+      def register_feature_groups
+        super
+
+        Flipper.register(:gitlab_team_members) { |actor| ::Gitlab::Com.gitlab_com_group_member?(actor.thing) }
+      end
+    end
+
     module ActiveSupportCacheStoreAdapter
       extend ::Gitlab::Utils::Override
 
