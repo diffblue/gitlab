@@ -3,58 +3,27 @@
 require 'spec_helper'
 
 RSpec.describe FeatureGroups::GitlabTeamMembers, feature_category: :shared do
-  let_it_be(:gitlab_com) { create(:group, path: 'gitlab-com') }
-  let_it_be_with_reload(:member) { create(:user).tap { |user| gitlab_com.add_developer(user) } }
-  let_it_be_with_reload(:non_member) { create(:user) }
+  let(:group) { instance_double('Group') }
+  let(:user) { build_stubbed(:user) }
 
   describe '#enabled?' do
-    context 'when not on gitlab.com' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(false)
-      end
-
-      it 'returns false' do
-        expect(described_class.enabled?(member)).to eq(false)
-      end
+    it 'returns false when actor is not a user' do
+      expect(described_class.enabled?(group)).to eq(false)
     end
 
-    context 'when on gitlab.com' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
+    context 'when actor is a user' do
+      subject(:enabled?) { described_class.enabled?(user) }
+
+      it 'returns true :Gitlab::Com.gitlab_com_group_member? returns true' do
+        expect(Gitlab::Com).to receive(:gitlab_com_group_member?).with(user.id).and_return(true)
+
+        expect(enabled?).to eq(true)
       end
 
-      it 'returns true for gitlab-com group members' do
-        expect(described_class.enabled?(member)).to eq(true)
-      end
+      it 'returns false :Gitlab::Com.gitlab_com_group_member? returns false' do
+        expect(Gitlab::Com).to receive(:gitlab_com_group_member?).with(user.id).and_return(false)
 
-      it 'returns false for users not in gitlab-com' do
-        expect(described_class.enabled?(non_member)).to eq(false)
-      end
-
-      it 'returns false when actor is not a user' do
-        expect(described_class.enabled?(gitlab_com)).to eq(false)
-      end
-
-      it 'reloads members after 5 minutes' do
-        expect(described_class.enabled?(non_member)).to eq(false)
-
-        gitlab_com.add_developer(non_member)
-
-        travel_to(6.minutes.from_now) do
-          expect(described_class.enabled?(non_member)).to eq(true)
-        end
-      end
-
-      it 'does not make queries on subsequent calls', :use_clean_rails_memory_store_caching do
-        described_class.enabled?(member)
-        non_member
-
-        queries = ActiveRecord::QueryRecorder.new do
-          described_class.enabled?(member)
-          described_class.enabled?(non_member)
-        end
-
-        expect(queries.count).to eq(0)
+        expect(enabled?).to eq(false)
       end
     end
   end
