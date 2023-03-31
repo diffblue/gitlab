@@ -25,6 +25,7 @@ export default {
   data() {
     return {
       modalId: 'approvals-auth',
+      collapsed: true,
     };
   },
   computed: {
@@ -49,8 +50,10 @@ export default {
     invalidRules() {
       return this.approvals.approvalState?.invalidApproversRules || [];
     },
-    suggestedApprovers() {
-      return this.approvals.approvalState?.suggestedApprovers?.nodes || [];
+  },
+  methods: {
+    toggleCollapsed() {
+      this.collapsed = !this.collapsed;
     },
   },
 };
@@ -62,6 +65,8 @@ export default {
     :is-optional-default="isOptional"
     :require-password-to-approve="requirePasswordToApprove"
     :modal-id="modalId"
+    :collapsed="collapsed"
+    @toggle="toggleCollapsed"
   >
     <template v-if="!isBasic" #default="{ isApproving, approveWithAuth, hasApprovalAuthError }">
       <approvals-auth
@@ -72,10 +77,9 @@ export default {
         @hide="clearError"
       />
     </template>
-    <template v-if="!isBasic" #footer>
+    <template v-if="!isBasic && !collapsed" #footer>
       <approvals-footer
         v-if="hasFooter"
-        :suggested-approvers="suggestedApprovers"
         :invalid-approvers-rules="invalidRules"
         :security-approvals-help-page-path="mr.securityApprovalsHelpPagePath"
         :eligible-approvers-docs-path="mr.eligibleApproversDocsPath"

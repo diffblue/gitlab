@@ -96,7 +96,6 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         wait_for_all_requests
 
         expect(page).to have_content("Requires 1 approval from eligible users.")
-        expect(page).to have_selector("img[alt='#{other_user.name}']")
       end
 
       it 'allows delete approvers group when it is set in project', :sidekiq_inline do
@@ -117,10 +116,9 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         click_button 'Update approval rule'
         click_on("Create merge request")
         wait_for_all_requests
-        click_on("View eligible approvers") if page.has_button?("View eligible approvers")
+        find('[data-testid="widget-toggle"]').click
         wait_for_requests
 
-        expect(page).not_to have_selector(".js-approvers img[alt='#{other_user.name}']")
         expect(page).to have_selector(".js-approvers img[alt='#{approver.name}']")
       end
     end
@@ -158,8 +156,6 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         wait_for_all_requests
 
         expect(page).to have_content("Requires 1 approval from eligible users.")
-        expect(page).to have_selector("img[alt='#{user.name}']")
-        expect(page).to have_selector("img[alt='#{other_user.name}']")
       end
 
       it 'allows delete approvers group when it`s set in project' do
@@ -184,7 +180,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         click_on("Save changes")
         wait_for_all_requests
 
-        click_on("View eligible approvers")
+        find('[data-testid="widget-toggle"]').click
         wait_for_requests
 
         expect(page).not_to have_selector(".js-approvers img[alt='#{other_user.name}']")

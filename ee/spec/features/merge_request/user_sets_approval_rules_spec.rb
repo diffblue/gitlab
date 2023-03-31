@@ -69,7 +69,7 @@ RSpec.describe 'Merge request > User sets approval rules', :js, feature_category
         click_on("Create merge request")
         wait_for_requests
 
-        click_on("View eligible approvers")
+        find('[data-testid="widget-toggle"]').click
         wait_for_requests
 
         tr = page.find(:css, 'tr', text: private_rule.name)

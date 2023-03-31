@@ -9,7 +9,6 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { createAlert } from '~/alert';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
-import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
 import ApprovalsFoss from '~/vue_merge_request_widget/components/approvals/approvals.vue';
 import { APPROVE_ERROR } from '~/vue_merge_request_widget/components/approvals/messages';
 import eventHub from '~/vue_merge_request_widget/event_hub';
@@ -75,7 +74,6 @@ describe('MRWidget approvals', () => {
           text: action.text(),
         };
   };
-  const findFooter = () => wrapper.findComponent(ApprovalsFooter);
   const findInvalidRules = () => wrapper.findByTestId('invalid-rules');
 
   beforeEach(() => {
@@ -193,23 +191,18 @@ describe('MRWidget approvals', () => {
   });
 
   describe('footer', () => {
-    let footer;
-
     beforeEach(async () => {
       createComponent();
 
       await waitForPromises();
     });
 
-    beforeEach(() => {
-      footer = findFooter();
-    });
+    it('opens footer when toggle is clicked', async () => {
+      wrapper.findByTestId('widget-toggle').vm.$emit('click');
 
-    it('is rendered with props', () => {
-      expect(footer.exists()).toBe(true);
-      expect(footer.props()).toMatchObject({
-        suggestedApprovers: [],
-      });
+      await nextTick();
+
+      expect(wrapper.findByTestId('approvals-footer').exists()).toBe(true);
     });
   });
 
