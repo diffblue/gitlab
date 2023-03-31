@@ -1,6 +1,5 @@
-import { GlTable, GlButton, GlIcon, GlBadge, GlLink } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { GlButton, GlIcon, GlBadge, GlLink } from '@gitlab/ui';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_delete_modal.vue';
 import DevopsAdoptionTable from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_table.vue';
 import DevopsAdoptionTableCellFlag from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_table_cell_flag.vue';
@@ -19,7 +18,7 @@ describe('DevopsAdoptionTable', () => {
   const createComponent = (options = {}) => {
     const { provide = {} } = options;
 
-    wrapper = mount(DevopsAdoptionTable, {
+    wrapper = mountExtended(DevopsAdoptionTable, {
       propsData: {
         cols: DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].cols,
         enabledNamespaces: devopsAdoptionNamespaceData.nodes,
@@ -35,19 +34,14 @@ describe('DevopsAdoptionTable', () => {
     localStorage.clear();
   });
 
-  const findTable = () => wrapper.findComponent(GlTable);
-
-  const findCol = (testId) => findTable().find(`[data-testid="${testId}"]`);
-
+  const findHeaders = () => wrapper.findAllByTestId(TABLE_TEST_IDS_HEADERS);
+  const findCol = (testId) => wrapper.findByTestId(testId);
   const findColRowChild = (col, row, child) =>
-    findTable().findAll(`[data-testid="${col}"]`).at(row).findComponent(child);
-
+    wrapper.findAllByTestId(col).at(row).findComponent(child);
   const findColSubComponent = (colTestId, childComponent) =>
     findCol(colTestId).findComponent(childComponent);
-
   const findSortByLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(0);
   const findSortDescLocalStorageSync = () => wrapper.findAllComponents(LocalStorageSync).at(1);
-
   const findDeleteModal = () => wrapper.findComponent(DevopsAdoptionDeleteModal);
 
   describe('table headings', () => {
@@ -55,7 +49,7 @@ describe('DevopsAdoptionTable', () => {
 
     beforeEach(() => {
       createComponent();
-      headers = findTable().findAll(`[data-testid="${TABLE_TEST_IDS_HEADERS}"]`);
+      headers = findHeaders();
     });
 
     it('displays the correct number of headings', () => {
@@ -206,14 +200,11 @@ describe('DevopsAdoptionTable', () => {
   });
 
   describe('delete modal integration', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
 
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        selectedNamespace: devopsAdoptionNamespaceData.nodes[0],
-      });
+      // select first namespace
+      await wrapper.findByTestId('select-namespace').vm.$emit('click');
     });
 
     it('re emits trackModalOpenState with the given value', async () => {
@@ -228,7 +219,7 @@ describe('DevopsAdoptionTable', () => {
 
     beforeEach(() => {
       createComponent();
-      headers = findTable().findAll(`[data-testid="${TABLE_TEST_IDS_HEADERS}"]`);
+      headers = findHeaders();
     });
 
     it('sorts the namespaces by name', async () => {
@@ -236,9 +227,7 @@ describe('DevopsAdoptionTable', () => {
         devopsAdoptionNamespaceData.nodes[0].namespace.fullName,
       );
 
-      headers.at(0).trigger('click');
-
-      await nextTick();
+      await headers.at(0).trigger('click');
 
       expect(findCol(TABLE_TEST_IDS_NAMESPACE).text()).toBe(
         devopsAdoptionNamespaceData.nodes[1].namespace.fullName,
@@ -248,9 +237,7 @@ describe('DevopsAdoptionTable', () => {
     it('should update local storage when the sort column changes', async () => {
       expect(findSortByLocalStorageSync().props('value')).toBe('name');
 
-      headers.at(1).trigger('click');
-
-      await nextTick();
+      await headers.at(1).trigger('click');
 
       expect(findSortByLocalStorageSync().props('value')).toBe('mergeRequestApproved');
     });
@@ -258,9 +245,7 @@ describe('DevopsAdoptionTable', () => {
     it('should update local storage when the sort direction changes', async () => {
       expect(findSortDescLocalStorageSync().props('value')).toBe(false);
 
-      headers.at(0).trigger('click');
-
-      await nextTick();
+      await headers.at(0).trigger('click');
 
       expect(findSortDescLocalStorageSync().props('value')).toBe(true);
     });
