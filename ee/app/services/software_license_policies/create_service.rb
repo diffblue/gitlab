@@ -11,7 +11,8 @@ module SoftwareLicensePolicies
       return error("", 403) unless is_scan_result_policy ||
         can?(@current_user, :admin_software_license_policy, @project)
 
-      success(software_license_policy: create_software_license_policy(is_scan_result_policy))
+      result = is_scan_result_policy ? create_for_scan_result_policy : create_software_license_policy
+      success(software_license_policy: result)
     rescue ActiveRecord::RecordInvalid => exception
       error(exception.record.errors.full_messages, 400)
     rescue ArgumentError => exception
@@ -21,15 +22,24 @@ module SoftwareLicensePolicies
 
     private
 
-    def create_software_license_policy(is_scan_result_policy)
+    def create_software_license_policy
       policy = SoftwareLicense.create_policy_for!(
         project: project,
         name: params[:name].strip,
         classification: params[:approval_status],
         scan_result_policy_read: params[:scan_result_policy_read]
       )
-      RefreshLicenseComplianceChecksWorker.perform_async(project.id) unless is_scan_result_policy
+      RefreshLicenseComplianceChecksWorker.perform_async(project.id)
       policy
+    end
+
+    def create_for_scan_result_policy
+      SoftwareLicense.unsafe_create_policy_for!(
+        project: project,
+        name: params[:name].strip,
+        classification: params[:approval_status],
+        scan_result_policy_read: params[:scan_result_policy_read]
+      )
     end
   end
 end
