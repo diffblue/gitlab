@@ -1220,8 +1220,7 @@ lib/gitlab/checks/** @proglottis @toon
 /lib/tasks/gitlab/password.rake @gitlab-org/manage/authentication-and-authorization/approvers
 /lib/tasks/tokens.rake @gitlab-org/manage/authentication-and-authorization/approvers
 
-[Verify] @gitlab-org/maintainers/cicd-verify
-# Verify backend
+[Verify Backend] @gitlab-org/maintainers/cicd-verify
 /**/app/**/ci/ 
 /**/lib/**/ci/
 /**/spec/**/ci/
@@ -1333,7 +1332,7 @@ lib/gitlab/checks/** @proglottis @toon
 /ee/spec/helpers/ee/projects/pipeline_helper_spec.rb
 /ee/spec/workers/clear_shared_runners_minutes_worker_spec.rb
 
-# Verify frontend
+[Verify Frontend]
 /**/javascripts/ci/            @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/pipelines/     @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/jobs/          @gitlab-org/ci-cd/verify/frontend
