@@ -20,6 +20,10 @@ To enable the new navigation sidebar:
 - Enable the `super_sidebar_nav` feature flag.
 - Select your avatar, then turn on the **New navigation** toggle.
 
+## Adding items to the sidebar
+
+Before adding an item to the sidebar, ensure you follow [this process](https://about.gitlab.com/handbook/product/ux/navigation/#how-to-propose-a-change-that-impacts-navigation).
+
 ## Adding page-specific Vue content
 
 Pages can render arbitrary content into the sidebar using the `SidebarPortal`
