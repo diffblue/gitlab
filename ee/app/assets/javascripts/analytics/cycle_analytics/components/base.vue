@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { GlEmptyState } from '@gitlab/ui';
-import { joinPaths, refreshCurrentPage } from '~/lib/utils/url_utility';
+import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import { VSA_METRICS_GROUPS } from '~/analytics/shared/constants';
 import { generateValueStreamsDashboardLink } from '~/analytics/shared/utils';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
@@ -147,10 +147,10 @@ export default {
     },
     dashboardsPath() {
       if (this.showDashboardsLink) {
-        const namespacePath = this.enableProjectsFilter
-          ? this.namespacePath
-          : joinPaths('groups', this.groupPath);
-        const projectsQuery = this.enableProjectsFilter ? this.selectedProjectFullPaths : [];
+        const namespacePath = this.enableProjectsFilter ? this.namespacePath : this.groupPath;
+        const projectsQuery = this.enableProjectsFilter
+          ? this.selectedProjectFullPaths
+          : [this.namespacePath];
 
         return generateValueStreamsDashboardLink(namespacePath, projectsQuery);
       }

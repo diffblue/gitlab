@@ -15,6 +15,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import {
   currentGroup,
   groupNamespace as namespace,
+  projectNamespace,
   createdBefore,
   createdAfter,
   initialPaginationQuery,
@@ -715,10 +716,31 @@ describe('EE Value Stream Analytics component', () => {
     it('does not display the project filter', () => {
       displaysProjectFilter(false);
     });
+  });
+
+  describe('with a project namespace', () => {
+    beforeEach(async () => {
+      mock = new MockAdapter(axios);
+      mockRequiredRoutes(mock);
+      wrapper = await createComponent({
+        withStageSelected: true,
+        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        initialState: {
+          ...initialCycleAnalyticsState,
+          enableProjectsFilter: false,
+          namespace: projectNamespace,
+          project: 'fake-id',
+        },
+      });
+    });
+
+    afterEach(() => {
+      mock.restore();
+    });
 
     it('renders a link to the value streams dashboard', () => {
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
-        '/groups/foo/-/analytics/dashboards/value_streams_dashboard',
+        '/groups/foo/-/analytics/dashboards/value_streams_dashboard?query=some/cool/path',
       );
     });
   });

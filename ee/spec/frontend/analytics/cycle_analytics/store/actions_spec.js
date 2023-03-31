@@ -8,6 +8,7 @@ import {
   createdAfter,
   createdBefore,
   groupNamespace as namespace,
+  projectNamespace,
   currentGroup,
 } from 'jest/analytics/cycle_analytics/mock_data';
 import {
@@ -25,6 +26,7 @@ import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '.
 
 const milestonesPath = `/${namespace.fullPath}/-/milestones.json`;
 const labelsPath = `/${namespace.fullPath}/-/labels.json`;
+const groupEndpoint = 'groups/foo';
 
 const alertErrorMessage = 'There was an error while fetching value stream analytics data.';
 
@@ -85,6 +87,28 @@ describe('Value Stream Analytics actions', () => {
     );
   });
 
+  describe('with a project namespace', () => {
+    it('setPaths dispatches the filters/setEndpoints action with project endpoints', () => {
+      return testAction(
+        actions.setPaths,
+        {},
+        { ...state, namespace: projectNamespace, isProjectNamespace: true },
+        [],
+        [
+          {
+            type: 'filters/setEndpoints',
+            payload: {
+              groupEndpoint,
+              labelsEndpoint: '/some/cool/path/-/labels.json',
+              milestonesEndpoint: '/some/cool/path/-/milestones.json',
+              projectEndpoint: 'some/cool/path',
+            },
+          },
+        ],
+      );
+    });
+  });
+
   describe('setPaths', () => {
     it('dispatches the filters/setEndpoints action with endpoints', () => {
       return testAction(
@@ -96,7 +120,7 @@ describe('Value Stream Analytics actions', () => {
           {
             type: 'filters/setEndpoints',
             payload: {
-              groupEndpoint: 'foo',
+              groupEndpoint,
               labelsEndpoint: labelsPath,
               milestonesEndpoint: milestonesPath,
             },

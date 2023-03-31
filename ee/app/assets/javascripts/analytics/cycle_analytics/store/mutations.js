@@ -114,9 +114,11 @@ export default {
       enableTasksByTypeChart = false,
       enableCustomizableStages = false,
       enableProjectsFilter = false,
+      projectId = null,
     } = {},
   ) {
     state.isLoading = true;
+    state.projectId = projectId;
     state.groupPath = groupPath;
     state.selectedProjects = selectedProjects;
     state.selectedValueStream = selectedValueStream;
