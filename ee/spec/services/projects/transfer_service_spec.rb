@@ -214,4 +214,24 @@ RSpec.describe Projects::TransferService do
       end
     end
   end
+
+  describe 'deleting compliance framework setting' do
+    context 'when the project has a compliance framework setting' do
+      let!(:compliance_framework_setting) { create(:compliance_framework_project_setting, project: project) }
+
+      it 'deletes the compliance framework setting' do
+        expect { subject.execute(group) }.to change { ::ComplianceManagement::ComplianceFramework::ProjectSettings.count }.from(1).to(0)
+      end
+    end
+
+    context 'when the project does not have a compliance framework setting' do
+      it 'does not raise an error' do
+        expect { subject.execute(group) }.not_to raise_error
+      end
+
+      it 'does not change the compliance framework settings count' do
+        expect { subject.execute(group) }.not_to change { ::ComplianceManagement::ComplianceFramework::ProjectSettings.count }
+      end
+    end
+  end
 end
