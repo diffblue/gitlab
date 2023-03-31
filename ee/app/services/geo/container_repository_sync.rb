@@ -133,7 +133,7 @@ module Geo
 
     # The client for primary registry
     def client
-      strong_memoize(:client) do
+      strong_memoize_with_expiration(:client, ContainerRepository.registry_client_expiration_time) do
         ContainerRegistry::Client.new(
           Gitlab.config.geo.registry_replication.primary_api_url,
           token: ::Auth::ContainerRegistryAuthenticationService.pull_access_token(repository_path)
