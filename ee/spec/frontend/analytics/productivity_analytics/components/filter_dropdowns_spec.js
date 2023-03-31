@@ -23,7 +23,7 @@ describe('FilterDropdowns component', () => {
   const projectPath = 'gitlab-org/gitlab-test';
   const projectId = 'gid://gitlab/Project/1';
 
-  beforeEach(() => {
+  const createWrapper = (propsData = {}) => {
     const {
       modules: { filters, ...modules },
       ...storeConfig
@@ -33,6 +33,10 @@ describe('FilterDropdowns component', () => {
       modules: {
         filters: {
           ...filters,
+          state: {
+            ...filters.state,
+            groupNamespace,
+          },
           actions: {
             ...filters.actions,
             ...filtersActionSpies,
@@ -44,9 +48,12 @@ describe('FilterDropdowns component', () => {
 
     wrapper = shallowMount(FilterDropdowns, {
       store: mockStore,
-      propsData: {},
+      propsData,
     });
-  });
+  };
+
+  const findGroupsDropdownFilter = () => wrapper.findComponent(GroupsDropdownFilter);
+  const findProjectsDropdownFilter = () => wrapper.findComponent(ProjectsDropdownFilter);
 
   afterEach(() => {
     // eslint-disable-next-line @gitlab/vtu-no-explicit-wrapper-destroy
@@ -56,27 +63,27 @@ describe('FilterDropdowns component', () => {
 
   describe('template', () => {
     it('renders the groups dropdown', () => {
-      expect(wrapper.findComponent(GroupsDropdownFilter).exists()).toBe(true);
+      createWrapper();
+      expect(findGroupsDropdownFilter().exists()).toBe(true);
     });
 
     describe('without a group selected', () => {
       beforeEach(() => {
-        wrapper.vm.groupId = null;
+        createWrapper({ group: { id: null } });
       });
 
       it('does not render the projects dropdown', () => {
-        expect(wrapper.findComponent(ProjectsDropdownFilter).exists()).toBe(false);
+        expect(findProjectsDropdownFilter().exists()).toBe(false);
       });
     });
 
     describe('with a group selected', () => {
       beforeEach(() => {
-        wrapper.vm.groupId = groupId;
-        mockStore.state.filters.groupNamespace = groupNamespace;
+        createWrapper({ group: { id: groupId } });
       });
 
       it('renders the projects dropdown', () => {
-        expect(wrapper.findComponent(ProjectsDropdownFilter).exists()).toBe(true);
+        expect(findProjectsDropdownFilter().exists()).toBe(true);
       });
     });
   });
@@ -84,13 +91,14 @@ describe('FilterDropdowns component', () => {
   describe('methods', () => {
     describe('onGroupSelected', () => {
       beforeEach(() => {
-        wrapper.vm.onGroupSelected({ id: groupId, full_path: groupNamespace });
+        createWrapper({ group: { id: null } });
+        findGroupsDropdownFilter().vm.$emit('selected', { id: groupId, full_path: groupNamespace });
       });
 
-      it('updates the groupId and invokes setGroupNamespace action', () => {
-        expect(wrapper.vm.groupId).toBe(1);
+      it('invokes setGroupNamespace action and renders the projects dropdown', () => {
         const { calls } = filtersActionSpies.setGroupNamespace.mock;
         expect(calls[calls.length - 1][1]).toBe(groupNamespace);
+        expect(findProjectsDropdownFilter().exists()).toBe(true);
       });
 
       it('emits the "groupSelected" event', () => {
@@ -103,13 +111,13 @@ describe('FilterDropdowns component', () => {
 
     describe('onProjectsSelected', () => {
       beforeEach(() => {
-        wrapper.vm.groupId = groupId;
+        createWrapper({ group: { id: groupId } });
       });
 
       describe('when the list of selected projects is not empty', () => {
         beforeEach(() => {
-          mockStore.state.filters.groupNamespace = groupNamespace;
-          wrapper.vm.onProjectsSelected([{ id: projectId, fullPath: `${projectPath}` }]);
+          const selectedProject = [{ id: projectId, fullPath: `${projectPath}` }];
+          findProjectsDropdownFilter().vm.$emit('selected', selectedProject);
         });
 
         it('invokes setProjectPath action', () => {
@@ -129,8 +137,7 @@ describe('FilterDropdowns component', () => {
 
       describe('when the list of selected projects is empty', () => {
         beforeEach(() => {
-          mockStore.state.filters.groupNamespace = groupNamespace;
-          wrapper.vm.onProjectsSelected([]);
+          findProjectsDropdownFilter().vm.$emit('selected', []);
         });
 
         it('invokes setProjectPath action with null', () => {
