@@ -234,7 +234,13 @@ export default {
             data-testid="help-link"
             :aria-label="$options.i18n.helpText"
           >
-            <gl-icon v-gl-tooltip name="question" :size="12" :title="$options.i18n.helpText" />
+            <gl-icon
+              v-gl-tooltip
+              name="question-o"
+              :size="14"
+              :title="$options.i18n.helpText"
+              class="gl-text-blue-500"
+            />
           </gl-link>
 
           <div class="gl-display-inline-flex">
