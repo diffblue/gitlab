@@ -171,7 +171,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
           stub_feature_flags(vsa_group_and_project_parity: false)
         end
 
-        it { is_expected.to eq(false) }
+        it { is_expected.to eq(true) }
       end
     end
 
@@ -188,13 +188,28 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         before do
           stub_licensed_features(cycle_analytics_for_projects: true)
 
-          params[:namespace] = sub_group_project.project_namespace
+          # The reload is needed because the project association with inverse_of is not loaded properly
+          params[:namespace] = sub_group_project.project_namespace.reload
         end
 
         it 'disables the task by type chart and the projects filter' do
           is_expected.to match(a_hash_including(enable_tasks_by_type_chart: 'false',
             enable_customizable_stages: 'true',
             enable_projects_filter: 'false'))
+        end
+
+        describe 'use_aggregated_data_collector param' do
+          subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
+
+          it { is_expected.to eq(true) }
+
+          context 'when the vsa_group_and_project_parity FF is off' do
+            before do
+              stub_feature_flags(vsa_group_and_project_parity: false)
+            end
+
+            it { is_expected.to eq(false) }
+          end
         end
       end
     end

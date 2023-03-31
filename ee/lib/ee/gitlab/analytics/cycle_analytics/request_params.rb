@@ -46,7 +46,7 @@ module EE
 
           override :use_aggregated_backend?
           def use_aggregated_backend?
-            super || (licensed? && ::Feature.enabled?(:vsa_group_and_project_parity, namespace))
+            super || licensed?
           end
 
           def aggregation_attributes
