@@ -78,6 +78,15 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
           expect(gl_user).to be_valid
           expect(gl_user).not_to be_admin
         end
+
+        it 'does not demote existing admin user' do
+          stub_omniauth_setting(auto_link_user: true)
+          create(:user, email: 'john@example.com', admin: true)
+          oidc_user.save # rubocop:disable Rails/SaveBang
+
+          expect(gl_user).to be_valid
+          expect(gl_user).to be_admin
+        end
       end
 
       context 'when defined' do
