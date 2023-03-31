@@ -315,5 +315,20 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
         subject.execute
       end
     end
+
+    describe '#client' do
+      it 'caches the client' do
+        client = subject.send(:client)
+        client1 = subject.send(:client)
+        client2 = nil
+
+        travel_to(Time.current + Gitlab::CurrentSettings.container_registry_token_expire_delay.minutes) do
+          client2 = subject.send(:client)
+        end
+
+        expect(client1.object_id).to be(client.object_id)
+        expect(client2.object_id).not_to be(client.object_id)
+      end
+    end
   end
 end
