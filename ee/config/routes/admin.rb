@@ -8,9 +8,11 @@ namespace :admin do
     end
   end
 
-  scope(path: 'groups/*id',
-        controller: :groups,
-        constraints: { id: Gitlab::PathRegex.full_namespace_route_regex, format: /(html|json|atom)/ }) do
+  scope(
+    path: 'groups/*id',
+    controller: :groups,
+    constraints: { id: Gitlab::PathRegex.full_namespace_route_regex, format: /(html|json|atom)/ }
+  ) do
     scope(as: :group) do
       post :reset_runners_minutes
     end
