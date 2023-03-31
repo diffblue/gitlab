@@ -13,9 +13,16 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
 
   let(:next_reconciliation_date) { Date.current + 60.days }
   let(:offline_license?) { true }
+  let(:seat_reconciliation?) { true }
 
   before do
-    create_current_license({ cloud_licensing_enabled: true, offline_cloud_licensing_enabled: offline_license? })
+    create_current_license(
+      {
+        cloud_licensing_enabled: true,
+        offline_cloud_licensing_enabled: offline_license?,
+        seat_reconciliation_enabled: seat_reconciliation?
+      }
+    )
   end
 
   describe '#display?' do
@@ -35,6 +42,12 @@ RSpec.describe Gitlab::ManualQuarterlyCoTermBanner do
 
     context 'when current license is not an offline cloud license' do
       let(:offline_license?) { false }
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when seat reconciliation is false' do
+      let(:seat_reconciliation?) { false }
 
       it { is_expected.to eq(false) }
     end

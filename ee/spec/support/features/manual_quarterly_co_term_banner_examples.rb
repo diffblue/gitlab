@@ -19,7 +19,11 @@ RSpec.shared_examples 'manual quarterly co-term banner' do |path_to_visit:|
     before do
       allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { should_check_namespace_plan? }
 
-      create_current_license(cloud_licensing_enabled: true, offline_cloud_licensing_enabled: true)
+      create_current_license(
+        cloud_licensing_enabled: true,
+        offline_cloud_licensing_enabled: true,
+        seat_reconciliation_enabled: true
+      )
 
       create(:upcoming_reconciliation, type, next_reconciliation_date: reconciliation_date)
 
