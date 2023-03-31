@@ -22,6 +22,7 @@ describe('UserBar component', () => {
   const findBrandLogo = () => wrapper.findByTestId('brand-header-custom-logo');
   const findSearchButton = () => wrapper.findByTestId('super-sidebar-search-button');
   const findSearchModal = () => wrapper.findComponent(SearchModal);
+  const findStopImpersonationButton = () => wrapper.findByTestId('stop-impersonation-btn');
 
   Vue.use(Vuex);
 
@@ -30,7 +31,7 @@ describe('UserBar component', () => {
       searchOptions: () => MOCK_DEFAULT_SEARCH_OPTIONS,
     },
   });
-  const createWrapper = (extraSidebarData = {}) => {
+  const createWrapper = ({ extraSidebarData = {}, provideOverrides = {} } = {}) => {
     wrapper = shallowMountExtended(UserBar, {
       propsData: {
         sidebarData: { ...sidebarData, ...extraSidebarData },
@@ -38,6 +39,8 @@ describe('UserBar component', () => {
       provide: {
         rootPath: '/',
         toggleNewNavEndpoint: '/-/profile/preferences',
+        isImpersonating: false,
+        ...provideOverrides,
       },
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
@@ -80,12 +83,16 @@ describe('UserBar component', () => {
       expect(findBrandLogo().exists()).toBe(true);
       expect(findBrandLogo().attributes('src')).toBe(sidebarData.logo_url);
     });
+
+    it('does not render the "Stop impersonating" button', () => {
+      expect(findStopImpersonationButton().exists()).toBe(false);
+    });
   });
 
   describe('GitLab Next badge', () => {
     describe('when on canary', () => {
       it('should render a badge to switch off GitLab Next', () => {
-        createWrapper({ gitlab_com_and_canary: true });
+        createWrapper({ extraSidebarData: { gitlab_com_and_canary: true } });
         const badge = wrapper.findComponent(GlBadge);
         expect(badge.text()).toBe('Next');
         expect(badge.attributes('href')).toBe(sidebarData.canary_toggle_com_url);
@@ -94,7 +101,7 @@ describe('UserBar component', () => {
 
     describe('when not on canary', () => {
       it('should not render the GitLab Next badge', () => {
-        createWrapper({ gitlab_com_and_canary: false });
+        createWrapper({ extraSidebarData: { gitlab_com_and_canary: false } });
         const badge = wrapper.findComponent(GlBadge);
         expect(badge.exists()).toBe(false);
       });
@@ -118,6 +125,31 @@ describe('UserBar component', () => {
 
     it('should render search modal', async () => {
       expect(findSearchModal().exists()).toBe(true);
+    });
+  });
+
+  describe('While impersonating a user', () => {
+    beforeEach(() => {
+      createWrapper({ provideOverrides: { isImpersonating: true } });
+    });
+
+    it('renders the "Stop impersonating" button', () => {
+      expect(findStopImpersonationButton().exists()).toBe(true);
+    });
+
+    it('sets the correct label on the button', () => {
+      const btn = findStopImpersonationButton();
+      const label = __('Stop impersonating');
+
+      expect(btn.attributes('title')).toBe(label);
+      expect(btn.attributes('aria-label')).toBe(label);
+    });
+
+    it('sets the href and data-method attributes', () => {
+      const btn = findStopImpersonationButton();
+
+      expect(btn.attributes('href')).toBe(sidebarData.stop_impersonation_path);
+      expect(btn.attributes('data-method')).toBe('delete');
     });
   });
 });
