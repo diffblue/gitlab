@@ -31,7 +31,7 @@ export default {
       return numberToHumanSize(this.containerRegistrySize, 1);
     },
   },
-  storageUsageQuotaHelpPage: helpPagePath('user/usage_quotas'),
+  storageUsageQuotaHelpPage: helpPagePath('user/packages/container_registry/index'),
 };
 </script>
 <template>
