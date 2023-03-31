@@ -111,6 +111,7 @@ const buildProjectsFromJSON = (projects = '') => {
  */
 export const buildCycleAnalyticsInitialData = ({
   valueStream = null,
+  projectId = null,
   groupId = null,
   createdBefore = null,
   createdAfter = null,
@@ -177,6 +178,7 @@ export const buildCycleAnalyticsInitialData = ({
   enableTasksByTypeChart: parseBoolean(enableTasksByTypeChart),
   enableCustomizableStages: parseBoolean(enableCustomizableStages),
   enableProjectsFilter: parseBoolean(enableProjectsFilter),
+  projectId: parseInt(projectId, 10),
 });
 
 /**

@@ -11,6 +11,8 @@ import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
 
+export const isProjectNamespace = ({ projectId }) => Boolean(projectId);
+
 export const namespacePath = ({ namespace }) => namespace?.fullPath || null;
 
 export const hasNoAccessError = (state) => state.errorCode === HTTP_STATUS_FORBIDDEN;
