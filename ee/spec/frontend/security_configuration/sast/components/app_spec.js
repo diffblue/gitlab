@@ -9,7 +9,6 @@ import sastCiConfigurationQuery from 'ee/security_configuration/sast/graphql/sas
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { USER_FACING_ERROR_MESSAGE_PREFIX } from '~/lib/utils/error_message';
 import { sastCiConfigurationQueryResponse } from '../mock_data';
 import { specificErrorMessage, technicalErrorMessage } from '../constants';
 
@@ -23,9 +22,9 @@ describe('SAST Configuration App', () => {
 
   const pendingHandler = () => new Promise(() => {});
   const successHandler = () => sastCiConfigurationQueryResponse;
-  // Prefixed with USER_FACING_ERROR_MESSAGE_PREFIX as used in lib/gitlab/utils/error_message.rb to indicate a user facing error
+  // Prefixed with window.gon.uf_error_prefix as used in lib/gitlab/utils/error_message.rb to indicate a user facing error
   const failureHandlerSpecific = () => ({
-    errors: [{ message: `${USER_FACING_ERROR_MESSAGE_PREFIX} ${specificErrorMessage}` }],
+    errors: [{ message: `${window.gon.uf_error_prefix} ${specificErrorMessage}` }],
   });
   const failureHandlerGeneric = async () => ({
     errors: [{ message: technicalErrorMessage }],
