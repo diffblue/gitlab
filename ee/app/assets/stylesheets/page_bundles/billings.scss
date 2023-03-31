@@ -116,7 +116,7 @@ $badge-height: $gl-spacing-scale-7;
 @media (min-width: $breakpoint-md) {
   .billing-plans {
     @include gl-display-flex;
-    @include gl-flex-wrap;
+    @include gl-flex-wrap-wrap;
     @include gl-justify-content-space-between;
 
     > * + * {
