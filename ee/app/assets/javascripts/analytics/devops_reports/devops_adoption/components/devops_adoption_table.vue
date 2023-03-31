@@ -204,6 +204,7 @@ export default {
             category="tertiary"
             icon="remove"
             :aria-label="$options.i18n.removeButton"
+            data-testid="select-namespace"
             @click="setSelectedNamespace(item)"
           />
         </span>
