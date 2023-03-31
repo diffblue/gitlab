@@ -122,9 +122,9 @@ export default {
 </script>
 
 <template>
-  <table class="table m-0">
+  <table class="table m-0 gl-border-t">
     <thead class="thead-white text-nowrap">
-      <tr class="d-md-table-row d-none">
+      <tr class="d-md-table-row d-none gl-font-sm">
         <th></th>
         <th class="gl-pl-0!">{{ s__('MRApprovals|Approvers') }}</th>
         <th></th>
@@ -179,13 +179,13 @@ export default {
           <td class="w-0 gl-pr-4!">
             <approved-icon class="gl-pl-2" :is-approved="rule.approved" />
           </td>
-          <td :colspan="numberOfColumns(rule)" class="gl-pl-0! gl-vertical-align-middle!">
+          <td :colspan="numberOfColumns(rule)" class="gl-pl-0!">
             <div class="d-md-flex d-none js-name align-items-center">
               <empty-rule-name
                 v-if="rule.type.toLowerCase() === $options.ruleTypeAnyApprover"
                 :eligible-approvers-docs-path="eligibleApproversDocsPath"
               />
-              <span v-else class="mt-n1">
+              <span v-else class="gl-white-space-nowrap">
                 <span
                   v-if="rule.section && rule.section !== 'codeowners'"
                   :aria-label="sectionNameLabel(rule)"
@@ -214,40 +214,57 @@ export default {
                 :img-size="24"
                 empty-text=""
               />
-              <div v-if="rule.commentedBy.nodes.length > 0" class="mt-2">
-                <span>{{ s__('MRApprovals|Commented by') }}</span>
+              <div v-if="rule.commentedBy.nodes.length > 0" class="gl-display-flex">
+                <span class="gl-display-inline-flex gl-font-sm gl-text-gray-500">{{
+                  s__('MRApprovals|Commented by')
+                }}</span>
                 <user-avatar-list
-                  class="d-inline-block align-middle"
+                  class="gl-display-inline-flex gl-align-items-center gl-ml-2"
                   :items="rule.commentedBy.nodes"
-                  :img-size="24"
+                  :img-size="16"
                 />
               </div>
-              <div v-if="rule.approvedBy.nodes.length" class="mt-2">
-                <span>{{ s__('MRApprovals|Approved by') }}</span>
+              <div v-if="rule.approvedBy.nodes.length" class="gl-display-flex">
+                <span class="gl-display-inline-flex gl-font-sm gl-text-gray-500">{{
+                  s__('MRApprovals|Approved by')
+                }}</span>
                 <user-avatar-list
-                  class="d-inline-block align-middle"
+                  class="gl-display-inline-flex gl-align-items-center gl-ml-2"
                   :items="rule.approvedBy.nodes"
-                  :img-size="24"
+                  :img-size="16"
                 />
               </div>
             </div>
           </td>
           <td
             v-if="rule.type.toLowerCase() !== $options.ruleTypeAnyApprover"
-            class="d-md-table-cell d-none js-approvers"
+            class="d-md-table-cell d-none gl-w-full js-approvers"
           >
-            <div>
-              <user-avatar-list :items="rule.eligibleApprovers" :img-size="24" empty-text="" />
-            </div>
+            <user-avatar-list
+              :items="rule.eligibleApprovers"
+              :img-size="24"
+              empty-text=""
+              class="gl-display-flex gl-flex-wrap"
+            />
           </td>
-          <td class="d-md-table-cell w-0 d-none text-nowrap js-pending">
+          <td class="d-md-table-cell w-0 d-none gl-white-space-nowrap gl-w-full js-pending">
             <number-of-approvals :rule="rule" :invalid-approvers-rules="invalidApproversRules" />
           </td>
-          <td class="d-md-table-cell d-none js-commented-by">
-            <user-avatar-list :items="rule.commentedBy.nodes" :img-size="24" empty-text="" />
+          <td class="d-md-table-cell d-none gl-w-full js-commented-by">
+            <user-avatar-list
+              :items="rule.commentedBy.nodes"
+              :img-size="24"
+              empty-text=""
+              class="gl-display-flex gl-flex-wrap"
+            />
           </td>
-          <td class="d-none d-md-table-cell js-approved-by">
-            <user-avatar-list :items="rule.approvedBy.nodes" :img-size="24" empty-text="" />
+          <td class="d-none d-md-table-cell gl-w-full js-approved-by">
+            <user-avatar-list
+              :items="rule.approvedBy.nodes"
+              :img-size="24"
+              empty-text=""
+              class="gl-display-flex gl-flex-wrap"
+            />
           </td>
         </tr>
       </tbody>

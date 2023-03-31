@@ -19,8 +19,8 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-align-items-center">
-    <span class="gl-mt-n2">{{ __('All eligible users') }}</span>
-    <span id="popovercontainer" class="gl-ml-3 gl-align-self-end">
+    <span>{{ __('All eligible users') }}</span>
+    <span id="popovercontainer" class="gl-display-inline-flex gl-ml-2">
       <gl-icon
         id="pop-approver"
         tabindex="0"
