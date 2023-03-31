@@ -13,11 +13,12 @@ Vue.use(VueApollo);
 describe('MRWidget approvals summary', () => {
   let wrapper;
 
-  const createComponent = (response = approvalRulesResponse) => {
+  const createComponent = (response = approvalRulesResponse, propsData = {}) => {
     wrapper = mount(ApprovalsSummary, {
       propsData: {
         approvalState: response.data.project.mergeRequest,
         multipleApprovalRulesAvailable: true,
+        ...propsData,
       },
     });
   };
@@ -49,6 +50,29 @@ describe('MRWidget approvals summary', () => {
       expect(wrapper.text()).toContain(
         `Requires ${TEST_APPROVALS_LEFT} approvals from eligible users`,
       );
+    });
+  });
+
+  describe('user committed', () => {
+    afterEach(() => {
+      window.gon.current_user_id = null;
+    });
+
+    it('does not show popover when setting is false', () => {
+      createComponent(approvalsRequiredResponse, { disableCommittersApproval: false });
+
+      expect(wrapper.find('[data-testid="commit-cant-approve"]').exists()).toBe(false);
+    });
+
+    it('shows popover if current user is a committer', () => {
+      const response = JSON.parse(JSON.stringify(approvalsRequiredResponse));
+      response.data.project.mergeRequest.committers.nodes.push({ id: 1 });
+
+      window.gon.current_user_id = 1;
+
+      createComponent(response, { disableCommittersApproval: true });
+
+      expect(wrapper.find('[data-testid="commit-cant-approve"]').exists()).toBe(true);
     });
   });
 });

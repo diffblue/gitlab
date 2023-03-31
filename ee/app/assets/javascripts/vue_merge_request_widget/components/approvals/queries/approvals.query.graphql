@@ -3,8 +3,12 @@
 query approvedByEE($projectPath: ID!, $iid: String!) {
   project(fullPath: $projectPath) {
     id
+    mergeRequestsDisableCommittersApproval
     mergeRequest(iid: $iid) {
       id
+      author {
+        id
+      }
       approved
       approvalsLeft
       approvalsRequired
@@ -22,6 +26,11 @@ query approvedByEE($projectPath: ID!, $iid: String!) {
         }
       }
       approvedBy {
+        nodes {
+          ...User
+        }
+      }
+      committers {
         nodes {
           ...User
         }

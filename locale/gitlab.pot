@@ -49297,6 +49297,9 @@ msgstr ""
 msgid "Why are you signing up? (optional)"
 msgstr ""
 
+msgid "Why can't I approve?"
+msgstr ""
+
 msgid "Why is this rule invalid?"
 msgstr ""
 
@@ -50154,6 +50157,9 @@ msgid "You can specify notification level per group or per project."
 msgstr ""
 
 msgid "You can view the source or %{linkStart}%{cloneIcon} clone the repository%{linkEnd}"
+msgstr ""
+
+msgid "You can't approve because you added one or more commits to this merge request."
 msgstr ""
 
 msgid "You can't follow more than %{limit} users. To follow more users, unfollow some others."
