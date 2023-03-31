@@ -442,55 +442,76 @@ export const emptyResponse = () => ({
   fixed: [],
 });
 
-export const findingQueryMockData = ({
-  stateComment = null,
-  dismissedAt = null,
-  dismissedBy = null,
-} = {}) =>
+export const findingMockData = {
+  id: 'b58fadc9-e4af-5404-ba6b-e4ee14801c6f',
+  stateComment: 'Existing comment',
+  dismissedAt: '2023-03-07T10:50:09Z',
+  dismissedBy: {
+    name: 'Administrator',
+    username: 'root',
+    webUrl: 'http://gdk.test:3000/root',
+    id: 'gid://gitlab/User/15',
+  },
+  vulnerability: {
+    id: 1,
+    stateTransitions: {
+      nodes: [
+        {
+          comment: 'Existing comment',
+          toState: 'DISMISSED',
+          createdAt: '2023-03-07T10:50:09Z',
+          author: {
+            name: 'Administrator',
+            username: 'root',
+            webUrl: 'http://gdk.test:3000/root',
+            id: 'gid://gitlab/User/15',
+          },
+        },
+      ],
+    },
+  },
+  mergeRequest: {
+    id: 'git://gitlab/MergeRequest/7',
+    iid: 7,
+    webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/merge_requests/7',
+    createdAt: '2023-03-07T10:50:09Z',
+    author: {
+      id: 'gid://gitlab/User/1',
+      name: 'Administrator',
+      username: 'root',
+      webUrl: 'http://gdk.test:3000/root',
+    },
+  },
+  issueLinks: {
+    nodes: [
+      {
+        id: 'git://gitlab/IssueLink/1',
+        linkType: 'CREATED',
+        issue: {
+          id: 'gid://gitlab/Issue/2',
+          iid: '2',
+          webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/issues/2',
+          createdAt: '2023-03-07T10:50:09Z',
+          author: {
+            id: 'gid://gitlab/User/1',
+            name: 'Administrator',
+            username: 'root',
+            webUrl: 'http://gdk.test:3000/root',
+          },
+        },
+      },
+    ],
+  },
+};
+
+export const findingQueryMockData = () =>
   jest.fn().mockResolvedValue({
     data: {
       project: {
         id: 'gid://gitlab/Project/11',
         pipeline: {
           id: 'gid://gitlab/Ci::Pipeline/13',
-          securityReportFinding: {
-            id: 'b58fadc9-e4af-5404-ba6b-e4ee14801c6f',
-            stateComment,
-            dismissedAt,
-            dismissedBy,
-            mergeRequest: {
-              id: 'git://gitlab/MergeRequest/7',
-              iid: 7,
-              webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/merge_requests/7',
-              createdAt: '2023-03-07T10:50:09Z',
-              author: {
-                id: 'gid://gitlab/User/1',
-                name: 'Administrator',
-                username: 'root',
-                webUrl: 'http://gdk.test:3000/root',
-              },
-            },
-            issueLinks: {
-              nodes: [
-                {
-                  id: 'git://gitlab/IssueLink/1',
-                  linkType: 'CREATED',
-                  issue: {
-                    id: 'gid://gitlab/Issue/2',
-                    iid: '2',
-                    webUrl: 'http://gdk.test:3000/root/security-reports-v2/-/issues/2',
-                    createdAt: '2023-03-07T10:50:09Z',
-                    author: {
-                      id: 'gid://gitlab/User/1',
-                      name: 'Administrator',
-                      username: 'root',
-                      webUrl: 'http://gdk.test:3000/root',
-                    },
-                  },
-                },
-              ],
-            },
-          },
+          securityReportFinding: findingMockData,
         },
       },
     },

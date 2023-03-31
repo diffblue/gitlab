@@ -19,10 +19,16 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import download from '~/lib/utils/downloader';
 import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
+import {
+  getCreatedIssueForVulnerability,
+  getDismissalTransitionForVulnerability,
+} from 'ee/vue_shared/security_reports/components/helpers';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
-import { i18n, reportTypes, popovers } from './i18n';
+import { i18n, popovers, reportTypes } from './i18n';
 
 export default {
   name: 'WidgetSecurityReports',
@@ -38,6 +44,7 @@ export default {
     DynamicScroller,
     DynamicScrollerItem,
   },
+  mixins: [glFeatureFlagsMixin()],
   i18n,
   props: {
     mr: {
@@ -63,6 +70,7 @@ export default {
     securityReportFinding: {
       manual: true,
       query: findingQuery,
+      errorPolicy: 'none',
       variables() {
         return {
           fullPath: this.mr.sourceProjectFullPath,
@@ -75,32 +83,49 @@ export default {
       },
       result({ data }) {
         const finding = data.project.pipeline.securityReportFinding;
-        const { mergeRequest, stateComment, dismissedBy, dismissedAt } = finding;
-
-        const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
+        const { mergeRequest, stateComment, dismissedBy, dismissedAt, vulnerability } = finding;
 
         if (mergeRequest) {
           this.$set(this.modalData.vulnerability, 'hasMergeRequest', true);
-          this.$set(this.modalData.vulnerability, 'merge_request_feedback', {
+
+          const mergeRequestData = {
             author: mergeRequest.author,
             merge_request_path: mergeRequest.webUrl,
             created_at: mergeRequest.createdAt,
             merge_request_iid: mergeRequest.iid,
-          });
+          };
+
+          if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
+            this.modalData.vulnerability.merge_request_links = [mergeRequestData];
+          } else {
+            this.modalData.vulnerability.merge_request_feedback = mergeRequestData;
+          }
         }
 
+        const issue = finding.issueLinks?.nodes.find((x) => x.linkType === 'CREATED')?.issue;
         if (issue) {
           this.$set(this.modalData.vulnerability, 'hasIssue', true);
-          this.$set(this.modalData.vulnerability, 'issue_feedback', {
+
+          const issueData = {
             author: issue.author,
             created_at: issue.createdAt,
             issue_url: issue.webUrl,
             issue_iid: issue.iid,
-          });
+            link_type: 'created',
+          };
+
+          if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
+            this.modalData.vulnerability.issue_links = [issueData];
+          } else {
+            this.modalData.vulnerability.issue_feedback = issueData;
+          }
         }
 
-        if (dismissedAt) {
-          this.$set(this.modalData.vulnerability, 'isDismissed', true);
+        if (this.glFeatures.deprecateVulnerabilitiesFeedback) {
+          this.modalData.vulnerability.state_transitions = vulnerability
+            ? vulnerability.stateTransitions.nodes.map(convertObjectPropsToSnakeCase)
+            : [];
+        } else if (dismissedAt) {
           this.$set(this.modalData.vulnerability, 'dismissal_feedback', {
             comment_details: stateComment
               ? { comment: stateComment, comment_author: dismissedBy }
@@ -372,16 +397,18 @@ export default {
             vulnerability_data: { ...finding, category: finding.report_type },
           },
         })
-        .then((response) => {
-          visitUrl(response.data.issue_url); // redirect the user to the created issue
+        .then(({ data }) => {
+          const url = this.glFeatures.deprecateVulnerabilitiesFeedback
+            ? getCreatedIssueForVulnerability(data).issue_url
+            : data.issue_url;
+
+          visitUrl(url);
         })
         .catch(() => {
+          this.isCreatingIssue = false;
           this.modalData.error = s__(
             'ciReport|There was an error creating the issue. Please try again.',
           );
-        })
-        .finally(() => {
-          this.isCreatingIssue = false;
         });
     },
 
@@ -412,8 +439,6 @@ export default {
           }
 
           this.modalData.vulnerability.state = 'dismissed';
-          this.modalData.vulnerability.isDismissed = true;
-
           this.hideModal();
 
           toast(
@@ -457,7 +482,6 @@ export default {
           }
 
           this.modalData.vulnerability.state = 'detected';
-          this.modalData.vulnerability.isDismissed = false;
           this.modalData.vulnerability.dismissal_feedback = null;
 
           this.hideModal();
@@ -481,10 +505,13 @@ export default {
     },
 
     addDismissalComment(comment) {
-      const { vulnerability: finding } = this.modalData;
-      const dismissalFeedback = finding.dismissal_feedback;
+      const finding = this.modalData.vulnerability;
 
-      const isEditingDismissalContent = Boolean(dismissalFeedback?.comment_details?.comment);
+      const isEditingDismissalContent = Boolean(
+        this.glFeatures.deprecateVulnerabilitiesFeedback
+          ? getDismissalTransitionForVulnerability(finding).comment
+          : finding.dismissal_feedback?.comment_details?.comment,
+      );
 
       const errorMsg = s__('SecurityReports|There was an error adding the comment.');
       const toastMsg = isEditingDismissalContent
@@ -520,7 +547,7 @@ export default {
     },
 
     createMergeRequest() {
-      const { vulnerability: finding } = this.modalData;
+      const finding = this.modalData.vulnerability;
 
       finding.target_branch = this.mr.sourceBranch;
 
@@ -537,15 +564,17 @@ export default {
           },
         })
         .then(({ data }) => {
-          visitUrl(data.merge_request_path);
+          const url = this.glFeatures.deprecateVulnerabilitiesFeedback
+            ? data.merge_request_links.at(-1).merge_request_path
+            : data.merge_request_path;
+
+          visitUrl(url);
         })
         .catch(() => {
+          this.isCreatingMergeRequest = false;
           this.modalData.error = s__(
             'ciReport|There was an error creating the merge request. Please try again.',
           );
-        })
-        .finally(() => {
-          this.isCreatingMergeRequest = false;
         });
     },
 

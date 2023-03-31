@@ -43,6 +43,22 @@ query pipelineFinding($fullPath: ID!, $pipelineId: ID!, $uuid: String!) {
             }
           }
         }
+        vulnerability {
+          id
+          stateTransitions(last: 1) {
+            nodes {
+              author {
+                id
+                name
+                username
+                webUrl
+              }
+              createdAt
+              comment
+              toState
+            }
+          }
+        }
       }
     }
   }
