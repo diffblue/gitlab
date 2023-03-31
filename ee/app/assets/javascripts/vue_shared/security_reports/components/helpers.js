@@ -31,10 +31,12 @@ export const getHttpString = (httpData) => {
     return '';
   }
 
-  const { body, method, url, headers } = httpData;
+  const { body, headers, method, url, statusCode, reasonPhrase } = httpData;
+  const methodOrStatusCode = method || statusCode;
+  const urlOrReasonPhrase = url || reasonPhrase;
   const headerString = headers.map(({ name, value }) => `${name}: ${value}`).join('\n');
 
-  return `${method} ${url}\n${headerString}\n\n${bodyWithFallBack(body)}`;
+  return `${methodOrStatusCode} ${urlOrReasonPhrase}\n${headerString}\n\n${bodyWithFallBack(body)}`;
 };
 
 export const getCreatedIssueForVulnerability = (vulnerability) =>

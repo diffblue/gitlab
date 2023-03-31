@@ -48589,6 +48589,9 @@ msgstr ""
 msgid "Vulnerability|Actual received response is the one received when this fault was detected"
 msgstr ""
 
+msgid "Vulnerability|Actual response:"
+msgstr ""
+
 msgid "Vulnerability|Add another identifier"
 msgstr ""
 
