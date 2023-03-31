@@ -22,8 +22,8 @@ module Gitlab
           user = super
 
           if user
-            user.admin = user_in_admin_group?
-            user.external = user_in_external_group?
+            user.admin = user_in_admin_group? if admin_groups_enabled?
+            user.external = user_in_external_group? if external_groups_enabled?
           end
 
           user
@@ -40,6 +40,14 @@ module Gitlab
         def required_groups_enabled?
           required_groups = oidc_config.required_groups
           required_groups.any?
+        end
+
+        def admin_groups_enabled?
+          oidc_config.admin_groups.any?
+        end
+
+        def external_groups_enabled?
+          oidc_config.external_groups.any?
         end
 
         def user_in_required_group?
