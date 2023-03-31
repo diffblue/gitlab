@@ -388,14 +388,16 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       subject(:finding_uuids) { aggregated_report.findings.map(&:uuid) }
 
       before do
-        create(:vulnerability_feedback, :dismissal,
-               :sast,
-               project: project,
-               pipeline: pipeline,
-               category: finding_with_feedback.report_type,
-               project_fingerprint: finding_with_feedback.project_fingerprint,
-               vulnerability_data: finding_with_feedback.raw_metadata,
-               finding_uuid: finding_with_feedback.uuid)
+        create(
+          :vulnerability_feedback, :dismissal,
+          :sast,
+          project: project,
+          pipeline: pipeline,
+          category: finding_with_feedback.report_type,
+          project_fingerprint: finding_with_feedback.project_fingerprint,
+          vulnerability_data: finding_with_feedback.raw_metadata,
+          finding_uuid: finding_with_feedback.uuid
+        )
       end
 
       context 'when the state parameter is not given' do
@@ -411,12 +413,14 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         before do
           vulnerability = create(:vulnerability, state, project: project)
 
-          create(:vulnerabilities_finding, :identifier,
-                 vulnerability: vulnerability,
-                 report_type: finding_with_associated_vulnerability.report_type,
-                 project: project,
-                 project_fingerprint: finding_with_associated_vulnerability.project_fingerprint,
-                 uuid: finding_with_associated_vulnerability.uuid)
+          create(
+            :vulnerabilities_finding, :identifier,
+            vulnerability: vulnerability,
+            report_type: finding_with_associated_vulnerability.report_type,
+            project: project,
+            project_fingerprint: finding_with_associated_vulnerability.project_fingerprint,
+            uuid: finding_with_associated_vulnerability.uuid
+          )
         end
 
         context 'when the given state is `dismissed`' do
@@ -556,21 +560,27 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
       let(:dismissed_finding) { sast_findings.third }
 
       before do
-        create(:vulnerabilities_finding,
-               :confirmed,
-               project: project,
-               report_type: 'sast',
-               uuid: confirmed_finding.uuid)
-        create(:vulnerabilities_finding,
-               :resolved,
-               project: project,
-               report_type: 'sast',
-               uuid: resolved_finding.uuid)
-        create(:vulnerabilities_finding,
-               :dismissed,
-               project: project,
-               report_type: 'sast',
-               uuid: dismissed_finding.uuid)
+        create(
+          :vulnerabilities_finding,
+          :confirmed,
+          project: project,
+          report_type: 'sast',
+          uuid: confirmed_finding.uuid
+        )
+        create(
+          :vulnerabilities_finding,
+          :resolved,
+          project: project,
+          report_type: 'sast',
+          uuid: resolved_finding.uuid
+        )
+        create(
+          :vulnerabilities_finding,
+          :dismissed,
+          project: project,
+          report_type: 'sast',
+          uuid: dismissed_finding.uuid
+        )
       end
 
       subject { described_class.new(pipeline: pipeline, params: { report_type: %w[sast], scope: 'all' }).execute }

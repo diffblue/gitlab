@@ -57,23 +57,27 @@ RSpec.shared_examples 'security findings finder' do
           scanner = create(:vulnerabilities_scanner, project: pipeline.project, external_id: scanner_external_id)
 
           report.findings.collect do |finding, index|
-            create(:security_finding,
-                   severity: finding.severity,
-                   confidence: finding.confidence,
-                   uuid: finding.uuid,
-                   deduplicated: true,
-                   scan: scan,
-                   scanner: scanner)
+            create(
+              :security_finding,
+              severity: finding.severity,
+              confidence: finding.confidence,
+              uuid: finding.uuid,
+              deduplicated: true,
+              scan: scan,
+              scanner: scanner
+            )
           end
         end.flatten
 
         findings.second.update!(deduplicated: false)
 
-        create(:vulnerability_feedback,
-               :dismissal,
-               project: pipeline.project,
-               category: :dependency_scanning,
-               finding_uuid: findings.first.uuid)
+        create(
+          :vulnerability_feedback,
+          :dismissal,
+          project: pipeline.project,
+          category: :dependency_scanning,
+          finding_uuid: findings.first.uuid
+        )
 
         vulnerability_finding = create(:vulnerabilities_finding, uuid: findings.second.uuid)
 
@@ -161,11 +165,13 @@ RSpec.shared_examples 'security findings finder' do
             let(:deprecate_vulnerabilities_feedback?) { false }
 
             before do
-              create(:vulnerability_feedback,
-                 :dismissal,
-                 project: pipeline.project,
-                 category: :dependency_scanning,
-                 finding_uuid: finding_to_dismiss.uuid)
+              create(
+                :vulnerability_feedback,
+                :dismissal,
+                project: pipeline.project,
+                category: :dependency_scanning,
+                finding_uuid: finding_to_dismiss.uuid
+              )
             end
 
             it { is_expected.to be(7) }
@@ -326,12 +332,14 @@ RSpec.shared_examples 'security findings finder' do
             scan = create(:security_scan, scan_type: retried_build.name, build: retried_build, latest: false)
 
             report.findings.each_with_index do |finding, index|
-              create(:security_finding,
-                     severity: finding.severity,
-                     confidence: finding.confidence,
-                     uuid: finding.uuid,
-                     deduplicated: true,
-                     scan: scan)
+              create(
+                :security_finding,
+                severity: finding.severity,
+                confidence: finding.confidence,
+                uuid: finding.uuid,
+                deduplicated: true,
+                scan: scan
+              )
             end
           end
 
@@ -342,9 +350,7 @@ RSpec.shared_examples 'security findings finder' do
           let(:report_types) { :secret_detection }
           let(:expected_uuids) { secret_detection_report.findings.map(&:uuid) }
           let(:secret_detection_report) do
-            create(:ci_reports_security_report,
-                   pipeline: pipeline,
-                   type: :secret_detection)
+            create(:ci_reports_security_report, pipeline: pipeline, type: :secret_detection)
           end
 
           before do
@@ -355,12 +361,14 @@ RSpec.shared_examples 'security findings finder' do
             Gitlab::Ci::Parsers::Security::SecretDetection.parse!(report_content, secret_detection_report)
 
             secret_detection_report.findings.each_with_index do |finding, index|
-              create(:security_finding,
-                     severity: finding.severity,
-                     confidence: finding.confidence,
-                     uuid: finding.uuid,
-                     deduplicated: true,
-                     scan: scan)
+              create(
+                :security_finding,
+                severity: finding.severity,
+                confidence: finding.confidence,
+                uuid: finding.uuid,
+                deduplicated: true,
+                scan: scan
+              )
             end
           end
 
@@ -369,10 +377,12 @@ RSpec.shared_examples 'security findings finder' do
 
         context 'when a vulnerability already exist for a security finding' do
           let!(:vulnerability_finding) do
-            create(:vulnerabilities_finding,
-                   :detected,
-                   uuid: Security::Finding.first.uuid,
-                   project: pipeline.project)
+            create(
+              :vulnerabilities_finding,
+              :detected,
+              uuid: Security::Finding.first.uuid,
+              project: pipeline.project
+            )
           end
 
           subject { findings.map(&:vulnerability).first }

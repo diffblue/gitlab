@@ -74,10 +74,9 @@ RSpec.describe Security::TrainingProviders::SecureCodeWarriorUrlFinder do
       let_it_be(:language) { 'ruby' }
 
       it 'returns full url path with the language parameter mapped' do
-        expect(described_class.new(identifier.project,
-                                   provider,
-                                   identifier_external_id,
-                                   language).full_url).to eq("example.com/?Id=gitlab&MappingList=cwe&MappingKey=2&LanguageKey=#{language}")
+        expect(
+          described_class.new(identifier.project, provider, identifier_external_id, language).full_url
+        ).to eq("example.com/?Id=gitlab&MappingList=cwe&MappingKey=2&LanguageKey=#{language}")
       end
     end
   end

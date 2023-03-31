@@ -40,12 +40,12 @@ module Security
       private
 
       attr_reader :project,
-                  :provider,
-                  :identifier_external_id,
-                  :language,
-                  :external_id,
-                  :external_type,
-                  :identifier
+        :provider,
+        :identifier_external_id,
+        :language,
+        :external_id,
+        :external_type,
+        :identifier
 
       def response_url
         strong_memoize(:response_url) do

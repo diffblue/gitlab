@@ -278,40 +278,49 @@ RSpec.describe Epics::CrossHierarchyChildrenFinder do
 
             let_it_be(:another_group) { create(:group) }
             let_it_be(:label) { create(:group_label, group: group) }
-            let_it_be(:epic4, reload: true) do
-              create(:epic, group: group,
-                            start_date: 6.days.before(reference_time),
-                            end_date: 6.days.before(reference_time),
-                            iid: 8876)
+            let_it_be_with_reload(:epic4) do
+              create(
+                :epic,
+                group: group,
+                start_date: 6.days.before(reference_time),
+                end_date: 6.days.before(reference_time),
+                iid: 8876
+              )
             end
 
-            let_it_be(:epic3, reload: true) do
-              create(:epic, :closed, parent: epic4,
-                                     group: another_group,
-                                     description: 'not so awesome',
-                                     start_date: 5.days.before(reference_time),
-                                     end_date: 3.days.before(reference_time),
-                                     iid: 6873)
+            let_it_be_with_reload(:epic3) do
+              create(
+                :epic, :closed, parent: epic4,
+                group: another_group,
+                description: 'not so awesome',
+                start_date: 5.days.before(reference_time),
+                end_date: 3.days.before(reference_time),
+                iid: 6873
+              )
             end
 
-            let_it_be(:epic2, reload: true) do
-              create(:epic, :opened, parent: epic4,
-                                     group: group,
-                                     created_at: 4.days.before(reference_time),
-                                     author: user,
-                                     start_date: 2.days.before(reference_time),
-                                     end_date: 3.days.since(reference_time),
-                                     iid: 9834)
+            let_it_be_with_reload(:epic2) do
+              create(
+                :epic, :opened, parent: epic4,
+                group: group,
+                created_at: 4.days.before(reference_time),
+                author: user,
+                start_date: 2.days.before(reference_time),
+                end_date: 3.days.since(reference_time),
+                iid: 9834
+              )
             end
 
             let_it_be(:epic1) do
-              create(:epic, :opened, parent: epic4,
-                                     group: another_group,
-                                     title: 'This is awesome epic',
-                                     created_at: 1.week.before(reference_time),
-                                     end_date: 10.days.before(reference_time),
-                                     labels: [label],
-                                     iid: 9835)
+              create(
+                :epic, :opened, parent: epic4,
+                group: another_group,
+                title: 'This is awesome epic',
+                created_at: 1.week.before(reference_time),
+                end_date: 10.days.before(reference_time),
+                labels: [label],
+                iid: 9835
+              )
             end
 
             let_it_be(:public_group) { create(:group, :public) }
