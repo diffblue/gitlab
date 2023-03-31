@@ -30,7 +30,7 @@ export default {
       'UsageQuota|Local proxy used for frequently-accessed upstream Docker images. %{linkStart}More information%{linkEnd}',
     ),
   },
-  storageUsageQuotaHelpPage: helpPagePath('user/usage_quotas'),
+  storageUsageQuotaHelpPage: helpPagePath('user/packages/dependency_proxy/index'),
 };
 </script>
 <template>

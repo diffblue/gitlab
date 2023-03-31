@@ -7,7 +7,7 @@ import { numberToHumanSize } from '~/lib/utils/number_utils';
 describe('Container registry usage component', () => {
   let wrapper;
 
-  const helpPath = helpPagePath('user/usage_quotas');
+  const helpPath = helpPagePath('user/packages/container_registry/index');
   const defaultProps = {
     containerRegistrySize: 512,
   };

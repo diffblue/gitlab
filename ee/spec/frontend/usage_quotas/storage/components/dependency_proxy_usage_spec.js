@@ -6,7 +6,7 @@ import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_
 describe('Dependency proxy usage component', () => {
   let wrapper;
 
-  const helpPath = helpPagePath('user/usage_quotas');
+  const helpPath = helpPagePath('user/packages/dependency_proxy/index');
   const defaultProps = {
     dependencyProxyTotalSize: '512 bytes',
   };
