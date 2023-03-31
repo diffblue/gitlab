@@ -86,6 +86,14 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
       end
     end
 
+    context 'when authenticated as a developer' do
+      before do
+        project.add_developer(user)
+      end
+
+      it_behaves_like 'protected branch'
+    end
+
     context 'when authenticated as a guest' do
       before do
         project.add_guest(user)
@@ -207,6 +215,18 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
 
           expect(response).to have_gitlab_http_status(:ok)
         end
+      end
+    end
+
+    context 'when authenticated as a developer' do
+      before do
+        project.add_developer(user)
+      end
+
+      it "returns a 403 response" do
+        patch api(route, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
 
@@ -415,6 +435,30 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
             expect(response).to have_gitlab_http_status(:unprocessable_entity)
           end
         end
+      end
+    end
+
+    context 'when authenticated as a developer' do
+      before do
+        project.add_developer(user)
+      end
+
+      it 'returns a 403 response' do
+        post post_endpoint, params: { name: branch_name }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when authenticated as a guest' do
+      before do
+        project.add_guest(user)
+      end
+
+      it 'returns a 403 response' do
+        post post_endpoint, params: { name: branch_name }
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end
