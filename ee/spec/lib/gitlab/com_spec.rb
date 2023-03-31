@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Com do
+RSpec.describe Gitlab::Com, feature_category: :shared do
   it { expect(described_class.l1_cache_backend).to eq(Gitlab::ProcessMemoryCache.cache_backend) }
   it { expect(described_class.l2_cache_backend).to eq(Rails.cache) }
 
@@ -20,7 +20,7 @@ RSpec.describe Gitlab::Com do
 
       it { is_expected.to be true }
 
-      context 'caching of allowed user IDs' do
+      describe 'caching of allowed user IDs' do
         before do
           described_class.gitlab_com_group_member_id?(user&.id)
         end
@@ -32,7 +32,7 @@ RSpec.describe Gitlab::Com do
     context 'when user is not a gitlab team member' do
       it { is_expected.to be false }
 
-      context 'caching of allowed user IDs' do
+      describe 'caching of allowed user IDs' do
         before do
           described_class.gitlab_com_group_member_id?(user&.id)
         end
@@ -50,14 +50,6 @@ RSpec.describe Gitlab::Com do
     context 'when gitlab-com group does not exist' do
       before do
         allow(Group).to receive(:find_by_name).and_return(nil)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when feature flag is turned off' do
-      before do
-        stub_feature_flags(gitlab_employee_badge: false)
       end
 
       it { is_expected.to be false }
