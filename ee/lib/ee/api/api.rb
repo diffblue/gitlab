@@ -10,6 +10,7 @@ module EE
 
         mount ::EE::API::GroupBoards
 
+        mount ::API::Ai::Experimentation::OpenAi
         mount ::API::AuditEvents
         mount ::API::ProjectApprovalRules
         mount ::API::StatusChecks
