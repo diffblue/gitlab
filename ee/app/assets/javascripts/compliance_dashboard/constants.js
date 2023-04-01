@@ -42,3 +42,15 @@ export const FRAMEWORK_BADGE_SIZES = [FRAMEWORK_BADGE_SIZE_SM, FRAMEWORK_BADGE_S
 export const ROUTE_VIOLATIONS = 'violations';
 export const ROUTE_FRAMEWORKS = 'frameworks';
 export const TABS = [ROUTE_VIOLATIONS, ROUTE_FRAMEWORKS];
+
+export const FRAMEWORKS_FILTER_TYPE_PROJECT = 'project';
+export const FRAMEWORKS_FILTER_TYPE_FRAMEWORK = 'framework';
+export const FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK = {
+  color: '#000000',
+  default: false,
+  description: s__('ComplianceFrameworks|No framework'),
+  id: 'gid://gitlab/ComplianceManagement::Framework/0',
+  name: s__('ComplianceFrameworks|No framework'),
+  pipelineConfigurationFullPath: '',
+  __typename: 'ComplianceFramework',
+};

@@ -175,3 +175,40 @@ export const createProjectSetComplianceFrameworkResponse = ({ errors } = {}) => 
     },
   },
 });
+
+export const createComplianceFrameworksTokenResponse = () => {
+  return {
+    data: {
+      namespace: {
+        id: 'gid://gitlab/Group/1',
+        name: 'Gitlab Shell',
+        __typename: 'Namespace',
+        complianceFrameworks: {
+          nodes: [
+            {
+              id: 'gid://gitlab/ComplianceManagement::Framework/1',
+              name: 'some framework',
+              default: false,
+              description: 'this is a framework',
+              color: '#3cb371',
+              pipelineConfigurationFullPath:
+                '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
+              __typename: 'ComplianceFramework',
+            },
+            {
+              id: 'gid://gitlab/ComplianceManagement::Framework/2',
+              name: 'another framework',
+              default: false,
+              description: 'this is another framework',
+              color: '#3cb371',
+              pipelineConfigurationFullPath:
+                '.compliance-gitlab-ci.yml@gitlab-shell/compliance-framework',
+              __typename: 'ComplianceFramework',
+            },
+          ],
+          __typename: 'ComplianceFrameworkConnection',
+        },
+      },
+    },
+  };
+};

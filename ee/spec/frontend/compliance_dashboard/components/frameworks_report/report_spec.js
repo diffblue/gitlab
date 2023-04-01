@@ -14,6 +14,7 @@ import complianceFrameworksGroupProjects from 'ee/compliance_dashboard/graphql/c
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
 import Pagination from 'ee/compliance_dashboard/components/frameworks_report/pagination.vue';
+import Filters from 'ee/compliance_dashboard/components/frameworks_report/filters.vue';
 
 Vue.use(VueApollo);
 
@@ -32,6 +33,7 @@ describe('ComplianceFrameworksReport component', () => {
   const findErrorMessage = () => wrapper.findComponent(GlAlert);
   const findProjectsTable = () => wrapper.findComponent(ProjectsTable);
   const findPagination = () => wrapper.findComponent(Pagination);
+  const findFilters = () => wrapper.findComponent(Filters);
 
   function createMockApolloProvider(resolverMock) {
     return createMockApollo([[complianceFrameworksGroupProjects, resolverMock]]);
@@ -78,6 +80,10 @@ describe('ComplianceFrameworksReport component', () => {
   describe('when initializing', () => {
     beforeEach(() => {
       wrapper = createComponent(mount, {}, mockGraphQlLoading);
+    });
+
+    it('renders the filters', () => {
+      expect(findFilters().exists()).toBe(true);
     });
 
     it('renders the table loading icon', () => {
@@ -238,6 +244,37 @@ describe('ComplianceFrameworksReport component', () => {
 
     it('does not show the pagination', () => {
       expect(findPagination().exists()).toBe(false);
+    });
+  });
+
+  describe('when the filter is updated', () => {
+    beforeEach(async () => {
+      wrapper = createComponent(mount, {}, mockGraphQlSuccess);
+      await waitForPromises();
+    });
+
+    it('should update route query', async () => {
+      findFilters().vm.$emit('submit', [
+        {
+          type: 'framework',
+          value: {
+            data: 'gid://gitlab/ComplianceManagement::Framework/1',
+            operator: '=',
+          },
+        },
+      ]);
+      await waitForPromises();
+
+      expect($router.push).toHaveBeenCalledTimes(1);
+      expect($router.push).toHaveBeenCalledWith({
+        query: {
+          project: undefined,
+          framework: 'gid://gitlab/ComplianceManagement::Framework/1',
+          frameworkExclude: undefined,
+          before: undefined,
+          after: undefined,
+        },
+      });
     });
   });
 });
