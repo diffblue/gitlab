@@ -4,15 +4,25 @@ import { GlAlert } from '@gitlab/ui';
 
 import { s__ } from '~/locale';
 
-import { GRAPHQL_PAGE_SIZE } from 'ee/compliance_dashboard/constants';
+import {
+  GRAPHQL_PAGE_SIZE,
+  FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK,
+} from 'ee/compliance_dashboard/constants';
+import {
+  mapFiltersToUrlParams,
+  mapQueryToFilters,
+  checkFilterForChange,
+} from 'ee/compliance_dashboard/utils';
 import complianceFrameworksGroupProjects from '../../graphql/compliance_frameworks_group_projects.query.graphql';
 import { mapProjects } from '../../graphql/mappers';
 import ProjectsTable from './projects_table.vue';
 import Pagination from './pagination.vue';
+import Filters from './filters.vue';
 
 export default {
   name: 'ComplianceFrameworkReport',
   components: {
+    Filters,
     GlAlert,
     Pagination,
     ProjectsTable,
@@ -43,6 +53,7 @@ export default {
         return {
           groupPath: this.groupPath,
           ...this.paginationCursors,
+          ...this.filterParams,
         };
       },
       update(data) {
@@ -81,6 +92,24 @@ export default {
         first: this.perPage,
       };
     },
+    filterParams() {
+      const { project, framework, frameworkExclude } = this.$route.query;
+      const filters = {};
+
+      if (framework && framework === FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK.id) {
+        filters.presenceFilter = frameworkExclude ? 'ANY' : 'NONE';
+      } else if (framework) {
+        if (frameworkExclude) filters.frameworkNot = framework;
+        else filters.framework = framework;
+      }
+
+      if (project) filters.project = project;
+
+      return filters;
+    },
+    filters() {
+      return mapQueryToFilters(this.$route.query);
+    },
     perPage() {
       return parseInt(this.$route.query.perPage || GRAPHQL_PAGE_SIZE, 10);
     },
@@ -114,6 +143,19 @@ export default {
         },
       });
     },
+    onFiltersChanged(filters) {
+      const newFilters = mapFiltersToUrlParams(filters);
+      if (checkFilterForChange({ currentFilters: this.$route.query, newFilters })) {
+        this.$router.push({
+          query: {
+            ...this.$route.query,
+            before: undefined,
+            after: undefined,
+            ...newFilters,
+          },
+        });
+      }
+    },
   },
   i18n: {
     queryError: s__(
@@ -125,6 +167,13 @@ export default {
 
 <template>
   <section>
+    <filters
+      :value="filters"
+      :group-path="groupPath"
+      :error="hasQueryError"
+      @submit="onFiltersChanged"
+    />
+
     <gl-alert v-if="hasQueryError" variant="danger" class="gl-my-3" :dismissible="false">
       {{ $options.i18n.queryError }}
     </gl-alert>

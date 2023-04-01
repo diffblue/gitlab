@@ -6,10 +6,26 @@ query complianceFrameworksGroupProjects(
   $before: String
   $first: Int
   $last: Int
+  $project: String
+  $framework: ComplianceManagementFrameworkID
+  $frameworkNot: ComplianceManagementFrameworkID
+  $presenceFilter: ComplianceFrameworkPresenceFilter
 ) {
   group(fullPath: $groupPath) {
     id
-    projects(includeSubgroups: true, after: $after, before: $before, first: $first, last: $last) {
+    projects(
+      includeSubgroups: true
+      after: $after
+      before: $before
+      first: $first
+      last: $last
+      search: $project
+      complianceFrameworkFilters: {
+        id: $framework
+        not: { id: $frameworkNot }
+        presenceFilter: $presenceFilter
+      }
+    ) {
       nodes {
         id
         name
