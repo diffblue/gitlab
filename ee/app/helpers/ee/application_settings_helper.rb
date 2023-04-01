@@ -73,7 +73,8 @@ module EE
         :cube_api_base_url,
         :cube_api_key,
         :telesign_customer_xid,
-        :telesign_api_key
+        :telesign_api_key,
+        :openai_api_key
       ].tap do |settings|
         next unless ::Gitlab.com?
 
