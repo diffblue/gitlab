@@ -5403,6 +5403,12 @@ msgstr ""
 msgid "AppleAppStore|Leave empty to use your current Private Key."
 msgstr ""
 
+msgid "AppleAppStore|Only set variables on protected branches and tags"
+msgstr ""
+
+msgid "AppleAppStore|Protected branches and tags only"
+msgstr ""
+
 msgid "AppleAppStore|The Apple App Store Connect Issuer ID."
 msgstr ""
 
