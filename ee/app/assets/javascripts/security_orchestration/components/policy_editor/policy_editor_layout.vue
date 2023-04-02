@@ -253,6 +253,7 @@ export default {
               />
             </gl-form-group>
 
+            <slot name="actions-first"></slot>
             <slot name="rules"></slot>
             <slot name="actions"></slot>
           </div>
