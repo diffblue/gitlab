@@ -24849,6 +24849,12 @@ msgstr ""
 msgid "JobAssistant|Add job"
 msgstr ""
 
+msgid "JobAssistant|Allow failure"
+msgstr ""
+
+msgid "JobAssistant|Error - Valid value is between 1 second and 1 week"
+msgstr ""
+
 msgid "JobAssistant|Image"
 msgstr ""
 
@@ -24867,6 +24873,9 @@ msgstr ""
 msgid "JobAssistant|Job name"
 msgstr ""
 
+msgid "JobAssistant|Rules"
+msgstr ""
+
 msgid "JobAssistant|Script"
 msgstr ""
 
@@ -24874,6 +24883,39 @@ msgid "JobAssistant|Stage (optional)"
 msgstr ""
 
 msgid "JobAssistant|Tags (optional)"
+msgstr ""
+
+msgid "JobAssistant|When"
+msgstr ""
+
+msgid "JobAssistant|always"
+msgstr ""
+
+msgid "JobAssistant|day(s)"
+msgstr ""
+
+msgid "JobAssistant|delayed"
+msgstr ""
+
+msgid "JobAssistant|manual"
+msgstr ""
+
+msgid "JobAssistant|minute(s)"
+msgstr ""
+
+msgid "JobAssistant|never"
+msgstr ""
+
+msgid "JobAssistant|on_failure"
+msgstr ""
+
+msgid "JobAssistant|on_success"
+msgstr ""
+
+msgid "JobAssistant|second(s)"
+msgstr ""
+
+msgid "JobAssistant|week(s)"
 msgstr ""
 
 msgid "Jobs"
