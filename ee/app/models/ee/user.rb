@@ -532,7 +532,7 @@ module EE
     private
 
     def gitlab_com_member?
-      ::Gitlab::Com.gitlab_com_group_member_id?(id)
+      ::Gitlab::Com.gitlab_com_group_member?(self)
     end
     strong_memoize_attr :gitlab_com_member?
 

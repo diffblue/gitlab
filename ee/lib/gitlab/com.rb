@@ -7,10 +7,10 @@ module Gitlab
     EXPIRY_TIME_L2_CACHE = 5.minutes
     GITLAB_COM_GROUP = 'gitlab-com'
 
-    def self.gitlab_com_group_member_id?(user_id = nil)
-      return false unless user_id
+    def self.gitlab_com_group_member?(user)
+      return false unless user.is_a?(::User)
 
-      Gitlab.com? && gitlab_com_user_ids.include?(user_id)
+      Gitlab.com? && gitlab_com_user_ids.include?(user.id)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -20,7 +20,7 @@ module Gitlab
           group = Group.find_by(path: GITLAB_COM_GROUP, parent_id: nil)
 
           if group
-            GroupMembersFinder.new(group).execute.pluck(:user_id)
+            group.members.pluck_user_ids.to_set
           else
             []
           end
