@@ -10,11 +10,16 @@ describe('MinutesUsageCharts', () => {
     ciMinutesUsage: cloneDeep(mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes),
   };
 
-  const createComponent = ({ props = {} } = {}) => {
+  const createComponent = ({ props = {} } = {}, featureFlag = false) => {
     wrapper = shallowMountExtended(MinutesUsageCharts, {
       propsData: {
         ...defaultProps,
         ...props,
+      },
+      provide: {
+        glFeatures: {
+          moveYearDropdownUsageCharts: featureFlag,
+        },
       },
     });
   };
@@ -28,6 +33,7 @@ describe('MinutesUsageCharts', () => {
   const findSharedRunnerByNamespace = () => wrapper.findByTestId('shared-runner-by-namespace');
   const findMinutesByProject = () => wrapper.findByTestId('minutes-by-project');
   const findSharedRunnerByProject = () => wrapper.findByTestId('shared-runner-by-project');
+  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-year-dropdown');
 
   it('does not render NoMinutesAlert if there are minutes', () => {
     expect(findNoMinutesAlert().exists()).toBe(false);
@@ -92,6 +98,16 @@ describe('MinutesUsageCharts', () => {
     it('does not render Shared Runners charts', () => {
       expect(findSharedRunnerByNamespace().exists()).toBe(false);
       expect(findSharedRunnerByProject().exists()).toBe(false);
+    });
+  });
+
+  describe('with move_year_dropdown_usage_charts feature flag turned on', () => {
+    beforeEach(() => {
+      createComponent({}, true);
+    });
+
+    it('should contain a year dropdown', () => {
+      expect(findYearDropdown().exists()).toBe(true);
     });
   });
 });

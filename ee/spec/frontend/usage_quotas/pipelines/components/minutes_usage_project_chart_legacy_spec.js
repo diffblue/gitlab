@@ -1,7 +1,7 @@
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageProjectChart from 'ee/usage_quotas/pipelines/components/minutes_usage_project_chart.vue';
+import MinutesUsageProjectChartLegacy from 'ee/usage_quotas/pipelines/components/minutes_usage_project_chart_legacy.vue';
 import {
   Y_AXIS_PROJECT_LABEL,
   Y_AXIS_SHARED_RUNNER_LABEL,
@@ -24,7 +24,7 @@ describe('Minutes usage by project chart component', () => {
     wrapper.findAllByTestId('minutes-usage-project-year-dropdown-item');
 
   const createComponent = (usageData = ciMinutesUsage.nodes, displaySharedRunner = false) => {
-    wrapper = shallowMountExtended(MinutesUsageProjectChart, {
+    wrapper = shallowMountExtended(MinutesUsageProjectChartLegacy, {
       propsData: {
         minutesUsageData: usageData,
         displaySharedRunnerData: displaySharedRunner,

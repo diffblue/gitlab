@@ -1,5 +1,6 @@
 import {
   getUsageDataByYear,
+  getUsageDataByYearObject,
   formatYearMonthData,
   getSortedYears,
 } from 'ee/usage_quotas/pipelines/utils';
@@ -222,5 +223,94 @@ describe('CI Minutes Usage Utils', () => {
     const usageDataByYear = getUsageDataByYear(nodes);
 
     expect(getSortedYears(usageDataByYear)).toEqual(expectedYears);
+  });
+
+  it('getUsageDataByYearObject normalizes data by year and by month', () => {
+    const expectedDataByYearMonth = {
+      2021: {
+        June: {
+          year: '2021',
+          month: 'June',
+          day: '01',
+          monthIso8601: '2021-06-01',
+          minutes: 5,
+          sharedRunnersDuration: 60,
+          projects: {
+            nodes: [
+              {
+                minutes: 5,
+                sharedRunnersDuration: 60,
+                project: {
+                  id: 'gid://gitlab/Project/6',
+                  name: 'devcafe-wp-theme',
+                  nameWithNamespace: 'Group / devcafe-wp-theme',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
+                },
+              },
+            ],
+            pageInfo: {
+              __typename: 'PageInfo',
+              hasNextPage: false,
+              hasPreviousPage: false,
+              startCursor: 'eyJpZCI6IjYifQ',
+              endCursor: 'eyJpZCI6IjYifQ',
+            },
+          },
+        },
+        July: {
+          year: '2021',
+          month: 'July',
+          day: '01',
+          monthIso8601: '2021-07-01',
+          minutes: 0,
+          sharedRunnersDuration: 0,
+          projects: {
+            nodes: [],
+            pageInfo: {
+              __typename: 'PageInfo',
+              hasNextPage: false,
+              hasPreviousPage: false,
+              startCursor: 'eyJpZCI6IjYifQ',
+              endCursor: 'eyJpZCI6IjYifQ',
+            },
+          },
+        },
+      },
+      2022: {
+        August: {
+          year: '2022',
+          month: 'August',
+          day: '01',
+          monthIso8601: '2022-08-01',
+          minutes: 5,
+          sharedRunnersDuration: 80,
+          projects: {
+            nodes: [
+              {
+                minutes: 5,
+                sharedRunnersDuration: 80,
+                project: {
+                  id: 'gid://gitlab/Project/7',
+                  name: 'devcafe-mx',
+                  nameWithNamespace: 'Group / devcafe-mx',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+                },
+              },
+            ],
+            pageInfo: {
+              __typename: 'PageInfo',
+              hasNextPage: false,
+              hasPreviousPage: false,
+              startCursor: 'eyJpZCI6IjYifQ',
+              endCursor: 'eyJpZCI6IjYifQ',
+            },
+          },
+        },
+      },
+    };
+
+    expect(getUsageDataByYearObject(nodes)).toEqual(expectedDataByYearMonth);
   });
 });
