@@ -15,8 +15,8 @@ module Projects
       )
 
       ServiceResponse.success(payload: result)
-    rescue Gitlab::AppliedMl::Errors::ProjectAlreadyDeregistered
-      ServiceResponse.error(message: 'Project is already deregistered', reason: :project_already_deregistered)
+    rescue Gitlab::AppliedMl::Errors::ProjectNotFound
+      ServiceResponse.error(message: 'Project is not found', reason: :project_not_found)
     rescue Gitlab::AppliedMl::Errors::ResourceNotAvailable
       ServiceResponse.error(message: 'Failed to deregister project', reason: :client_request_failed)
     end

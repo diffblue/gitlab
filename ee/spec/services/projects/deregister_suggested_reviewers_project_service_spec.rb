@@ -68,17 +68,17 @@ RSpec.describe Projects::DeregisterSuggestedReviewersProjectService, :saas, feat
           allow(project).to receive(:suggested_reviewers_enabled).and_return(false)
         end
 
-        context 'when project is already deregistered' do
+        context 'when project is not found' do
           it 'returns an error response', :aggregate_failures do
             allow_next(Gitlab::AppliedMl::SuggestedReviewers::Client)
               .to receive(:deregister_project)
               .with(deregistration_input)
-              .and_raise(Gitlab::AppliedMl::Errors::ProjectAlreadyDeregistered)
+              .and_raise(Gitlab::AppliedMl::Errors::ProjectNotFound)
 
             expect(result).to be_a(ServiceResponse)
             expect(result).to be_error
-            expect(result.message).to eq('Project is already deregistered')
-            expect(result.reason).to eq(:project_already_deregistered)
+            expect(result.message).to eq('Project is not found')
+            expect(result.reason).to eq(:project_not_found)
           end
         end
 
