@@ -257,7 +257,8 @@ export default {
         </div>
       </dim-disable-container>
     </template>
-    <template #actions>
+
+    <template #actions-first>
       <dim-disable-container data-testid="action-container" :disabled="hasParsingError">
         <template #title>
           <h4>{{ $options.i18n.ACTIONS_LABEL }}</h4>
