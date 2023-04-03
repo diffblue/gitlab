@@ -88,8 +88,8 @@ describe('FilterDropdowns component', () => {
     });
   });
 
-  describe('methods', () => {
-    describe('onGroupSelected', () => {
+  describe('events', () => {
+    describe('when group is selected', () => {
       beforeEach(() => {
         createWrapper({ group: { id: null } });
         findGroupsDropdownFilter().vm.$emit('selected', { id: groupId, full_path: groupNamespace });
@@ -109,12 +109,12 @@ describe('FilterDropdowns component', () => {
       });
     });
 
-    describe('onProjectsSelected', () => {
+    describe('with group selected', () => {
       beforeEach(() => {
         createWrapper({ group: { id: groupId } });
       });
 
-      describe('when the list of selected projects is not empty', () => {
+      describe('when project is selected', () => {
         beforeEach(() => {
           const selectedProject = [{ id: projectId, fullPath: `${projectPath}` }];
           findProjectsDropdownFilter().vm.$emit('selected', selectedProject);
@@ -135,7 +135,7 @@ describe('FilterDropdowns component', () => {
         });
       });
 
-      describe('when the list of selected projects is empty', () => {
+      describe('when project is deselected', () => {
         beforeEach(() => {
           findProjectsDropdownFilter().vm.$emit('selected', []);
         });
