@@ -97,7 +97,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_additional_minutes_path', feature_category: :subscription_cost_management do
+  describe '#buy_additional_minutes_path', feature_category: :consumables_cost_management do
     subject { helper.buy_additional_minutes_path(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -124,7 +124,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_storage_path', feature_category: :subscription_cost_management do
+  describe '#buy_storage_path', feature_category: :consumables_cost_management do
     subject { helper.buy_storage_path(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -150,7 +150,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_storage_url', feature_category: :subscription_cost_management do
+  describe '#buy_storage_url', feature_category: :consumables_cost_management do
     subject { helper.buy_storage_url(namespace) }
 
     let(:namespace) { build_stubbed(:group) }
@@ -176,7 +176,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#buy_addon_target_attr', feature_category: :subscription_cost_management do
+  describe '#buy_addon_target_attr', feature_category: :consumables_cost_management do
     subject { helper.buy_addon_target_attr(namespace) }
 
     let(:namespace) { create(:group) }
@@ -193,7 +193,7 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#pipeline_usage_app_data', feature_category: :subscription_cost_management do
+  describe '#pipeline_usage_app_data', feature_category: :consumables_cost_management do
     context 'when gitlab sass', :saas do
       let(:minutes_usage) { user_group.ci_minutes_usage }
       let(:minutes_usage_presenter) { ::Ci::Minutes::UsagePresenter.new(minutes_usage) }
@@ -244,13 +244,13 @@ RSpec.describe EE::NamespacesHelper do
     end
   end
 
-  describe '#purchase_storage_url', feature_category: :subscription_cost_management do
+  describe '#purchase_storage_url', feature_category: :consumables_cost_management do
     subject { helper.purchase_storage_url }
 
     it { is_expected.to eq(EE::SUBSCRIPTIONS_MORE_STORAGE_URL) }
   end
 
-  describe '#storage_usage_app_data', feature_category: :subscription_cost_management do
+  describe '#storage_usage_app_data', feature_category: :consumables_cost_management do
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:admin) { create(:user, namespace: namespace) }
 

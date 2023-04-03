@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Admin::PlanLimitsController, :enable_admin_mode,
   type: :request,
-  feature_category: :subscription_cost_management do
+  feature_category: :consumables_cost_management do
   describe 'GET #index' do
     subject(:get_index) { get admin_plan_limits_path }
 

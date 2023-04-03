@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Namespace::Storage::Notification, feature_category: :subscription_cost_management do
+RSpec.describe EE::Namespace::Storage::Notification, feature_category: :consumables_cost_management do
   include NamespaceStorageHelpers
   include RepositoryStorageHelpers
 

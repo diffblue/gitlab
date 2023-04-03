@@ -5,7 +5,7 @@ module GitlabSubscriptions
     include ApplicationWorker
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
-    feature_category :subscription_cost_management
+    feature_category :seat_cost_management
     data_consistency :always
     urgency :low
 

@@ -2,7 +2,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component,
-        feature_category: :subscription_cost_management do
+        feature_category: :consumables_cost_management do
   using RSpec::Parameterized::TableSyntax
 
   let(:storage_enforcement_date) { Date.today + 31 }

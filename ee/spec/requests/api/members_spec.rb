@@ -561,7 +561,7 @@ RSpec.describe API::Members, feature_category: :subgroups do
       end
     end
 
-    describe 'GET /groups/:id/billable_members', feature_category: :subscription_cost_management do
+    describe 'GET /groups/:id/billable_members', feature_category: :seat_cost_management do
       let(:url) { "/groups/#{group.id}/billable_members" }
       let(:params) { {} }
 
@@ -745,7 +745,7 @@ RSpec.describe API::Members, feature_category: :subgroups do
       end
     end
 
-    describe 'GET /groups/:id/billable_members/:user_id/memberships', feature_category: :subscription_cost_management do
+    describe 'GET /groups/:id/billable_members/:user_id/memberships', feature_category: :seat_cost_management do
       let_it_be(:developer) { create(:user) }
       let_it_be(:guest) { create(:user) }
 
@@ -966,7 +966,7 @@ RSpec.describe API::Members, feature_category: :subgroups do
       end
     end
 
-    describe 'DELETE /groups/:id/billable_members/:user_id', feature_category: :subscription_cost_management do
+    describe 'DELETE /groups/:id/billable_members/:user_id', feature_category: :seat_cost_management do
       context 'when the current user has insufficient rights' do
         it 'returns 400' do
           not_an_owner = create(:user)

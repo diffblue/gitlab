@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::RefreshSeatsWorker, :saas, feature_category: :subscription_cost_management do
+RSpec.describe GitlabSubscriptions::RefreshSeatsWorker, :saas, feature_category: :seat_cost_management do
   let(:db_is_read_only) { false }
   let(:worker) { described_class.new }
 

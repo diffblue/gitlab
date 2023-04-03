@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Sets group repository storage limit', :js, :saas, feature_category: :subscription_cost_management do
+RSpec.describe 'Sets group repository storage limit', :js, :saas, feature_category: :consumables_cost_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:admin) { create(:admin) }
 

@@ -119,7 +119,7 @@ module EE
             optional :search, type: String, desc: 'The exact name of the subscribed member'
             optional :sort, type: String, desc: 'The sorting option', values: Helpers::MembersHelpers.member_sort_options
           end
-          get ":id/billable_members", feature_category: :subscription_cost_management do
+          get ":id/billable_members", feature_category: :seat_cost_management do
             group = find_group!(params[:id])
 
             bad_request!(nil) if group.subgroup?
@@ -174,7 +174,7 @@ module EE
             requires :user_id, type: Integer, desc: 'The user ID of the member'
             use :pagination
           end
-          get ":id/billable_members/:user_id/memberships", feature_category: :subscription_cost_management do
+          get ":id/billable_members/:user_id/memberships", feature_category: :seat_cost_management do
             group = find_group!(params[:id])
 
             bad_request! unless can?(current_user, :admin_group_member, group)
@@ -193,7 +193,7 @@ module EE
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
           end
-          delete ":id/billable_members/:user_id", feature_category: :subscription_cost_management do
+          delete ":id/billable_members/:user_id", feature_category: :seat_cost_management do
             group = find_group!(params[:id])
 
             result = ::BillableMembers::DestroyService.new(group, user_id: params[:user_id], current_user: current_user).execute

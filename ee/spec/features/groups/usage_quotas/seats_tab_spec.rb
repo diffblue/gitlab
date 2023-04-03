@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :subscription_cost_management do
+RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, :saas, feature_category: :seat_cost_management do
   include Spec::Support::Helpers::ModalHelpers
   include Features::MembersHelpers
 

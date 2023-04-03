@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::Storage::LimitExclusion, feature_category: :subscription_cost_management, type: :model do
+RSpec.describe Namespaces::Storage::LimitExclusion, feature_category: :consumables_cost_management, type: :model do
   describe 'associations' do
     it { is_expected.to belong_to(:namespace).required }
   end

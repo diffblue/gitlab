@@ -5,7 +5,7 @@ module GitlabSubscriptions
     include ApplicationWorker
     include LimitedCapacity::Worker
 
-    feature_category :subscription_cost_management
+    feature_category :seat_cost_management
     data_consistency :sticky
     urgency :low
 
