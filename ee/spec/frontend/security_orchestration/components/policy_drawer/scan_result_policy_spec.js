@@ -1,9 +1,10 @@
+import { convertToTitleCase } from '~/lib/utils/text_utility';
 import ScanResultPolicy from 'ee/security_orchestration/components/policy_drawer/scan_result_policy.vue';
 import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_drawer/policy_drawer_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
-import { mockProjectScanResultPolicy } from '../../mocks/mock_scan_result_policy_data';
+import { mockProjectWithAllApproverTypesScanResultPolicy } from '../../mocks/mock_scan_result_policy_data';
 
 describe('ScanResultPolicy component', () => {
   let wrapper;
@@ -23,12 +24,22 @@ describe('ScanResultPolicy component', () => {
 
   describe('default policy', () => {
     beforeEach(() => {
-      factory({ propsData: { policy: mockProjectScanResultPolicy } });
+      factory({ propsData: { policy: mockProjectWithAllApproverTypesScanResultPolicy } });
     });
 
-    it('does render the policy summary', () => {
-      expect(findRequireApprovals().exists()).toBe(true);
+    it('renders the policy summary', () => {
       expect(findSummary().exists()).toBe(true);
+    });
+
+    it('renders the "RequireApproval" component correctly', () => {
+      expect(findRequireApprovals().exists()).toBe(true);
+      expect(findRequireApprovals().props('approvers')).toStrictEqual([
+        ...mockProjectWithAllApproverTypesScanResultPolicy.groupApprovers,
+        ...mockProjectWithAllApproverTypesScanResultPolicy.roleApprovers.map((r) =>
+          convertToTitleCase(r.toLowerCase()),
+        ),
+        ...mockProjectWithAllApproverTypesScanResultPolicy.userApprovers,
+      ]);
     });
   });
 });
