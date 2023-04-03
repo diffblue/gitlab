@@ -16,7 +16,11 @@ module Resolvers
       find_and_authorize_scope!(args)
       project_scopes = projects_in_scope(args)
 
-      response = TimeboxReportService.new(timebox, project_scopes).execute
+      response = if feature_enabled?
+                   Timebox::RollupReportService.new(timebox, project_scopes).execute
+                 else
+                   TimeboxReportService.new(timebox, project_scopes).execute
+                 end
 
       if response.error?
         { error: response.payload.merge(message: response.message) }
@@ -26,6 +30,12 @@ module Resolvers
     end
 
     private
+
+    def feature_enabled?
+      return Feature.enabled?(:rollup_timebox_chart, timebox.group) if timebox&.group
+
+      Feature.enabled?(:rollup_timebox_chart, timebox.project)
+    end
 
     def find_and_authorize_scope!(args)
       return unless args[:full_path].present?

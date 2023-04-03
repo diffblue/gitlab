@@ -70,6 +70,7 @@ RSpec.describe 'Querying a Milestone', feature_category: :team_planning do
 
     context 'when there are too many events' do
       before do
+        stub_feature_flags(rollup_timebox_chart: false)
         stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 0)
       end
 
@@ -79,6 +80,21 @@ RSpec.describe 'Querying a Milestone', feature_category: :team_planning do
         expect(graphql_data_at(:milestone, :report, :error, :code)).to eq 'TOO_MANY_EVENTS'
         expect(graphql_data_at(:milestone, :report, :error, :message)).to include('too many')
         expect(graphql_data_at(:milestone, :report, :burnup_time_series)).to be_nil
+      end
+
+      context 'when "rollup_timebox_chart" feature flag is enabled' do
+        before do
+          stub_feature_flags(rollup_timebox_chart: true)
+          stub_const('Timebox::EventAggregationService::EVENT_COUNT_LIMIT', 0)
+        end
+
+        it 'explains why the report cannot be generated' do
+          post_graphql(query, current_user: current_user)
+
+          expect(graphql_data_at(:milestone, :report, :error, :code)).to eq 'TOO_MANY_EVENTS'
+          expect(graphql_data_at(:milestone, :report, :error, :message)).to include('too many')
+          expect(graphql_data_at(:milestone, :report, :burnup_time_series)).to be_nil
+        end
       end
     end
 
