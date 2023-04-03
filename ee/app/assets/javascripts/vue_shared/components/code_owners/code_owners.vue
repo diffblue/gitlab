@@ -3,7 +3,6 @@ import { GlIcon, GlLink, GlButton } from '@gitlab/ui';
 import { __, sprintf } from '~/locale';
 import { createAlert } from '~/alert';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import getRefMixin from '~/repository/mixins/get_ref';
 import codeOwnersInfoQuery from '../../../graphql_shared/queries/code_owners_info.query.graphql';
 
 export default {
@@ -12,6 +11,7 @@ export default {
     about: __('About this feature'),
     and: __('and'),
     errorMessage: __('An error occurred while loading code owners.'),
+    manageBranchRules: __('Manage branch rules'),
   },
   codeOwnersHelpPath: helpPagePath('user/project/code_owners'),
   components: {
@@ -19,7 +19,6 @@ export default {
     GlLink,
     GlButton,
   },
-  mixins: [getRefMixin],
   apollo: {
     project: {
       query: codeOwnersInfoQuery,
@@ -27,8 +26,7 @@ export default {
         return {
           projectPath: this.projectPath,
           filePath: this.filePath,
-          // we need branch in blob view and ref in repository view
-          ref: this.branch || this.ref,
+          ref: this.branch,
         };
       },
       skip() {
@@ -50,12 +48,17 @@ export default {
     filePath: {
       type: String,
       required: false,
-      default: null,
+      default: '',
     },
     branch: {
       type: String,
       required: false,
-      default: null,
+      default: '',
+    },
+    branchRulesPath: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   data() {
@@ -117,49 +120,55 @@ export default {
 <template>
   <div
     v-if="hasCodeOwners && !isFetching"
-    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+    class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
   >
-    <div class="gl-display-inline gl-mr-2">
-      <gl-icon name="users" data-testid="users-icon" />
-      <strong>{{ $options.i18n.title }}</strong>
-      <gl-link :href="$options.codeOwnersHelpPath" target="_blank" :title="$options.i18n.about">
-        <gl-icon name="question-o" data-testid="help-icon" />
-      </gl-link>
-      :
-    </div>
-    <div v-for="(owner, index) in visibleCodeOwners" :key="owner.id" data-testid="code-owners">
-      <span v-if="commaSeparateList && index > 0" data-testid="comma-separator">, </span>
-      <gl-link :href="owner.webPath" target="_blank">
-        {{ owner.name }}
-      </gl-link>
-    </div>
-
-    <template v-if="collapsedCodeOwners.length && isCodeOwnersExpanded">
-      <div
-        v-for="(owner, index) in collapsedCodeOwners"
-        :key="owner.id"
-        class="gl-display-inline"
-        data-testid="code-owners"
-      >
-        <span v-if="index !== lastIndexOfCollapsedCodeOwners" data-testid="comma-separator"
-          >,
-        </span>
-        <span v-else data-testid="and-separator" class="gl-ml-2"> {{ $options.i18n.and }} </span>
+    <div class="gl-display-flex gl-flex-wrap-wrap">
+      <div class="gl-display-inline gl-mr-2">
+        <gl-icon name="users" data-testid="users-icon" />
+        <strong>{{ $options.i18n.title }}</strong>
+        <gl-link :href="$options.codeOwnersHelpPath" target="_blank" :title="$options.i18n.about">
+          <gl-icon name="question-o" data-testid="help-icon" />
+        </gl-link>
+        :
+      </div>
+      <div v-for="(owner, index) in visibleCodeOwners" :key="owner.id" data-testid="code-owners">
+        <span v-if="commaSeparateList && index > 0" data-testid="comma-separator">, </span>
         <gl-link :href="owner.webPath" target="_blank">
           {{ owner.name }}
         </gl-link>
       </div>
-    </template>
 
-    <template v-if="collapsedCodeOwners.length">
-      <span v-if="!isCodeOwnersExpanded" class="gl-ml-2"> {{ $options.i18n.and }} </span>
-      <gl-button
-        class="gl-vertical-align-text-bottom gl-ml-2"
-        variant="link"
-        @click="toggleCodeOwners"
-      >
-        {{ toggleText }}
-      </gl-button>
-    </template>
+      <template v-if="collapsedCodeOwners.length && isCodeOwnersExpanded">
+        <div
+          v-for="(owner, index) in collapsedCodeOwners"
+          :key="owner.id"
+          class="gl-display-inline"
+          data-testid="code-owners"
+        >
+          <span v-if="index !== lastIndexOfCollapsedCodeOwners" data-testid="comma-separator"
+            >,
+          </span>
+          <span v-else data-testid="and-separator" class="gl-ml-2"> {{ $options.i18n.and }} </span>
+          <gl-link :href="owner.webPath" target="_blank">
+            {{ owner.name }}
+          </gl-link>
+        </div>
+      </template>
+
+      <template v-if="collapsedCodeOwners.length">
+        <span v-if="!isCodeOwnersExpanded" class="gl-ml-2"> {{ $options.i18n.and }} </span>
+        <gl-button
+          class="gl-ml-2"
+          variant="link"
+          data-testid="collapse-toggle"
+          @click="toggleCodeOwners"
+        >
+          {{ toggleText }}
+        </gl-button>
+      </template>
+    </div>
+    <gl-button size="small" :href="branchRulesPath" class="gl-ml-4" data-testid="branch-rules-link">
+      {{ $options.i18n.manageBranchRules }}
+    </gl-button>
   </div>
 </template>

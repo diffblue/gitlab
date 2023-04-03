@@ -1,4 +1,4 @@
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlLink } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -7,7 +7,12 @@ import waitForPromises from 'helpers/wait_for_promises';
 import CodeOwners from 'ee_component/vue_shared/components/code_owners/code_owners.vue';
 import codeOwnersInfoQuery from 'ee/graphql_shared/queries/code_owners_info.query.graphql';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { codeOwnerMock, codeOwnersMultipleMock, codeOwnersDataMock, refMock } from '../mock_data';
+import {
+  codeOwnerMock,
+  codeOwnersMultipleMock,
+  codeOwnersDataMock,
+  codeOwnersPropsMock,
+} from '../mock_data';
 
 let wrapper;
 let mockResolver;
@@ -29,8 +34,7 @@ const createComponent = async (codeOwners = [codeOwnerMock], mountFn = shallowMo
   wrapper = extendedWrapper(
     mountFn(CodeOwners, {
       apolloProvider: createMockApollo([[codeOwnersInfoQuery, mockResolver]]),
-      propsData: { projectPath: 'some/project', filePath: 'some/file' },
-      mixins: [{ data: () => ({ ref: refMock }) }],
+      propsData: codeOwnersPropsMock,
     }),
   );
 
@@ -43,7 +47,8 @@ describe('Code owners component', () => {
   const findCodeOwners = () => wrapper.findAllByTestId('code-owners');
   const findCommaSeparators = () => wrapper.findAllByTestId('comma-separator');
   const findAndSeparators = () => wrapper.findAllByTestId('and-separator');
-  const findToggle = () => wrapper.findComponent(GlButton);
+  const findToggle = () => wrapper.findByTestId('collapse-toggle');
+  const findBranchRulesLink = () => wrapper.findByTestId('branch-rules-link');
   const findLink = () => wrapper.findComponent(GlLink);
 
   beforeEach(() => createComponent());
@@ -69,6 +74,10 @@ describe('Code owners component', () => {
 
   it('doesn`t render toggle when the number of codeowners is less than 5', () => {
     expect(findToggle().exists()).toBe(false);
+  });
+
+  it('renders a link to branch rules settings', () => {
+    expect(findBranchRulesLink().attributes('href')).toBe(codeOwnersPropsMock.branchRulesPath);
   });
 
   it.each`

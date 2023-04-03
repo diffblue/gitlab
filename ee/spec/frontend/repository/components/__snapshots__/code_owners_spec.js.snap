@@ -4,359 +4,436 @@ exports[`Code owners component matches the snapshot 1`] = `<!---->`;
 
 exports[`Code owners component matches the snapshot 2`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-inline gl-mr-2"
+    class="gl-display-flex gl-flex-wrap-wrap"
   >
-    <gl-icon-stub
-      data-testid="users-icon"
-      name="users"
-      size="16"
-    />
-     
-    <strong>
-      Code owners
-    </strong>
-     
-    <gl-link-stub
-      href="/help/user/project/code_owners"
-      target="_blank"
-      title="About this feature"
+    <div
+      class="gl-display-inline gl-mr-2"
     >
       <gl-icon-stub
-        data-testid="help-icon"
-        name="question-o"
+        data-testid="users-icon"
+        name="users"
         size="16"
       />
-    </gl-link-stub>
+       
+      <strong>
+        Code owners
+      </strong>
+       
+      <gl-link-stub
+        href="/help/user/project/code_owners"
+        target="_blank"
+        title="About this feature"
+      >
+        <gl-icon-stub
+          data-testid="help-icon"
+          name="question-o"
+          size="16"
+        />
+      </gl-link-stub>
+      
+      :
     
-    :
-  
-  </div>
-   
-  <div
-    data-testid="code-owners"
-  >
+    </div>
+     
+    <div
+      data-testid="code-owners"
+    >
+      <!---->
+       
+      <gl-link-stub
+        href="path/to/@johnDoe"
+        target="_blank"
+      >
+        
+        John Doe
+      
+      </gl-link-stub>
+    </div>
+     
     <!---->
      
-    <gl-link-stub
-      href="path/to/@johnDoe"
-      target="_blank"
-    >
-      
-      John Doe
-    
-    </gl-link-stub>
+    <!---->
   </div>
    
-  <!---->
-   
-  <!---->
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    class="gl-ml-4"
+    data-testid="branch-rules-link"
+    href="/some/Project/-/settings/repository#js-branch-rules"
+    icon=""
+    size="small"
+    variant="default"
+  >
+    
+    Manage branch rules
+  
+  </gl-button-stub>
 </div>
 `;
 
 exports[`Code owners component matches the snapshot 3`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-inline gl-mr-2"
+    class="gl-display-flex gl-flex-wrap-wrap"
   >
-    <gl-icon-stub
-      data-testid="users-icon"
-      name="users"
-      size="16"
-    />
-     
-    <strong>
-      Code owners
-    </strong>
-     
-    <gl-link-stub
-      href="/help/user/project/code_owners"
-      target="_blank"
-      title="About this feature"
+    <div
+      class="gl-display-inline gl-mr-2"
     >
       <gl-icon-stub
-        data-testid="help-icon"
-        name="question-o"
+        data-testid="users-icon"
+        name="users"
         size="16"
       />
-    </gl-link-stub>
+       
+      <strong>
+        Code owners
+      </strong>
+       
+      <gl-link-stub
+        href="/help/user/project/code_owners"
+        target="_blank"
+        title="About this feature"
+      >
+        <gl-icon-stub
+          data-testid="help-icon"
+          name="question-o"
+          size="16"
+        />
+      </gl-link-stub>
+      
+      :
     
-    :
-  
-  </div>
-   
-  <div
-    data-testid="code-owners"
-  >
+    </div>
+     
+    <div
+      data-testid="code-owners"
+    >
+      <!---->
+       
+      <gl-link-stub
+        href="/raisa"
+        target="_blank"
+      >
+        
+        Idella Welch
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/noella"
+        target="_blank"
+      >
+        
+        Winston Von
+      
+      </gl-link-stub>
+    </div>
+     
     <!---->
      
-    <gl-link-stub
-      href="/raisa"
-      target="_blank"
-    >
-      
-      Idella Welch
-    
-    </gl-link-stub>
+    <!---->
   </div>
-  <div
-    data-testid="code-owners"
+   
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    class="gl-ml-4"
+    data-testid="branch-rules-link"
+    href="/some/Project/-/settings/repository#js-branch-rules"
+    icon=""
+    size="small"
+    variant="default"
   >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/noella"
-      target="_blank"
-    >
-      
-      Winston Von
     
-    </gl-link-stub>
-  </div>
-   
-  <!---->
-   
-  <!---->
+    Manage branch rules
+  
+  </gl-button-stub>
 </div>
 `;
 
 exports[`Code owners component matches the snapshot 4`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-inline gl-mr-2"
+    class="gl-display-flex gl-flex-wrap-wrap"
   >
-    <gl-icon-stub
-      data-testid="users-icon"
-      name="users"
-      size="16"
-    />
-     
-    <strong>
-      Code owners
-    </strong>
-     
-    <gl-link-stub
-      href="/help/user/project/code_owners"
-      target="_blank"
-      title="About this feature"
+    <div
+      class="gl-display-inline gl-mr-2"
     >
       <gl-icon-stub
-        data-testid="help-icon"
-        name="question-o"
+        data-testid="users-icon"
+        name="users"
         size="16"
       />
-    </gl-link-stub>
+       
+      <strong>
+        Code owners
+      </strong>
+       
+      <gl-link-stub
+        href="/help/user/project/code_owners"
+        target="_blank"
+        title="About this feature"
+      >
+        <gl-icon-stub
+          data-testid="help-icon"
+          name="question-o"
+          size="16"
+        />
+      </gl-link-stub>
+      
+      :
     
-    :
-  
-  </div>
-   
-  <div
-    data-testid="code-owners"
-  >
+    </div>
+     
+    <div
+      data-testid="code-owners"
+    >
+      <!---->
+       
+      <gl-link-stub
+        href="/raisa"
+        target="_blank"
+      >
+        
+        Idella Welch
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/noella"
+        target="_blank"
+      >
+        
+        Winston Von
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/edyth"
+        target="_blank"
+      >
+        
+        Don Runte
+      
+      </gl-link-stub>
+    </div>
+     
     <!---->
      
-    <gl-link-stub
-      href="/raisa"
-      target="_blank"
-    >
-      
-      Idella Welch
-    
-    </gl-link-stub>
-  </div>
-  <div
-    data-testid="code-owners"
-  >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/noella"
-      target="_blank"
-    >
-      
-      Winston Von
-    
-    </gl-link-stub>
-  </div>
-  <div
-    data-testid="code-owners"
-  >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/edyth"
-      target="_blank"
-    >
-      
-      Don Runte
-    
-    </gl-link-stub>
+    <!---->
   </div>
    
-  <!---->
-   
-  <!---->
+  <gl-button-stub
+    buttontextclasses=""
+    category="primary"
+    class="gl-ml-4"
+    data-testid="branch-rules-link"
+    href="/some/Project/-/settings/repository#js-branch-rules"
+    icon=""
+    size="small"
+    variant="default"
+  >
+    
+    Manage branch rules
+  
+  </gl-button-stub>
 </div>
 `;
 
 exports[`Code owners component matches the snapshot 5`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-inline gl-mr-2"
+    class="gl-display-flex gl-flex-wrap-wrap"
   >
-    <gl-icon-stub
-      data-testid="users-icon"
-      name="users"
-      size="16"
-    />
-     
-    <strong>
-      Code owners
-    </strong>
-     
-    <gl-link-stub
-      href="/help/user/project/code_owners"
-      target="_blank"
-      title="About this feature"
+    <div
+      class="gl-display-inline gl-mr-2"
     >
       <gl-icon-stub
-        data-testid="help-icon"
-        name="question-o"
+        data-testid="users-icon"
+        name="users"
         size="16"
       />
-    </gl-link-stub>
+       
+      <strong>
+        Code owners
+      </strong>
+       
+      <gl-link-stub
+        href="/help/user/project/code_owners"
+        target="_blank"
+        title="About this feature"
+      >
+        <gl-icon-stub
+          data-testid="help-icon"
+          name="question-o"
+          size="16"
+        />
+      </gl-link-stub>
+      
+      :
     
-    :
-  
-  </div>
-   
-  <div
-    data-testid="code-owners"
-  >
+    </div>
+     
+    <div
+      data-testid="code-owners"
+    >
+      <!---->
+       
+      <gl-link-stub
+        href="/raisa"
+        target="_blank"
+      >
+        
+        Idella Welch
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/noella"
+        target="_blank"
+      >
+        
+        Winston Von
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/edyth"
+        target="_blank"
+      >
+        
+        Don Runte
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/julietta_rogahn"
+        target="_blank"
+      >
+        
+        Sherri McClure
+      
+      </gl-link-stub>
+    </div>
+    <div
+      data-testid="code-owners"
+    >
+      <span
+        data-testid="comma-separator"
+      >
+        , 
+      </span>
+       
+      <gl-link-stub
+        href="/youlanda"
+        target="_blank"
+      >
+        
+        Amber Koch
+      
+      </gl-link-stub>
+    </div>
+     
     <!---->
      
-    <gl-link-stub
-      href="/raisa"
-      target="_blank"
-    >
-      
-      Idella Welch
-    
-    </gl-link-stub>
-  </div>
-  <div
-    data-testid="code-owners"
-  >
     <span
-      data-testid="comma-separator"
+      class="gl-ml-2"
     >
-      , 
+       and 
     </span>
      
-    <gl-link-stub
-      href="/noella"
-      target="_blank"
+    <gl-button-stub
+      buttontextclasses=""
+      category="primary"
+      class="gl-ml-2"
+      data-testid="collapse-toggle"
+      icon=""
+      size="medium"
+      variant="link"
     >
       
-      Winston Von
-    
-    </gl-link-stub>
-  </div>
-  <div
-    data-testid="code-owners"
-  >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/edyth"
-      target="_blank"
-    >
+        2 more
       
-      Don Runte
-    
-    </gl-link-stub>
+    </gl-button-stub>
   </div>
-  <div
-    data-testid="code-owners"
-  >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/julietta_rogahn"
-      target="_blank"
-    >
-      
-      Sherri McClure
-    
-    </gl-link-stub>
-  </div>
-  <div
-    data-testid="code-owners"
-  >
-    <span
-      data-testid="comma-separator"
-    >
-      , 
-    </span>
-     
-    <gl-link-stub
-      href="/youlanda"
-      target="_blank"
-    >
-      
-      Amber Koch
-    
-    </gl-link-stub>
-  </div>
-   
-  <!---->
-   
-  <span
-    class="gl-ml-2"
-  >
-     and 
-  </span>
    
   <gl-button-stub
     buttontextclasses=""
     category="primary"
-    class="gl-vertical-align-text-bottom gl-ml-2"
+    class="gl-ml-4"
+    data-testid="branch-rules-link"
+    href="/some/Project/-/settings/repository#js-branch-rules"
     icon=""
-    size="medium"
-    variant="link"
+    size="small"
+    variant="default"
   >
     
-      2 more
-    
+    Manage branch rules
+  
   </gl-button-stub>
 </div>
 `;
