@@ -99,6 +99,7 @@ class Projects::BlobController < Projects::ApplicationController
     )
   rescue Files::UpdateService::FileChangedError
     @conflict = true
+    @different_project = different_project?
     render :edit
   end
 
