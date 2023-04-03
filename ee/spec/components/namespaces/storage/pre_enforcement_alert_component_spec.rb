@@ -4,6 +4,7 @@ require "spec_helper"
 RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component,
         feature_category: :consumables_cost_management do
   using RSpec::Parameterized::TableSyntax
+  include NamespaceStorageHelpers
 
   let(:storage_enforcement_date) { Date.today + 31 }
   let(:over_storage_limit) { false }
@@ -18,8 +19,9 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
       group.root_storage_statistics.update!(
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
+      set_notification_limit(group, megabytes: 500)
       allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
       allow_next_instance_of(::Namespaces::Storage::RootSize) do |group|
         allow(group).to receive(:above_size_limit?).and_return(over_storage_limit)
@@ -82,7 +84,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       it 'includes used_storage in the banner text' do
         render_inline(component)
 
-        storage_size = ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP / 1.gigabyte
+        storage_size = 5.gigabytes / 1.gigabyte
         expect(page).to have_text "The namespace is currently using #{storage_size} GB of namespace storage"
       end
 
@@ -114,7 +116,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         end
       end
 
-      context 'when user has dismissed banner' do
+      context 'when namespace is below the notification limit' do
         before do
           create(
             :group_callout,
@@ -122,6 +124,8 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
             group: group,
             feature_name: 'storage_enforcement_banner_first_enforcement_threshold'
           )
+          allow(::EE::Gitlab::Namespaces::Storage::Enforcement)
+          .to receive(:show_pre_enforcement_alert?).and_return(false)
         end
 
         it 'does not render' do
@@ -131,17 +135,8 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         end
       end
 
-      context 'when the user has dismissed the banner and namespace is over storage limit' do
+      context 'when namespace is over storage limit' do
         let(:over_storage_limit) { true }
-
-        before do
-          create(
-            :group_callout,
-            user: user,
-            group: group,
-            feature_name: 'storage_enforcement_banner_first_enforcement_threshold'
-          )
-        end
 
         it 'renders the banner' do
           render_inline(component)
@@ -178,7 +173,9 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
     context 'when group does not meet the criteria to render the alert' do
       it 'does not render' do
-        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_banner).and_return(false)
+        allow(::EE::Gitlab::Namespaces::Storage::Enforcement)
+          .to receive(:show_pre_enforcement_alert?).and_return(false)
+
         render_inline(component)
 
         expect(page).not_to have_css('.js-storage-enforcement-banner')

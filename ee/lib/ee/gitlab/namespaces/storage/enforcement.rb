@@ -7,7 +7,6 @@ module EE
         class Enforcement
           ENFORCEMENT_DATE = 100.years.from_now.to_date
           EFFECTIVE_DATE = 99.years.from_now.to_date
-          FREE_NAMESPACE_STORAGE_CAP = 5.gigabytes
 
           def self.enforce_limit?(namespace)
             root_namespace = namespace.root_ancestor
@@ -19,21 +18,31 @@ module EE
               enforceable_dates?(root_namespace)
           end
 
-          def self.show_pre_enforcement_banner?(namespace)
+          def self.show_pre_enforcement_alert?(namespace)
             root_namespace = namespace.root_ancestor
 
-            return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
-            return false unless ::Gitlab::CurrentSettings.enforce_namespace_storage_limit?
-            return false if root_namespace.paid?
-            return false unless has_breached_free_storage_cap?(root_namespace)
-            return false unless root_namespace.storage_enforcement_date.present?
-            return false unless root_namespace.storage_enforcement_date >= Date.today
+            if ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+                !root_namespace.paid? &&
+                reached_pre_enforcement_notification_limit?(root_namespace) &&
+                root_namespace.storage_enforcement_date.present? &&
+                root_namespace.storage_enforcement_date >= Date.today
 
-            ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
+              return ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
+            end
+
+            false
           end
 
-          private_class_method def self.has_breached_free_storage_cap?(root_namespace)
-            (root_namespace.root_storage_statistics&.storage_size || 0) >= FREE_NAMESPACE_STORAGE_CAP
+          def self.reached_pre_enforcement_notification_limit?(root_namespace)
+            return false if root_namespace.storage_limit_exclusion.present?
+
+            notification_limit = root_namespace.actual_plan.actual_limits.notification_limit.megabytes
+            return false unless notification_limit > 0
+
+            total_storage = ::Namespaces::Storage::RootSize.new(root_namespace).current_size
+            purchased_storage = (root_namespace.additional_purchased_storage_size || 0)
+
+            total_storage >= (notification_limit + purchased_storage)
           end
 
           private_class_method def self.enforceable_plan?(root_namespace)

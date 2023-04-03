@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Group', feature_category: :subgroups do
+  include NamespaceStorageHelpers
+
   describe 'group edit', :js do
     let_it_be(:user) { create(:user) }
 
@@ -57,10 +59,8 @@ RSpec.describe 'Group', feature_category: :subgroups do
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
-
-      group.root_storage_statistics.update!(
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
-      )
+      set_used_storage(group, megabytes: 12)
+      set_notification_limit(group, megabytes: 12)
       group.add_maintainer(user)
       sign_in(user)
     end
@@ -81,20 +81,42 @@ RSpec.describe 'Group', feature_category: :subgroups do
         expect(page).not_to have_text storage_banner_text
       end
 
-      it 'does not display the banner if user has previously closed unless threshold has changed' do
+      it 'does not display the dismissed banner if the group is still over notification_limit' do
         visit group_path(group)
-        expect(page).to have_text storage_banner_text
-        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
-        wait_for_requests
-        page.refresh
-        expect(page).not_to have_text storage_banner_text
 
-        storage_enforcement_date = Date.today + 13
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-        end
-        page.refresh
         expect(page).to have_text storage_banner_text
+
+        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
+        page.refresh
+
+        expect(page).not_to have_text storage_banner_text
+      end
+
+      context 'when the group does not reach the notification_limit' do
+        before do
+          set_notification_limit(group, megabytes: 13)
+        end
+
+        it 'does not display the banner' do
+          visit group_path(group)
+          expect(page).not_to have_text storage_banner_text
+        end
+      end
+
+      context 'when changing the storage_enforcement_date callout threshold' do
+        let(:storage_enforcement_date) { Date.today + 13 }
+
+        before do
+          allow_next_found_instance_of(Group) do |group|
+            allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+          end
+        end
+
+        it 'displays the banner' do
+          visit group_path(group)
+
+          expect(page).to have_text storage_banner_text
+        end
       end
     end
 

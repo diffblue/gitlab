@@ -16,9 +16,10 @@ RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent, :saas,
   context 'when subgroup' do
     before do
       group.root_storage_statistics.update!(
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
       subgroup.add_maintainer(user)
+      create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
     end
 
     it 'includes the correct subgroup info in the banner text' do

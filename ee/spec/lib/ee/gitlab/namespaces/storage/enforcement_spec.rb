@@ -3,6 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
+  include NamespaceStorageHelpers
+  using RSpec::Parameterized::TableSyntax
+
   describe '.enforce_limit?' do
     before do
       stub_feature_flags(
@@ -207,6 +210,102 @@ RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
 
       it 'returns true when namespace storage limits are enforced for the root namespace' do
         expect(described_class.enforce_limit?(subgroup)).to eq(true)
+      end
+    end
+  end
+
+  describe '.show_pre_enforcement_alert?' do
+    subject(:show_pre_enforcement_alert?) { described_class.show_pre_enforcement_alert?(group) }
+
+    let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
+
+    context 'with application settings set to false' do
+      context 'when should_check_namespace_plan? is false' do
+        before do
+          allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
+        end
+
+        it 'returns false' do
+          expect(show_pre_enforcement_alert?).to eq(false)
+        end
+      end
+    end
+
+    context 'with application settings set to true' do
+      before do
+        allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+      end
+
+      context 'with a paid namespace' do
+        let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+        it 'returns false' do
+          expect(show_pre_enforcement_alert?).to eq(false)
+        end
+      end
+
+      context 'with a storage_enforcement_date in past' do
+        let(:storage_enforcement_date) { Date.today - 1 }
+
+        before do
+          allow(described_class).to receive(:reached_pre_enforcement_notification_limit?).and_return(true)
+          allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+        end
+
+        it 'returns false' do
+          expect(show_pre_enforcement_alert?).to eq(false)
+        end
+      end
+
+      context 'when the namespace reaches the notification limit' do
+        before do
+          allow(described_class).to receive(:reached_pre_enforcement_notification_limit?).and_return(true)
+        end
+
+        it 'returns true' do
+          expect(show_pre_enforcement_alert?).to eq(true)
+        end
+      end
+    end
+  end
+
+  describe '.reached_pre_enforcement_notification_limit?' do
+    let(:root_namespace) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
+
+    subject(:reached_pre_enforcement_notification_limit?) do
+      described_class.reached_pre_enforcement_notification_limit?(root_namespace)
+    end
+
+    context 'when storage limit exclusion is present' do
+      let!(:excluded_namespace) { create(:storage_limit_excluded_namespace, namespace: root_namespace) }
+
+      it 'returns false' do
+        expect(reached_pre_enforcement_notification_limit?).to be false
+      end
+    end
+
+    context 'when storage limit exclusion is not present' do
+      where(:total_storage, :notification_limit, :additional_purchased_storage_size, :expected_result) do
+        12 | 0  | 0     | false
+        12 | 13 | 0     | false
+        12 | 12 | 0     | true
+        13 | 12 | 0     | true
+        12 | 13 | 1024  | false
+        13 | 12 | 1024  | true
+        15 | 13 | 1024  | true
+        12 | 12 | 1024  | false
+      end
+
+      with_them do
+        before do
+          root_namespace.update!(additional_purchased_storage_size: additional_purchased_storage_size)
+          set_used_storage(root_namespace, megabytes: total_storage)
+          set_notification_limit(root_namespace, megabytes: notification_limit)
+        end
+
+        it 'returns expected_result' do
+          expect(reached_pre_enforcement_notification_limit?).to eq(expected_result)
+        end
       end
     end
   end

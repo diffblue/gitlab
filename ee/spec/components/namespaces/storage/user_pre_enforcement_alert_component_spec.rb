@@ -21,22 +21,34 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, typ
       create(
         :namespace_root_storage_statistics,
         namespace: user.namespace,
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
     end
 
-    it 'includes used storage in the banner text' do
-      render_inline(component)
+    context 'when a notification limit has not been set' do
+      it 'does not include used storage in the banner text' do
+        render_inline(component)
 
-      expect(page).to have_text storage_counter(
-        ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
-      )
+        expect(page).not_to have_text storage_counter(5.gigabytes)
+      end
     end
 
-    it 'includes the correct navigation instruction in the banner text' do
-      render_inline(component)
+    context 'when a notification limit has been set' do
+      before do
+        create(:plan_limits, plan: user.namespace.root_ancestor.actual_plan, notification_limit: 500)
+      end
 
-      expect(page).to have_text "View and manage your usage from User settings > Usage quotas"
+      it 'includes used storage in the banner text' do
+        render_inline(component)
+
+        expect(page).to have_text storage_counter(5.gigabytes)
+      end
+
+      it 'includes the correct navigation instruction in the banner text' do
+        render_inline(component)
+
+        expect(page).to have_text "View and manage your usage from User settings > Usage quotas"
+      end
     end
   end
 end
