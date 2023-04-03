@@ -10,10 +10,6 @@ module EE
         include GeoInstrumentation
 
         before_action only: [:show] do
-          if can_run_sast_experiments_on?(@project)
-            experiment(:security_reports_mr_widget_prompt, namespace: @project.namespace).publish
-          end
-
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:suggested_reviewers_control, @project)
         end
