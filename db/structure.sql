@@ -23347,6 +23347,7 @@ CREATE TABLE user_preferences (
     use_legacy_web_ide boolean DEFAULT false NOT NULL,
     use_new_navigation boolean,
     achievements_enabled boolean DEFAULT true NOT NULL,
+    pinned_nav_items jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT check_89bf269f41 CHECK ((char_length(diffs_deletion_color) <= 7)),
     CONSTRAINT check_d07ccd35f7 CHECK ((char_length(diffs_addition_color) <= 7))
 );

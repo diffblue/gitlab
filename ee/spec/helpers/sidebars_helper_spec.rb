@@ -8,6 +8,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
   describe '#super_sidebar_context' do
     let_it_be(:user) { build(:user) }
     let_it_be(:panel) { {} }
+    let_it_be(:panel_type) { 'project' }
 
     before do
       allow(helper).to receive(:current_user) { user }
@@ -57,7 +58,9 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:project) { build(:project) }
       let_it_be(:group) { nil }
 
-      let(:subject) { helper.super_sidebar_context(user, group: group, project: project, panel: panel) }
+      let(:subject) do
+        helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
+      end
 
       include_examples 'pipeline minutes attributes'
 
@@ -76,7 +79,9 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:group) { build(:group) }
       let_it_be(:project) { nil }
 
-      let(:subject) { helper.super_sidebar_context(user, group: group, project: project, panel: panel) }
+      let(:subject) do
+        helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
+      end
 
       include_examples 'pipeline minutes attributes'
 
@@ -95,7 +100,9 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       let_it_be(:project) { nil }
       let_it_be(:group) { nil }
 
-      let(:subject) { helper.super_sidebar_context(user, group: group, project: project, panel: panel) }
+      let(:subject) do
+        helper.super_sidebar_context(user, group: group, project: project, panel: panel, panel_type: panel_type)
+      end
 
       it 'does not have pipeline minutes attributes' do
         expect(subject).not_to have_key('pipeline_minutes')

@@ -29,7 +29,7 @@ module EE
     end
 
     override :super_sidebar_context
-    def super_sidebar_context(user, group:, project:, panel:)
+    def super_sidebar_context(user, group:, project:, panel:, panel_type:)
       show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
 
       return super unless show_buy_pipeline_minutes
