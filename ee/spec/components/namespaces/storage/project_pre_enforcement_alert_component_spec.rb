@@ -12,6 +12,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
     stub_ee_application_setting(enforce_namespace_storage_limit: true)
 
     project.add_maintainer(user)
+    create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
   end
 
   context 'with project in a group' do
@@ -19,7 +20,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
 
     before do
       group.root_storage_statistics.update!(
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
     end
 
@@ -39,7 +40,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
     before do
       storage = instance_double(
         Namespace::RootStorageStatistics,
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
 
       allow(project.root_ancestor)

@@ -92,7 +92,7 @@ RSpec.describe 'Project', :js, feature_category: :projects do
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
 
       group.root_storage_statistics.update!(
-        storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+        storage_size: 5.gigabytes
       )
       group.add_maintainer(user)
       sign_in(user)
@@ -129,7 +129,7 @@ RSpec.describe 'Project', :js, feature_category: :projects do
           create(
             :namespace_root_storage_statistics,
             namespace: user.namespace,
-            storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+            storage_size: 5.gigabytes
           )
 
           allow_next_found_instance_of(Namespaces::UserNamespace) do |user_namespace|

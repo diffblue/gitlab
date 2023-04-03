@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'User visits their profile', feature_category: :user_profile do
+  include NamespaceStorageHelpers
+
   let_it_be_with_refind(:user) { create(:user) }
 
   before do
@@ -25,7 +27,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
         create(
           :namespace_root_storage_statistics,
           namespace: user.namespace,
-          storage_size: ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+          storage_size: 5.gigabytes
         )
       end
 
@@ -33,6 +35,7 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
         allow_next_found_instance_of(Namespaces::UserNamespace) do |user_namespace|
           allow(user_namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
         end
+        create(:plan_limits, plan: user.namespace.root_ancestor.actual_plan, notification_limit: 500)
       end
 
       it 'displays the banner in the profile page' do
@@ -40,19 +43,45 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
         expect(page).to have_text storage_banner_text
       end
 
-      it 'does not display the banner if user has previously closed unless threshold has changed' do
-        visit(profile_path)
-        expect(page).to have_text storage_banner_text
-        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
-        page.refresh
-        expect(page).not_to have_text storage_banner_text
+      context 'when the user has previously dismissed and the storage_enforcement_date threshold has changed' do
+        it 'displays the banner' do
+          visit(profile_path)
+          expect(page).to have_text storage_banner_text
+          find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
+          page.refresh
+          expect(page).not_to have_text storage_banner_text
 
-        storage_enforcement_date = Date.today + 13
-        allow_next_found_instance_of(Namespaces::UserNamespace) do |user_namespace|
-          allow(user_namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+          storage_enforcement_date = Date.today + 13
+          allow_next_found_instance_of(Namespaces::UserNamespace) do |user_namespace|
+            allow(user_namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+          end
+          page.refresh
+          expect(page).to have_text storage_banner_text
         end
+      end
+
+      it 'does not display the banner if the namespace does not reach the notification_limit' do
+        visit(profile_path)
+        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
+
+        set_notification_limit(user.namespace, megabytes: 6000)
+
         page.refresh
-        expect(page).to have_text storage_banner_text
+
+        expect(page).not_to have_text storage_banner_text
+      end
+
+      context 'with a storage_enforcement_date in past' do
+        let(:storage_enforcement_date) { Date.today - 1 }
+
+        before do
+          allow(user.namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
+        end
+
+        it 'does not display the banner' do
+          visit(profile_path)
+          expect(page).not_to have_text storage_banner_text
+        end
       end
     end
 
