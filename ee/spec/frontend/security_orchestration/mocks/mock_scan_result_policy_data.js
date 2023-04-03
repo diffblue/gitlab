@@ -51,6 +51,7 @@ export const mockProjectScanResultPolicy = {
   enabled: false,
   userApprovers: [],
   groupApprovers: [],
+  roleApprovers: [],
   source: {
     __typename: 'ProjectSecurityPolicySource',
     project: {
@@ -67,6 +68,7 @@ export const mockGroupScanResultPolicy = {
   enabled: mockDefaultBranchesScanResultObject.enabled,
   userApprovers: [],
   groupApprovers: [],
+  roleApprovers: [],
   source: {
     __typename: 'GroupSecurityPolicySource',
     inherited: true,
@@ -107,12 +109,30 @@ export const mockProjectWithBranchesScanResultPolicy = {
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
   yaml: mockWithBranchesScanResultManifest,
   enabled: true,
-  userApprovers: ['the.one'],
+  userApprovers: [{ name: 'the.one' }],
   groupApprovers: [],
+  roleApprovers: [],
   source: {
     __typename: 'ProjectSecurityPolicySource',
     project: {
       fullPath: 'project/path/second',
+    },
+  },
+};
+
+export const mockProjectWithAllApproverTypesScanResultPolicy = {
+  __typename: 'ScanResultPolicy',
+  name: mockDefaultBranchesScanResultObject.name,
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockDefaultBranchesScanResultManifest,
+  enabled: false,
+  userApprovers: [{ name: 'the.one' }],
+  groupApprovers: [{ fullPath: 'the.one.group' }],
+  roleApprovers: ['OWNER'],
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+    project: {
+      fullPath: 'project/path',
     },
   },
 };
@@ -124,19 +144,20 @@ export const mockScanResultPoliciesResponse = [
 
 export const createRequiredApprovers = (count) => {
   const approvers = [];
-  for (let i = 0; i < count; i += 1) {
-    const id = i + 1;
-    const approver = { webUrl: `webUrl${id}` };
-    if (i % 2) {
+  for (let i = 1; i <= count; i += 1) {
+    let approver = { webUrl: `webUrl${i}` };
+    if (i % 3 === 0) {
+      approver = 'Owner';
+    } else if (i % 2 === 0) {
       // eslint-disable-next-line no-underscore-dangle
       approver.__typename = 'UserCore';
-      approver.name = `username${id}`;
-      approver.id = `gid://gitlab/User/${id}`;
+      approver.name = `username${i}`;
+      approver.id = `gid://gitlab/User/${i}`;
     } else {
       // eslint-disable-next-line no-underscore-dangle
       approver.__typename = 'Group';
-      approver.fullPath = `grouppath${id}`;
-      approver.id = `gid://gitlab/Group/${id}`;
+      approver.fullPath = `grouppath${i}`;
+      approver.id = `gid://gitlab/Group/${i}`;
     }
     approvers.push(approver);
   }

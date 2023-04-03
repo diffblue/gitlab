@@ -2,6 +2,7 @@
 import { GlSprintf, GlLink } from '@gitlab/ui';
 import { s__, n__, __, sprintf } from '~/locale';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 
 const THRESHOLD_FOR_APPROVERS = 3;
 
@@ -40,9 +41,11 @@ export default {
     },
   },
   methods: {
+    isRoleType(approver) {
+      return typeof approver === 'string';
+    },
     isUserType(approver) {
-      // eslint-disable-next-line no-underscore-dangle
-      return approver.__typename === 'UserCore';
+      return approver?.id?.includes(TYPENAME_USER);
     },
     displayName(approver) {
       return this.isUserType(approver) ? approver.name : approver.fullPath;
@@ -71,11 +74,11 @@ export default {
       }
       return '';
     },
-    attributeName(approver) {
-      return this.isUserType(approver) ? 'data-user' : 'data-group';
-    },
     attributeValue(approver) {
-      return getIdFromGraphQLId(approver.id);
+      // The data-user attribute is required for the user popover
+      // Since the popover is only for users, this method returns false if not a user to hide the
+      // data-user attribute
+      return this.isUserType(approver) ? getIdFromGraphQLId(approver.id) : false;
     },
   },
 };
@@ -91,10 +94,13 @@ export default {
         {{ approvalsText }}
       </template>
       <template #approvers>
-        <span v-for="approver in displayedApprovers" :key="approver.id">
+        <span v-for="approver in displayedApprovers" :key="approver.id || approver">
+          <span v-if="isRoleType(approver)" :data-testid="approver">{{ approver }}</span>
           <gl-link
+            v-else
             :href="approver.webUrl"
-            :[attributeName(approver)]="attributeValue(approver)"
+            :data-user="attributeValue(approver)"
+            :data-testid="approver.id"
             target="_blank"
             class="gfm gfm-project_member js-user-link"
           >

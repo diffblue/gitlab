@@ -1,5 +1,5 @@
 <script>
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { fromYaml, humanizeRules } from '../policy_editor/scan_result_policy/lib';
 import { SUMMARY_TITLE } from './constants';
 import PolicyDrawerLayout from './policy_drawer_layout.vue';
@@ -37,7 +37,19 @@ export default {
       return this.parsedYaml.actions.find((action) => action.type === 'require_approval');
     },
     approvers() {
-      return [...this.policy.userApprovers, ...this.policy.groupApprovers];
+      return [
+        ...this.policy.groupApprovers,
+        ...this.policy.roleApprovers.map((r) => {
+          return {
+            GUEST: __('Guest'),
+            REPORTER: __('Reporter'),
+            DEVELOPER: __('Developer'),
+            MAINTAINER: __('Maintainer'),
+            OWNER: __('Owner'),
+          }[r];
+        }),
+        ...this.policy.userApprovers,
+      ];
     },
   },
 };
