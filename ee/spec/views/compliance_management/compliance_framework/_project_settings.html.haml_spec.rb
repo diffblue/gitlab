@@ -60,6 +60,30 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
         expect(rendered).not_to have_button('Save changes')
       end
     end
+
+    context 'project does not have a gitlab_ci_yml file' do
+      before do
+        allow(project.repository).to receive(:gitlab_ci_yml).and_return(nil)
+      end
+
+      it 'does not render the No pipeline alert' do
+        render
+
+        expect(rendered).to have_content('No pipeline configuration found')
+      end
+    end
+
+    context 'project has a gitlab_ci_yml file' do
+      before do
+        allow(project.repository).to receive(:gitlab_ci_yml).and_return('test: scriptx: exit 0')
+      end
+
+      it 'does render the No pipeline alert' do
+        render
+
+        expect(rendered).not_to have_content('No pipeline configuration found')
+      end
+    end
   end
 
   context 'group has no compliance frameworks' do
