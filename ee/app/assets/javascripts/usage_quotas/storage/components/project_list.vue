@@ -56,7 +56,8 @@ export default {
     { key: 'storage', label: __('Total'), sortable: true },
     { key: 'repository', label: __('Repository') },
     { key: 'snippets', label: __('Snippets') },
-    { key: 'buildArtifacts', label: __('Artifacts') },
+    { key: 'buildArtifacts', label: __('Job artifacts') },
+    { key: 'pipelineArtifacts', label: __('Pipeline artifacts') },
     { key: 'containerRegistry', label: __('Container Registry') },
     { key: 'lfsObjects', label: __('LFS') },
     { key: 'packages', label: __('Packages') },
@@ -139,6 +140,10 @@ export default {
 
     <template #cell(buildArtifacts)="{ item: project }">
       <number-to-human-size :value="project.statistics.buildArtifactsSize" />
+    </template>
+
+    <template #cell(pipelineArtifacts)="{ item: project }">
+      <number-to-human-size :value="project.statistics.pipelineArtifactsSize" />
     </template>
 
     <template #cell(packages)="{ item: project }">

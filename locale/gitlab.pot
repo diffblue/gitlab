@@ -24798,6 +24798,9 @@ msgstr ""
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
+msgid "Job artifacts"
+msgstr ""
+
 msgid "Job has been erased"
 msgstr ""
 
@@ -31646,6 +31649,9 @@ msgid "Pipeline Schedules"
 msgstr ""
 
 msgid "Pipeline URL"
+msgstr ""
+
+msgid "Pipeline artifacts"
 msgstr ""
 
 msgid "Pipeline creation rate limits"
@@ -46943,12 +46949,6 @@ msgstr ""
 msgid "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
 msgstr ""
 
-msgid "UsageQuota|Artifacts"
-msgstr ""
-
-msgid "UsageQuota|Artifacts is a sum of build and pipeline artifacts."
-msgstr ""
-
 msgid "UsageQuota|Audio samples, videos, datasets, and graphics."
 msgstr ""
 
@@ -46997,7 +46997,7 @@ msgstr ""
 msgid "UsageQuota|Includes artifacts, repositories, wiki, and other items."
 msgstr ""
 
-msgid "UsageQuota|LFS storage"
+msgid "UsageQuota|Job artifacts created by CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Learn more about usage quotas"
@@ -47021,13 +47021,10 @@ msgstr ""
 msgid "UsageQuota|No projects to display."
 msgstr ""
 
-msgid "UsageQuota|Packages"
-msgstr ""
-
 msgid "UsageQuota|Pending Members"
 msgstr ""
 
-msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
+msgid "UsageQuota|Pipeline artifacts created by CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Pipelines"
@@ -47042,9 +47039,6 @@ msgstr ""
 msgid "UsageQuota|Recalculate repository usage"
 msgstr ""
 
-msgid "UsageQuota|Repository"
-msgstr ""
-
 msgid "UsageQuota|Search"
 msgstr ""
 
@@ -47055,9 +47049,6 @@ msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
 msgid "UsageQuota|Shared runner duration"
-msgstr ""
-
-msgid "UsageQuota|Snippets"
 msgstr ""
 
 msgid "UsageQuota|Something went wrong while fetching pipeline statistics"
@@ -47136,9 +47127,6 @@ msgid "UsageQuota|User settings &gt; Usage quotas"
 msgstr ""
 
 msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked if the storage limit was reached."
-msgstr ""
-
-msgid "UsageQuota|Wiki"
 msgstr ""
 
 msgid "UsageQuota|Wiki content."

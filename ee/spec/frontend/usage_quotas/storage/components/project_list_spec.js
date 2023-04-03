@@ -34,6 +34,7 @@ const storageTypes = [
   { key: 'repository' },
   { key: 'snippets' },
   { key: 'buildArtifacts' },
+  { key: 'pipelineArtifacts' },
   { key: 'containerRegistry' },
   { key: 'lfsObjects' },
   { key: 'packages' },
