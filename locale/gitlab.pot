@@ -22127,6 +22127,9 @@ msgstr ""
 msgid "Importing..."
 msgstr ""
 
+msgid "Import|Partially completed"
+msgstr ""
+
 msgid "Import|The repository could not be imported."
 msgstr ""
 
@@ -31313,9 +31316,6 @@ msgid "Parsing error for param :embed_json. %{message}"
 msgstr ""
 
 msgid "Part of merge request changes"
-msgstr ""
-
-msgid "Partial import"
 msgstr ""
 
 msgid "Participants"
