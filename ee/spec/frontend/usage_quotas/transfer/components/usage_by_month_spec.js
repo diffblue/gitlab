@@ -26,19 +26,27 @@ describe('UsageByMonth', () => {
 
   const createComponent = ({ propsData = {} } = {}) => {
     wrapper = shallowMountExtended(UsageByMonth, {
-      propsData: { ...defaultPropsData, propsData },
+      propsData: { ...defaultPropsData, ...propsData },
     });
   };
 
   const findGlAreaChart = () => wrapper.findComponent(GlAreaChart);
 
+  it('renders `Usage by month` heading', () => {
+    createComponent();
+
+    expect(wrapper.findByRole('heading', { name: USAGE_BY_MONTH_HEADER }).exists()).toBe(true);
+  });
+
   describe('when `loading` prop is `true`', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({
         propsData: {
-          loading: false,
+          loading: true,
         },
       });
+
+      await waitForPromises();
     });
 
     it('renders `GlSkeletonLoader` component', () => {
@@ -82,12 +90,6 @@ describe('UsageByMonth', () => {
           },
         },
       });
-    });
-
-    it('renders `Usage by month` heading', () => {
-      createComponent();
-
-      expect(wrapper.findByRole('heading', { name: USAGE_BY_MONTH_HEADER }).exists()).toBe(true);
     });
 
     describe('when tooltip is shown', () => {

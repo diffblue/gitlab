@@ -6,9 +6,10 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import GroupTransferApp from 'ee/usage_quotas/transfer/components/group_transfer_app.vue';
 import UsageByMonth from 'ee/usage_quotas/transfer/components/usage_by_month.vue';
+import UsageByProject from 'ee/usage_quotas/transfer/components/usage_by_project.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import getGroupDataTransferEgress from 'ee/usage_quotas/transfer/graphql/queries/get_group_data_transfer_egress.query.graphql';
-import { USAGE_BY_PROJECT_HEADER } from 'ee/usage_quotas/constants';
+import { DEFAULT_PER_PAGE } from '~/api';
 import { getGroupDataTransferEgressResponse } from '../mock_data';
 
 describe('GroupTransferApp', () => {
@@ -18,14 +19,12 @@ describe('GroupTransferApp', () => {
     fullPath: 'h5bp',
   };
 
+  const defaultRequestHandler = () =>
+    jest.fn().mockResolvedValueOnce(getGroupDataTransferEgressResponse);
+
   const createComponent = ({
     provide = {},
-    requestHandlers = [
-      [
-        getGroupDataTransferEgress,
-        jest.fn().mockResolvedValueOnce(getGroupDataTransferEgressResponse),
-      ],
-    ],
+    requestHandlers = [[getGroupDataTransferEgress, defaultRequestHandler()]],
   } = {}) => {
     Vue.use(VueApollo);
 
@@ -38,6 +37,7 @@ describe('GroupTransferApp', () => {
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findGlALert = () => wrapper.findComponent(GlAlert);
   const findUsageByMonth = () => wrapper.findComponent(UsageByMonth);
+  const findUsageByProject = () => wrapper.findComponent(UsageByProject);
 
   describe('when GraphQL request is loading', () => {
     beforeEach(() => {
@@ -50,6 +50,14 @@ describe('GroupTransferApp', () => {
 
     it('sets `StatisticsCard` `loading` prop to `true`', () => {
       expect(findStatisticsCard().props('loading')).toBe(true);
+    });
+
+    it('sets `UsageByMonth` `loading` prop to `true`', () => {
+      expect(findUsageByMonth().props('loading')).toBe(true);
+    });
+
+    it('sets `UsageByProject` `loading` prop to `true`', () => {
+      expect(findUsageByProject().props('loading')).toBe(true);
     });
   });
 
@@ -81,6 +89,63 @@ describe('GroupTransferApp', () => {
         loading: false,
       });
     });
+
+    it('renders `UsageByProject` component and correctly passes props', () => {
+      expect(findUsageByProject().props()).toMatchObject({
+        projects: getGroupDataTransferEgressResponse.data.group.projects,
+        loading: false,
+      });
+    });
+  });
+
+  describe('when `UsageByProject` component emits `next` event', () => {
+    it('calls GraphQL request with correct variables', async () => {
+      const requestHandler = defaultRequestHandler().mockResolvedValueOnce(
+        getGroupDataTransferEgressResponse,
+      );
+      createComponent({
+        requestHandlers: [[getGroupDataTransferEgress, requestHandler]],
+      });
+      await waitForPromises();
+
+      const { endCursor } = getGroupDataTransferEgressResponse.data.group.projects.pageInfo;
+
+      findUsageByProject().vm.$emit('next', endCursor);
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenLastCalledWith({
+        first: DEFAULT_PER_PAGE,
+        after: endCursor,
+        last: null,
+        before: null,
+        fullPath: defaultProvide.fullPath,
+      });
+    });
+  });
+
+  describe('when `UsageByProject` component emits `prev` event', () => {
+    it('calls GraphQL request with correct variables', async () => {
+      const requestHandler = defaultRequestHandler().mockResolvedValueOnce(
+        getGroupDataTransferEgressResponse,
+      );
+      createComponent({
+        requestHandlers: [[getGroupDataTransferEgress, requestHandler]],
+      });
+      await waitForPromises();
+
+      const { startCursor } = getGroupDataTransferEgressResponse.data.group.projects.pageInfo;
+
+      findUsageByProject().vm.$emit('prev', startCursor);
+      await waitForPromises();
+
+      expect(requestHandler).toHaveBeenLastCalledWith({
+        first: null,
+        after: null,
+        last: DEFAULT_PER_PAGE,
+        before: startCursor,
+        fullPath: defaultProvide.fullPath,
+      });
+    });
   });
 
   describe('when GraphQL request is not successful', () => {
@@ -102,11 +167,5 @@ describe('GroupTransferApp', () => {
 
       expect(findGlALert().exists()).toBe(false);
     });
-  });
-
-  it('renders `Usage by project` heading', () => {
-    createComponent();
-
-    expect(wrapper.findByRole('heading', { name: USAGE_BY_PROJECT_HEADER }).exists()).toBe(true);
   });
 });

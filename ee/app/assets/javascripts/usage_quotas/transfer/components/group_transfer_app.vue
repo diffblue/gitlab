@@ -3,14 +3,14 @@ import { GlAlert } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { numberToHumanSizeSplit } from '~/lib/utils/number_utils';
 import dateFormat from '~/lib/dateformat';
-import { USAGE_BY_PROJECT_HEADER } from '../../constants';
+import { DEFAULT_PER_PAGE } from '~/api';
 import getGroupDataTransferEgress from '../graphql/queries/get_group_data_transfer_egress.query.graphql';
 import StatisticsCard from '../../components/statistics_card.vue';
 import UsageByMonth from './usage_by_month.vue';
+import UsageByProject from './usage_by_project.vue';
 
 export default {
   i18n: {
-    USAGE_BY_PROJECT_HEADER,
     ERROR_MESSAGE: s__(
       'UsageQuotas|An error occurred loading the transfer data. Please refresh the page to try again.',
     ),
@@ -21,12 +21,21 @@ export default {
     GlAlert,
     StatisticsCard,
     UsageByMonth,
+    UsageByProject,
   },
   inject: ['fullPath'],
   data() {
     return {
       groupDataTransferEgress: {},
       hasError: false,
+      pagination: {
+        first: DEFAULT_PER_PAGE,
+        after: null,
+        last: null,
+        before: null,
+      },
+      isLoadingProjects: true,
+      isLoadingGroups: true,
     };
   },
   apollo: {
@@ -35,19 +44,26 @@ export default {
       variables() {
         return {
           fullPath: this.fullPath,
+          ...this.pagination,
         };
       },
       update(data) {
         return data.group;
       },
+      result() {
+        this.isLoadingProjects = false;
+        this.isLoadingGroups = false;
+      },
       error() {
         this.hasError = true;
+        this.isLoadingProjects = false;
+        this.isLoadingGroups = false;
       },
     },
   },
   computed: {
-    isGroupDataTransferEgressLoading() {
-      return this.$apollo.queries.groupDataTransferEgress.loading;
+    projects() {
+      return this.groupDataTransferEgress?.projects || {};
     },
     egressNodes() {
       return this.groupDataTransferEgress?.dataTransfer?.egressNodes?.nodes || [];
@@ -80,6 +96,24 @@ export default {
     onAlertDismiss() {
       this.hasError = false;
     },
+    onUsageByProjectNext(endCursor) {
+      this.isLoadingProjects = true;
+      this.pagination = {
+        first: DEFAULT_PER_PAGE,
+        after: endCursor,
+        last: null,
+        before: null,
+      };
+    },
+    onUsageByProjectPrev(startCursor) {
+      this.isLoadingProjects = true;
+      this.pagination = {
+        first: null,
+        after: null,
+        last: DEFAULT_PER_PAGE,
+        before: startCursor,
+      };
+    },
   },
 };
 </script>
@@ -95,9 +129,14 @@ export default {
       :usage-unit="combinedEgressNodesUnit"
       :total-value="$options.i18n.STATISTICS_CARD_TOTAL_VALUE"
       :description="$options.i18n.STATISTICS_CARD_DESCRIPTION"
-      :loading="isGroupDataTransferEgressLoading"
+      :loading="isLoadingGroups"
     />
-    <usage-by-month :chart-data="usageByMonthData" :loading="isGroupDataTransferEgressLoading" />
-    <h4 class="gl-font-lg gl-mb-5">{{ $options.i18n.USAGE_BY_PROJECT_HEADER }}</h4>
+    <usage-by-month :chart-data="usageByMonthData" :loading="isLoadingGroups" />
+    <usage-by-project
+      :projects="projects"
+      :loading="isLoadingProjects"
+      @next="onUsageByProjectNext"
+      @prev="onUsageByProjectPrev"
+    />
   </div>
 </template>
