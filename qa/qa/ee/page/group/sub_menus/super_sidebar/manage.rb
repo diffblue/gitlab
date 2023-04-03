@@ -6,11 +6,11 @@ module QA
       module Group
         module SubMenus
           module SuperSidebar
-            module Plan
+            module Manage
               extend QA::Page::PageConcern
 
-              def go_to_roadmap
-                open_plan_submenu("Roadmap")
+              def go_to_group_iterations
+                open_manage_submenu('Iterations')
               end
             end
           end

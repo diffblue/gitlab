@@ -11,7 +11,6 @@ module QA
             super
 
             base.class_eval do
-              prepend QA::Page::Project::SubMenus::Common
               prepend SubMenus::LicenseCompliance
               prepend SubMenus::SecurityCompliance
               prepend SubMenus::Analytics
@@ -19,8 +18,9 @@ module QA
               prepend SubMenus::Settings
 
               if QA::Runtime::Env.super_sidebar_enabled?
-                prepend SubMenus::SuperSidebar::Secure
+                prepend Page::SubMenus::SuperSidebar::Secure
                 prepend SubMenus::SuperSidebar::Code
+                prepend SubMenus::SuperSidebar::Analyze
               end
             end
           end

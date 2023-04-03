@@ -6,7 +6,9 @@ module QA
       module Project
         module SubMenus
           module Analytics
-            def click_project_insights_link
+            extend QA::Page::PageConcern
+
+            def go_to_insights
               hover_analytics do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'Insights')

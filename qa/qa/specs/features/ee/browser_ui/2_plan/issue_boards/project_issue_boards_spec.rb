@@ -96,7 +96,7 @@ module QA
 
       def go_to_project_board(project)
         project.visit!
-        Page::Project::Menu.perform(&:go_to_boards)
+        Page::Project::Menu.perform(&:go_to_issue_boards)
       end
     end
   end

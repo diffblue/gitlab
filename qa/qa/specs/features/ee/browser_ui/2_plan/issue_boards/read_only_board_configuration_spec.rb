@@ -21,7 +21,7 @@ module QA
         end
 
         label_board_list.project.visit!
-        Page::Project::Menu.perform(&:go_to_boards)
+        Page::Project::Menu.perform(&:go_to_issue_boards)
       end
 
       it 'shows board configuration to user without edit permission', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347959' do

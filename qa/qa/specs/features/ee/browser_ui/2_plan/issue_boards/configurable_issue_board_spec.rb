@@ -10,7 +10,7 @@ module QA
       before do
         Flow::Login.sign_in
         label_board_list.project.visit!
-        Page::Project::Menu.perform(&:go_to_boards)
+        Page::Project::Menu.perform(&:go_to_issue_boards)
       end
 
       it 'renames the issue board', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347954' do
