@@ -29285,9 +29285,6 @@ msgstr ""
 msgid "Normal text"
 msgstr ""
 
-msgid "NorthstarNavigation|Alpha"
-msgstr ""
-
 msgid "NorthstarNavigation|Beta"
 msgstr ""
 
