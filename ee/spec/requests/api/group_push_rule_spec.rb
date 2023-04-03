@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category: :source_code_management do
+RSpec.describe API::GroupPushRule, 'GroupPushRule', :aggregate_failures, api: true, feature_category: :source_code_management do
   include ApiHelpers
   include AccessMatchersForRequest
 
@@ -35,7 +35,10 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
   end
 
   shared_examples 'allow access to api based on role' do
-    it { expect { subject }.to be_allowed_for(:admin) }
+    context 'when admin', :enable_admin_mode do
+      it { expect { subject }.to be_allowed_for(:admin) }
+    end
+
     it { expect { subject }.to be_allowed_for(:owner).of(group) }
 
     it { expect { subject }.to be_denied_for(:developer).of(group) }
@@ -60,14 +63,19 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
       group.update!(push_rule: push_rule)
     end
 
+    it_behaves_like 'GET request permissions for admin mode' do
+      let(:path) { "/groups/#{group.id}/push_rule" }
+      let(:failed_status_code) { :not_found }
+    end
+
     context 'when unlicensed' do
-      subject { get api("/groups/#{group.id}/push_rule", admin) }
+      subject { get api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
 
       it_behaves_like 'not found when feature is unavailable'
     end
 
     context 'authorized user' do
-      subject { get api("/groups/#{group.id}/push_rule", admin) }
+      subject { get api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
 
       context 'when licensed' do
         include_context 'licensed features available'
@@ -146,14 +154,22 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
   describe 'POST /groups/:id/push_rule' do
     let_it_be(:group) { create(:group) }
 
+    it_behaves_like 'POST request permissions for admin mode' do
+      include_context 'licensed features available'
+
+      let(:path) { "/groups/#{group.id}/push_rule" }
+      let(:params) { attributes }
+      let(:failed_status_code) { :not_found }
+    end
+
     context 'when unlicensed' do
-      subject { post api("/groups/#{group.id}/push_rule", admin), params: attributes }
+      subject { post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes }
 
       it_behaves_like 'not found when feature is unavailable'
     end
 
     context 'authorized user' do
-      subject { post api("/groups/#{group.id}/push_rule", admin), params: attributes }
+      subject { post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes }
 
       context 'when licensed' do
         include_context 'licensed features available'
@@ -168,7 +184,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
           expect { subject }.to change { PushRule.count }.by(1)
         end
 
-        it 'creates record with appropriate attributes', :aggregate_failures do
+        it 'creates record with appropriate attributes' do
           subject
 
           push_rule = group.reload.push_rule
@@ -190,7 +206,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
             group.update!(push_rule: push_rule)
           end
 
-          it do
+          specify do
             subject
 
             expect(response).to have_gitlab_http_status(:unprocessable_entity)
@@ -205,8 +221,8 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
         end
 
         context 'when no rule is specified' do
-          it do
-            post api("/groups/#{group.id}/push_rule", admin), params: {}
+          specify do
+            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: {}
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(json_response['error']).to include('at least one parameter must be provided')
@@ -228,7 +244,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
 
         context 'and reject_unsigned_commits is not set' do
           it 'returns created' do
-            post api("/groups/#{group.id}/push_rule", admin), params: attributes.except(:reject_unsigned_commits)
+            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes.except(:reject_unsigned_commits)
 
             expect(response).to have_gitlab_http_status(:created)
           end
@@ -249,7 +265,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
 
         context 'and commit_committer_check is not set' do
           it 'returns created' do
-            post api("/groups/#{group.id}/push_rule", admin), params: attributes.except(:commit_committer_check)
+            post api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes.except(:commit_committer_check)
 
             expect(response).to have_gitlab_http_status(:created)
           end
@@ -259,7 +275,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
   end
 
   describe 'PUT /groups/:id/push_rule' do
-    subject { put api("/groups/#{group.id}/push_rule", admin), params: attributes_for_update }
+    subject { put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update }
 
     let(:group) { create(:group) }
 
@@ -274,6 +290,14 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
     before do
       push_rule = create(:push_rule, **attributes)
       group.update!(push_rule: push_rule)
+    end
+
+    it_behaves_like 'PUT request permissions for admin mode' do
+      include_context 'licensed features available'
+
+      let(:path) { "/groups/#{group.id}/push_rule" }
+      let(:params) { attributes_for_update }
+      let(:failed_status_code) { :not_found }
     end
 
     context 'when unlicensed' do
@@ -300,7 +324,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
           let_it_be(:group_without_push_rule) { create(:group) }
 
           it 'returns not found' do
-            put api("/groups/#{group_without_push_rule.id}/push_rule", admin), params: attributes_for_update
+            put api("/groups/#{group_without_push_rule.id}/push_rule", admin, admin_mode: true), params: attributes_for_update
 
             expect(response).to have_gitlab_http_status(:not_found)
             expect(json_response['message']).to include('Push Rule Not Found')
@@ -314,8 +338,8 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
         end
 
         context 'when no rule is specified' do
-          it do
-            put api("/groups/#{group.id}/push_rule", admin), params: {}
+          specify do
+            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: {}
 
             expect(response).to have_gitlab_http_status(:bad_request)
             expect(json_response['error']).to include('at least one parameter must be provided')
@@ -337,7 +361,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
 
         context 'and reject_unsigned_commits is not set' do
           it 'returns status ok' do
-            put api("/groups/#{group.id}/push_rule", admin), params: attributes_for_update.except(:reject_unsigned_commits)
+            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update.except(:reject_unsigned_commits)
 
             expect(response).to have_gitlab_http_status(:ok)
           end
@@ -358,7 +382,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
 
         context 'and commit_committer_check is not set' do
           it 'returns status ok' do
-            put api("/groups/#{group.id}/push_rule", admin), params: attributes_for_update.except(:commit_committer_check)
+            put api("/groups/#{group.id}/push_rule", admin, admin_mode: true), params: attributes_for_update.except(:commit_committer_check)
 
             expect(response).to have_gitlab_http_status(:ok)
           end
@@ -371,13 +395,20 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
     let_it_be(:push_rule) { create(:push_rule, **attributes) }
     let_it_be(:group) { create(:group, push_rule: push_rule) }
 
+    it_behaves_like 'DELETE request permissions for admin mode' do
+      include_context 'licensed features available'
+
+      let(:path) { "/groups/#{group.id}/push_rule" }
+      let(:failed_status_code) { :not_found }
+    end
+
     context 'authorized user' do
       context 'when licensed' do
         include_context 'licensed features available'
 
         context 'with group push rule' do
-          it do
-            delete api("/groups/#{group.id}/push_rule", admin)
+          specify do
+            delete api("/groups/#{group.id}/push_rule", admin, admin_mode: true)
 
             expect(response).to have_gitlab_http_status(:no_content)
             expect(group.reload.push_rule).to be nil
@@ -396,7 +427,7 @@ RSpec.describe API::GroupPushRule, 'GroupPushRule', api: true, feature_category:
       end
 
       context 'when unlicensed' do
-        subject { delete api("/groups/#{group.id}/push_rule", admin) }
+        subject { delete api("/groups/#{group.id}/push_rule", admin, admin_mode: true) }
 
         it_behaves_like 'not found when feature is unavailable'
       end

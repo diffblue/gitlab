@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Groups, feature_category: :subgroups do
+RSpec.describe API::Groups, :aggregate_failures, feature_category: :subgroups do
   include GroupAPIHelpers
 
   let_it_be(:group, reload: true) { create(:group) }
@@ -198,7 +198,14 @@ RSpec.describe API::Groups, feature_category: :subgroups do
   end
 
   describe 'PUT /groups/:id' do
-    subject { put api("/groups/#{group.id}", user), params: params }
+    let_it_be(:admin_mode) { false }
+
+    subject { put api("/groups/#{group.id}", user, admin_mode: admin_mode), params: params }
+
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { "/groups/#{group.id}" }
+      let(:params) { { default_branch_protection: Gitlab::Access::PROTECTION_NONE } }
+    end
 
     context 'file_template_project_id' do
       let(:params) { { file_template_project_id: project.id } }
@@ -255,6 +262,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
 
       context 'authenticated as an admin' do
         let(:user) { admin }
+        let_it_be(:admin_mode) { true }
 
         where(:feature_enabled, :setting_enabled, :default_branch_protection) do
           true  | true  | Gitlab::Access::PROTECTION_NONE
@@ -443,9 +451,15 @@ RSpec.describe API::Groups, feature_category: :subgroups do
   end
 
   describe "POST /groups" do
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { '/groups' }
+      let(:params) { attributes_for_group_api shared_runners_minutes_limit: 133 }
+    end
+
     context "when authenticated as user with group permissions" do
       it "creates an ldap_group_link if ldap_cn and ldap_access are supplied" do
         group_attributes = attributes_for_group_api ldap_cn: 'ldap-group', ldap_access: Gitlab::Access::DEVELOPER
+
         expect { post api("/groups", admin), params: group_attributes }.to change { LdapGroupLink.count }.by(1)
       end
 
@@ -467,7 +481,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             group = attributes_for_group_api shared_runners_minutes_limit: 133
 
             expect do
-              post api("/groups", admin), params: group
+              post api("/groups", admin, admin_mode: true), params: group
             end.to change { Group.count }.by(1)
 
             created_group = Group.find(json_response['id'])
@@ -484,13 +498,15 @@ RSpec.describe API::Groups, feature_category: :subgroups do
       using RSpec::Parameterized::TableSyntax
 
       let(:params) { attributes_for_group_api(default_branch_protection: Gitlab::Access::PROTECTION_NONE) }
+      let_it_be(:admin_mode) { false }
 
       subject do
-        post api("/groups", user), params: params
+        post api("/groups", user, admin_mode: admin_mode), params: params
       end
 
       context 'authenticated as an admin' do
         let(:user) { admin }
+        let_it_be(:admin_mode) { true }
 
         where(:feature_enabled, :setting_enabled, :default_branch_protection) do
           true  | true  | Gitlab::Access::PROTECTION_NONE
@@ -552,7 +568,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
           group = attributes_for_group_api
 
           expect do
-            post api("/groups", admin), params: group
+            post api("/groups", admin, admin_mode: true), params: group
           end.not_to change { Group.count }
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -649,6 +665,12 @@ RSpec.describe API::Groups, feature_category: :subgroups do
       allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(true)
     end
 
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { "/groups/#{group.id}/ldap_sync" }
+      let(:params) { {} }
+      let(:success_status_code) { :accepted }
+    end
+
     context 'when the ldap_group_sync feature is available' do
       before do
         stub_licensed_features(ldap_group_sync: true)
@@ -701,7 +723,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
 
       context 'when authenticated as the admin' do
         it 'returns 202 Accepted' do
-          ldap_sync(group.id, admin, :disable!)
+          ldap_sync(group.id, admin, :disable!, true)
           expect(response).to have_gitlab_http_status(:accepted)
         end
       end
@@ -728,7 +750,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
       end
 
       it 'returns 404 (same as CE would)' do
-        ldap_sync(group.id, admin, :disable!)
+        ldap_sync(group.id, admin, :disable!, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -807,6 +829,10 @@ RSpec.describe API::Groups, feature_category: :subgroups do
 
     it_behaves_like 'inaccessable by reporter role and lower'
 
+    it_behaves_like 'GET request permissions for admin mode' do
+      let(:path) { "/groups/#{group.id}/audit_events" }
+    end
+
     context 'when authenticated, as a member' do
       before do
         stub_licensed_features(audit_events: true)
@@ -878,7 +904,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
             let_it_be(:audit_event_2) { create(:group_audit_event, entity_id: group.id) }
 
             it 'paginates the records correctly' do
-              get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1 }
+              get api("/groups/#{group.id}/audit_events", current_user, admin_mode: true), params: { pagination: 'keyset', per_page: 1 }
 
               expect(response).to have_gitlab_http_status(:ok)
               records = json_response
@@ -915,7 +941,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
 
             context 'on making requests with unsupported ordering structure' do
               it 'returns error' do
-                get api("/groups/#{group.id}/audit_events", current_user), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
+                get api("/groups/#{group.id}/audit_events", current_user, admin_mode: true), params: { pagination: 'keyset', per_page: 1, order_by: 'created_at', sort: 'asc' }
 
                 expect(response).to have_gitlab_http_status(:method_not_allowed)
                 expect(json_response['error']).to eq('Keyset pagination is not yet available for this type of request')
@@ -1466,9 +1492,9 @@ RSpec.describe API::Groups, feature_category: :subgroups do
     end
   end
 
-  def ldap_sync(group_id, user, sidekiq_testing_method)
+  def ldap_sync(group_id, user, sidekiq_testing_method, admin_mode = false)
     Sidekiq::Testing.send(sidekiq_testing_method) do
-      post api("/groups/#{group_id}/ldap_sync", user)
+      post api("/groups/#{group_id}/ldap_sync", user, admin_mode: admin_mode)
     end
   end
 end
