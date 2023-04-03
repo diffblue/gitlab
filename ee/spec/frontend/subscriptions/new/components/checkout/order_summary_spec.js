@@ -37,6 +37,8 @@ describe('Order Summary', () => {
   let wrapper;
   let trackingSpy;
 
+  const promotionalOfferText = 'Promotional Offer Text';
+
   const availablePlans = [
     { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
     {
@@ -45,6 +47,7 @@ describe('Order Summary', () => {
       price_per_year: 228,
       name: 'silver plan',
       eligible_to_use_promo_code: true,
+      promotional_offer_text: promotionalOfferText,
     },
     {
       id: 'thirdPlanId',
@@ -78,6 +81,7 @@ describe('Order Summary', () => {
 
   const findTaxHelpLink = () => wrapper.findByTestId('tax-help-link');
   const findPromoCodeInput = () => wrapper.findComponent(PromoCodeInput);
+  const findPromotionalOfferText = () => wrapper.findByTestId('promotional-offer-text');
 
   const discount = () => wrapper.findByTestId('discount').text();
   const taxInfoLine = () => wrapper.findByTestId('tax-info-line').text();
@@ -712,6 +716,34 @@ describe('Order Summary', () => {
       await store.commit(types.UPDATE_NUMBER_OF_USERS, 1);
 
       expect(promoCodeInput.props('errorMessage')).toBe('');
+    });
+  });
+
+  describe('promotional offer text', () => {
+    it('shows promotional offer text when present', async () => {
+      createComponent();
+
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+      await waitForPromises();
+
+      expect(findPromotionalOfferText().text()).toBe(promotionalOfferText);
+    });
+
+    it('does not show promotional offer text when not present', async () => {
+      createComponent();
+
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
+      await waitForPromises();
+
+      expect(findPromotionalOfferText().exists()).toBe(false);
+    });
+
+    it('does not show promotional offer text when loading', async () => {
+      createComponent();
+
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+
+      expect(findPromotionalOfferText().exists()).toBe(false);
     });
   });
 
