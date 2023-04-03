@@ -1240,13 +1240,20 @@ lib/gitlab/checks/** @proglottis @toon
 /app/controllers/projects/runners_controller.rb
 /app/controllers/projects/triggers_controller.rb
 /app/controllers/projects/variables_controller.rb
+/app/helpers/artifacts_helper.rb
+/app/helpers/routing/artifacts_helper.rb
 /app/models/commit_status.rb
 /app/models/external_pull_request.rb
 /app/models/generic_commit_status.rb
 /app/models/namespace_ci_cd_setting.rb
 /app/models/project_ci_cd_setting.rb
+/app/models/projects/build_artifacts_size_refresh.rb
 /app/presenters/commit_status_presenter.rb
 /app/presenters/generic_commit_status_presenter.rb
+/app/serializers/build_artifact_entity.rb
+/app/serializers/job_artifact_report_entity.rb
+/app/services/projects/refresh_build_artifacts_size_statistics_service.rb
+/app/uploaders/job_artifact_uploader.rb
 /app/validators/json_schemas/build_metadata_id_tokens.json
 /app/views/projects/artifacts/
 /app/views/projects/generic_commit_statuses/
@@ -1265,6 +1272,8 @@ lib/gitlab/checks/** @proglottis @toon
 /app/workers/pipeline_notification_worker.rb
 /app/workers/pipeline_process_worker.rb
 /app/workers/pipeline_schedule_worker.rb
+/app/workers/projects/refresh_build_artifacts_size_statistics_worker.rb
+/app/workers/projects/schedule_refresh_build_artifacts_size_statistics_worker.rb
 /app/workers/run_pipeline_schedule_worker.rb
 /app/workers/stuck_ci_jobs_worker.rb
 /app/workers/update_external_pull_requests_worker.rb
@@ -1319,6 +1328,8 @@ lib/gitlab/checks/** @proglottis @toon
 /spec/workers/pipeline_notification_worker_spec.rb
 /spec/workers/pipeline_process_worker_spec.rb
 /spec/workers/pipeline_schedule_worker_spec.rb
+/spec/workers/projects/refresh_build_artifacts_size_statistics_worker_spec.rb
+/spec/workers/projects/schedule_refresh_build_artifacts_size_statistics_worker_spec.rb
 /spec/workers/run_pipeline_schedule_worker_spec.rb
 /spec/workers/stuck_ci_jobs_worker_spec.rb
 /spec/workers/update_external_pull_requests_worker_spec.rb
@@ -1335,6 +1346,8 @@ lib/gitlab/checks/** @proglottis @toon
 /**/javascripts/ci/            @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/pipelines/     @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/jobs/          @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/artifacts/     @gitlab-org/ci-cd/verify/frontend
+/**/javascripts/artifacts_settings/  @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/token_access/  @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/admin/application_settings/runner_token_expiration/  @gitlab-org/ci-cd/verify/frontend
 /**/javascripts/usage_quotas/pipelines/ @gitlab-org/ci-cd/verify/frontend @fulfillment-group/utilization-group/fe
