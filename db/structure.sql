@@ -18622,7 +18622,10 @@ CREATE TABLE namespace_root_storage_statistics (
     dependency_proxy_size bigint DEFAULT 0 NOT NULL,
     notification_level smallint DEFAULT 100 NOT NULL,
     container_registry_size bigint DEFAULT 0 NOT NULL,
-    registry_size_estimated boolean DEFAULT false NOT NULL
+    registry_size_estimated boolean DEFAULT false NOT NULL,
+    public_forks_storage_size bigint DEFAULT 0 NOT NULL,
+    internal_forks_storage_size bigint DEFAULT 0 NOT NULL,
+    private_forks_storage_size bigint DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE namespace_settings (
