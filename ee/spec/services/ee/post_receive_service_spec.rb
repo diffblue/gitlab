@@ -103,7 +103,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
     end
   end
 
-  describe 'storage size limit alerts', feature_category: :subscription_cost_management do
+  describe 'storage size limit alerts', feature_category: :consumables_cost_management do
     context 'when there is no alert' do
       before do
         allow_next_instance_of(Namespaces::Storage::CliNotification, project.namespace, user) do |notification|

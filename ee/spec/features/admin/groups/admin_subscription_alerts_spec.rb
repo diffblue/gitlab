@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Subscription expired notification', :js, feature_category: :subscription_cost_management do
+RSpec.describe 'Subscription expired notification', :js, feature_category: :consumables_cost_management do
   let(:admin) { create(:admin) }
   let(:subscribable) { double(:license) }
   let(:expected_content) { 'Your subscription expired' }

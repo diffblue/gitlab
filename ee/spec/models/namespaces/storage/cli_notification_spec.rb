@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::Storage::CliNotification, feature_category: :subscription_cost_management do
+RSpec.describe Namespaces::Storage::CliNotification, feature_category: :consumables_cost_management do
   include RepositoryStorageHelpers
 
   let_it_be(:group, refind: true) { create(:group) }

@@ -338,7 +338,7 @@
   :tags: []
 - :name: cronjob:gitlab_subscriptions_schedule_refresh_seats
   :worker_name: GitlabSubscriptions::ScheduleRefreshSeatsWorker
-  :feature_category: :subscription_cost_management
+  :feature_category: :seat_cost_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -347,7 +347,7 @@
   :tags: []
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
-  :feature_category: :subscription_cost_management
+  :feature_category: :seat_cost_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1256,7 +1256,7 @@
   :tags: []
 - :name: gitlab_subscriptions_refresh_seats
   :worker_name: GitlabSubscriptions::RefreshSeatsWorker
-  :feature_category: :subscription_cost_management
+  :feature_category: :seat_cost_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

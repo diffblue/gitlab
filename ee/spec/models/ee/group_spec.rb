@@ -2548,7 +2548,7 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
-  describe '#usage_quotas_enabled?', feature_category: :subscription_cost_management do
+  describe '#usage_quotas_enabled?', feature_category: :consumables_cost_management do
     using RSpec::Parameterized::TableSyntax
 
     where(:feature_available, :feature_enabled, :root_group, :result) do

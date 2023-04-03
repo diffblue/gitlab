@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Usage Quota', :js, feature_category: :subscription_cost_management do
+RSpec.describe 'Profile > Usage Quota', :js, feature_category: :consumables_cost_management do
   include ::Ci::MinutesHelpers
 
   using RSpec::Parameterized::TableSyntax

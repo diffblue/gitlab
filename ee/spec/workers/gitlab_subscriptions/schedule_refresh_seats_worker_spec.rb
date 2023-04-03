@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::ScheduleRefreshSeatsWorker, feature_category: :subscription_cost_management do
+RSpec.describe GitlabSubscriptions::ScheduleRefreshSeatsWorker, feature_category: :seat_cost_management do
   subject(:worker) { described_class.new }
 
   describe '#perform' do

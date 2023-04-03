@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe HistoricalDataWorker, feature_category: :subscription_cost_management do
+RSpec.describe HistoricalDataWorker, feature_category: :seat_cost_management do
   subject { described_class.new }
 
   describe '#perform' do
