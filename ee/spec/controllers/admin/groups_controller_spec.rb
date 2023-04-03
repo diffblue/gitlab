@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::GroupsController, feature_category: :subgroups do
+RSpec.describe Admin::GroupsController, feature_category: :continuous_integration do
   let(:admin) { create(:admin) }
   let(:group) { create(:group) }
 
