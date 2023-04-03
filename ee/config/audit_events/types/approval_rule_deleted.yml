@@ -1,0 +1,9 @@
+---
+name: approval_rule_deleted
+description: Triggered on successful approval rule deletion
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/329514
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82297
+milestone: '14.9'
+feature_category: source_code_management
+saved_to_database: true
+streamed: true
