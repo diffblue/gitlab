@@ -33,7 +33,6 @@ const initPerformanceBar = (el) => {
         env: performanceBarData.env,
         requestId: performanceBarData.requestId,
         peekUrl: performanceBarData.peekUrl,
-        profileUrl: performanceBarData.profileUrl,
         statsUrl: performanceBarData.statsUrl,
       };
     },
@@ -146,7 +145,6 @@ const initPerformanceBar = (el) => {
           env: this.env,
           requestId: this.requestId,
           peekUrl: this.peekUrl,
-          profileUrl: this.profileUrl,
           statsUrl: this.statsUrl,
         },
         on: {

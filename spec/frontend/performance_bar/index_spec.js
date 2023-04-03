@@ -22,7 +22,6 @@ describe('performance bar wrapper', () => {
     peekWrapper.dataset.requestId = '123';
     peekWrapper.dataset.peekUrl = '/-/peek/results';
     peekWrapper.dataset.statsUrl = 'https://log.gprd.gitlab.net/app/dashboards#/view/';
-    peekWrapper.dataset.profileUrl = '?lineprofiler=true';
 
     mock = new MockAdapter(axios);
 
