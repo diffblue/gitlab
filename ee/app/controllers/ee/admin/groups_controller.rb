@@ -4,7 +4,12 @@
 module EE
   module Admin
     module GroupsController
+      extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
+
+      prepended do
+        feature_category :continuous_integration, [:reset_runners_minutes]
+      end
 
       def reset_runners_minutes
         group
