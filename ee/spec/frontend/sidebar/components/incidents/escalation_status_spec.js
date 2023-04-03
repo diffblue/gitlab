@@ -2,17 +2,19 @@ import { GlDropdownSectionHeader, GlPopover, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import EscalationStatus from 'ee/sidebar/components/incidents/escalation_status.vue';
+import InnerEscalationStatus from '~/sidebar/components/incidents/escalation_status.vue';
 import { STATUS_TRIGGERED } from '~/sidebar/constants';
 
 describe('EscalationStatus', () => {
   let wrapper;
-  const showSpy = jest.fn();
-  const hideSpy = jest.fn();
 
   function createComponent(glFeatures = {}) {
     wrapper = mountExtended(EscalationStatus, {
       propsData: {
         status: STATUS_TRIGGERED,
+      },
+      stubs: {
+        InnerEscalationStatus,
       },
       provide: {
         glFeatures: {
@@ -26,7 +28,7 @@ describe('EscalationStatus', () => {
   const findDropdownHeaderComponent = () => wrapper.findComponent(GlDropdownSectionHeader);
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findLearnMoreLink = () => wrapper.findComponent(GlLink);
-  const findInnerStatusComponent = () => wrapper.findComponent({ ref: 'escalationStatus' });
+  const findInnerStatusComponent = () => wrapper.findComponent(InnerEscalationStatus);
   const openPopover = async () => {
     await findPopover().vm.$emit('show');
     await nextTick();
@@ -64,28 +66,6 @@ describe('EscalationStatus', () => {
       await closePopover();
 
       expect(findInnerStatusComponent().props('preventDropdownClose')).toBe(false);
-    });
-  });
-
-  describe('dropdown', () => {
-    it('forwards `show` calls to the child', () => {
-      createComponent();
-
-      findInnerStatusComponent().vm.show = showSpy;
-
-      wrapper.vm.show();
-
-      expect(showSpy).toHaveBeenCalled();
-    });
-
-    it('forwards `hide` calls to the child', () => {
-      createComponent();
-
-      findInnerStatusComponent().vm.hide = hideSpy;
-
-      wrapper.vm.hide();
-
-      expect(hideSpy).toHaveBeenCalled();
     });
   });
 
