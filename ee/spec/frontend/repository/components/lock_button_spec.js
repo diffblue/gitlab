@@ -1,6 +1,6 @@
 import { GlButton, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 
 import VueApollo from 'vue-apollo';
 import LockButton from 'ee_component/repository/components/lock_button.vue';
@@ -61,13 +61,10 @@ describe('LockButton component', () => {
       expect(findLockButton().text()).toContain(label);
     });
 
-    it('passes the correct prop if lockLoading is set to true', async () => {
+    it('sets loading prop to true when LockButton was clicked', async () => {
       createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ lockLoading: true });
-
-      await nextTick();
+      findLockButton().vm.$emit('click');
+      await clickSubmit();
 
       expect(findLockButton().props('loading')).toBe(true);
     });
@@ -78,12 +75,13 @@ describe('LockButton component', () => {
       expect(findModal().text()).toBe('Are you sure you want to lock some_file.js?');
     });
 
-    it('should hide the confirm modal when a hide action is triggered', () => {
+    it('should hide the confirm modal when a hide action is triggered', async () => {
       createComponent();
-      findLockButton().vm.$emit('click');
-      expect(wrapper.vm.isModalVisible).toBe(true);
-      clickHide();
-      expect(wrapper.vm.isModalVisible).toBe(false);
+      await findLockButton().vm.$emit('click');
+      expect(findModal().props('visible')).toBe(true);
+
+      await clickHide();
+      expect(findModal().props('visible')).toBe(false);
     });
 
     it('executes a lock mutation once lock is confirmed', async () => {
