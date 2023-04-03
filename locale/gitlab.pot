@@ -11280,6 +11280,9 @@ msgstr ""
 msgid "ContainerRegistry|Copy push command"
 msgstr ""
 
+msgid "ContainerRegistry|Created %{time}"
+msgstr ""
+
 msgid "ContainerRegistry|Delete image repository?"
 msgstr ""
 
@@ -11335,9 +11338,6 @@ msgid "ContainerRegistry|Keep the most recent:"
 msgstr ""
 
 msgid "ContainerRegistry|Keep these tags"
-msgstr ""
-
-msgid "ContainerRegistry|Last updated %{time}"
 msgstr ""
 
 msgid "ContainerRegistry|Login"
