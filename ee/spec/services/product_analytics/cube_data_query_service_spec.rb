@@ -129,6 +129,19 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
       stub_cube_proxy_setup
     end
 
+    context 'when Cube API is not responding' do
+      before do
+        stub_cube_not_connected
+      end
+
+      it 'returns connection refused' do
+        response = request_load(false)
+
+        expect(response.reason).to eq(:bad_gateway)
+        expect(response.message).to include("Connection refused")
+      end
+    end
+
     context 'when querying a database that does not exist' do
       before do
         stub_cube_load_no_db
@@ -241,5 +254,10 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
   def stub_cube_meta
     stub_request(:get, cube_api_meta_url)
       .to_return(status: 201, body: cube_data, headers: {})
+  end
+
+  def stub_cube_not_connected
+    stub_request(:post, cube_api_load_url)
+      .to_raise(Errno::ECONNREFUSED)
   end
 end

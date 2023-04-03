@@ -69,26 +69,26 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
 
     before do
       project.add_developer(user)
-    end
 
-    subject do
-      GitlabSchema.execute(query, context: { current_user: user })
-                  .as_json.dig('data', 'project', 'productAnalyticsState')
-    end
-
-    it 'will query state correctly' do
       stub_application_setting(product_analytics_enabled?: true)
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_dashboards: true)
 
-      expect_next_instance_of(ProjectSetting) do |instance|
-        expect(instance).to receive(:jitsu_key).and_return('test key')
+      allow_next_instance_of(ProjectSetting) do |instance|
+        allow(instance).to receive(:jitsu_key).and_return('test key')
       end
 
-      expect_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
-        expect(instance).to receive(:initializing?).and_return(false)
+      allow_next_instance_of(Resolvers::ProductAnalytics::StateResolver) do |instance|
+        allow(instance).to receive(:initializing?).and_return(false)
       end
+    end
 
+    subject do
+      GitlabSchema.execute(query, context: { current_user: user })
+                  .as_json
+    end
+
+    it 'will query state correctly' do
       expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
         expect(instance).to receive(:execute).and_return(
           ServiceResponse.success(
@@ -98,7 +98,28 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
             }))
       end
 
-      expect(subject).to eq('COMPLETE')
+      expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('COMPLETE')
+    end
+
+    it 'will pass through Cube API errors' do
+      expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+        expect(instance).to receive(:execute).and_return(
+          ServiceResponse.error(
+            message: 'Error',
+            payload: {
+              'error' => 'Test Error'
+            }))
+      end
+
+      expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Test Error')
+    end
+
+    it 'will pass through Cube API connection errors' do
+      expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+        expect(instance).to receive(:execute).and_return(ServiceResponse.error(message: 'Connection Error'))
+      end
+
+      expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
     end
   end
 end

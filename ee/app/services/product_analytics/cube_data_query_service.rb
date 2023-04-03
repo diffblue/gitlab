@@ -28,18 +28,18 @@ module ProductAnalytics
         headers: cube_security_headers
       }
 
-      response = if params[:path] == 'meta'
-                   Gitlab::HTTP.get(cube_server_url(params[:path]), options)
-                 else
-                   ::Gitlab::HTTP.post(
-                     cube_server_url(params[:path]),
-                     options.merge(body: { query: params[:query], queryType: params[:queryType] }.to_json)
-                   )
-                 end
-
       begin
+        response = if params[:path] == 'meta'
+                     Gitlab::HTTP.get(cube_server_url(params[:path]), options)
+                   else
+                     ::Gitlab::HTTP.post(
+                       cube_server_url(params[:path]),
+                       options.merge(body: { query: params[:query], queryType: params[:queryType] }.to_json)
+                     )
+                   end
+
         body = Gitlab::Json.parse(response.body)
-      rescue Gitlab::Json.parser_error => e
+      rescue Gitlab::Json.parser_error, *Gitlab::HTTP::HTTP_ERRORS => e
         return ServiceResponse.error(message: e.message, reason: :bad_gateway)
       end
 

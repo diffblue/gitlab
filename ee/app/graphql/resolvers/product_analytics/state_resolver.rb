@@ -31,6 +31,12 @@ module Resolvers
             current_user: current_user,
             params: params).execute
 
+          # check for unknown errors and pass through to UI
+          if response.error? && !response.payload['error']&.include?('UNKNOWN_DATABASE')
+            error_message = response.payload['error'] || response.message
+            raise ::Gitlab::Graphql::Errors::BaseError, "Error from Cube API: #{error_message}"
+          end
+
           response.error? || response.payload.dig('results', 0, 'data', 0, 'TrackedEvents.count').to_i == 0
         end
       end

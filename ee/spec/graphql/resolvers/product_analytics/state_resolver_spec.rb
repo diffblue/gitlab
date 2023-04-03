@@ -28,6 +28,13 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
           end
         end
       end
+
+      context "when error is raised by Cube" do
+        it "raises error in GraphQL output" do
+          setup_for('error')
+          expect(subject).to be_a(::Gitlab::Graphql::Errors::BaseError)
+        end
+      end
     end
 
     context 'when user has guest access' do
@@ -55,12 +62,21 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
     end
 
     allow_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
-      allow(instance).to receive(:execute).and_return(
-        ServiceResponse.success(
-          message: 'test success',
-          payload: {
-            'results' => [{ 'data' => [{ 'TrackedEvents.count' => state == 'waiting_for_events' ? 0 : 1 }] }]
-          }))
+      if state == 'error'
+        allow(instance).to receive(:execute).and_return(
+          ServiceResponse.error(
+            message: 'Error',
+            payload: {
+              'error' => 'Test Error'
+            }))
+      else
+        allow(instance).to receive(:execute).and_return(
+          ServiceResponse.success(
+            message: 'test success',
+            payload: {
+              'results' => [{ 'data' => [{ 'TrackedEvents.count' => state == 'waiting_for_events' ? 0 : 1 }] }]
+            }))
+      end
     end
   end
 end
