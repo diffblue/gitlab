@@ -13,6 +13,7 @@ module Gitlab
     def display?
       return false if Gitlab::CurrentSettings.should_check_namespace_plan?
       return false unless ::License.current&.offline_cloud_license?
+      return false unless ::License.current.seat_reconciliation?
 
       require_notification?
     end
