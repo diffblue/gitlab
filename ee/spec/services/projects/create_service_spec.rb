@@ -446,6 +446,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
   describe 'after create actions' do
     describe 'set_default_compliance_framework' do
+      let_it_be(:admin_bot) { create(:user, :admin_bot, :admin) }
       let_it_be(:group, reload: true) { create(:group) }
       let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
       let_it_be(:framework_two) { create(:compliance_framework, namespace: group, name: 'HIPAA') }
@@ -453,6 +454,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       context 'when default compliance framework is set at the root namespace' do
         before do
           group.add_owner(user)
+          group.add_owner(admin_bot)
           group.namespace_settings.update!(default_compliance_framework_id: framework.id)
         end
 
@@ -483,6 +485,7 @@ RSpec.describe Projects::CreateService, '#execute' do
       context 'when default compliance framework is not set at the root namespace' do
         before do
           group.add_owner(user)
+          group.add_owner(admin_bot)
           group.namespace_settings.update!(default_compliance_framework_id: nil)
         end
 
