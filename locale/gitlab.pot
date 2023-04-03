@@ -35567,9 +35567,6 @@ msgstr ""
 msgid "ProtectedEnvironment|Allowed to deploy"
 msgstr ""
 
-msgid "ProtectedEnvironment|Allowed to deploy and approve"
-msgstr ""
-
 msgid "ProtectedEnvironment|Allowed to deploy to %{project} / %{environment}"
 msgstr ""
 

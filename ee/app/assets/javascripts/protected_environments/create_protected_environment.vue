@@ -64,9 +64,6 @@ export default {
     environmentText() {
       return this.environment || this.$options.i18n.environmentText;
     },
-    canCreateMultipleRules() {
-      return this.glFeatures.multipleEnvironmentApprovalRulesFe;
-    },
     hasSelectedEnvironment() {
       return Boolean(this.environment);
     },
@@ -108,9 +105,7 @@ export default {
       const protectedEnvironment = {
         name: this.environment,
         deploy_access_levels: this.deployers,
-        ...(this.canCreateMultipleRules
-          ? { approval_rules: this.approvers }
-          : { required_approval_count: this.approvals }),
+        approval_rules: this.approvers,
       };
       Api.createProtectedEnvironment(this.projectId, protectedEnvironment)
         .then(() => {
@@ -152,7 +147,7 @@ export default {
         {{ errorMessage }}
       </gl-alert>
       <gl-alert
-        v-if="canCreateMultipleRules && !alertDismissed"
+        v-if="!alertDismissed"
         :title="$options.i18n.unifiedRulesAlertHeader"
         class="gl-mb-5"
         @dismiss="alertDismissed = false"
@@ -184,59 +179,31 @@ export default {
           @search="getProtectedEnvironments"
         />
       </gl-form-group>
-      <template v-if="canCreateMultipleRules">
-        <gl-collapse :visible="hasSelectedEnvironment">
-          <gl-form-group
-            data-testid="create-deployer-dropdown"
-            label-for="create-deployer-dropdown"
-            :label="$options.i18n.deployerLabel"
-          >
-            <template #label-description>
-              {{ $options.i18n.deployerHelp }}
-            </template>
-            <access-dropdown
-              id="create-deployer-dropdown"
-              :access-levels-data="accessLevelsData"
-              :access-level="$options.ACCESS_LEVELS.DEPLOY"
-              :disabled="disabled"
-              :preselected-items="deployers"
-              @hidden="updateDeployers"
-            />
-          </gl-form-group>
-          <add-approvers
-            :project-id="projectId"
-            @change="updateApprovers"
-            @error="errorMessage = $event"
-          />
-        </gl-collapse>
-      </template>
-      <template v-else>
+
+      <gl-collapse :visible="hasSelectedEnvironment">
         <gl-form-group
           data-testid="create-deployer-dropdown"
           label-for="create-deployer-dropdown"
           :label="$options.i18n.deployerLabel"
         >
+          <template #label-description>
+            {{ $options.i18n.deployerHelp }}
+          </template>
           <access-dropdown
             id="create-deployer-dropdown"
             :access-levels-data="accessLevelsData"
             :access-level="$options.ACCESS_LEVELS.DEPLOY"
             :disabled="disabled"
+            :preselected-items="deployers"
             @hidden="updateDeployers"
           />
         </gl-form-group>
-        <gl-form-group
-          label-for="create-approval-count"
-          data-testid="create-approval-count"
-          :label="$options.i18n.approvalLabel"
-        >
-          <gl-collapsible-listbox
-            id="create-approval-count"
-            v-model="approvals"
-            :toggle-text="approvals"
-            :items="$options.APPROVAL_COUNT_OPTIONS"
-          />
-        </gl-form-group>
-      </template>
+        <add-approvers
+          :project-id="projectId"
+          @change="updateApprovers"
+          @error="errorMessage = $event"
+        />
+      </gl-collapse>
     </template>
     <template #footer>
       <gl-button category="primary" variant="confirm" :disabled="isFormInvalid" @click="submitForm">

@@ -40,11 +40,10 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
   context 'logged in as a maintainer' do
     before do
       project.add_maintainer(user)
+      visit project_settings_ci_cd_path(project)
     end
 
     it 'allows set "Allow pipeline triggerer to approve deployment"' do
-      visit project_settings_ci_cd_path(project)
-
       expect(page.find('#project_allow_pipeline_trigger_approve_deployment')).not_to be_checked
       within('#js-protected-environments-settings') do
         check('project_allow_pipeline_trigger_approve_deployment')
@@ -58,101 +57,7 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
       end
     end
 
-    context 'with unified approval rules' do
-      before do
-        stub_feature_flags(multiple_environment_approval_rules_fe: false)
-        visit project_settings_ci_cd_path(project)
-      end
-
-      it 'has access to Protected Environments settings' do
-        expect(page).to have_gitlab_http_status(:ok)
-      end
-
-      it 'allows seeing a list of protected environments', :js do
-        within('.protected-branches-list') do
-          expect(page).to have_content('production')
-          expect(page).to have_content('removed environment')
-        end
-      end
-
-      it 'allows seeing a list of upstream protected environments', :js do
-        within('.group-protected-branches-list') do
-          expect(page).to have_content('staging')
-        end
-      end
-
-      it 'allows creating explicit protected environments', :js do
-        within('[data-testid="new-protected-environment"]') do
-          set_protected_environment('staging')
-          set_allowed_to_deploy('Developers + Maintainers')
-          set_required_approvals(1)
-          click_on('Protect')
-        end
-
-        wait_for_requests
-
-        within('.protected-branches-list') do
-          expect(page).to have_content('staging')
-
-          within('tr', text: 'staging') do
-            expect(page).to have_content('Developers + Maintainers')
-            expect(page).to have_content('1')
-          end
-        end
-      end
-
-      it 'allows updating access to a protected environment', :js, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/11086' do
-        within('.protected-branches-list tr', text: 'production') do
-          set_allowed_to_deploy('Developers + Maintainers')
-        end
-
-        visit project_settings_ci_cd_path(project)
-
-        within('.protected-branches-list') do
-          expect(page).to have_content('1 role, 1 user')
-        end
-      end
-
-      it 'allows unprotecting an environment', :js do
-        within('.protected-branches-list tr', text: 'production') do
-          click_on('Unprotect')
-        end
-
-        accept_gl_confirm
-
-        wait_for_requests
-
-        within('.protected-branches-list') do
-          expect(page).not_to have_content('production')
-        end
-      end
-
-      context 'when projects_tokens_optional_encryption feature flag is false' do
-        before do
-          stub_feature_flags(projects_tokens_optional_encryption: false)
-        end
-
-        context 'when runners_token exists but runners_token_encrypted is empty' do
-          before do
-            project.update_column(:runners_token, 'abc')
-            project.update_column(:runners_token_encrypted, nil)
-          end
-
-          it 'shows setting page correctly' do
-            visit project_settings_ci_cd_path(project)
-
-            expect(page).to have_gitlab_http_status(:ok)
-          end
-        end
-      end
-    end
-
-    context 'with multiple approval rules' do
-      before do
-        stub_feature_flags(multiple_environment_approval_rules_fe: true)
-        visit project_settings_ci_cd_path(project)
-      end
-
+    context 'with protected environments' do
       it 'has access to Protected Environments settings' do
         expect(page).to have_gitlab_http_status(:ok)
       end
@@ -172,18 +77,84 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
 
         wait_for_requests
 
-        within('[data-testid="protected-environments-list"]') do
+        within_protected_environments_list do
           expect(page).to have_content('staging')
 
           click_button 'staging'
 
-          within('[data-testid="protected-environment-staging-deployers"]') do
+          within_deployers do
             expect(page).to have_content('Developers + Maintainers')
           end
 
-          within('[data-testid="protected-environment-staging-approvers"]') do
+          within_approvers do
             expect(page).to have_content('Developers + Maintainers')
             expect(page).to have_content('1')
+          end
+        end
+      end
+
+      it 'allows seeing a list of protected environments', :js do
+        within_protected_environments_list do
+          expect(page).to have_button('production')
+          expect(page).to have_button('removed environment')
+        end
+      end
+
+      it 'allows seeing a list of upstream protected environments', :js do
+        within('.group-protected-branches-list') do
+          expect(page).to have_content('staging')
+        end
+      end
+
+      it 'allows updating access to a protected environment', :js do
+        within_protected_environments_list do
+          click_button 'production'
+          click_button 'Add deployment rules'
+        end
+
+        set_allowed_to_deploy('Developers + Maintainers')
+
+        click_button _('Save')
+
+        wait_for_requests
+
+        visit project_settings_ci_cd_path(project)
+
+        within_protected_environments_list do
+          expect(page).to have_content('2 Deployment Rules')
+        end
+      end
+
+      it 'allows unprotecting an environment', :js do
+        within_protected_environments_list do
+          click_button 'production'
+          click_button s_('ProtectedEnvironments|Unprotect')
+        end
+
+        accept_gl_confirm
+
+        wait_for_requests
+
+        within_protected_environments_list do
+          expect(page).not_to have_content('production')
+        end
+      end
+
+      context 'when projects_tokens_optional_encryption feature flag is false' do
+        before do
+          stub_feature_flags(projects_tokens_optional_encryption: false)
+        end
+
+        context 'when runners_token exists but runners_token_encrypted is empty' do
+          before do
+            project.update_column(:runners_token, 'abc')
+            project.update_column(:runners_token_encrypted, nil)
+          end
+
+          it 'shows setting page correctly' do
+            visit project_settings_ci_cd_path(project)
+
+            expect(page).to have_gitlab_http_status(:ok)
           end
         end
       end
@@ -221,15 +192,21 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
     button.click
   end
 
-  def set_required_approvals(number)
-    within('#create-approval-count') do
-      select_from_listbox(number.to_s, from: '0')
-    end
-  end
-
   def set_required_approvals_for(option, number)
     within '[data-testid="approval-rules"]' do
       fill_in "approval-count-#{option}", with: number.to_s
     end
+  end
+
+  def within_protected_environments_list(&block)
+    within('[data-testid="protected-environments-list"]', &block)
+  end
+
+  def within_deployers(&block)
+    within('[data-testid="protected-environment-staging-deployers"]', &block)
+  end
+
+  def within_approvers(&block)
+    within('[data-testid="protected-environment-staging-approvers"]', &block)
   end
 end
