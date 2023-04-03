@@ -35,6 +35,23 @@ export const getUsageDataByYear = (ciMinutesUsage) => {
   }, {});
 };
 
+export const getUsageDataByYearObject = (ciMinutesUsage) => {
+  const formattedData = formatYearMonthData(ciMinutesUsage, true);
+
+  return formattedData.length > 0
+    ? formattedData.reduce((prev, cur) => {
+        if (!prev[cur.year]) {
+          // eslint-disable-next-line no-param-reassign
+          prev[cur.year] = {};
+        }
+
+        // eslint-disable-next-line no-param-reassign
+        prev[cur.year][cur.month] = cur;
+        return prev;
+      }, {})
+    : {};
+};
+
 export const getSortedYears = (usageDataByYear) => {
   return Object.keys(usageDataByYear).reverse();
 };

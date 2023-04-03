@@ -2,7 +2,7 @@ import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageMonthChart from 'ee/usage_quotas/pipelines/components/minutes_usage_month_chart.vue';
+import MinutesUsageMonthChartLegacy from 'ee/usage_quotas/pipelines/components/minutes_usage_month_chart_legacy.vue';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
@@ -18,7 +18,7 @@ describe('Minutes usage by month chart component', () => {
     wrapper.findAllByTestId('minutes-usage-month-dropdown-item');
 
   const createComponent = (usageData = ciMinutesUsage.nodes) => {
-    wrapper = shallowMountExtended(MinutesUsageMonthChart, {
+    wrapper = shallowMountExtended(MinutesUsageMonthChartLegacy, {
       propsData: {
         ciMinutesUsage: usageData,
       },

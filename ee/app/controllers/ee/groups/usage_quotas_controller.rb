@@ -13,6 +13,7 @@ module EE
       prepended do
         before_action only: [:index] do
           push_frontend_feature_flag(:data_transfer_monitoring, group)
+          push_frontend_feature_flag(:move_year_dropdown_usage_charts, current_user)
         end
       end
 

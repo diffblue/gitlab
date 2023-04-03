@@ -1,5 +1,4 @@
 <script>
-import { GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import {
@@ -10,43 +9,36 @@ import {
   Y_AXIS_PROJECT_LABEL,
   formatWithUtc,
 } from '../constants';
-import { getUsageDataByYear, getSortedYears } from '../utils';
 
 export default {
   components: {
     GlAreaChart,
-    GlDropdown,
-    GlDropdownItem,
   },
   USAGE_BY_MONTH,
   NO_CI_MINUTES_MSG,
   props: {
-    ciMinutesUsage: {
-      type: Array,
+    selectedYear: {
+      type: String,
+      required: true,
+    },
+    usageDataByYear: {
+      type: Object,
       required: true,
     },
   },
-  data() {
-    return {
-      selectedYear: '',
-      usageDataByYear: {},
-    };
+  chartOptions: {
+    xAxis: {
+      name: X_AXIS_MONTH_LABEL,
+      type: X_AXIS_CATEGORY,
+    },
+    yAxis: {
+      name: Y_AXIS_PROJECT_LABEL,
+      axisLabel: {
+        formatter: (val) => val,
+      },
+    },
   },
   computed: {
-    chartOptions() {
-      return {
-        xAxis: {
-          name: X_AXIS_MONTH_LABEL,
-          type: X_AXIS_CATEGORY,
-        },
-        yAxis: {
-          name: Y_AXIS_PROJECT_LABEL,
-          axisLabel: {
-            formatter: (val) => val,
-          },
-        },
-      };
-    },
     chartData() {
       return [
         {
@@ -66,46 +58,17 @@ export default {
       }
       return [];
     },
-    years() {
-      return getSortedYears(this.usageDataByYear);
-    },
-  },
-  watch: {
-    years() {
-      this.setFirstYearDropdown();
-    },
-  },
-  mounted() {
-    this.usageDataByYear = getUsageDataByYear(this.ciMinutesUsage);
-    this.setFirstYearDropdown();
-  },
-  methods: {
-    changeSelectedYear(year) {
-      this.selectedYear = year;
-    },
-    setFirstYearDropdown() {
-      [this.selectedYear] = this.years;
-    },
   },
 };
 </script>
 <template>
   <div>
-    <div class="gl-display-flex gl-mt-7 gl-mb-3">
-      <div class="gl-flex-grow-1"></div>
-      <gl-dropdown :text="selectedYear" data-testid="minutes-usage-month-dropdown" right>
-        <gl-dropdown-item
-          v-for="year in years"
-          :key="year"
-          :is-checked="selectedYear === year"
-          is-check-item
-          data-testid="minutes-usage-month-dropdown-item"
-          @click="changeSelectedYear(year)"
-        >
-          {{ year }}
-        </gl-dropdown-item>
-      </gl-dropdown>
-    </div>
-    <gl-area-chart class="gl-mb-3" :data="chartData" :option="chartOptions" responsive :width="0" />
+    <gl-area-chart
+      class="gl-mb-3"
+      :data="chartData"
+      :option="$options.chartOptions"
+      responsive
+      :width="0"
+    />
   </div>
 </template>

@@ -19,6 +19,7 @@ module Profiles
 
     def push_feature_flags
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+      push_frontend_feature_flag(:move_year_dropdown_usage_charts, current_user)
     end
   end
 end
