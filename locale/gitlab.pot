@@ -30752,6 +30752,9 @@ msgstr ""
 msgid "PackageRegistry|Conan Command"
 msgstr ""
 
+msgid "PackageRegistry|Configure in settings"
+msgstr ""
+
 msgid "PackageRegistry|Configure package forwarding and package file size limits."
 msgstr ""
 
