@@ -66,10 +66,21 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     let_it_be(:user) { create(:user) }
     let_it_be(:project) { create(:project, namespace: user.namespace) }
 
-    let(:service) { described_class.new(user, project, search: 'foobar', scope: scope, basic_search: basic_search) }
+    let(:service) do
+      described_class.new(
+        user,
+        project,
+        search: 'foobar',
+        scope: scope,
+        basic_search: basic_search,
+        advanced_search: advanced_search
+      )
+    end
+
     let(:use_zoekt) { true }
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
+    let(:advanced_search) { nil }
 
     before do
       allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
@@ -101,6 +112,15 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
 
     context 'when basic_search is requested' do
       let(:basic_search) { true }
+
+      it 'does not search with Zoekt' do
+        expect(service.use_zoekt?).to eq(false)
+        expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
+      end
+    end
+
+    context 'when advanced search is requested' do
+      let(:advanced_search) { true }
 
       it 'does not search with Zoekt' do
         expect(service.use_zoekt?).to eq(false)
