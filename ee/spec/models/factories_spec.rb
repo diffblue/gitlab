@@ -28,14 +28,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:ci_job_artifact, :correct_checksum],
     [:dependency_proxy_blob, :remote_store],
     [:environment, :non_playable],
-    [:composer_cache_file, :object_storage],
-    [:debian_project_component_file, :object_storage],
-    [:debian_project_distribution, :object_storage],
-    [:debian_file_metadatum, :unknown],
     [:issue_customer_relations_contact, :for_contact],
     [:issue_customer_relations_contact, :for_issue],
-    [:package_file, :object_storage],
-    [:rpm_repository_file, :object_storage],
     [:pages_domain, :without_certificate],
     [:pages_domain, :without_key],
     [:pages_domain, :with_missing_chain],
@@ -82,6 +76,14 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
 
   shared_examples 'factory' do |factory|
     skip_any = skipped.include?([factory.name, any])
+
+    before do
+      stub_composer_cache_object_storage # [:composer_cache_file, :object_storage]
+      stub_package_file_object_storage # [:package_file, :object_storage]
+      debian_component_file_object_storage # [:debian_project_component_file, :object_storage]
+      debian_distribution_release_file_object_storage # [:debian_project_distribution, :object_storage]
+      stub_rpm_repository_file_object_storage # [:rpm_repository_file, :object_storage]
+    end
 
     describe "#{factory.name} factory" do
       it 'does not raise error when built' do
