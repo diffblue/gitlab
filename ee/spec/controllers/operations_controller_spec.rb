@@ -94,8 +94,12 @@ RSpec.describe OperationsController, feature_category: :release_orchestration do
         end
 
         let(:alert_json_path) do
-          project_prometheus_alert_path(project, last_firing_alert.prometheus_metric_id,
-                                        environment_id: environment, format: :json)
+          project_prometheus_alert_path(
+            project,
+            last_firing_alert.prometheus_metric_id,
+            environment_id: environment,
+            format: :json
+          )
         end
 
         let(:expected_project) { json_response['projects'].first }

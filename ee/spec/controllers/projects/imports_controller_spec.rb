@@ -22,11 +22,10 @@ RSpec.describe Projects::ImportsController, feature_category: :importers do
         project.add_maintainer(new_user)
 
         post :create, params: {
-                        namespace_id: project.namespace.to_param,
-                        project_id: project,
-                        project: { mirror: true, mirror_user_id: new_user.id, import_url: 'http://local.dev' }
-                      },
-                      format: :json
+          namespace_id: project.namespace.to_param,
+          project_id: project,
+          project: { mirror: true, mirror_user_id: new_user.id, import_url: 'http://local.dev' }
+        }, format: :json
 
         expect(project.reload.mirror).to eq(true)
         expect(project.reload.mirror_user.id).to eq(user.id)

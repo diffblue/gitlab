@@ -193,12 +193,11 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
           it 'redirects and displays an error', :aggregate_failures do
             post provider, params: { group_id: group }
 
-            expect(flash[:alert])
-              .to eq(format(
-                       s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
-                       group_name: group.name,
-                       message: s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
-                     ))
+            expect(flash[:alert]).to eq(format(
+              s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
+              group_name: group.name,
+              message: s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
+            ))
             expect(response).to redirect_to(root_path)
           end
         end
@@ -212,12 +211,11 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
         it 'redirects and displays an error' do
           post provider, params: { group_id: group }
 
-          expect(flash[:alert])
-            .to eq(format(
-                     s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
-                     group_name: group.name,
-                     message: 'Extern uid has already been taken'
-                   ))
+          expect(flash[:alert]).to eq(format(
+            s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
+            group_name: group.name,
+            message: 'Extern uid has already been taken'
+          ))
           expect(response).to redirect_to(root_path)
         end
       end

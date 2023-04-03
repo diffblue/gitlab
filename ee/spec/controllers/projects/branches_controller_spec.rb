@@ -24,13 +24,11 @@ RSpec.describe Projects::BranchesController, feature_category: :source_code_mana
       end
 
       it 'renders the diverged from upstream partial' do
-        get :index,
-            format: :html,
-            params: {
-              namespace_id: project.namespace,
-              project_id: project,
-              state: 'all'
-            }
+        get :index, format: :html, params: {
+          namespace_id: project.namespace,
+          project_id: project,
+          state: 'all'
+        }
 
         expect(controller).to render_template('projects/branches/_diverged_from_upstream')
         expect(response.body).to match(/diverged from upstream/)

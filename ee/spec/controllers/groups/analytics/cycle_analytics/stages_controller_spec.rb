@@ -14,10 +14,12 @@ RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_cate
   end
 
   let_it_be(:value_stream) do
-    create(:cycle_analytics_value_stream,
-           namespace: group,
-           name: 'First value stream',
-           stages: stages)
+    create(
+      :cycle_analytics_value_stream,
+      namespace: group,
+      name: 'First value stream',
+      stages: stages
+    )
   end
 
   let(:params) { { group_id: group, value_stream_id: value_stream.id } }

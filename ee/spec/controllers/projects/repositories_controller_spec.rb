@@ -20,11 +20,11 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
       it 'logs the audit event' do
         expect { get_archive }.to change { AuditEvent.count }.by(1)
         expect(AuditEvent.last.details).to include({
-                                                     author_name: user_name,
-                                                     custom_message: "Repository Download Started",
-                                                     target_id: project.id,
-                                                     target_type: "Project"
-                                                   })
+          author_name: user_name,
+          custom_message: "Repository Download Started",
+          target_id: project.id,
+          target_type: "Project"
+        })
       end
     end
 
@@ -33,8 +33,8 @@ RSpec.describe Projects::RepositoriesController, feature_category: :source_code_
         expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
           event_type,
           nil,
-          a_string_including("author_name\":\"#{user_name}",
-                             "custom_message\":\"Repository Download Started"))
+          a_string_including("author_name\":\"#{user_name}", "custom_message\":\"Repository Download Started")
+        )
 
         get_archive
       end

@@ -20,8 +20,7 @@ RSpec.describe Projects::MergeRequests::CreationsController, feature_category: :
       let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
 
       subject do
-        get :new,
-        params: {
+        get :new, params: {
           namespace_id: project.namespace,
           project_id: project,
           merge_request: {

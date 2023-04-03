@@ -27,18 +27,24 @@ RSpec.describe SearchController, :elastic, feature_category: :global_search do
           action = 'executed'
           subject
 
-          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
-                                context: context('i_search_total'),
-                                property: 'i_search_total',
-                                label: 'redis_hll_counters.search.search_total_unique_counts_monthly')
-          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
-                                context: context('i_search_paid'),
-                                property: 'i_search_paid',
-                                label: 'redis_hll_counters.search.i_search_paid_monthly')
-          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
-                                context: context('i_search_advanced'),
-                                property: 'i_search_advanced',
-                                label: 'redis_hll_counters.search.search_total_unique_counts_monthly')
+          expect_snowplow_event(
+            category: category, action: action, namespace: namespace, user: user,
+            context: context('i_search_total'),
+            property: 'i_search_total',
+            label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
+          )
+          expect_snowplow_event(
+            category: category, action: action, namespace: namespace, user: user,
+            context: context('i_search_paid'),
+            property: 'i_search_paid',
+            label: 'redis_hll_counters.search.i_search_paid_monthly'
+          )
+          expect_snowplow_event(
+            category: category, action: action, namespace: namespace, user: user,
+            context: context('i_search_advanced'),
+            property: 'i_search_advanced',
+            label: 'redis_hll_counters.search.search_total_unique_counts_monthly'
+          )
         end
       end
 

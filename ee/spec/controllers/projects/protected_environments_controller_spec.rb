@@ -12,9 +12,11 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
 
   describe '#POST create' do
     let(:params) do
-      attributes_for(:protected_environment,
-                     deploy_access_levels_attributes: [{ access_level: maintainer_access }],
-                     required_approval_count: 1)
+      attributes_for(
+        :protected_environment,
+        deploy_access_levels_attributes: [{ access_level: maintainer_access }],
+        required_approval_count: 1
+      )
     end
 
     subject do
@@ -53,9 +55,11 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
 
       context 'with invalid params' do
         let(:params) do
-          attributes_for(:protected_environment,
-                         name: '',
-                         deploy_access_levels_attributes: [{ access_level: maintainer_access }])
+          attributes_for(
+            :protected_environment,
+            name: '',
+            deploy_access_levels_attributes: [{ access_level: maintainer_access }]
+          )
         end
 
         it 'does not create a new ProtectedEnvironment' do

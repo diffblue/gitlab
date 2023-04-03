@@ -221,10 +221,9 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
 
     def read_board(board:, format: :html)
       get :show, params: {
-          group_id: group,
-          id: board.to_param
-      },
-                 format: format
+        group_id: group,
+        id: board.to_param
+      }, format: format
     end
   end
 end

@@ -20,13 +20,12 @@ RSpec.describe Projects::ApproversController, feature_category: :source_code_man
       let!(:approver) { create(:approver, target: merge_request) }
 
       def destroy_merge_request_approver
-        delete :destroy,
-               params: {
-                 namespace_id: project.namespace.to_param,
-                 project_id: project.to_param,
-                 merge_request_id: merge_request.to_param,
-                 id: approver.id
-               }
+        delete :destroy, params: {
+          namespace_id: project.namespace.to_param,
+          project_id: project.to_param,
+          merge_request_id: merge_request.to_param,
+          id: approver.id
+        }
       end
 
       context 'when the user cannot update approvers because they do not have access' do
@@ -76,12 +75,11 @@ RSpec.describe Projects::ApproversController, feature_category: :source_code_man
       let!(:approver) { create(:approver, target: project) }
 
       def destroy_project_approver
-        delete :destroy,
-               params: {
-                 namespace_id: project.namespace.to_param,
-                 project_id: project.to_param,
-                 id: approver.id
-               }
+        delete :destroy, params: {
+          namespace_id: project.namespace.to_param,
+          project_id: project.to_param,
+          id: approver.id
+        }
       end
 
       context 'when the user cannot update approvers because they do not have access' do
