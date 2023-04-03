@@ -53,10 +53,6 @@
     top: calc(#{$system-header-height} + #{$header-height});
   }
 
-  .content-wrapper-margin {
-    margin-top: calc(#{$system-header-height} + #{$header-height});
-  }
-
   // Performance Bar
   // System Header
   &.with-performance-bar {
@@ -64,10 +60,6 @@
     header.navbar-gitlab,
     .fixed-top {
       top: $performance-bar-height + $system-header-height;
-    }
-
-    .layout-page {
-      margin-top: calc(#{$header-height} + #{$performance-bar-height} + #{$system-header-height});
     }
 
     // left sidebar eg: project page
@@ -93,10 +85,6 @@
   &.devise-layout-html body .footer-container,
   &.devise-layout-html body hr.footer-fixed {
     bottom: $system-footer-height;
-  }
-
-  .content-wrapper-margin {
-    margin-bottom: 16px;
   }
 
   .boards-list,
