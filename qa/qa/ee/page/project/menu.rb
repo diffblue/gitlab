@@ -18,7 +18,10 @@ module QA
               prepend SubMenus::Repository
               prepend SubMenus::Settings
 
-              prepend SubMenus::SuperSidebar::SecurityCompliance if QA::Runtime::Env.super_sidebar_enabled?
+              if QA::Runtime::Env.super_sidebar_enabled?
+                prepend SubMenus::SuperSidebar::Secure
+                prepend SubMenus::SuperSidebar::Code
+              end
             end
           end
         end

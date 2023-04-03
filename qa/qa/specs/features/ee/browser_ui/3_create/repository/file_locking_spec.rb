@@ -3,8 +3,13 @@
 module QA
   RSpec.describe 'Create' do
     describe 'File Locking', product_group: :source_code do
-      let(:user_one) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
-      let(:user_two) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2) }
+      let(:user_one) do
+        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
+      end
+
+      let(:user_two) do
+        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2)
+      end
 
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -32,7 +37,8 @@ module QA
         end
       end
 
-      it 'locks a directory and tries to push as a second user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347768' do
+      it 'locks a directory and tries to push as a second user',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347768' do
         push branch: project.default_branch, file: 'directory/file', as_user: user_one
 
         sign_out_and_sign_in_as user: user_one
@@ -43,7 +49,8 @@ module QA
         expect_no_error_on_push for_file: 'directory/file', as_user: user_one
       end
 
-      it 'locks a file and tries to push as a second user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347769' do
+      it 'locks a file and tries to push as a second user',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347769' do
         sign_out_and_sign_in_as user: user_one
         go_to_file
         click_lock
@@ -52,7 +59,8 @@ module QA
         expect_no_error_on_push as_user: user_one
       end
 
-      it 'checks file locked by other user to be disabled', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347767' do
+      it 'checks file locked by other user to be disabled',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347767' do
         go_to_file
         click_lock
         sign_out_and_sign_in_as user: user_one
@@ -64,7 +72,7 @@ module QA
       end
 
       it 'creates a merge request and fails to merge',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347770' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347770' do
         push branch: 'test', as_user: user_one
 
         merge_request = Resource::MergeRequest.fabricate_via_api! do |merge_request|
@@ -82,7 +90,8 @@ module QA
         expect(page).to have_text("locked by #{admin_username}")
       end
 
-      it 'locks a file and unlocks in list', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347766' do
+      it 'locks a file and unlocks in list',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347766' do
         sign_out_and_sign_in_as user: user_one
         go_to_file
         click_lock
@@ -99,9 +108,7 @@ module QA
 
       def try_to_merge(merge_request:)
         merge_request.visit!
-        Page::MergeRequest::Show.perform do |show|
-          show.try_to_merge!
-        end
+        Page::MergeRequest::Show.perform(&:try_to_merge!)
       end
 
       def sign_out_and_sign_in_as(user:)
