@@ -47129,6 +47129,9 @@ msgstr ""
 msgid "UsageQuota|Transfer"
 msgstr ""
 
+msgid "UsageQuota|Transfer data used"
+msgstr ""
+
 msgid "UsageQuota|Transfer data used by month"
 msgstr ""
 
