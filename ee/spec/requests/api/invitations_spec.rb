@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profile do
+RSpec.describe API::Invitations, 'EE Invitations', :aggregate_failures, feature_category: :user_profile do
   include GroupAPIHelpers
 
   let_it_be(:admin) { create(:user, :admin, email: 'admin@example.com') }
@@ -13,7 +13,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
 
   shared_examples 'restricted email error' do |message, code|
     it 'returns an http error response and the validation message' do
-      post api(url, admin),
+      post api(url, admin, admin_mode: true),
       params: { email: invite_email, access_level: Member::MAINTAINER }
 
       expect(response).to have_gitlab_http_status(code)
@@ -52,7 +52,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
       params = { email: 'example1@example.com', access_level: Member::DEVELOPER }
 
       expect do
-        post api(url, admin), params: params
+        post api(url, admin, admin_mode: true), params: params
 
         expect(response).to have_gitlab_http_status(:created)
       end.to change { AuditEvent.count }.by(1)
@@ -62,7 +62,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
       params = { email: '_bogus_', access_level: Member::DEVELOPER }
 
       expect do
-        post api(url, admin), params: params
+        post api(url, admin, admin_mode: true), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end.not_to change { AuditEvent.count }
@@ -72,6 +72,11 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
   describe 'POST /groups/:id/invitations' do
     it_behaves_like 'member creation audit event'
     it_behaves_like 'admin signup restrictions email error - denylist', "The member's email address is not allowed for this group. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check the &#39;Domain denylist&#39;.", :created
+
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { url }
+      let(:params) { { email: 'example1@example.com', access_level: Member::DEVELOPER } }
+    end
 
     context 'when the group is restricted by admin signup restrictions' do
       it_behaves_like 'admin signup restrictions email error - allowlist', "The member's email address is not allowed for this group. Go to the &#39;Admin area &gt; Sign-up restrictions&#39;, and check &#39;Allowed domains for sign-ups&#39;.", :created
@@ -95,7 +100,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
       end
 
       subject(:post_invitations) do
-        post api(url, admin),
+        post api(url, admin, admin_mode: true),
              params: { email: invite_email, access_level: Member::MAINTAINER }
       end
 
@@ -144,13 +149,13 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
           stub_ee_application_setting(dashboard_enforcement_limit: 1)
         end
 
-        it 'creates one member and errors on the other member', :aggregate_failures do
+        it 'creates one member and errors on the other member' do
           expect do
             stranger = create(:user)
             stranger2 = create(:user)
             user_id_list = "#{stranger.id},#{stranger2.id}"
 
-            post api(url, admin), params: { user_id: user_id_list, access_level: Member::DEVELOPER }
+            post api(url, admin, admin_mode: true), params: { user_id: user_id_list, access_level: Member::DEVELOPER }
 
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['status']).to eq('error')
@@ -167,7 +172,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
 
       context 'when group has no parent' do
         it 'return success' do
-          post api(url, admin),
+          post api(url, admin, admin_mode: true),
                params: { email: invite_email,
                          access_level: Member::MINIMAL_ACCESS }
 
@@ -181,7 +186,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
         let(:group) { create(:group, parent: parent_group) }
 
         it 'return error' do
-          post api(url, admin),
+          post api(url, admin, admin_mode: true),
                params: { email: invite_email,
                          access_level: Member::MINIMAL_ACCESS }
 
@@ -199,6 +204,12 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
 
     it_behaves_like 'member creation audit event'
 
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { url }
+      let(:params) { { email: 'example1@example.com', access_level: Member::DEVELOPER } }
+      let(:failed_status_code) { :not_found }
+    end
+
     context 'with group membership locked' do
       before do
         group.update!(membership_lock: true)
@@ -207,7 +218,7 @@ RSpec.describe API::Invitations, 'EE Invitations', feature_category: :user_profi
       it 'returns an error and exception message when group membership lock is enabled' do
         params = { email: 'example1@example.com', access_level: Member::DEVELOPER }
 
-        post api(url, admin), params: params
+        post api(url, admin, admin_mode: true), params: params
 
         expect(json_response['message']).to eq 'Members::CreateService::MembershipLockedError'
         expect(json_response['status']).to eq 'error'

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
+RSpec.describe API::License, :aggregate_failures, api: true, feature_category: :sm_provisioning do
   include ApiHelpers
 
   let(:gl_license)  { build(:gitlab_license) }
@@ -28,8 +28,12 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
   end
 
   describe 'GET /license' do
+    it_behaves_like 'GET request permissions for admin mode' do
+      let(:path) { '/license' }
+    end
+
     it 'retrieves the license information if admin is logged in' do
-      get api('/license', admin)
+      get api('/license', admin, admin_mode: true)
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['user_limit']).to eq 0
       expect(Date.parse(json_response['starts_at'])).to eq Date.new(1970, 1, 1)
@@ -46,8 +50,13 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
   end
 
   describe 'POST /license' do
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { '/license' }
+      let(:params) { { license: gl_license.export } }
+    end
+
     it 'adds a new license if admin is logged in' do
-      post api('/license', admin), params: { license: gl_license.export }
+      post api('/license', admin, admin_mode: true), params: { license: gl_license.export }
 
       expect(response).to have_gitlab_http_status(:created)
       expect(json_response['user_limit']).to eq 0
@@ -64,7 +73,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     end
 
     it 'returns 400 if the license cannot be saved' do
-      post api('/license', admin), params: { license: 'foo' }
+      post api('/license', admin, admin_mode: true), params: { license: 'foo' }
 
       expect(response).to have_gitlab_http_status(:bad_request)
     end
@@ -88,7 +97,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
 
     shared_examples 'license removal' do
       it 'destroys a license and returns 204' do
-        delete api(endpoint, admin)
+        delete api(endpoint, admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:no_content)
         expect(response.message).to eq('No Content')
@@ -98,8 +107,12 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
 
     it_behaves_like 'license removal'
 
+    it_behaves_like 'DELETE request permissions for admin mode' do
+      let(:path) { endpoint }
+    end
+
     it "returns an error if the license doesn't exist" do
-      delete api("/license/0", admin)
+      delete api("/license/0", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:not_found)
       expect(json_response['message']).to eq('404 Not found')
@@ -119,12 +132,16 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     end
   end
 
-  describe 'GET /license/:id', :aggregate_failures do
+  describe 'GET /license/:id' do
     let(:license) { create(:license) }
     let(:endpoint) { "/license/#{license.id}" }
 
+    it_behaves_like 'GET request permissions for admin mode' do
+      let(:path) { endpoint }
+    end
+
     it 'gets a license by its id' do
-      get api(endpoint, admin)
+      get api(endpoint, admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['id']).to eq(license.id)
@@ -132,7 +149,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     end
 
     it "returns an error if the license doesn't exist" do
-      get api("/license/#{non_existing_record_id}", admin)
+      get api("/license/#{non_existing_record_id}", admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:not_found)
       expect(json_response['message']).to eq('404 Not Found')
@@ -146,7 +163,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     end
   end
 
-  describe 'PUT /license/:id/refresh_billable_users', :aggregate_failures do
+  describe 'PUT /license/:id/refresh_billable_users' do
     let(:license) { create(:license) }
     let(:endpoint) { "/license/#{license.id}/refresh_billable_users" }
 
@@ -154,9 +171,15 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
       allow(::Analytics::UsageTrends::CounterJobWorker).to receive(:perform_async)
     end
 
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { endpoint }
+      let(:params) { {} }
+      let(:success_status_code) { :accepted }
+    end
+
     context 'when user is an admin' do
       it 'schedules a refresh of billable_users' do
-        put api(endpoint, admin)
+        put api(endpoint, admin, admin_mode: true)
 
         expect(::Analytics::UsageTrends::CounterJobWorker).to have_received(:perform_async).once
         expect(response).to have_gitlab_http_status(:accepted)
@@ -165,7 +188,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
 
       context "when license doesn't exist" do
         it "returns 404" do
-          put api("/license/#{non_existing_record_id}/refresh_billable_users", admin)
+          put api("/license/#{non_existing_record_id}/refresh_billable_users", admin, admin_mode: true)
 
           expect(::Analytics::UsageTrends::CounterJobWorker).not_to have_received(:perform_async)
           expect(response).to have_gitlab_http_status(:not_found)
@@ -207,8 +230,12 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
        create(:license, created_at: Time.now + 20, data: gl_licenses[1].export)]
     end
 
+    it_behaves_like 'GET request permissions for admin mode' do
+      let(:path) { endpoint }
+    end
+
     it 'returns a collection of licenses' do
-      get api(endpoint, admin)
+      get api(endpoint, admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
 
@@ -220,7 +247,7 @@ RSpec.describe API::License, api: true, feature_category: :sm_provisioning do
     it 'returns an empty array if no licenses exist' do
       License.delete_all
 
-      get api(endpoint, admin)
+      get api(endpoint, admin, admin_mode: true)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response).to eq([])

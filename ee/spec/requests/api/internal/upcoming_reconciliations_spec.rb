@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :purchase do
+RSpec.describe API::Internal::UpcomingReconciliations, :aggregate_failures, :api, feature_category: :purchase do
   describe 'PUT /internal/upcoming_reconciliations' do
     before do
       stub_application_setting(check_namespace_plan: true)
@@ -39,8 +39,13 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
          }]
       end
 
+      it_behaves_like 'PUT request permissions for admin mode' do
+        let(:path) { '/internal/upcoming_reconciliations' }
+        let(:params) { { upcoming_reconciliations: upcoming_reconciliations } }
+      end
+
       subject(:put_upcoming_reconciliations) do
-        put api('/internal/upcoming_reconciliations', admin), params: { upcoming_reconciliations: upcoming_reconciliations }
+        put api('/internal/upcoming_reconciliations', admin, admin_mode: true), params: { upcoming_reconciliations: upcoming_reconciliations }
       end
 
       it 'returns success' do
@@ -52,7 +57,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
       context 'when namespace_id is empty' do
         let(:namespace_id) { nil }
 
-        it 'returns error', :aggregate_failures do
+        it 'returns error' do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -69,7 +74,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
           end
         end
 
-        it 'returns error', :aggregate_failures do
+        it 'returns error' do
           put_upcoming_reconciliations
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -78,7 +83,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
       end
     end
 
-    context 'when not gitlab.com', :aggregate_failures do
+    context 'when not gitlab.com' do
       it 'returns 403 error' do
         stub_application_setting(check_namespace_plan: false)
 
@@ -97,6 +102,14 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
       stub_application_setting(check_namespace_plan: true)
     end
 
+    it_behaves_like 'DELETE request permissions for admin mode' do
+      before do
+        create(:upcoming_reconciliation, namespace_id: namespace.id)
+      end
+
+      let(:path) { "/internal/upcoming_reconciliations?namespace_id=#{namespace.id}" }
+    end
+
     context 'when the request is not authenticated' do
       it 'returns authentication error' do
         delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}")
@@ -106,7 +119,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
     end
 
     context 'when authenticated as user' do
-      it 'returns authentication error', :aggregate_failures do
+      it 'returns authentication error' do
         user = create(:user)
 
         expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", user) }
@@ -124,8 +137,8 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
           stub_application_setting(check_namespace_plan: false)
         end
 
-        it 'returns an error', :aggregate_failures do
-          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin) }
+        it 'returns an error' do
+          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin, admin_mode: true) }
             .not_to change(GitlabSubscriptions::UpcomingReconciliation, :count)
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -134,8 +147,8 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
       end
 
       context 'when the namespace_id is missing' do
-        it 'returns a 400 error', :aggregate_failures do
-          expect { delete api("/internal/upcoming_reconciliations", admin) }
+        it 'returns a 400 error' do
+          expect { delete api("/internal/upcoming_reconciliations", admin, admin_mode: true) }
             .not_to change(GitlabSubscriptions::UpcomingReconciliation, :count)
 
           expect(response).to have_gitlab_http_status(:bad_request)
@@ -144,10 +157,10 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
       end
 
       context 'when there is an upcoming reconciliation for the namespace' do
-        it 'destroys the reconciliation and returns success', :aggregate_failures do
+        it 'destroys the reconciliation and returns success' do
           create(:upcoming_reconciliation, namespace_id: namespace.id)
 
-          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin) }
+          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin, admin_mode: true) }
             .to change { GitlabSubscriptions::UpcomingReconciliation.where(namespace_id: namespace.id).count }
             .by(-1)
 
@@ -157,7 +170,7 @@ RSpec.describe API::Internal::UpcomingReconciliations, :api, feature_category: :
 
       context 'when the namespace_id does not have an upcoming reconciliation' do
         it 'returns a not found error' do
-          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin) }
+          expect { delete api("/internal/upcoming_reconciliations?namespace_id=#{namespace.id}", admin, admin_mode: true) }
             .not_to change(GitlabSubscriptions::UpcomingReconciliation, :count)
 
           expect(response).to have_gitlab_http_status(:not_found)
