@@ -39764,10 +39764,16 @@ msgstr ""
 msgid "SecurityReports|Download %{artifactName}"
 msgstr ""
 
+msgid "SecurityReports|Download patch to resolve"
+msgstr ""
+
 msgid "SecurityReports|Download results"
 msgstr ""
 
 msgid "SecurityReports|Download scanned URLs"
+msgstr ""
+
+msgid "SecurityReports|Download the patch to apply it manually"
 msgstr ""
 
 msgid "SecurityReports|Either you don't have permission to view this dashboard or the dashboard has not been setup. Please check your permission settings with your administrator or check your dashboard configurations to proceed."
