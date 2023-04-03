@@ -24,24 +24,11 @@ module Mutations
           prepare_response_for(::Vulnerabilities::SecurityFinding::CreateMergeRequestService.new(
             project: finding.project,
             current_user: current_user,
-            params: params_for(finding)
+            params: { security_finding: finding }
           ).execute)
         end
 
         private
-
-        def params_for(finding)
-          {
-            security_finding_uuid: finding.uuid,
-            vulnerability_data: vulnerability_data_for(finding)
-          }
-        end
-
-        def vulnerability_data_for(finding)
-          finding.vulnerability_finding.metadata.with_indifferent_access.tap do |metadata|
-            metadata[:category] = finding.scan.scan_type if metadata[:category].blank?
-          end
-        end
 
         def find_object(uuid:)
           ::Security::Finding.find_by_uuid(uuid).tap do |finding|

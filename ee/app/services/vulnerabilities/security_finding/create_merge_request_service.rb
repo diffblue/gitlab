@@ -3,73 +3,87 @@
 module Vulnerabilities
   module SecurityFinding
     class CreateMergeRequestService < ::BaseProjectService
-      attr_reader :error_message
-
       def execute
-        raise Gitlab::Access::AccessDeniedError unless can?(@current_user, :read_security_resource, @project)
+        enforce_authorization!
 
-        merge_request = nil
         @error_message = nil
 
-        ApplicationRecord.transaction do
-          merge_request = create_merge_request
-          vulnerability = find_or_create_vulnerability
-          create_vulnerability_merge_request_link(vulnerability, merge_request)
+        merge_request = ApplicationRecord.transaction do
+          create_merge_request.tap do |merge_request|
+            create_vulnerability_merge_request_link(merge_request, find_or_create_vulnerability)
+          end
         end
 
-        return error_response if @error_message
+        merge_request.present? ? success_response(merge_request) : error_response(@error_message)
+      end
 
-        success_response(merge_request)
+      private
+
+      def enforce_authorization!
+        return if can?(current_user, :read_security_resource, project)
+
+        raise Gitlab::Access::AccessDeniedError
+      end
+
+      def execute_service!(service)
+        response = service.execute
+        return response if response[:status] == :success
+
+        @error_message = response[:message]
+        raise ActiveRecord::Rollback
       end
 
       def create_merge_request
-        merge_request_response = MergeRequests::CreateFromVulnerabilityDataService.new(@project,
-                                                                                       @current_user,
-                                                                                       vulnerability_data).execute
-
-        if merge_request_response[:status] != :success
-          @error_message = merge_request_response[:message]
-          raise ActiveRecord::Rollback
-        end
-
-        merge_request_response[:merge_request]
-      end
-
-      def vulnerability_data
-        params[:vulnerability_data]
+        execute_service!(
+          MergeRequests::CreateFromVulnerabilityDataService
+            .new(project, current_user, vulnerability_data)
+        )[:merge_request]
       end
 
       def find_or_create_vulnerability
-        finding_params = { security_finding_uuid: params[:security_finding_uuid] }
-        response = Vulnerabilities::FindOrCreateFromSecurityFindingService.new(project: @project,
-                                                                               current_user: @current_user,
-                                                                               params: finding_params,
-                                                                               state: 'confirmed').execute
-
-        if response.error?
-          @error_message = response[:message]
-          raise ActiveRecord::Rollback
-        end
-
-        response.payload[:vulnerability]
+        execute_service!(
+          Vulnerabilities::FindOrCreateFromSecurityFindingService
+            .new(project: project, current_user: current_user, params: {
+              security_finding_uuid: params[:security_finding].uuid
+            }, state: 'confirmed')
+        ).payload[:vulnerability]
       end
 
-      def create_vulnerability_merge_request_link(vulnerability, merge_request)
-        params = { vulnerability: vulnerability, merge_request: merge_request }
-        merge_request_link_response = VulnerabilityMergeRequestLinks::CreateService.new(project: @project,
-                                                                                        current_user: @current_user,
-                                                                                        params: params).execute
-
-        if merge_request_link_response.error?
-          @error_message = merge_request_link_response[:message]
-          raise ActiveRecord::Rollback
-        end
-
-        merge_request_link_response.payload[:merge_request_link]
+      def create_vulnerability_merge_request_link(merge_request, vulnerability)
+        execute_service!(
+          VulnerabilityMergeRequestLinks::CreateService
+            .new(project: project, current_user: current_user, params: {
+              vulnerability: vulnerability,
+              merge_request: merge_request
+            })
+        ).payload[:merge_request_link]
       end
 
-      def error_response
-        ServiceResponse.error(message: @error_message)
+      def vulnerability_data
+        security_finding = params[:security_finding]
+        vulnerability_finding = find_or_create_vulnerability_finding_for(security_finding)
+        vulnerability_finding.metadata.with_indifferent_access.tap do |metadata|
+          metadata[:category] = security_finding.scan.scan_type if metadata[:category].blank?
+        end
+      end
+
+      def find_or_create_vulnerability_finding_for(security_finding)
+        vulnerability_finding = security_finding.vulnerability_finding
+        return vulnerability_finding if vulnerability_finding.present?
+
+        execute_service!(
+          ::Vulnerabilities::Findings::FindOrCreateFromSecurityFindingService.new(
+            project: project,
+            current_user: current_user,
+            params: {
+              security_finding_uuid: security_finding.uuid
+            }
+          )
+        ).payload[:vulnerability_finding]
+      end
+
+      def error_response(message)
+        ServiceResponse.error(message: message)
       end
 
       def success_response(merge_request)
