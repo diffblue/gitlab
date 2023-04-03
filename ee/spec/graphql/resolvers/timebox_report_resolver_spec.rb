@@ -21,6 +21,9 @@ RSpec.describe Resolvers::TimeboxReportResolver do
   let_it_be(:start_date) { Date.today }
   let_it_be(:due_date) { start_date + 2.weeks }
 
+  let(:event_aggregation_service_class) { TimeboxReportService }
+  let(:report_service_class) { TimeboxReportService }
+
   before_all do
     group.add_guest(group_member)
     private_group.add_guest(private_group_member)
@@ -29,6 +32,7 @@ RSpec.describe Resolvers::TimeboxReportResolver do
   end
 
   before do
+    stub_feature_flags(rollup_timebox_chart: false)
     stub_licensed_features(milestone_charts: true, issue_weights: true, iterations: true)
   end
 
@@ -67,7 +71,7 @@ RSpec.describe Resolvers::TimeboxReportResolver do
 
       context 'when the service returns an error' do
         before do
-          stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 1)
+          stub_const("#{event_aggregation_service_class.name}::EVENT_COUNT_LIMIT", 1)
         end
 
         let(:error_message) { 'Burnup chart could not be generated due to too many events' }
@@ -139,7 +143,7 @@ RSpec.describe Resolvers::TimeboxReportResolver do
 
         with_them do
           it 'passes projects to the timebox report service' do
-            expect(TimeboxReportService).to receive(:new).with(timebox, a_collection_containing_exactly(*authorized_projects)).and_call_original
+            expect(report_service_class).to receive(:new).with(timebox, a_collection_containing_exactly(*authorized_projects)).and_call_original
 
             subject
           end
@@ -168,5 +172,66 @@ RSpec.describe Resolvers::TimeboxReportResolver do
     end
 
     it_behaves_like 'timebox time series'
+  end
+
+  context 'when "rollup_timebox_chart" feature flag is disabled' do
+    let(:timebox) { create(:milestone, group: group) }
+
+    it 'uses TimeboxReportService' do
+      expect(TimeboxReportService).to receive(:new).and_call_original
+
+      resolve(described_class, obj: timebox, ctx: { current_user: group_member })
+    end
+  end
+
+  context 'when "rollup_timebox_chart" feature flag is enabled' do
+    let(:event_aggregation_service_class) { Timebox::EventAggregationService }
+    let(:report_service_class) { Timebox::RollupReportService }
+
+    context 'when FF is enabled for group' do
+      let_it_be(:timebox) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), start_date: start_date, due_date: due_date) }
+
+      before do
+        stub_feature_flags(rollup_timebox_chart: group)
+      end
+
+      it 'uses Timebox::RollupReportService' do
+        expect(Timebox::RollupReportService).to receive(:new).and_call_original
+
+        resolve(described_class, obj: timebox, ctx: { current_user: group_member })
+      end
+
+      context 'when timebox is an iteration' do
+        before_all do
+          create(:resource_iteration_event, issue: issues[0], iteration: timebox, action: :add, created_at: start_date + 4.days)
+          create(:resource_iteration_event, issue: issues[1], iteration: timebox, action: :add, created_at: start_date + 9.days)
+        end
+
+        it_behaves_like 'timebox time series'
+      end
+    end
+
+    context 'when FF is enabled for project' do
+      let_it_be(:timebox) { create(:milestone, project: project, start_date: start_date, due_date: due_date) }
+
+      before do
+        stub_feature_flags(rollup_timebox_chart: project)
+      end
+
+      it 'uses Timebox::RollupReportService' do
+        expect(Timebox::RollupReportService).to receive(:new).and_call_original
+
+        resolve(described_class, obj: timebox, ctx: { current_user: group_member })
+      end
+
+      context 'when timebox is a milestone' do
+        before_all do
+          create(:resource_milestone_event, issue: issues[0], milestone: timebox, action: :add, created_at: start_date + 4.days)
+          create(:resource_milestone_event, issue: issues[1], milestone: timebox, action: :add, created_at: start_date + 9.days)
+        end
+
+        it_behaves_like 'timebox time series'
+      end
+    end
   end
 end
