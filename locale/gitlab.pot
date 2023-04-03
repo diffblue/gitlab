@@ -27322,6 +27322,9 @@ msgstr ""
 msgid "MergeRequest|Approved by @%{username}"
 msgstr ""
 
+msgid "MergeRequest|Can't fetch the diff needed to update this view. Please reload this page."
+msgstr ""
+
 msgid "MergeRequest|Can't fetch the single file diff for the discussion. Please reload this page."
 msgstr ""
 
@@ -27338,9 +27341,6 @@ msgid "MergeRequest|Can't show this merge request because the target branch %{br
 msgstr ""
 
 msgid "MergeRequest|Compare %{target} and %{source}"
-msgstr ""
-
-msgid "MergeRequest|Encountered an issue while trying to fetch the single file diff."
 msgstr ""
 
 msgid "MergeRequest|Error dismissing suggestion popover. Please try again."
