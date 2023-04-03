@@ -1,0 +1,9 @@
+---
+name: authenticated_with_group_saml
+description: Triggered after successfully signing in with SAML authentication
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/35710
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/28575
+milestone: '12.10'
+feature_category: user_management
+saved_to_database: true
+streamed: true

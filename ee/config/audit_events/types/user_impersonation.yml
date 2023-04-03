@@ -1,0 +1,9 @@
+---
+name: user_impersonation
+description: Triggered when an instance administrator starts or stops impersonating a user
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/300961
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/79340
+milestone: '14.8'
+feature_category: user_management
+saved_to_database: true
+streamed: true

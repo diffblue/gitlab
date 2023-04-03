@@ -1,0 +1,9 @@
+---
+name: repository_git_operation
+description: Triggered when authenticated users push, pull, or clone a project using SSH, HTTP(S), or the UI
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/373950
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76719
+milestone: '14.9'
+feature_category: source_code_management
+saved_to_database: false
+streamed: true
