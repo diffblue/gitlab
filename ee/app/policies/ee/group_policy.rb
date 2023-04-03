@@ -8,6 +8,7 @@ module EE
     prepended do
       include CrudPolicyHelpers
 
+      condition(:group_member, scope: :subject) { @user && !@user.is_a?(DeployToken) && @subject.member?(@user) }
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
       condition(:saml_group_links_enabled, scope: :subject) do
         @subject.root_ancestor.saml_group_links_enabled?
@@ -89,7 +90,7 @@ module EE
       end
 
       condition(:needs_new_sso_session) do
-        sso_enforcement_prevents_access?
+        sso_enforcement_prevents_access? && group_member?
       end
 
       condition(:no_active_sso_session) do
