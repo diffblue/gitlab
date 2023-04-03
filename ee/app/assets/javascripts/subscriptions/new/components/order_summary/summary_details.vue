@@ -1,5 +1,5 @@
 <script>
-import { GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
@@ -7,6 +7,7 @@ import formattingMixins from '../../formatting_mixins';
 
 export default {
   components: {
+    GlAlert,
     GlLink,
     GlSprintf,
     GlLoadingIcon,
@@ -24,12 +25,16 @@ export default {
       'usersPresent',
       'showAmount',
       'discount',
+      'promotionalOfferText',
     ]),
     taxAmount() {
       return this.taxRate ? this.formatAmount(this.vat, this.showAmount) : '–';
     },
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
+    },
+    showPromotionalOfferText() {
+      return !this.isInvoicePreviewLoading && this.promotionalOfferText;
     },
   },
   i18n: {
@@ -77,6 +82,14 @@ export default {
         })
       }}
     </div>
+    <gl-alert
+      v-if="showPromotionalOfferText"
+      data-testid="promotional-offer-text"
+      :dismissible="false"
+      class="gl-mt-5"
+    >
+      {{ promotionalOfferText }}
+    </gl-alert>
     <slot name="promo-code"></slot>
     <div>
       <div class="gl-border-b-1 gl-border-b-gray-100 gl-border-b-solid gl-my-5"></div>

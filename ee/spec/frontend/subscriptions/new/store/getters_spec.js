@@ -408,4 +408,22 @@ describe('Subscriptions Getters', () => {
       ).toBe(false);
     });
   });
+
+  describe('promotionalOfferText', () => {
+    it('returns promotional offer text when present', () => {
+      expect(
+        getters.promotionalOfferText(state, {
+          selectedPlanDetails: { promotionalOfferText: 'Promotional offer text' },
+        }),
+      ).toBe('Promotional offer text');
+    });
+
+    it('does not return promotional offer text when not present', () => {
+      expect(
+        getters.promotionalOfferText(state, {
+          selectedPlanDetails: {},
+        }),
+      ).toBe(undefined);
+    });
+  });
 });
