@@ -66,6 +66,9 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
               value
             }
           }
+          source {
+            name
+          }
         }
         location {
           ... on VulnerabilityLocationSast {

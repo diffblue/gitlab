@@ -48670,6 +48670,9 @@ msgstr ""
 msgid "Vulnerability|Additional Info"
 msgstr ""
 
+msgid "Vulnerability|Assert:"
+msgstr ""
+
 msgid "Vulnerability|Bug Bounty"
 msgstr ""
 
