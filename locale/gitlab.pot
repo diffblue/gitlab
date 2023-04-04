@@ -574,6 +574,11 @@ msgstr ""
 msgid "%{count} LOC/commit"
 msgstr ""
 
+msgid "%{count} Participant"
+msgid_plural "%{count} Participants"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{count} approval required from %{name}"
 msgid_plural "%{count} approvals required from %{name}"
 msgstr[0] ""
@@ -629,11 +634,6 @@ msgstr ""
 
 msgid "%{count} of %{total}"
 msgstr ""
-
-msgid "%{count} participant"
-msgid_plural "%{count} participants"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "%{count} project"
 msgid_plural "%{count} projects"
