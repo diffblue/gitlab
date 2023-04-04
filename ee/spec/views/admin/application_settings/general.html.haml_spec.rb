@@ -140,7 +140,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
     with_them do
       before do
         stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_dashboards: flag_enabled)
+        stub_feature_flags(product_analytics_admin_settings: flag_enabled)
       end
 
       it_behaves_like params[:examples_to_run]
