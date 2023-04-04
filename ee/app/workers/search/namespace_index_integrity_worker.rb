@@ -13,7 +13,8 @@ module Search
     urgency :throttled
 
     LEASE_TIMEOUT = 30.minutes.freeze
-    DELAY_INTERVAL = 24.hours.freeze
+    PROJECT_DELAY_INTERVAL = 24.hours.freeze
+    NAMESPACE_DELAY_INTERVAL = 1.hour.freeze
 
     def perform(namespace_id)
       return if namespace_id.blank?
@@ -26,14 +27,22 @@ module Search
         return
       end
 
-      in_lock("#{self.class.name.underscore}/namespace/#{namespace_id}", ttl: LEASE_TIMEOUT) do
-        logger.info(structured_payload(message: 'enqueueing all projects for namespace', namespace_id: namespace_id))
+      return unless namespace.use_elasticsearch?
 
-        namespace.all_projects.each_batch do |relation|
+      in_lock("#{self.class.name.underscore}/namespace/#{namespace_id}", ttl: LEASE_TIMEOUT) do
+        logger.info(structured_payload(message: 'enqueueing all children for namespace', namespace_id: namespace_id))
+        namespace.children.each_batch do |relation|
+          relation.each do |n|
+            ::Search::NamespaceIndexIntegrityWorker.perform_in(rand(NAMESPACE_DELAY_INTERVAL).seconds, n.id)
+          end
+        end
+
+        logger.info(structured_payload(message: 'enqueueing all projects for namespace', namespace_id: namespace_id))
+        namespace.projects.each_batch do |relation|
           relation.each do |project|
             next unless project.should_check_index_integrity?
 
-            ::Search::ProjectIndexIntegrityWorker.perform_in(rand(DELAY_INTERVAL).seconds, project.id)
+            ::Search::ProjectIndexIntegrityWorker.perform_in(rand(PROJECT_DELAY_INTERVAL).seconds, project.id)
           end
         end
       end
