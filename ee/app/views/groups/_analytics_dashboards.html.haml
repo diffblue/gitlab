@@ -22,6 +22,7 @@
           input_id: 'group_analytics_dashboards_pointer_attributes_target_project_id',
           group_id: @group.id,
           order_by: 'last_activity_at',
+          with_shared: true.to_s,
           include_subgroups: true.to_s,
           clearable: true.to_s,
           selected: pointer.target_project_id } }

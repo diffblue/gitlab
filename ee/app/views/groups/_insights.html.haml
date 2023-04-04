@@ -23,6 +23,7 @@
           input_id: 'group_insight_attributes_project_id',
           group_id: @group.id,
           order_by: 'last_activity_at',
+          with_shared: true.to_s,
           include_subgroups: true.to_s,
           selected: insight.project_id } }
       = form.submit _('Save changes'), pajamas_button: true
