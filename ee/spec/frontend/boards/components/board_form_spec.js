@@ -1,5 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -7,17 +8,19 @@ import BoardForm from 'ee/boards/components/board_form.vue';
 import createEpicBoardMutation from 'ee/boards/graphql/epic_board_create.mutation.graphql';
 import destroyEpicBoardMutation from 'ee/boards/graphql/epic_board_destroy.mutation.graphql';
 import updateEpicBoardMutation from 'ee/boards/graphql/epic_board_update.mutation.graphql';
+import updateMutation from '~/boards/graphql/board_update.mutation.graphql';
 
+import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import { formType } from '~/boards/constants';
-import updateBoardMutation from '~/boards/graphql/board_update.mutation.graphql';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn().mockName('visitUrlMock'),
   stripFinalUrlSegment: jest.requireActual('~/lib/utils/url_utility').stripFinalUrlSegment,
   getParameterByName: jest.fn().mockName('getParameterByName'),
+  updateHistory: jest.requireActual('~/lib/utils/url_utility').updateHistory,
 }));
 
 Vue.use(Vuex);
@@ -48,7 +51,7 @@ const defaultProps = {
 
 describe('BoardForm', () => {
   let wrapper;
-  let mutate;
+  let requestHandlers;
   let store;
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -72,13 +75,36 @@ describe('BoardForm', () => {
     });
   };
 
+  const defaultHandlers = {
+    create: jest.fn().mockResolvedValue({}),
+    destroy: jest.fn().mockResolvedValue({}),
+    update: jest.fn().mockResolvedValue({}),
+  };
+
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+
+    requestHandlers = handlers;
+
+    return createMockApollo([
+      [createEpicBoardMutation, handlers.create],
+      [updateEpicBoardMutation, handlers.update],
+      [destroyEpicBoardMutation, handlers.destroy],
+      [updateMutation, handlers.updateBoard],
+    ]);
+  };
+
   const createComponent = ({
     props,
     iterationCadences = false,
     isIssueBoard = false,
     isEpicBoard = true,
+    handlers = defaultHandlers,
   } = {}) => {
+    const apolloProvider = createMockApolloProvider(handlers);
+
     wrapper = shallowMountExtended(BoardForm, {
+      apolloProvider,
       propsData: { ...defaultProps, ...props },
       provide: {
         boardBaseUrl: 'root',
@@ -88,20 +114,10 @@ describe('BoardForm', () => {
         isGroupBoard: true,
         isProjectBoard: false,
       },
-      mocks: {
-        $apollo: {
-          mutate,
-        },
-      },
       attachTo: document.body,
       store,
     });
   };
-
-  afterEach(() => {
-    mutate = null;
-    store = null;
-  });
 
   describe('when creating a new epic board', () => {
     beforeEach(() => {
@@ -142,37 +158,53 @@ describe('BoardForm', () => {
         findInput().trigger('keyup.enter', { metaKey: true });
       };
 
-      beforeEach(() => {
-        mutate = jest.fn().mockResolvedValue({
-          data: {
-            epicBoardCreate: {
-              epicBoard: { id: 'gid://gitlab/Boards::EpicBoard/123', webPath: 'test-path' },
-            },
+      it('does not call API if board name is empty', async () => {
+        createComponent({
+          props: { canAdminBoard: true, currentPage: formType.new },
+          handlers: {
+            ...defaultHandlers,
+            create: jest.fn().mockResolvedValue({
+              data: {
+                epicBoardCreate: {
+                  epicBoard: { id: 'gid://gitlab/Boards::EpicBoard/123', webPath: 'test-path' },
+                },
+              },
+            }),
           },
         });
-      });
-
-      it('does not call API if board name is empty', async () => {
-        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
         findInput().trigger('keyup.enter', { metaKey: true });
 
         await waitForPromises();
 
-        expect(mutate).not.toHaveBeenCalled();
+        expect(requestHandlers.create).not.toHaveBeenCalled();
       });
 
       it('calls a correct GraphQL mutation and updates board on state', async () => {
-        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
+        createComponent({
+          props: { canAdminBoard: true, currentPage: formType.new },
+          handlers: {
+            ...defaultHandlers,
+            create: jest.fn().mockResolvedValue({
+              data: {
+                epicBoardCreate: {
+                  epicBoard: { id: 'gid://gitlab/Boards::EpicBoard/123', webPath: 'test-path' },
+                  errors: [],
+                },
+              },
+            }),
+          },
+        });
         fillForm();
 
         await waitForPromises();
-
-        expect(mutate).toHaveBeenCalledWith({
-          mutation: createEpicBoardMutation,
-          variables: {
-            input: expect.objectContaining({
-              name: 'test',
-            }),
+        expect(requestHandlers.create).toHaveBeenCalledWith({
+          input: {
+            groupPath: '',
+            hideBacklogList: false,
+            hideClosedList: false,
+            labelIds: [],
+            name: 'test',
+            projectPath: undefined,
           },
         });
 
@@ -181,13 +213,17 @@ describe('BoardForm', () => {
       });
 
       it('sets error if GraphQL mutation fails', async () => {
-        mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
-        createComponent({ props: { canAdminBoard: true, currentPage: formType.new } });
+        createComponent({
+          props: { canAdminBoard: true, currentPage: formType.new },
+          handlers: {
+            create: jest.fn().mockRejectedValue({}),
+          },
+        });
         fillForm();
 
         await waitForPromises();
 
-        expect(mutate).toHaveBeenCalled();
+        expect(requestHandlers.create).toHaveBeenCalled();
 
         await waitForPromises();
         expect(setBoardMock).not.toHaveBeenCalled();
@@ -202,12 +238,6 @@ describe('BoardForm', () => {
     });
 
     it('should use global ids for assignee, milestone and iteration when calling GraphQL mutation', async () => {
-      mutate = jest.fn().mockResolvedValue({
-        data: {
-          updateBoard: { board: { id: 'gid://gitlab/Board/321' } },
-        },
-      });
-
       createComponent({
         props: {
           currentBoard: {
@@ -228,32 +258,39 @@ describe('BoardForm', () => {
         },
         isIssueBoard: true,
         isEpicBoard: false,
+        handlers: {
+          updateBoard: jest.fn().mockResolvedValue({
+            data: {
+              updateBoard: {
+                board: { id: 'gid://gitlab/Board/321' },
+                errors: [],
+              },
+            },
+          }),
+        },
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: updateBoardMutation,
-        variables: {
-          input: expect.objectContaining({
-            id: currentBoard.id,
-            assigneeId: 'gid://gitlab/User/1',
-            milestoneId: 'gid://gitlab/Milestone/2',
-            iterationId: 'gid://gitlab/Iteration/3',
-          }),
+      expect(requestHandlers.updateBoard).toHaveBeenCalledWith({
+        input: {
+          hideBacklogList: false,
+          hideClosedList: false,
+          id: currentBoard.id,
+          iterationCadenceId: null,
+          assigneeId: 'gid://gitlab/User/1',
+          milestoneId: 'gid://gitlab/Milestone/2',
+          labelIds: [],
+          iterationId: 'gid://gitlab/Iteration/3',
+          name: 'test',
+          weight: null,
         },
       });
     });
 
     it('should send iterationCadenceId', async () => {
-      mutate = jest.fn().mockResolvedValue({
-        data: {
-          updateBoard: { board: { id: 'gid://gitlab/Board/321' } },
-        },
-      });
-
       createComponent({
         props: {
           currentBoard: {
@@ -276,22 +313,34 @@ describe('BoardForm', () => {
         iterationCadences: true,
         isIssueBoard: true,
         isEpicBoard: false,
+        handlers: {
+          updateBoard: jest.fn().mockResolvedValue({
+            data: {
+              updateBoard: {
+                board: { id: 'gid://gitlab/Board/321' },
+                errors: [],
+              },
+            },
+          }),
+        },
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: updateBoardMutation,
-        variables: {
-          input: expect.objectContaining({
-            id: currentBoard.id,
-            assigneeId: 'gid://gitlab/User/1',
-            milestoneId: 'gid://gitlab/Milestone/2',
-            iterationId: 'gid://gitlab/Iteration/3',
-            iterationCadenceId: 'gid://gitlab/Iterations::Cadence/4',
-          }),
+      expect(requestHandlers.updateBoard).toHaveBeenCalledWith({
+        input: {
+          assigneeId: 'gid://gitlab/User/1',
+          hideBacklogList: false,
+          hideClosedList: false,
+          id: currentBoard.id,
+          iterationCadenceId: 'gid://gitlab/Iterations::Cadence/4',
+          iterationId: 'gid://gitlab/Iteration/3',
+          labelIds: [],
+          milestoneId: 'gid://gitlab/Milestone/2',
+          name: 'test',
+          weight: null,
         },
       });
     });
@@ -303,18 +352,21 @@ describe('BoardForm', () => {
     });
 
     it('calls GraphQL mutation with correct parameters', async () => {
-      mutate = jest.fn().mockResolvedValue({
-        data: {
-          epicBoardUpdate: {
-            epicBoard: { id: currentEpicBoard.id, webPath: 'test-path' },
-          },
-        },
-      });
       createComponent({
         props: {
           canAdminBoard: true,
           currentPage: formType.edit,
           currentBoard: currentEpicBoard,
+        },
+        handlers: {
+          update: jest.fn().mockResolvedValue({
+            data: {
+              epicBoardUpdate: {
+                epicBoard: { id: currentEpicBoard.id, webPath: 'test-path' },
+                errors: [],
+              },
+            },
+          }),
         },
       });
 
@@ -322,12 +374,13 @@ describe('BoardForm', () => {
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: updateEpicBoardMutation,
-        variables: {
-          input: expect.objectContaining({
-            id: currentEpicBoard.id,
-          }),
+      expect(requestHandlers.update).toHaveBeenCalledWith({
+        input: {
+          hideBacklogList: false,
+          hideClosedList: false,
+          id: currentEpicBoard.id,
+          labelIds: [],
+          name: 'test',
         },
       });
 
@@ -336,19 +389,21 @@ describe('BoardForm', () => {
     });
 
     it('sets error if GraphQL mutation fails', async () => {
-      mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
       createComponent({
         props: {
           canAdminBoard: true,
           currentPage: formType.edit,
           currentBoard: currentEpicBoard,
         },
+        handlers: {
+          update: jest.fn().mockRejectedValue({}),
+        },
       });
       findInput().trigger('keyup.enter', { metaKey: true });
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalled();
+      expect(requestHandlers.update).toHaveBeenCalled();
 
       await waitForPromises();
       expect(setBoardMock).not.toHaveBeenCalled();
@@ -385,23 +440,28 @@ describe('BoardForm', () => {
     });
 
     it('calls a correct GraphQL mutation and redirects to correct page after deleting board', async () => {
-      mutate = jest.fn().mockResolvedValue({});
       createComponent({
         props: {
           canAdminBoard: true,
           currentPage: formType.delete,
           currentBoard: currentEpicBoard,
         },
+        handlers: {
+          destroy: jest.fn().mockResolvedValue({
+            data: {
+              destroyEpicBoard: {
+                epicBoard: { id: '1' },
+              },
+            },
+          }),
+        },
       });
       findModal().vm.$emit('primary');
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: destroyEpicBoardMutation,
-        variables: {
-          id: currentEpicBoard.id,
-        },
+      expect(requestHandlers.destroy).toHaveBeenCalledWith({
+        id: currentEpicBoard.id,
       });
 
       await waitForPromises();
@@ -409,24 +469,24 @@ describe('BoardForm', () => {
     });
 
     it('shows a GlAlert if GraphQL mutation fails', async () => {
-      mutate = jest.fn().mockRejectedValue('Houston, we have a problem');
       createComponent({
         props: {
           canAdminBoard: true,
           currentPage: formType.delete,
           currentBoard: currentEpicBoard,
         },
+        handlers: { destroy: jest.fn().mockRejectedValue({}) },
       });
-      jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
+
       findModal().vm.$emit('primary');
 
       await waitForPromises();
 
-      expect(mutate).toHaveBeenCalled();
+      expect(requestHandlers.destroy).toHaveBeenCalled();
 
       await waitForPromises();
       expect(visitUrl).not.toHaveBeenCalled();
-      expect(wrapper.vm.setError).toHaveBeenCalled();
+      expect(setErrorMock).toHaveBeenCalled();
     });
   });
 });
