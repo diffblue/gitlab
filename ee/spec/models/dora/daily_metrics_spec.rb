@@ -65,7 +65,7 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
     end
 
     let_it_be(:project) { create(:project, :repository) }
-    let_it_be(:environment) { create(:environment, project: project) }
+    let_it_be(:environment) { create(:environment, :production, project: project) }
 
     let_it_be(:date) { 1.day.ago }
 
@@ -93,6 +93,24 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
                                         lead_time_for_changes_in_seconds: 2,
                                         time_to_restore_service_in_seconds: 3,
                                         incidents_count: 4)
+    end
+
+    context 'for production environment' do
+      it 'recalculates performance scores' do
+        expect(Dora::PerformanceScore).to receive(:refresh!).with(project, date.to_date)
+
+        subject
+      end
+    end
+
+    context 'for non-production environment' do
+      let(:environment) { create(:environment, :staging, project: project) }
+
+      it 'does not for scores recalculation' do
+        expect(Dora::PerformanceScore).not_to receive(:refresh!)
+
+        subject
+      end
     end
 
     it 'when there is an existing metric already overwrites data' do

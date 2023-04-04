@@ -74,6 +74,8 @@ module Dora
           DO UPDATE SET
             #{queries_to_refresh.map { |column, query| "#{column} = (#{query})" }.join(', ')}
         SQL
+
+        Dora::PerformanceScore.refresh!(environment.project, date) if environment.production?
       end
 
       private
