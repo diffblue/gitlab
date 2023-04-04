@@ -297,6 +297,12 @@ module EE
       ::Gitlab::Geo.proxied_request?(request.env) ? geo_proxied_ssh_url_to_repo(proxied_site, project) : super
     end
 
+    def project_transfer_app_data(project)
+      {
+        full_path: project.full_path
+      }
+    end
+
     private
 
     def remove_message_data(project)

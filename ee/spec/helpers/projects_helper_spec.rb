@@ -623,4 +623,12 @@ RSpec.describe ProjectsHelper do
 
     it { expect(subject).to eq geo_url }
   end
+
+  describe '#project_transfer_app_data' do
+    it 'returns expected hash' do
+      expect(helper.project_transfer_app_data(project)).to eq({
+        full_path: project.full_path
+      })
+    end
+  end
 end
