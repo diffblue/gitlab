@@ -11,6 +11,17 @@ module Zoekt
 
     validate :only_root_namespaces_can_be_indexed
 
+    scope :recent, -> { order(id: :desc) }
+    scope :with_limit, ->(maximum) { limit(maximum) }
+
+    def self.for_shard_and_namespace!(shard:, namespace:)
+      find_by!(shard: shard, namespace: namespace)
+    end
+
+    def self.find_or_create_for_shard_and_namespace!(shard:, namespace:)
+      find_or_create_by!(shard: shard, namespace: namespace)
+    end
+
     def self.enabled_for_project?(project)
       where(namespace: project.root_namespace).exists?
     end
