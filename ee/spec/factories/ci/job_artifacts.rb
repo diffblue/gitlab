@@ -2,16 +2,6 @@
 
 FactoryBot.define do
   factory :ee_ci_job_artifact, class: '::Ci::JobArtifact', parent: :ci_job_artifact do
-    trait :with_exceeding_identifiers do
-      file_type { :sast }
-      file_format { :raw }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-sast-report-with-exceeding-identifiers.json'), 'application/json')
-      end
-    end
-
     trait :verification_succeeded do
       common_security_report # with file
       verification_checksum { 'abc' }
@@ -22,16 +12,6 @@ FactoryBot.define do
       common_security_report # with file
       verification_failure { 'Could not calculate the checksum' }
       verification_state { Ci::JobArtifact.verification_state_value(:verification_failed) }
-    end
-
-    trait :sast_with_vulnerability_flags do
-      file_type { :sast }
-      file_format { :raw }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-sast-report-with-vulnerability-flags.json'), 'application/json')
-      end
     end
 
     trait :sast_without_any_identifiers do
@@ -114,21 +94,6 @@ FactoryBot.define do
       end
     end
 
-    trait :dast_with_corrupted_data do
-      file_format { :raw }
-      file_type { :dast }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('spec/fixtures/trace/sample_trace'), 'application/json')
-      end
-    end
-
-    trait :dast_with_missing_file do
-      file_format { :raw }
-      file_type { :dast }
-    end
-
     trait :dast_multiple_sites do
       file_format { :raw }
       file_type { :dast }
@@ -146,16 +111,6 @@ FactoryBot.define do
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
           Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-missing-scan.json'), 'application/json')
-      end
-    end
-
-    trait :dast_missing_scanned_resources_field do
-      file_format { :raw }
-      file_type { :dast }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-missing-scanned-resources.json'), 'application/json')
       end
     end
 
@@ -420,16 +375,6 @@ FactoryBot.define do
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
           Rails.root.join('ee/spec/fixtures/requirements_management/all_passing_report.json'), 'application/json')
-      end
-    end
-
-    trait :individual_requirements do
-      file_format { :raw }
-      file_type { :requirements }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/requirements_management/report_by_requirement.json'), 'application/json')
       end
     end
 
