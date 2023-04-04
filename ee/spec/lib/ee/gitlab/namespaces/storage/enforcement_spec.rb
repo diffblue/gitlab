@@ -277,7 +277,7 @@ RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
     end
 
     context 'when storage limit exclusion is present' do
-      let!(:excluded_namespace) { create(:storage_limit_excluded_namespace, namespace: root_namespace) }
+      let!(:excluded_namespace) { create(:namespace_storage_limit_exclusion, namespace: root_namespace) }
 
       it 'returns false' do
         expect(reached_pre_enforcement_notification_limit?).to be false
