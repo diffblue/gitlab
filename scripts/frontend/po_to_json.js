@@ -3,21 +3,38 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-const ROOT_DIR = path.join(__dirname, '../../');
+async function isDir(dirPath) {
+  if (!dirPath) {
+    return false;
+  }
+  try {
+    const stat = await fs.stat(dirPath);
+    return stat.isDirectory();
+  } catch (e) {
+    return false;
+  }
+}
 
 /**
  * This is the main function which starts multiple workers
  * in order to speed up the po file => app.js
  * locale conversions
  */
-async function main() {
+async function main({ localeRoot, outputDir } = {}) {
+  if (!(await isDir(localeRoot))) {
+    throw new Error(`Provided localeRoot: '${localeRoot}' doesn't seem to be a folder`);
+  }
+
+  if (!(await isDir(outputDir))) {
+    throw new Error(`Provided outputDir '${outputDir}' doesn't seem to be a folder`);
+  }
+
+  // eslint-disable-next-line global-require
+  const glob = require('glob');
   // eslint-disable-next-line global-require
   const { Worker } = require('jest-worker');
 
-  const getChildDirectories = async (source) =>
-    (await fs.readdir(source, { withFileTypes: true }))
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
+  const locales = glob.sync('*/*.po', { cwd: localeRoot });
 
   const worker = new Worker(__filename, {
     exposedMethods: ['convertPoFileForLocale'],
@@ -27,9 +44,16 @@ async function main() {
   worker.getStdout().pipe(process.stdout);
   worker.getStderr().pipe(process.stderr);
 
-  const locales = await getChildDirectories(path.join(ROOT_DIR, 'locale/'));
-
-  await Promise.all(locales.map((locale) => worker.convertPoFileForLocale(locale)));
+  await Promise.all(
+    locales.map((localeFile) => {
+      const locale = path.dirname(localeFile);
+      return worker.convertPoFileForLocale({
+        locale,
+        localeFile: path.join(localeRoot, localeFile),
+        resultDir: path.join(outputDir, locale),
+      });
+    }),
+  );
 
   await worker.end();
 
@@ -135,8 +159,8 @@ function convertPoToJed(data, locale) {
  * 2. converts it with convertPoToJed
  * 3. writes the file to
  */
-async function convertPoFileForLocale(locale) {
-  const poContent = await fs.readFile(path.join(ROOT_DIR, `locale/${locale}/gitlab.po`));
+async function convertPoFileForLocale({ locale, localeFile, resultDir }) {
+  const poContent = await fs.readFile(localeFile);
 
   const { jed } = await convertPoToJed(poContent, locale);
 
@@ -144,8 +168,6 @@ async function convertPoFileForLocale(locale) {
     console.log(`${locale}: No translations. Skipping creation of app.js`);
     return;
   }
-
-  const resultDir = path.join(ROOT_DIR, `app/assets/javascripts/locale/${locale}`);
 
   await fs.mkdir(resultDir, { recursive: true });
 
@@ -161,13 +183,26 @@ async function convertPoFileForLocale(locale) {
  Start the main thread only if we are not part of a worker
  */
 if (!process.env.JEST_WORKER_ID) {
-  main();
+  // eslint-disable-next-line global-require
+  const argumentsParser = require('commander');
+
+  const args = argumentsParser
+    .option('-l, --locale-root <locale_root>', 'Extract messages from subfolders in this directory')
+    .option('-o, --output-dir <output_dir>', 'Write app.js files into subfolders in this directory')
+    .parse(process.argv);
+
+  main(args).catch((e) => {
+    console.warn(`Something went wrong: ${e.message}`);
+    console.warn(args.printHelp());
+    process.exitCode = 1;
+  });
 }
 
 /*
  Expose the function for workers
  */
 module.exports = {
+  main,
   convertPoToJed,
   convertPoFileForLocale,
 };

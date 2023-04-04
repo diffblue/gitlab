@@ -1,40 +1,91 @@
-import { convertPoToJed } from '../../../../scripts/frontend/po_to_json';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { readFile, rm, mkdtemp, stat } from 'fs/promises';
+import {
+  convertPoToJed,
+  convertPoFileForLocale,
+  main,
+} from '../../../../scripts/frontend/po_to_json';
 
 describe('PoToJson', () => {
   const LOCALE = 'de';
+  const LOCALE_DIR = join(__dirname, '__fixtures__/locale');
+  const PO_FILE = join(LOCALE_DIR, LOCALE, 'gitlab.po');
+  const CONVERTED_FILE = join(LOCALE_DIR, LOCALE, 'converted.json');
+  let DE_CONVERTED = null;
+
+  beforeAll(async () => {
+    DE_CONVERTED = Object.freeze(JSON.parse(await readFile(CONVERTED_FILE, 'utf-8')));
+  });
+
+  describe('tests writing to the file system', () => {
+    let resultDir = null;
+
+    afterEach(async () => {
+      if (resultDir) {
+        await rm(resultDir, { recursive: true, force: true });
+      }
+    });
+
+    beforeEach(async () => {
+      resultDir = await mkdtemp(join(tmpdir(), 'locale-test'));
+    });
+
+    describe('#main', () => {
+      it('throws without arguments', async () => {
+        return expect(main()).rejects.toThrow(/doesn't seem to be a folder/);
+      });
+
+      it('throws if outputDir does not exist', async () => {
+        return expect(
+          main({
+            localeRoot: LOCALE_DIR,
+            outputDir: 'i-do-not-exist',
+          }),
+        ).rejects.toThrow(/doesn't seem to be a folder/);
+      });
+
+      it('throws if localeRoot does not exist', async () => {
+        return expect(
+          main({
+            localeRoot: 'i-do-not-exist',
+            outputDir: resultDir,
+          }),
+        ).rejects.toThrow(/doesn't seem to be a folder/);
+      });
+
+      it('converts folder of po files to app.js files', async () => {
+        expect((await stat(resultDir)).isDirectory()).toBe(true);
+        await main({ localeRoot: LOCALE_DIR, outputDir: resultDir });
+
+        const resultFile = join(resultDir, LOCALE, 'app.js');
+        expect((await stat(resultFile)).isFile()).toBe(true);
+
+        window.translations = null;
+        await import(resultFile);
+        expect(window.translations).toEqual(DE_CONVERTED);
+      });
+    });
+
+    describe('#convertPoFileForLocale', () => {
+      it('converts simple PO to app.js, which exposes translations on the window', async () => {
+        await convertPoFileForLocale({ locale: 'de', localeFile: PO_FILE, resultDir });
+
+        const resultFile = join(resultDir, 'app.js');
+        expect((await stat(resultFile)).isFile()).toBe(true);
+
+        window.translations = null;
+        await import(resultFile);
+        expect(window.translations).toEqual(DE_CONVERTED);
+      });
+    });
+  });
 
   describe('#convertPoToJed', () => {
-    it('converts simple PO to JED compatible JSON', () => {
-      const poContent = `
-# Simple translated string
-msgid " %{start} to %{end}"
-msgstr " %{start} bis %{end}"
+    it('converts simple PO to JED compatible JSON', async () => {
+      const poContent = await readFile(PO_FILE, 'utf-8');
 
-# Simple translated, pluralized string
-msgid "%d Alert:"
-msgid_plural "%d Alerts:"
-msgstr[0] "%d Warnung:"
-msgstr[1] "%d Warnungen:"
-
-# Simple string without translation
-msgid "Example"
-msgstr ""
-`;
-
-      expect(convertPoToJed(poContent, LOCALE).jed).toEqual({
-        domain: 'app',
-        locale_data: {
-          app: {
-            '': {
-              domain: 'app',
-              lang: LOCALE,
-            },
-            ' %{start} to %{end}': [' %{start} bis %{end}'],
-            '%d Alert:': ['%d Warnung:', '%d Warnungen:'],
-            Example: [''],
-          },
-        },
-      });
+      expect(convertPoToJed(poContent, LOCALE).jed).toEqual(DE_CONVERTED);
     });
 
     it('returns null for empty string', () => {

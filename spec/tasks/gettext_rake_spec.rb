@@ -23,16 +23,24 @@ RSpec.describe 'gettext', :silence_stdout, feature_category: :internationalizati
   end
 
   describe ':compile' do
-    it 'creates a pot file and invokes the \'gettext:po_to_json\' task' do
-      expect(Kernel).to receive(:system).with('node ./scripts/frontend/po_to_json.js').and_return(true)
+    let(:compile_command) do
+      [
+        "node", "./scripts/frontend/po_to_json.js",
+        "--locale-root", Rails.root.join('locale').to_s,
+        "--output-dir", Rails.root.join('app/assets/javascripts/locale').to_s
+      ]
+    end
+
+    it 'creates a pot file and runs po-to-json conversion via node script' do
+      expect(Kernel).to receive(:system).with(*compile_command).and_return(true)
 
       expect { run_rake_task('gettext:compile') }
         .to change { File.exist?(pot_file_path) }
         .to be_truthy
     end
 
-    it 'with non-successful gettext-to-js conversion' do
-      expect(Kernel).to receive(:system).with('node ./scripts/frontend/po_to_json.js').and_return(false)
+    it 'aborts with non-successful po-to-json conversion via node script' do
+      expect(Kernel).to receive(:system).with(*compile_command).and_return(false)
 
       expect { run_rake_task('gettext:compile') }.to abort_execution
     end
