@@ -49,7 +49,7 @@ export default {
 <template>
   <span>
     <span data-testid="approvals-text">{{ pendingApprovalsText }}</span>
-    <span v-if="hasInvalidRules" class="gl-vertical-align-middle gl-text-gray-600 js-help gl-ml-3">
+    <span v-if="hasInvalidRules" class="gl-display-inline-flex gl-ml-2 js-help">
       <gl-icon
         :id="rule.name"
         name="question-o"
