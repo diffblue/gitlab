@@ -71,7 +71,7 @@ module Vulnerabilities
 
     def determine_dismissed_at
       if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-        @state == :dismissed ? Time.current : nil
+        @state&.to_sym == :dismissed ? Time.current : nil
       else
         existing_dismissal_feedback&.created_at
       end
@@ -79,7 +79,7 @@ module Vulnerabilities
 
     def determine_dismissed_by_id
       if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-        @state == :dismissed ? @author.id : nil
+        @state&.to_sym == :dismissed ? @author.id : nil
       else
         existing_dismissal_feedback&.author_id
       end
