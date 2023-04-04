@@ -1,13 +1,17 @@
 # frozen_string_literal: true
 
 constraints(::Constraints::ProjectUrlConstrainer.new) do
-  scope(path: '*namespace_id',
-        as: :namespace,
-        namespace_id: Gitlab::PathRegex.full_namespace_route_regex) do
-    scope(path: ':project_id',
-          constraints: { project_id: Gitlab::PathRegex.project_route_regex },
-          module: :projects,
-          as: :project) do
+  scope(
+    path: '*namespace_id',
+    as: :namespace,
+    namespace_id: Gitlab::PathRegex.full_namespace_route_regex
+  ) do
+    scope(
+      path: ':project_id',
+      constraints: { project_id: Gitlab::PathRegex.project_route_regex },
+      module: :projects,
+      as: :project
+    ) do
       # Begin of the /-/ scope.
       # Use this scope for all new project routes.
       scope '-' do
@@ -139,7 +143,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
         # Added for backward compatibility with https://gitlab.com/gitlab-org/gitlab/-/merge_requests/39543
         # TODO: Cleanup https://gitlab.com/gitlab-org/gitlab/-/issues/320814
         get 'iterations/inherited/:id', to: redirect('%{namespace_id}/%{project_id}/-/iterations/%{id}'),
-                                        as: :legacy_project_iterations_inherited
+          as: :legacy_project_iterations_inherited
 
         resources :iterations, only: [:index, :show], constraints: { id: /\d+/ }
 

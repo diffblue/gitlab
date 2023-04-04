@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
 constraints(::Constraints::GroupUrlConstrainer.new) do
-  scope(path: 'groups/*group_id/-',
-        module: :groups,
-        as: :group,
-        constraints: { group_id: Gitlab::PathRegex.full_namespace_route_regex }) do
+  scope(
+    path: 'groups/*group_id/-',
+    module: :groups,
+    as: :group,
+    constraints: { group_id: Gitlab::PathRegex.full_namespace_route_regex }
+  ) do
     draw :wiki
 
     namespace :settings do

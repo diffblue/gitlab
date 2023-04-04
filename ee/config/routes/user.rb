@@ -17,9 +17,7 @@ scope :users, module: :users do
 end
 
 scope(constraints: { username: Gitlab::PathRegex.root_namespace_route_regex }) do
-  scope(path: 'users/:username',
-        as: :user,
-        controller: :users) do
+  scope(path: 'users/:username', as: :user, controller: :users) do
     get :available_project_templates
     get :available_group_templates
   end
