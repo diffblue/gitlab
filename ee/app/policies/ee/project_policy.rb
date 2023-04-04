@@ -386,6 +386,8 @@ module EE
         enable :read_project_merge_request_analytics
         enable :read_approvers
         enable :read_on_demand_dast_scan
+
+        enable :read_project_runners
       end
 
       rule { ~security_and_compliance_disabled & auditor }.policy do

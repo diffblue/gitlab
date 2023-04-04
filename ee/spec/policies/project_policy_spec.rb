@@ -2763,4 +2763,12 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'read_project_runners' do
+    context 'with auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_project_runners) }
+    end
+  end
 end

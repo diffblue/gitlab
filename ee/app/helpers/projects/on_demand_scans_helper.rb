@@ -35,7 +35,7 @@ module Projects::OnDemandScansHelper
       'new-scanner-profile-path' => new_project_security_configuration_profile_library_dast_scanner_profile_path(project),
       'new-site-profile-path' => new_project_security_configuration_profile_library_dast_site_profile_path(project),
       'timezones' => timezone_data(format: :full).to_json,
-      'can_edit_runner_tags' => Ability.allowed?(current_user, :admin_project, project).to_s
+      'can_edit_runner_tags' => Ability.allowed?(current_user, :admin_project_runners, project).to_s
     })
   end
 
