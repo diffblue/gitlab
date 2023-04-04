@@ -154,6 +154,8 @@ export default {
             ...newFilters,
           },
         });
+      } else {
+        this.$apollo.queries.projects.refetch();
       }
     },
   },
