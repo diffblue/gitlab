@@ -12522,7 +12522,60 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="commitparentnamesnames"></a>`names` | [`[String!]`](#string) | Names of the commit parent (branch or tag). |
-| <a id="commitparentnamestotalcount"></a>`totalCount` | [`Int`](#int) | Total of parent branches or tags. |
+
+### `CommitReferences`
+
+#### Fields with arguments
+
+##### `CommitReferences.containingBranches`
+
+Get branch names containing a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitreferencescontainingbranchesexcludetipped"></a>`excludeTipped` | [`Boolean!`](#boolean) | Exclude tipping refs. WARNING: This argument can be confusing, if there is a limit. for example set the limit to 5 and in the 5 out a total of 25 refs there is 2 tipped refs, then the method will only 3 refs, even though there is more. |
+| <a id="commitreferencescontainingbrancheslimit"></a>`limit` | [`Int!`](#int) | Number of ref names to return. |
+
+##### `CommitReferences.containingTags`
+
+Get tag names containing a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitreferencescontainingtagsexcludetipped"></a>`excludeTipped` | [`Boolean!`](#boolean) | Exclude tipping refs. WARNING: This argument can be confusing, if there is a limit. for example set the limit to 5 and in the 5 out a total of 25 refs there is 2 tipped refs, then the method will only 3 refs, even though there is more. |
+| <a id="commitreferencescontainingtagslimit"></a>`limit` | [`Int!`](#int) | Number of ref names to return. |
+
+##### `CommitReferences.tippingBranches`
+
+Get branch names tipping at a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitreferencestippingbrancheslimit"></a>`limit` | [`Int!`](#int) | Number of ref names to return. |
+
+##### `CommitReferences.tippingTags`
+
+Get tag names tipping at a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitreferencestippingtagslimit"></a>`limit` | [`Int!`](#int) | Number of ref names to return. |
 
 ### `ComplianceFramework`
 
@@ -18824,19 +18877,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectboardsid"></a>`id` | [`BoardID`](#boardid) | Find a board by its ID. |
 
-##### `Project.branchesTippingAtCommit`
-
-Get branch names tipping at a given commit.
-
-Returns [`CommitParentNames`](#commitparentnames).
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="projectbranchestippingatcommitcommitsha"></a>`commitSha` | [`String!`](#string) | Project commit SHA identifier. For example, `287774414568010855642518513f085491644061`. |
-| <a id="projectbranchestippingatcommitlimit"></a>`limit` | [`Int`](#int) | Number of branch names to return. |
-
 ##### `Project.ciConfigVariables`
 
 CI/CD config variable.
@@ -18909,6 +18949,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="projectclusteragentshasvulnerabilities"></a>`hasVulnerabilities` | [`Boolean`](#boolean) | Returns only cluster agents which have vulnerabilities. |
+
+##### `Project.commitReferences`
+
+Get tag names containing a given commit.
+
+WARNING:
+**Introduced** in 16.0.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`CommitReferences`](#commitreferences).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectcommitreferencescommitsha"></a>`commitSha` | [`String!`](#string) | Project commit SHA identifier. For example, `287774414568010855642518513f085491644061`. |
 
 ##### `Project.containerRepositories`
 
@@ -19867,19 +19923,6 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectsnippetsids"></a>`ids` | [`[SnippetID!]`](#snippetid) | Array of global snippet IDs. For example, `gid://gitlab/ProjectSnippet/1`. |
 | <a id="projectsnippetsvisibility"></a>`visibility` | [`VisibilityScopesEnum`](#visibilityscopesenum) | Visibility of the snippet. |
-
-##### `Project.tagsTippingAtCommit`
-
-Get tag names tipping at a given commit.
-
-Returns [`CommitParentNames`](#commitparentnames).
-
-###### Arguments
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| <a id="projecttagstippingatcommitcommitsha"></a>`commitSha` | [`String!`](#string) | Project commit SHA identifier. For example, `287774414568010855642518513f085491644061`. |
-| <a id="projecttagstippingatcommitlimit"></a>`limit` | [`Int`](#int) | Number of branch names to return. |
 
 ##### `Project.terraformState`
 

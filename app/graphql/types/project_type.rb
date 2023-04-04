@@ -600,15 +600,11 @@ module Types
           authorize: :read_cycle_analytics,
           alpha: { milestone: '15.10' }
 
-    field :tags_tipping_at_commit, ::Types::Projects::CommitParentNamesType,
-          null: true,
-          resolver: Resolvers::Projects::TagsTippingAtCommitResolver,
-          description: "Get tag names tipping at a given commit."
-
-    field :branches_tipping_at_commit, ::Types::Projects::CommitParentNamesType,
-          null: true,
-          resolver: Resolvers::Projects::BranchesTippingAtCommitResolver,
-          description: "Get branch names tipping at a given commit."
+    field :commit_references, ::Types::CommitReferencesType,
+      null: true,
+      resolver: Resolvers::Projects::CommitReferencesResolver,
+      alpha: { milestone: '16.0' },
+      description: "Get tag names containing a given commit."
 
     def timelog_categories
       object.project_namespace.timelog_categories if Feature.enabled?(:timelog_categories)
