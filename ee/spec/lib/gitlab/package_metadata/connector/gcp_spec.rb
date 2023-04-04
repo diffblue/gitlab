@@ -138,6 +138,10 @@ RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :licen
       :npm | "npm"
       :nuget | "nuget"
       :pypi | "pypi"
+      :apk | "apk"
+      :rpm | "rpm"
+      :deb | "deb"
+      :cbl_mariner | "cbl-mariner"
     end
 
     with_them do

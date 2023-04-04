@@ -18,6 +18,10 @@ RSpec.shared_examples "full offline license-db sync" do
     :npm | "npm"
     :nuget | "nuget"
     :pypi | "pypi"
+    :apk | "apk"
+    :rpm | "rpm"
+    :deb | "deb"
+    :cbl_mariner | "cbl-mariner"
   end
 
   with_them do

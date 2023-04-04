@@ -23,7 +23,15 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :license_co
         have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
           version_format: described_class::VERSION_FORMAT, purl_type: 'nuget'),
         have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-          version_format: described_class::VERSION_FORMAT, purl_type: 'pypi')
+          version_format: described_class::VERSION_FORMAT, purl_type: 'pypi'),
+        have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+          version_format: described_class::VERSION_FORMAT, purl_type: 'apk'),
+        have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+          version_format: described_class::VERSION_FORMAT, purl_type: 'rpm'),
+        have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+          version_format: described_class::VERSION_FORMAT, purl_type: 'deb'),
+        have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+          version_format: described_class::VERSION_FORMAT, purl_type: 'cbl_mariner')
       ])
     end
   end

@@ -14,7 +14,11 @@ RSpec.describe Sbom::Component, type: :model, feature_category: :dependency_mana
       maven: 5,
       npm: 6,
       nuget: 7,
-      pypi: 8
+      pypi: 8,
+      apk: 9,
+      rpm: 10,
+      deb: 11,
+      cbl_mariner: 12
     }
   end
 
