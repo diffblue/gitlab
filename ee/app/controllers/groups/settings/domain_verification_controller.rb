@@ -11,7 +11,7 @@ module Groups
       feature_category :system_access
       urgency :low
 
-      def show
+      def index
         @hide_search_settings = true
         @domains = group.all_projects_pages_domains(only_verified: false)
       end

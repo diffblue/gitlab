@@ -9,7 +9,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     namespace :settings do
       resource :reporting, only: [:show], controller: 'reporting'
-      resource :domain_verification, only: [:show], controller: 'domain_verification'
+      resources :domain_verification, only: [:index], controller: 'domain_verification'
       resource :merge_requests, only: [:update]
     end
 

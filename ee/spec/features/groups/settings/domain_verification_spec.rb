@@ -13,13 +13,13 @@ RSpec.describe 'Group domain verification settings', :saas, feature_category: :s
     group.add_owner(user)
   end
 
-  subject(:visit_domain_verification_page) { visit group_settings_domain_verification_path(group) }
+  subject(:visit_domain_verification_page) { visit group_settings_domain_verification_index_path(group) }
 
   it 'displays the side bar menu item' do
     visit_domain_verification_page
 
     page.within('.shortcuts-settings') do
-      expect(page).to have_link _('Domain Verification'), href: group_settings_domain_verification_path(group)
+      expect(page).to have_link _('Domain Verification'), href: group_settings_domain_verification_index_path(group)
     end
   end
 
