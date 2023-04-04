@@ -28597,6 +28597,12 @@ msgstr ""
 msgid "Navigation|Operate"
 msgstr ""
 
+msgid "Navigation|Pin item"
+msgstr ""
+
+msgid "Navigation|Pinned"
+msgstr ""
+
 msgid "Navigation|Plan"
 msgstr ""
 
@@ -28624,10 +28630,16 @@ msgstr ""
 msgid "Navigation|Toggle edit mode"
 msgstr ""
 
+msgid "Navigation|Unpin item"
+msgstr ""
+
 msgid "Navigation|View all groups"
 msgstr ""
 
 msgid "Navigation|View all projects"
+msgstr ""
+
+msgid "Navigation|Your pinned items appear here."
 msgstr ""
 
 msgid "Navigation|Your work"
