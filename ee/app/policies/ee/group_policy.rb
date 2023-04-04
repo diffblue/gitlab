@@ -252,9 +252,6 @@ module EE
         enable :read_wiki
 
         enable :read_group_all_available_runners
-      end
-
-      rule { auditor }.policy do
         enable :read_group_runners
       end
 

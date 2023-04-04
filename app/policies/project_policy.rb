@@ -280,9 +280,6 @@ class ProjectPolicy < BasePolicy
     enable :set_show_default_award_emojis
     enable :set_show_diff_preview_in_email
     enable :set_warn_about_potentially_unwanted_characters
-
-    enable :register_project_runners
-    enable :create_project_runners
     enable :manage_owners
   end
 
@@ -538,6 +535,8 @@ class ProjectPolicy < BasePolicy
     enable :admin_feature_flags_client
     enable :register_project_runners
     enable :create_project_runners
+    enable :admin_project_runners
+    enable :read_project_runners
     enable :update_runners_registration_token
     enable :admin_project_google_cloud
     enable :admin_project_aws
