@@ -24,7 +24,7 @@ RSpec.describe Namespaces::Storage::LimitExclusion, feature_category: :consumabl
 
   describe 'dependent destroy' do
     let(:namespace) { create(:namespace) }
-    let!(:excluded_namespace) { create(:storage_limit_excluded_namespace, namespace: namespace) }
+    let!(:excluded_namespace) { create(:namespace_storage_limit_exclusion, namespace: namespace) }
 
     it 'destroys the excluded namespace when the namespace is destroyed' do
       expect { namespace.destroy! }.to change { described_class.count }.by(-1)
