@@ -47,6 +47,17 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           webUrl
           nameWithNamespace
         }
+        evidence {
+          request {
+            body
+            headers {
+              name
+              value
+            }
+            method
+            url
+          }
+        }
         location {
           ... on VulnerabilityLocationSast {
             startLine

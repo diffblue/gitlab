@@ -501,25 +501,26 @@ export const pipelineSecurityReportFinding = {
   issueLinks: {
     nodes: [],
   },
-  request: {
-    url: 'http://example.com/requestUrl',
-    body: 'request body',
-    method: 'request method',
-    headers: [
-      { name: 'headers name - 1', value: 'headers value - 1' },
-      { name: 'headers name - 2', value: 'headers value - 2' },
-    ],
+  evidence: {
+    request: {
+      url: 'http://example.com/requestUrl',
+      body: 'request body',
+      method: 'request method',
+      headers: [
+        { name: 'headers name - 1', value: 'headers value - 1' },
+        { name: 'headers name - 2', value: 'headers value - 2' },
+      ],
+    },
+    response: {
+      body: 'response body',
+      statusCode: '200',
+      reasonPhrase: 'response reasonPhrase',
+      headers: [
+        { name: 'response headers name - 1', value: 'response headers value - 1' },
+        { name: 'response headers name - 2', value: 'response headers value - 2' },
+      ],
+    },
   },
-  response: {
-    body: 'response body',
-    statusCode: '200',
-    reasonPhrase: 'response reasonPhrase',
-    headers: [
-      { name: 'response headers name - 1', value: 'response headers value - 1' },
-      { name: 'response headers name - 2', value: 'response headers value - 2' },
-    ],
-  },
-  evidence: 'evidence',
   links: [
     { url: 'http://example.com/link-1', name: null },
     { url: 'http://example.com/link-2', name: 'links name - 1' },

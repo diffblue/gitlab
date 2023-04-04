@@ -48700,6 +48700,9 @@ msgstr ""
 msgid "Vulnerability|Select a severity"
 msgstr ""
 
+msgid "Vulnerability|Sent request:"
+msgstr ""
+
 msgid "Vulnerability|Set the status of the vulnerability finding based on the information available to you."
 msgstr ""
 
