@@ -19831,7 +19831,9 @@ CREATE TABLE pages_deployments (
     file_count integer NOT NULL,
     file_sha256 bytea NOT NULL,
     size bigint,
+    root_directory text DEFAULT 'public'::text,
     CONSTRAINT check_5f9132a958 CHECK ((size IS NOT NULL)),
+    CONSTRAINT check_7e938c810a CHECK ((char_length(root_directory) <= 255)),
     CONSTRAINT check_f0fe8032dd CHECK ((char_length(file) <= 255))
 );
 
