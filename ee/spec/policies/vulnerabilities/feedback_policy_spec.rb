@@ -86,8 +86,10 @@ RSpec.describe Vulnerabilities::FeedbackPolicy, feature_category: :vulnerability
 
         context 'when auto-fix is disabled' do
           before do
-            project.security_setting.update!(auto_fix_dependency_scanning: false,
-                                             auto_fix_container_scanning: false)
+            project.security_setting.update!(
+              auto_fix_dependency_scanning: false,
+              auto_fix_container_scanning: false
+            )
           end
 
           it { is_expected.to be_disallowed(:create_vulnerability_feedback) }

@@ -28,62 +28,76 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
 
   shared_examples 'can admin epic relations' do
     it do
-      is_expected.to be_allowed(:admin_epic_relation,
-                                :admin_epic_tree_relation,
-                                :admin_epic_link_relation)
+      is_expected.to be_allowed(
+        :admin_epic_relation,
+        :admin_epic_tree_relation,
+        :admin_epic_link_relation
+      )
     end
   end
 
   shared_examples 'cannot admin epic relations' do
     it do
-      is_expected.to be_disallowed(:admin_epic_relation,
-                                   :admin_epic_tree_relation,
-                                   :admin_epic_link_relation)
+      is_expected.to be_disallowed(
+        :admin_epic_relation,
+        :admin_epic_tree_relation,
+        :admin_epic_link_relation
+      )
     end
   end
 
   shared_examples 'can only read epics' do
     it 'matches expected permissions' do
-      is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
-                                :create_todo, :read_issuable_participables)
-      is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
-                                   :create_epic, :set_epic_metadata, :set_confidentiality,
-                                   :mark_note_as_internal, :read_internal_note)
+      is_expected.to be_allowed(
+        :read_epic, :read_epic_iid, :read_note,
+        :create_todo, :read_issuable_participables
+      )
+      is_expected.to be_disallowed(
+        :update_epic, :destroy_epic, :admin_epic,
+        :create_epic, :set_epic_metadata, :set_confidentiality,
+        :mark_note_as_internal, :read_internal_note
+      )
     end
   end
 
   shared_examples 'can manage epics' do
     it 'matches expected permissions' do
-      is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
-                                :read_issuable_participables, :read_internal_note,
-                                :update_epic, :admin_epic, :create_epic, :admin_epic_relation,
-                                :create_todo, :admin_epic_link_relation, :set_epic_metadata,
-                                :set_confidentiality, :mark_note_as_internal,
-                                :admin_epic_tree_relation)
+      is_expected.to be_allowed(
+        :read_epic, :read_epic_iid, :read_note,
+        :read_issuable_participables, :read_internal_note,
+        :update_epic, :admin_epic, :create_epic, :admin_epic_relation,
+        :create_todo, :admin_epic_link_relation, :set_epic_metadata,
+        :set_confidentiality, :mark_note_as_internal,
+        :admin_epic_tree_relation
+      )
     end
   end
 
   shared_examples 'all epic permissions disabled' do
     it 'matches expected permissions' do
-      is_expected.to be_disallowed(:read_epic, :read_epic_iid, :update_epic,
-                                   :destroy_epic, :admin_epic, :create_epic,
-                                   :create_note, :award_emoji, :read_note,
-                                   :read_issuable_participables,
-                                   :create_todo, :admin_epic_link_relation,
-                                   :set_epic_metadata, :set_confidentiality,
-                                   :admin_epic_relation, :admin_epic_tree_relation)
+      is_expected.to be_disallowed(
+        :read_epic, :read_epic_iid, :update_epic,
+        :destroy_epic, :admin_epic, :create_epic,
+        :create_note, :award_emoji, :read_note,
+        :read_issuable_participables,
+        :create_todo, :admin_epic_link_relation,
+        :set_epic_metadata, :set_confidentiality,
+        :admin_epic_relation, :admin_epic_tree_relation
+      )
     end
   end
 
   shared_examples 'all reporter epic permissions enabled' do
     it 'matches expected permissions' do
-      is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
-                                :admin_epic, :create_epic, :create_note,
-                                :award_emoji, :read_note, :create_todo,
-                                :read_issuable_participables, :read_internal_note,
-                                :admin_epic_link_relation, :set_epic_metadata,
-                                :set_confidentiality, :admin_epic_relation,
-                                :admin_epic_tree_relation)
+      is_expected.to be_allowed(
+        :read_epic, :read_epic_iid, :update_epic,
+        :admin_epic, :create_epic, :create_note,
+        :award_emoji, :read_note, :create_todo,
+        :read_issuable_participables, :read_internal_note,
+        :admin_epic_link_relation, :set_epic_metadata,
+        :set_confidentiality, :admin_epic_relation,
+        :admin_epic_tree_relation
+      )
     end
   end
 
@@ -198,11 +212,13 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         let(:user) { nil }
 
         it 'matches expected permissions' do
-          is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
-                                    :read_issuable_participables)
+          is_expected.to be_allowed(
+            :read_epic, :read_epic_iid, :read_note, :read_issuable_participables
+          )
 
-          is_expected.to be_disallowed(:create_todo, :read_internal_note,
-                                       :admin_epic_tree_relation)
+          is_expected.to be_disallowed(
+            :create_todo, :read_internal_note, :admin_epic_tree_relation
+          )
         end
 
         it_behaves_like 'cannot comment on epics'
@@ -293,11 +309,13 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
 
           it 'matches expected permissions' do
             is_expected.to be_allowed(:read_epic, :read_epic_iid)
-            is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
-                                         :create_epic, :admin_epic_link_relation,
-                                         :set_epic_metadata, :set_confidentiality,
-                                         :mark_note_as_internal, :read_internal_note,
-                                         :admin_epic_tree_relation)
+            is_expected.to be_disallowed(
+              :update_epic, :destroy_epic, :admin_epic,
+              :create_epic, :admin_epic_link_relation,
+              :set_epic_metadata, :set_confidentiality,
+              :mark_note_as_internal, :read_internal_note,
+              :admin_epic_tree_relation
+            )
           end
         end
 
@@ -320,11 +338,13 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       end
 
       it 'matches expected permissions' do
-        is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
-                                  :admin_epic, :create_epic, :create_note,
-                                  :award_emoji, :read_note, :create_todo,
-                                  :read_issuable_participables, :admin_epic_relation,
-                                  :admin_epic_tree_relation)
+        is_expected.to be_allowed(
+          :read_epic, :read_epic_iid, :update_epic,
+          :admin_epic, :create_epic, :create_note,
+          :award_emoji, :read_note, :create_todo,
+          :read_issuable_participables, :admin_epic_relation,
+          :admin_epic_tree_relation
+        )
         is_expected.to be_disallowed(:admin_epic_link_relation)
       end
     end
@@ -338,11 +358,13 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       end
 
       it 'matches expected permissions' do
-        is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
-                                  :admin_epic, :create_epic, :create_note,
-                                  :award_emoji, :read_note, :create_todo,
-                                  :read_issuable_participables, :admin_epic_relation,
-                                  :admin_epic_link_relation)
+        is_expected.to be_allowed(
+          :read_epic, :read_epic_iid, :update_epic,
+          :admin_epic, :create_epic, :create_note,
+          :award_emoji, :read_note, :create_todo,
+          :read_issuable_participables, :admin_epic_relation,
+          :admin_epic_link_relation
+        )
         is_expected.to be_disallowed(:admin_epic_tree_relation)
       end
     end

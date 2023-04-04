@@ -4,8 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Vulnerabilities::MergeRequestLinkPolicy, feature_category: :vulnerability_management do
   let(:vulnerability_merge_request_link) do
-    build(:vulnerabilities_merge_request_link, vulnerability: vulnerability,
-                                               merge_request: merge_request)
+    build(
+      :vulnerabilities_merge_request_link,
+      vulnerability: vulnerability,
+      merge_request: merge_request
+    )
   end
 
   let_it_be(:user) { create(:user) }
