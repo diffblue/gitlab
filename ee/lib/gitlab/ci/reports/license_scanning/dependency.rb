@@ -25,12 +25,15 @@ module Gitlab
               .project_blob_path(project, File.join(sha, path))
           end
 
-          def hash
-            name.hash
+          def eql?(other)
+            name == other.name &&
+              package_manager == other.package_manager &&
+              purl_type == other.purl_type &&
+              version == other.version
           end
 
-          def eql?(other)
-            self.name == other.name
+          def hash
+            [name, package_manager, purl_type, version].hash
           end
         end
       end

@@ -78,9 +78,11 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :licens
 
         it 'returns the expected dependencies for known licenses' do
           bsd_license = report.licenses.find { |license| license.name == "BSD" }
+
           expect(bsd_license.dependencies).to match_array([
             have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
             have_attributes(name: "acorn", version: "5.7.3"),
+            have_attributes(name: "acorn", version: "6.4.0"),
             have_attributes(name: "json-schema", version: "0.2.3"),
             have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
             have_attributes(name: "activesupport", version: "5.1.4"),
@@ -90,22 +92,14 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :licens
 
         it 'returns the expected dependencies for unknown licenses' do
           unknown_license = report.licenses.find { |license| license.name == "unknown" }
+
+          expect(unknown_license.dependencies.length).to be(434)
+
           expect(unknown_license.dependencies).to include(
             have_attributes(name: "byebug", version: "10.0.0"),
             have_attributes(name: "rspec-core", version: "3.7.1"),
             have_attributes(name: "yargs-parser", version: "8.1.0")
           )
-          expect(unknown_license.dependencies.length).to be(398)
-        end
-
-        it 'only includes the first encountered dependency when two dependencies with the same name exist' do
-          bsd_license = report.licenses.find { |license| license.name == "BSD" }
-
-          expect(bsd_license.dependencies).to include(
-            have_attributes(name: "acorn", version: "5.7.3"))
-
-          expect(bsd_license.dependencies).not_to include(
-            have_attributes(name: "acorn", version: "6.4.0"))
         end
       end
 
