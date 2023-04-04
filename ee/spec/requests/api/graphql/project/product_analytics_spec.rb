@@ -106,12 +106,23 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
         expect(instance).to receive(:execute).and_return(
           ServiceResponse.error(
             message: 'Error',
+            reason: :bad_gateway,
             payload: {
               'error' => 'Test Error'
             }))
       end
 
       expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Test Error')
+    end
+
+    it 'will query state when Cube DB does not exist' do
+      expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+        expect(instance).to receive(:execute).and_return(
+          ServiceResponse.error(
+            message: '404 Clickhouse Database Not Found', reason: :not_found))
+      end
+
+      expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('WAITING_FOR_EVENTS')
     end
 
     it 'will pass through Cube API connection errors' do
