@@ -2363,15 +2363,15 @@ RSpec.describe API::Projects, feature_category: :projects do
 
         context 'with default search' do
           it_behaves_like 'successful groups response' do
-            let(:expected_groups) { [project_group1, project_group2] }
+            let(:expected_groups) { [project_group2] }
           end
         end
 
         context 'when searching by group name' do
           context 'searching by group name' do
             it_behaves_like 'successful groups response' do
-              let(:params) { { search: 'group1' } }
-              let(:expected_groups) { [project_group1] }
+              let(:params) { { search: 'group2' } }
+              let(:expected_groups) { [project_group2] }
             end
           end
 
@@ -2394,7 +2394,7 @@ RSpec.describe API::Projects, feature_category: :projects do
 
       context 'without share_with_group_lock' do
         it_behaves_like 'successful groups response' do
-          let(:expected_groups) { [root_group, project_group1, project_group2] }
+          let(:expected_groups) { [project_group2] }
         end
       end
 
