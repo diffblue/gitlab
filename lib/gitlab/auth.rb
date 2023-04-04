@@ -370,14 +370,8 @@ module Gitlab
         ]
       end
 
-      def available_scopes_for(current_user)
-        scopes = non_admin_available_scopes
-
-        if current_user.admin? # rubocop: disable Cop/UserAdmin
-          scopes += Feature.enabled?(:admin_mode_for_api) ? ADMIN_SCOPES : [SUDO_SCOPE]
-        end
-
-        scopes
+      def available_scopes_for(resource)
+        available_scopes_for_resource(resource) - unavailable_scopes_for_resource(resource)
       end
 
       def all_available_scopes
@@ -400,6 +394,33 @@ module Gitlab
       end
 
       private
+
+      def available_scopes_for_resource(resource)
+        case resource
+        when User
+          scopes = non_admin_available_scopes
+
+          if resource.admin? # rubocop: disable Cop/UserAdmin
+            scopes += Feature.enabled?(:admin_mode_for_api) ? ADMIN_SCOPES : [SUDO_SCOPE]
+          end
+
+          scopes
+        when Project, Group
+          resource_bot_scopes
+        else
+          []
+        end
+      end
+
+      def unavailable_scopes_for_resource(resource)
+        unavailable_observability_scopes_for_resource(resource)
+      end
+
+      def unavailable_observability_scopes_for_resource(resource)
+        return [] if resource.is_a?(Group) && Gitlab::Observability.enabled?(resource)
+
+        OBSERVABILITY_SCOPES
+      end
 
       def non_admin_available_scopes
         API_SCOPES + REPOSITORY_SCOPES + registry_scopes + OBSERVABILITY_SCOPES
