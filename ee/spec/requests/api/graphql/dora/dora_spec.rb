@@ -26,6 +26,7 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
   let_it_be(:production_in_project_2) { create(:environment, :production, project: project_2) }
   let_it_be(:production_not_in_group) { create(:environment, :production, project: project_not_in_group) }
 
+  let(:number_of_days) { (Time.current.to_date - 3.months.ago.to_date).to_i + 1 }
   let(:post_query) { post_graphql(query, current_user: reporter) }
   let(:data) { graphql_data.dig(*path_prefix) }
 
@@ -96,8 +97,10 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
       it 'returns data for multiple metrics' do
         post_query
 
-        expect(data).to eq([
-          { 'deploymentFrequency' => 12, 'changeFailureRate' => 4, 'date' => nil }
+        df = 12
+        expect(data).to match([
+          { 'deploymentFrequency' => be_within(0.01).of(df.fdiv(number_of_days)), 'changeFailureRate' => 4,
+            'date' => nil }
         ])
       end
     end
@@ -143,8 +146,10 @@ RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category:
       it 'returns data for multiple metrics' do
         post_query
 
-        expect(data).to eq([
-          { 'deploymentFrequency' => 16, 'changeFailureRate' => 3, 'date' => nil }
+        df = 16
+        expect(data).to match([
+          { 'deploymentFrequency' => be_within(0.01).of(df.fdiv(number_of_days)), 'changeFailureRate' => 3,
+            'date' => nil }
         ])
       end
     end

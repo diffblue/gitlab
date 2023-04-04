@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :devops_reports do
+RSpec.describe Gitlab::Insights::Executors::DoraExecutor, time_travel_to: '2021-05-15', feature_category: :devops_reports do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user).tap { |u| group.add_developer(u) } }
   let_it_be(:project1) { create(:project, group: group) }
@@ -11,6 +11,8 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
   let_it_be(:environment1) { create(:environment, :production, project: project1) }
   let_it_be(:environment2) { create(:environment, :production, project: project2) }
   let_it_be(:environment3) { create(:environment, :staging, project: project2) }
+  let_it_be(:date1) { Date.parse('2021-04-05') }
+  let_it_be(:date2) { Date.parse('2021-02-10') }
 
   let(:query_params) do
     {
@@ -38,9 +40,6 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
   end
 
   before(:all) do
-    date1 = Date.today
-    date2 = date1 - 3.months
-
     create(:dora_daily_metrics,
            deployment_frequency: 5,
            lead_time_for_changes_in_seconds: 100,
@@ -74,6 +73,12 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
     end
   end
 
+  def deployment_frequency(date, count)
+    number_of_days = (date.end_of_month - date.beginning_of_month).to_i + 1
+
+    count.fdiv(number_of_days).round(2)
+  end
+
   context 'when Dora::AggregateMetricsService fails' do
     let(:insights_entity) { group }
 
@@ -90,7 +95,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
     let(:insights_entity) { group }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [0, 50, 0, 0, 25] }
+      let(:expected_result) { [0, deployment_frequency(date2, 50), 0, deployment_frequency(date1, 25), 0] }
     end
 
     context 'when requesting the lead_time_for_changes metric' do
@@ -99,7 +104,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
       end
 
       it_behaves_like 'serialized_data examples' do
-        let(:expected_result) { [nil, 0.2, nil, nil, 0.1] }
+        let(:expected_result) { [nil, 0.2, nil, 0.1, nil] }
       end
     end
 
@@ -109,7 +114,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
       end
 
       it_behaves_like 'serialized_data examples' do
-        let(:expected_result) { [nil, 30, nil, nil, 20] }
+        let(:expected_result) { [nil, 30, nil, 20, nil] }
       end
     end
 
@@ -119,7 +124,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
       end
 
       it_behaves_like 'serialized_data examples' do
-        let(:expected_result) { [0, 150, 0, 0, 25] }
+        let(:expected_result) { [0, deployment_frequency(date2, 150), 0, deployment_frequency(date1, 25), 0] }
       end
     end
 
@@ -128,7 +133,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
         let(:projects) { { only: [project2.id] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [0, 0, 0, 0, 20] }
+          let(:expected_result) { [0, 0, 0, deployment_frequency(date1, 20), 0] }
         end
       end
 
@@ -136,7 +141,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
         let(:projects) { { only: [project2.full_path] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [0, 0, 0, 0, 20] }
+          let(:expected_result) { [0, 0, 0, deployment_frequency(date1, 20), 0] }
         end
       end
     end
@@ -168,7 +173,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
     let(:insights_entity) { project1 }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [0, 50, 0, 0, 5] }
+      let(:expected_result) { [0, deployment_frequency(date2, 50), 0, deployment_frequency(date1, 5), 0] }
     end
 
     context 'when filtering projects' do
@@ -176,7 +181,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
         let(:projects) { { only: [project1.id] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [0, 50, 0, 0, 5] }
+          let(:expected_result) { [0, deployment_frequency(date2, 50), 0, deployment_frequency(date1, 5), 0] }
         end
       end
 
@@ -185,7 +190,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor, feature_category: :dev
 
         # ignores the filter
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [0, 50, 0, 0, 5] }
+          let(:expected_result) { [0, deployment_frequency(date2, 50), 0, deployment_frequency(date1, 5), 0] }
         end
       end
     end

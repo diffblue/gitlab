@@ -12,6 +12,8 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
   let_it_be(:production) { create(:environment, :production, project: project) }
   let_it_be(:staging) { create(:environment, :staging, project: project) }
 
+  let(:number_of_days) { (Time.current.to_date - 3.months.ago.to_date).to_i + 1 }
+
   let(:current_user) { reporter }
 
   before_all do
@@ -112,10 +114,15 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         let(:args) { { interval: 'monthly' } }
 
         it 'returns the metrics grouped by month' do
+          deployments_in_march = 18
+          deployments_in_april = 87
+          days_in_march = 31
+          days_in_april = 30
+
           expect(resolve_metrics).to eq(
             [
-              metric_row('date' => '2021-03-01', 'deployment_frequency' => 18),
-              metric_row('date' => '2021-04-01', 'deployment_frequency' => 87)
+              metric_row('date' => '2021-03-01', 'deployment_frequency' => deployments_in_march.fdiv(days_in_march)),
+              metric_row('date' => '2021-04-01', 'deployment_frequency' => deployments_in_april.fdiv(days_in_april))
             ])
         end
       end
@@ -126,7 +133,7 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         it 'returns the metrics grouped into a single bucket with a nil date' do
           expect(resolve_metrics).to eq(
             [
-              metric_row('date' => nil, 'deployment_frequency' => 105)
+              metric_row('date' => nil, 'deployment_frequency' => 105.fdiv(number_of_days))
             ])
         end
       end
@@ -241,7 +248,9 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
 
   def resolve_metrics
     context = { current_user: current_user }
-    resolve(described_class, obj: obj, lookahead: positive_lookahead, args: args, ctx: context, arg_style: :internal)
+    response = resolve(described_class, obj: obj, lookahead: positive_lookahead, args: args, ctx: context, arg_style: :internal)
+    response.each { |row| row.delete('deployment_count') } if response.is_a?(Array) # not used in GraphQL
+    response
   end
 
   def metric_row(**extra)

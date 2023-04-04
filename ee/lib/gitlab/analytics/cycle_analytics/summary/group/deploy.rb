@@ -23,10 +23,6 @@ module Gitlab
             private
 
             def deployments_count
-              @deployments_count ||= deployment_count_via_dora_api
-            end
-
-            def deployment_count_via_dora_api
               result = Dora::AggregateMetricsService.new(
                 container: group,
                 current_user: options[:current_user],
@@ -35,7 +31,7 @@ module Gitlab
 
               return 0 unless result[:status] == :success
 
-              result[:data].first[metric_key] || 0
+              result[:data].first['deployment_count'] || 0
             end
 
             def dora_aggregate_metrics_params
@@ -44,16 +40,12 @@ module Gitlab
                 end_date: (options[:to] || Date.today).to_date,
                 interval: 'all',
                 environment_tiers: %w[production],
-                metrics: [metric_key]
+                metrics: ['deployment_frequency']
               }
 
               params[:group_project_ids] = options[:projects] if options[:projects].present?
 
               params
-            end
-
-            def metric_key
-              'deployment_frequency'
             end
           end
         end
