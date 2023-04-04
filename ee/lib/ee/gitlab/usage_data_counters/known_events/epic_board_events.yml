@@ -4,13 +4,10 @@
 # epic events to allow data aggregation.
 # More information in: https://gitlab.com/gitlab-org/gitlab/-/issues/322405
 - name: g_project_management_users_creating_epic_boards
-  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_viewing_epic_boards
-  redis_slot: project_management
   aggregation: daily
 
 - name: g_project_management_users_updating_epic_board_names
-  redis_slot: project_management
   aggregation: daily
