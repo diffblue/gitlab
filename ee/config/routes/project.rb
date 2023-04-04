@@ -140,11 +140,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           end
         end
 
-        # Added for backward compatibility with https://gitlab.com/gitlab-org/gitlab/-/merge_requests/39543
-        # TODO: Cleanup https://gitlab.com/gitlab-org/gitlab/-/issues/320814
-        get 'iterations/inherited/:id', to: redirect('%{namespace_id}/%{project_id}/-/iterations/%{id}'),
-          as: :legacy_project_iterations_inherited
-
         resources :iterations, only: [:index, :show], constraints: { id: /\d+/ }
 
         resources :iteration_cadences, path: 'cadences(/*vueroute)', action: :index do
