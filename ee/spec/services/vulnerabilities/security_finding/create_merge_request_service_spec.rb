@@ -3,20 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Vulnerabilities::SecurityFinding::CreateMergeRequestService, '#execute', feature_category: :vulnerability_management do
-  let_it_be(:yarn_lock_content) { fixture_file('security_reports/remediations/yarn.lock', dir: 'ee') }
-  let_it_be(:project_files) { { 'yarn.lock' => yarn_lock_content } }
-  let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, :custom_repo, namespace: group, files: project_files) }
-  let_it_be(:pipeline) { create(:ci_pipeline, :success, project: project) }
-  let_it_be(:build) { create(:ci_build, :success, name: 'dependency_scanning', pipeline: pipeline) }
-  let_it_be(:artifact) { create(:ee_ci_job_artifact, :dependency_scanning_remediation, job: build) }
-  let_it_be(:report_finding) do
-    report = create(:ci_reports_security_report, pipeline: pipeline, type: :dependency_scanning)
-    Gitlab::Ci::Parsers::Security::DependencyScanning.parse!(File.read(artifact.file.path), report)
-    report.findings.find do |finding|
-      finding.cve == 'yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98'
-    end
-  end
+  include_context 'with dependency scanning security report findings'
 
   let_it_be(:scan) do
     create(
