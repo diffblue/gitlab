@@ -52464,9 +52464,6 @@ msgstr ""
 msgid "mrWidget|Did not close"
 msgstr ""
 
-msgid "mrWidget|Dismiss"
-msgstr ""
-
 msgid "mrWidget|Failed to load deployment statistics"
 msgstr ""
 
