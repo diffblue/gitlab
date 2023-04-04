@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 With file finder, you can search for a file in a repository directly from the GitLab UI.
 
-File finder is powered by the [`fuzzaldrin-plus`](https://github.com/jeancroy/fuzz-aldrin-plus) library, which uses fuzzy search and highlights results as you're typing.
+File finder is powered by the [`fuzzaldrin-plus`](https://github.com/jeancroy/fuzz-aldrin-plus) library, which uses fuzzy search and highlights results as you type.
 
 ## Search for a file
 
