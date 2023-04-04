@@ -8,16 +8,23 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
   let(:user) { create(:user) }
   let(:admin) { create(:admin) }
   let(:project) { create(:project) }
+  let(:path) { "/application/settings" }
 
   before do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
   end
 
+  it_behaves_like 'GET request permissions for admin mode'
+
   describe "PUT /application/settings" do
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:params) { { help_text: 'Help text', file_template_project_id: project.id } }
+    end
+
     it 'sets EE specific settings' do
       stub_licensed_features(custom_file_templates: true)
 
-      put api("/application/settings", admin, admin_mode: true),
+      put api(path, admin, admin_mode: true),
         params: {
           help_text: 'Help text',
           file_template_project_id: project.id
@@ -136,7 +143,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
 
     before do
       # Make sure the settings exist before the specs
-      get api("/application/settings", admin, admin_mode: true)
+      get api(path, admin, admin_mode: true)
     end
 
     context 'when the feature is not available' do
@@ -145,7 +152,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
 
       it 'hides the attributes in the API' do
-        get api("/application/settings", admin, admin_mode: true)
+        get api(path, admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:ok)
         attribute_names.each do |attribute|
@@ -154,11 +161,11 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
 
       it 'does not update application settings' do
-        put api("/application/settings", admin, admin_mode: true), params: settings
+        put api(path, admin, admin_mode: true), params: settings
 
         expect(response).to have_gitlab_http_status(:ok)
 
-        expect { put api("/application/settings", admin, admin_mode: true), params: settings }
+        expect { put api(path, admin, admin_mode: true), params: settings }
           .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
       end
     end
@@ -169,7 +176,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
 
       it 'includes the attributes in the API' do
-        get api("/application/settings", admin, admin_mode: true)
+        get api(path, admin, admin_mode: true)
 
         expect(response).to have_gitlab_http_status(:ok)
         attribute_names.each do |attribute|
@@ -178,7 +185,7 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
 
       it 'allows updating the settings' do
-        put api("/application/settings", admin, admin_mode: true), params: settings
+        put api(path, admin, admin_mode: true), params: settings
         expect(response).to have_gitlab_http_status(:ok)
 
         settings.each do |attribute, value|

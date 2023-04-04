@@ -215,6 +215,10 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
       group1.update!(shared_runners_minutes_limit: 1000, extra_shared_runners_minutes_limit: 500)
     end
 
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { "/namespaces/#{group1.id}" }
+    end
+
     context 'when authenticated as admin' do
       subject { put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params }
 
@@ -458,6 +462,10 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
       post api("/namespaces/#{group1.id}/gitlab_subscription", current_user, admin_mode: admin_mode), params: payload
     end
 
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { "/namespaces/#{group1.id}/gitlab_subscription" }
+    end
+
     context 'when authenticated as a regular user' do
       it 'returns an unauthorized error' do
         do_post(user, params)
@@ -693,6 +701,10 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
         start_date: '2018/01/01',
         end_date: '2019/01/01'
       }
+    end
+
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { "/namespaces/#{namespace.id}/gitlab_subscription" }
     end
 
     context 'when authenticated as a regular user' do
