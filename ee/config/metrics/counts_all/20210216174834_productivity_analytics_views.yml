@@ -6,7 +6,6 @@ description: Total visits to /groups/:group/-/analytics/productivity_analytics a
 product_section: dev
 product_stage: manage
 product_group: optimize
-product_category:
 value_type: number
 status: active
 time_frame: all

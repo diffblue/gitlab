@@ -4,7 +4,6 @@ description: Count of unique visits to group value streams dashboards page
 product_section: dev
 product_stage: plan
 product_group: optimize
-product_category:
 value_type: number
 status: active
 milestone: "15.11"

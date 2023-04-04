@@ -6,7 +6,6 @@ description: Unique visitors to /groups/:group/-/analytics/productivity_analytic
 product_section: dev
 product_stage: manage
 product_group: optimize
-product_category:
 value_type: number
 status: active
 time_frame: 7d

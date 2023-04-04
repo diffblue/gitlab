@@ -5,7 +5,6 @@ description: Count of unique visits to the group level CI/CD Analytics Lead Time
 product_section: dev
 product_stage: manage
 product_group: optimize
-product_category:
 value_type: number
 status: active
 milestone: "15.2"
