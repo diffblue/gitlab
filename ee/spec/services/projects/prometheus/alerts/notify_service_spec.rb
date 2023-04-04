@@ -43,10 +43,8 @@ RSpec.describe Projects::Prometheus::Alerts::NotifyService do
       end
 
       before do
-        create(:clusters_integrations_prometheus,
-               cluster: prd_cluster, alert_manager_token: token)
-        create(:clusters_integrations_prometheus,
-               cluster: stg_cluster, alert_manager_token: nil)
+        create(:clusters_integrations_prometheus, cluster: prd_cluster, alert_manager_token: token)
+        create(:clusters_integrations_prometheus, cluster: stg_cluster, alert_manager_token: nil)
       end
 
       context 'without token' do

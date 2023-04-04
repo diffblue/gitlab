@@ -114,8 +114,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
   context 'with repository mirror' do
     before do
-      opts.merge!(import_url: 'http://foo.com',
-                  mirror: true)
+      opts.merge!(import_url: 'http://foo.com', mirror: true)
     end
 
     context 'when licensed' do
