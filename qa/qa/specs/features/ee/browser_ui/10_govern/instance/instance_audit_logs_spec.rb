@@ -17,11 +17,7 @@ module QA
       end
     end
 
-    describe 'Instance', :requires_admin, :reliable, quarantine: {
-      type: :flaky,
-      only: { job: 'review-qa-*' },
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/373794'
-    } do
+    describe 'Instance', :requires_admin do
       context 'for failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
