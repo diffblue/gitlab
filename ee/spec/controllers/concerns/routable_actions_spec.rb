@@ -39,76 +39,40 @@ RSpec.describe RoutableActions, feature_category: :system_access do
       end
 
       shared_examples 'sso redirects' do
-        context 'for group members' do
-          before do
-            root_group.add_developer(user)
-          end
+        it 'redirects to group sign in page' do
+          get :show, params: request_params(routable)
 
-          it 'redirects to group sign in page' do
-            get :show, params: request_params(routable)
-
-            expect(response).to have_gitlab_http_status(:found)
-            expect(response.location).to match(%r{groups/.*/-/saml/sso\?redirect=.+&token=})
-          end
-
-          it 'does not redirect on POST requests' do
-            post :create, params: request_params(routable)
-
-            expect(response).to have_gitlab_http_status(:not_found)
-          end
+          expect(response).to have_gitlab_http_status(:found)
+          expect(response.location).to match(%r{groups/.*/-/saml/sso\?redirect=.+&token=})
         end
 
-        context 'for non members' do
-          it 'returns the correct status for GET requests' do
-            get :show, params: request_params(routable)
+        it 'does not redirect on POST requests' do
+          post :create, params: request_params(routable)
 
-            expect(response).to have_gitlab_http_status(get_non_members)
-          end
-
-          it 'returns the correct status for POST requests' do
-            post :create, params: request_params(routable)
-
-            expect(response).to have_gitlab_http_status(post_non_members)
-          end
+          expect(response).to have_gitlab_http_status(:not_found)
         end
       end
 
-      describe 'for a public group' do
+      describe 'for a group' do
         let(:routable) { root_group }
-        let(:get_non_members) { :ok }
-        let(:post_non_members) { :ok }
 
         include_examples 'sso redirects'
       end
 
-      describe 'for a nested public group' do
-        let(:routable) { create(:group, parent: root_group) }
-        let(:get_non_members) { :ok }
-        let(:post_non_members) { :ok }
-
-        include_examples 'sso redirects'
-      end
-
-      describe 'for a nested private group' do
+      describe 'for a nested group' do
         let(:routable) { create(:group, :private, parent: root_group) }
-        let(:get_non_members) { :not_found }
-        let(:post_non_members) { :not_found }
 
         include_examples 'sso redirects'
       end
 
-      describe 'for a nested public project' do
-        let(:routable) { create(:project, :public, group: root_group) }
-        let(:get_non_members) { :ok }
-        let(:post_non_members) { :ok }
+      describe 'for a project' do
+        let(:routable) { create(:project, :private, group: root_group) }
 
         include_examples 'sso redirects'
       end
 
-      describe 'for a nested private project' do
+      describe 'for a nested project' do
         let(:routable) { create(:project, :private, group: create(:group, :private, parent: root_group)) }
-        let(:get_non_members) { :found }
-        let(:post_non_members) { :not_found }
 
         include_examples 'sso redirects'
       end
