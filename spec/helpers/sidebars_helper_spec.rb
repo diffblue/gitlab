@@ -146,12 +146,22 @@ RSpec.describe SidebarsHelper, feature_category: :navigation do
             {
               text: _('Assigned'),
               href: merge_requests_dashboard_path(assignee_username: user.username),
-              count: 4
+              count: 4,
+              extraAttrs: {
+                'data-track-action': 'click_link',
+                'data-track-label': 'merge_requests_assigned',
+                'data-track-property': 'nav_core_menu'
+              }
             },
             {
               text: _('Review requests'),
               href: merge_requests_dashboard_path(reviewer_username: user.username),
-              count: 0
+              count: 0,
+              extraAttrs: {
+                'data-track-action': 'click_link',
+                'data-track-label': 'merge_requests_to_review',
+                'data-track-property': 'nav_core_menu'
+              }
             }
           ]
         }
