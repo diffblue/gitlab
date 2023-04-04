@@ -1119,6 +1119,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: compliance_management_framework_export_mailer
+  :worker_name: ComplianceManagement::FrameworkExportMailerWorker
+  :feature_category: :compliance_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: compliance_management_merge_requests_compliance_violations
   :worker_name: ComplianceManagement::MergeRequests::ComplianceViolationsWorker
   :feature_category: :compliance_management
