@@ -32917,6 +32917,12 @@ msgstr ""
 msgid "Preferences|Customize integrations with third party services."
 msgstr ""
 
+msgid "Preferences|Customize the appearance of the syntax."
+msgstr ""
+
+msgid "Preferences|Customize the behavior of the system layout and default views."
+msgstr ""
+
 msgid "Preferences|Customize the color of GitLab."
 msgstr ""
 
@@ -32999,12 +33005,6 @@ msgid "Preferences|The Web IDE remains available alongside the Beta."
 msgstr ""
 
 msgid "Preferences|This feature is experimental and translations are not yet complete."
-msgstr ""
-
-msgid "Preferences|This setting allows you to customize the appearance of the syntax."
-msgstr ""
-
-msgid "Preferences|This setting allows you to customize the behavior of the system layout and default views."
 msgstr ""
 
 msgid "Preferences|Time preferences"
