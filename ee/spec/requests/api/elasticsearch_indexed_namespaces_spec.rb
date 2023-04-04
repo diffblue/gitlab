@@ -35,6 +35,10 @@ RSpec.describe API::ElasticsearchIndexedNamespaces, :aggregate_failures, feature
   describe 'PUT /elasticsearch_indexed_namespaces/rollout' do
     let(:path) { "/elasticsearch_indexed_namespaces/rollout" }
 
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:params) { { plan: 'ultimate', percentage: 50 } }
+    end
+
     include_context 'rollout related'
 
     it 'invokes ElasticNamespaceRolloutWorker rollout' do
@@ -48,6 +52,10 @@ RSpec.describe API::ElasticsearchIndexedNamespaces, :aggregate_failures, feature
 
   describe 'PUT /elasticsearch_indexed_namespaces/rollback' do
     let(:path) { "/elasticsearch_indexed_namespaces/rollback" }
+
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:params) { { plan: 'ultimate', percentage: 50 } }
+    end
 
     include_context 'rollout related'
 

@@ -7,6 +7,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
   let(:admin) { create(:admin) }
 
   context 'updating name' do
+    it_behaves_like 'PUT request permissions for admin mode' do
+      let(:path) { "/users/#{user.id}" }
+      let(:params) { { name: 'New Name' } }
+    end
+
     shared_examples_for 'admin can update the name of a user' do
       it 'updates the user with new name' do
         put api("/users/#{user.id}", admin, admin_mode: true), params: { name: 'New Name' }
@@ -70,6 +75,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
 
     describe "PUT /users/:id" do
+      it_behaves_like 'PUT request permissions for admin mode' do
+        let(:path) { "/users/#{user.id}" }
+        let(:params) { { password: User.random_password } }
+      end
+
       it "creates audit event when updating user with new password" do
         put api("/users/#{user.id}", admin, admin_mode: true), params: { password: User.random_password }
 
@@ -78,6 +88,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
 
     describe 'POST /users/:id/block' do
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:path) { "/users/#{user.id}/block" }
+        let(:params) { {} }
+      end
+
       it 'creates audit event when blocking user' do
         expect do
           post api("/users/#{user.id}/block", admin, admin_mode: true)
@@ -96,6 +111,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
 
     describe 'POST /users/:id/keys' do
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:path) { "/users/#{user.id}/keys" }
+        let(:params) { attributes_for(:key) }
+      end
+
       it 'creates audit event when admin adds a new key for a user' do
         key = attributes_for(:key)
 
@@ -181,6 +201,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
     end
 
     describe "POST /users/" do
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:path) { "/users" }
+        let(:params) { attributes_for(:user).merge({ auditor: true }) }
+      end
+
       context 'when user is an admin' do
         before do
           stub_licensed_features(auditor_user: true)
@@ -230,6 +255,11 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
       stub_licensed_features(group_saml: true)
     end
     let(:saml_provider) { create(:saml_provider) }
+
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:path) { "/users" }
+      let(:params) { attributes_for(:user, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id) }
+    end
 
     it 'creates user with new identity' do
       post api("/users", admin, admin_mode: true), params: attributes_for(:user, provider: 'group_saml', extern_uid: '67890', group_id_for_saml: saml_provider.group.id)

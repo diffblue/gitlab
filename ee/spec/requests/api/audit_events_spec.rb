@@ -71,6 +71,10 @@ RSpec.describe API::AuditEvents, :aggregate_failures, feature_category: :audit_e
           stub_licensed_features(admin_audit_log: true)
         end
 
+        it_behaves_like 'GET request permissions for admin mode' do
+          let(:path) { url }
+        end
+
         it 'returns 200 response' do
           get api(url, admin, admin_mode: true)
 
@@ -233,6 +237,10 @@ RSpec.describe API::AuditEvents, :aggregate_failures, feature_category: :audit_e
       context 'audit events feature is available' do
         before do
           stub_licensed_features(admin_audit_log: true)
+        end
+
+        it_behaves_like 'GET request permissions for admin mode' do
+          let(:path) { url }
         end
 
         context 'audit event exists' do

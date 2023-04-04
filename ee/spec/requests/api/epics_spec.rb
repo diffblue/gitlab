@@ -667,6 +667,10 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         group.add_developer(user)
       end
 
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:path) { url }
+      end
+
       context 'when required parameter is missing' do
         it 'returns 400' do
           post api(url, user), params: { description: 'epic description' }
@@ -912,6 +916,10 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
     context 'when epics feature is enabled' do
       before do
         stub_licensed_features(epics: true, subepics: true)
+      end
+
+      it_behaves_like 'PUT request permissions for admin mode' do
+        let(:path) { url }
       end
 
       context 'when a user does not have permissions to create an epic' do

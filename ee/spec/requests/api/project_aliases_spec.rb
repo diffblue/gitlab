@@ -5,11 +5,16 @@ require 'spec_helper'
 RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_category: :source_code_management do
   let(:user)  { create(:user) }
   let(:admin) { create(:admin) }
+  let(:path) { '/project_aliases' }
 
   context 'without premium license' do
     describe 'GET /project_aliases' do
+      it_behaves_like 'GET request permissions for admin mode' do
+        let(:success_status_code) { :forbidden }
+      end
+
       before do
-        get api('/project_aliases', admin, admin_mode: true)
+        get api(path, admin, admin_mode: true)
       end
 
       it 'returns 403' do
@@ -19,6 +24,11 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
 
     describe 'GET /project_aliases/:name' do
       let(:project_alias) { create(:project_alias) }
+
+      it_behaves_like 'GET request permissions for admin mode' do
+        let(:path) { "/project_aliases/#{project_alias.name}" }
+        let(:success_status_code) { :forbidden }
+      end
 
       before do
         get api("/project_aliases/#{project_alias.name}", admin, admin_mode: true)
@@ -32,8 +42,13 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
     describe 'POST /project_aliases' do
       let(:project) { create(:project) }
 
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:params) { { project_id: project.id, name: 'some-project' } }
+        let(:success_status_code) { :forbidden }
+      end
+
       before do
-        post api("/project_aliases", admin, admin_mode: true), params: { project_id: project.id, name: 'some-project' }
+        post api(path, admin, admin_mode: true), params: { project_id: project.id, name: 'some-project' }
       end
 
       it 'returns 403' do
@@ -43,9 +58,14 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
 
     describe 'DELETE /project_aliases/:name' do
       let(:project_alias) { create(:project_alias) }
+      let(:path) { "/project_aliases/#{project_alias.name}" }
+
+      it_behaves_like 'DELETE request permissions for admin mode' do
+        let(:success_status_code) { :forbidden }
+      end
 
       before do
-        delete api("/project_aliases/#{project_alias.name}", admin, admin_mode: true)
+        delete api(path, admin, admin_mode: true)
       end
 
       it 'returns 403' do
@@ -77,8 +97,10 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
 
     describe 'GET /project_aliases' do
       before do
-        get api('/project_aliases', user, admin_mode: true)
+        get api(path, user, admin_mode: true)
       end
+
+      it_behaves_like 'GET request permissions for admin mode'
 
       it_behaves_like 'GitLab administrator only API endpoint'
 
@@ -98,10 +120,13 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
     describe 'GET /project_aliases/:name' do
       let(:project_alias) { create(:project_alias) }
       let(:alias_name) { project_alias.name }
+      let(:path) { "/project_aliases/#{alias_name}" }
 
       before do
-        get api("/project_aliases/#{alias_name}", user, admin_mode: true)
+        get api(path, user, admin_mode: true)
       end
+
+      it_behaves_like 'GET request permissions for admin mode'
 
       it_behaves_like 'GitLab administrator only API endpoint'
 
@@ -129,9 +154,14 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
       let(:project) { create(:project) }
       let(:project_alias) { create(:project_alias) }
       let(:alias_name) { project_alias.name }
+      let(:params) { { project_id: project.id, name: alias_name } }
 
       before do
-        post api("/project_aliases", user, admin_mode: true), params: { project_id: project.id, name: alias_name }
+        post api(path, user, admin_mode: true), params: params
+      end
+
+      it_behaves_like 'POST request permissions for admin mode' do
+        let(:alias_name) { 'some-project' }
       end
 
       it_behaves_like 'GitLab administrator only API endpoint'
@@ -159,10 +189,13 @@ RSpec.describe API::ProjectAliases, :aggregate_failures, api: true, feature_cate
     describe 'DELETE /project_aliases/:name' do
       let(:project_alias) { create(:project_alias) }
       let(:alias_name) { project_alias.name }
+      let(:path) { "/project_aliases/#{alias_name}" }
 
       before do
-        delete api("/project_aliases/#{alias_name}", user, admin_mode: true)
+        delete api(path, user, admin_mode: true)
       end
+
+      it_behaves_like 'DELETE request permissions for admin mode'
 
       it_behaves_like 'GitLab administrator only API endpoint'
 

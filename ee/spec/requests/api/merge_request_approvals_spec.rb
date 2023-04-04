@@ -57,6 +57,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
 
   describe 'GET :id/merge_requests/:merge_request_iid/approvals' do
     let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 2, name: 'foo') }
+    let(:path) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals" }
 
     it 'retrieves the approval status' do
       project.add_developer(approver)
@@ -65,7 +66,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
       rule.users << approver
       rule.groups << group
 
-      get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", user)
+      get api(path, user)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['approvals_required']).to eq 2
@@ -85,7 +86,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
       rule.users << approver
       rule.groups << group
 
-      get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", approver)
+      get api(path, approver)
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(json_response['approvals_required']).to eq 2
@@ -110,7 +111,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
       end
 
       it 'hides private group' do
-        get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", user)
+        get api(path, user)
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response['approver_groups'].size).to eq(0)
@@ -118,7 +119,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
 
       context 'when admin' do
         it 'shows all approver groups' do
-          get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", admin, admin_mode: true)
+          get api(path, admin, admin_mode: true)
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response['approver_groups'].size).to eq(1)
@@ -129,7 +130,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
     context 'when approvers are set to zero' do
       before do
         create(:approval_project_rule, project: project, approvals_required: 0)
-        get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", user)
+        get api(path, user)
       end
 
       it 'returns a 200' do
@@ -142,7 +143,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
     context 'when merge_status is cannot_be_merged_rechecking' do
       before do
         merge_request.update!(merge_status: 'cannot_be_merged_rechecking')
-        get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", user)
+        get api(path, user)
       end
 
       it 'returns `checking`' do
@@ -274,6 +275,11 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
   end
 
   describe 'POST :id/merge_requests/:merge_request_iid/approvals' do
+    let(:path) { "/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals" }
+    let(:params) { { approvals_required: 5 } }
+
+    it_behaves_like 'POST request permissions for admin mode'
+
     shared_examples_for 'user allowed to override approvals_before_merge' do
       context 'when disable_overriding_approvers_per_merge_request is false on the project' do
         before do
@@ -282,7 +288,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
 
         it 'allows you to set approvals required' do
           expect do
-            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user, admin_mode: true), params: { approvals_required: 5 }
+            post api(path, current_user, admin_mode: true), params: params
           end.to change { merge_request.reload.approvals_before_merge }.from(nil).to(5)
 
           expect(response).to have_gitlab_http_status(:created)
@@ -297,7 +303,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
 
         it 'does not allow you to set approvals_before_merge' do
           expect do
-            post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", current_user, admin_mode: true), params: { approvals_required: 5 }
+            post api(path, current_user, admin_mode: true), params: params
           end.not_to change { merge_request.reload.approvals_before_merge }
 
           expect(response).to have_gitlab_http_status(:unprocessable_entity)
@@ -326,7 +332,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
 
       it 'does not allow you to override approvals required' do
         expect do
-          post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/approvals", user2), params: { approvals_required: 5 }
+          post api(path, user2), params: params
         end.not_to change { merge_request.reload.approvals_before_merge }
 
         expect(response).to have_gitlab_http_status(:forbidden)
