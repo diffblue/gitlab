@@ -2,7 +2,10 @@
 
 module QA
   RSpec.describe 'Secure', :runner, product_group: :composition_analysis,
-    feature_flag: { name: 'license_scanning_sbom_scanner' } do
+    feature_flag: { name: 'license_scanning_sbom_scanner' }, quarantine: {
+      type: :waiting_on,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/397067'
+    } do
     describe 'License Compliance' do
       before(:all) do
         @project = Resource::Project.fabricate_via_api! do |project|

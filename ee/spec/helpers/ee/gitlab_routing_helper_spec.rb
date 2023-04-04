@@ -164,14 +164,6 @@ RSpec.describe EE::GitlabRoutingHelper do
     end
   end
 
-  describe '#license_management_settings_path' do
-    it 'generates a path to the license compliance page' do
-      result = helper.license_management_settings_path(project)
-
-      expect(result).to eq('/foo/bar/-/licenses#policies')
-    end
-  end
-
   describe '#user_group_saml_omniauth_metadata_path' do
     subject do
       helper.user_group_saml_omniauth_metadata_path(group)

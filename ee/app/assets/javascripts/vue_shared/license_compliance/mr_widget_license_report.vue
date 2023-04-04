@@ -29,11 +29,6 @@ export default {
       required: false,
       default: null,
     },
-    licenseManagementSettingsPath: {
-      type: String,
-      required: false,
-      default: null,
-    },
     apiUrl: {
       type: String,
       required: true,
@@ -67,6 +62,11 @@ export default {
       required: false,
       default: '',
     },
+    securityPoliciesPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   typicalReportItemHeight: 26,
   maxShownReportItems: 20,
@@ -87,7 +87,7 @@ export default {
       return this.checkReportStatus(this.isLoading, this.loadLicenseReportError);
     },
     showActionButtons() {
-      return this.licenseManagementSettingsPath !== null || this.fullReportPath !== null;
+      return this.securityPoliciesPath !== null || this.fullReportPath !== null;
     },
   },
   watch: {
@@ -198,10 +198,10 @@ export default {
           {{ s__('ciReport|View full report') }}
         </gl-button>
         <gl-button
-          v-if="licenseManagementSettingsPath"
+          v-if="securityPoliciesPath"
           data-testid="manage-licenses-button"
           :class="{ 'gl-mr-3': isCollapsible }"
-          :href="licenseManagementSettingsPath"
+          :href="securityPoliciesPath"
           data-qa-selector="manage_licenses_button"
           @click="trackVisitedPath('users_visiting_testing_manage_license_compliance')"
         >

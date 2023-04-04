@@ -15,8 +15,8 @@ export default () => {
     const {
       canManageLicenses,
       apiUrl,
-      licenseManagementSettingsPath,
       licensesApiPath,
+      securityPoliciesPath,
     } = licensesTab.dataset;
 
     // eslint-disable-next-line no-new
@@ -31,7 +31,7 @@ export default () => {
           props: {
             apiUrl,
             licensesApiPath,
-            licenseManagementSettingsPath,
+            securityPoliciesPath,
             canManageLicenses: parseBoolean(canManageLicenses),
             alwaysOpen: true,
             reportSectionClass: 'split-report-section',
