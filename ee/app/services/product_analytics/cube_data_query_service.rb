@@ -43,10 +43,12 @@ module ProductAnalytics
         return ServiceResponse.error(message: e.message, reason: :bad_gateway)
       end
 
-      if database_exists?(body)
-        ServiceResponse.success(message: 'Cube Query Successful', payload: body)
-      else
+      if database_missing?(body)
         ServiceResponse.error(message: '404 Clickhouse Database Not Found', reason: :not_found)
+      elsif body['error'].present?
+        ServiceResponse.error(message: body['error'], reason: :bad_request)
+      else
+        ServiceResponse.success(message: 'Cube Query Successful', payload: body)
       end
     end
 
@@ -89,8 +91,8 @@ module ProductAnalytics
       }
     end
 
-    def database_exists?(body)
-      (body['error'] =~ %r{\AError: Code: (81|60)\..*(UNKNOWN_DATABASE|UNKNOWN_TABLE)}).nil?
+    def database_missing?(body)
+      body['error'] =~ %r{\AError: Code: (81|60)\..*(UNKNOWN_DATABASE|UNKNOWN_TABLE)}
     end
   end
 end

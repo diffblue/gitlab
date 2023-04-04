@@ -155,6 +155,19 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
       end
     end
 
+    context 'when querying with an invalid query' do
+      before do
+        stub_cube_load_invalid_query
+      end
+
+      it 'returns an error' do
+        response = request_load(false)
+
+        expect(response.reason).to eq(:bad_request)
+        expect(response.message).to eq("Query is invalid")
+      end
+    end
+
     context 'when querying an existing database' do
       before do
         stub_cube_load
@@ -244,6 +257,11 @@ RSpec.describe ProductAnalytics::CubeDataQueryService, feature_category: :produc
 
     stub_request(:post, cube_api_load_url)
       .to_return(status: 400, body: msg, headers: {})
+  end
+
+  def stub_cube_load_invalid_query
+    stub_request(:post, cube_api_load_url)
+      .to_return(status: 200, body: '{"error": "Query is invalid"}', headers: {})
   end
 
   def stub_cube_dry_run
