@@ -3,16 +3,24 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composition do
-  let_it_be(:project) { build(:project) }
+  include Devise::Test::ControllerHelpers
 
-  describe '#can_view_private_catalog?' do
-    subject { helper.can_view_private_catalog?(project) }
+  let_it_be(:project) { create_default(:project) }
+  let_it_be(:user) { create_default(:user) }
+
+  before do
+    allow(helper).to receive(:current_user).and_return(user)
+  end
+
+  describe '#can_view_namespace_catalog?' do
+    subject { helper.can_view_namespace_catalog?(project) }
 
     context 'when FF `ci_private_catalog_beta` is disabled' do
       before do
         stub_feature_flags(ci_private_catalog_beta: false)
         stub_licensed_features(ci_namespace_catalog: true)
-        allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
+
+        project.add_owner(user)
       end
 
       it 'returns false' do
@@ -22,33 +30,17 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
     context 'when user has no permissions to collaborate' do
       before do
-        allow(helper).to receive(:can_collaborate_with_project?).and_return(false)
+        stub_licensed_features(ci_namespace_catalog: true)
       end
 
-      context 'when license for namespace catalog is enabled' do
-        before do
-          stub_licensed_features(ci_namespace_catalog: true)
-        end
-
-        it 'returns false' do
-          expect(subject).to be false
-        end
-      end
-
-      context 'when license for namespace catalog is not enabled' do
-        before do
-          stub_licensed_features(ci_namespace_catalog: false)
-        end
-
-        it 'returns false' do
-          expect(subject).to be false
-        end
+      it 'returns false' do
+        expect(subject).to be false
       end
     end
 
     context 'when user has permissions to collaborate' do
       before do
-        allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
+        project.add_owner(user)
       end
 
       context 'when license for namespace catalog is enabled' do
@@ -89,7 +81,8 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
     context 'with the right permissions' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
-        allow(helper).to receive(:can_collaborate_with_project?).and_return(true)
+
+        project.add_owner(user)
       end
 
       it 'returns both the super and EE specific properties' do

@@ -2673,4 +2673,94 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'read_namespace_catalog' do
+    let(:current_user) { owner }
+
+    context 'when the ci_namespace_catalog licensed feature is unavailable' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_namespace_catalog) }
+    end
+
+    context 'when the ci_private_catalog_beta feature flag is disabled' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+        stub_feature_flags(ci_private_catalog_beta: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_namespace_catalog) }
+    end
+
+    context 'when ci_namespace_catalog and ci_private_catalog_beta are available' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:current_user) { public_send(role) }
+
+      where(:role, :allowed) do
+        :owner      | true
+        :maintainer | true
+        :developer  | true
+        :reporter   | false
+        :guest      | false
+      end
+
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+      end
+
+      with_them do
+        it do
+          expect(subject.can?(:read_namespace_catalog)).to be(allowed)
+        end
+      end
+    end
+  end
+
+  describe 'add_catalog_resource' do
+    let(:current_user) { owner }
+
+    context 'when the ci_namespace_catalog licensed feature is unavailable' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: false)
+      end
+
+      it { is_expected.to be_disallowed(:add_catalog_resource) }
+    end
+
+    context 'when the ci_private_catalog_beta feature flag is disabled' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+        stub_feature_flags(ci_private_catalog_beta: false)
+      end
+
+      it { is_expected.to be_disallowed(:add_catalog_resource) }
+    end
+
+    context 'when ci_namespace_catalog and ci_private_catalog_beta are available' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:current_user) { public_send(role) }
+
+      where(:role, :allowed) do
+        :owner      | true
+        :maintainer | false
+        :developer  | false
+        :reporter   | false
+        :guest      | false
+      end
+
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+      end
+
+      with_them do
+        it do
+          expect(subject.can?(:add_catalog_resource)).to be(allowed)
+        end
+      end
+    end
+  end
 end
