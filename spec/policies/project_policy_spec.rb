@@ -3104,26 +3104,6 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'add_catalog_resource' do
-    using RSpec::Parameterized::TableSyntax
-
-    let(:current_user) { public_send(role) }
-
-    where(:role, :allowed) do
-      :owner      | true
-      :maintainer | false
-      :developer  | false
-      :reporter   | false
-      :guest      | false
-    end
-
-    with_them do
-      it do
-        expect(subject.can?(:add_catalog_resource)).to be(allowed)
-      end
-    end
-  end
-
   describe 'read_code' do
     let(:current_user) { create(:user) }
 
@@ -3143,6 +3123,18 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
       it { expect_disallowed(:read_code) }
     end
+  end
+
+  describe 'read_namespace_catalog' do
+    let(:current_user) { owner }
+
+    specify { is_expected.to be_disallowed(:read_namespace_catalog) }
+  end
+
+  describe 'add_catalog_resource' do
+    let(:current_user) { owner }
+
+    specify { is_expected.to be_disallowed(:read_namespace_catalog) }
   end
 
   private

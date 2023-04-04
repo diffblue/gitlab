@@ -17,7 +17,7 @@ module Projects
         private
 
         def check_catalog_access
-          render_404 unless helpers.can_view_private_catalog?(@project)
+          render_404 unless helpers.can_view_namespace_catalog?(@project)
         end
       end
     end
