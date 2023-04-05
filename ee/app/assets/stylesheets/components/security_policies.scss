@@ -1,4 +1,4 @@
 .security-policies-alert {
-  @include sticky-top-positioning();
+  top: $calc-application-header-height;
   @include gl-z-index-1;
 }
