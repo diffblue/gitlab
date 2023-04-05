@@ -512,23 +512,14 @@ RSpec.describe API::Groups, feature_category: :subgroups do
           expect(response_groups).to contain_exactly(group2.id, group3.id)
         end
 
-        context 'distinct count with present_groups_select_all feature flag' do
+        context 'distinct count' do
           subject { get api('/groups', user2), params: { min_access_level: 40 } }
 
+          # Prevent Rails from optimizing the count query and inadvertadly creating a poor performing databse query.
+          # https://gitlab.com/gitlab-org/gitlab/-/issues/368969
           it 'counts with *' do
             count_sql = /#{Regexp.escape('SELECT count(*)')}/i
             expect { subject }.to make_queries_matching count_sql
-          end
-
-          context 'when present_groups_select_all feature flag is disabled' do
-            before do
-              stub_feature_flags(present_groups_select_all: false)
-            end
-
-            it 'counts with count_column' do
-              count_sql = /#{Regexp.escape('SELECT count(count_column)')}/i
-              expect { subject }.to make_queries_matching count_sql
-            end
           end
         end
       end
