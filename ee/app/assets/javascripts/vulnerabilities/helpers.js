@@ -74,6 +74,21 @@ export const normalizeGraphQLVulnerability = (vulnerability) => {
   return newVulnerability;
 };
 
+export const normalizeGraphQLLastStateTransition = (graphQLVulnerability, vulnerability) => {
+  const stateTransitions = [...vulnerability.stateTransitions];
+
+  // The vulnerability status mutation only returns 1 stateTransition
+  const [graphQLLastStateTransitions] = graphQLVulnerability.stateTransitions.nodes;
+  stateTransitions.push({
+    ...graphQLLastStateTransitions,
+    fromState: graphQLLastStateTransitions.fromState.toLowerCase(),
+    toState: graphQLLastStateTransitions.toState.toLowerCase(),
+    dismissalReason: graphQLLastStateTransitions.dismissalReason?.toLowerCase(),
+  });
+
+  return { stateTransitions };
+};
+
 export const formatIdentifierExternalIds = ({ externalType, externalId, name }) => {
   return `[${externalType}]-[${externalId}]-[${name}]`;
 };

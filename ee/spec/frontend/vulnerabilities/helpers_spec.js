@@ -2,6 +2,7 @@ import {
   getFormattedIssue,
   getAddRelatedIssueRequestParams,
   normalizeGraphQLVulnerability,
+  normalizeGraphQLLastStateTransition,
   formatIdentifierExternalIds,
   isSupportedIdentifier,
 } from 'ee/vulnerabilities/helpers';
@@ -64,6 +65,59 @@ describe('Vulnerabilities helpers', () => {
         dismissedById: 16,
         state: 'dismissed',
         id: 54,
+      });
+    });
+  });
+
+  describe('normalizeGraphQLLastStateTransition', () => {
+    const vulnerability = {
+      stateTransitions: [
+        {
+          author: { id: 'gid://gitlab/User/16' },
+          comment: 'test',
+          createdAt: '2023-03-07T09:20:31.852Z',
+          fromState: 'detected',
+          toState: 'confirmed',
+          dismissalReason: null,
+        },
+      ],
+    };
+
+    const graphQLVulnerability = {
+      stateTransitions: {
+        nodes: [
+          {
+            author: { id: 'gid://gitlab/User/1' },
+            comment: null,
+            createdAt: '2023-03-06T01:20:01.000Z',
+            fromState: 'CONFIRMED',
+            toState: 'DISMISSED',
+            dismissalReason: 'USED_IN_TESTS',
+          },
+        ],
+      },
+    };
+
+    const normalizedLastStateTransition = {
+      author: { id: 'gid://gitlab/User/1' },
+      comment: null,
+      createdAt: '2023-03-06T01:20:01.000Z',
+      fromState: 'confirmed',
+      toState: 'dismissed',
+      dismissalReason: 'used_in_tests',
+    };
+
+    it(`returns object with only normalized graphQLVulnerability last stateTransition when initial vulnerability doesn't have stateTransitions`, () => {
+      expect(
+        normalizeGraphQLLastStateTransition(graphQLVulnerability, { stateTransitions: [] }),
+      ).toEqual({
+        stateTransitions: [normalizedLastStateTransition],
+      });
+    });
+
+    it('concatenates initial vulnerability stateTransitions with normalized graphQLVulnerability last stateTransition', () => {
+      expect(normalizeGraphQLLastStateTransition(graphQLVulnerability, vulnerability)).toEqual({
+        stateTransitions: [...vulnerability.stateTransitions, normalizedLastStateTransition],
       });
     });
   });
