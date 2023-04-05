@@ -6,7 +6,7 @@ export default {
     CiResourcesListItem,
   },
   props: {
-    components: {
+    resources: {
       type: Array,
       required: true,
     },
@@ -14,11 +14,7 @@ export default {
 };
 </script>
 <template>
-  <ul>
-    <ci-resources-list-item
-      v-for="component in components"
-      :key="component.id"
-      :component="component"
-    />
+  <ul class="gl-p-0">
+    <ci-resources-list-item v-for="resource in resources" :key="resource.id" :resource="resource" />
   </ul>
 </template>

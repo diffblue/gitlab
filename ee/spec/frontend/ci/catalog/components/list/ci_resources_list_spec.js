@@ -6,7 +6,7 @@ describe('CiResourcesList', () => {
   let wrapper;
 
   const defaultProps = {
-    components: [{ id: 1 }, { id: 2 }],
+    resources: [{ id: 1 }, { id: 2 }],
   };
 
   const findResourcesListItems = () => wrapper.findAllComponents(CiResourcesListItem);
@@ -26,7 +26,7 @@ describe('CiResourcesList', () => {
     });
 
     it('renders a list of ResourcesListItem components', () => {
-      expect(findResourcesListItems()).toHaveLength(defaultProps.components.length);
+      expect(findResourcesListItems()).toHaveLength(defaultProps.resources.length);
     });
   });
 });

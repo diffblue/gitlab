@@ -9023,6 +9023,9 @@ msgstr ""
 msgid "CiCatalog|Learn more"
 msgstr ""
 
+msgid "CiCatalog|Released %{timeAgo} by %{author}"
+msgstr ""
+
 msgid "CiCatalog|Repositories of pipeline components available in this namespace."
 msgstr ""
 

@@ -3,7 +3,7 @@ import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vu
 import CatalogHeader from 'ee/ci/catalog/components/list/catalog_header.vue';
 import CiResourcesList from 'ee/ci/catalog/components/list/ci_resources_list.vue';
 import EmptyState from 'ee/ci/catalog/components/list/empty_state.vue';
-import { mockCatalogList } from 'ee/ci/catalog/constants';
+import { mockCatalogResourceList } from 'ee/ci/catalog/constants';
 
 describe('ciResourcesPage', () => {
   let wrapper;
@@ -41,7 +41,7 @@ describe('ciResourcesPage', () => {
     });
 
     it('passes down props to the resources list', () => {
-      expect(findCiResourcesList().props()).toEqual({ components: mockCatalogList });
+      expect(findCiResourcesList().props()).toEqual({ resources: mockCatalogResourceList });
     });
   });
 });
