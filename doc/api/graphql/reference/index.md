@@ -24212,6 +24212,15 @@ State of a Geo registry.
 | <a id="registrystatestarted"></a>`STARTED` | Registry currently syncing. |
 | <a id="registrystatesynced"></a>`SYNCED` | Registry that is synced. |
 
+### `RelativePositionType`
+
+The position to which the object should be moved.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="relativepositiontypeafter"></a>`AFTER` | Object is moved after an adjacent object. |
+| <a id="relativepositiontypebefore"></a>`BEFORE` | Object is moved before an adjacent object. |
+
 ### `ReleaseAssetLinkType`
 
 Type of the link: `other`, `runbook`, `image`, `package`.
@@ -26858,8 +26867,10 @@ A time-frame defined as a closed inclusive range of two dates.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="workitemwidgethierarchyupdateinputadjacentworkitemid"></a>`adjacentWorkItemId` | [`WorkItemID`](#workitemid) | ID of the work item to be switched with. |
 | <a id="workitemwidgethierarchyupdateinputchildrenids"></a>`childrenIds` | [`[WorkItemID!]`](#workitemid) | Global IDs of children work items. |
 | <a id="workitemwidgethierarchyupdateinputparentid"></a>`parentId` | [`WorkItemID`](#workitemid) | Global ID of the parent work item. Use `null` to remove the association. |
+| <a id="workitemwidgethierarchyupdateinputrelativeposition"></a>`relativePosition` | [`RelativePositionType`](#relativepositiontype) | Type of switch. Valid values are `BEFORE` or `AFTER`. |
 
 ### `WorkItemWidgetIterationInput`
 
