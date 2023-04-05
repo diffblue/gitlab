@@ -1,26 +1,25 @@
 import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
-import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageMonthChartLegacy from 'ee/usage_quotas/pipelines/components/minutes_usage_month_chart_legacy.vue';
+import MinutesUsageMonthChart from 'ee/usage_quotas/pipelines/components/minutes_usage_month_chart.vue';
+import { getUsageDataByYear } from 'ee/usage_quotas/pipelines/utils';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
 } = mockGetCiMinutesUsageNamespace;
+const usageDataByYear = getUsageDataByYear(ciMinutesUsage.nodes);
 
 describe('Minutes usage by month chart component', () => {
   let wrapper;
 
   const findAreaChart = () => wrapper.findComponent(GlAreaChart);
-  const findYearDropdown = () => wrapper.findByTestId('minutes-usage-month-dropdown');
-  const findAllYearDropdownItems = () =>
-    wrapper.findAllByTestId('minutes-usage-month-dropdown-item');
 
-  const createComponent = (usageData = ciMinutesUsage.nodes) => {
-    wrapper = shallowMountExtended(MinutesUsageMonthChartLegacy, {
+  const createComponent = () => {
+    wrapper = shallowMountExtended(MinutesUsageMonthChart, {
       propsData: {
-        ciMinutesUsage: usageData,
+        usageDataByYear,
+        selectedYear: '2022',
       },
     });
   };
@@ -35,25 +34,6 @@ describe('Minutes usage by month chart component', () => {
 
   it('should contain a responsive attribute for the area chart', () => {
     expect(findAreaChart().attributes('responsive')).toBeDefined();
-  });
-
-  it('renders year dropdown component', () => {
-    expect(findYearDropdown().exists()).toBe(true);
-    expect(findYearDropdown().props('text')).toBe('2022');
-  });
-
-  it('renders only the years with available minutes data', () => {
-    expect(findAllYearDropdownItems().length).toBe(2);
-  });
-
-  it('should change the selected year in the year dropdown', async () => {
-    expect(findYearDropdown().props('text')).toBe('2022');
-
-    findAllYearDropdownItems().at(1).vm.$emit('click');
-
-    await nextTick();
-
-    expect(findYearDropdown().props('text')).toBe('2021');
   });
 
   describe.each`
