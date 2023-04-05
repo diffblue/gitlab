@@ -38,6 +38,9 @@ export default {
   mrStatusCheckRetryPath:
     '/api/:version/projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry',
   protectedEnvironmentPath: '/api/:version/projects/:id/protected_environments/:name',
+  aiCompletionsPath: '/api/:version/ai/experimentation/openai/completions',
+  aiEmbeddingsPath: '/api/:version/ai/experimentation/openai/embeddings',
+  aiChatPath: '/api/:version/ai/experimentation/openai/chat/completions',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
@@ -306,5 +309,20 @@ export default {
       .replace(':name', encodeURIComponent(name));
 
     return axios.delete(url);
+  },
+
+  requestAICompletions({ model, prompt, ...rest }) {
+    const url = Api.buildUrl(this.aiCompletionsPath);
+    return axios.post(url, { model, prompt, rest });
+  },
+
+  requestAIEmbeddings({ model, input, ...rest }) {
+    const url = Api.buildUrl(this.aiEmbeddingsPath);
+    return axios.post(url, { model, input, rest });
+  },
+
+  requestAIChat({ model, messages, ...rest }) {
+    const url = Api.buildUrl(this.aiChatPath);
+    return axios.post(url, { model, messages, rest });
   },
 };

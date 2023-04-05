@@ -439,4 +439,50 @@ describe('Api', () => {
       });
     });
   });
+
+  describe('AI endpoints', () => {
+    const model = 'test-model';
+    const prompt = 'test-prompt';
+    const msg = 'foo bar';
+    const rest = { max_tokens: 50, temperature: 0.5 };
+
+    describe('requestAICompletions', () => {
+      it('queries the completions AI endpoint', async () => {
+        const expectedUrl = Api.buildUrl(Api.aiCompletionsPath);
+        const expectedResponse = { choices: { text: msg } };
+        mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
+
+        return Api.requestAICompletions({ model, prompt, ...rest }).then((res) => {
+          expect(res.data).toEqual(expectedResponse);
+          expect(res.config.url).toEqual(expectedUrl);
+        });
+      });
+    });
+
+    describe('requestAIEmbeddings', () => {
+      it('queries the completions AI endpoint', async () => {
+        const expectedUrl = Api.buildUrl(Api.aiEmbeddingsPath);
+        const expectedResponse = { data: [{ embedding: [msg] }] };
+        mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
+
+        return Api.requestAIEmbeddings({ model, input: prompt, ...rest }).then((res) => {
+          expect(res.data).toEqual(expectedResponse);
+          expect(res.config.url).toEqual(expectedUrl);
+        });
+      });
+    });
+
+    describe('requestAIChat', () => {
+      it('queries the completions AI endpoint', async () => {
+        const expectedUrl = Api.buildUrl(Api.aiChatPath);
+        const expectedResponse = { choices: { message: msg } };
+        mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
+
+        return Api.requestAIChat({ model, messages: [msg], ...rest }).then((res) => {
+          expect(res.data).toEqual(expectedResponse);
+          expect(res.config.url).toEqual(expectedUrl);
+        });
+      });
+    });
+  });
 });
