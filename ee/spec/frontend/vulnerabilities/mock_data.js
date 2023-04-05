@@ -76,3 +76,35 @@ export const getSecurityTrainingProjectData = (urlOverrides = {}) => ({
     },
   },
 });
+
+export const getVulnerabilityStatusMutationResponse = (queryName, expected) => ({
+  data: {
+    [queryName]: {
+      errors: [],
+      vulnerability: {
+        id: 'gid://gitlab/Vulnerability/54',
+        [`${expected}At`]: '2020-09-16T11:13:26Z',
+        state: expected.toUpperCase(),
+        ...(expected !== 'detected' && {
+          [`${expected}By`]: {
+            id: 'gid://gitlab/User/1',
+          },
+        }),
+        stateTransitions: {
+          nodes: [
+            {
+              author: {
+                id: 'gid://gitlab/User/16',
+              },
+              comment: null,
+              createdAt: '2023-03-06T01:20:01.000Z',
+              fromState: expected !== 'detected' ? 'DETECTED' : 'CONFIRMED',
+              toState: expected.toUpperCase(),
+              dismissalReason: 'USED_IN_TESTS',
+            },
+          ],
+        },
+      },
+    },
+  },
+});

@@ -10,7 +10,7 @@ import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.
 import Header from 'ee/vulnerabilities/components/header.vue';
 import ResolutionAlert from 'ee/vulnerabilities/components/resolution_alert.vue';
 import StatusDescription from 'ee/vulnerabilities/components/status_description.vue';
-import VulnerabilityStateDropdown from 'ee/vulnerabilities/components/vulnerability_state_dropdown.vue';
+import VulnerabilityStateDropdownDeprecated from 'ee/vulnerabilities/components/vulnerability_state_dropdown_deprecated.vue';
 import { FEEDBACK_TYPES, VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UsersMockHelper from 'helpers/user_mock_data_helper';
@@ -21,6 +21,7 @@ import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
+import { getVulnerabilityStatusMutationResponse } from './mock_data';
 
 Vue.use(VueApollo);
 
@@ -53,6 +54,7 @@ describe('Vulnerability Header', () => {
     location: 'location',
     name: 'name',
     mergeRequestLinks: [],
+    stateTransitions: [],
   };
 
   const diff = 'some diff to download';
@@ -88,7 +90,7 @@ describe('Vulnerability Header', () => {
 
   // Helpers
   const changeStatus = (action) => {
-    const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
+    const dropdown = wrapper.findComponent(VulnerabilityStateDropdownDeprecated);
     dropdown.vm.$emit('change', { action });
   };
 
@@ -127,23 +129,7 @@ describe('Vulnerability Header', () => {
       beforeEach(() => {
         const apolloProvider = createApolloProvider([
           vulnerabilityStateMutations[action],
-          jest.fn().mockResolvedValue({
-            data: {
-              [queryName]: {
-                errors: [],
-                vulnerability: {
-                  id: 'gid://gitlab/Vulnerability/54',
-                  [`${expected}At`]: '2020-09-16T11:13:26Z',
-                  state: expected.toUpperCase(),
-                  ...(expected !== 'detected' && {
-                    [`${expected}By`]: {
-                      id: 'gid://gitlab/User/1',
-                    },
-                  }),
-                },
-              },
-            },
-          }),
+          jest.fn().mockResolvedValue(getVulnerabilityStatusMutationResponse(queryName, expected)),
         ]);
 
         createWrapper({ apolloProvider });
@@ -200,8 +186,7 @@ describe('Vulnerability Header', () => {
       });
 
       it('when the vulnerability state changes but the API call fails, an error message is displayed', async () => {
-        const dropdown = wrapper.findComponent(VulnerabilityStateDropdown);
-        dropdown.vm.$emit('change', { action });
+        changeStatus(action);
 
         await waitForPromises();
         expect(createAlert).toHaveBeenCalledTimes(1);

@@ -14,10 +14,9 @@ import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { VULNERABILITY_STATE_OBJECTS, FEEDBACK_TYPES, HEADER_ACTION_BUTTONS } from '../constants';
-import { normalizeGraphQLVulnerability } from '../helpers';
+import { normalizeGraphQLVulnerability, normalizeGraphQLLastStateTransition } from '../helpers';
 import ResolutionAlert from './resolution_alert.vue';
 import StatusDescription from './status_description.vue';
-import VulnerabilityStateDropdown from './vulnerability_state_dropdown.vue';
 
 export default {
   name: 'VulnerabilityHeader',
@@ -27,9 +26,11 @@ export default {
     GlButton,
     StatusBadge,
     ResolutionAlert,
-    VulnerabilityStateDropdown,
     SplitButton,
     StatusDescription,
+    VulnerabilityStateDropdownDeprecated: () =>
+      import('./vulnerability_state_dropdown_deprecated.vue'),
+    VulnerabilityStateDropdown: () => import('./vulnerability_state_dropdown.vue'),
   },
 
   mixins: [glFeatureFlagMixin()],
@@ -91,6 +92,9 @@ export default {
         this.vulnerability.state !== VULNERABILITY_STATE_OBJECTS.resolved.state
       );
     },
+    initialDismissalReason() {
+      return this.vulnerability.stateTransitions?.at(-1)?.dismissalReason;
+    },
   },
 
   watch: {
@@ -143,6 +147,7 @@ export default {
         this.$emit('vulnerability-state-change', {
           ...this.vulnerability,
           ...normalizeGraphQLVulnerability(data[queryName].vulnerability),
+          ...normalizeGraphQLLastStateTransition(data[queryName].vulnerability, this.vulnerability),
         });
       } catch (error) {
         createAlert({
@@ -236,6 +241,12 @@ export default {
         <label class="mb-0 mx-2">{{ __('Status') }}</label>
         <gl-loading-icon v-if="isLoadingVulnerability" size="sm" class="d-inline" />
         <vulnerability-state-dropdown
+          v-else-if="glFeatures.dismissalReason"
+          :initial-state="vulnerability.state"
+          :initial-dismissal-reason="initialDismissalReason"
+          @change="changeVulnerabilityState"
+        />
+        <vulnerability-state-dropdown-deprecated
           v-else
           :initial-state="vulnerability.state"
           @change="changeVulnerabilityState"
