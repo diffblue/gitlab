@@ -201,6 +201,26 @@ module EE
               unprocessable_entity!('Exclusion could not be removed')
             end
           end
+
+          desc 'Retrieve all limit exclusions' do
+            detail 'Gets all records for namespaces that have been excluded'
+            success code: 200, model: ::API::Entities::Namespaces::Storage::LimitExclusion
+            failure [
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' }
+            ]
+          end
+          params do
+            use :pagination
+          end
+          get 'storage/limit_exclusions', feature_category: :consumables_cost_management do
+            authenticated_as_admin!
+            forbidden!('this API is for GitLab.com only') unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+
+            exclusions = ::Namespaces::Storage::LimitExclusion.all
+
+            present paginate(exclusions), with: ::API::Entities::Namespaces::Storage::LimitExclusion
+          end
         end
       end
     end

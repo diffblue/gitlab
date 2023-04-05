@@ -1021,4 +1021,60 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
       end
     end
   end
+
+  describe 'GET /storage/limit_exclusions' do
+    def do_get(current_user = nil, admin_mode: false)
+      get api("/namespaces/storage/limit_exclusions", current_user, admin_mode: admin_mode)
+    end
+
+    context 'when on GitLab.com', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'when authenticated as an admin' do
+        before do
+          create_list(:namespace_storage_limit_exclusion, 5)
+        end
+
+        it 'returns all limit exclusions' do
+          do_get(admin, admin_mode: true)
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(response).to include_pagination_headers
+
+          expect(json_response.size).to eq 5
+        end
+      end
+
+      context 'when authenticated as a regular user' do
+        it 'returns a 403 error' do
+          do_get(user)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'when unauthenticated' do
+        it 'returns a 401 error' do
+          do_get
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+    end
+
+    context 'when not on GitLab.com' do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: false)
+      end
+
+      it 'returns 403 error' do
+        do_get(admin, admin_mode: true)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response).to eq('message' => '403 Forbidden - this API is for GitLab.com only')
+      end
+    end
+  end
 end
