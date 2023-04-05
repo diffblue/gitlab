@@ -9203,6 +9203,15 @@ msgstr ""
 msgid "CiVariable|Search environments"
 msgstr ""
 
+msgid "CiVariable|Variable %{key} has been deleted."
+msgstr ""
+
+msgid "CiVariable|Variable %{key} has been successfully added."
+msgstr ""
+
+msgid "CiVariable|Variable %{key} has been updated."
+msgstr ""
+
 msgid "Classification Label (optional)"
 msgstr ""
 
