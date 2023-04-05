@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_category: :compliance_management do
   let_it_be(:worker) { described_class.new }
   let_it_be(:user) { create(:user) }
+  let_it_be(:admin_bot) { create(:user, :admin_bot, :admin) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
@@ -13,12 +14,13 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
 
   describe "#perform" do
     before do
-      group.add_owner(user)
+      group.add_developer(user)
+      group.add_owner(admin_bot)
       stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
     end
 
     it 'invokes Projects::UpdateService' do
-      params = [project, user, { compliance_framework_setting_attributes: { framework: framework.id } }]
+      params = [project, admin_bot, { compliance_framework_setting_attributes: { framework: framework.id } }]
 
       expect_next_instance_of(::Projects::UpdateService, *params) do |project_update_service|
         expect(project_update_service).to receive(:execute).and_call_original
@@ -41,12 +43,6 @@ RSpec.describe ComplianceManagement::UpdateDefaultFrameworkWorker, feature_categ
       expect(Gitlab::ErrorTracking).to receive(:log_exception).with(instance_of(ActiveRecord::RecordNotFound))
 
       worker.perform(user.id, non_existing_record_id, framework.id)
-    end
-
-    it 'rescues and logs the exception if user does not exist' do
-      expect(Gitlab::ErrorTracking).to receive(:log_exception).with(instance_of(ActiveRecord::RecordNotFound))
-
-      worker.perform(non_existing_record_id, project.id, framework.id)
     end
   end
 end
