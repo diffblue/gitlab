@@ -104,11 +104,12 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base gl-relative gl-pt-5 gl-pr-7 gl-pb-4 gl-pl-5">
+  <div
+    class="gl-display-flex gl-flex-direction-column gl-gap-3 gl-bg-gray-10 gl-rounded-base gl-py-5"
+  >
     <policy-action-approvers
       v-for="({ id, type }, i) in approverTypeTracker"
       :key="id"
-      class="gl-mb-4"
       :approver-index="i"
       :available-types="availableApproverTypes"
       :approver-type="type"

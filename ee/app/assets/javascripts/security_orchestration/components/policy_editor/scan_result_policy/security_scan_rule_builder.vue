@@ -3,6 +3,7 @@ import { GlSprintf, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
+import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
@@ -11,6 +12,7 @@ export default {
     'ScanResultPolicy|from %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}',
   ),
   components: {
+    BaseLayoutComponent,
     GlSprintf,
     GlFormInput,
     PolicyRuleBranchSelection,
@@ -20,6 +22,11 @@ export default {
     initRule: {
       type: Object,
       required: true,
+    },
+    ruleLabel: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   computed: {
@@ -79,55 +86,63 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-inline! gl-line-height-42 gl-ml-3">
-    <gl-sprintf :message="$options.scanResultRuleCopy">
-      <template #scanners>
-        <policy-rule-multi-select
-          v-model="scannersToAdd"
-          class="gl-mx-3 gl-display-inline! gl-vertical-align-middle"
-          :item-type-name="$options.i18n.scanners"
-          :items="$options.REPORT_TYPES_DEFAULT"
-          data-testid="scanners-select"
-        />
-      </template>
+  <base-layout-component
+    :rule-label="ruleLabel"
+    :type="initRule.type"
+    :show-scan-type-dropdown="true"
+    @changed="$emit('changed', $event)"
+    @remove="$emit('remove')"
+  >
+    <template #content>
+      <gl-sprintf :message="$options.scanResultRuleCopy">
+        <template #scanners>
+          <policy-rule-multi-select
+            v-model="scannersToAdd"
+            class="gl-display-inline! gl-vertical-align-middle"
+            :item-type-name="$options.i18n.scanners"
+            :items="$options.REPORT_TYPES_DEFAULT"
+            data-testid="scanners-select"
+          />
+        </template>
 
-      <template #branches>
-        <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged($event)" />
-      </template>
+        <template #branches>
+          <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged($event)" />
+        </template>
 
-      <template #vulnerabilitiesAllowed>
-        <label for="vulnerabilities-allowed" class="gl-sr-only">{{
-          $options.i18n.vulnerabilitiesAllowed
-        }}</label>
-        <gl-form-input
-          id="vulnerabilities-allowed"
-          v-model="vulnerabilitiesAllowed"
-          type="number"
-          class="gl-w-11! gl-mx-3 gl-display-inline! gl-vertical-align-middle"
-          :min="0"
-          data-testid="vulnerabilities-allowed-input"
-        />
-      </template>
+        <template #vulnerabilitiesAllowed>
+          <label for="vulnerabilities-allowed" class="gl-sr-only">{{
+            $options.i18n.vulnerabilitiesAllowed
+          }}</label>
+          <gl-form-input
+            id="vulnerabilities-allowed"
+            v-model="vulnerabilitiesAllowed"
+            type="number"
+            class="gl-w-11! gl-display-inline! gl-vertical-align-middle"
+            :min="0"
+            data-testid="vulnerabilities-allowed-input"
+          />
+        </template>
 
-      <template #severities>
-        <policy-rule-multi-select
-          v-model="severityLevelsToAdd"
-          class="gl-ml-3 gl-display-inline! gl-vertical-align-middle"
-          :item-type-name="$options.i18n.severityLevels"
-          :items="$options.SEVERITY_LEVELS"
-          data-testid="severities-select"
-        />
-      </template>
+        <template #severities>
+          <policy-rule-multi-select
+            v-model="severityLevelsToAdd"
+            class="gl-display-inline! gl-vertical-align-middle"
+            :item-type-name="$options.i18n.severityLevels"
+            :items="$options.SEVERITY_LEVELS"
+            data-testid="severities-select"
+          />
+        </template>
 
-      <template #vulnerabilityStates>
-        <policy-rule-multi-select
-          v-model="vulnerabilityStates"
-          class="gl-mx-3 gl-display-inline! gl-vertical-align-middle"
-          :item-type-name="$options.i18n.vulnerabilityStates"
-          :items="$options.APPROVAL_VULNERABILITY_STATES"
-          data-testid="vulnerability-states-select"
-        />
-      </template>
-    </gl-sprintf>
-  </div>
+        <template #vulnerabilityStates>
+          <policy-rule-multi-select
+            v-model="vulnerabilityStates"
+            class="gl-display-inline! gl-vertical-align-middle"
+            :item-type-name="$options.i18n.vulnerabilityStates"
+            :items="$options.APPROVAL_VULNERABILITY_STATES"
+            data-testid="vulnerability-states-select"
+          />
+        </template>
+      </gl-sprintf>
+    </template>
+  </base-layout-component>
 </template>

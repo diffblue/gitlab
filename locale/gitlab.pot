@@ -38602,9 +38602,6 @@ msgstr ""
 msgid "ScanResultPolicy|%{count} licenses"
 msgstr ""
 
-msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}"
-msgstr ""
-
 msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:"
 msgstr ""
 
