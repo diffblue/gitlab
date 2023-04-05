@@ -821,4 +821,105 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
       end
     end
   end
+
+  describe 'POST :id/storage/limit_exclusion' do
+    def do_post(namespace_id, current_user, payload, admin_mode: false)
+      post api("/namespaces/#{namespace_id}/storage/limit_exclusion", current_user, admin_mode: admin_mode), params: payload
+    end
+
+    let_it_be(:namespace) { create(:group) }
+
+    let(:params) do
+      {
+        reason: 'for testing reasons'
+      }
+    end
+
+    context 'when on GitLab.com', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'when authenticated as an admin' do
+        context 'when params are valid' do
+          it 'creates the exclusion for the Namespace' do
+            do_post(namespace.id, admin, params, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(json_response['reason']).to eq params[:reason]
+            expect(namespace.storage_limit_exclusion).not_to be nil
+          end
+        end
+
+        context 'when an exclusion already exists' do
+          before do
+            create(:namespace_storage_limit_exclusion, namespace: namespace)
+          end
+
+          it 'returns a 400 error' do
+            do_post(namespace.id, admin, params, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response).to eq('message' => '400 Bad request - already excluded')
+          end
+        end
+
+        context 'when namespace is not found' do
+          it 'returns a 404 error' do
+            do_post(non_existing_record_id, admin, params, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+
+        context 'when namespace is not the root ancestor' do
+          let(:subgroup) { create(:group, parent: namespace) }
+
+          it 'returns a 400 error' do
+            do_post(subgroup.id, admin, params, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response).to eq('message' => '400 Bad request - must use a root namespace')
+          end
+        end
+
+        context 'when params are invalid' do
+          it 'returns a 400 error' do
+            do_post(namespace.id, admin, params.merge(reason: nil), admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+        end
+      end
+
+      context 'when unauthenticated' do
+        it 'returns a 401 error' do
+          do_post(namespace.id, nil, params)
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+
+      context 'when authenticated as a regular user' do
+        it 'returns an unauthorized error' do
+          do_post(namespace.id, user, params)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when not on GitLab.com' do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: false)
+      end
+
+      it 'returns 403 error' do
+        do_post(namespace.id, admin, params, admin_mode: true)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response).to eq('message' => '403 Forbidden - this API is for GitLab.com only')
+      end
+    end
+  end
 end

@@ -142,6 +142,38 @@ module EE
               render_validation_error!(subscription)
             end
           end
+
+          desc 'Creates a storage limit exclusion for a Namespace' do
+            detail 'Creates a Namespaces::Storage::LimitExclusion'
+            success code: 201, model: ::API::Entities::Namespaces::Storage::LimitExclusion
+            failure [
+              { code: 400, message: "Bad request" },
+              { code: 401, message: "Unauthorized" },
+              { code: 404, message: "Not found" }
+            ]
+          end
+          params do
+            requires :reason, type: String, desc: 'The reason the Namespace is being excluded'
+          end
+          post ':id/storage/limit_exclusion', feature_category: :consumables_cost_management do
+            authenticated_as_admin!
+            forbidden!('this API is for GitLab.com only') unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+
+            namespace = find_namespace!(params[:id])
+
+            bad_request!('must use a root namespace') unless namespace.root?
+            bad_request!('already excluded') if namespace.storage_limit_exclusion
+
+            limit_exclusion = namespace.build_storage_limit_exclusion(
+              reason: params[:reason]
+            )
+
+            if limit_exclusion.save
+              present limit_exclusion, with: ::API::Entities::Namespaces::Storage::LimitExclusion
+            else
+              render_validation_error!(limit_exclusion)
+            end
+          end
         end
       end
     end
