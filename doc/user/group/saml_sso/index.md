@@ -59,7 +59,7 @@ To set up SSO with Azure as your identity provider:
 1. Make sure the identity provider is set to have provider-initiated calls
    to link existing GitLab accounts.
 
-1. Optional. If you use [Group Sync](#group-sync), customize the name of the
+1. Optional. If you use [Group Sync](group_sync.md), customize the name of the
    group claim to match the required attribute.
 
 <i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
@@ -396,10 +396,6 @@ For example, to unlink the `MyOrg` account:
 1. On the left sidebar, select **Account**.
 1. In the **Service sign-in** section, select **Disconnect** next to the connected account.
 
-## Group Sync
-
-For information on automatically managing GitLab group membership, see [SAML Group Sync](group_sync.md).
-
 ## NameID
 
 GitLab.com uses the SAML **NameID** to identify users. The **NameID** is:
@@ -516,6 +512,7 @@ immediately. If the user:
 - [Glossary](../../../integration/saml.md#glossary)
 - [Authentication comparison between SaaS and self-managed](../../../administration/auth/index.md#saas-vs-self-managed-comparison)
 - [Passwords for users created through integrated authentication](../../../security/passwords_for_integrated_authentication_methods.md)
+- [SAML Group Sync](group_sync.md)
 
 ## Troubleshooting
 
