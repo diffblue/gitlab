@@ -1,4 +1,3 @@
-import { nextTick } from 'vue';
 import { mount } from '@vue/test-utils';
 
 import MonthsHeaderItemComponent from 'ee/roadmap/components/preset_months/months_header_item.vue';
@@ -73,15 +72,16 @@ describe('MonthsHeaderItemComponent', () => {
         mockTimeframeMonths[timeframeIndex].getMonth() + 2,
         1,
       );
+      const currentYear = mockTimeframeMonths[timeframeIndex].getFullYear();
+      const currentMonth = mockTimeframeMonths[timeframeIndex].getMonth() + 1;
+
+      jest.useFakeTimers({ legacyFakeTimers: false });
+      jest.setSystemTime(new Date(`${currentYear}-0${currentMonth}-01T00:00:00Z`));
+
       createComponent({
         timeframeIndex,
         timeframeItem,
       });
-
-      wrapper.vm.currentYear = mockTimeframeMonths[timeframeIndex].getFullYear();
-      wrapper.vm.currentMonth = mockTimeframeMonths[timeframeIndex].getMonth() + 1;
-
-      await nextTick();
 
       expect(findTimelineHeader().classes()).toHaveLength(2);
       expect(findTimelineHeader().classes()).toContain('label-dark');
