@@ -18,6 +18,7 @@ class InstanceSecurityDashboardPolicy < BasePolicy
 
   rule { security_dashboard_enabled & can?(:read_instance_security_dashboard) }.policy do
     enable :create_vulnerability_export
-    enable :read_cluster
+    enable :read_cluster # Deprecated as certificate-based cluster integration (`Clusters::Cluster`).
+    enable :read_cluster_agent
   end
 end
