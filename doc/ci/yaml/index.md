@@ -3962,9 +3962,9 @@ If `stage` is not defined, the job uses the `test` stage by default.
 
 **Keyword type**: Job keyword. You can use it only as part of a job.
 
-**Possible inputs**: An array including any number of stage names. Stage names can be:
+**Possible inputs**: A string, which can be a:
 
-- The [default stages](#stages).
+- [Default stage](#stages).
 - User-defined stages.
 
 **Example of `stage`**:
