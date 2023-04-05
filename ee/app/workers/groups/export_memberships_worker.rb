@@ -21,9 +21,11 @@ module Groups
     private
 
     def send_email
-      Notify.memberships_export_email(csv_data: @response.payload,
-                                      requested_by: @current_user,
-                                      group: @group).deliver_later
+      Notify.memberships_export_email(
+        csv_data: @response.payload,
+        requested_by: @current_user,
+        group: @group
+      ).deliver_later
     end
   end
 end
