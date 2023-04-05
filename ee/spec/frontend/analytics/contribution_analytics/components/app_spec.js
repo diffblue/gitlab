@@ -6,8 +6,8 @@ import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import App from 'ee/analytics/contribution_analytics/components/app.vue';
+import GroupMembersTable from 'ee/analytics/contribution_analytics/components/group_members_table.vue';
 import contributionsQuery from 'ee/analytics/contribution_analytics/graphql/contributions.query.graphql';
-import { MOCK_CONTRIBUTIONS_RESPONSE } from '../mock_data';
 
 jest.mock('@sentry/browser');
 
@@ -16,18 +16,49 @@ Vue.use(VueApollo);
 describe('Contribution Analytics App', () => {
   let wrapper;
 
-  const mockContributionsHandler = jest.fn();
-  const createMockApolloProvider = (contributionsQueryResolver) =>
-    createMockApollo([
-      [contributionsQuery, mockContributionsHandler.mockResolvedValue(contributionsQueryResolver)],
-    ]);
+  const wrapApiResponse = (nodes, endCursor = '') => ({
+    data: {
+      group: {
+        id: 'YEET',
+        contributions: {
+          nodes,
+          pageInfo: {
+            endCursor,
+            hasNextPage: endCursor !== '',
+          },
+        },
+      },
+    },
+  });
 
-  const createWrapper = ({ mockApollo }) => {
+  const createMockContribution = (userId, metricValue) => ({
+    repoPushed: metricValue,
+    mergeRequestsCreated: metricValue,
+    mergeRequestsMerged: metricValue,
+    mergeRequestsClosed: metricValue,
+    mergeRequestsApproved: metricValue,
+    issuesCreated: metricValue,
+    issuesClosed: metricValue,
+    totalEvents: metricValue,
+    user: {
+      id: userId,
+      name: userId,
+      webUrl: userId,
+    },
+  });
+
+  const createWrapper = ({ contributionsQueryResolver }) => {
+    const apolloProvider = createMockApollo(
+      [[contributionsQuery, contributionsQueryResolver]],
+      {},
+      { typePolicies: { Query: { fields: { group: { merge: false } } } } },
+    );
+
     wrapper = shallowMount(App, {
-      apolloProvider: mockApollo,
+      apolloProvider,
       propsData: {
         fullPath: 'test',
-        startDate: '2000-01-01',
+        startDate: '2000-12-10',
         endDate: '2000-12-31',
       },
     });
@@ -35,10 +66,11 @@ describe('Contribution Analytics App', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findErrorAlert = () => wrapper.findComponent(GlAlert);
+  const findGroupMembersTable = () => wrapper.findComponent(GroupMembersTable);
 
   it('renders the loading spinner when the request is pending', async () => {
-    const mockApollo = createMockApolloProvider({ data: null });
-    createWrapper({ mockApollo });
+    const contributionsQueryResolver = jest.fn().mockResolvedValue({ data: null });
+    createWrapper({ contributionsQueryResolver });
 
     expect(findLoadingIcon().exists()).toBe(true);
     await waitForPromises();
@@ -46,8 +78,8 @@ describe('Contribution Analytics App', () => {
   });
 
   it('renders the error alert if the request fails', async () => {
-    const mockApollo = createMockApolloProvider({ data: null });
-    createWrapper({ mockApollo });
+    const contributionsQueryResolver = jest.fn().mockResolvedValue({ data: null });
+    createWrapper({ contributionsQueryResolver });
     await waitForPromises();
 
     expect(Sentry.captureException).toHaveBeenCalled();
@@ -55,14 +87,53 @@ describe('Contribution Analytics App', () => {
     expect(findErrorAlert().text()).toEqual(wrapper.vm.$options.i18n.error);
   });
 
-  it('fetches paginated data', async () => {
-    const mockApollo = createMockApolloProvider(MOCK_CONTRIBUTIONS_RESPONSE);
-    createWrapper({ mockApollo });
+  it('fetches the data per week, using paginated requests when necessary', async () => {
+    const userA = 'primary';
+    const userB = 'secondary';
+    const nextPageCursor = 'next';
+
+    const contributionsQueryResolver = jest
+      .fn()
+      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 100)], nextPageCursor))
+      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userB, 5)]))
+      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 25)]))
+      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 50)], nextPageCursor))
+      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userB, 7)]));
+
+    createWrapper({ contributionsQueryResolver });
     await waitForPromises();
 
-    expect(mockContributionsHandler).toHaveBeenCalledWith({
-      ...wrapper.props(),
-      nextPageCursor: '',
-    });
+    expect(findGroupMembersTable().props('contributions')).toMatchSnapshot();
+    expect(contributionsQueryResolver).toHaveBeenCalledTimes(5);
+    [
+      {
+        endDate: '2000-12-17',
+        nextPageCursor: '',
+      },
+      {
+        endDate: '2000-12-17',
+        nextPageCursor,
+      },
+      {
+        startDate: '2000-12-18',
+        endDate: '2000-12-25',
+        nextPageCursor: '',
+      },
+      {
+        startDate: '2000-12-26',
+        endDate: '2000-12-31',
+        nextPageCursor: '',
+      },
+      {
+        startDate: '2000-12-26',
+        endDate: '2000-12-31',
+        nextPageCursor,
+      },
+    ].forEach((result) =>
+      expect(contributionsQueryResolver).toHaveBeenCalledWith({
+        ...wrapper.props(),
+        ...result,
+      }),
+    );
   });
 });
