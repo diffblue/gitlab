@@ -922,4 +922,103 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
       end
     end
   end
+
+  describe 'DELETE :id/storage/limit_exclusion' do
+    def do_delete(namespace_id, current_user, admin_mode: false)
+      delete api("/namespaces/#{namespace_id}/storage/limit_exclusion", current_user, admin_mode: admin_mode)
+    end
+
+    let_it_be(:namespace) { create(:group) }
+
+    context 'when on GitLab.com', :saas do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: true)
+      end
+
+      context 'when authenticated as an admin' do
+        context 'when an exclusion exists' do
+          let_it_be(:exclusion) { create(:namespace_storage_limit_exclusion, namespace: namespace) }
+
+          context 'when the deletion is successful' do
+            it 'returns success' do
+              do_delete(namespace.id, admin, admin_mode: true)
+
+              expect(response).to have_gitlab_http_status(:success)
+              expect(namespace.storage_limit_exclusion).to be nil
+            end
+          end
+
+          context 'when there is an error deleting' do
+            before do
+              allow_next_found_instance_of(Namespaces::Storage::LimitExclusion) do |instance|
+                allow(instance).to receive(:destroy).and_return(false)
+              end
+            end
+
+            it 'returns an error' do
+              do_delete(namespace.id, admin, admin_mode: true)
+
+              expect(response).to have_gitlab_http_status(:unprocessable_entity)
+              expect(json_response['message']).to eq('Exclusion could not be removed')
+            end
+          end
+        end
+
+        context 'when namespace is not found' do
+          it 'returns a 404 error' do
+            do_delete(non_existing_record_id, admin, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:not_found)
+          end
+        end
+
+        context 'when namespace is not the root ancestor' do
+          it 'returns a 400 error' do
+            do_delete(group2.id, admin, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response).to eq('message' => '400 Bad request - must use a root namespace')
+          end
+        end
+
+        context 'when no exclusion exists' do
+          it 'returns a 400 error' do
+            do_delete(namespace.id, admin, admin_mode: true)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response).to eq('message' => '400 Bad request - not excluded')
+          end
+        end
+      end
+
+      context 'when authenticated as a regular user' do
+        it 'returns an unauthorized error' do
+          do_delete(namespace.id, user)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'when unauthenticated' do
+        it 'returns a 401 error' do
+          do_delete(namespace.id, nil)
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+    end
+
+    context 'when not on GitLab.com' do
+      before do
+        stub_ee_application_setting(should_check_namespace_plan: false)
+      end
+
+      it 'returns 403 error' do
+        do_delete(namespace.id, admin, admin_mode: true)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(json_response).to eq('message' => '403 Forbidden - this API is for GitLab.com only')
+      end
+    end
+  end
 end

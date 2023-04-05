@@ -147,9 +147,10 @@ module EE
             detail 'Creates a Namespaces::Storage::LimitExclusion'
             success code: 201, model: ::API::Entities::Namespaces::Storage::LimitExclusion
             failure [
-              { code: 400, message: "Bad request" },
-              { code: 401, message: "Unauthorized" },
-              { code: 404, message: "Not found" }
+              { code: 400, message: 'Bad request' },
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 404, message: 'Not found' }
             ]
           end
           params do
@@ -172,6 +173,32 @@ module EE
               present limit_exclusion, with: ::API::Entities::Namespaces::Storage::LimitExclusion
             else
               render_validation_error!(limit_exclusion)
+            end
+          end
+
+          desc 'Removes a storage limit exclusion for a Namespace' do
+            detail 'Removes a Namespaces::Storage::LimitExclusion'
+            success code: 204
+            failure [
+              { code: 400, message: 'Bad request' },
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 422, message: 'Unprocessable entity' }
+            ]
+          end
+          delete ':id/storage/limit_exclusion' do
+            authenticated_as_admin!
+            forbidden!('this API is for GitLab.com only') unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+
+            namespace = find_namespace!(params[:id])
+
+            bad_request!('must use a root namespace') unless namespace.root?
+            bad_request!('not excluded') unless namespace.storage_limit_exclusion
+
+            if namespace.storage_limit_exclusion.destroy
+              no_content!
+            else
+              unprocessable_entity!('Exclusion could not be removed')
             end
           end
         end
