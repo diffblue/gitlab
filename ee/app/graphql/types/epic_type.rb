@@ -162,7 +162,7 @@ module Types
       null: true, complexity: 10, description: 'Current health status of the epic.'
 
     field :award_emoji, Types::AwardEmojis::AwardEmojiType.connection_type,
-      null: true, authorize: :read_emoji,
+      null: true,
       description: 'List of award emojis associated with the epic.'
 
     field :ancestors, Types::EpicType.connection_type,

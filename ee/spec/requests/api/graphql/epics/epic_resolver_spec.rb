@@ -185,6 +185,39 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     end
   end
 
+  context 'when requesting awardEmoji' do
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:award_emoji) { create(:award_emoji, awardable: epic, user: user) }
+    let_it_be(:query) do
+      <<-GQL
+      query {
+        group(fullPath: "#{group.full_path}") {
+          epic(iid: #{epic.iid}) {
+            awardEmoji {
+              nodes {
+                user {
+                  username
+                }
+                name
+              }
+            }
+          }
+        }
+      }
+      GQL
+    end
+
+    it 'includes award emojis' do
+      post_graphql(query, current_user: user)
+
+      response = graphql_data_at(:group, :epic, :award_emoji, :nodes)
+
+      expect(response.length).to eq(1)
+      expect(response.first['user']['username']).to eq(user.username)
+      expect(response.first['name']).to eq(award_emoji.name)
+    end
+  end
+
   describe 'N+1 query checks' do
     let_it_be(:epic_a) { create(:epic, group: group) }
     let_it_be(:epic_b) { create(:epic, group: group) }
@@ -213,6 +246,14 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
       end
 
       include_examples 'N+1 query check'
+
+      it 'N+1 query test contains data' do
+        execute_query
+
+        response = graphql_data_at(:group, :epics, :nodes).flat_map { |node| node['awardEmoji']['nodes'] }
+
+        expect(response).not_to be_empty
+      end
     end
 
     context 'when requesting `health_status`' do
