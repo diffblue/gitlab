@@ -35,7 +35,7 @@ export default {
 <template>
   <section class="gl-border-t gl-border-gray-100">
     <div
-      class="gl-py-6 gl-display-flex gl-flex-wrap-wrap gl-justify-content-space-between gl-align-items-flex-start"
+      class="gl-py-6 gl-display-flex gl-flex-wrap gl-justify-content-space-between gl-align-items-flex-start"
     >
       <div>
         <h4 class="gl-mt-0 gl-mb-2">{{ label }}</h4>

@@ -139,7 +139,7 @@ export default {
 </script>
 <template>
   <gl-form novalidate @submit.prevent="submit">
-    <div class="gl-display-flex gl-flex-wrap-wrap">
+    <div class="gl-display-flex gl-flex-wrap">
       <gl-form-group
         class="gl-flex-grow-1"
         :invalid-feedback="form.fields.activationCode.feedback"
