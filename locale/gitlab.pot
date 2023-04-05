@@ -17250,9 +17250,6 @@ msgstr ""
 msgid "Everything you need to create a GitLab Pages site using Gatsby"
 msgstr ""
 
-msgid "Everything you need to create a GitLab Pages site using GitBook"
-msgstr ""
-
 msgid "Everything you need to create a GitLab Pages site using Hexo"
 msgstr ""
 
@@ -34922,9 +34919,6 @@ msgid "ProjectTemplates|Pages/Bridgetown"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Gatsby"
-msgstr ""
-
-msgid "ProjectTemplates|Pages/GitBook"
 msgstr ""
 
 msgid "ProjectTemplates|Pages/Hexo"
