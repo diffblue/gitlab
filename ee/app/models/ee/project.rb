@@ -689,7 +689,7 @@ module EE
     end
 
     def reset_approvals_on_push
-      !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+      !ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
                                                                   .retain_approvals_on_push
                                                                   .value && feature_available?(:merge_request_approvers)
     end
@@ -719,7 +719,7 @@ module EE
     end
 
     def require_password_to_approve
-      ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group, project: self)
+      ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(group&.root_ancestor, project: self)
                                                                   .require_password_to_approve
                                                                   .value && password_authentication_enabled_for_web?
     end
