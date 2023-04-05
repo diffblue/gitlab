@@ -45370,6 +45370,39 @@ msgstr ""
 msgid "TimeTrackingEstimated|Est"
 msgstr ""
 
+msgid "TimeTrackingReport|From"
+msgstr ""
+
+msgid "TimeTrackingReport|Run report"
+msgstr ""
+
+msgid "TimeTrackingReport|Something went wrong. Please try again."
+msgstr ""
+
+msgid "TimeTrackingReport|Source"
+msgstr ""
+
+msgid "TimeTrackingReport|Spent at"
+msgstr ""
+
+msgid "TimeTrackingReport|Summary"
+msgstr ""
+
+msgid "TimeTrackingReport|Time spent"
+msgstr ""
+
+msgid "TimeTrackingReport|To"
+msgstr ""
+
+msgid "TimeTrackingReport|Total time spent: "
+msgstr ""
+
+msgid "TimeTrackingReport|User"
+msgstr ""
+
+msgid "TimeTrackingReport|Username"
+msgstr ""
+
 msgid "TimeTracking|%{spentStart}Spent: %{spentEnd}"
 msgstr ""
 
