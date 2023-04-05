@@ -154,7 +154,7 @@ export default {
           :href="sastAnalyzersDocumentationPath"
           :aria-label="$options.i18n.help"
         >
-          <gl-icon name="question" />
+          <gl-icon name="question-o" />
         </gl-link>
       </template>
 
