@@ -755,13 +755,17 @@ you can quote that without having to manually prepend `>` to every line!
 
 ```
 
->>>
-If you paste a message from somewhere else
+<!--
+Use a standard blockquote here until https://gitlab.com/gitlab-org/gitlab/-/issues/390290
+gets properly fixed. The mixture of HTML comments and HTML tags
+trigger this problem.
+-->
 
-that spans multiple lines,
-
-you can quote that without having to manually prepend `>` to every line!
->>>
+> If you paste a message from somewhere else
+>
+> that spans multiple lines,
+>
+> you can quote that without having to manually prepend `>` to every line!
 
 ### Code spans and blocks
 
