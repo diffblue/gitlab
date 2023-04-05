@@ -14,10 +14,28 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
     stub_feature_flags(openai_experimentation: current_user)
   end
 
+  RSpec.shared_examples 'proxies request to ai api endpoint' do
+    it 'calls openai endpoint' do
+      expect(Gitlab::HTTP).to receive(:post).with("#{described_class::OPEN_AI_API_URL}/#{endpoint}",
+        headers: header,
+        body: params.to_json)
+
+      post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
+    end
+
+    it 'returns json received from openai endpoint' do
+      expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
+
+      post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
+
+      expect(json_response).to eq(body)
+    end
+  end
+
   describe 'when feature flag not enabled for user' do
     let(:not_authorized_user) { create :user }
 
-    [:completions, :embeddings].each do |endpoint|
+    [:completions, :embeddings, 'chat/completions'].each do |endpoint|
       it 'returns not found' do
         post api("/ai/experimentation/openai/#{endpoint}", not_authorized_user)
 
@@ -27,58 +45,53 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   describe 'POST /ai/experimentation/openai/completions' do
-    let(:params) do
-      {
-        prompt: 'test',
-        model: 'text-davinci-003',
-        max_tokens: 16,
-        stream: false,
-        echo: false,
-        presence_penalty: 0,
-        frequency_penalty: 0,
-        best_of: 1
-      }
-    end
-
-    it 'calls openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).with("#{described_class::OPEN_AI_API_URL}/completions",
-        headers: header,
-        body: params.to_json)
-
-      post api('/ai/experimentation/openai/completions', current_user), params: { prompt: 'test' }
-    end
-
-    it 'returns json received from openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
-
-      post api('/ai/experimentation/openai/completions', current_user), params: { prompt: 'test' }
-
-      expect(json_response).to eq(body)
+    it_behaves_like 'proxies request to ai api endpoint' do
+      let(:input_params) { { prompt: 'test', model: 'text-davinci-003' } }
+      let(:endpoint) { 'completions' }
+      let(:params) do
+        input_params.merge({
+          temperature: 1.0,
+          stream: false,
+          echo: false,
+          presence_penalty: 0,
+          frequency_penalty: 0,
+          best_of: 1
+        })
+      end
     end
   end
 
   describe 'POST /ai/experimentation/openai/embeddings' do
-    let(:params) do
-      {
-        input: 'test',
-        model: 'text-davinci-003'
-      }
+    it_behaves_like 'proxies request to ai api endpoint' do
+      let(:input_params) { { input: 'test', model: 'text-davinci-003' } }
+      let(:endpoint) { 'embeddings' }
+      let(:params) do
+        input_params
+      end
     end
+  end
 
-    it 'calls openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).with("#{described_class::OPEN_AI_API_URL}/embeddings",
-        headers: header,
-        body: params.to_json)
+  describe 'POST /ai/experimentation/openai/chat/completions' do
+    it_behaves_like 'proxies request to ai api endpoint' do
+      let(:messages) do
+        [
+          { role: "system", content: "You are a helpful assistant." },
+          { role: "user", content: "Who won the world series in 2020?" },
+          { role: "assistant", content: "The Los Angeles Dodgers won the World Series in 2020." },
+          { role: "user", content: "Where was it played?" }
+        ]
+      end
 
-      post api('/ai/experimentation/openai/embeddings', current_user), params: { input: 'test' }
-    end
-
-    it 'returns json received from openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
-
-      post api('/ai/experimentation/openai/embeddings', current_user), params: { input: 'test' }
-
-      expect(json_response).to eq(body)
+      let(:input_params) { { messages: messages, model: 'gpt-3.5-turbo' } }
+      let(:endpoint) { 'chat/completions' }
+      let(:params) do
+        input_params.merge({
+          temperature: 1.0,
+          stream: false,
+          presence_penalty: 0,
+          frequency_penalty: 0
+        })
+      end
     end
   end
 end
