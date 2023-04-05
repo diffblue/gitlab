@@ -149,7 +149,12 @@ module SidebarsHelper
         items: section[:menu_items].map do |item|
           {
             text: item[:title],
-            href: item[:href]
+            href: item[:href],
+            extraAttrs: {
+              'data-track-label': item[:id],
+              'data-track-action': 'click_link',
+              'data-track-property': 'nav_create_menu'
+            }
           }
         end
       }
