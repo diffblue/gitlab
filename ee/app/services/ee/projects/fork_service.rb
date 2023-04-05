@@ -20,6 +20,16 @@ module EE
         ::Gitlab::Audit::Auditor.audit(audit_context)
       end
       # rubocop:enable Gitlab/ModuleWithInstanceVariables
+
+      # rubocop:disable Gitlab/ModuleWithInstanceVariables
+      override :allowed_fork?
+      def allowed_fork?
+        result = ::Users::Abuse::ProjectsDownloadBanCheckService.execute(current_user, @project)
+        return false if result.error?
+
+        super
+      end
+      # rubocop:enable Gitlab/ModuleWithInstanceVariables
     end
   end
 end

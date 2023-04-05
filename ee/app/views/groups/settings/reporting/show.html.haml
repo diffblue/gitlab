@@ -5,7 +5,7 @@
 %h4.settings-title
   = s_('GroupSettings|Git abuse rate limit')
 %p
-  = s_('GroupSettings|Configure limits on the number of repositories users can download in a given time.')
+  = s_('GroupSettings|Configure limits on the number of repositories users can download, clone, or fork in a given time.')
 
 - if @group.unique_project_download_limit_enabled?
   #js-unique-project-download-limit-settings-form{ data: unique_project_download_limit_settings_data }
