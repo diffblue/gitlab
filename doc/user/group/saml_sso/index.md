@@ -227,8 +227,6 @@ After you set up your identity provider to work with GitLab, you must configure 
    For more information, see the [SSO enforcement documentation](#sso-enforcement).
 1. Select **Save changes**.
 
-![Group SAML Settings for GitLab.com](img/group_saml_settings_v13_12.png)
-
 NOTE:
 The certificate [fingerprint algorithm](../../../integration/saml.md#configure-saml-on-your-idp) must be in SHA1. When configuring the identity provider (such as [Google Workspace](#set-up-google-workspace)), use a secure signature algorithm.
 
