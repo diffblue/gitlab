@@ -55,5 +55,34 @@ RSpec.describe Projects::ForkService do
         subject
       end
     end
+
+    describe '#allowed_fork?' do
+      before do
+        allow_next_instance_of(::Users::Abuse::ProjectsDownloadBanCheckService, project, user) do |service|
+          allow(service).to receive(:execute).and_return(service_response)
+        end
+      end
+
+      context 'when user is banned from forking the project' do
+        let(:service_response) { ServiceResponse.error(message: 'User has been banned') }
+
+        it 'does not fork the project' do
+          forked_project = execute
+
+          expect(forked_project.saved?).to be_nil
+        end
+      end
+
+      context 'when user is allowed to fork the project' do
+        let(:service_response) { ServiceResponse.success }
+
+        it 'forks the project' do
+          forked_project = execute
+
+          expect(forked_project.saved?).to be(true)
+          expect(forked_project.import_in_progress?).to be(true)
+        end
+      end
+    end
   end
 end
