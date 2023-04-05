@@ -154,6 +154,18 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
     end
 
     it { expect { dismiss_vulnerability }.to raise_error Gitlab::Graphql::Errors::ArgumentError, 'To state must not be the same as from_state for the same dismissal_reason' }
+
+    context 'with a different dismissal reason' do
+      before do
+        vulnerability.latest_state_transition.update!(dismissal_reason: :false_positive)
+      end
+
+      it 'creates note' do
+        expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
+
+        dismiss_vulnerability
+      end
+    end
   end
 
   describe 'permissions' do
