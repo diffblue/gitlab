@@ -1,0 +1,9 @@
+---
+name: user_email_changed_and_user_signed_in
+description: audit when user emailed changed and user signed in
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369331
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106090
+milestone: '15.8'
+feature_category: user_management
+saved_to_database: true
+streamed: true

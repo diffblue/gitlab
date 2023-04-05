@@ -1,0 +1,9 @@
+---
+name: merge_commit_template_updated
+description: audit when merge commit template is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369314
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107533
+milestone: '15.8'
+feature_category: projects
+saved_to_database: true
+streamed: true

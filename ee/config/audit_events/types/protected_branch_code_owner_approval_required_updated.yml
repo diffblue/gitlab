@@ -1,0 +1,9 @@
+---
+name: protected_branch_code_owner_approval_required_updated
+description: audit when protected branch code owner approval required setting is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369318
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107530
+milestone: '15.8'
+feature_category: source_code_management
+saved_to_database: true
+streamed: true
