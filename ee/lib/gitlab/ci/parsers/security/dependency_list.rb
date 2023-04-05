@@ -38,7 +38,11 @@ module Gitlab
 
               next unless dependency
 
-              vulnerability = finding.metadata.merge(vulnerability_id: finding.vulnerability_id)
+              additional_attrs = { vulnerability_id: finding.vulnerability_id }
+
+              additional_attrs['name'] = finding.name unless finding.metadata['name']
+
+              vulnerability = finding.metadata.merge(additional_attrs)
 
               report.add_dependency(formatter.format(dependency, '', dependency_path(finding), vulnerability))
             end

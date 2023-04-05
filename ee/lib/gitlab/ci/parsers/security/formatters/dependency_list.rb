@@ -91,7 +91,7 @@ module Gitlab
             def formatted_vulnerabilities(vulnerabilities)
               return [] if vulnerabilities.blank?
 
-              vuln_params = { name: vulnerabilities['message'], severity: vulnerabilities['severity'].downcase }
+              vuln_params = { name: vulnerabilities['name'], severity: vulnerabilities['severity'].downcase }
 
               id = vulnerabilities[:vulnerability_id]
               standalone_vuln_params = { id: id, url: vulnerability_url(id) }

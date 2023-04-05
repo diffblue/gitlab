@@ -146,7 +146,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
                   vulnerability = dependency['vulnerabilities'].first
                   path = "/security/vulnerabilities/#{finding.vulnerability_id}"
 
-                  expect(vulnerability['name']).to eq('Vulnerabilities in libxml2 in nokogiri')
+                  expect(vulnerability['name']).to eq('Vulnerabilities in libxml2')
                   expect(vulnerability['id']).to eq(finding.vulnerability_id)
                   expect(vulnerability['url']).to end_with(path)
                 end
@@ -223,7 +223,7 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
           let(:expected_vulnerability) do
             {
               "id" => finding.vulnerability_id,
-              "name" => "Vulnerabilities in libxml2 in nokogiri",
+              "name" => "Vulnerabilities in libxml2",
               "severity" => "high"
             }
           end
