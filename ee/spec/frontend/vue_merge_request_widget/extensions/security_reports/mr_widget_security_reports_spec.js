@@ -171,6 +171,16 @@ describe('MR Widget Security Reports', () => {
     mockAxios.restore();
   });
 
+  describe('with active pipeline', () => {
+    beforeEach(() => {
+      createComponent({ propsData: { mr: { isPipelineActive: true } } });
+    });
+
+    it('should not mount the widget component', () => {
+      expect(findWidget().exists()).toBe(false);
+    });
+  });
+
   describe('with empty MR data', () => {
     beforeEach(() => {
       createComponent();

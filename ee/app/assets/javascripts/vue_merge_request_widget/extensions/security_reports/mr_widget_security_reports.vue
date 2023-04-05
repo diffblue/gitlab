@@ -616,6 +616,7 @@ export default {
 
 <template>
   <mr-widget
+    v-if="!mr.isPipelineActive"
     v-model="vulnerabilities"
     :error-text="$options.i18n.error"
     :fetch-collapsed-data="fetchCollapsedData"
