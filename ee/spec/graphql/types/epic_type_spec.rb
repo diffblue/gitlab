@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['Epic'] do
+RSpec.describe GitlabSchema.types['Epic'], feature_category: :portfolio_management do
   include GraphqlHelpers
   include_context 'includes EpicAggregate constants'
 
