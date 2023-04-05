@@ -5,10 +5,7 @@ module QA
                  only: { subdomain: :staging },
                  feature_flag: { name: 'namespace_storage_limit', scope: :group },
                  product_group: :utilization do
-    describe 'Utilization', quarantine: {
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/398115',
-      type: :investigating
-    } do
+    describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
       let(:hash) { SecureRandom.hex(8) }
@@ -30,16 +27,22 @@ module QA
       before do
         Flow::Login.sign_in(as: owner_user)
 
-        Resource::Project.fabricate_via_api! do |project|
+        project = Resource::Project.fabricate_via_api! do |project|
           project.name = "free-project-#{hash}"
           project.group = free_plan_group
-          project.initialize_with_readme = true
           project.api_client = owner_api_client
+        end
+
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.api_client = owner_api_client
+          commit.project = project
+          commit.commit_message = 'Add large file'
+          commit.add_files([{ file_path: 'test.rb', content: SecureRandom.hex(10000) }])
         end
 
         free_plan_group.visit!
 
-        # Runtime::Feature.enable(:namespace_storage_limit, group: free_plan_group)
+        Runtime::Feature.enable(:namespace_storage_limit, group: free_plan_group)
         Runtime::Feature.enable(:enforce_storage_limit_for_free, group: free_plan_group)
         Runtime::Feature.enable(:namespace_storage_limit_bypass_date_check, group: free_plan_group)
 
@@ -59,12 +62,17 @@ module QA
             usage_quota.storage_tab
 
             aggregate_failures do
-              expect(usage_quota.namespace_usage_total.squish).to match(/\d+\.\d+ Ki?B Namespace storage used/i)
-              expect(usage_quota.purchased_usage_total.squish).to match(/\d+ Gi?B \D+ Purchased storage/i)
-              expect(usage_quota.dependency_proxy_size).to match(/0 bytes/i)
-              expect(usage_quota.container_registry_size).to match(/0 bytes/i)
+              expect do
+                ::QA::Support::WaitForRequests.wait_for_requests # handle element loading text
+                usage_quota.namespace_usage_total.squish
+              end
+                .to eventually_match(%r{\d+\.\d+ Ki?B / \d+.\d+ Gi?B Namespace storage used}i)
+                      .within(max_attempts: 10, reload_page: page, sleep_interval: 1)
+              expect(usage_quota.purchased_usage_total.squish).to match(%r{\d+ Gi?B \D+ Purchased storage}i)
+              expect(usage_quota.dependency_proxy_size).to match(%r{0 bytes}i)
+              expect(usage_quota.container_registry_size).to match(%r{0 bytes}i)
               expect(usage_quota.group_usage_message)
-                .to match(/Usage of group resources across the projects in the #{free_plan_group.path} group/i)
+                .to match(%r{Usage of group resources across the projects in the #{free_plan_group.path} group}i)
             end
           end
         end
