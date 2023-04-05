@@ -21890,9 +21890,6 @@ msgstr ""
 msgid "Ignored"
 msgstr ""
 
-msgid "Image URL"
-msgstr ""
-
 msgid "ImageDiffViewer|2-up"
 msgstr ""
 
@@ -23135,9 +23132,6 @@ msgstr ""
 msgid "Input the remote repository URL"
 msgstr ""
 
-msgid "Insert"
-msgstr ""
-
 msgid "Insert a %{rows}x%{cols} table."
 msgstr ""
 
@@ -23154,9 +23148,6 @@ msgid "Insert column before"
 msgstr ""
 
 msgid "Insert comment template"
-msgstr ""
-
-msgid "Insert image"
 msgstr ""
 
 msgid "Insert link"
@@ -46926,9 +46917,6 @@ msgid "Upload could not be deleted."
 msgstr ""
 
 msgid "Upload file"
-msgstr ""
-
-msgid "Upload image"
 msgstr ""
 
 msgid "Upload new file"
