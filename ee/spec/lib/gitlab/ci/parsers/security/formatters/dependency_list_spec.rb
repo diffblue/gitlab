@@ -82,7 +82,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Formatters::DependencyList do
 
         expect(vulnerability[:id]).to eq(standalone_vulnerability.id)
         expect(vulnerability[:url]).to end_with(path)
-        expect(vulnerability[:name]).to eq('Vulnerabilities in libxml2 in nokogiri')
+        expect(vulnerability[:name]).to eq('Vulnerabilities in libxml2')
         expect(vulnerability[:severity]).to eq('high')
       end
     end

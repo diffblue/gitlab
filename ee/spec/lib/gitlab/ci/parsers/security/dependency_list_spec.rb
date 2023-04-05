@@ -73,7 +73,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: 
 
         expect(report.dependencies.size).to eq(21)
         expect(vuln_nokogiri.size).to eq(1)
-        expect(vuln_nokogiri[0][:name]).to eq('Vulnerabilities in libxml2 in nokogiri')
+        expect(vuln_nokogiri[0][:name]).to eq('Vulnerabilities in libxml2')
       end
 
       context 'with newfound dependency' do

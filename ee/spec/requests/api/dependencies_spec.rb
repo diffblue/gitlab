@@ -40,7 +40,7 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
         vulnerability = json_response.find { |dep| dep['name'] == 'nokogiri' }['vulnerabilities'][0]
         path = "/security/vulnerabilities/#{finding.vulnerability_id}"
 
-        expect(vulnerability['name']).to eq('Vulnerabilities in libxml2 in nokogiri')
+        expect(vulnerability['name']).to eq('Vulnerabilities in libxml2')
         expect(vulnerability['severity']).to eq('high')
         expect(vulnerability['id']).to eq(finding.vulnerability_id)
         expect(vulnerability['url']).to end_with(path)
