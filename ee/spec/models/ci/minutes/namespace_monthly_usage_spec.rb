@@ -340,4 +340,23 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
       it { is_expected.to be_truthy }
     end
   end
+
+  describe 'scope: .by_namespace_and_date', :freeze_time do
+    let_it_be(:date) { Date.today.beginning_of_month }
+    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:ci_usage) { create(:ci_namespace_monthly_usage, namespace: namespace, amount_used: 200, date: date) }
+    let_it_be(:other_namespace) { create(:namespace) }
+
+    context 'when there are matching records' do
+      it 'returns the matching records' do
+        expect(described_class.by_namespace_and_date(namespace, date)).to eq([ci_usage])
+      end
+    end
+
+    context 'when there are no matching records' do
+      it 'returns an empty array' do
+        expect(described_class.by_namespace_and_date(other_namespace, date)).to eq([])
+      end
+    end
+  end
 end

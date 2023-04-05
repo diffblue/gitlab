@@ -23,10 +23,28 @@ RSpec.describe 'Query.ciMinutesUsage', feature_category: :purchase do
       date: Date.new(2021, 5, 1))
 
     create(:ci_namespace_monthly_usage,
+      namespace: user.namespace,
+      amount_used: 60,
+      shared_runners_duration: 70,
+      date: Date.new(2021, 4, 1))
+
+    create(:ci_project_monthly_usage,
+      project: user_project,
+      amount_used: 80,
+      shared_runners_duration: 90,
+      date: Date.new(2021, 4, 1))
+
+    create(:ci_namespace_monthly_usage,
       namespace: group,
       amount_used: 100,
       shared_runners_duration: 200,
       date: Date.new(2021, 6, 1))
+
+    create(:ci_namespace_monthly_usage,
+      namespace: group,
+      amount_used: 300,
+      shared_runners_duration: 400,
+      date: Date.new(2021, 7, 1))
   end
 
   subject(:result) { post_graphql(query, current_user: user) }
@@ -55,22 +73,90 @@ RSpec.describe 'Query.ciMinutesUsage', feature_category: :purchase do
       QUERY
     end
 
-    it 'returns usage data by month for the current user' do
-      subject
+    context 'when date is not provided' do
+      it 'returns the usage data for all months' do
+        subject
 
-      monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
-      expect(monthly_usage).to contain_exactly({
-        'month' => 'May',
-        'minutes' => 50,
-        'sharedRunnersDuration' => 100,
-        'projects' => { 'nodes' => [{
-          'minutes' => 40,
-          'sharedRunnersDuration' => 80,
-          'project' => {
-            'name' => 'Project 1'
+        monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
+
+        expect(monthly_usage).to contain_exactly({
+          'month' => 'April',
+          'minutes' => 60,
+          'sharedRunnersDuration' => 70,
+          'projects' => {
+            'nodes' => [{
+              'minutes' => 80,
+              'sharedRunnersDuration' => 90,
+              'project' => {
+                'name' => 'Project 1'
+              }
+            }]
           }
-        }] }
-      })
+        },
+          {
+            'month' => 'May',
+            'minutes' => 50,
+            'sharedRunnersDuration' => 100,
+            'projects' => {
+              'nodes' => [{
+                'minutes' => 40,
+                'sharedRunnersDuration' => 80,
+                'project' => {
+                  'name' => 'Project 1'
+                }
+              }]
+            }
+          })
+      end
+    end
+
+    context 'when date is provided' do
+      let_it_be(:date) { Date.new(2021, 5, 1) }
+      let(:query) do
+        <<-QUERY
+          {
+            ciMinutesUsage(date: "#{date.iso8601}") {
+              nodes {
+                minutes
+                sharedRunnersDuration
+                month
+                projects {
+                  nodes {
+                    minutes
+                    sharedRunnersDuration
+                    project {
+                      name
+                    }
+                  }
+                }
+              }
+            }
+          }
+        QUERY
+      end
+
+      context 'with usage data for the given month' do
+        it 'returns the usage data for the given month only' do
+          subject
+
+          monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
+
+          expect(monthly_usage).to contain_exactly({
+            'month' => 'May',
+            'minutes' => 50,
+            'sharedRunnersDuration' => 100,
+            'projects' => {
+              'nodes' => [{
+                'minutes' => 40,
+                'sharedRunnersDuration' => 80,
+                'project' => {
+                  'name' => user_project.name
+                }
+              }]
+            }
+          })
+        end
+      end
     end
 
     it 'does not create N+1 queries' do
@@ -112,15 +198,63 @@ RSpec.describe 'Query.ciMinutesUsage', feature_category: :purchase do
           group.add_owner(user)
         end
 
-        it 'returns the usage data' do
-          subject
+        context 'when date is not provided' do
+          it 'returns the usage data for all months' do
+            subject
 
-          monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
-          expect(monthly_usage).to contain_exactly({
-            'month' => 'June',
-            'minutes' => 100,
-            'sharedRunnersDuration' => 200
-          })
+            monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
+
+            expect(monthly_usage).to contain_exactly(
+              {
+                'month' => 'July',
+                'minutes' => 300,
+                'sharedRunnersDuration' => 400
+              },
+              {
+                'month' => 'June',
+                'minutes' => 100,
+                'sharedRunnersDuration' => 200
+              }
+            )
+          end
+        end
+
+        context 'when date is provided' do
+          let_it_be(:date) { Date.new(2022, 10, 1) }
+          let(:query) do
+            <<-QUERY
+              {
+                ciMinutesUsage(namespaceId: "#{namespace.to_global_id}", date: "#{date.iso8601}") {
+                  nodes {
+                    minutes
+                    sharedRunnersDuration
+                    month
+                  }
+                }
+              }
+            QUERY
+          end
+
+          context 'with usage data for the given month' do
+            before do
+              create(:ci_namespace_monthly_usage,
+                namespace: group,
+                amount_used: 90,
+                shared_runners_duration: 95,
+                date: date)
+            end
+
+            it 'returns the usage data for the given month only' do
+              subject
+
+              monthly_usage = graphql_data_at(:ci_minutes_usage, :nodes)
+              expect(monthly_usage).to contain_exactly({
+                'month' => 'October',
+                'minutes' => 90,
+                'sharedRunnersDuration' => 95
+              })
+            end
+          end
         end
       end
 

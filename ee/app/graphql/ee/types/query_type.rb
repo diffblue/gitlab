@@ -11,6 +11,9 @@ module EE
                  argument :namespace_id, ::Types::GlobalIDType[::Namespace],
                    required: false,
                    description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
+                 argument :date, ::Types::DateType,
+                   required: false,
+                   description: 'Date for which to retrieve the usage data, should be the first day of a month.'
                end
         field :current_license, ::Types::Admin::CloudLicenses::CurrentLicenseType,
               null: true,
@@ -78,9 +81,13 @@ module EE
         ::GitlabSchema.find_by_gid(id)
       end
 
-      def ci_minutes_usage(namespace_id: nil)
+      def ci_minutes_usage(namespace_id: nil, date: nil)
         root_namespace = find_root_namespace(namespace_id)
-        ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(root_namespace)
+        if date
+          ::Ci::Minutes::NamespaceMonthlyUsage.by_namespace_and_date(root_namespace, date)
+        else
+          ::Ci::Minutes::NamespaceMonthlyUsage.for_namespace(root_namespace)
+        end
       end
 
       private
