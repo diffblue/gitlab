@@ -18,7 +18,7 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
 
   subject { described_class.new(project, user, finding_id: finding_id).execute }
 
-  shared_examples 'creates a vulnerability state transition record' do
+  shared_examples 'creates a vulnerability state transition record with note' do
     let(:comment) { "Dismissal comment" }
     let(:dismissal_reason) { 'false_positive' }
     let(:service) do
@@ -42,6 +42,15 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
       expect(state_transition.dismissal_reason).to eq(dismissal_reason)
       expect(state_transition.author).to eq(user)
     end
+
+    it 'creates a note' do
+      expect { service.execute }.to change { Note.count }.from(0).to(1)
+
+      note = Note.last
+
+      expect(note.noteable).to eq(project.vulnerabilities.last)
+      expect(note.author).to eq(user)
+    end
   end
 
   # Modification of this class may carry unintended risk for self-managed users by breaking unapplied
@@ -50,7 +59,7 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/create_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "62fa71413bf6f024bf16e3a66851155cc797337821a0fd985cc3ea9b5f8aecb8"
+    expected_checksum = "e8570f31db6ae630b67e490a25a77e8c3eeda9fd23dc670d733f09ba61f6bc33"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 
@@ -77,7 +86,7 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
         ))
     end
 
-    it_behaves_like 'creates a vulnerability state transition record'
+    it_behaves_like 'creates a vulnerability state transition record with note'
 
     context 'and finding is dismissed' do
       context 'when deprecate_vulnerabilities_feedback is enabled' do

@@ -99,6 +99,11 @@ module Vulnerabilities
       state_transition_params[:dismissal_reason] = @dismissal_reason if @dismissal_reason
 
       Vulnerabilities::StateTransition.create!(state_transition_params)
+      create_system_note(vulnerability)
+    end
+
+    def create_system_note(vulnerability)
+      SystemNoteService.change_vulnerability_state(vulnerability, @author)
     end
 
     def existing_dismissal_feedback

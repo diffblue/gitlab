@@ -49,7 +49,7 @@ feature_category: :vulnerability_management do
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "6cbf54411beb5c5ca363242939b5b366e66fa001f5d6bcce825186688c388eb4"
+    expected_checksum = "7593840d49d02e8ac7f95ae36004a85589e28bd8d646e301645d7c91c67339fa"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 
@@ -102,6 +102,15 @@ feature_category: :vulnerability_management do
           expect(state_transition.comment).to eq(comment)
           expect(state_transition.dismissal_reason).to eq(dismissal_reason)
         end
+      end
+
+      it 'creates a note' do
+        expect { subject }.to change { Note.count }.from(0).to(1)
+
+        note = Note.last
+
+        expect(note.noteable).to eq(project.vulnerabilities.last)
+        expect(note.author).to eq(user)
       end
     end
 
