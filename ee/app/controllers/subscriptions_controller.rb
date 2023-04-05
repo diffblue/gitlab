@@ -36,12 +36,6 @@ class SubscriptionsController < ApplicationController
         else
           current_user.namespace
         end
-
-      experiment(:cart_abandonment_modal,
-        namespace: @namespace,
-        user: current_user,
-        sticky_to: current_user
-      ).run
     else
       store_location_for(:user, request.fullpath)
       redirect_to new_user_registration_path(redirect_from: 'checkout')
