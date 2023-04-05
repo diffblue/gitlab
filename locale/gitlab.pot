@@ -38878,6 +38878,9 @@ msgstr ""
 msgid "SearchError|A search query problem has occurred"
 msgstr ""
 
+msgid "SearchError|Learn more about %{search_syntax_link_start} Zoekt search syntax%{search_syntax_link_end}."
+msgstr ""
+
 msgid "SearchError|To resolve the problem, check the query syntax and try again."
 msgstr ""
 

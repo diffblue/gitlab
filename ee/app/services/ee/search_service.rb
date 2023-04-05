@@ -5,6 +5,8 @@ module EE
     include ::Gitlab::Utils::StrongMemoize
     extend ::Gitlab::Utils::Override
 
+    delegate :use_zoekt?, to: :search_service
+
     # This is a proper method instead of a `delegate` in order to
     # avoid adding unnecessary methods to Search::SnippetService
     def use_elasticsearch?
