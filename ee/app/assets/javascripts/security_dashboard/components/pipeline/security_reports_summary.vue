@@ -142,7 +142,7 @@ export default {
       <div
         v-for="[scanType, scanSummary] in formattedSummary"
         :key="scanType"
-        class="gl-display-flex gl-flex-wrap-wrap gl-align-items-center gl-gap-3 gl-my-3"
+        class="gl-display-flex gl-flex-wrap gl-align-items-center gl-gap-3 gl-my-3"
       >
         <div class="gl-flex-grow-1 gl-flex-basis-0">
           {{ scanType }}

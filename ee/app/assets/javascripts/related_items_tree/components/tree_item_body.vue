@@ -208,9 +208,7 @@ export default {
         'item-closed': isClosed,
       }"
     >
-      <div
-        class="gl-display-flex gl-align-items-center gl-flex-wrap-wrap gl-flex-grow-1 flex-xl-nowrap"
-      >
+      <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap">
         <div class="item-title-wrapper gl-flex-grow-1 gl-mr-3">
           <div class="item-title gl-display-flex gl-mb-0 gl-py-1">
             <gl-icon
@@ -247,7 +245,7 @@ export default {
           </div>
 
           <div
-            class="item-meta gl-display-flex gl-flex-wrap-wrap mt-xl-0 gl-align-items-center gl-font-sm gl-ml-6"
+            class="item-meta gl-display-flex gl-flex-wrap mt-xl-0 gl-align-items-center gl-font-sm gl-ml-6"
           >
             <span class="gl-mr-4 gl-mb-1">{{ itemHierarchy }}</span>
             <gl-tooltip v-if="isEpic" :target="() => $refs.countBadge">

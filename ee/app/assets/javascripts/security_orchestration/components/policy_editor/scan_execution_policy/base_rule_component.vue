@@ -95,7 +95,7 @@ export default {
     </div>
 
     <div class="gl-flex-grow-1">
-      <div class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap-wrap">
+      <div class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
         <gl-sprintf :message="$options.i18n.scanExecutionRuleCopy">
           <template #scopes>
             <slot name="scopes"></slot>
