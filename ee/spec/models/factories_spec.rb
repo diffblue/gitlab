@@ -74,6 +74,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:container_repository, :remote_store]
   ].freeze
 
+  geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?
+
   shared_examples 'factory' do |factory|
     skip_any = skipped.include?([factory.name, any])
 
@@ -86,6 +88,10 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     end
 
     describe "#{factory.name} factory" do
+      before(:context) do
+        skip 'Geo DB is not set up' if factory.name.start_with?('geo') && !geo_configured
+      end
+
       it 'does not raise error when built' do
         # We use `skip` here because using `build` mostly work even if
         # factories break when creating them.
