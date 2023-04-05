@@ -9,10 +9,13 @@ RSpec.describe EE::NamespacesHelper do
   let!(:user_project_creation_level) { nil }
 
   let(:user_group) do
-    create(:namespace, :with_ci_minutes,
-           project_creation_level: user_project_creation_level,
-           owner: user,
-           ci_minutes_used: ci_minutes_used)
+    create(
+      :namespace,
+      :with_ci_minutes,
+      project_creation_level: user_project_creation_level,
+      owner: user,
+      ci_minutes_used: ci_minutes_used
+    )
   end
 
   let(:ci_minutes_used) { 100 }

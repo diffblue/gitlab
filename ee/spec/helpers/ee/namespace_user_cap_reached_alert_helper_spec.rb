@@ -16,8 +16,7 @@ RSpec.describe EE::NamespaceUserCapReachedAlertHelper, :use_clean_rails_memory_s
 
     context 'with a persisted namespace' do
       let_it_be(:group, refind: true) do
-        create(:group, :public,
-              namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
+        create(:group, :public, namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
       end
 
       let_it_be(:subgroup) { create(:group, parent: group) }

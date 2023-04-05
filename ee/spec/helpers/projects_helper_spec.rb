@@ -268,8 +268,10 @@ RSpec.describe ProjectsHelper do
 
         before do
           allow(project).to receive(:latest_ingested_security_pipeline).and_return(pipeline)
-          allow(pipeline).to receive_messages(has_security_report_ingestion_warnings?: true,
-                                              has_security_report_ingestion_errors?: false)
+          allow(pipeline).to receive_messages(
+            has_security_report_ingestion_warnings?: true,
+            has_security_report_ingestion_errors?: false
+          )
         end
 
         it { is_expected.to match(base_values.merge!(pipeline_values)) }
@@ -310,8 +312,10 @@ RSpec.describe ProjectsHelper do
     context 'when the banner should be shown' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag_enabled, :is_com, :is_public, :is_free, :is_member, :user_dismissed_banner,
-      :legacy_open_source_license_available, :should_show_banner) do
+      where(
+        :feature_flag_enabled, :is_com, :is_public, :is_free, :is_member, :user_dismissed_banner,
+        :legacy_open_source_license_available, :should_show_banner
+      ) do
         false | false | false | false | false | true | true | false
         true  | false | false | false | false | true  | true  | false
         true  | true  | false | false | false | true  | true  | false

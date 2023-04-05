@@ -123,10 +123,12 @@ RSpec.describe LicenseMonitoringHelper do
     let(:now) { Date.current }
 
     def setup_license(starts_at:, expires_at:, max_users:)
-      license = build(:license,
-                      starts_at: starts_at,
-                      expires_at: expires_at,
-                      restrictions: { active_user_count: max_users })
+      license = build(
+        :license,
+        starts_at: starts_at,
+        expires_at: expires_at,
+        restrictions: { active_user_count: max_users }
+      )
       allow(License).to receive(:current).and_return(license)
 
       license
