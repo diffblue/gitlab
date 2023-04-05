@@ -185,7 +185,7 @@ export default {
                 v-if="rule.type.toLowerCase() === $options.ruleTypeAnyApprover"
                 :eligible-approvers-docs-path="eligibleApproversDocsPath"
               />
-              <span v-else class="gl-white-space-nowrap">
+              <span v-else>
                 <span
                   v-if="rule.section && rule.section !== 'codeowners'"
                   :aria-label="sectionNameLabel(rule)"
