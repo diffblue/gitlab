@@ -2,6 +2,7 @@ import { nextTick } from 'vue';
 import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
@@ -37,6 +38,7 @@ describe('PolicyActionApprovers', () => {
       stubs: {
         GlForm,
         GlSprintf,
+        BaseLayoutComponent,
         ...stubs,
       },
     });
@@ -47,7 +49,7 @@ describe('PolicyActionApprovers', () => {
   const findGroupSelect = () => wrapper.findComponent(GroupSelect);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findAddButton = () => wrapper.findByTestId('add-approver');
-  const findRemoveButton = () => wrapper.findByTestId('remove-approver');
+  const findRemoveButton = () => wrapper.findByTestId('remove-rule');
   const findMessage = () => wrapper.findComponent(GlSprintf);
 
   describe('single type', () => {
@@ -155,7 +157,7 @@ describe('PolicyActionApprovers', () => {
 
   describe('message', () => {
     it('renders the correct message for the first type added', async () => {
-      factory({ stubs: { GlSprintf: true } });
+      factory({ stubs: { GlSprintf: true, BaseLayoutComponent: true } });
       await nextTick();
       expect(findMessage().attributes('message')).toBe(getDefaultHumanizedTemplate(1));
     });
@@ -163,7 +165,7 @@ describe('PolicyActionApprovers', () => {
     it('renders the correct text for the non-first type', async () => {
       factory({
         propsData: { approverIndex: 1, numOfApproverTypes: 2 },
-        stubs: { GlSprintf: true },
+        stubs: { GlSprintf: true, BaseLayoutComponent: true },
       });
       await nextTick();
       expect(findMessage().attributes('message')).toBe(MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE);

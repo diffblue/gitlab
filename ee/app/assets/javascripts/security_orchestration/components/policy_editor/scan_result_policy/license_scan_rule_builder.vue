@@ -4,10 +4,12 @@ import { sprintf, s__ } from '~/locale';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import { EXCEPT, LICENSE_STATES, MATCHING } from './lib/rules';
 
 export default {
   components: {
+    BaseLayoutComponent,
     GlSprintf,
     GlCollapsibleListbox,
     PolicyRuleBranchSelection,
@@ -18,6 +20,11 @@ export default {
     initRule: {
       type: Object,
       required: true,
+    },
+    ruleLabel: {
+      type: String,
+      required: false,
+      default: '',
     },
   },
   i18n: {
@@ -115,45 +122,53 @@ export default {
 </script>
 
 <template>
-  <div class="gl-line-height-42 gl-display-inline! gl-vertical-align-middle gl-ml-3">
-    <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
-      <template #matchType>
-        <gl-collapsible-listbox
-          id="matchType"
-          v-model="matchType"
-          class="gl-display-inline! gl-mx-3 gl-w-auto gl-vertical-align-middle"
-          :items="$options.matchTypeOptions"
-          :toggle-text="matchTypeToggleText"
-          data-testid="match-type-select"
-        />
-      </template>
+  <base-layout-component
+    :type="initRule.type"
+    :rule-label="ruleLabel"
+    :show-scan-type-dropdown="true"
+    @changed="$emit('changed', $event)"
+    @remove="$emit('remove')"
+  >
+    <template #content>
+      <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
+        <template #matchType>
+          <gl-collapsible-listbox
+            id="matchType"
+            v-model="matchType"
+            class="gl-display-inline! gl-w-auto gl-vertical-align-middle"
+            :items="$options.matchTypeOptions"
+            :toggle-text="matchTypeToggleText"
+            data-testid="match-type-select"
+          />
+        </template>
 
-      <template #licenseStates>
-        <policy-rule-multi-select
-          v-model="licenseStates"
-          class="gl-mx-3 gl-display-inline! gl-vertical-align-middle"
-          :item-type-name="$options.i18n.licenseStates"
-          :items="$options.licenseStates"
-          data-testid="license-state-select"
-        />
-      </template>
+        <template #licenseStates>
+          <policy-rule-multi-select
+            v-model="licenseStates"
+            class="gl-display-inline! gl-vertical-align-middle"
+            :item-type-name="$options.i18n.licenseStates"
+            :items="$options.licenseStates"
+            data-testid="license-state-select"
+          />
+        </template>
 
-      <template #licenseType>
-        <gl-collapsible-listbox
-          v-model="licenseTypes"
-          class="gl-vertical-align-middle gl-display-inline! gl-mr-3"
-          :items="filteredLicenses"
-          :toggle-text="toggleText"
-          searchable
-          multiple
-          data-testid="license-multi-select"
-          @search="filterList"
-        />
-      </template>
+        <template #licenseType>
+          <gl-collapsible-listbox
+            v-model="licenseTypes"
+            class="gl-vertical-align-middle gl-display-inline!"
+            :items="filteredLicenses"
+            :toggle-text="toggleText"
+            searchable
+            multiple
+            data-testid="license-multi-select"
+            @search="filterList"
+          />
+        </template>
 
-      <template #branches>
-        <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged" />
-      </template>
-    </gl-sprintf>
-  </div>
+        <template #branches>
+          <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged" />
+        </template>
+      </gl-sprintf>
+    </template>
+  </base-layout-component>
 </template>

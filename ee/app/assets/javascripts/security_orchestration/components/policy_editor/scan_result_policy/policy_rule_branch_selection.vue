@@ -1,5 +1,5 @@
 <script>
-import { GlCollapsibleListbox, GlFormGroup, GlFormInput } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { n__, s__, __ } from '~/locale';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -20,7 +20,6 @@ const GROUP_LEVEL_BRANCHES_OPTIONS = [
 export default {
   components: {
     GlCollapsibleListbox,
-    GlFormGroup,
     GlFormInput,
     ProtectedBranchesSelector,
   },
@@ -88,41 +87,39 @@ export default {
 </script>
 
 <template>
-  <span>
-    <gl-form-group class="gl-mx-3 gl-mb-3! gl-display-inline!">
-      <protected-branches-selector
-        v-if="displayBranchSelector"
-        v-model="branchesToAdd"
-        class="gl-display-inline"
-        :allow-all-branches-option="false"
-        :allow-all-protected-branches-option="true"
-        :project-id="namespaceId"
-        :selected-branches-names="branchesToAdd"
-      />
-      <template v-else>
-        <span class="gl-display-flex">
-          <label for="group-level-branch-selector" class="gl-sr-only">
-            {{ $options.i18n.groupLevelBranchSelector }}
-          </label>
-          <gl-collapsible-listbox
-            id="group-level-branch-selector"
-            :items="$options.GROUP_LEVEL_BRANCHES_OPTIONS"
-            :selected="selected"
-            @select="handleSelect"
-          />
-          <label for="group-level-branch-input" class="gl-sr-only">
-            {{ $options.i18n.groupLevelBranchInput }}
-          </label>
-          <gl-form-input
-            v-if="showInput"
-            id="group-level-branch-input"
-            v-model="enteredBranches"
-            class="gl-display-inline gl-w-30 gl-ml-3"
-            type="text"
-          />
-        </span>
-      </template>
-    </gl-form-group>
+  <div class="gl-display-flex gl-align-items-center gl-gap-3">
+    <protected-branches-selector
+      v-if="displayBranchSelector"
+      v-model="branchesToAdd"
+      class="gl-display-inline gl-max-w-26"
+      :allow-all-branches-option="false"
+      :allow-all-protected-branches-option="true"
+      :project-id="namespaceId"
+      :selected-branches-names="branchesToAdd"
+    />
+    <template v-else>
+      <span class="gl-display-flex">
+        <label for="group-level-branch-selector" class="gl-sr-only">
+          {{ $options.i18n.groupLevelBranchSelector }}
+        </label>
+        <gl-collapsible-listbox
+          id="group-level-branch-selector"
+          :items="$options.GROUP_LEVEL_BRANCHES_OPTIONS"
+          :selected="selected"
+          @select="handleSelect"
+        />
+        <label for="group-level-branch-input" class="gl-sr-only">
+          {{ $options.i18n.groupLevelBranchInput }}
+        </label>
+        <gl-form-input
+          v-if="showInput"
+          id="group-level-branch-input"
+          v-model="enteredBranches"
+          class="gl-display-inline gl-w-30 gl-ml-3"
+          type="text"
+        />
+      </span>
+    </template>
     <span v-if="showBranchesLabel" data-testid="branches-label">{{ branchesText }}</span>
-  </span>
+  </div>
 </template>

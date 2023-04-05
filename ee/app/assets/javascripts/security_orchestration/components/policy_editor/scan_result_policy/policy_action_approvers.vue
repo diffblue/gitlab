@@ -1,6 +1,7 @@
 <script>
 import { GlButton, GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
+import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import GroupSelect from './group_select.vue';
 import RoleSelect from './role_select.vue';
 import UserSelect from './user_select.vue';
@@ -14,6 +15,7 @@ import {
 
 export default {
   components: {
+    BaseLayoutComponent,
     GlButton,
     GlForm,
     GlFormInput,
@@ -118,69 +120,68 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-gap-3">
-    <gl-form class="gl-display-flex gl-align-items-center" @submit.prevent>
-      <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30">
-        <gl-sprintf :message="actionText">
-          <template #require="{ content }">
-            <strong>{{ content }}</strong>
-          </template>
+  <base-layout-component
+    class="gl-py-0 gl-rounded-0"
+    :show-label="false"
+    :show-remove-button="showRemoveButton"
+    @remove="handleRemoveApprover"
+  >
+    <template #content>
+      <gl-form class="gl-display-flex gl-align-items-center" @submit.prevent>
+        <div class="gl-display-flex gl-align-items-center gl-justify-content-end gl-w-30">
+          <gl-sprintf :message="actionText">
+            <template #require="{ content }">
+              <strong>{{ content }}</strong>
+            </template>
 
-          <template #approvalsRequired>
-            <gl-form-input
-              :value="approvalsRequired"
-              type="number"
-              class="gl-w-11! gl-mx-3"
-              :min="1"
-              data-testid="approvals-required-input"
-              @update="approvalsRequiredChanged"
-            />
-          </template>
+            <template #approvalsRequired>
+              <gl-form-input
+                :value="approvalsRequired"
+                type="number"
+                class="gl-w-11! gl-mx-3"
+                :min="1"
+                data-testid="approvals-required-input"
+                @update="approvalsRequiredChanged"
+              />
+            </template>
 
-          <template #approval="{ content }">
-            <strong class="gl-mr-3">{{ content }}</strong>
-          </template>
-        </gl-sprintf>
-      </div>
+            <template #approval="{ content }">
+              <strong class="gl-mr-3">{{ content }}</strong>
+            </template>
+          </gl-sprintf>
+        </div>
 
-      <gl-collapsible-listbox
-        class="gl-mx-3"
-        :items="availableTypes"
-        :toggle-text="approverTypeToggleText"
-        :disabled="!hasAvailableTypes"
-        @select="handleSelectedApproverType"
-      />
-
-      <template v-if="approverType">
-        <component
-          :is="approverComponent"
-          :existing-approvers="existingApprovers[approverType]"
-          @updateSelectedApprovers="
-            handleApproversUpdate({
-              updatedApprovers: $event,
-              type: approverType,
-            })
-          "
+        <gl-collapsible-listbox
+          class="gl-mx-3"
+          :items="availableTypes"
+          :toggle-text="approverTypeToggleText"
+          :disabled="!hasAvailableTypes"
+          @select="handleSelectedApproverType"
         />
-      </template>
-    </gl-form>
-    <gl-button
-      v-if="showAddButton"
-      variant="link"
-      data-testid="add-approver"
-      icon="plus"
-      @click="addApproverType"
-    >
-      {{ $options.i18n.ADD_APPROVER_LABEL }}
-    </gl-button>
-    <gl-button
-      v-if="showRemoveButton"
-      :key="approverType"
-      icon="remove"
-      category="tertiary"
-      data-testid="remove-approver"
-      :aria-label="__('Remove')"
-      @click="handleRemoveApprover"
-    />
-  </div>
+
+        <template v-if="approverType">
+          <component
+            :is="approverComponent"
+            :existing-approvers="existingApprovers[approverType]"
+            @updateSelectedApprovers="
+              handleApproversUpdate({
+                updatedApprovers: $event,
+                type: approverType,
+              })
+            "
+          />
+        </template>
+      </gl-form>
+      <gl-button
+        v-if="showAddButton"
+        class="gl-ml-auto"
+        variant="link"
+        data-testid="add-approver"
+        icon="plus"
+        @click="addApproverType"
+      >
+        {{ $options.i18n.ADD_APPROVER_LABEL }}
+      </gl-button>
+    </template>
+  </base-layout-component>
 </template>
