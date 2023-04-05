@@ -61,7 +61,7 @@ export default {
       :checked="hasPipelineMustSucceed"
       :locked="pipelineMustSucceed.locked"
       :locked-text="lockedText"
-      data-qa-selector="only_allow_merge_if_pipeline_succeeds_checkbox"
+      checkbox-qa-selector="only_allow_merge_if_pipeline_succeeds_checkbox"
       data-testid="allow_merge_if_pipeline_succeeds_checkbox"
       @input="toggleChecked('hasPipelineMustSucceed')"
     >
@@ -78,7 +78,7 @@ export default {
         :checked="skippedPipelineChecked"
         :locked="skippedPipelineLocked"
         :locked-text="skippedPipelineText"
-        data-qa-selector="always_allow_merge_on_skipped_pipeline_checkbox"
+        checkbox-qa-selector="always_allow_merge_on_skipped_pipeline_checkbox"
         data-testid="allow_merge_on_skipped_pipeline_checkbox"
         @input="toggleChecked('hasAllowMergeOnSkippedPipeline')"
       >
@@ -95,7 +95,7 @@ export default {
       :checked="hasOnlyAllowMergeIfAllResolved"
       :locked="onlyAllowMergeIfAllResolved.locked"
       :locked-text="lockedText"
-      data-qa-selector="only_allow_merge_if_all_discussions_are_resolved_checkbox"
+      checkbox-qa-selector="only_allow_merge_if_all_discussions_are_resolved_checkbox"
       data-testid="allow_merge_if_all_discussions_are_resolved_checkbox"
       @input="toggleChecked('hasOnlyAllowMergeIfAllResolved')"
     />

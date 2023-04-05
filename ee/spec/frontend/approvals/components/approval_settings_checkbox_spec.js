@@ -87,6 +87,20 @@ describe('ApprovalSettingsCheckbox', () => {
     });
   });
 
+  describe('data-qa-selector', () => {
+    it('defaults to undefined when no checkboxQaSelector value is given', () => {
+      createWrapper();
+
+      expect(findCheckbox().attributes('data-qa-selector')).toBeUndefined();
+    });
+
+    it('sets the data-qa-selector when checkboxQaSelector is given', () => {
+      createWrapper({ props: { checkboxQaSelector: 'test-checkbox' } });
+
+      expect(findCheckbox().attributes('data-qa-selector')).toBe('test-checkbox');
+    });
+  });
+
   describe('#slot', () => {
     it('should render a default slot', () => {
       const slotContent = 'test slot content';
