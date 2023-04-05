@@ -127,12 +127,14 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
 
   describe 'renders error when zoekt search fails' do
     let(:query) { 'test' }
+    let(:search_service) { instance_double(SearchService, scope: 'blobs', use_elasticsearch?: true, use_zoekt?: true) }
     let(:results) { Gitlab::Zoekt::SearchResults.new(user, query) }
 
     before do
       sign_in(user)
 
       allow_next_instance_of(SearchService) do |service|
+        allow(service).to receive(:search_service).and_return(search_service)
         allow(service).to receive(:search_results).and_return(results)
         allow(results).to receive(:zoekt_search).and_return({ Error: 'failed to parse query' })
       end
@@ -142,6 +144,11 @@ RSpec.describe 'Project elastic search', :js, :elastic, :disable_rate_limiter, f
 
     it 'renders error information' do
       expect(page).to have_content('A search query problem has occurred')
+      expect(page).to have_content('Learn more about Zoekt search syntax')
+      expect(page).to have_link(
+        'Zoekt search syntax',
+        href: help_page_path('user/search/exact_code_search.md', anchor: 'syntax')
+      )
     end
 
     it 'sets tab count to 0' do

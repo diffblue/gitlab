@@ -1,0 +1,12 @@
+.gl-display-flex.gl-flex-direction-column.gl-align-items-center
+  %div
+    .svg-content.svg-150
+      = image_tag 'illustrations/search-timeout-md.svg'
+  %div
+    %h4.gl-text-center.gl-font-weight-bold= s_('SearchError|A search query problem has occurred')
+    %p.gl-text-center
+      = s_('SearchError|To resolve the problem, check the query syntax and try again.')
+      - if search_service.use_zoekt?
+        - search_syntax_link_url = help_page_path('user/search/exact_code_search.md', anchor: 'syntax')
+        - search_syntax_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: search_syntax_link_url }
+        = html_escape(s_('SearchError|Learn more about %{search_syntax_link_start} Zoekt search syntax%{search_syntax_link_end}.')) % { search_syntax_link_start: search_syntax_link_start, search_syntax_link_end: '</a>'.html_safe }
