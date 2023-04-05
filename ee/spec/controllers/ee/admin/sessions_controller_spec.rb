@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Admin::SessionsController, :do_not_mock_admin_mode,
-feature_category: :system_access do
+  feature_category: :system_access do
   include_context 'custom session'
 
   describe '#create' do

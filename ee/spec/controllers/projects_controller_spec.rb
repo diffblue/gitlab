@@ -130,11 +130,10 @@ RSpec.describe ProjectsController do
     it 'does not allow an auditor user to access the page' do
       sign_in(create(:user, :auditor))
 
-      get :edit,
-          params: {
-            namespace_id: project.namespace.path,
-            id: project.path
-          }
+      get :edit, params: {
+        namespace_id: project.namespace.path,
+        id: project.path
+      }
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
@@ -254,12 +253,11 @@ RSpec.describe ProjectsController do
         repository_size_limit: 1024
       }
 
-      put :update,
-          params: {
-            namespace_id: project.namespace,
-            id: project,
-            project: params
-          }
+      put :update, params: {
+        namespace_id: project.namespace,
+        id: project,
+        project: params
+      }
       project.reload
 
       expect(response).to have_gitlab_http_status(:found)
@@ -277,12 +275,11 @@ RSpec.describe ProjectsController do
         reset_approvals_on_push: false
       }
 
-      put :update,
-          params: {
-            namespace_id: project.namespace,
-            id: project,
-            project: params
-          }
+      put :update, params: {
+        namespace_id: project.namespace,
+        id: project,
+        project: params
+      }
       project.reload
 
       expect(response).to have_gitlab_http_status(:found)
@@ -296,12 +293,11 @@ RSpec.describe ProjectsController do
         merge_requests_template: 'I got tissues'
       }
 
-      put :update,
-          params: {
-            namespace_id: project.namespace,
-            id: project,
-            project: params
-          }
+      put :update, params: {
+        namespace_id: project.namespace,
+        id: project,
+        project: params
+      }
       project.reload
 
       expect(response).to have_gitlab_http_status(:found)
@@ -601,12 +597,11 @@ RSpec.describe ProjectsController do
 
       shared_examples 'no compliance framework is set' do
         it 'does not change compliance framework for project' do
-          put :update,
-              params: {
-                namespace_id: project.group,
-                id: project,
-                project: params
-              }
+          put :update, params: {
+            namespace_id: project.group,
+            id: project,
+            project: params
+          }
           project.reload
 
           expect(project.compliance_framework_setting).to be_nil
@@ -639,12 +634,11 @@ RSpec.describe ProjectsController do
           end
 
           it 'sets the compliance framework' do
-            put :update,
-                params: {
-                  namespace_id: project.group,
-                  id: project,
-                  project: params
-                }
+            put :update, params: {
+              namespace_id: project.group,
+              id: project,
+              project: params
+            }
             project.reload
 
             expect(project.compliance_framework_setting.compliance_management_framework).to eq(framework)

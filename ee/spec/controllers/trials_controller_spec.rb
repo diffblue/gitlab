@@ -109,9 +109,11 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
               uid: user.id,
               trial_user_information: ActionController::Parameters
                                         .new(post_params).permit(:namespace_id, :glm_source, :glm_content)
-                                        .merge(namespace_id: namespace.id,
-                                               gitlab_com_trial: true,
-                                               sync_to_gl: true)
+                                        .merge(
+                                          namespace_id: namespace.id,
+                                          gitlab_com_trial: true,
+                                          sync_to_gl: true
+                                        )
             }
 
             expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|
@@ -124,10 +126,12 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           it 'tracks for the trial creation' do
             post_create_lead
 
-            expect_snowplow_event(category: described_class.name,
-                                  action: 'create_trial',
-                                  namespace: namespace,
-                                  user: user)
+            expect_snowplow_event(
+              category: described_class.name,
+              action: 'create_trial',
+              namespace: namespace,
+              user: user
+            )
           end
 
           context 'when the user is `setup_for_company: true`' do
@@ -153,8 +157,10 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
         context 'when the ApplyTrialService is unsuccessful' do
           let(:apply_trial_result) do
-            instance_double(GitlabSubscriptions::Trials::ApplyTrialService,
-                            execute: ServiceResponse.error(message: '_fail_'))
+            instance_double(
+              GitlabSubscriptions::Trials::ApplyTrialService,
+              execute: ServiceResponse.error(message: '_fail_')
+            )
           end
 
           it { is_expected.to render_template(:select) }
@@ -273,10 +279,12 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
       it 'tracks the trial creation event' do
         subject
 
-        expect_snowplow_event(category: described_class.name,
-                              action: 'create_trial',
-                              namespace: namespace,
-                              user: user)
+        expect_snowplow_event(
+          category: described_class.name,
+          action: 'create_trial',
+          namespace: namespace,
+          user: user
+        )
       end
 
       context 'with redirect trial user to feature' do
@@ -306,8 +314,10 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
     context 'with failure' do
       let(:apply_trial_result) do
-        instance_double(GitlabSubscriptions::Trials::ApplyTrialService,
-                        execute: ServiceResponse.error(message: '_failed_'))
+        instance_double(
+          GitlabSubscriptions::Trials::ApplyTrialService,
+          execute: ServiceResponse.error(message: '_failed_')
+        )
       end
 
       it { is_expected.to render_template(:select) }

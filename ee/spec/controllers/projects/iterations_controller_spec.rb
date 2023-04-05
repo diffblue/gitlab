@@ -66,8 +66,7 @@ RSpec.describe Projects::IterationsController, feature_category: :team_planning 
     let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
     subject do
-      get :show,
-      params: {
+      get :show, params: {
         namespace_id: project.namespace,
         project_id: project,
         id: iteration.id

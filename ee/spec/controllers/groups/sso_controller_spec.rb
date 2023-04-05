@@ -204,8 +204,8 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
   describe 'GET sign_up_form' do
     subject do
       get :sign_up_form,
-          params: { group_id: group },
-          session: { "oauth_data" => oauth_data, "oauth_group_id" => oauth_group_id }
+        params: { group_id: group },
+        session: { "oauth_data" => oauth_data, "oauth_group_id" => oauth_group_id }
     end
 
     let(:oauth_data) { nil }
@@ -259,8 +259,8 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
   describe 'POST sign_up' do
     subject do
       post :sign_up,
-           params: { group_id: group, new_user: new_user_data },
-           session: { "oauth_data" => oauth_data, "oauth_group_id" => group.id }
+        params: { group_id: group, new_user: new_user_data },
+        session: { "oauth_data" => oauth_data, "oauth_group_id" => group.id }
     end
 
     let(:new_user_data) { { username: "myusername" } }
@@ -322,8 +322,8 @@ RSpec.describe Groups::SsoController, feature_category: :system_access do
   describe 'POST authorize_managed_account' do
     subject do
       post :authorize_managed_account,
-           params: { group_id: group },
-           session: session
+        params: { group_id: group },
+        session: session
     end
 
     let(:session) { { "oauth_data" => oauth_data, "oauth_group_id" => group.id } }

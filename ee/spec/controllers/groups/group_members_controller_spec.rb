@@ -88,13 +88,11 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
       end
 
       it 'is successful' do
-        post :override,
-             params: {
-               group_id: group,
-               id: membership,
-               group_member: { override: true }
-             },
-             format: :js
+        post :override, params: {
+          group_id: group,
+          id: membership,
+          group_member: { override: true }
+        }, format: :js
 
         expect(response).to have_gitlab_http_status(:ok)
       end
@@ -103,13 +101,11 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         let_it_be(:membership) { create(:group_member, :minimal_access, source: group, user: create(:user)) }
 
         it 'is not successful' do
-          post :override,
-               params: {
-                 group_id: group,
-                 id: membership,
-                 group_member: { override: true }
-               },
-               format: :js
+          post :override, params: {
+            group_id: group,
+            id: membership,
+            group_member: { override: true }
+          }, format: :js
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
@@ -120,13 +116,11 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
           end
 
           it 'is successful' do
-            post :override,
-                 params: {
-                   group_id: group,
-                   id: membership,
-                   group_member: { override: true }
-                 },
-                 format: :js
+            post :override, params: {
+              group_id: group,
+              id: membership,
+              group_member: { override: true }
+            }, format: :js
 
             expect(response).to have_gitlab_http_status(:ok)
           end

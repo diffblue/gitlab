@@ -41,12 +41,11 @@ RSpec.describe Projects::Settings::MergeRequestsController, feature_category: :c
         merge_requests_template: 'I got tissues'
       }
 
-      put :update,
-          params: {
-            namespace_id: project.namespace,
-            project_id: project,
-            project: params
-          }
+      put :update, params: {
+        namespace_id: project.namespace,
+        project_id: project,
+        project: params
+      }
       project.reload
 
       expect(response).to have_gitlab_http_status(:found)

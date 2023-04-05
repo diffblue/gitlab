@@ -31,12 +31,11 @@ RSpec.describe Projects::Settings::CiCdController, feature_category: :continuous
 
     describe 'PATCH update' do
       subject do
-        patch :update,
-              params: {
-                namespace_id: project.namespace.to_param,
-                project_id: project,
-                project: params
-              }
+        patch :update, params: {
+          namespace_id: project.namespace.to_param,
+          project_id: project,
+          project: params
+        }
       end
 
       context 'when updating general settings' do
