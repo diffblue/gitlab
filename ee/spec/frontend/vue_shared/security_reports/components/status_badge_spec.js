@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import { GlBadge } from '@gitlab/ui';
 import StatusBadge, { VARIANTS } from 'ee/vue_shared/security_reports/components/status_badge.vue';
 import { VULNERABILITY_STATES } from 'ee/vulnerabilities/constants';
+import { assertProps } from 'helpers/assert_props';
 
 describe('StatusBadge', () => {
   let wrapper;
@@ -27,9 +28,9 @@ describe('StatusBadge', () => {
     },
   );
 
-  it('throws if the passed state is not supported', () => {
+  it('fails validation if the passed state is not supported', () => {
     expect(() => {
-      createWrapper('invalid-prop');
+      assertProps(StatusBadge, { state: 'invalid-prop' });
     }).toThrow('Invalid prop: custom validator check failed for prop');
   });
 });
