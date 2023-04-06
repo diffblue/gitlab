@@ -42,10 +42,13 @@ RSpec.describe DeploymentPolicy, feature_category: :continuous_delivery do
 
   context 'when maintainers are allowed to deploy and approve' do
     let!(:protected_environment) do
-      create(:protected_environment, :maintainers_can_deploy,
-                                     name: environment.name,
-                                     project: project,
-                                     required_approval_count: 1)
+      create(
+        :protected_environment,
+        :maintainers_can_deploy,
+        name: environment.name,
+        project: project,
+        required_approval_count: 1
+      )
     end
 
     it { expect_allowed(:approve_deployment) }

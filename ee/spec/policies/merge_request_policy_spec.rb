@@ -248,11 +248,13 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
       end
 
       it 'does not lock basic policies for any user' do
-        expect(policy_for(maintainer)).to be_allowed(:approve_merge_request,
-                                                      :update_merge_request,
-                                                      :reopen_merge_request,
-                                                      :create_note,
-                                                      :resolve_note)
+        expect(policy_for(maintainer)).to be_allowed(
+          :approve_merge_request,
+          :update_merge_request,
+          :reopen_merge_request,
+          :create_note,
+          :resolve_note
+        )
       end
     end
   end
