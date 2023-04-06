@@ -92,7 +92,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base gl-px-5! gl-pt-5! gl-relative gl-pb-4">
+  <div class="security-policies-bg-gray-10 gl-rounded-base gl-px-5! gl-pt-5! gl-relative gl-pb-4">
     <gl-form inline @submit.prevent>
       <gl-sprintf :message="$options.humanizedTemplate">
         <template #thenLabel="{ content }">

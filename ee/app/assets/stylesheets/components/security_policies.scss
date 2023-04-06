@@ -2,3 +2,11 @@
   top: $calc-application-header-height;
   @include gl-z-index-1;
 }
+
+.security-policies-bg-gray-10 {
+  @include gl-bg-gray-10;
+
+  .gl-dark & {
+    @include gl-bg-white;
+  }
+}
