@@ -52,6 +52,19 @@ RSpec.describe Ci::Minutes::UpdateProjectAndNamespaceUsageService, feature_categ
       end
     end
 
+    context 'when duration increased out of integer range' do
+      let(:max_int) { 2147483647 }
+
+      before do
+        usage = Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
+        usage.update!(shared_runners_duration: max_int)
+      end
+
+      it 'does not fail the service' do
+        expect { subject }.not_to raise_error
+      end
+    end
+
     context 'when statistics and usage do not have existing values' do
       it_behaves_like 'updates legacy consumption'
       it_behaves_like 'updates monthly consumption'

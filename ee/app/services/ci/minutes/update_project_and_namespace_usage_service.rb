@@ -23,6 +23,10 @@ module Ci
 
         # No need to check notification if consumption hasn't changed
         send_minutes_email_notification if consumption > 0
+
+      # TODO: migrate to bigint https://gitlab.com/gitlab-org/gitlab/-/issues/404432
+      rescue ActiveRecord::RangeError => e
+        Gitlab::ErrorTracking.track_exception(e)
       end
 
       def idempotency_cache_key
