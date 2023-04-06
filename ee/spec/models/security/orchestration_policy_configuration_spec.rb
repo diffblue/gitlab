@@ -755,17 +755,40 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
-  describe '#delete_scan_result_policy_reads' do
-    subject(:delete_scan_result_policy_reads) { security_orchestration_policy_configuration.delete_scan_result_policy_reads }
+  describe '#delete_software_license_policies' do
+    let(:configuration) { create(:security_orchestration_policy_configuration) }
+    let(:other_configuration) { create(:security_orchestration_policy_configuration) }
 
-    let(:security_orchestration_policy_configuration_id) { security_orchestration_policy_configuration.id }
+    let(:scan_result_policy_read) do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration)
+    end
 
-    before do
-      create(:scan_result_policy_read, security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id, orchestration_policy_idx: 0)
+    let(:scan_result_policy_read_other_configuration) do
+      create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration)
+    end
+
+    let!(:software_license_without_scan_result_policy) do
+      create(:software_license_policy, project: configuration.project)
+    end
+
+    let!(:software_license_with_scan_result_policy) do
+      create(:software_license_policy, project: configuration.project,
+        scan_result_policy_read: scan_result_policy_read)
+    end
+
+    let!(:software_license_with_scan_result_policy_other_configuration) do
+      create(:software_license_policy, project: other_configuration.project,
+        scan_result_policy_read: scan_result_policy_read_other_configuration)
     end
 
     it 'deletes project scan_result_policy_reads' do
-      expect { delete_scan_result_policy_reads }.to change(Security::ScanResultPolicyRead, :count).from(1).to(0)
+      configuration.delete_software_license_policies(configuration.project)
+
+      software_license_policies = SoftwareLicensePolicy.where(project_id: configuration.project.id)
+      other_project_software_license_policies = SoftwareLicensePolicy.where(project_id: other_configuration.project)
+
+      expect(software_license_policies).to match_array([software_license_without_scan_result_policy])
+      expect(other_project_software_license_policies).to match_array([software_license_with_scan_result_policy_other_configuration])
     end
   end
 
