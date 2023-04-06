@@ -1,0 +1,9 @@
+---
+name: merge_request_approval_operation
+description: Audit event triggered when a merge request is approved
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/10869
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92983
+milestone: '15.3'
+feature_category: code_review_workflow
+saved_to_database: true
+streamed: true

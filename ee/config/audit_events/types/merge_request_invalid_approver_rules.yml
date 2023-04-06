@@ -1,0 +1,9 @@
+---
+name: merge_request_invalid_approver_rules
+description:  Audit event triggered for an invalid rule when merge request is approved
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/100496
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/100496
+milestone: '15.5'
+feature_category: code_review_workflow
+saved_to_database: true
+streamed: true

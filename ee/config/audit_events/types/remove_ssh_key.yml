@@ -1,0 +1,9 @@
+---
+name: remove_ssh_key
+description: Audit event triggered when a ssh key is removed
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/220127
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65615
+milestone: '14.1'
+feature_category: user_profile
+saved_to_database: true
+streamed: true

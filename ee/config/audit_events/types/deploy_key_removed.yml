@@ -1,0 +1,9 @@
+---
+name: deploy_key_removed
+description: Audit event triggered when deploy key is removed
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363087
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92219
+milestone: '15.3'
+feature_category: continuous_delivery
+saved_to_database: true
+streamed: true

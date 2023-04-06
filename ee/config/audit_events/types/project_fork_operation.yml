@@ -1,0 +1,9 @@
+---
+name: project_fork_operation
+description:  Audit event triggered when a project is forked
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90916
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90916
+milestone: '15.2'
+feature_category: source_code_management
+saved_to_database: true
+streamed: true
