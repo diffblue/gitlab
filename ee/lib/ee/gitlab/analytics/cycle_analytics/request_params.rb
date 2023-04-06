@@ -29,7 +29,8 @@ module EE
 
             {
               name: group.name,
-              full_path: "groups/#{group.full_path}"
+              full_path: "groups/#{group.full_path}",
+              type: namespace.type
             }
           end
 

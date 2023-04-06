@@ -130,6 +130,7 @@ export const buildCycleAnalyticsInitialData = ({
   aggregationNextRunAt = null,
   namespaceName = null,
   namespaceFullPath = null,
+  namespaceType = null,
   enableTasksByTypeChart = false,
   enableCustomizableStages = false,
   enableProjectsFilter = false,
@@ -174,6 +175,7 @@ export const buildCycleAnalyticsInitialData = ({
   namespace: {
     name: namespaceName,
     fullPath: namespaceFullPath,
+    type: namespaceType,
   },
   enableTasksByTypeChart: parseBoolean(enableTasksByTypeChart),
   enableCustomizableStages: parseBoolean(enableCustomizableStages),

@@ -10,8 +10,10 @@ import dateFormat from '~/lib/dateformat';
 import { HTTP_STATUS_FORBIDDEN } from '~/lib/utils/http_status';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
+import { NAMESPACE_TYPES } from '../../../vue_shared/components/runner_tags_dropdown/constants';
 
-export const isProjectNamespace = ({ projectId }) => Boolean(projectId);
+export const isProjectNamespace = ({ namespace }) =>
+  Boolean(namespace.type === NAMESPACE_TYPES.PROJECT);
 
 export const namespacePath = ({ namespace }) => namespace?.fullPath || null;
 

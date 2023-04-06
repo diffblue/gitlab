@@ -220,7 +220,7 @@ export default {
       <value-stream-filters
         v-if="!shouldRenderAggregationWarning"
         class="gl-mb-6"
-        :group-path="groupPath"
+        :namespace-path="namespacePath"
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
