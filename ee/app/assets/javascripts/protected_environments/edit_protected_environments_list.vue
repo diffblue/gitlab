@@ -115,9 +115,13 @@ export default {
     >
       <template v-if="isAddingDeploymentRule" #add-rule-form>
         <p>{{ $options.i18n.addModalText }}</p>
-        <gl-form-group :label="$options.i18n.addDeployerLabel" label-for="create-deployer-dropdown">
+        <gl-form-group
+          :label="$options.i18n.addDeployerLabel"
+          label-for="update-deployer-dropdown"
+          data-testid="create-deployer-dropdown"
+        >
           <access-dropdown
-            id="create-deployer-dropdown"
+            id="update-deployer-dropdown"
             class="gl-w-30p"
             :access-levels-data="accessLevelsData"
             :access-level="$options.ACCESS_LEVELS.DEPLOY"

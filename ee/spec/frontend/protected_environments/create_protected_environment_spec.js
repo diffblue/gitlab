@@ -30,8 +30,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     wrapper.findByTestId('create-environment').findComponent(GlCollapsibleListbox);
   const findAccessDropdown = () =>
     wrapper.findByTestId('create-deployer-dropdown').findComponent(AccessDropdown);
-  const findRequiredCountSelect = () =>
-    wrapper.findByTestId('create-approval-count').findComponent(GlCollapsibleListbox);
   const findRequiredCountForApprover = (name) =>
     wrapper
       .findAllComponents(GlFormInput)
@@ -55,7 +53,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     mockAxios.restore();
   });
 
-  const createComponentWithFeatures = (glFeatures = {}) => ({
+  const createComponent = ({
     searchUnprotectedEnvironmentsUrl = SEARCH_URL,
     projectId = PROJECT_ID,
   } = {}) => {
@@ -65,7 +63,6 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
         projectId,
       },
       provide: {
-        glFeatures,
         apiLink: API_LINK,
         docsLink: DOCS_LINK,
         accessLevelsData: [
@@ -84,230 +81,133 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     });
   };
 
-  describe('with unified approval rules', () => {
-    const createComponent = createComponentWithFeatures();
-
-    const submitForm = async (
-      deployAccessLevels = [{ user_id: 1 }],
-      name = 'production',
-      requiredApprovalCount = '3',
-    ) => {
-      findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
-      findEnvironmentsListbox().vm.$emit('select', name);
-      findRequiredCountSelect().vm.$emit('select', requiredApprovalCount);
-
-      await findSubmitButton().vm.$emit('click');
-    };
-
-    it('renders AccessDropdown and passes down the props', () => {
-      createComponent();
-      const dropdown = findAccessDropdown();
-
-      expect(dropdown.props()).toMatchObject({
-        accessLevel: ACCESS_LEVELS.DEPLOY,
-        label: __('Select users'),
-      });
+  const submitForm = async (
+    deployAccessLevels = [{ user_id: 1 }],
+    name = 'production',
+    requiredApprovalCount = '3',
+  ) => {
+    mockAxios.onGet('/api/v4/users/1').reply(HTTP_STATUS_OK, {
+      name: 'root',
+      web_url: '/root',
+      avatar_url: '/root.png',
+      id: 1,
     });
+    findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
+    findEnvironmentsListbox().vm.$emit('select', name);
+    findApproverDropdown().vm.$emit('hidden', deployAccessLevels);
+    await waitForPromises();
+    findRequiredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
+    await nextTick();
+    await findSubmitButton().vm.$emit('click');
+  };
 
-    it('searchs the environment name', async () => {
-      const query = 'staging';
-      createComponent();
+  describe('alert', () => {
+    let alert;
 
-      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
+    unmockLocation();
 
-      const environmentSearch = findEnvironmentsListbox();
-      environmentSearch.vm.$emit('search', query);
-
-      await waitForPromises();
-      await nextTick();
-
-      expect(environmentSearch.props('items')).toEqual([{ value: query, text: query }]);
-    });
-
-    it('renders a select for the required approval count', () => {
+    beforeEach(() => {
       createComponent();
 
-      const count = findRequiredCountSelect();
-
-      expect(count.props('toggleText')).toBe('0');
+      alert = findAlert();
     });
 
-    it('should make a request when submit is clicked', async () => {
-      createComponent();
-
-      jest.spyOn(Api, 'createProtectedEnvironment');
-      const deployAccessLevels = [{ user_id: 1 }];
-      const name = 'production';
-      const requiredApprovalCount = '3';
-
-      await submitForm(deployAccessLevels, name, requiredApprovalCount);
-
-      expect(Api.createProtectedEnvironment).toHaveBeenCalledWith(PROJECT_ID, {
-        deploy_access_levels: deployAccessLevels,
-        required_approval_count: requiredApprovalCount,
-        name,
-      });
+    it('alerts users to the removal of unified approval rules', () => {
+      expect(alert.exists()).toBe(true);
+      expect(alert.props('title')).toMatchInterpolatedText(
+        s__('ProtectedEnvironments|Unified approval rules have been removed from the settings UI'),
+      );
+      expect(alert.find('p').text()).toMatchInterpolatedText(
+        s__(
+          'ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility.',
+        ),
+      );
     });
 
-    describe('on successful protected environment', () => {
-      it('should reload the page', async () => {
-        createComponent();
-        mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
-        await submitForm();
-        await waitForPromises();
-
-        expect(window.location.reload).toHaveBeenCalled();
-      });
+    it('links to the API documentation', () => {
+      expect(wrapper.findByRole('link', { name: 'API' }).attributes('href')).toBe(API_LINK);
     });
 
-    describe('on failed protected environment', () => {
-      it('should show an error message', async () => {
-        mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
-        createComponent();
-        await submitForm();
-        await waitForPromises();
-
-        expect(findAlert().text()).toBe(__('Failed to protect the environment'));
-
-        expect(window.location.reload).not.toHaveBeenCalled();
-      });
+    it('links to the feature documentation', () => {
+      expect(
+        wrapper.findByRole('link', { name: 'multiple approval rules' }).attributes('href'),
+      ).toBe(DOCS_LINK);
     });
   });
 
-  describe('with multiple approval rules', () => {
-    const createComponent = createComponentWithFeatures({
-      multipleEnvironmentApprovalRulesFe: true,
+  it('renders AccessDropdown and passes down the props', () => {
+    createComponent();
+    const dropdown = findAccessDropdown();
+
+    expect(dropdown.props()).toMatchObject({
+      accessLevel: ACCESS_LEVELS.DEPLOY,
+      label: __('Select users'),
     });
-    const submitForm = async (
-      deployAccessLevels = [{ user_id: 1 }],
-      name = 'production',
-      requiredApprovalCount = '3',
-    ) => {
-      mockAxios.onGet('/api/v4/users/1').reply(HTTP_STATUS_OK, {
-        name: 'root',
-        web_url: '/root',
-        avatar_url: '/root.png',
-        id: 1,
-      });
-      findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
-      findEnvironmentsListbox().vm.$emit('select', name);
-      findApproverDropdown().vm.$emit('hidden', deployAccessLevels);
+  });
+
+  it('searchs the environment name', async () => {
+    const query = 'staging';
+    createComponent();
+
+    mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
+
+    const environmentSearch = findEnvironmentsListbox();
+    environmentSearch.vm.$emit('search', query);
+
+    await waitForPromises();
+    await nextTick();
+
+    expect(environmentSearch.props('items')).toEqual([{ value: query, text: query }]);
+  });
+
+  it('renders a dropdown for selecting approvers', () => {
+    createComponent();
+
+    const approvers = findAddApprovers();
+
+    expect(approvers.props()).toMatchObject({
+      disabled: false,
+    });
+  });
+
+  it('should make a request when submit is clicked', async () => {
+    createComponent();
+
+    jest.spyOn(Api, 'createProtectedEnvironment');
+    const deployAccessLevels = [{ user_id: 1 }];
+    const name = 'production';
+    const requiredApprovalCount = '3';
+
+    await submitForm(deployAccessLevels, name, requiredApprovalCount);
+
+    expect(Api.createProtectedEnvironment).toHaveBeenCalledWith(PROJECT_ID, {
+      deploy_access_levels: deployAccessLevels,
+      approval_rules: [{ user_id: 1, required_approvals: requiredApprovalCount }],
+      name,
+    });
+  });
+
+  describe('on successful protected environment', () => {
+    it('should reload the page', async () => {
+      createComponent();
+      mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
+      await submitForm();
       await waitForPromises();
-      findRequiredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
-      await nextTick();
-      await findSubmitButton().vm.$emit('click');
-    };
 
-    describe('alert', () => {
-      let alert;
-
-      unmockLocation();
-
-      beforeEach(() => {
-        createComponent();
-
-        alert = findAlert();
-      });
-
-      it('alerts users to the removal of unified approval rules', () => {
-        expect(alert.exists()).toBe(true);
-        expect(alert.props('title')).toMatchInterpolatedText(
-          s__(
-            'ProtectedEnvironments|Unified approval rules have been removed from the settings UI',
-          ),
-        );
-        expect(alert.find('p').text()).toMatchInterpolatedText(
-          s__(
-            'ProtectedEnvironments|You can still use the %{apiLinkStart}API%{apiLinkEnd} to configure unified approval rules. Consider using %{docsLinkStart}multiple approval rules%{docsLinkEnd} instead, because they provide greater flexibility.',
-          ),
-        );
-      });
-
-      it('links to the API documentation', () => {
-        expect(wrapper.findByRole('link', { name: 'API' }).attributes('href')).toBe(API_LINK);
-      });
-
-      it('links to the feature documentation', () => {
-        expect(
-          wrapper.findByRole('link', { name: 'multiple approval rules' }).attributes('href'),
-        ).toBe(DOCS_LINK);
-      });
+      expect(window.location.reload).toHaveBeenCalled();
     });
+  });
 
-    it('renders AccessDropdown and passes down the props', () => {
+  describe('on failed protected environment', () => {
+    it('should show an error message', async () => {
+      mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
       createComponent();
-      const dropdown = findAccessDropdown();
-
-      expect(dropdown.props()).toMatchObject({
-        accessLevel: ACCESS_LEVELS.DEPLOY,
-        label: __('Select users'),
-      });
-    });
-
-    it('searchs the environment name', async () => {
-      const query = 'staging';
-      createComponent();
-
-      mockAxios.onGet(SEARCH_URL, { params: { query } }).reply(HTTP_STATUS_OK, [query]);
-
-      const environmentSearch = findEnvironmentsListbox();
-      environmentSearch.vm.$emit('search', query);
-
+      await submitForm();
       await waitForPromises();
-      await nextTick();
 
-      expect(environmentSearch.props('items')).toEqual([{ value: query, text: query }]);
-    });
+      expect(findAlert().text()).toBe(__('Failed to protect the environment'));
 
-    it('renders a dropdown for selecting approvers', () => {
-      createComponent();
-
-      const approvers = findAddApprovers();
-
-      expect(approvers.props()).toMatchObject({
-        disabled: false,
-      });
-    });
-
-    it('should make a request when submit is clicked', async () => {
-      createComponent();
-
-      jest.spyOn(Api, 'createProtectedEnvironment');
-      const deployAccessLevels = [{ user_id: 1 }];
-      const name = 'production';
-      const requiredApprovalCount = '3';
-
-      await submitForm(deployAccessLevels, name, requiredApprovalCount);
-
-      expect(Api.createProtectedEnvironment).toHaveBeenCalledWith(PROJECT_ID, {
-        deploy_access_levels: deployAccessLevels,
-        approval_rules: [{ user_id: 1, required_approvals: requiredApprovalCount }],
-        name,
-      });
-    });
-
-    describe('on successful protected environment', () => {
-      it('should reload the page', async () => {
-        createComponent();
-        mockAxios.onPost().replyOnce(HTTP_STATUS_OK);
-        await submitForm();
-        await waitForPromises();
-
-        expect(window.location.reload).toHaveBeenCalled();
-      });
-    });
-
-    describe('on failed protected environment', () => {
-      it('should show an error message', async () => {
-        mockAxios.onPost().replyOnce(HTTP_STATUS_BAD_REQUEST, {});
-        createComponent();
-        await submitForm();
-        await waitForPromises();
-
-        expect(findAlert().text()).toBe(__('Failed to protect the environment'));
-
-        expect(window.location.reload).not.toHaveBeenCalled();
-      });
+      expect(window.location.reload).not.toHaveBeenCalled();
     });
   });
 });
