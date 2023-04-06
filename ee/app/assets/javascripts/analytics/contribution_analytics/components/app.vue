@@ -2,8 +2,13 @@
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
-import { filterIssues, filterMergeRequests, filterPushes } from '../utils';
-import { MAX_REQUEST_COUNT } from '../constants';
+import {
+  filterIssues,
+  filterMergeRequests,
+  filterPushes,
+  mergeContributions,
+  restrictRequestEndDate,
+} from '../utils';
 import contributionsQuery from '../graphql/contributions.query.graphql';
 import PushesChart from './pushes_chart.vue';
 import MergeRequestsChart from './merge_requests_chart.vue';
@@ -43,7 +48,6 @@ export default {
       contributions: [],
       loadError: false,
       isLoading: false,
-      requestCount: 0,
     };
   },
   computed: {
@@ -58,30 +62,32 @@ export default {
     },
   },
   async created() {
-    await this.fetchContributions();
+    await this.fetchContributions(this.startDate);
   },
   methods: {
-    async fetchContributions(endCursor = '') {
+    async fetchContributions(startDate, nextPageCursor = '') {
       this.isLoading = true;
 
       try {
+        const { endDate, nextStartDate } = restrictRequestEndDate(startDate, this.endDate);
+
         const { data } = await this.$apollo.query({
           query: contributionsQuery,
           variables: {
             fullPath: this.fullPath,
-            startDate: this.startDate,
-            endDate: this.endDate,
-            nextPageCursor: endCursor,
+            startDate,
+            endDate,
+            nextPageCursor,
           },
         });
 
         const { nodes = [], pageInfo } = data.group?.contributions || {};
+        this.contributions = mergeContributions(this.contributions, nodes);
 
-        this.contributions = [...this.contributions, ...nodes];
-        this.requestCount += 1;
-
-        if (this.requestCount < MAX_REQUEST_COUNT && pageInfo?.hasNextPage) {
-          await this.fetchContributions(pageInfo.endCursor);
+        if (pageInfo?.hasNextPage) {
+          await this.fetchContributions(startDate, pageInfo.endCursor);
+        } else if (nextStartDate !== null) {
+          await this.fetchContributions(nextStartDate);
         }
       } catch (error) {
         Sentry.captureException(error);

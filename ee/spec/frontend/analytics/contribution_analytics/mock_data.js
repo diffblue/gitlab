@@ -117,20 +117,6 @@ export const MOCK_CONTRIBUTIONS = [
   },
 ];
 
-export const MOCK_PAGE_INFO = {
-  endCursor: 'MTAw',
-  hasNextPage: true,
-};
-
-export const MOCK_CONTRIBUTIONS_RESPONSE = {
-  data: {
-    group: {
-      nodes: MOCK_CONTRIBUTIONS,
-      pageInfo: MOCK_PAGE_INFO,
-    },
-  },
-};
-
 export const MOCK_PUSHES = [
   { count: 15, user: 'luffy' },
   { count: 19, user: 'zoro' },

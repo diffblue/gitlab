@@ -4,7 +4,7 @@ export const CHART_HEIGHT = 350;
 export const INNER_CHART_HEIGHT = 200;
 export const CHART_X_AXIS_ROTATE = 45;
 export const CHART_X_AXIS_NAME_TOP_PADDING = 55;
-export const MAX_REQUEST_COUNT = 10;
+export const MAX_DAYS_PER_REQUEST = 7;
 
 export const LEGACY_TABLE_COLUMNS = [
   { name: 'fullname', text: __('Name') },
