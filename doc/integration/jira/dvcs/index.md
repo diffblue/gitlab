@@ -7,7 +7,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 # Jira DVCS connector **(FREE)**
 
 WARNING:
-The Jira GitHub Enterprise DVCS connector was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/362168) in GitLab 15.1
+The Jira DVCS connector for Jira Cloud was [deprecated](https://gitlab.com/gitlab-org/gitlab/-/issues/362168) in GitLab 15.1
 and is planned for removal in 16.0. Use the [GitLab for Jira Cloud app](../connect-app.md) instead.
 
 Use the Jira DVCS (distributed version control system) connector if you self-host
