@@ -125,12 +125,12 @@ export default {
   <table class="table m-0 gl-border-t">
     <thead class="thead-white text-nowrap">
       <tr class="d-md-table-row d-none gl-font-sm">
-        <th></th>
-        <th class="gl-pl-0!">{{ s__('MRApprovals|Approvers') }}</th>
-        <th></th>
-        <th>{{ s__('MRApprovals|Approvals') }}</th>
-        <th>{{ s__('MRApprovals|Commented by') }}</th>
-        <th>{{ s__('MRApprovals|Approved by') }}</th>
+        <th class="gl-bg-white!"></th>
+        <th class="gl-bg-white! gl-pl-0!">{{ s__('MRApprovals|Approvers') }}</th>
+        <th class="gl-bg-white!"></th>
+        <th class="gl-bg-white!">{{ s__('MRApprovals|Approvals') }}</th>
+        <th class="gl-bg-white!">{{ s__('MRApprovals|Commented by') }}</th>
+        <th class="gl-bg-white!">{{ s__('MRApprovals|Approved by') }}</th>
       </tr>
     </thead>
     <tbody v-if="$apollo.queries.mergeRequest.loading" class="border-top-0">
@@ -169,9 +169,9 @@ export default {
     </tbody>
     <template v-else>
       <tbody v-for="{ id, title, rules } in sections" :key="id" class="border-top-0">
-        <tr v-if="title" class="js-section-title">
+        <tr v-if="title" class="js-section-title gl-bg-white">
           <td class="w-0"></td>
-          <td colspan="99">
+          <td colspan="99" class="gl-font-sm gl-text-gray-500 gl-pl-0!">
             <strong>{{ title }}</strong>
           </td>
         </tr>
