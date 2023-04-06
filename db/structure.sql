@@ -19275,7 +19275,7 @@ CREATE TABLE packages_debian_group_component_files (
     compression_type smallint,
     file_store smallint DEFAULT 1 NOT NULL,
     file text NOT NULL,
-    file_md5 bytea NOT NULL,
+    file_md5 bytea,
     file_sha256 bytea NOT NULL,
     CONSTRAINT check_839e1685bc CHECK ((char_length(file) <= 255))
 );
@@ -19400,7 +19400,7 @@ CREATE TABLE packages_debian_project_component_files (
     compression_type smallint,
     file_store smallint DEFAULT 1 NOT NULL,
     file text NOT NULL,
-    file_md5 bytea NOT NULL,
+    file_md5 bytea,
     file_sha256 bytea NOT NULL,
     CONSTRAINT check_e5af03fa2d CHECK ((char_length(file) <= 255))
 );
