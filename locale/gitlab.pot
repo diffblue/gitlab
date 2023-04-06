@@ -39986,6 +39986,9 @@ msgstr ""
 msgid "SecurityReports|There was an error creating the merge request."
 msgstr ""
 
+msgid "SecurityReports|There was an error creating the merge request. Please try again."
+msgstr ""
+
 msgid "SecurityReports|There was an error deleting the comment."
 msgstr ""
 
