@@ -159,7 +159,7 @@ export default {
         :href="helpPagePath"
         :aria-label="__('Project security status help page')"
         target="_blank"
-        ><gl-icon name="question"
+        ><gl-icon name="question-o"
       /></gl-link>
     </template>
     <template v-if="!isLoadingGrades" #help-text>
