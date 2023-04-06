@@ -2,7 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
@@ -15,7 +15,9 @@ import TimeboxSummaryCards from 'ee/burndown_chart/components/timebox_summary_ca
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { useFakeDate } from 'helpers/fake_date';
 import waitForPromises from 'helpers/wait_for_promises';
-import { day1, day2, day3, day4 } from '../mock_data';
+import { day1, day2, day3, day4, getBurnupQueryIterationSuccess } from '../mock_data';
+
+Vue.use(VueApollo);
 
 function useFakeDateFromDay({ date }) {
   const [year, month, day] = date.split('-');
@@ -48,23 +50,24 @@ describe('burndown_chart', () => {
     burndownEventsPath: '/api/v4/projects/1234/milestones/1/burndown_events',
   };
 
-  const createComponent = ({ props = {}, data = {}, loading = false } = {}) => {
+  const iterationHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(getBurnupQueryIterationSuccess([day1, day2]));
+  const milestoneHandlerSuccess = jest.fn();
+
+  const createComponent = ({
+    props = {},
+    iterationMockResponse = iterationHandlerSuccess,
+    milestoneMockResponse = milestoneHandlerSuccess,
+  } = {}) => {
     wrapper = shallowMount(BurnCharts, {
+      apolloProvider: createMockApollo([
+        [BurnupQueryIteration, iterationMockResponse],
+        [BurnupQueryMilestone, milestoneMockResponse],
+      ]),
       propsData: {
         ...defaultProps,
         ...props,
-      },
-      mocks: {
-        $apollo: {
-          queries: {
-            report: {
-              loading,
-            },
-          },
-        },
-      },
-      data() {
-        return data;
       },
     });
   };
@@ -77,15 +80,17 @@ describe('burndown_chart', () => {
     mock.restore();
   });
 
-  it('passes loading=true through to charts', () => {
-    createComponent({ loading: true });
+  useFakeDateFromDay(day2);
+
+  it('passes loading through to charts', async () => {
+    createComponent({
+      props: { iterationId: 'gid://gitlab/Iteration/1' },
+    });
 
     expect(findBurndownChart().props('loading')).toBe(true);
     expect(findBurnupChart().props('loading')).toBe(true);
-  });
 
-  it('passes loading=false through to charts', () => {
-    createComponent({ loading: false });
+    await waitForPromises();
 
     expect(findBurndownChart().props('loading')).toBe(false);
     expect(findBurnupChart().props('loading')).toBe(false);
@@ -109,9 +114,7 @@ describe('burndown_chart', () => {
   it('toggles Issue weight', async () => {
     createComponent();
 
-    findWeightButton().vm.$emit('click');
-
-    await nextTick();
+    await findWeightButton().vm.$emit('click');
 
     expect(findActiveButtons()).toHaveLength(1);
     expect(findActiveButtons().at(0).text()).toBe('Issue weight');
@@ -134,28 +137,21 @@ describe('burndown_chart', () => {
   it('sets weight prop of burnup chart', async () => {
     createComponent();
 
-    findWeightButton().vm.$emit('click');
-
-    await nextTick();
+    await findWeightButton().vm.$emit('click');
 
     expect(findBurnupChart().props('issuesSelected')).toBe(false);
   });
 
   it('renders IterationReportSummaryOpen for open iteration', () => {
     createComponent({
-      data: {
-        report: {
-          stats: {},
-        },
-      },
       props: {
         iterationState: 'open',
-        iterationId: 'gid://gitlab/Iteration/11',
+        iterationId: 'gid://gitlab/Iteration/1',
       },
     });
 
     expect(wrapper.findComponent(OpenTimeboxSummary).props()).toEqual({
-      iterationId: 'gid://gitlab/Iteration/11',
+      iterationId: 'gid://gitlab/Iteration/1',
       displayValue: 'count',
       namespaceType: 'group',
       fullPath: defaultProps.fullPath,
@@ -164,11 +160,6 @@ describe('burndown_chart', () => {
 
   it('renders TimeboxSummaryCards for closed iterations', () => {
     createComponent({
-      data: {
-        report: {
-          stats: {},
-        },
-      },
       props: {
         iterationState: 'closed',
         iterationId: 'gid://gitlab/Iteration/1',
@@ -178,64 +169,105 @@ describe('burndown_chart', () => {
     expect(wrapper.findComponent(TimeboxSummaryCards).exists()).toBe(true);
   });
 
-  it('uses burndown data computed from burnup data', () => {
-    createComponent({
-      data: {
-        report: {
-          burnupData: [day1],
+  describe('burndown props', () => {
+    beforeEach(async () => {
+      createComponent({
+        props: {
+          iterationId: 'gid://gitlab/Iteration/1',
+          startDate: day1.date,
+          dueDate: day2.date,
         },
-      },
+      });
+      await waitForPromises();
     });
-    const { openIssuesCount, openIssuesWeight } = findBurndownChart().props();
 
-    const expectedCount = [day1.date, day1.scopeCount - day1.completedCount];
-    const expectedWeight = [day1.date, day1.scopeWeight - day1.completedWeight];
+    it('sets openIssueCount based on computed burnup data', () => {
+      const { openIssuesCount } = findBurndownChart().props();
 
-    expect(openIssuesCount).toEqual([expectedCount]);
-    expect(openIssuesWeight).toEqual([expectedWeight]);
+      const expectedCount = [
+        [day1.date, day1.scopeCount - day1.completedCount],
+        [day2.date, day2.scopeCount - day2.completedCount],
+      ];
+
+      expect(openIssuesCount).toEqual(expectedCount);
+    });
+
+    it('sets openIssueWeight based on computed burnup data', async () => {
+      await findWeightButton().vm.$emit('click');
+      await waitForPromises();
+
+      const { openIssuesWeight } = findBurndownChart().props();
+      const expectedWeight = [
+        [day1.date, day1.scopeWeight - day1.completedWeight],
+        [day2.date, day2.scopeWeight - day2.completedWeight],
+      ];
+
+      expect(openIssuesWeight).toEqual(expectedWeight);
+    });
   });
 
   describe('showNewOldBurndownToggle', () => {
-    it('hides old/new burndown buttons if props is false', () => {
+    it('hides old/new burndown buttons when showNewOldBurndownToggle is false', () => {
       createComponent({ props: { showNewOldBurndownToggle: false } });
 
       expect(findOldBurndownChartButton().exists()).toBe(false);
       expect(findNewBurndownChartButton().exists()).toBe(false);
     });
 
-    it('shows old/new burndown buttons if prop true', () => {
+    it('shows old/new burndown buttons when showNewOldBurndownToggle is true', () => {
       createComponent({ props: { showNewOldBurndownToggle: true } });
 
       expect(findOldBurndownChartButton().exists()).toBe(true);
       expect(findNewBurndownChartButton().exists()).toBe(true);
     });
 
-    it('calls fetchLegacyBurndownEvents, but only once', () => {
-      createComponent({ props: { showNewOldBurndownToggle: true } });
-      jest.spyOn(wrapper.vm, 'fetchLegacyBurndownEvents');
+    it('calls fetchLegacyBurndownEvents, but only once', async () => {
+      createComponent({ props: { showNewOldBurndownToggle: true, startDate: day2.date } });
+      mock
+        .onGet(defaultProps.burndownEventsPath)
+        .reply(HTTP_STATUS_OK, [{ action: 'created', created_at: day2.date }]);
+      const expectedOpenIssuesCount = [[day2.date, 1]];
+
+      await findOldBurndownChartButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(findBurndownChart().props().openIssuesCount).toEqual(expectedOpenIssuesCount);
+
+      // test that cached legacy burndown events are used by changing response
       mock.onGet(defaultProps.burndownEventsPath).reply(HTTP_STATUS_OK, []);
 
-      findOldBurndownChartButton().vm.$emit('click');
+      await findNewBurndownChartButton().vm.$emit('click');
+      await findOldBurndownChartButton().vm.$emit('click');
+      await waitForPromises();
 
-      expect(wrapper.vm.fetchLegacyBurndownEvents).toHaveBeenCalledTimes(1);
+      expect(findBurndownChart().props().openIssuesCount).toEqual(expectedOpenIssuesCount);
     });
   });
 
-  // some separate tests for the update function since it has a bunch of logic
   describe('padSparseBurnupData function', () => {
     useFakeDateFromDay(day4);
 
-    beforeEach(() => {
+    const createComponentForBurnupData = async (days) => {
       createComponent({
-        props: { startDate: day1.date, dueDate: day4.date },
+        props: {
+          startDate: day1.date,
+          dueDate: day4.date,
+          iterationId: 'gid://gitlab/Iteration/11',
+        },
+        iterationMockResponse: jest.fn().mockResolvedValue(getBurnupQueryIterationSuccess(days)),
       });
-    });
+      await waitForPromises();
+    };
 
-    it('pads data from startDate if no startDate values', () => {
-      const result = wrapper.vm.padSparseBurnupData([day2, day3, day4]);
+    const getBurnupData = () => findBurnupChart().props().burnupData;
 
-      expect(result.length).toBe(4);
-      expect(result[0]).toEqual({
+    it('pads data from startDate when no startDate values', async () => {
+      await createComponentForBurnupData([day2, day3, day4]);
+
+      const burnupData = getBurnupData();
+
+      expect(burnupData).toHaveLength(4);
+      expect(burnupData[0]).toEqual({
         date: day1.date,
         completedCount: 0,
         completedWeight: 0,
@@ -244,16 +276,20 @@ describe('burndown_chart', () => {
       });
     });
 
-    it('if dueDate is in the past, pad data using last existing value', () => {
-      const result = wrapper.vm.padSparseBurnupData([day1, day2]);
+    it('pads data using last existing value when dueDate is in the past', async () => {
+      await createComponentForBurnupData([day1, day2]);
 
-      expect(result.length).toBe(4);
-      expect(result[2]).toEqual({
-        ...day2,
+      const burnupData = getBurnupData();
+
+      expect(burnupData).toHaveLength(4);
+      expect(burnupData[2]).toMatchObject({
+        completedCount: day2.completedCount,
+        scopeCount: day2.scopeCount,
         date: day3.date,
       });
-      expect(result[3]).toEqual({
-        ...day2,
+      expect(burnupData[3]).toMatchObject({
+        completedCount: day2.completedCount,
+        scopeCount: day2.scopeCount,
         date: day4.date,
       });
     });
@@ -262,75 +298,63 @@ describe('burndown_chart', () => {
       // day3 is before the day4 we set to dueDate in the beforeEach
       useFakeDateFromDay(day3);
 
-      it('pad data up to current date using last existing value', () => {
-        const result = wrapper.vm.padSparseBurnupData([day1, day2]);
+      it('pads data up to current date using last existing value', async () => {
+        await createComponentForBurnupData([day1, day2]);
 
-        expect(result.length).toBe(3);
-        expect(result[2]).toEqual({
-          ...day2,
+        const burnupData = getBurnupData();
+
+        expect(burnupData).toHaveLength(3);
+        expect(burnupData[2]).toMatchObject({
+          scopeCount: day2.scopeCount,
+          completedCount: day2.completedCount,
           date: day3.date,
         });
       });
     });
 
-    it('pads missing days with data from previous days', () => {
-      const result = wrapper.vm.padSparseBurnupData([day1, day4]);
+    it('pads missing days with data from previous days', async () => {
+      await createComponentForBurnupData([day1, day4]);
 
-      expect(result.length).toBe(4);
-      expect(result[1]).toEqual({
-        ...day1,
+      const burnupData = getBurnupData();
+
+      expect(burnupData).toHaveLength(4);
+      expect(burnupData[1]).toMatchObject({
+        scopeCount: day1.scopeCount,
+        completedCount: day1.completedCount,
         date: day2.date,
       });
-      expect(result[2]).toEqual({
-        ...day1,
+      expect(burnupData[2]).toMatchObject({
+        scopeCount: day1.scopeCount,
+        completedCount: day1.completedCount,
         date: day3.date,
       });
     });
   });
 
   describe('fullPath is only passed for iteration report', () => {
-    let burnupQuerySpy;
-
-    const createComponentWithApollo = ({ query, props = {} }) => {
-      Vue.use(VueApollo);
-      burnupQuerySpy = jest.fn();
-      wrapper = shallowMount(BurnCharts, {
-        apolloProvider: createMockApollo([[query, burnupQuerySpy]]),
-        propsData: {
-          ...defaultProps,
-          ...props,
-        },
-      });
-    };
-
     it('makes a request with a fullPath for iteration', async () => {
-      createComponentWithApollo({ query: BurnupQueryIteration, props: { iterationId: 'id' } });
+      createComponent({ props: { iterationId: 'gid://gitlab/Iteration/1' } });
       await waitForPromises();
 
-      expect(burnupQuerySpy).toHaveBeenCalledTimes(1);
-      expect(burnupQuerySpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          iterationId: 'id',
-          fullPath: defaultProps.fullPath,
-        }),
-      );
+      expect(iterationHandlerSuccess).toHaveBeenCalledTimes(1);
+      expect(iterationHandlerSuccess).toHaveBeenCalledWith({
+        milestoneId: '',
+        iterationId: 'gid://gitlab/Iteration/1',
+        weight: false,
+        fullPath: defaultProps.fullPath,
+      });
     });
 
     it('makes a request without a fullPath for milestone', async () => {
-      createComponentWithApollo({ query: BurnupQueryMilestone, props: { milestoneId: 'id' } });
+      createComponent({ props: { milestoneId: 'gid://gitlab/Milestone/1' } });
       await waitForPromises();
 
-      expect(burnupQuerySpy).toHaveBeenCalledTimes(1);
-      expect(burnupQuerySpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          milestoneId: 'id',
-        }),
-      );
-      expect(burnupQuerySpy).toHaveBeenCalledWith(
-        expect.not.objectContaining({
-          fullPath: defaultProps.fullPath,
-        }),
-      );
+      expect(milestoneHandlerSuccess).toHaveBeenCalledTimes(1);
+      expect(milestoneHandlerSuccess).toHaveBeenCalledWith({
+        milestoneId: 'gid://gitlab/Milestone/1',
+        iterationId: '',
+        weight: false,
+      });
     });
   });
 });
