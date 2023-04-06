@@ -62,7 +62,7 @@ module EE
           end
 
           after_transition any => ::Ci::Pipeline.completed_statuses do |pipeline|
-            next unless pipeline.can_ingest_sbom_reports?
+            next unless pipeline.default_branch? && pipeline.can_ingest_sbom_reports?
 
             pipeline.run_after_commit do
               ::Sbom::IngestReportsWorker.perform_async(pipeline.id)

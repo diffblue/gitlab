@@ -207,30 +207,56 @@ RSpec.describe Ci::Pipeline do
 
   describe '::Sbom::IngestReportsWorker' do
     let(:can_ingest_sbom_reports) { true }
+    let(:default_branch) { true }
 
     subject(:transition_pipeline) { pipeline.update!(status_event: transition) }
 
     before do
       allow(::Sbom::IngestReportsWorker).to receive(:perform_async)
       allow(pipeline).to receive(:can_ingest_sbom_reports?).and_return(can_ingest_sbom_reports)
+      allow(pipeline).to receive(:default_branch?).and_return(default_branch)
     end
 
     shared_examples_for 'ingesting sbom reports' do
       context 'when sbom reports can be ingested for the pipeline' do
-        it 'schedules ingest sbom reports job' do
-          transition_pipeline
+        context 'on the default branch' do
+          it 'schedules ingest sbom reports job' do
+            transition_pipeline
 
-          expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
+            expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
+          end
+        end
+
+        context 'on a non-default branch' do
+          let(:default_branch) { false }
+
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
         end
       end
 
       context 'when sbom reports can not be ingested for the pipeline' do
         let(:can_ingest_sbom_reports) { false }
 
-        it 'does not schedule ingest sbom reports job' do
-          transition_pipeline
+        context 'on the default branch' do
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
 
-          expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
+        end
+
+        context 'on a non-default branch' do
+          let(:default_branch) { false }
+
+          it 'does not schedule ingest sbom reports job' do
+            transition_pipeline
+
+            expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+          end
         end
       end
     end
