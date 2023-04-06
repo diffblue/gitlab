@@ -1,4 +1,5 @@
 export const day1 = {
+  __typename: 'BurnupChartDailyTotals',
   date: '2020-08-08',
   completedCount: 0,
   completedWeight: 0,
@@ -7,6 +8,7 @@ export const day1 = {
 };
 
 export const day2 = {
+  __typename: 'BurnupChartDailyTotals',
   date: '2020-08-09',
   completedCount: 1,
   completedWeight: 1,
@@ -15,6 +17,7 @@ export const day2 = {
 };
 
 export const day3 = {
+  __typename: 'BurnupChartDailyTotals',
   date: '2020-08-10',
   completedCount: 2,
   completedWeight: 4,
@@ -23,6 +26,7 @@ export const day3 = {
 };
 
 export const day4 = {
+  __typename: 'BurnupChartDailyTotals',
   date: '2020-08-11',
   completedCount: 3,
   completedWeight: 5,
@@ -52,3 +56,23 @@ export const legacyBurndownEvents = [
     weight: 2,
   },
 ];
+
+export const getBurnupQueryIterationSuccess = (days) => ({
+  data: {
+    iteration: {
+      __typename: 'Iteration',
+      id: 'gid://gitlab/Iteration/139072',
+      title: null,
+      report: {
+        __typename: 'TimeboxReport',
+        burnupTimeSeries: days,
+        stats: {
+          __typename: 'TimeReportStats',
+          total: { __typename: 'TimeboxMetrics', count: 12, weight: 15 },
+          complete: { __typename: 'TimeboxMetrics', count: 2, weight: 3 },
+          incomplete: { __typename: 'TimeboxMetrics', count: 10, weight: 12 },
+        },
+      },
+    },
+  },
+});
