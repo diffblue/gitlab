@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group > Members > Unlimited members alert', :js, :saas,
+RSpec.describe 'Group > Unlimited members alert', :js, :saas,
   feature_category: :subgroups do
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
@@ -14,11 +14,9 @@ RSpec.describe 'Group > Members > Unlimited members alert', :js, :saas,
       group.add_owner(user)
       sign_in(user)
 
-      visit group_group_members_path(group)
+      visit group_path(group)
 
-      wait_for_all_requests
-
-      expect(page).not_to have_selector(alert_selector)
+      expect_to_be_on_group_index_without_alert
     end
   end
 
@@ -34,11 +32,9 @@ RSpec.describe 'Group > Members > Unlimited members alert', :js, :saas,
         group.add_maintainer(user)
         sign_in(user)
 
-        visit group_group_members_path(group)
+        visit group_path(group)
 
-        wait_for_all_requests
-
-        expect(page).not_to have_selector(alert_selector)
+        expect_to_be_on_group_index_without_alert
       end
     end
 
@@ -50,7 +46,8 @@ RSpec.describe 'Group > Members > Unlimited members alert', :js, :saas,
       end
 
       it_behaves_like 'unlimited members during trial alert' do
-        let_it_be(:page_path) { group_group_members_path(group) }
+        let_it_be(:members_page_path) { group_group_members_path(group) }
+        let_it_be(:page_path) { group_path(group) }
       end
     end
 
@@ -63,8 +60,14 @@ RSpec.describe 'Group > Members > Unlimited members alert', :js, :saas,
       end
 
       it_behaves_like 'unlimited members during trial alert' do
-        let_it_be(:page_path) { group_group_members_path(subgroup) }
+        let_it_be(:members_page_path) { group_group_members_path(subgroup) }
+        let_it_be(:page_path) { group_path(subgroup) }
       end
     end
+  end
+
+  def expect_to_be_on_group_index_without_alert
+    expect(page).to have_content('Subgroups and projects')
+    expect(page).not_to have_selector(alert_selector)
   end
 end

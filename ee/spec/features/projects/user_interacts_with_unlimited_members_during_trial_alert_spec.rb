@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project > Members > Unlimited members alert', :js, :saas,
+RSpec.describe 'Project > Unlimited members alert', :js, :saas,
   feature_category: :subgroups do
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
@@ -16,11 +16,9 @@ RSpec.describe 'Project > Members > Unlimited members alert', :js, :saas,
 
       sign_in(user)
 
-      visit project_project_members_path(project)
+      visit project_path(project)
 
-      wait_for_all_requests
-
-      expect(page).not_to have_selector(alert_selector)
+      expect_on_project_index_without_alert
     end
   end
 
@@ -37,11 +35,9 @@ RSpec.describe 'Project > Members > Unlimited members alert', :js, :saas,
         project.add_maintainer(user)
         sign_in(user)
 
-        visit project_project_members_path(project)
+        visit project_path(project)
 
-        wait_for_all_requests
-
-        expect(page).not_to have_selector(alert_selector)
+        expect_on_project_index_without_alert
       end
     end
 
@@ -54,8 +50,14 @@ RSpec.describe 'Project > Members > Unlimited members alert', :js, :saas,
       end
 
       it_behaves_like 'unlimited members during trial alert' do
-        let_it_be(:page_path) { project_project_members_path(project) }
+        let_it_be(:members_page_path) { project_project_members_path(project) }
+        let_it_be(:page_path) { project_path(project) }
       end
     end
+  end
+
+  def expect_on_project_index_without_alert
+    expect(page).to have_content('Project information')
+    expect(page).not_to have_selector(alert_selector)
   end
 end

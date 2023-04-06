@@ -1,16 +1,27 @@
+- root_namespace = resource.root_ancestor
+- return unless show_unlimited_members_during_trial_alert?(root_namespace)
 
-- if show_unlimited_members_during_trial_alert?(group)
+- content_for :page_level_alert do
   %div{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(title: s_('UnlimitedMembersDuringTrialAlert|Get the most out of your trial with space for more members'),
       alert_options: { class: 'js-unlimited-members-during-trial-alert',
         data: { feature_id: ::EE::Users::GroupCalloutsHelper::UNLIMITED_MEMBERS_DURING_TRIAL_ALERT,
                                dismiss_endpoint: group_callouts_path,
-                               group_id: group.id,
+                               group_id: root_namespace.id,
                                testid: 'unlimited-members-during-trial-alert' } },
       close_button_options: { data: { testid: 'hide-unlimited-members-during-trial-alert' }}) do |c|
       = c.body do
-        = s_("UnlimitedMembersDuringTrialAlert|During your trial, invite as many members as you like to %{group} to collaborate with you.") % { group: group.name }
+        = s_("UnlimitedMembersDuringTrialAlert|During your trial, invite as many members as you like to %{group_or_project} to collaborate with you.") % { group_or_project: resource.name }
         = n_("When your trial ends, you'll have a maximum of %d member on the Free tier, or you can get more by upgrading to a paid tier.", "When your trial ends, you'll have a maximum of %d members on the Free tier, or you can get more by upgrading to a paid tier.", ::Namespaces::FreeUserCap.dashboard_limit) % ::Namespaces::FreeUserCap.dashboard_limit
       = c.actions do
-        = render Pajamas::ButtonComponent.new(href: group_billings_path(group), variant: 'confirm') do
+        - button_variant = :default
+        - if members_page?
+          - button_variant = :confirm
+        - else
+          .js-invite-members-trigger{ data: { variant: 'confirm',
+            display_text: s_('UnlimitedMembersDuringTrialAlert|Invite more members'),
+            trigger_source: 'unlimited-members-during-trial-alert',
+            classes: 'gl-mr-3'
+          } }
+        = render Pajamas::ButtonComponent.new(href: group_billings_path(root_namespace), variant: button_variant) do
           = s_('UnlimitedMembersDuringTrialAlert|Explore paid plans')
