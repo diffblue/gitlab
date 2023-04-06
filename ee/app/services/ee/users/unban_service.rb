@@ -2,18 +2,18 @@
 
 module EE
   module Users
-    module BanService
+    module UnbanService
       extend ::Gitlab::Utils::Override
       include ManagementBaseService
 
       private
 
       def event_name
-        'ban_user'
+        'unban_user'
       end
 
       def event_message
-        'Banned user'
+        'Unbanned user'
       end
     end
   end
