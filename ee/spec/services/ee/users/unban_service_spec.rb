@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::BanService, feature_category: :user_management do
+RSpec.describe Users::UnbanService, feature_category: :user_management do
   let_it_be(:current_user) { create(:admin) }
 
   subject(:service) { described_class.new(current_user) }
 
   describe '#execute' do
-    let!(:user) { create(:user) }
+    let!(:user) { create(:user, :banned) }
 
     subject(:operation) { service.execute(user) }
 
@@ -17,7 +17,7 @@ RSpec.describe Users::BanService, feature_category: :user_management do
         let(:operation) { service.execute(user) }
 
         let(:fail_condition!) do
-          allow(user).to receive(:ban).and_return(false)
+          allow(user).to receive(:unban).and_return(false)
         end
 
         let(:attributes) do
@@ -28,7 +28,7 @@ RSpec.describe Users::BanService, feature_category: :user_management do
             details: {
               author_class: 'User',
               author_name: current_user.name,
-              custom_message: 'Banned user',
+              custom_message: 'Unbanned user',
               target_details: user.username,
               target_id: user.id,
               target_type: 'User'
