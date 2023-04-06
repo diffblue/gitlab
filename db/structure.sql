@@ -22746,7 +22746,7 @@ ALTER SEQUENCE subscriptions_id_seq OWNED BY subscriptions.id;
 
 CREATE TABLE suggestions (
     id bigint NOT NULL,
-    note_id integer NOT NULL,
+    note_id_convert_to_bigint integer DEFAULT 0 NOT NULL,
     relative_order smallint NOT NULL,
     applied boolean DEFAULT false NOT NULL,
     commit_id character varying,
@@ -22755,7 +22755,7 @@ CREATE TABLE suggestions (
     lines_above integer DEFAULT 0 NOT NULL,
     lines_below integer DEFAULT 0 NOT NULL,
     outdated boolean DEFAULT false NOT NULL,
-    note_id_convert_to_bigint bigint DEFAULT 0 NOT NULL
+    note_id bigint NOT NULL
 );
 
 CREATE SEQUENCE suggestions_id_seq
