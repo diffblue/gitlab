@@ -147,6 +147,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
               "--full-path=#{project.full_path}",
               "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
+              "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
             ],
@@ -200,6 +201,44 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         end
       end
 
+      context 'when add_hashed_root_namespace_id_to_commits migration is not complete' do
+        before do
+          set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_commits, including: false)
+        end
+
+        it 'runs the indexer without --hashed-root-namespace-id flag' do
+          gitaly_connection_data = {
+            storage: project.repository_storage,
+            limit_file_size: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes
+          }.merge(Gitlab::GitalyClient.connection_data(project.repository_storage))
+
+          expect_popen.with(
+            [
+              TestEnv.indexer_bin_path,
+              "--project-id=#{project.id}",
+              "--timeout=#{described_class.timeout}s",
+              '--search-curation',
+              "--from-sha=#{expected_from_sha}",
+              "--to-sha=#{to_sha}",
+              "--full-path=#{project.full_path}",
+              "--visibility-level=#{project.visibility_level}",
+              "--repository-access-level=#{project.repository_access_level}",
+              "--traversal-ids=#{project.namespace_ancestry}",
+              "#{project.repository.disk_path}.git"
+            ],
+            nil,
+            hash_including(
+              'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
+              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
+              'RAILS_ENV' => Rails.env,
+              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
+            )
+          ).and_return(popen_success)
+
+          indexer.run
+        end
+      end
+
       it 'runs the indexing command' do
         gitaly_connection_data = {
           storage: project.repository_storage,
@@ -217,6 +256,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             "--full-path=#{project.full_path}",
             "--visibility-level=#{project.visibility_level}",
             "--repository-access-level=#{project.repository_access_level}",
+            "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
             "--traversal-ids=#{project.namespace_ancestry}",
             "#{project.repository.disk_path}.git"
           ],
