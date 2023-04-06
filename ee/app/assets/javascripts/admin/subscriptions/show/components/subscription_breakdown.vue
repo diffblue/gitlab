@@ -167,7 +167,7 @@ export default {
         >
           <template v-if="shouldShowFooter" #footer>
             <div
-              class="gl-display-flex gl-flex-wrap-wrap gl-align-items-flex-start gl-justify-content-space-between"
+              class="gl-display-flex gl-flex-wrap gl-align-items-flex-start gl-justify-content-space-between"
             >
               <div>
                 <gl-button

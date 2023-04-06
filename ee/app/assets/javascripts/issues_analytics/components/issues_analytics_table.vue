@@ -204,7 +204,7 @@ export default {
               :css-classes="['issue-labels-popover']"
               data-testid="labelsPopover"
             >
-              <div class="gl-display-flex gl-justify-content-start gl-flex-wrap-wrap gl-mr-1">
+              <div class="gl-display-flex gl-justify-content-start gl-flex-wrap gl-mr-1">
                 <gl-label
                   v-for="label in item.labels.nodes"
                   :key="label.id"

@@ -100,15 +100,15 @@ export default {
     class="card-header gl-display-flex gl-pl-5 gl-pr-4 gl-py-4 gl-flex-direction-column gl-sm-flex-direction-row gl-bg-white"
   >
     <div
-      class="gl-display-flex gl-flex-grow-1 gl-flex-shrink-0 gl-flex-wrap-wrap gl-flex-direction-column gl-sm-flex-direction-row"
+      class="gl-display-flex gl-flex-grow-1 gl-flex-shrink-0 gl-flex-wrap gl-flex-direction-column gl-sm-flex-direction-row"
     >
-      <div class="gl-display-flex gl-flex-shrink-0 gl-align-items-center gl-flex-wrap-wrap">
+      <div class="gl-display-flex gl-flex-shrink-0 gl-align-items-center gl-flex-wrap">
         <h3 class="card-title h5 gl-my-0 gl-flex-shrink-0">
           {{ allowSubEpics ? __('Child issues and epics') : $options.treeTitle[parentItem.type] }}
         </h3>
         <div
           v-if="parentIsEpic"
-          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-3 gl-flex-wrap-wrap"
+          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-3 gl-flex-wrap"
         >
           <gl-popover :target="() => $refs.countBadge">
             <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
@@ -174,7 +174,7 @@ export default {
         </div>
       </div>
       <div
-        class="gl-display-flex gl-sm-display-inline-flex lh-100 gl-vertical-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap-wrap gl-mt-2 gl-sm-mt-0"
+        class="gl-display-flex gl-sm-display-inline-flex lh-100 gl-vertical-align-middle gl-sm-ml-2 gl-ml-0 gl-flex-wrap gl-mt-2 gl-sm-mt-0"
       >
         <epic-health-status v-if="showHealthStatus" :health-status="healthStatus" />
       </div>

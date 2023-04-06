@@ -476,7 +476,7 @@ export default {
         </gl-form-group>
       </div>
 
-      <div class="gl-display-flex gl-flex-wrap-wrap">
+      <div class="gl-display-flex gl-flex-wrap">
         <gl-button
           :loading="loading"
           data-testid="save-cadence"
