@@ -63,6 +63,10 @@ module QA
           end
         end
 
+        after do
+          project.remove_via_api!
+        end
+
         it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347775'
         it_behaves_like 'selected developer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347774'
       end
@@ -99,6 +103,11 @@ module QA
               groups: [group]
             }
           end
+        end
+
+        after do
+          project.remove_via_api!
+          group.remove_via_api!
         end
 
         it_behaves_like 'unselected maintainer', 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347772'

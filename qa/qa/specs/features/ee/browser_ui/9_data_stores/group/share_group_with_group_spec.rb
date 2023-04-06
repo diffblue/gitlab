@@ -30,6 +30,12 @@ module QA
         source_group_with_members.add_member(maintainer_user, Resource::Members::AccessLevel::MAINTAINER)
       end
 
+      after do
+        project.remove_via_api!
+        source_group_with_members.remove_via_api!
+        target_group_with_project.remove_via_api!
+      end
+
       it 'can be shared with another group with correct access level',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347935' do
         Flow::Login.sign_in
