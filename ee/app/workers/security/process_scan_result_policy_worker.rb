@@ -27,11 +27,13 @@ module Security
       return unless project && configuration
 
       in_lock(self.class.lease_key(project, configuration), ttl: LEASE_TTL, sleep_sec: method(:lease_sleep_sec)) do
-        configuration.transaction do
-          configuration.delete_scan_result_policy_reads
-          configuration.delete_scan_finding_rules_for_project(project_id)
+        active_scan_result_policies = configuration.active_scan_result_policies
 
-          active_scan_result_policies = configuration.active_scan_result_policies
+        break if active_scan_result_policies.empty?
+
+        configuration.transaction do
+          configuration.delete_scan_finding_rules_for_project(project_id)
+          configuration.delete_software_license_policies(project)
 
           active_scan_result_policies.each_with_index do |policy, policy_index|
             Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
