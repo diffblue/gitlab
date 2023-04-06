@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
   let_it_be(:project) { create(:project) }
 
-  let(:supported_schema_versions) { %w[14.1.0] }
+  let(:supported_schema_versions) { %w[15.0.0] }
   let(:validator) { described_class.new(report_type, report_data, report_data['version'], project: project) }
   let(:supported_hash) do
     {
@@ -18,7 +18,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
     }
   end
 
-  let(:deprecated_schema_versions) { %w[10.0.0] }
+  let(:deprecated_schema_versions) { %w[14.1.0] }
   let(:deprecations_hash) do
     {
       cluster_image_scanning: deprecated_schema_versions,
@@ -33,8 +33,31 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
   let(:report_type) { :dast }
   let(:valid_data) do
     {
-      "version" => "14.1.0",
-      "vulnerabilities" => []
+      'version' => '15.0.0',
+      'vulnerabilities' => [],
+      'scan' => {
+        'scanned_resources' => [],
+        'type' => report_type.to_s,
+        'start_time' => '2012-02-10T05:16:59',
+        'end_time' => '2012-02-10T05:26:02',
+        'status' => 'success',
+        'analyzer' => {
+          'id' => 'some-gitlab-analyzer-id',
+          'name' => 'Some Analyzer',
+          'version' => '0.2.0',
+          'vendor' => {
+            'name' => 'Some Analyzer Vendor'
+          }
+        },
+        'scanner' => {
+          'id' => 'some-gitlab-scanner-id',
+          'name' => 'Some Scanner',
+          'version' => '0.1.0',
+          'vendor' => {
+            'name' => 'Some Scanner Vendor'
+          }
+        }
+      }
     }
   end
 
@@ -106,13 +129,14 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::SchemaValidator do
       let(:current_versions) { described_class::CURRENT_VERSIONS[report_type].join(", ") }
 
       context 'when report uses a deprecated version' do
+        let(:deprecated_schema_version) { deprecated_schema_versions.first }
         let(:report_data) do
-          valid_data['version'] = deprecated_schema_versions.first
+          valid_data['version'] = deprecated_schema_version
           valid_data
         end
 
         let(:expected_deprecation_message) do
-          "version 10.0.0 for report type #{report_type} is deprecated. "\
+          "version #{deprecated_schema_version} for report type #{report_type} is deprecated. "\
           "However, GitLab will still attempt to parse and ingest this report. "\
           "Upgrade the security report to one of the following versions: #{current_versions}."
         end
