@@ -86,4 +86,11 @@ RSpec.describe 'Gets registries', feature_category: :geo_replication do
     registry_factory: :geo_dependency_proxy_manifest_registry,
     registry_foreign_key_field_name: 'dependencyProxyManifestId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'projectWikiRepositoryRegistries',
+    registry_class_name: 'ProjectWikiRepositoryRegistry',
+    registry_factory: :geo_project_wiki_repository_registry,
+    registry_foreign_key_field_name: 'projectWikiRepositoryId'
+  }
 end

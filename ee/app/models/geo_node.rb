@@ -328,14 +328,14 @@ class GeoNode < ApplicationRecord
     status || build_status
   end
 
+  def api_url(suffix)
+    Gitlab::Utils.append_path(internal_uri.to_s, "api/#{API::API.version}/#{suffix}")
+  end
+
   private
 
   def geo_api_url(suffix)
     api_url("geo/#{suffix}")
-  end
-
-  def api_url(suffix)
-    Gitlab::Utils.append_path(internal_uri.to_s, "api/#{API::API.version}/#{suffix}")
   end
 
   def ensure_access_keys!

@@ -59,6 +59,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:geo_upload_state, any],
     [:geo_ci_secure_file_state, any],
     [:geo_container_repository_state, any],
+    [:geo_wiki_repository_state, any],
     [:lfs_object, :checksum_failure],
     [:lfs_object, :checksummed],
     [:merge_request, :blocked],

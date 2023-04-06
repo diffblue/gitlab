@@ -172,7 +172,40 @@ RSpec.describe Geo::RepositoryVerificationSecondaryService, :geo, feature_catego
     end
 
     context 'for a wiki' do
-      include_examples 'verify checksums for repositories/wikis', :wiki
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
+        end
+
+        include_examples 'verify checksums for repositories/wikis', :wiki
+      end
+
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+        let(:repository) { project.wiki.repository }
+
+        subject(:service)  { described_class.new(registry, :wiki) }
+
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
+        end
+
+        it 'does not calculate the wiki checksum' do
+          expect(repository).not_to receive(:checksum)
+
+          service.execute
+
+          expect(registry).to have_attributes(
+            wiki_verification_checksum_sha: nil,
+            wiki_checksum_mismatch: false,
+            last_wiki_verification_ran_at: nil,
+            last_wiki_verification_failure: nil,
+            wiki_verification_retry_count: nil,
+            resync_wiki: false,
+            wiki_retry_at: nil,
+            wiki_retry_count: nil
+          )
+        end
+      end
     end
   end
 end

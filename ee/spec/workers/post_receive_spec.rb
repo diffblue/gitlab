@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe PostReceive, feature_category: :shared do
   include AfterNextHelpers
+  include ::EE::GeoHelpers
 
   let(:changes) { "123456 789012 refs/heads/tést\n654321 210987 refs/tags/tag" }
   let(:changes_with_master) { "#{changes}\n423423 797823 refs/heads/master" }
@@ -30,16 +31,16 @@ RSpec.describe PostReceive, feature_category: :shared do
         expect_next(Git::BranchPushService).to receive(:execute).and_return(true)
       end
 
-      it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node' do
-        allow(Gitlab::Geo).to receive(:primary?) { true }
+      it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
+        stub_primary_node
 
         expect(::Geo::RepositoryUpdatedService).to get_executed
 
         described_class.new.perform(gl_repository, key_id, base64_changes)
       end
 
-      it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node' do
-        allow(Gitlab::Geo).to receive(:primary?) { false }
+      it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary site' do
+        stub_secondary_node
 
         expect_next_instance_of(::Geo::RepositoryUpdatedService).never
 
@@ -66,20 +67,93 @@ RSpec.describe PostReceive, feature_category: :shared do
         allow_next(Git::WikiPushService).to receive(:execute)
       end
 
-      it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node' do
-        allow(Gitlab::Geo).to receive(:primary?) { true }
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
+        end
 
-        expect(::Geo::RepositoryUpdatedService).to get_executed
+        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary site' do
+          stub_primary_node
 
-        described_class.new.perform(gl_repository, key_id, base64_changes)
+          expect(::Geo::RepositoryUpdatedService).to get_executed
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
+
+        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary site' do
+          stub_secondary_node
+
+          expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
       end
 
-      it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node' do
-        allow(Gitlab::Geo).to receive(:primary?) { false }
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
+        end
 
-        expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+        context 'when on a Geo primary site' do
+          before do
+            stub_primary_node
+          end
 
-        described_class.new.perform(gl_repository, key_id, base64_changes)
+          it 'does not call Geo::RepositoryUpdatedService' do
+            expect_next_instance_of(::Geo::RepositoryUpdatedService).never
+
+            described_class.new.perform(gl_repository, key_id, base64_changes)
+          end
+
+          context 'when wiki_repository does not exist' do
+            it 'does not call replicator to update Geo' do
+              expect(project.wiki_repository).to be_nil
+
+              expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+
+              described_class.new.perform(gl_repository, key_id, base64_changes)
+            end
+          end
+
+          context 'when wiki_repository exists' do
+            it 'calls replicator to update Geo' do
+              wiki.create_wiki_repository
+
+              expect(project.wiki_repository).to be_present
+              expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator) do |instance|
+                expect(instance).to receive(:handle_after_update)
+              end
+
+              described_class.new.perform(gl_repository, key_id, base64_changes)
+            end
+          end
+        end
+
+        context 'when not on a Geo primary site' do
+          before do
+            stub_secondary_node
+          end
+
+          context 'when wiki_repository does not exist' do
+            it 'does not call replicator to update Geo' do
+              expect(project.wiki_repository).to be_nil
+
+              expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+
+              described_class.new.perform(gl_repository, key_id, base64_changes)
+            end
+          end
+
+          context 'when wiki_repository exists' do
+            it 'does not call replicator to update Geo' do
+              create(:project_wiki_repository, project: project)
+
+              expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+
+              described_class.new.perform(gl_repository, key_id, base64_changes)
+            end
+          end
+        end
       end
     end
 
@@ -96,9 +170,9 @@ RSpec.describe PostReceive, feature_category: :shared do
         described_class.new.perform(gl_repository, key_id, base64_changes)
       end
 
-      context 'when on a Geo primary node' do
+      context 'when on a Geo primary site' do
         before do
-          allow(Gitlab::Geo).to receive(:primary?) { true }
+          stub_primary_node
         end
 
         it 'does not call Geo::RepositoryUpdatedService' do
@@ -141,7 +215,7 @@ RSpec.describe PostReceive, feature_category: :shared do
         end
       end
 
-      context 'when not on a Geo primary node' do
+      context 'when not on a Geo primary site' do
         it 'does not call replicator to update Geo' do
           wiki.create_wiki_repository
 

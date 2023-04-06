@@ -15,6 +15,8 @@ RSpec.shared_examples 'a repository replicator' do
   let_it_be(:primary) { create(:geo_node, :primary) }
   let_it_be(:secondary) { create(:geo_node) }
 
+  let(:housekeeping_model_record) { model_record }
+
   subject(:replicator) { model_record.replicator }
 
   before do
@@ -150,6 +152,12 @@ RSpec.shared_examples 'a repository replicator' do
   describe '.housekeeping_enabled?' do
     it 'is implemented' do
       expect(replicator.class.housekeeping_enabled?).to be_in([true, false])
+    end
+  end
+
+  describe '#housekeeping_model_record' do
+    it 'is implemented' do
+      expect(replicator.housekeeping_model_record).to eq(housekeeping_model_record)
     end
   end
 

@@ -22,6 +22,7 @@ module Geo
     delegate :project, to: :registry
 
     def should_verify_checksum?
+      return false if type == :wiki && ::Geo::ProjectWikiRepositoryReplicator.enabled?
       return false if resync?
       return false unless primary_checksummed?
 

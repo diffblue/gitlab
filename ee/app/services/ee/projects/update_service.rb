@@ -161,7 +161,11 @@ module EE
       end
 
       def sync_wiki_on_enable
-        ::Geo::RepositoryUpdatedService.new(project.wiki.repository).execute
+        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+          project.wiki_repository.replicator.handle_after_update if project.wiki_repository
+        else
+          ::Geo::RepositoryUpdatedService.new(project.wiki.repository).execute
+        end
       end
 
       def refresh_merge_trains(project)

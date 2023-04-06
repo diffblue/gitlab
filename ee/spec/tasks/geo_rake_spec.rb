@@ -123,26 +123,8 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
       let!(:primary_node) { create(:geo_node, :primary) }
       let!(:geo_event_log) { create(:geo_event_log) }
       let!(:geo_node_status) { build(:geo_node_status, :healthy, geo_node: current_node) }
-      let(:checks) do
-        [
-          /Name: /,
-          /URL: /,
-          /GitLab Version: /,
-          /Geo Role: /,
-          /Health Status: /,
-          /Sync Settings: /,
-          /Database replication lag: /,
-          /Repositories: /,
-          /Verified Repositories: /,
-          /Wikis: /,
-          /Verified Wikis: /,
-          /Uploads: /,
-          /Container repositories: /,
-          /Design repositories: /,
-          /Repositories Checked: /,
-          /Last event ID seen from primary: /,
-          /Last status report was: /
-        ] + Gitlab::Geo.verification_enabled_replicator_classes.map { |k| /#{k.replicable_title_plural} Verified:/ } +
+      let(:self_service_framework_checks) do
+        Gitlab::Geo.verification_enabled_replicator_classes.map { |k| /#{k.replicable_title_plural} Verified:/ } +
           Gitlab::Geo.enabled_replicator_classes.map { |k| /#{k.replicable_title_plural}:/ }
       end
 
@@ -171,9 +153,65 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
           expect { run_rake_task('geo:status') }.not_to output(/Health Status Summary/).to_stdout
         end
 
-        it 'prints messages for all the checks' do
-          checks.each do |text|
-            expect { run_rake_task('geo:status') }.to output(text).to_stdout
+        context 'with geo_project_wiki_repository_replication feature flag disabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: false)
+          end
+
+          it 'prints messages for all the checks' do
+            checks = [
+              /Name: /,
+              /URL: /,
+              /GitLab Version: /,
+              /Geo Role: /,
+              /Health Status: /,
+              /Sync Settings: /,
+              /Database replication lag: /,
+              /Repositories: /,
+              /Verified Repositories: /,
+              /Wikis: /,
+              /Verified Wikis: /,
+              /Uploads: /,
+              /Container repositories: /,
+              /Design repositories: /,
+              /Repositories Checked: /,
+              /Last event ID seen from primary: /,
+              /Last status report was: /
+            ] + self_service_framework_checks
+
+            checks.each do |text|
+              expect { run_rake_task('geo:status') }.to output(text).to_stdout
+            end
+          end
+        end
+
+        context 'with geo_project_wiki_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: true)
+          end
+
+          it 'prints messages for all the checks' do
+            checks = [
+              /Name: /,
+              /URL: /,
+              /GitLab Version: /,
+              /Geo Role: /,
+              /Health Status: /,
+              /Sync Settings: /,
+              /Database replication lag: /,
+              /Repositories: /,
+              /Verified Repositories: /,
+              /Uploads: /,
+              /Container repositories: /,
+              /Design repositories: /,
+              /Repositories Checked: /,
+              /Last event ID seen from primary: /,
+              /Last status report was: /
+            ] + self_service_framework_checks
+
+            checks.each do |text|
+              expect { run_rake_task('geo:status') }.to output(text).to_stdout
+            end
           end
         end
       end

@@ -101,15 +101,22 @@ module Geo
         repository_state_table[:repository_verification_checksum].eq(nil)
           .and(repository_state_table[:last_repository_verification_failure].eq(nil))
 
-      wiki_recently_updated =
-        repository_state_table[:wiki_verification_checksum].eq(nil)
-          .and(repository_state_table[:last_wiki_verification_failure].eq(nil))
+      where_clause =
+        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+          repository_recently_updated
+        else
+          wiki_recently_updated =
+            repository_state_table[:wiki_verification_checksum].eq(nil)
+              .and(repository_state_table[:last_wiki_verification_failure].eq(nil))
+
+          repository_recently_updated.or(wiki_recently_updated)
+        end
 
       query =
         projects_table
           .join(repository_state_table).on(project_id_matcher)
           .project(projects_table[:id], projects_table[:last_repository_updated_at])
-          .where(repository_recently_updated.or(wiki_recently_updated))
+          .where(where_clause)
           .take(batch_size)
 
       apply_shard_restriction(query)

@@ -86,6 +86,16 @@ module Geo
 
     # Called by Geo::FrameworkHousekeepingService#execute
     #
+    # Override this if you need to pass a different model instance to
+    # the Repositories::HousekeepingService.
+    #
+    # @return [ApplicationRecord] instance
+    def housekeeping_model_record
+      model_record
+    end
+
+    # Called by Geo::FrameworkHousekeepingService#execute
+    #
     # Override this to enable repository snapshotting per replicable
     #
     # @return [Boolean] whether the repository snapshotting is available
@@ -93,7 +103,7 @@ module Geo
       false
     end
 
-    def snapshot_url(repository); end
+    def snapshot_url; end
 
     def remote_url
       Gitlab::Geo.primary_node.repository_url(repository)

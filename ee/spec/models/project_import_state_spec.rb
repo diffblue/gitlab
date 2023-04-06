@@ -66,22 +66,74 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
             .and_return(design_updated_service)
         end
 
-        it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
-          stub_primary_node
+        context 'with geo_project_wiki_repository_replication feature flag disabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: false)
+          end
 
-          expect(repository_updated_service).to receive(:execute).once
-          expect(wiki_updated_service).to receive(:execute).once
-          expect(design_updated_service).to receive(:execute).once
+          it 'calls Geo::RepositoryUpdatedService when running on a Geo primary node', :aggregate_failures do
+            stub_primary_node
 
-          import_state.finish
+            expect(repository_updated_service).to receive(:execute).once
+            expect(wiki_updated_service).to receive(:execute).once
+            expect(design_updated_service).to receive(:execute).once
+
+            import_state.finish
+          end
+
+          it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
+            stub_secondary_node
+
+            expect(repository_updated_service).not_to receive(:execute)
+            expect(wiki_updated_service).not_to receive(:execute)
+            expect(design_updated_service).not_to receive(:execute)
+
+            import_state.finish
+          end
         end
 
-        it 'does not call Geo::RepositoryUpdatedService when not running on a Geo primary node', :aggregate_failures do
-          expect(repository_updated_service).not_to receive(:execute)
-          expect(wiki_updated_service).not_to receive(:execute)
-          expect(design_updated_service).not_to receive(:execute)
+        context 'with geo_project_wiki_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: true)
+          end
 
-          import_state.finish
+          context 'when on a Geo primary site' do
+            before do
+              stub_primary_node
+            end
+
+            it 'does not call Geo::RepositoryUpdatedService for the wiki repository', :aggregate_failures do
+              expect(repository_updated_service).to receive(:execute).once
+              expect_next_instance_of(::Geo::RepositoryUpdatedService, project.wiki.repository).never
+              expect(design_updated_service).to receive(:execute)
+
+              import_state.finish
+            end
+
+            context 'when wiki_repository does not exist' do
+              it 'does not call replicator to update Geo' do
+                expect(project.wiki_repository).to be_nil
+                expect(repository_updated_service).to receive(:execute).once
+                expect(design_updated_service).to receive(:execute).once
+                expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
+
+                import_state.finish
+              end
+            end
+
+            context 'when wiki_repository exists' do
+              it 'calls replicator to update Geo', :aggregate_failures do
+                create(:project_wiki_repository, project: project)
+
+                expect(project.wiki_repository).to be_present
+                expect(repository_updated_service).to receive(:execute).once
+                expect(design_updated_service).to receive(:execute).once
+                expect(project.wiki_repository.replicator).to receive(:handle_after_update)
+
+                import_state.finish
+              end
+            end
+          end
         end
       end
 

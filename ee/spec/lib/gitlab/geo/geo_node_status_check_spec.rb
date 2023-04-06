@@ -22,19 +22,45 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
     end
 
     context 'with legacy replication' do
-      it 'prints messages for all legacy replication and verification checks' do
-        checks = [
-          /Repositories: /,
-          /Verified Repositories: /,
-          /Wikis: /,
-          /Verified Wikis: /,
-          /Uploads: /,
-          /Container repositories: /,
-          /Design repositories: /
-        ]
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
+        end
 
-        checks.each do |text|
-          expect { subject.print_replication_verification_status }.to output(text).to_stdout
+        it 'prints messages for all legacy replication and verification checks' do
+          checks = [
+            /Repositories: /,
+            /Verified Repositories: /,
+            /Wikis: /,
+            /Verified Wikis: /,
+            /Uploads: /,
+            /Container repositories: /,
+            /Design repositories: /
+          ]
+
+          checks.each do |text|
+            expect { subject.print_replication_verification_status }.to output(text).to_stdout
+          end
+        end
+      end
+
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
+        end
+
+        it 'prints messages for all legacy replication and verification checks' do
+          checks = [
+            /Repositories: /,
+            /Verified Repositories: /,
+            /Uploads: /,
+            /Container repositories: /,
+            /Design repositories: /
+          ]
+
+          checks.each do |text|
+            expect { subject.print_replication_verification_status }.to output(text).to_stdout
+          end
         end
       end
     end

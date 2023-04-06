@@ -35,6 +35,8 @@ module Geo
         private
 
         def verify_checksum(type)
+          return if type == :wiki && ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
           Geo::RepositoryVerificationSecondaryService.new(registry, type).execute
         rescue StandardError => e
           log_error('Error verifying the repository checksum', e, type: type)

@@ -237,6 +237,8 @@ module Gitlab
       end
 
       def print_wikis_status
+        return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
         print_counts_row(
           description: 'Wikis',
           failed: current_node_status.wikis_failed_count,
@@ -247,6 +249,8 @@ module Gitlab
       end
 
       def print_verified_wikis
+        return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
         if Gitlab::Geo.repository_verification_enabled?
           print_counts_row(
             description: 'Verified Wikis',

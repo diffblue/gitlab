@@ -25,11 +25,25 @@ module EE
       return unless ::Gitlab::Geo.primary?
 
       if wiki.is_a?(ProjectWiki)
-        ::Geo::RepositoryUpdatedService.new(wiki.repository).execute
+        process_project_wiki_changes(wiki)
       else
-        group_wiki_repository = wiki.group.group_wiki_repository
-        group_wiki_repository.replicator.handle_after_update if group_wiki_repository
+        process_group_wiki_changes(wiki)
       end
+    end
+
+    def process_project_wiki_changes(wiki)
+      if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+        project_wiki_repository = wiki.project.wiki_repository
+        project_wiki_repository.replicator.handle_after_update if project_wiki_repository
+      else
+        ::Geo::RepositoryUpdatedService.new(wiki.repository).execute
+      end
+    end
+
+    def process_group_wiki_changes(wiki)
+      return unless wiki.group.group_wiki_repository
+
+      wiki.group.group_wiki_repository.replicator.handle_after_update
     end
 
     override :replicate_snippet_changes

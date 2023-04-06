@@ -45,7 +45,24 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   end
 
   def self.find_registries_needs_sync_again(batch_size:, except_ids: [])
-    super.order(arel_table[:last_repository_synced_at].asc.nulls_first)
+    # TODO: Remove this as part of https://gitlab.com/gitlab-org/gitlab/-/issues/395807
+    #
+    # The Geo legacy implementation uses this method to find both project and
+    # wiki repositories that need to sync again. But, we are migrating wiki
+    # repositories  to the Geo SSF. So, we need to exclude wiki repositories
+    # when the `geo_project_wiki_repository_replication` feature flag is
+    # enabled.
+    registries =
+      if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+        where(resync_repository: true)
+          .retry_due
+          .model_id_not_in(except_ids)
+          .limit(batch_size)
+      else
+        super
+      end
+
+    registries.order(arel_table[:last_repository_synced_at].asc.nulls_first)
   end
 
   def self.delete_worker_class

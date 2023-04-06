@@ -879,7 +879,13 @@ module EE
 
     def log_geo_updated_events
       repository.log_geo_updated_event
-      wiki.repository.log_geo_updated_event
+
+      if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+        wiki_repository.replicator.handle_after_update if wiki_repository
+      else
+        wiki.repository.log_geo_updated_event
+      end
+
       design_repository.log_geo_updated_event
     end
 

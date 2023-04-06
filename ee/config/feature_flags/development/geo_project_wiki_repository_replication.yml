@@ -1,0 +1,8 @@
+---
+name: geo_project_wiki_repository_replication
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/110675
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/395807
+milestone: '15.11'
+type: development
+group: group::geo
+default_enabled: false

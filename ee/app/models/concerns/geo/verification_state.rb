@@ -271,15 +271,16 @@ module Geo
     #                   checksum routine was called
     def verification_succeeded_with_checksum!(checksum, calculation_started_at)
       self.verification_checksum = checksum
-
       self.verification_succeeded!
 
       if resource_updated_during_checksum?(calculation_started_at)
         # just let backfill pick it up
         self.verification_pending!
-      elsif Gitlab::Geo.primary?
-        self.replicator.handle_after_checksum_succeeded
       end
+
+      return unless Gitlab::Geo.primary?
+
+      self.replicator.handle_after_checksum_succeeded
     end
 
     # Convenience method to update failure message and transition to failed
