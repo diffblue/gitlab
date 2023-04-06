@@ -30,6 +30,9 @@ RSpec.describe Gitlab::CodeOwners::Section, feature_category: :source_code_manag
         '[Doc][1] @doc'       | 'Doc' | false | 1 | '@doc'      | {}
         '[Doc] @doc'          | 'Doc' | false | 0 | '@doc'      | {}
         '^[Doc] @doc'         | 'Doc' | true  | 0 | '@doc'      | {}
+        '[Doc] @doc @rrr.dev @dev' | 'Doc' | false | 0 | '@doc @rrr.dev @dev' | {}
+        '^[Doc] @doc @rrr.dev @dev' | 'Doc' | true | 0 | '@doc @rrr.dev @dev' | {}
+        '[Doc][2] @doc @rrr.dev @dev' | 'Doc' | false | 2 | '@doc @rrr.dev @dev' | {}
       end
 
       with_them do
