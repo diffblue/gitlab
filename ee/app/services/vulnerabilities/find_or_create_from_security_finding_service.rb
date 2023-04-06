@@ -63,7 +63,13 @@ module Vulnerabilities
         Vulnerabilities::StateTransition.create!(state_transition_params)
 
         vulnerability.update!(state: @state)
+
+        create_system_note(vulnerability)
       end
+    end
+
+    def create_system_note(vulnerability)
+      SystemNoteService.change_vulnerability_state(vulnerability, @current_user)
     end
 
     def update_existing_state_transition(vulnerability)
