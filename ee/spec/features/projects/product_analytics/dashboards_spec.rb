@@ -99,7 +99,7 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
           stub_licensed_features(product_analytics: true)
         end
 
-        context 'without the Jitsu key' do
+        context 'when an instance has not been set up yet' do
           it_behaves_like 'renders the onboarding empty state'
 
           context 'when setting up a new instance' do
@@ -118,12 +118,18 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
               project.project_setting.update!(jitsu_key: '123')
               project.reload
 
+              ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
+
               travel_to(1.minute.from_now) do
                 expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
               end
             end
 
-            context 'when a new instance has already been initialized' do
+            context 'and a new instance is already being intialized' do
+              before do
+                ::ProductAnalytics::InitializeStackService.new(container: project).lock!
+              end
+
               it 'renders an error alert when setting up a new instance' do
                 click_button s_('ProductAnalytics|Set up product analytics')
 
@@ -134,10 +140,27 @@ RSpec.describe 'Product Analytics Dashboard', :js, feature_category: :product_an
           end
         end
 
-        context 'with the Jitsu key' do
+        context 'when the instance is loading' do
           before do
             project.project_setting.update!(jitsu_key: '123')
             project.reload
+
+            ::ProductAnalytics::InitializeStackService.new(container: project).lock!
+
+            visit_page
+          end
+
+          it 'renders the loading view' do
+            expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
+          end
+        end
+
+        context 'when waiting for events' do
+          before do
+            project.project_setting.update!(jitsu_key: '123')
+            project.reload
+
+            ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
           end
 
           context 'when the cube API returns an unhandled error' do

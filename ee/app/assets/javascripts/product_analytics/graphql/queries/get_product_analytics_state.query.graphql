@@ -1,0 +1,6 @@
+query getProductAnalyticsState($projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    productAnalyticsState
+  }
+}

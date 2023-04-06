@@ -1,20 +1,15 @@
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsApp from 'ee/product_analytics/product_analytics_app.vue';
 import OnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
 import DashboardsView from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
 import createRouter from 'ee/analytics/analytics_dashboards/router';
-import waitForPromises from 'helpers/wait_for_promises';
 import { TEST_HOST } from 'helpers/test_constants';
-import { NO_INSTANCE_DATA, NO_PROJECT_INSTANCE } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_JITSU_KEY,
   TEST_COLLECTOR_HOST,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { TEST_PROJECT_FULL_PATH, TEST_PROJECT_ID } from './mock_data';
-
-jest.mock('ee/analytics/analytics_dashboards/data_sources/cube_analytics', () => ({
-  hasAnalyticsData: jest.fn(),
-}));
 
 describe('ProductAnalyticsApp', () => {
   let wrapper;
@@ -37,31 +32,31 @@ describe('ProductAnalyticsApp', () => {
   };
 
   describe('when mounted', () => {
-    it('should show the onboarding app if there is no jitsuKey', async () => {
-      createWrapper({ jitsuKey: null });
+    beforeEach(() => {
+      createWrapper();
+    });
 
-      await waitForPromises();
+    it('renders the onboarding view', () => {
+      expect(findOnboardingView().exists()).toBe(true);
+    });
 
-      expect(findOnboardingView().props('status')).toBe(NO_PROJECT_INSTANCE);
+    it('does not render the dashboard view', () => {
       expect(findDashboardsView().exists()).toBe(false);
     });
 
-    it('should show the dashboards app if the onboarding was successful', async () => {
-      createWrapper({ jitsuKey: null });
+    describe('and the onboarding is complete', () => {
+      beforeEach(() => {
+        findOnboardingView().vm.$emit('complete');
+        return nextTick();
+      });
 
-      await waitForPromises();
+      it('renders the dashboard app', () => {
+        expect(findDashboardsView().exists()).toBe(true);
+      });
 
-      findOnboardingView().vm.$emit('complete');
-
-      await waitForPromises();
-
-      expect(findDashboardsView().exists()).toBe(true);
-    });
-
-    it('should show onboarding view with NO_INSTANCE_DATA status with a jitsuKey', async () => {
-      createWrapper();
-
-      expect(findOnboardingView().props('status')).toBe(NO_INSTANCE_DATA);
+      it('does not render the onboarding view', () => {
+        expect(findOnboardingView().exists()).toBe(false);
+      });
     });
   });
 });

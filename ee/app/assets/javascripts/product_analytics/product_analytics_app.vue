@@ -1,6 +1,5 @@
 <script>
 import OnboardingView from 'ee/product_analytics/onboarding/onboarding_view.vue';
-import { NO_PROJECT_INSTANCE, NO_INSTANCE_DATA } from './onboarding/constants';
 
 export default {
   name: 'ProductAnalyticsApp',
@@ -8,41 +7,20 @@ export default {
     OnboardingView,
     DashboardsView: () => import('ee/analytics/analytics_dashboards/dashboards_app.vue'),
   },
-  inject: {
-    jitsuKey: {
-      type: String,
-      default: null,
-    },
-  },
   data() {
     return {
-      onboardingStatus: this.getInitialOnboardingStatus(),
-      onboardingSuccess: false,
+      setupNeeded: true,
     };
   },
   methods: {
-    getInitialOnboardingStatus() {
-      if (!this.jitsuKey) {
-        return NO_PROJECT_INSTANCE;
-      }
-
-      // We'll let <onboarding-view> figure out if we have instance data or not
-      return NO_INSTANCE_DATA;
-    },
-    onOnboardingUpdate(isSuccess) {
-      this.onboardingStatus = null;
-      this.onboardingSuccess = isSuccess;
+    onComplete() {
+      this.setupNeeded = false;
     },
   },
 };
 </script>
 
 <template>
-  <onboarding-view
-    v-if="onboardingStatus"
-    :status="onboardingStatus"
-    @complete="onOnboardingUpdate(true)"
-    @error="onOnboardingUpdate(false)"
-  />
-  <dashboards-view v-else-if="onboardingSuccess" />
+  <onboarding-view v-if="setupNeeded" @complete="onComplete" />
+  <dashboards-view v-else />
 </template>

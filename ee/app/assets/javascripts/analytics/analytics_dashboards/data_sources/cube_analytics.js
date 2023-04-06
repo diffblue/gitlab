@@ -106,22 +106,3 @@ export const fetch = async ({
 
   return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery);
 };
-
-export const NO_DATABASE_ERROR_MESSAGE = '404 Clickhouse Database Not Found';
-
-export const hasAnalyticsData = async (projectId) => {
-  try {
-    const data = await createCubeJsApi(projectId).load({ measures: [DEFAULT_COUNT_KEY] });
-
-    return data.rawData()[0][DEFAULT_COUNT_KEY] > 0;
-  } catch (error) {
-    const errorMessage = error?.response?.message;
-
-    // We expect this error to occur when onboarding
-    if (errorMessage === NO_DATABASE_ERROR_MESSAGE) {
-      return false;
-    }
-
-    throw error;
-  }
-};

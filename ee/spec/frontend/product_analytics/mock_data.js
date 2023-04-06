@@ -22,3 +22,12 @@ export const getJitsuKeyResponse = (jitsuKey = null) => ({
     },
   },
 });
+
+export const getProductAnalyticsStateResponse = (productAnalyticsState = null) => ({
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/2',
+      productAnalyticsState,
+    },
+  },
+});
