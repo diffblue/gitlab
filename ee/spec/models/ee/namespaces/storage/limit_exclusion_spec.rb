@@ -20,6 +20,11 @@ RSpec.describe Namespaces::Storage::LimitExclusion, feature_category: :consumabl
     it { is_expected.to belong_to(:namespace).optional(false) }
     it { is_expected.to validate_presence_of(:reason) }
     it { is_expected.to validate_length_of(:reason).is_at_most(255) }
+
+    it do
+      exclusion = build(:namespace_storage_limit_exclusion)
+      expect(exclusion).to validate_uniqueness_of(:namespace)
+    end
   end
 
   describe 'dependent destroy' do
