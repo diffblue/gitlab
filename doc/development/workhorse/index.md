@@ -15,9 +15,6 @@ Workhorse itself is not a feature, but there are
 
 The canonical source for Workhorse is
 [`gitlab-org/gitlab/workhorse`](https://gitlab.com/gitlab-org/gitlab/tree/master/workhorse).
-Prior to [epic #4826](https://gitlab.com/groups/gitlab-org/-/epics/4826), it was
-[`gitlab-org/gitlab-workhorse`](https://gitlab.com/gitlab-org/gitlab-workhorse/tree/master),
-but that repository is no longer used for development.
 
 ## Install Workhorse
 
