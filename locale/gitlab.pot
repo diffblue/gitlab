@@ -31531,9 +31531,6 @@ msgstr ""
 msgid "PerformanceBar|First Contentful Paint"
 msgstr ""
 
-msgid "PerformanceBar|Flamegraph with mode:"
-msgstr ""
-
 msgid "PerformanceBar|Frontend resources"
 msgstr ""
 
