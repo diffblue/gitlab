@@ -6,6 +6,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
   include GroupAPIHelpers
   include UploadHelpers
   include WorkhorseHelpers
+  include KeysetPaginationHelpers
 
   let_it_be(:user1) { create(:user, can_create_group: false) }
   let_it_be(:user2) { create(:user) }
@@ -196,23 +197,6 @@ RSpec.describe API::Groups, feature_category: :subgroups do
         end
 
         context 'keyset pagination' do
-          def pagination_links(response)
-            link = response.headers['LINK']
-            return unless link
-
-            link.split(',').map do |link|
-              match = link.match(/<(?<url>.*)>; rel="(?<rel>\w+)"/)
-              break nil unless match
-
-              { url: match[:url], rel: match[:rel] }
-            end.compact
-          end
-
-          def params_for_next_page(response)
-            next_url = pagination_links(response).find { |link| link[:rel] == 'next' }[:url]
-            Rack::Utils.parse_query(URI.parse(next_url).query)
-          end
-
           context 'on making requests with supported ordering structure' do
             it 'paginates the records correctly', :aggregate_failures do
               # first page
@@ -223,7 +207,7 @@ RSpec.describe API::Groups, feature_category: :subgroups do
               expect(records.size).to eq(1)
               expect(records.first['id']).to eq(group_1.id)
 
-              params_for_next_page = params_for_next_page(response)
+              params_for_next_page = pagination_params_from_next_url(response)
               expect(params_for_next_page).to include('cursor')
 
               get api('/groups'), params: params_for_next_page
