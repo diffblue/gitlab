@@ -1,9 +1,11 @@
 <script>
-import { GlLink, GlButton } from '@gitlab/ui';
+import { GlLoadingIcon, GlLink, GlButton } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AnalyticsClipboardInput from '../shared/analytics_clipboard_input.vue';
+import getProjectJitsuKeyQuery from '../graphql/queries/get_project_jitsu_key.query.graphql';
 import OnboardingSetupCollapse from './components/onboarding_setup_collapse.vue';
+
 import {
   INSTALL_NPM_PACKAGE,
   ESM_SETUP_WITH_NPM,
@@ -14,6 +16,7 @@ import {
 export default {
   name: 'ProductAnalyticsOnboardingSetup',
   components: {
+    GlLoadingIcon,
     AnalyticsClipboardInput,
     OnboardingSetupCollapse,
     GlLink,
@@ -26,6 +29,9 @@ export default {
     jitsuKey: {
       type: String,
     },
+    projectFullPath: {
+      type: String,
+    },
   },
   props: {
     isInitialSetup: {
@@ -34,7 +40,15 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      apolloJitsuKey: null,
+    };
+  },
   computed: {
+    appIdKey() {
+      return this.jitsuKey ?? this.apolloJitsuKey;
+    },
     description() {
       if (this.isInitialSetup) {
         return this.$options.i18n.initialSetupDescription;
@@ -50,12 +64,31 @@ export default {
       };
     },
   },
+  apollo: {
+    apolloJitsuKey: {
+      query: getProjectJitsuKeyQuery,
+      variables() {
+        return {
+          projectPath: this.projectFullPath,
+        };
+      },
+      update(data) {
+        return data?.project?.jitsuKey;
+      },
+      skip() {
+        return this.appIdKey;
+      },
+      error(err) {
+        this.$emit('error', err);
+      },
+    },
+  },
   methods: {
     replaceKeys(template) {
       const hostKey = '$host';
-      const appIdKey = '$applicationId';
+      const applicationId = '$applicationId';
 
-      return template.replace(hostKey, this.collectorHost).replace(appIdKey, this.jitsuKey);
+      return template.replace(hostKey, this.collectorHost).replace(applicationId, this.appIdKey);
     },
   },
   i18n: {
@@ -98,7 +131,9 @@ export default {
 </script>
 
 <template>
-  <section>
+  <gl-loading-icon v-if="!appIdKey" size="lg" class="gl-my-7" />
+
+  <section v-else>
     <header class="gl-display-flex gl-justify-content-space-between gl-align-items-flex-start">
       <div class="gl-mb-7">
         <h2 class="gl-mb-4" data-testid="title">{{ $options.i18n.title }}</h2>
@@ -134,7 +169,7 @@ export default {
       <analytics-clipboard-input
         :label="$options.i18n.sdkAppId"
         :description="$options.i18n.sdkAppIdDescription"
-        :value="jitsuKey"
+        :value="appIdKey"
       />
     </section>
 

@@ -1,11 +1,7 @@
 import { CubejsApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
-import {
-  fetch,
-  hasAnalyticsData,
-  NO_DATABASE_ERROR_MESSAGE,
-} from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
+import { fetch } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
-import { mockCountResultSet, mockResultSet, mockFilters } from '../../mock_data';
+import { mockResultSet, mockFilters } from '../../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 
@@ -162,55 +158,5 @@ describe('Cube Analytics Data Source', () => {
         );
       },
     );
-  });
-
-  describe('hasAnalyticsData', () => {
-    let result;
-
-    afterEach(() => {
-      result = null;
-    });
-
-    describe.each`
-      countText           | mockedApiResponse          | expectedResult
-      ${'greater than 0'} | ${mockCountResultSet(335)} | ${true}
-      ${'equal to 0'}     | ${mockCountResultSet(0)}   | ${false}
-    `('when the amount of data is $countText', ({ mockedApiResponse, expectedResult }) => {
-      beforeEach(async () => {
-        mockLoad.mockImplementation(() => mockedApiResponse);
-
-        result = await hasAnalyticsData('TEST_ID');
-      });
-
-      itSetsUpCube();
-
-      it(`should return ${expectedResult}`, () => {
-        expect(result).toBe(expectedResult);
-      });
-    });
-
-    describe(`when the API returns ${NO_DATABASE_ERROR_MESSAGE}`, () => {
-      beforeEach(async () => {
-        mockLoad.mockRejectedValue({ response: { message: NO_DATABASE_ERROR_MESSAGE } });
-
-        result = await hasAnalyticsData('TEST_ID');
-      });
-
-      itSetsUpCube();
-
-      it('should return false', async () => {
-        expect(result).toBe(false);
-      });
-    });
-
-    describe(`when the API returns an unexpected error`, () => {
-      const error = new Error('unexpected error');
-
-      it('should throw the error', async () => {
-        mockLoad.mockRejectedValue(error);
-
-        await expect(hasAnalyticsData('TEST_ID')).rejects.toThrow(error);
-      });
-    });
   });
 });

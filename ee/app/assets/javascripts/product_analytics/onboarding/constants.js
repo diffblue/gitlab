@@ -20,13 +20,17 @@ export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/applica
     host: '$host',
 });</script>`;
 
-export const JITSU_KEY_CHECK_DELAY = 1000;
+export const SHORT_POLLING_INTERVAL = 1000;
 
-export const CUBE_DATA_CHECK_DELAY = 2500;
+export const LONG_POLLING_INTERVAL = 2500;
 
-export const NO_PROJECT_INSTANCE = 'no_project_instance';
+export const STATE_CREATE_INSTANCE = 'CREATE_INSTANCE';
 
-export const NO_INSTANCE_DATA = 'no_instance_data';
+export const STATE_LOADING_INSTANCE = 'LOADING_INSTANCE';
+
+export const STATE_WAITING_FOR_EVENTS = 'WAITING_FOR_EVENTS';
+
+export const STATE_COMPLETE = 'COMPLETE';
 
 export const EMPTY_STATE_I18N = {
   empty: {
@@ -46,7 +50,7 @@ export const EMPTY_STATE_I18N = {
 };
 
 export const ONBOARDING_VIEW_I18N = {
-  unhandledErrorMessage: s__(
+  fetchErrorMessage: s__(
     'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
   ),
 };
