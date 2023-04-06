@@ -521,6 +521,20 @@ export const pipelineSecurityReportFinding = {
         { name: 'response headers name - 2', value: 'response headers value - 2' },
       ],
     },
+    supportingMessages: [
+      {
+        name: 'Recorded',
+        response: {
+          body: 'response body',
+          statusCode: '200',
+          reasonPhrase: 'response reasonPhrase',
+          headers: [
+            { name: 'response headers name - 1', value: 'response headers value - 1' },
+            { name: 'response headers name - 2', value: 'response headers value - 2' },
+          ],
+        },
+      },
+    ],
     source: {
       name: 'Status Code',
     },

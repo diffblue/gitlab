@@ -48892,6 +48892,9 @@ msgstr ""
 msgid "Vulnerability|Unmodified Response"
 msgstr ""
 
+msgid "Vulnerability|Unmodified response:"
+msgstr ""
+
 msgid "Vulnerability|View training"
 msgstr ""
 

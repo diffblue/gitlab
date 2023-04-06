@@ -67,6 +67,18 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
               value
             }
           }
+          supportingMessages {
+            name
+            response {
+              body
+              reasonPhrase
+              statusCode
+              headers {
+                name
+                value
+              }
+            }
+          }
           source {
             name
           }
