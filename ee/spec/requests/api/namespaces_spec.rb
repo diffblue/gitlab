@@ -257,6 +257,21 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
         end
       end
 
+      shared_examples 'handles monthly usage' do
+        it 'expires the CI minutes CachedQuota' do
+          expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
+
+          subject
+        end
+
+        it 'resets the current CI minutes notification level' do
+          expect do
+            subject
+          end.to change { usage.reload.notification_level }
+            .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
+        end
+      end
+
       context 'when request has extra_shared_runners_minutes_limit param' do
         before do
           params[:extra_shared_runners_minutes_limit] = 1000
@@ -271,12 +286,6 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
             .to eq(params[:extra_shared_runners_minutes_limit])
         end
 
-        it 'expires the CI minutes CachedQuota' do
-          expect_next(Gitlab::Ci::Minutes::CachedQuota).to receive(:expire!)
-
-          subject
-        end
-
         it 'updates pending builds data since adding extra minutes the quota is not used up anymore' do
           minutes_exceeded = group1.ci_minutes_usage.minutes_used_up?
           expect(minutes_exceeded).to eq(true)
@@ -288,14 +297,15 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
           expect(pending_build.reload.minutes_exceeded).to eq(false)
         end
 
-        context 'when current CI minutes notification level is set' do
-          it 'resets the current CI minutes notification level' do
-            expect do
-              put api("/namespaces/#{group1.id}", admin, admin_mode: true), params: params
-            end.to change { usage.reload.notification_level }
-              .to(Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
-          end
+        it_behaves_like 'handles monthly usage'
+      end
+
+      context 'when shared_runners_minutes_limit param is present' do
+        before do
+          params[:shared_runners_minutes_limit] = nil
         end
+
+        it_behaves_like 'handles monthly usage'
       end
 
       context 'when neither minutes limit params is provided' do
