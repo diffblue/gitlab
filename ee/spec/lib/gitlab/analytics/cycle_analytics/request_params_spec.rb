@@ -143,7 +143,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
         expect(attributes).to match(hash_including({
           namespace: {
             name: root_group.name,
-            full_path: "groups/#{root_group.full_path}"
+            full_path: "groups/#{root_group.full_path}",
+            type: "Group"
           }
         }))
       end
