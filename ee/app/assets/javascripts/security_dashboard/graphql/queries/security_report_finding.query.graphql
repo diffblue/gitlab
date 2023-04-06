@@ -48,6 +48,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           nameWithNamespace
         }
         evidence {
+          summary
           request {
             body
             headers {

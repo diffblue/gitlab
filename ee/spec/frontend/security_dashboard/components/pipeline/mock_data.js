@@ -502,6 +502,7 @@ export const pipelineSecurityReportFinding = {
     nodes: [],
   },
   evidence: {
+    summary: 'Invalid status codes indicate an error.',
     request: {
       url: 'http://example.com/requestUrl',
       body: 'request body',
