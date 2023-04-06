@@ -37,11 +37,11 @@ RSpec.describe 'Service Desk Setting', :js, :clean_gitlab_redis_cache, feature_c
     project.add_maintainer(user)
     sign_in(user)
 
-    allow(::Gitlab::IncomingEmail).to receive(:enabled?).and_return(true)
-    allow(::Gitlab::IncomingEmail).to receive(:supports_wildcard?).and_return(true)
+    allow(::Gitlab::Email::IncomingEmail).to receive(:enabled?).and_return(true)
+    allow(::Gitlab::Email::IncomingEmail).to receive(:supports_wildcard?).and_return(true)
 
-    allow(::Gitlab::ServiceDeskEmail).to receive(:enabled?).and_return(true)
-    allow(::Gitlab::ServiceDeskEmail).to receive(:address_for_key).and_return('address-suffix@example.com')
+    allow(::Gitlab::Email::ServiceDeskEmail).to receive(:enabled?).and_return(true)
+    allow(::Gitlab::Email::ServiceDeskEmail).to receive(:address_for_key).and_return('address-suffix@example.com')
 
     allow_next_instance_of(Project) do |proj_instance|
       expect(proj_instance).to receive(:present).with(current_user: user).and_return(presenter)
