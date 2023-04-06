@@ -23,6 +23,7 @@ The available roles are:
 - Developer
 - Maintainer
 - Owner
+- Minimal Access (available for the top-level group only)
 
 A user assigned the Guest role has the least permissions,
 and the Owner has the most.
@@ -423,28 +424,28 @@ nested groups if you have membership in one of its parents.
 For more information, see
 [subgroup memberships](group/subgroups/index.md#subgroup-membership).
 
-## Users with minimal access **(PREMIUM)**
+## Users with Minimal Access **(PREMIUM)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/40942) in GitLab 13.4.
-> - Support for inviting users with minimal access role [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106438) in GitLab 15.9.
+> - Support for inviting users with Minimal Access role [introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106438) in GitLab 15.9.
 
-Owners can add members with a "minimal access" role to a root group. Such users do not:
+Users with the Minimal Access role:
 
 - Count as licensed seats on self-managed Ultimate subscriptions or any GitLab.com subscriptions.
 - Automatically have access to projects and subgroups in that root group.
 
-Owners must explicitly add these "minimal access" users to the specific subgroups and
+Owners must explicitly add these users to the specific subgroups and
 projects.
 
-You can use minimal access to give the same member more than one role in a group:
+You can use the Minimal Access role to give the same member more than one role in a group:
 
-1. Add the member to the root group with a minimal access role.
+1. Add the member to the root group with a Minimal Access role.
 1. Invite the member as a direct member with a specific role in any subgroup or project in that group.
 
-Because of an [outstanding issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996), when minimal access users:
+Because of an [outstanding issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996), when a user with the Minimal Access role:
 
-- Sign in with standard web authentication, they receive a `404` error when accessing the parent group.
-- Sign in with Group SSO, they receive a `404` error immediately because they are redirected to the parent group page.
+- Signs in with standard web authentication, they receive a `404` error when accessing the parent group.
+- Signs in with Group SSO, they receive a `404` error immediately because they are redirected to the parent group page.
 
 To work around the issue, give these users the Guest role or higher to any project or subgroup within the parent group.
 
