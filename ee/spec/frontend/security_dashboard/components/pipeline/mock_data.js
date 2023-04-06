@@ -520,6 +520,9 @@ export const pipelineSecurityReportFinding = {
         { name: 'response headers name - 2', value: 'response headers value - 2' },
       ],
     },
+    source: {
+      name: 'Status Code',
+    },
   },
   links: [
     { url: 'http://example.com/link-1', name: null },
