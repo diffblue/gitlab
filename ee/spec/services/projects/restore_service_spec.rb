@@ -66,14 +66,16 @@ RSpec.describe Projects::RestoreService do
 
     context 'when the original project path does not contain the -deleted- suffix' do
       let(:project) do
-        create(:project,
-               :repository,
-               name: 'a project name',
-               namespace: user.namespace,
-               marked_for_deletion_at: 1.day.ago,
-               deleting_user: user,
-               archived: true,
-               pending_delete: pending_delete)
+        create(
+          :project,
+          :repository,
+          name: 'a project name',
+          namespace: user.namespace,
+          marked_for_deletion_at: 1.day.ago,
+          deleting_user: user,
+          archived: true,
+          pending_delete: pending_delete
+        )
       end
 
       it 'renames the project back to its original path' do
