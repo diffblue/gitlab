@@ -6,6 +6,7 @@ module Namespaces
 
       belongs_to :namespace, optional: false
 
+      validates :namespace, uniqueness: true
       validates :reason, presence: true, length: { maximum: 255 }
     end
   end
