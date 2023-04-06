@@ -34,17 +34,7 @@ export default {
   },
   computed: {
     isEditing() {
-      if (!this.existingPolicy) {
-        return false;
-      }
-
-      return Boolean(
-        this.existingPolicy.creation_timestamp ||
-          [
-            POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
-            POLICY_TYPE_COMPONENT_OPTIONS.scanResult?.urlParameter,
-          ].includes(this.existingPolicy.type),
-      );
+      return Boolean(this.existingPolicy);
     },
     policyTypes() {
       return Object.values(POLICY_TYPE_COMPONENT_OPTIONS);
