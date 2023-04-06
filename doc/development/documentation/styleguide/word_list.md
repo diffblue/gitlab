@@ -583,7 +583,14 @@ you can use **Pages** thereafter.
 
 ## GitLab Runner
 
-Use title case for **GitLab Runner**. This is the product you install. See also [runners](#runner-runners) and [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
+Use title case for **GitLab Runner**. This is the product you install. For more information about the decision for this usage,
+see [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/233529).
+
+See also:
+
+- [runners](#runner-runners)
+- [runner managers](#runner-manager-runner-managers)
+- [runner workers](#runner-worker-runner-workers)
 
 ## GitLab SaaS
 
@@ -1136,6 +1143,14 @@ Use lowercase for **runners**. These are the agents that run CI/CD jobs. See als
 
 When referring to runners, if you have to specify that the runners are installed on a customer's GitLab instance,
 use **self-managed** rather than **self-hosted**.
+
+## runner manager, runner managers
+
+Use lowercase for **runner managers**. These are a type of runner that can create multiple runners for autoscaling. See also [GitLab Runner](#gitlab-runner).
+
+## runner worker, runner workers
+
+Use lowercase for **runner workers**. This is the process created by the runner on the host computing platform to run jobs. See also [GitLab Runner](#gitlab-runner).
 
 ## (s)
 
