@@ -126,7 +126,7 @@ export default {
 <template>
   <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
     <gl-form
-      class="gl-display-flex gl-flex-wrap-wrap gl-align-items-center gl-flex-grow-1 gl-gap-3"
+      class="gl-display-flex gl-flex-wrap gl-align-items-center gl-flex-grow-1 gl-gap-3"
       @submit.prevent
     >
       <gl-sprintf :message="actionMessage">

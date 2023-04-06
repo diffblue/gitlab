@@ -4,7 +4,7 @@ exports[`Code owners component matches the snapshot 1`] = `<!---->`;
 
 exports[`Code owners component matches the snapshot 2`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
 >
   <div
     class="gl-display-inline gl-mr-2"
@@ -58,7 +58,7 @@ exports[`Code owners component matches the snapshot 2`] = `
 
 exports[`Code owners component matches the snapshot 3`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
 >
   <div
     class="gl-display-inline gl-mr-2"
@@ -130,7 +130,7 @@ exports[`Code owners component matches the snapshot 3`] = `
 
 exports[`Code owners component matches the snapshot 4`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
 >
   <div
     class="gl-display-inline gl-mr-2"
@@ -220,7 +220,7 @@ exports[`Code owners component matches the snapshot 4`] = `
 
 exports[`Code owners component matches the snapshot 5`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap-wrap"
+  class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-flex-wrap"
 >
   <div
     class="gl-display-inline gl-mr-2"
