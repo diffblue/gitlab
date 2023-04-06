@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GraphqlTriggers do
+RSpec.describe GraphqlTriggers, feature_category: :shared do
   describe '.issuable_weight_updated' do
     let(:work_item) { create(:work_item) }
 
