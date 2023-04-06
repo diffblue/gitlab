@@ -16,9 +16,9 @@ RSpec.describe EE::TrialRegistrationHelper do
     subject { helper.social_signin_enabled? }
 
     where com: [true, false],
-          omniauth_enabled: [true, false],
-          omniauthable: [true, false],
-          button_based_providers_enabled: [true, false]
+      omniauth_enabled: [true, false],
+      omniauthable: [true, false],
+      button_based_providers_enabled: [true, false]
 
     with_them do
       let(:result) { com && omniauth_enabled && button_based_providers_enabled && omniauthable }

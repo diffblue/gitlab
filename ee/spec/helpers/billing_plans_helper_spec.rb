@@ -169,8 +169,8 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
   describe '#use_new_purchase_flow?' do
     where type: [Group.sti_name, Namespaces::UserNamespace.sti_name],
-          plan: Plan.all_plans,
-          trial_active: [true, false]
+      plan: Plan.all_plans,
+      trial_active: [true, false]
 
     with_them do
       let_it_be(:user) { create(:user) }
@@ -234,12 +234,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
       with_them do
         let(:namespace) do
-          double('plan',
-                 {
-                   actual_plan_name: plan_name,
-                   id: '000000000'
-                 }
-          )
+          double('plan', { actual_plan_name: plan_name, id: '000000000' })
         end
 
         before do

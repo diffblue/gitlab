@@ -198,15 +198,17 @@ RSpec.describe EE::IntegrationsHelper do
     end
 
     let(:request) do
-      double(:Request,
-             optional_port: nil,
-             path_parameters: {},
-             protocol: 'https',
-             routes: nil,
-             env: { 'warden' => warden },
-             engine_script_name: nil,
-             original_script_name: nil,
-             host: 'example.com')
+      double(
+        :Request,
+        optional_port: nil,
+        path_parameters: {},
+        protocol: 'https',
+        routes: nil,
+        env: { 'warden' => warden },
+        engine_script_name: nil,
+        original_script_name: nil,
+        host: 'example.com'
+      )
     end
 
     before do

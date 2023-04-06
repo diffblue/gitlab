@@ -27,21 +27,24 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         :project_default_branch,
         :resolved_by_id,
         :dismissed_by_id,
-        :confirmed_by_id)
+        :confirmed_by_id
+      )
     end
 
     let(:finding_serializer_hash) do
-      finding.slice(:description,
-                    :identifiers,
-                    :links,
-                    :location,
-                    :name,
-                    :issue_feedback,
-                    :project,
-                    :remediations,
-                    :solution,
-                    :uuid,
-                    :details)
+      finding.slice(
+        :description,
+        :identifiers,
+        :links,
+        :location,
+        :name,
+        :issue_feedback,
+        :project,
+        :remediations,
+        :solution,
+        :uuid,
+        :details
+      )
     end
 
     let(:desired_serializer_fields) { %i[metadata identifiers name issue_feedback merge_request_feedback project project_fingerprint scanner uuid details dismissal_feedback false_positive state_transitions issue_links merge_request_links] }
