@@ -1,0 +1,9 @@
+---
+name: user_disable_two_factor
+description: Audit event triggered when user disables two factor authentication
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/238177
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89598
+milestone: '15.1'
+feature_category: system_access
+saved_to_database: true
+streamed: true
