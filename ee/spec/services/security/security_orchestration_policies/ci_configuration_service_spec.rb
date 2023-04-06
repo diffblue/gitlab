@@ -92,8 +92,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
             artifacts: {
               reports: {
                 container_scanning: 'gl-container-scanning-report.json',
-                dependency_scanning: 'gl-dependency-scanning-report.json',
-                cyclonedx: "**/gl-sbom-*.cdx.json"
+                dependency_scanning: 'gl-dependency-scanning-report.json'
               },
               paths: [
                 'gl-container-scanning-report.json', 'gl-dependency-scanning-report.json', "**/gl-sbom-*.cdx.json"
