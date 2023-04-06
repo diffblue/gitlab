@@ -2169,7 +2169,22 @@ msgstr ""
 msgid "AccountValidation|Verification is required to discourage and reduce the abuse on GitLab infrastructure. If you verify with a credit or debit card, %{strong_start}GitLab will not charge your card, it will only be used for validation.%{strong_end} %{learn_more_link}"
 msgstr ""
 
+msgid "Achievements|%{namespace_full_path} awarded you the %{achievement_name} achievement"
+msgstr ""
+
+msgid "Achievements|%{namespace_full_path} awarded you the %{achievement_name} achievement!"
+msgstr ""
+
+msgid "Achievements|%{namespace_link} awarded you the %{bold_start}%{achievement_name}%{bold_end} achievement!"
+msgstr ""
+
 msgid "Achievements|Awarded %{timeAgo} by %{namespace}"
+msgstr ""
+
+msgid "Achievements|View your achievements on your %{link_start}profile%{link_end}."
+msgstr ""
+
+msgid "Achievements|View your achievements on your profile."
 msgstr ""
 
 msgid "Acknowledge"
