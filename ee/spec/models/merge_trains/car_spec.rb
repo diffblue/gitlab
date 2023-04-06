@@ -2,20 +2,20 @@
 
 require "spec_helper"
 
-RSpec.describe MergeTrain do
+RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project, :repository) }
-
-  it { is_expected.to belong_to(:merge_request) }
-  it { is_expected.to belong_to(:user) }
-  it { is_expected.to belong_to(:pipeline) }
 
   before do
     allow(AutoMergeProcessWorker).to receive(:perform_async)
   end
 
-  shared_context 'various merge trains' do
+  it { is_expected.to belong_to(:merge_request) }
+  it { is_expected.to belong_to(:user) }
+  it { is_expected.to belong_to(:pipeline) }
+
+  shared_context 'with train cars in many states' do
     let_it_be(:merge_train_idle) { create(:merge_train, :idle) }
     let_it_be(:merge_train_stale) { create(:merge_train, :stale) }
     let_it_be(:merge_train_fresh) { create(:merge_train, :fresh) }
@@ -26,7 +26,7 @@ RSpec.describe MergeTrain do
   describe '.active' do
     subject { described_class.active }
 
-    include_context 'various merge trains'
+    include_context 'with train cars in many states'
 
     it 'returns only active merge trains' do
       is_expected.to contain_exactly(merge_train_idle, merge_train_stale, merge_train_fresh)
@@ -36,7 +36,7 @@ RSpec.describe MergeTrain do
   describe '.complete' do
     subject { described_class.complete }
 
-    include_context 'various merge trains'
+    include_context 'with train cars in many states'
 
     it 'returns only merged merge trains' do
       is_expected.to contain_exactly(merge_train_merged, merge_train_merging)
@@ -151,8 +151,13 @@ RSpec.describe MergeTrain do
     let!(:first_on_master) { create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-1') }
     let!(:second_on_master) { create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-2') }
 
-    let!(:first_on_stable) { create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-1-backport') }
-    let!(:second_on_stable) { create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-2-backport') }
+    let!(:first_on_stable) do
+      create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-1-backport')
+    end
+
+    let!(:second_on_stable) do
+      create_merge_request_on_train(target_branch: 'stable', source_branch: 'feature-2-backport')
+    end
 
     subject { described_class.first_cars_in_trains(project) }
 
@@ -161,7 +166,9 @@ RSpec.describe MergeTrain do
     end
 
     context 'when first_on_master has already been merged' do
-      let!(:first_on_master) { create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-1', status: :merged) }
+      let!(:first_on_master) do
+        create_merge_request_on_train(target_branch: 'master', source_branch: 'feature-1', status: :merged)
+      end
 
       it 'returns second on master as active MR' do
         is_expected.to contain_exactly(second_on_master.merge_train, first_on_stable.merge_train)
@@ -179,7 +186,7 @@ RSpec.describe MergeTrain do
 
     context 'when there is a merge request on train' do
       let!(:merge_request_1) { create_merge_request_on_train }
-      let(:merge_commit_sha_1) { Digest::SHA1.hexdigest 'test-1' }
+      let(:merge_commit_sha_1) { OpenSSL::Digest.hexdigest('SHA256', 'test-1') }
       let(:target_sha) { merge_commit_sha_1 }
 
       context 'when the merge request has already been merging' do
@@ -204,7 +211,7 @@ RSpec.describe MergeTrain do
 
       context 'when there is another merge request on train and it has been merged' do
         let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome', status: :merged) }
-        let(:merge_commit_sha_2) { Digest::SHA1.hexdigest 'test-2' }
+        let(:merge_commit_sha_2) { OpenSSL::Digest.hexdigest('SHA256', 'test-2') }
         let(:target_sha) { merge_commit_sha_2 }
 
         before do
@@ -394,7 +401,7 @@ RSpec.describe MergeTrain do
 
       context 'when merge train is stale' do
         before do
-          merge_train.update!(status: MergeTrain.state_machines[:status].states[:stale].value)
+          merge_train.update!(status: described_class.state_machines[:status].states[:stale].value)
         end
 
         it { is_expected.to be_truthy }
@@ -649,17 +656,19 @@ RSpec.describe MergeTrain do
     end
   end
 
-  def create_merge_request_on_train(target_project: project, target_branch: 'master', source_project: project, source_branch: 'feature', status: :idle)
+  def create_merge_request_on_train(
+    target_project: project, target_branch: 'master', source_project: project,
+    source_branch: 'feature', status: :idle)
     create(:merge_request,
       :on_train,
       target_branch: target_branch,
       target_project: target_project,
       source_branch: source_branch,
       source_project: source_project,
-      status: MergeTrain.state_machines[:status].states[status].value)
+      status: MergeTrains::Car.state_machines[:status].states[status].value)
   end
 
-  context 'loose foreign key on merge_trains.pipeline_id' do
+  context 'with loose foreign key on merge_trains.pipeline_id' do
     it_behaves_like 'cleanup by a loose foreign key' do
       let!(:parent) { create(:ci_pipeline) }
       let!(:model) { create(:merge_train, pipeline: parent) }

@@ -1264,7 +1264,7 @@ RSpec.describe MergeRequest do
     context 'when the merge request was on a merge train' do
       let(:merge_request) do
         create(:merge_request, :on_train,
-          status: MergeTrain.state_machines[:status].states[:merged].value,
+          status: MergeTrains::Car.state_machines[:status].states[:merged].value,
           source_project: project, target_project: project)
       end
 

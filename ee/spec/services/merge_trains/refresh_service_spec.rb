@@ -105,7 +105,8 @@ RSpec.describe MergeTrains::RefreshService, feature_category: :merge_trains do
       context 'when merge request 1 was on a merge train' do
         before do
           allow(merge_request_1.merge_train).to receive(:cleanup_ref)
-          merge_request_1.merge_train.update_column(:status, MergeTrain.state_machines[:status].states[:merged].value)
+          merge_request_1.merge_train.update_column(:status,
+            MergeTrains::Car.state_machines[:status].states[:merged].value)
         end
 
         it 'does not refresh' do

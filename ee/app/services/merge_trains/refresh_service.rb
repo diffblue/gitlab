@@ -25,7 +25,7 @@ module MergeTrains
 
       require_next_recreate = false
 
-      MergeTrain.all_cars(target_project_id, target_branch, limit: DEFAULT_CONCURRENCY).each do |car|
+      MergeTrains::Car.all_cars(target_project_id, target_branch, limit: DEFAULT_CONCURRENCY).each do |car|
         result = MergeTrains::RefreshMergeRequestService
           .new(car.target_project, car.user, require_recreate: require_next_recreate)
           .execute(car.merge_request)

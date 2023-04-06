@@ -14,7 +14,7 @@ module EE
         expose :status_name, as: :status,
                              documentation: {
                                type: 'string',
-                               values: MergeTrain.state_machine.states.map(&:name),
+                               values: ::MergeTrains::Car.state_machine.states.map(&:name),
                                example: 'merging'
                              }
         expose :merged_at, documentation: { type: 'dateTime', example: '2015-12-24T17:54:31.198Z' }

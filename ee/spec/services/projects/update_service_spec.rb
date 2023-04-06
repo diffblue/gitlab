@@ -391,7 +391,7 @@ RSpec.describe Projects::UpdateService, '#execute' do
       it 'drops all merge request in the train', :sidekiq_might_not_need_inline do
         expect do
           update_project(project, user, merge_pipelines_enabled: false)
-        end.to change { MergeTrain.count }.from(2).to(0)
+        end.to change { MergeTrains::Car.count }.from(2).to(0)
       end
     end
 
@@ -399,7 +399,7 @@ RSpec.describe Projects::UpdateService, '#execute' do
       it 'does not drop all merge request in the train' do
         expect do
           update_project(project, user, merge_pipelines_enabled: true)
-        end.not_to change { MergeTrain.count }
+        end.not_to change { MergeTrains::Car.count }
       end
     end
   end

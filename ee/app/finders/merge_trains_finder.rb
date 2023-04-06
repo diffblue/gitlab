@@ -12,7 +12,7 @@ class MergeTrainsFinder
 
   def execute
     unless Ability.allowed?(current_user, :read_merge_train, project)
-      return MergeTrain.none
+      return MergeTrains::Car.none
     end
 
     items = merge_trains
