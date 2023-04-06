@@ -80,7 +80,7 @@ module Gitlab
         end
 
         def access_token
-          ::Gitlab::CurrentSettings.openai_api_key
+          @token ||= ::Gitlab::CurrentSettings.openai_api_key
         end
       end
     end
