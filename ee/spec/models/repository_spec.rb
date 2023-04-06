@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Repository do
+RSpec.describe Repository, feature_category: :source_code_management do
   include RepoHelpers
   include ::EE::GeoHelpers
 
