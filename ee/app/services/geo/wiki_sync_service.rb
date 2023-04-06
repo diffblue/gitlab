@@ -7,6 +7,8 @@ module Geo
     private
 
     def sync_repository
+      return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
       start_registry_sync!
       fetch_repository
       mark_sync_as_successful

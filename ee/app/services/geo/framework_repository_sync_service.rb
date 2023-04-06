@@ -67,7 +67,15 @@ module Geo
     end
 
     def lease_key
-      @lease_key ||= "#{LEASE_KEY_PREFIX}:#{replicable_name}:#{replicator.model_record.id}"
+      @lease_key ||=
+        if replicator == 'project_wiki_repository'
+          # Only to keep compatibility with the legacy framework for wikis. We can
+          # remove this conditional in the same merge request that removes all references
+          # to the geo_project_wiki_repository_replication feature flag from the codebase.
+          "#{Geo::RepositoryBaseSyncService::LEASE_KEY_PREFIX}:wiki:#{replicator.model_record.project_id}"
+        else
+          "#{LEASE_KEY_PREFIX}:#{replicable_name}:#{replicator.model_record.id}"
+        end
     end
 
     def lease_timeout
@@ -156,7 +164,7 @@ module Geo
       log_info("Attempting to fetch repository via snapshot")
 
       temp_repo.create_from_snapshot(
-        replicator.snapshot_url(temp_repo),
+        replicator.snapshot_url,
         ::Gitlab::Geo::RepoSyncRequest.new(scope: ::Gitlab::Geo::API_SCOPE).authorization
       )
     rescue StandardError => err
@@ -271,7 +279,7 @@ module Geo
       return unless replicator.class.housekeeping_enabled?
 
       task = new_repository? ? :gc : nil
-      service = Repositories::HousekeepingService.new(replicator.model_record, task)
+      service = Repositories::HousekeepingService.new(replicator.housekeeping_model_record, task)
       service.increment!
 
       return if task.nil? && !service.needed?

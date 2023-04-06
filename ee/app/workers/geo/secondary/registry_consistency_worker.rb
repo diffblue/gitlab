@@ -34,7 +34,8 @@ module Geo
         Geo::PagesDeploymentRegistry,
         Geo::CiSecureFileRegistry,
         Geo::DependencyProxyBlobRegistry,
-        Geo::DependencyProxyManifestRegistry
+        Geo::DependencyProxyManifestRegistry,
+        Geo::ProjectWikiRepositoryRegistry
       ].freeze
 
       BATCH_SIZE = 10000

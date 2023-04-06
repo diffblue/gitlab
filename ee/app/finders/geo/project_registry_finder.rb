@@ -34,11 +34,19 @@ module Geo
 
     # rubocop:disable CodeReuse/ActiveRecord
     def find_project_ids_pending_verification(batch_size:, except_ids: [])
-      registry_class
-        .from_union([
-                      repositories_checksummed_pending_verification,
-                      wikis_checksummed_pending_verification
-                    ])
+      registries =
+        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+          registry_class
+            .repositories_checksummed_pending_verification
+        else
+          registry_class
+            .from_union([
+                          repositories_checksummed_pending_verification,
+                          wikis_checksummed_pending_verification
+                        ])
+        end
+
+      registries
         .model_id_not_in(except_ids)
         .limit(batch_size)
         .pluck_model_foreign_key

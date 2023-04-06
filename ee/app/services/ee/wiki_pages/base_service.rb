@@ -24,9 +24,14 @@ module EE
       end
 
       def process_wiki_repository_update
-        # TODO: Geo support for group wiki
-        # https://gitlab.com/gitlab-org/gitlab/-/issues/208147
-        if ::Gitlab::Geo.primary? && container.is_a?(Project)
+        return unless ::Gitlab::Geo.primary?
+
+        # TODO: Geo support for group wiki https://gitlab.com/gitlab-org/gitlab/-/issues/208147
+        return unless container.is_a?(Project)
+
+        if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+          container.wiki_repository.replicator.handle_after_update if container.wiki_repository
+        else
           ::Geo::RepositoryUpdatedService.new(container.wiki.repository).execute
         end
       end

@@ -82,17 +82,41 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
   describe '#replicable_types' do
     subject(:names) { helper.replicable_types.map { |t| t[:name_plural] } }
 
-    it 'includes legacy types' do
-      expected_names = %w(
-        repositories
-        wikis
-        lfs_objects
-        uploads
-        job_artifacts
-        design_repositories
-      )
+    context 'with geo_project_wiki_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: false)
+      end
 
-      expect(names).to include(*expected_names)
+      it 'includes legacy types' do
+        expected_names = %w(
+          repositories
+          wikis
+          lfs_objects
+          uploads
+          job_artifacts
+          design_repositories
+        )
+
+        expect(names).to include(*expected_names)
+      end
+    end
+
+    context 'with geo_project_wiki_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: true)
+      end
+
+      it 'includes legacy types' do
+        expected_names = %w(
+          repositories
+          lfs_objects
+          uploads
+          job_artifacts
+          design_repositories
+        )
+
+        expect(names).to include(*expected_names)
+      end
     end
 
     it 'includes replicator types' do

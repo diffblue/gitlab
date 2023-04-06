@@ -131,17 +131,42 @@ RSpec.describe Geo::RepositoryVerificationFinder, feature_category: :geo_replica
         .to match_array(project)
     end
 
-    it 'returns projects where wiki verification is pending' do
-      create(:repository_state, :repository_verified, project: project)
+    context 'with geo_project_wiki_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: false)
+      end
 
-      expect(subject.find_recently_updated_projects(batch_size: 10))
-        .to match_array(project)
+      it 'returns projects where wiki verification is pending' do
+        create(:repository_state, :repository_verified, project: project)
+
+        expect(subject.find_recently_updated_projects(batch_size: 10))
+          .to match_array(project)
+      end
+
+      it 'does not return projects where wiki verification failed' do
+        create(:repository_state, :repository_verified, :wiki_failed, project: project)
+
+        expect(subject.find_recently_updated_projects(batch_size: 10)).to be_empty
+      end
     end
 
-    it 'does not return projects where wiki verification failed' do
-      create(:repository_state, :repository_verified, :wiki_failed, project: project)
+    context 'with geo_project_wiki_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: true)
+      end
 
-      expect(subject.find_recently_updated_projects(batch_size: 10)).to be_empty
+      it 'does not return projects where wiki verification is pending' do
+        create(:repository_state, :repository_verified, project: project)
+
+        expect(subject.find_recently_updated_projects(batch_size: 10))
+          .to be_empty
+      end
+
+      it 'does not return projects where wiki verification failed' do
+        create(:repository_state, :repository_verified, :wiki_failed, project: project)
+
+        expect(subject.find_recently_updated_projects(batch_size: 10)).to be_empty
+      end
     end
 
     it 'returns less active projects first' do

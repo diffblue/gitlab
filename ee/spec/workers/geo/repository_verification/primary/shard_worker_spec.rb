@@ -70,14 +70,56 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
       subject.perform(shard_name)
     end
 
-    it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects missing wiki verification' do
-      missing_wiki_verification = create(:project)
+    context 'with geo_project_wiki_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: false)
+      end
 
-      create(:repository_state, :repository_verified, project: missing_wiki_verification)
+      it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects missing wiki verification' do
+        missing_wiki_verification = create(:project)
 
-      expect(primary_singleworker).to receive(:perform_async).with(missing_wiki_verification.id)
+        create(:repository_state, :repository_verified, project: missing_wiki_verification)
 
-      subject.perform(shard_name)
+        expect(primary_singleworker).to receive(:perform_async).with(missing_wiki_verification.id)
+
+        subject.perform(shard_name)
+      end
+
+      it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki verification failed' do
+        wiki_verification_failed = create(:project)
+
+        create(:repository_state, :repository_verified, :wiki_failed, project: wiki_verification_failed)
+
+        expect(primary_singleworker).to receive(:perform_async).with(wiki_verification_failed.id)
+
+        subject.perform(shard_name)
+      end
+    end
+
+    context 'with geo_project_wiki_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: true)
+      end
+
+      it 'does not perform Geo::RepositoryVerification::Primary::SingleWorker for projects missing wiki verification' do
+        missing_wiki_verification = create(:project)
+
+        create(:repository_state, :repository_verified, project: missing_wiki_verification)
+
+        expect(primary_singleworker).not_to receive(:perform_async).with(missing_wiki_verification.id)
+
+        subject.perform(shard_name)
+      end
+
+      it 'does not perform Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki verification failed' do
+        wiki_verification_failed = create(:project)
+
+        create(:repository_state, :repository_verified, :wiki_failed, project: wiki_verification_failed)
+
+        expect(primary_singleworker).not_to receive(:perform_async).with(wiki_verification_failed.id)
+
+        subject.perform(shard_name)
+      end
     end
 
     it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects where repository verification failed' do
@@ -86,16 +128,6 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
       create(:repository_state, :repository_failed, :wiki_verified, project: repository_verification_failed)
 
       expect(primary_singleworker).to receive(:perform_async).with(repository_verification_failed.id)
-
-      subject.perform(shard_name)
-    end
-
-    it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki verification failed' do
-      wiki_verification_failed = create(:project)
-
-      create(:repository_state, :repository_verified, :wiki_failed, project: wiki_verification_failed)
-
-      expect(primary_singleworker).to receive(:perform_async).with(wiki_verification_failed.id)
 
       subject.perform(shard_name)
     end
@@ -117,15 +149,38 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
           subject.perform(shard_name)
         end
 
-        it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki should be reverified' do
-          project_to_be_reverified = create(:project)
+        context 'with geo_project_wiki_repository_replication feature flag disabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: false)
+          end
 
-          create(:repository_state, :repository_verified, :wiki_verified,
-            project: project_to_be_reverified, last_wiki_verification_ran_at: 10.days.ago)
+          it 'performs Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki should be reverified' do
+            project_to_be_reverified = create(:project)
 
-          expect(primary_singleworker).to receive(:perform_async).with(project_to_be_reverified.id)
+            create(:repository_state, :repository_verified, :wiki_verified,
+              project: project_to_be_reverified, last_wiki_verification_ran_at: 10.days.ago)
 
-          subject.perform(shard_name)
+            expect(primary_singleworker).to receive(:perform_async).with(project_to_be_reverified.id)
+
+            subject.perform(shard_name)
+          end
+        end
+
+        context 'with geo_project_wiki_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_project_wiki_repository_replication: true)
+          end
+
+          it 'does not perform Geo::RepositoryVerification::Primary::SingleWorker for projects where wiki should be reverified' do
+            project_to_be_reverified = create(:project)
+
+            create(:repository_state, :repository_verified, :wiki_verified,
+              project: project_to_be_reverified, last_wiki_verification_ran_at: 10.days.ago)
+
+            expect(primary_singleworker).not_to receive(:perform_async).with(project_to_be_reverified.id)
+
+            subject.perform(shard_name)
+          end
         end
       end
 
@@ -237,34 +292,63 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
       let(:project_both_verified) { create(:repository_state, :repository_verified, :wiki_verified).project }
       let(:project_both_failed) { create(:repository_state, :repository_failed, :wiki_failed).project }
       let(:project_repo_unverified) { create(:repository_state).project }
-      let(:project_wiki_unverified) { create(:repository_state).project }
+      let(:project_wiki_unverified) { create(:repository_state, :repository_verified).project }
       let(:project_repo_failed_wiki_verified) { create(:repository_state, :repository_failed, :wiki_verified).project }
       let(:project_repo_verified_wiki_failed) { create(:repository_state, :repository_verified, :wiki_failed).project }
       let(:project_repo_reverify) { create(:repository_state, :repository_verified, :wiki_verified, last_repository_verification_ran_at: 10.days.ago).project }
       let(:project_wiki_reverify) { create(:repository_state, :repository_verified, :wiki_verified, last_wiki_verification_ran_at: 10.days.ago).project }
 
-      it 'handles multiple batches of projects needing verification' do
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_unverified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_wiki_unverified.id).once.and_call_original
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: false)
+        end
 
-        3.times do
-          Sidekiq::Testing.inline! { subject.perform(shard_name) }
+        it 'handles multiple batches of projects/wikis needing verification' do
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_unverified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_wiki_unverified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_verified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_wiki_verified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_both_failed.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_failed_wiki_verified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_verified_wiki_failed.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_reverify.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_wiki_reverify.id).once.and_call_original
+
+          # In the setup phase, we stub the db_retrieve_batch_size value to 1, and
+          # we have 9 registries that can be verified. So, 10 (number of registries
+          # in this state + 1) is the number of times the worker needs to run to
+          # ensure that enqueue primary_singleworker once per registry pending
+          # verification.
+          10.times do
+            Sidekiq::Testing.inline! { subject.perform(shard_name) }
+          end
         end
       end
 
-      it 'handles multiple batches of projects needing verification' do
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_unverified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_wiki_unverified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_verified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_wiki_verified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_both_failed.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_failed_wiki_verified.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_verified_wiki_failed.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_repo_reverify.id).once.and_call_original
-        expect(primary_singleworker).to receive(:perform_async).with(project_wiki_reverify.id).once.and_call_original
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
+        end
 
-        10.times do
-          Sidekiq::Testing.inline! { subject.perform(shard_name) }
+        it 'handles multiple batches of projects needing verification' do
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_unverified.id).once.and_call_original
+          expect(primary_singleworker).not_to receive(:perform_async).with(project_wiki_unverified.id)
+          expect(primary_singleworker).not_to receive(:perform_async).with(project_repo_verified.id)
+          expect(primary_singleworker).to receive(:perform_async).with(project_wiki_verified.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_both_failed.id).once.and_call_original
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_failed_wiki_verified.id).once.and_call_original
+          expect(primary_singleworker).not_to receive(:perform_async).with(project_repo_verified_wiki_failed.id)
+          expect(primary_singleworker).to receive(:perform_async).with(project_repo_reverify.id).once.and_call_original
+          expect(primary_singleworker).not_to receive(:perform_async).with(project_wiki_reverify.id)
+
+          # In the setup phase, we stub the db_retrieve_batch_size value to 1, and
+          # we have 9 registries that can be verified. So, 10 (number of registries
+          # in this state + 1) is the number of times the worker needs to run to
+          # ensure that enqueue primary_singleworker once per registry pending
+          # verification.
+          10.times do
+            Sidekiq::Testing.inline! { subject.perform(shard_name) }
+          end
         end
       end
     end

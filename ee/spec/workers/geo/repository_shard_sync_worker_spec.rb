@@ -87,16 +87,6 @@ RSpec.describe Geo::RepositoryShardSyncWorker, :geo, :clean_gitlab_redis_cache, 
       subject.perform(shard_name)
     end
 
-    it 'performs Geo::ProjectSyncWorker for synced projects updated recently' do
-      create(:geo_project_registry, :synced, :repository_dirty, project: project_1)
-      create(:geo_project_registry, :synced, project: project_2)
-      create(:geo_project_registry, :synced, :wiki_dirty)
-
-      expect(Geo::ProjectSyncWorker).to receive(:perform_async).twice.and_return(spy)
-
-      subject.perform(shard_name)
-    end
-
     it 'does not schedule a job twice for the same project' do
       create(:geo_project_registry, project: project_2)
       create(:geo_project_registry, project: project_1)
@@ -261,29 +251,61 @@ RSpec.describe Geo::RepositoryShardSyncWorker, :geo, :clean_gitlab_redis_cache, 
       end
     end
 
-    context 'with multiple shards' do
-      it 'uses two loops to schedule jobs', :sidekiq_might_not_need_inline do
-        create(:geo_project_registry, project: project_2)
-        create(:geo_project_registry, project: project_1)
+    context 'with geo_project_wiki_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: false)
+      end
 
-        Gitlab::ShardHealthCache.update([shard_name, 'shard2', 'shard3', 'shard4', 'shard5'])
-        secondary.update!(repos_max_capacity: 5)
+      it 'performs Geo::ProjectSyncWorker for synced projects/wikis updated recently' do
+        create(:geo_project_registry, :synced, :repository_dirty, project: project_1)
+        create(:geo_project_registry, :synced, project: project_2)
+        create(:geo_project_registry, :synced, :wiki_dirty)
 
-        expect(subject).to receive(:schedule_jobs).twice.and_call_original
+        expect(Geo::ProjectSyncWorker).to receive(:perform_async).twice.and_return(spy)
 
         subject.perform(shard_name)
       end
 
-      it 'skips backfill for projects on unhealthy shards' do
-        project_unhealthy_shard = create_project_on_shard('unknown')
+      context 'with multiple shards' do
+        it 'uses two loops to schedule jobs', :sidekiq_might_not_need_inline do
+          create(:geo_project_registry, project: project_2)
+          create(:geo_project_registry, project: project_1)
 
-        create(:geo_project_registry, project: project_1)
-        create(:geo_project_registry, project: project_unhealthy_shard)
+          Gitlab::ShardHealthCache.update([shard_name, 'shard2', 'shard3', 'shard4', 'shard5'])
+          secondary.update!(repos_max_capacity: 5)
 
-        expect(Geo::ProjectSyncWorker).to receive(:perform_async).with(project_1.id, anything)
-        expect(Geo::ProjectSyncWorker).not_to receive(:perform_async).with(project_unhealthy_shard.id, anything)
+          expect(subject).to receive(:schedule_jobs).twice.and_call_original
 
-        Sidekiq::Testing.inline! { subject.perform(shard_name) }
+          subject.perform(shard_name)
+        end
+
+        it 'skips backfill for projects on unhealthy shards' do
+          project_unhealthy_shard = create_project_on_shard('unknown')
+
+          create(:geo_project_registry, project: project_1)
+          create(:geo_project_registry, project: project_unhealthy_shard)
+
+          expect(Geo::ProjectSyncWorker).to receive(:perform_async).with(project_1.id, anything)
+          expect(Geo::ProjectSyncWorker).not_to receive(:perform_async).with(project_unhealthy_shard.id, anything)
+
+          Sidekiq::Testing.inline! { subject.perform(shard_name) }
+        end
+      end
+    end
+
+    context 'with geo_project_wiki_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_project_wiki_repository_replication: true)
+      end
+
+      it 'performs Geo::ProjectSyncWorker for synced projects updated recently' do
+        create(:geo_project_registry, :synced, :repository_dirty, project: project_1)
+        create(:geo_project_registry, :synced, project: project_2)
+        create(:geo_project_registry, :synced, :wiki_dirty)
+
+        expect(Geo::ProjectSyncWorker).to receive(:perform_async).once.and_return(spy)
+
+        subject.perform(shard_name)
       end
     end
   end

@@ -55,6 +55,7 @@ module Geo
     end
 
     def sync_wiki(registry, options)
+      return if ::Geo::ProjectWikiRepositoryReplicator.enabled?
       return unless options[:sync_wiki] && registry.resync_wiki?
 
       Geo::WikiSyncService.new(registry.project).execute

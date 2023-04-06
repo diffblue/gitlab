@@ -91,6 +91,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       ci_secure_file = create(:ci_secure_file)
       dependency_proxy_blob = create(:dependency_proxy_blob)
       dependency_proxy_manifest = create(:dependency_proxy_manifest)
+      project_wiki_repository = create(:project_wiki_repository, project: project)
 
       expect(Geo::ContainerRepositoryRegistry.where(container_repository_id: container_repository.id).count).to eq(0)
       expect(Geo::DesignRegistry.where(project_id: project.id).count).to eq(0)
@@ -107,6 +108,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       expect(Geo::CiSecureFileRegistry.where(ci_secure_file: ci_secure_file.id).count).to eq(0)
       expect(Geo::DependencyProxyBlobRegistry.where(dependency_proxy_blob: dependency_proxy_blob.id).count).to eq(0)
       expect(Geo::DependencyProxyManifestRegistry.where(dependency_proxy_manifest: dependency_proxy_manifest.id).count).to eq(0)
+      expect(Geo::ProjectWikiRepositoryRegistry.where(project_wiki_repository: project_wiki_repository.id).count).to eq(0)
 
       subject.perform
 
@@ -125,6 +127,7 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       expect(Geo::CiSecureFileRegistry.where(ci_secure_file: ci_secure_file.id).count).to eq(1)
       expect(Geo::DependencyProxyBlobRegistry.where(dependency_proxy_blob: dependency_proxy_blob.id).count).to eq(1)
       expect(Geo::DependencyProxyManifestRegistry.where(dependency_proxy_manifest: dependency_proxy_manifest.id).count).to eq(1)
+      expect(Geo::ProjectWikiRepositoryRegistry.where(project_wiki_repository: project_wiki_repository.id).count).to eq(1)
     end
 
     context 'when the current Geo node is disabled or primary' do

@@ -54,17 +54,23 @@ RSpec.shared_examples 'a replicable model with a separate table for verification
   end
 
   describe '#save_verification_details' do
-    let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
+    let(:verifiable_model_class) { verifiable_model_record.class }
+    let(:verification_state_table_class) { verifiable_model_class.verification_state_table_class }
+    let(:replicator_class) { verifiable_model_class.replicator_class }
 
-    context 'when model record is not part of available_verifiables scope' do
+    context 'when model record is not part of verifiables scope' do
+      before do
+        next unless unverifiable_model_record.nil?
+
+        skip "Skipping because all #{replicator_class.replicable_title_plural} are records that can be checksummed"
+      end
+
       it 'does not create verification details' do
-        skip if defined?(skip_unverifiable_model_record_tests) && skip_unverifiable_model_record_tests
-
         expect { unverifiable_model_record.save! }.not_to change { verification_state_table_class.count }
       end
     end
 
-    context 'when model_record is part of available_verifiables scope' do
+    context 'when model_record is part of verifiables scope' do
       it 'creates verification details' do
         expect { verifiable_model_record.save! }.to change { verification_state_table_class.count }.by(1)
       end

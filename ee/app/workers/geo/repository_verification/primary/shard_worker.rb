@@ -91,6 +91,8 @@ module Geo
 
         # rubocop: disable CodeReuse/ActiveRecord
         def find_failed_wiki_ids(batch_size:)
+          return [] if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
           finder.find_failed_wikis(batch_size: batch_size).pluck(:id)
         end
         # rubocop: enable CodeReuse/ActiveRecord
@@ -103,9 +105,17 @@ module Geo
           interval = minimum_reverification_interval.ago + jitter.seconds
 
           repository_ids = finder.find_reverifiable_repositories(interval: interval, batch_size: batch_size).pluck(:id)
-          wiki_ids = finder.find_reverifiable_wikis(interval: interval, batch_size: batch_size).pluck(:id)
+          wiki_ids = find_reverifiable_wikis(interval: interval, batch_size: batch_size)
 
           take_batch(repository_ids, wiki_ids, batch_size: batch_size)
+        end
+        # rubocop: enable CodeReuse/ActiveRecord
+
+        # rubocop: disable CodeReuse/ActiveRecord
+        def find_reverifiable_wikis(interval:, batch_size:)
+          return [] if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+
+          finder.find_reverifiable_wikis(interval: interval, batch_size: batch_size).pluck(:id)
         end
         # rubocop: enable CodeReuse/ActiveRecord
 

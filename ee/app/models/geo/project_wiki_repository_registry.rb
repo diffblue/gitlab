@@ -14,16 +14,5 @@ module Geo
     validates :project_wiki_repository, presence: true, uniqueness: true
 
     delegate :project, :wiki_repository_state, to: :project_wiki_repository, allow_nil: true
-
-    private
-
-    override :ready_to_verify?
-    def ready_to_verify?
-      primary_wiki_repository_checksum.present?
-    end
-
-    def primary_wiki_repository_checksum
-      wiki_repository_state&.verification_checksum
-    end
   end
 end
