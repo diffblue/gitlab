@@ -76,12 +76,14 @@ export default {
   <gl-card
     v-if="shouldShowRelatedFeatureFlags"
     id="related-feature-flags"
-    class="gl-overflow-hidden gl-mt-5 gl-mb-0"
-    header-class="card-header"
+    class="gl-overflow-hidden gl-mt-5 gl-mb-0 gl-bg-gray-10"
+    header-class="card-header gl-line-height-24 gl-pl-5 gl-pr-4 gl-py-4 gl-bg-white"
     body-class="gl-p-0 gl-mx-5"
   >
     <template #header>
-      <h3 class="card-title gl-my-0 gl-display-flex gl-align-items-center gl-w-full gl-relative h5">
+      <h3
+        class="card-title h5 gl-my-0 gl-relative gl-display-flex gl-align-items-center gl-flex-grow-1 gl-line-height-24"
+      >
         <gl-link
           id="user-content-related-feature-flags"
           class="anchor gl-text-decoration-none gl-absolute gl-mr-2"
@@ -89,8 +91,8 @@ export default {
           aria-hidden="true"
         />
         {{ $options.i18n.title }}
-        <gl-icon class="text-secondary gl-mr-2" name="feature-flag" />
-        <span class="h5">{{ numberOfFeatureFlags }}</span>
+        <gl-icon class="gl-text-gray-500 gl-ml-3 gl-mr-2" name="feature-flag" />
+        <span class="gl-text-gray-500">{{ numberOfFeatureFlags }}</span>
       </h3>
     </template>
     <gl-loading-icon v-if="loading" size="sm" class="gl-my-3" />
@@ -105,7 +107,7 @@ export default {
           v-gl-tooltip
           :name="icon(flag)"
           :title="iconTooltip(flag)"
-          class="gl-mr-3"
+          class="gl-mr-2"
           data-testid="feature-flag-details-icon"
         />
         <gl-link

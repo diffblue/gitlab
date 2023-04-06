@@ -219,7 +219,9 @@ export default {
         :class="{ 'panel-empty-heading border-bottom-0': !isFormVisible, 'gl-border-b-1': !isOpen }"
         class="card-header gl-display-flex gl-justify-content-space-between gl-bg-white gl-align-items-center gl-line-height-24 gl-pl-5 gl-pr-4 gl-py-4"
       >
-        <h3 class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center">
+        <h3
+          class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center gl-line-height-24"
+        >
           <gl-link
             id="user-content-resource-links"
             class="anchor position-absolute gl-text-decoration-none"
