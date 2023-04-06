@@ -105,7 +105,7 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex gl-flex-direction-column gl-gap-3 gl-bg-gray-10 gl-rounded-base gl-py-5"
+    class="security-policies-bg-gray-10 gl-display-flex gl-flex-direction-column gl-gap-3 gl-rounded-base gl-py-5"
   >
     <policy-action-approvers
       v-for="({ id, type }, i) in approverTypeTracker"

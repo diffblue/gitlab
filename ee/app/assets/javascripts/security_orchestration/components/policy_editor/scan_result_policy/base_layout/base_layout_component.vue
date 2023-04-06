@@ -46,7 +46,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-gap-3 gl-bg-gray-10 gl-rounded-base gl-p-5">
+  <div class="gl-display-flex gl-gap-3 security-policies-bg-gray-10 gl-rounded-base gl-p-5">
     <div v-if="showLabel" class="gl-min-w-7">
       <label
         data-testid="base-label"
