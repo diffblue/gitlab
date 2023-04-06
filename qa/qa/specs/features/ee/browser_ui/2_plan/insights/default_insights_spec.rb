@@ -39,7 +39,7 @@ module QA
 
         project.visit!
 
-        Page::Project::Menu.perform(&:click_project_insights_link)
+        Page::Project::Menu.perform(&:go_to_insights)
       end
 
       it_behaves_like 'default insights page'

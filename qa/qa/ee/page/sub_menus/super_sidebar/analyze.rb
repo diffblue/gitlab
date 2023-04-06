@@ -1,27 +1,13 @@
 # frozen_string_literal: true
 
 module QA
-  module Page
-    module Project
+  module EE
+    module Page
       module SubMenus
         module SuperSidebar
           module Analyze
-            extend QA::Page::PageConcern
-
-            def self.included(base)
-              super
-
-              base.class_eval do
-                include QA::Page::Project::SubMenus::SuperSidebar::Common
-              end
-            end
-
             def go_to_value_stream_analytics
               open_analyze_submenu('Value stream analytics')
-            end
-
-            def go_to_contributor_statistics
-              open_analyze_submenu('Contributor statistics')
             end
 
             def go_to_ci_cd_analytics
@@ -30,6 +16,14 @@ module QA
 
             def go_to_repository_analytics
               open_analyze_submenu('Repository analytics')
+            end
+
+            def go_to_issue_analytics
+              open_analyze_submenu('Issue analytics')
+            end
+
+            def go_to_insights
+              open_analyze_submenu('Insights')
             end
 
             private

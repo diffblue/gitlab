@@ -19,7 +19,7 @@ module QA
       end
 
       context 'for disable and Enable LFS', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347919' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347919' do
         before do
           sign_in
           group.visit!
@@ -30,12 +30,14 @@ module QA
           Page::Group::Settings::General.perform(&:set_lfs_enabled)
         end
 
-        it_behaves_like 'audit event',
-                        ["Changed lfs enabled from false to true", /Changed lfs enabled( from true)? to false/]
+        it_behaves_like 'audit event', [
+          "Changed lfs enabled from false to true",
+          /Changed lfs enabled( from true)? to false/
+        ]
       end
 
       context 'for enable and disable membership lock', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347900' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347900' do
         before do
           sign_in
           group.visit!
@@ -46,12 +48,14 @@ module QA
           Page::Group::Settings::General.perform(&:set_membership_lock_disabled)
         end
 
-        it_behaves_like 'audit event',
-                        ["Changed membership lock from true to false", "Changed membership lock from false to true"]
+        it_behaves_like 'audit event', [
+          "Changed membership lock from true to false",
+          "Changed membership lock from false to true"
+        ]
       end
 
       context 'for enable and disable allow user request access', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347902' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347902' do
         before do
           sign_in
           group.visit!
@@ -62,13 +66,14 @@ module QA
           Page::Group::Settings::General.perform(&:toggle_request_access)
         end
 
-        it_behaves_like 'audit event',
-                        ["Changed request access enabled from true to false",
-                         "Changed request access enabled from false to true"]
+        it_behaves_like 'audit event', [
+          "Changed request access enabled from true to false",
+          "Changed request access enabled from false to true"
+        ]
       end
 
       context 'for enable and disable 2FA requirement', :requires_admin, :reliable, :skip_live_env,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347920' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347920' do
         let!(:owner_user) do
           Resource::User.fabricate_via_api!
         end
@@ -103,13 +108,14 @@ module QA
           Page::Group::Settings::General.perform(&:set_require_2fa_disabled)
         end
 
-        it_behaves_like 'audit event',
-                        ["Changed require two factor authentication from true to false",
-                         "Changed require two factor authentication from false to true"]
+        it_behaves_like 'audit event', [
+          "Changed require two factor authentication from true to false",
+          "Changed require two factor authentication from false to true"
+        ]
       end
 
       context 'for change project creation level',
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347901' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347901' do
         before do
           sign_in
           group.visit!

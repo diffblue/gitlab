@@ -6,18 +6,22 @@ module QA
       module Group
         module Menu
           extend QA::Page::PageConcern
-          include SubMenus::SuperSidebar::Plan if QA::Runtime::Env.super_sidebar_enabled?
 
           def self.prepended(base)
             super
 
             base.class_eval do
-              prepend QA::Page::Group::SubMenus::Common
+              if QA::Runtime::Env.super_sidebar_enabled?
+                prepend SubMenus::SuperSidebar::Secure
+                prepend SubMenus::SuperSidebar::Plan
+                prepend SubMenus::SuperSidebar::Analyze
+                prepend SubMenus::SuperSidebar::Manage
+              end
             end
           end
 
           def go_to_issue_boards
-            return go_to_issue_board if QA::Runtime::Env.super_sidebar_enabled?
+            return super if QA::Runtime::Env.super_sidebar_enabled?
 
             hover_issues do
               within_submenu do
@@ -27,6 +31,8 @@ module QA
           end
 
           def go_to_group_iterations
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_issues do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Iterations')
@@ -51,6 +57,8 @@ module QA
           end
 
           def click_contribution_analytics_item
+            return go_to_contribution_analytics if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_analytics do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Contribution')
@@ -59,6 +67,8 @@ module QA
           end
 
           def click_group_insights_link
+            return go_to_insights if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_analytics do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Insights')
@@ -73,6 +83,8 @@ module QA
           end
 
           def click_group_security_link
+            return go_to_security_dashboard if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_security_and_compliance do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Security dashboard')
@@ -81,6 +93,8 @@ module QA
           end
 
           def click_group_vulnerability_link
+            return go_to_vulnerability_report if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_security_and_compliance do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Vulnerability report')
@@ -89,6 +103,8 @@ module QA
           end
 
           def go_to_audit_events
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_security_and_compliance do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Audit events')
@@ -97,6 +113,8 @@ module QA
           end
 
           def click_compliance_report_link
+            return go_to_compliance_report if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_security_and_compliance do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Compliance report')
@@ -105,6 +123,8 @@ module QA
           end
 
           def click_group_wiki_link
+            return go_to_wiki if QA::Runtime::Env.super_sidebar_enabled?
+
             within_sidebar do
               scroll_to_element(:sidebar_menu_link, menu_item: 'Wiki')
               click_element(:sidebar_menu_link, menu_item: 'Wiki')
