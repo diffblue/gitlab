@@ -225,6 +225,18 @@ RSpec.describe Ci::Pipeline do
 
             expect(::Sbom::IngestReportsWorker).to have_received(:perform_async).with(pipeline.id)
           end
+
+          context 'if pipeline is a child' do
+            before do
+              allow(pipeline).to receive(:child?).and_return(true)
+            end
+
+            it 'does not schedule ingest sbom reports job' do
+              transition_pipeline
+
+              expect(::Sbom::IngestReportsWorker).not_to have_received(:perform_async)
+            end
+          end
         end
 
         context 'on a non-default branch' do
