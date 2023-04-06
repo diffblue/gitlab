@@ -1120,8 +1120,8 @@ RSpec.describe API::Projects, feature_category: :projects do
       let_it_be(:admin) { create(:admin) }
 
       it 'avoids N+1 queries' do
-        allow(Gitlab::ServiceDeskEmail).to receive(:enabled?).and_return(true)
-        allow(Gitlab::IncomingEmail).to receive(:enabled?).and_return(true)
+        allow(Gitlab::Email::ServiceDeskEmail).to receive(:enabled?).and_return(true)
+        allow(Gitlab::Email::IncomingEmail).to receive(:enabled?).and_return(true)
 
         get api('/projects', admin)
 
@@ -4171,7 +4171,7 @@ RSpec.describe API::Projects, feature_category: :projects do
       before do
         project.update!(service_desk_enabled: false)
 
-        allow(::Gitlab::IncomingEmail).to receive(:enabled?).and_return(true)
+        allow(::Gitlab::Email::IncomingEmail).to receive(:enabled?).and_return(true)
       end
 
       it 'returns 200' do
