@@ -58,6 +58,7 @@ export default {
       v-for="(button, index) in buttons"
       :key="button.action"
       :is-checked="selectedButton === button"
+      :data-testid="`${button.action}-button`"
       is-check-item
       @click="setButton(index)"
     >

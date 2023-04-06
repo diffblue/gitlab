@@ -1,0 +1,9 @@
+mutation securityFindingCreateMergeRequest($uuid: String!) {
+  securityFindingCreateMergeRequest(input: { uuid: $uuid }) {
+    errors
+    mergeRequest {
+      id
+      webUrl
+    }
+  }
+}

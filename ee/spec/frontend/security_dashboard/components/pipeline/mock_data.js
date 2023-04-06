@@ -560,3 +560,58 @@ export const getPipelineSecurityReportFindingResponse = ({
     },
   },
 });
+
+export const securityFindingDismissMutationResponse = {
+  data: {
+    securityFindingDismiss: {
+      errors: [],
+      securityFinding: {
+        vulnerability: {
+          id: 1,
+          stateTransitions: {
+            nodes: {
+              author: null,
+              comment: '',
+              createdAt: '',
+              toState: 'DISMISSED',
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const securityFindingRevertToDetectedMutationResponse = {
+  data: {
+    securityFindingRevertToDetected: {
+      errors: [],
+      securityFinding: {
+        vulnerability: {
+          id: 1,
+          stateTransitions: {
+            nodes: {
+              author: null,
+              comment: '',
+              createdAt: '',
+              toState: 'DETECTED',
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+export const securityFindingCreateMergeRequestMutationResponse = {
+  data: {
+    securityFindingCreateMergeRequest: {
+      errors: [],
+      mergeRequest: {
+        id: '1',
+        iid: '1',
+        webUrl: 'https://gitlab.com',
+      },
+    },
+  },
+};
