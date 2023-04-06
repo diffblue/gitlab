@@ -6,10 +6,10 @@ module EE
       UNLIMITED_MEMBERS_DURING_TRIAL_ALERT = 'unlimited_members_during_trial_alert'
 
       def show_unlimited_members_during_trial_alert?(group)
-        !user_dismissed_for_group(UNLIMITED_MEMBERS_DURING_TRIAL_ALERT, group) &&
-          ::Namespaces::FreeUserCap::Enforcement.new(group).qualified_namespace? &&
+        ::Namespaces::FreeUserCap::Enforcement.new(group).qualified_namespace? &&
+          ::Namespaces::FreeUserCap.owner_access?(user: current_user, namespace: group) &&
           group.trial_active? &&
-          can_admin_group_member?(group)
+          !user_dismissed_for_group(UNLIMITED_MEMBERS_DURING_TRIAL_ALERT, group)
       end
     end
   end
