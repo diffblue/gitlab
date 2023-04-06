@@ -852,6 +852,23 @@ Use lowercase for **merge requests**. If you use **MR** as the acronym, spell it
 
 Use lowercase for **milestones**.
 
+## Minimal Access
+
+When writing about the Minimal Access role:
+
+- Use a capital **M** and a capital **A**.
+- Write it out:
+  - Use: if you are assigned the Minimal Access role
+  - Instead of: if you are a Minimal Access user
+
+- When the Minimal Access role is the minimum required role:
+  - Use: at least the Minimal Access role
+  - Instead of: the Minimal Access role or higher
+
+Do not use bold.
+
+Do not use **Minimal Access permissions**. A user who is assigned the Minimal Access role has a set of associated permissions.
+
 ## n/a, N/A, not applicable
 
 When possible, use **not applicable**. Spelling out the phrase helps non-English speaking users and avoids
