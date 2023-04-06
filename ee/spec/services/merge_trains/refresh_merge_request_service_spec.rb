@@ -182,7 +182,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       context 'when the pipeline is stale' do
         before do
-          merge_request.merge_train.update_column(:status, MergeTrain.state_machines[:status].states[:stale].value)
+          merge_request.merge_train.update_column(:status, MergeTrains::Car.state_machines[:status].states[:stale].value)
         end
 
         it_behaves_like 'cancels and recreates a pipeline for the merge train'

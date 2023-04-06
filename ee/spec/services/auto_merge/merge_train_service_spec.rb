@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AutoMerge::MergeTrainService do
+RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
   include ExclusiveLeaseHelpers
 
   let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
@@ -47,7 +47,7 @@ RSpec.describe AutoMerge::MergeTrainService do
 
     it 'creates system note' do
       expect(SystemNoteService)
-        .to receive(:merge_train).with(merge_request, project, user, instance_of(MergeTrain))
+        .to receive(:merge_train).with(merge_request, project, user, MergeTrains::Car)
 
       subject
     end
@@ -192,7 +192,7 @@ RSpec.describe AutoMerge::MergeTrainService do
           status: status)
       end
 
-      let(:status) { MergeTrain.state_machines[:status].states[:fresh].value }
+      let(:status) { MergeTrains::Car.state_machines[:status].states[:fresh].value }
 
       it 'processes the train by default' do
         expect(MergeTrains::RefreshWorker).to receive(:perform_async).with(merge_request_2.target_project_id, merge_request_2.target_branch)
@@ -203,7 +203,7 @@ RSpec.describe AutoMerge::MergeTrainService do
       end
 
       context 'when the status is stale already' do
-        let(:status) { MergeTrain.state_machines[:status].states[:stale].value }
+        let(:status) { MergeTrains::Car.state_machines[:status].states[:stale].value }
 
         it 'does not do anything' do
           expect(MergeTrains::RefreshWorker).not_to receive(:perform_async)
@@ -279,7 +279,7 @@ RSpec.describe AutoMerge::MergeTrainService do
         create(:merge_request, :on_train,
           source_project: project, source_branch: 'signed-commits',
           target_project: project, target_branch: 'master',
-          status: MergeTrain.state_machines[:status].states[:fresh].value)
+          status: MergeTrains::Car.state_machines[:status].states[:fresh].value)
       end
 
       it 'processes the train' do
