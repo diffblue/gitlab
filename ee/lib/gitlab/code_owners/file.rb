@@ -48,7 +48,7 @@ module Gitlab
         entries.present? && entries.all?(&:optional?)
       end
 
-      def entry_for_path(path)
+      def entries_for_path(path)
         path = "/#{path}" unless path.start_with?('/')
 
         matches = []
