@@ -45,9 +45,14 @@ export default () => {
     });
   }
 
-  const initCodeOwnersApp = () =>
-    new Vue({
-      el: document.getElementById('js-code-owners'),
+  const initCodeOwnersApp = () => {
+    const codeOwnersEl = document.querySelector('#js-code-owners');
+    if (!codeOwnersEl) {
+      return false;
+    }
+    const { branch, branchRulesPath } = codeOwnersEl.dataset;
+    return new Vue({
+      el: codeOwnersEl,
       router,
       apolloProvider,
       render(h) {
@@ -55,10 +60,12 @@ export default () => {
           props: {
             filePath: this.$route.params.path,
             projectPath,
+            branch,
+            branchRulesPath,
           },
         });
       },
     });
-
+  };
   initCodeOwnersApp();
 };

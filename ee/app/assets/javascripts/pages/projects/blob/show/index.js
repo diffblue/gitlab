@@ -20,7 +20,7 @@ const router = new VueRouter({ mode: 'history' });
 const codeOwnersEl = document.querySelector('#js-code-owners');
 
 if (codeOwnersEl) {
-  const { blobPath, projectPath, branch } = codeOwnersEl.dataset;
+  const { blobPath, projectPath, branch, branchRulesPath } = codeOwnersEl.dataset;
 
   // eslint-disable-next-line no-new
   new Vue({
@@ -33,6 +33,7 @@ if (codeOwnersEl) {
           filePath: blobPath,
           projectPath,
           branch,
+          branchRulesPath,
         },
       });
     },

@@ -12,6 +12,13 @@ export const codeOwnersMultipleMock = [
   { id: '7', name: 'Larita Hamill', webPath: '/alesia' },
 ];
 
+export const codeOwnersPropsMock = {
+  projectPath: 'some/project',
+  filePath: 'some/file',
+  branch: 'main',
+  branchRulesPath: '/some/Project/-/settings/repository#js-branch-rules',
+};
+
 export const codeOwnersDataMock = {
   id: '1234',
   repository: {
