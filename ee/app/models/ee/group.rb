@@ -736,9 +736,9 @@ module EE
       members = ::GroupMember.active_without_invites_and_requests.where(
         source_id: self_and_descendants
       )
-
       members = members.with_elevated_guests if exclude_guests
 
+      members = members.not_banned_in(root_ancestor)
       users_without_bots(members)
     end
 
@@ -752,6 +752,7 @@ module EE
         source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
       )
 
+      members = members.not_banned_in(root_ancestor)
       users_without_bots(members).with_state(:active)
     end
 
@@ -760,6 +761,7 @@ module EE
       groups = self.class.invited_groups_in_groups_for_hierarchy(self, exclude_guests)
       members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
 
+      members = members.not_banned_in(root_ancestor)
       users_without_bots(members)
     end
 
@@ -768,6 +770,7 @@ module EE
       groups = self.class.invited_groups_in_projects_for_hierarchy(self, exclude_guests)
       members = invited_or_shared_group_members(groups, exclude_guests: exclude_guests)
 
+      members = members.not_banned_in(root_ancestor)
       users_without_bots(members)
     end
 

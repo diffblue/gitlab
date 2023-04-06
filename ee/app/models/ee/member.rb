@@ -33,6 +33,10 @@ module EE
         joins(sanitize_sql_array([sql, namespace.id]))
       end
 
+      scope :not_banned_in, ->(namespace) do
+        where.not(user_id: ::Namespaces::NamespaceBan.where(namespace: namespace).select(:user_id))
+      end
+
       scope :elevated_guests, -> do
         where(access_level: ::Gitlab::Access::GUEST).joins(:member_role).merge(MemberRole.elevating)
       end
