@@ -27,7 +27,7 @@ module Vulnerabilities
 
       # The following service call alters the `previous_changes` of the vulnerability object
       # therefore, we are sending the cloned object as that information is important for the rest of the logic.
-      SystemNoteService.change_vulnerability_state(@vulnerability.clone, @user) if @vulnerability.state_previously_changed?
+      SystemNoteService.change_vulnerability_state(@vulnerability.clone, @user)
       true
     end
 
