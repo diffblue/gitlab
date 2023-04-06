@@ -3,9 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
-  it 'displays information about the last pipeline to an authenticated developer on the project' do
+  let_it_be(:user) { create(:user) }
+
+  before do
     stub_licensed_features(operations_dashboard: true)
-    user = create(:user)
+  end
+
+  it_behaves_like 'a "Your work" page with sidebar and breadcrumbs', :operations_path, :operations_dashboard
+
+  it 'displays information about the last pipeline to an authenticated developer on the project' do
     project = create(:project, :repository, name: 'Great Project')
     pipeline = create(:ci_pipeline, project: project, sha: project.commit.sha, status: :running)
     project.add_developer(user)
@@ -24,12 +30,9 @@ RSpec.describe 'Dashboard operations', :js, feature_category: :shared do
   context 'when opened on gitlab.com', :saas do
     before do
       stub_application_setting(check_namespace_plan: true)
-      stub_licensed_features(operations_dashboard: true)
     end
 
     it 'masks projects without valid license' do
-      user = create(:user)
-
       ultimate_group = create(:group)
       bronze_group = create(:group)
 
