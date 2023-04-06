@@ -9,7 +9,7 @@ module Gitlab
         optional: /(?<optional>\^)?/,
         name: /\[(?<name>.*?)\]/,
         approvals: /(?:\[(?<approvals>\d*?)\])?/,
-        default_owners: /(?<default_owners>\s+[@\w_\-\/\s+]*)?/ # rubocop: disable Style/RegexpLiteralMixedPreserve
+        default_owners: /(?<default_owners>\s+[@\w_.\-\/\s+]*)?/ # rubocop: disable Style/RegexpLiteralMixedPreserve
       }.freeze
 
       HEADER_REGEX = /^#{REGEX.values_at(:optional, :name, :approvals, :default_owners).join}/
