@@ -55,9 +55,7 @@ export default {
   },
   computed: {
     approverTypeToggleText() {
-      return this.approverType
-        ? APPROVER_TYPE_LIST_ITEMS.find((v) => v.value === this.approverType).text
-        : DEFAULT_APPROVER_DROPDOWN_TEXT;
+      return this.approverType ? this.selected : DEFAULT_APPROVER_DROPDOWN_TEXT;
     },
     approverComponent() {
       switch (this.approverType) {
@@ -80,6 +78,9 @@ export default {
       return this.approverIndex === 0
         ? this.humanizedTemplate
         : MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE;
+    },
+    selected() {
+      return APPROVER_TYPE_LIST_ITEMS.find((v) => v.value === this.approverType)?.text;
     },
     showAddButton() {
       return (
@@ -154,6 +155,7 @@ export default {
         <gl-collapsible-listbox
           class="gl-mx-3"
           :items="availableTypes"
+          :selected="selected"
           :toggle-text="approverTypeToggleText"
           :disabled="!hasAvailableTypes"
           @select="handleSelectedApproverType"

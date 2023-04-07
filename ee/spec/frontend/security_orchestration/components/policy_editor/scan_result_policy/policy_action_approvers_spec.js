@@ -8,6 +8,7 @@ import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
 import {
   APPROVER_TYPE_LIST_ITEMS,
+  DEFAULT_APPROVER_DROPDOWN_TEXT,
   getDefaultHumanizedTemplate,
   MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
@@ -55,6 +56,14 @@ describe('PolicyActionApprovers', () => {
   describe('single type', () => {
     beforeEach(factory);
 
+    it('renders the approver type dropdown with the correct props', () => {
+      expect(findApproverTypeDropdown().props()).toMatchObject({
+        disabled: false,
+        selected: [],
+        toggleText: DEFAULT_APPROVER_DROPDOWN_TEXT,
+      });
+    });
+
     it('renders the add button', () => {
       expect(findAddButton().exists()).toBe(true);
     });
@@ -96,6 +105,17 @@ describe('PolicyActionApprovers', () => {
   });
 
   describe('selected approver types', () => {
+    it('renders the approver type dropdown with the correct props', async () => {
+      factory({ propsData: { approverType: USER_TYPE } });
+      await nextTick();
+      const text = APPROVER_TYPE_LIST_ITEMS.find((v) => v.value === USER_TYPE)?.text;
+      expect(findApproverTypeDropdown().props()).toMatchObject({
+        disabled: false,
+        selected: text,
+        toggleText: text,
+      });
+    });
+
     it('renders the user select when the "user" type approver is selected', async () => {
       factory({ propsData: { approverType: USER_TYPE } });
       await nextTick();
