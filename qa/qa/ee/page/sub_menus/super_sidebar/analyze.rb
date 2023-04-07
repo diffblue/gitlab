@@ -29,7 +29,7 @@ module QA
             private
 
             def open_analyze_submenu(sub_menu)
-              open_submenu('Analyze', '#analyze', sub_menu)
+              open_submenu('Analyze', sub_menu)
             end
           end
         end
