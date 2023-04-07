@@ -10,6 +10,9 @@ module Gitlab
     class DocumentReference
       include Gitlab::Utils::StrongMemoize
 
+      DEFAULT_DELIMITER = '|'
+      LEGACY_DELIMITER = ' '
+
       PRELOAD_BATCH_SIZE = 1_000
 
       InvalidError = Class.new(StandardError)
@@ -74,11 +77,12 @@ module Gitlab
         def serialize_array(array)
           test_array!(array)
 
-          array.join(' ')
+          array.join(LEGACY_DELIMITER)
         end
 
         def deserialize(string)
-          deserialize_array(string.split(' '))
+          delimiter = string.include?(DEFAULT_DELIMITER) ? DEFAULT_DELIMITER : LEGACY_DELIMITER
+          deserialize_array(string.split(delimiter))
         end
 
         def deserialize_array(array)
