@@ -30,7 +30,7 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
       end
     end
 
-    context 'when ArkoseLabs is enabled for trial signups' do
+    context 'when ArkoseLabs is enabled for trial signups', :js do
       before do
         stub_feature_flags(arkose_labs_trial_signup_challenge: true)
       end
@@ -46,7 +46,7 @@ RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
       end
     end
 
-    context 'when reCAPTCHA is enabled' do
+    context 'when reCAPTCHA is enabled', :js do
       before do
         stub_application_setting(recaptcha_enabled: true)
       end

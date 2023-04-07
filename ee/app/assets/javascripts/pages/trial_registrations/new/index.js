@@ -8,6 +8,7 @@ import UsernameValidator from '~/pages/sessions/new/username_validator';
 import EmailFormatValidator from '~/pages/sessions/new/email_format_validator';
 import Tracking from '~/tracking';
 import { setupArkoseLabsForSignup } from 'ee/arkose_labs';
+import { initTogglePasswordVisibility } from '~/authentication/password';
 
 new UsernameValidator(); // eslint-disable-line no-new
 new LengthValidator(); // eslint-disable-line no-new
@@ -22,3 +23,4 @@ Tracking.enableFormTracking({
 });
 
 setupArkoseLabsForSignup();
+initTogglePasswordVisibility();
