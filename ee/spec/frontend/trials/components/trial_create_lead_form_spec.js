@@ -58,7 +58,7 @@ describe('TrialCreateLeadForm', () => {
         'phone_number',
       ];
 
-      visibleFields.forEach((f) => expect(wrapper.findByTestId(f).exists()).toBe(true));
+      visibleFields.forEach((f) => expect(findFormInput(f).exists()).toBe(true));
     });
   });
 
@@ -71,6 +71,24 @@ describe('TrialCreateLeadForm', () => {
       findForm().trigger('submit');
 
       expect(trackSaasTrialSubmit).toHaveBeenCalled();
+    });
+
+    it.each`
+      value                    | result
+      ${null}                  | ${false}
+      ${'+1 (121) 22-12-23'}   | ${false}
+      ${'+12190AX '}           | ${false}
+      ${'Tel:129120'}          | ${false}
+      ${'11290+12'}            | ${false}
+      ${FORM_DATA.phoneNumber} | ${true}
+    `('validates the phone number with value of `$value`', ({ value, result }) => {
+      expect(findFormInput('phone_number').exists()).toBe(true);
+
+      findFormInput('phone_number').setValue(value);
+
+      findForm().trigger('submit');
+
+      expect(findFormInput('phone_number').element.checkValidity()).toBe(result);
     });
   });
 });
