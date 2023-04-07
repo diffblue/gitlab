@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::DocumentReference do
+RSpec.describe Gitlab::Elastic::DocumentReference, feature_category: :global_search do
   let_it_be(:issue) { create(:issue) }
 
   let(:project) { issue.project }
@@ -13,7 +13,8 @@ RSpec.describe Gitlab::Elastic::DocumentReference do
 
   let(:project_as_array) { [Project, project.id, project.es_id] }
   let(:project_as_ref) { described_class.new(*project_as_array) }
-  let(:project_as_str) { project_as_array.join(' ') }
+  let(:project_as_str) { project_as_array.join(delimiter) }
+  let(:delimiter) { ' ' }
 
   describe '.build' do
     it 'builds a document for an issue' do
@@ -86,6 +87,15 @@ RSpec.describe Gitlab::Elastic::DocumentReference do
 
     it 'deserializes a project string' do
       expect(described_class.deserialize(project_as_str)).to eq(project_as_ref)
+    end
+
+    context 'when a pipe delimiter is used' do
+      let(:delimiter) { '|' }
+
+      it 'deserializes string correctly' do
+        expect(described_class.deserialize(project_as_str)).to eq(project_as_ref)
+        expect(described_class.deserialize(issue_as_str)).to eq(issue_as_ref)
+      end
     end
   end
 
