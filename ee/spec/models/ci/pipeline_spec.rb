@@ -876,4 +876,16 @@ RSpec.describe Ci::Pipeline do
       expect(pipeline.total_ci_minutes_consumed).to eq(26)
     end
   end
+
+  describe '#security_scan_types' do
+    before do
+      create(:security_scan, pipeline: pipeline, scan_type: scan_type)
+    end
+
+    let(:scan_type) { 'dast' }
+
+    it 'returns security_scan_types' do
+      expect(pipeline.security_scan_types).to match_array([scan_type])
+    end
+  end
 end
