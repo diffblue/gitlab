@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Signup on EE', feature_category: :user_profile do
+RSpec.describe 'Signup on EE', :js, feature_category: :user_profile do
   let(:new_user) { build_stubbed(:user) }
 
   before do
@@ -16,6 +16,8 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
     fill_in 'new_user_first_name', with: new_user.first_name
     fill_in 'new_user_last_name', with: new_user.last_name
     fill_in 'new_user_password', with: new_user.password
+
+    wait_for_all_requests
   end
 
   context 'for Gitlab.com' do
@@ -31,6 +33,7 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
 
         select 'Software Developer', from: 'user_role'
         choose 'user_setup_for_company_true'
+        choose 'Join a project'
         click_button 'Continue'
 
         user = User.find_by_username!(new_user[:username])
@@ -48,6 +51,7 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
 
         select 'Software Developer', from: 'user_role'
         choose 'user_setup_for_company_false'
+        choose 'Join a project'
         check 'user_email_opted_in'
         click_button 'Continue'
 
@@ -66,6 +70,7 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
 
         select 'Software Developer', from: 'user_role'
         choose 'user_setup_for_company_false'
+        choose 'Join a project'
         click_button 'Continue'
 
         user = User.find_by_username!(new_user[:username])
@@ -85,6 +90,7 @@ RSpec.describe 'Signup on EE', feature_category: :user_profile do
 
       select 'Software Developer', from: 'user_role'
       choose 'user_setup_for_company_true'
+      choose 'Join a project'
       click_button 'Continue'
       user = User.find_by_username(new_user[:username])
 
