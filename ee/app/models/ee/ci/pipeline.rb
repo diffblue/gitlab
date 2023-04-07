@@ -234,6 +234,10 @@ module EE
         ::Gitlab::Ci::Minutes::PipelineConsumption.new(self).amount
       end
 
+      def security_scan_types
+        security_scans.pluck(:scan_type)
+      end
+
       private
 
       def has_security_reports?

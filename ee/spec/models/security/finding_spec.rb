@@ -345,6 +345,14 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     end
   end
 
+  describe '.fetch_uuids' do
+    it 'returns the uuids of findings' do
+      findings = create_list(:security_finding, 2)
+
+      expect(described_class.fetch_uuids).to include(findings.first.uuid, findings.second.uuid)
+    end
+  end
+
   describe '#state' do
     subject { finding_1.state }
 

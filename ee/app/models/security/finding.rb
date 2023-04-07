@@ -152,6 +152,10 @@ module Security
         active_partition&.value || column_defaults['partition_number']
       end
 
+      def fetch_uuids
+        pluck(:uuid)
+      end
+
       private
 
       delegate :active_partition, to: :partitioning_strategy, private: true
