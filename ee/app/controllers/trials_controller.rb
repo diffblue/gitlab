@@ -112,6 +112,8 @@ class TrialsController < ApplicationController
   end
 
   def can_create_group?
+    # Instance admins can disable user's ability to create top level groups.
+    # See https://docs.gitlab.com/ee/user/admin_area/index.html#prevent-a-user-from-creating-groups
     params[:new_group_name].present? && can?(current_user, :create_group)
   end
 
