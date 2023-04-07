@@ -337,6 +337,91 @@ The `Documentation` Code Owners section under the **Approval Rules** area displa
 The Code Owner approval and protected branch features do not apply to users who
 are **Allowed to push**.
 
+## Error handling in Code Owners
+
+### Entries with spaces
+
+Paths containing whitespace must be escaped with backslashes: `path\ with\ spaces/*.md`.
+Without the backslashes, the path after the first whitespace is parsed as an owner.
+GitLab the parses `folder with spaces/*.md @group` into
+`path: "folder", owners: " with spaces/*.md @group"`.
+
+### Unparsable sections
+
+If a section heading cannot be parsed, the section is:
+
+1. Parsed as an entry.
+1. Added to the previous section.
+1. If no previous section exists, the section is added to the default section.
+
+For example, this file is missing a square closing bracket:
+
+```plaintext
+* @group
+
+[Section name
+docs/ @docs_group
+```
+
+GitLab recognizes the heading `[Section name` as an entry. The default section includes 3 rules:
+
+- Default section
+  - `*` owned by `@group`
+  - `[Section` owned by `name`
+  - `docs/` owned by `@docs_group`
+
+This file contains an unescaped space between the words `Section` and `name`.
+GitLab recognizes the intended heading as an entry:
+
+```plaintext
+[Docs]
+docs/**/* @group
+
+[Section name]{2} @group
+docs/ @docs_group
+```
+
+The `[Docs]` section then includes 3 rules:
+
+- `docs/**/*` owned by `@group`
+- `[Section` owned by `name]{2} @group`
+- `docs/` owned by `@docs_group`
+
+### Malformed owners
+
+Each entry must contain 1 or more owners to be valid, malformed owners are ignored.
+For example `/path/* @group user_without_at_symbol @user_with_at_symbol`
+is owned by `@group` and `@user_with_at_symbol`.
+
+### Inaccessible or incorrect owners
+
+Inaccessible or incorrect owners are ignored. For example, if `@group`, `@username`,
+and `example@gitlab.com` are accessible on the project and we create an entry:
+
+```plaintext
+* @group @grou @username @i_left @i_dont_exist example@gitlab.com invalid@gitlab.com
+```
+
+GitLab ignores `@grou`, `@i_left`, `@i_dont_exist`, and `invalid@gitlab.com`.
+
+For more information on who is accessible, see [Groups as Code Owners](#groups-as-code-owners).
+
+### Zero owners
+
+If an entry includes no owners, or zero [accessible owners](#inaccessible-or-incorrect-owners)
+exist, the entry is invalid. Because this rule can never be satisfied, GitLab
+auto-approves it in merge requests.
+
+NOTE:
+When a protected branch has `Require code owner approval` enabled, rules with
+zero owners are still honored.
+
+### Less than 1 required approval
+
+When [defining the number of approvals](#require-multiple-approvals-from-code-owners) for a section,
+the minimum number of approvals is `1`. Setting the number of approvals to
+`0` results in GitLab requiring one approval.
+
 ## Example `CODEOWNERS` file
 
 ```plaintext
