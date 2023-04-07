@@ -28,6 +28,11 @@ class SetUserStatusBasedOnUserCapSettingWorker
       user.resend_confirmation_instructions
       user.accept_pending_invitations! if user.active_for_authentication?
       DeviseMailer.user_admin_approval(user).deliver_later
+
+      if user.created_by_id
+        reset_token = user.generate_reset_token
+        NotificationService.new.new_user(user, reset_token)
+      end
     else
       logger.error(message: "Approval of user id=#{user_id} failed")
     end

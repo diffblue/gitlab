@@ -121,6 +121,25 @@ RSpec.describe SetUserStatusBasedOnUserCapSettingWorker, type: :worker, feature_
         end
       end
 
+      context 'when the user was created via sign up' do
+        it 'does not send a password reset email' do
+          expect { subject }.not_to have_enqueued_mail(Notify, :new_user_email)
+        end
+      end
+
+      context 'when the user was created by an admin' do
+        let(:admin) { create(:user, :admin) }
+        let(:user) { create(:user, :blocked_pending_approval, created_by_id: admin.id) }
+
+        it 'sends a password reset email' do
+          allow(Devise.token_generator).to receive(:generate).and_return([:reset_token, 'enc'])
+
+          expect(Notify).to receive(:new_user_email).with(user.id, :reset_token).and_call_original
+
+          expect { subject }.to have_enqueued_mail(Notify, :new_user_email)
+        end
+      end
+
       context 'when pending invitations' do
         let!(:project_member_invite) { create(:project_member, :invited, invite_email: user.email) }
         let!(:group_member_invite) { create(:group_member, :invited, invite_email: user.email) }
