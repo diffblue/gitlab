@@ -45,8 +45,11 @@ describe('ComplianceFrameworksReport component', () => {
     resolverMock = mockGraphQlLoading,
     queryParams = {},
   ) {
+    const currentQueryParams = { ...queryParams };
     $router = {
-      push: jest.fn(),
+      push: jest.fn().mockImplementation(({ query }) => {
+        Object.assign(currentQueryParams, query);
+      }),
     };
     return extendedWrapper(
       mountFn(ComplianceFrameworksReport, {
@@ -60,7 +63,7 @@ describe('ComplianceFrameworksReport component', () => {
           $router,
           $route: {
             name: ROUTE_FRAMEWORKS,
-            query: queryParams,
+            query: currentQueryParams,
           },
         },
       }),
@@ -275,6 +278,24 @@ describe('ComplianceFrameworksReport component', () => {
           after: undefined,
         },
       });
+    });
+
+    it('should still reload list when updated to the same value', async () => {
+      const FILTERS = [
+        {
+          type: 'framework',
+          value: {
+            data: 'gid://gitlab/ComplianceManagement::Framework/1',
+            operator: '=',
+          },
+        },
+      ];
+
+      findFilters().vm.$emit('submit', FILTERS);
+      findFilters().vm.$emit('submit', FILTERS);
+      await waitForPromises();
+
+      expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
     });
   });
 });
