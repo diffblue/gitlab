@@ -75,7 +75,7 @@ export default {
         return this.initRule.vulnerabilities_allowed;
       },
       set(value) {
-        this.triggerChanged({ vulnerabilities_allowed: parseInt(value, 10) });
+        this.triggerChanged({ vulnerabilities_allowed: parseInt(value || '0', 10) });
       },
     },
     isSeverityFilterSelected() {

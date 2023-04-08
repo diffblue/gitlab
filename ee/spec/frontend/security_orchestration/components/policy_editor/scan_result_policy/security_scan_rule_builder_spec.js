@@ -96,6 +96,7 @@ describe('SecurityScanRuleBuilder', () => {
       ${findBranches}    | ${PROTECTED_BRANCHES_MOCK[0]}           | ${{ branches: UPDATED_RULE.branches }}
       ${findScanners}    | ${UPDATED_RULE.scanners}                | ${{ scanners: UPDATED_RULE.scanners }}
       ${findVulnAllowed} | ${UPDATED_RULE.vulnerabilities_allowed} | ${{ vulnerabilities_allowed: UPDATED_RULE.vulnerabilities_allowed }}
+      ${findVulnAllowed} | ${''}                                   | ${{ vulnerabilities_allowed: 0 }}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
       async ({ currentComponent, newValue, expected }) => {

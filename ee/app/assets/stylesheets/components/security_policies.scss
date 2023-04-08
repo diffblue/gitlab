@@ -3,6 +3,10 @@
   @include gl-z-index-1;
 }
 
+.security-policies-pre-min-width {
+  min-width: 285px;
+}
+
 .security-policies-bg-gray-10 {
   @include gl-bg-gray-10;
 
