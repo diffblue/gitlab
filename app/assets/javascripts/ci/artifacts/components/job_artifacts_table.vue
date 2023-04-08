@@ -114,6 +114,7 @@ export default {
       selectedArtifacts: [],
       pagination: INITIAL_PAGINATION_STATE,
       isBulkDeleteModalVisible: false,
+      isDeletingArtifactsForJob: null,
       isBulkDeleting: false,
     };
   },
@@ -152,6 +153,11 @@ export default {
     },
     canBulkDestroyArtifacts() {
       return this.glFeatures[BULK_DELETE_FEATURE_FLAG] && this.canDestroyArtifacts;
+    },
+    artifactsToDelete() {
+      return this.isDeletingArtifactsForJob
+        ? this.isDeletingArtifactsForJob
+        : this.selectedArtifacts;
     },
   },
   methods: {
@@ -212,7 +218,7 @@ export default {
           mutation: bulkDestroyJobArtifactsMutation,
           variables: {
             projectId: convertToGraphQLId(TYPENAME_PROJECT, this.projectId),
-            ids: this.selectedArtifacts,
+            ids: this.artifactsToDelete,
           },
           update: (store, { data }) => {
             const { errors, destroyedCount, destroyedIds } = data.bulkDestroyJobArtifacts;
@@ -232,7 +238,9 @@ export default {
               });
               store.gc();
 
-              this.clearSelectedArtifacts();
+              if (!this.isDeletingArtifactsForJob) {
+                this.clearSelectedArtifacts();
+              }
             }
           },
         })
@@ -257,6 +265,7 @@ export default {
     },
     handleBulkDeleteModalHide() {
       this.isBulkDeleteModalVisible = false;
+      this.isDeletingArtifactsForJob = null;
     },
     clearSelectedArtifacts() {
       this.selectedArtifacts = [];
@@ -269,6 +278,13 @@ export default {
     },
     browseButtonDisabled(job) {
       return !job.browseArtifactsPath;
+    },
+    deleteButtonDisabled(job) {
+      return !job.hasArtifacts || !this.canBulkDestroyArtifacts;
+    },
+    deleteArtifactsForJob(job) {
+      this.isDeletingArtifactsForJob = job.artifacts.nodes.map((node) => node.id);
+      this.handleBulkDeleteModalShow();
     },
   },
   fields: [
@@ -328,7 +344,7 @@ export default {
     />
     <bulk-delete-modal
       :visible="isBulkDeleteModalVisible"
-      :selected-artifacts="selectedArtifacts"
+      :artifacts-to-delete="artifactsToDelete"
       :is-deleting="isBulkDeleting"
       @primary="onConfirmBulkDelete"
       @hidden="handleBulkDeleteModalHide"
@@ -452,10 +468,11 @@ export default {
           <gl-button
             v-if="canDestroyArtifacts"
             icon="remove"
+            :disabled="deleteButtonDisabled(item)"
             :title="$options.i18n.delete"
             :aria-label="$options.i18n.delete"
             data-testid="job-artifacts-delete-button"
-            disabled
+            @click="deleteArtifactsForJob(item)"
           />
         </gl-button-group>
       </template>

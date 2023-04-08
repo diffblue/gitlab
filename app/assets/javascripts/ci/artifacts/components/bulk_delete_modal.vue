@@ -19,7 +19,7 @@ export default {
       type: Boolean,
       required: true,
     },
-    selectedArtifacts: {
+    artifactsToDelete: {
       type: Array,
       required: true,
     },
@@ -30,7 +30,7 @@ export default {
   },
   computed: {
     checkedCount() {
-      return this.selectedArtifacts.length || 0;
+      return this.artifactsToDelete.length || 0;
     },
     modalActionPrimary() {
       return {
