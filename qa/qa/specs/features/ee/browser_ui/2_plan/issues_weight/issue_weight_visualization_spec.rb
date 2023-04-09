@@ -35,7 +35,7 @@ module QA
           expect(show.total_issue_weight_value).to have_content(weight)
         end
 
-        Page::Project::Menu.perform(&:click_issues)
+        Page::Project::Menu.perform(&:go_to_issues)
 
         Page::Project::Issue::Index.perform do |index|
           expect(index.issuable_weight).to have_content(weight)
