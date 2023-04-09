@@ -224,19 +224,19 @@ class TimeboxReportService
 
   def resource_timebox_events
     resource_timebox_event_class.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'timebox' AS event_type", "id", "created_at", "#{timebox_fk} AS value", "action", "issue_id")
+      .aliased_for_timebox_report
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
   def state_events
     ResourceStateEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'state' AS event_type", "id", "created_at", "state AS value", "NULL AS action", "issue_id")
+      .aliased_for_timebox_report
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
   def weight_events
     ResourceWeightEvent.by_created_at_earlier_or_equal_to(end_time).by_issue_ids(in_scoped_issue_ids)
-      .select("'weight' AS event_type", "id", "created_at", "weight AS value", "NULL AS action", "issue_id")
+      .aliased_for_timebox_report
       .limit(SINGLE_EVENT_COUNT_LIMIT)
   end
 
