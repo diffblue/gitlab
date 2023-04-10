@@ -504,9 +504,10 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     context 'when `code_suggestions` is specified', :saas do
       let_it_be(:managed_group) { create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_owner(user) } }
       let(:params) { { code_suggestions: '1' } }
+      let(:submitted_group) { managed_group }
 
       subject(:put_update) do
-        put :update, params: { id: managed_group.to_param, group: params }
+        put :update, params: { id: submitted_group.to_param, group: params }
       end
 
       before do
@@ -539,6 +540,19 @@ RSpec.describe GroupsController, feature_category: :subgroups do
             put_update
 
             expect(managed_group.reload.code_suggestions).to eq(false)
+          end
+        end
+
+        context 'when group is a subgroup' do
+          let_it_be(:subgroup) { create(:group, parent: managed_group) }
+          let(:submitted_group) { subgroup }
+
+          it 'does not allow changes to a subgroup' do
+            expect(subgroup.code_suggestions).to eq(false)
+
+            put_update
+
+            expect(subgroup.reload.code_suggestions).to eq(false)
           end
         end
       end
@@ -814,23 +828,33 @@ RSpec.describe GroupsController, feature_category: :subgroups do
   end
 
   describe '#ai_assist_ui_enabled?' do
+    let_it_be(:subgroup) { create(:group, parent: group) }
+
     where(:feature_ai_assist_ui, :feature_ai_assist, :ai_assist_flag, :current_group, :result) do
-      false | false | false | ref(:group) | false
-      false | false | false | nil         | false
-      false | true  | true  | ref(:group) | false
-      false | true  | true  | nil         | false
-      false | false | true  | ref(:group) | false
-      false | false | true  | nil         | false
-      true  | false | false | ref(:group) | false
-      true  | false | false | nil         | false
-      true  | true  | false | ref(:group) | false
-      true  | true  | false | nil         | false
-      true  | true  | true  | ref(:group) | true
-      true  | true  | true  | nil         | false
-      true  | false | true  | ref(:group) | false
-      true  | false | true  | nil         | false
-      false | true  | false | ref(:group) | false
-      false | true  | false | nil         | false
+      false | false | false | ref(:group)    | false
+      false | false | false | nil            | false
+      false | false | false | ref(:subgroup) | false
+      false | true  | true  | ref(:group)    | false
+      false | true  | true  | nil            | false
+      false | true  | true  | ref(:subgroup) | false
+      false | false | true  | ref(:group)    | false
+      false | false | true  | nil            | false
+      false | false | true  | ref(:subgroup) | false
+      true  | false | false | ref(:group)    | false
+      true  | false | false | nil            | false
+      true  | false | false | ref(:subgroup) | false
+      true  | true  | false | ref(:group)    | false
+      true  | true  | false | nil            | false
+      true  | true  | false | ref(:subgroup) | false
+      true  | true  | true  | ref(:group)    | true
+      true  | true  | true  | nil            | false
+      true  | true  | true  | ref(:subgroup) | false
+      true  | false | true  | ref(:group)    | false
+      true  | false | true  | nil            | false
+      true  | false | true  | ref(:subgroup) | false
+      false | true  | false | ref(:group)    | false
+      false | true  | false | nil            | false
+      false | true  | false | ref(:subgroup) | false
     end
 
     with_them do
