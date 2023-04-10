@@ -28,7 +28,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       expect(rendered).to render_template('groups/settings/_code_suggestions')
       field_text = s_('CodeSuggestions|Projects in this group can use Code Suggestions in VS Code')
       expect(rendered).to have_content(field_text)
-      beta_link = help_page_path('user/project/repository/vscode', anchor: 'code-suggestions-closed-beta')
+      beta_link = help_page_path('user/project/repository/code_suggestions')
       expect(rendered).to have_link('What are code suggestions?', href: beta_link)
       test_link = 'https://about.gitlab.com/handbook/legal/testing-agreement/'
       expect(rendered).to have_link('Testing Terms of Use', href: test_link)
