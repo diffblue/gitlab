@@ -19,6 +19,7 @@ import {
   relativePositions,
   trackingAddedIssue,
   SNOWPLOW_EPIC_ACTIVITY,
+  EPIC_CREATE_ERROR_MESSAGE,
 } from '../constants';
 
 import epicChildReorder from '../queries/epic_child_reorder.mutation.graphql';
@@ -405,11 +406,9 @@ export const receiveCreateItemSuccess = ({ state, commit, dispatch, getters }, {
 
   dispatch('toggleCreateEpicForm', { toggleState: false });
 };
-export const receiveCreateItemFailure = ({ commit }) => {
+export const receiveCreateItemFailure = ({ commit }, { message }) => {
   commit(types.RECEIVE_CREATE_ITEM_FAILURE);
-  createAlert({
-    message: s__('Epics|Something went wrong while creating child epics.'),
-  });
+  createAlert({ message: message || EPIC_CREATE_ERROR_MESSAGE });
 };
 export const createItem = ({ state, dispatch }, { itemTitle, groupFullPath }) => {
   dispatch('requestCreateItem');
@@ -434,8 +433,9 @@ export const createItem = ({ state, dispatch }, { itemTitle, groupFullPath }) =>
         parentItem: state.parentItem,
       });
     })
-    .catch(() => {
-      dispatch('receiveCreateItemFailure');
+    .catch(({ response }) => {
+      const message = response.data.message?.parent;
+      dispatch('receiveCreateItemFailure', { message });
     });
 };
 
