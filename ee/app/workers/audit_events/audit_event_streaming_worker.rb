@@ -32,9 +32,11 @@ module AuditEvents
 
         track_audit_event_count(audit_operation)
 
-        Gitlab::HTTP.post(destination.destination_url,
-                          body: request_body(audit_event, audit_operation),
-                          headers: headers)
+        Gitlab::HTTP.post(
+          destination.destination_url,
+          body: request_body(audit_event, audit_operation),
+          headers: headers
+        )
       rescue URI::InvalidURIError => e
         Gitlab::ErrorTracking.log_exception(e)
       rescue *Gitlab::HTTP::HTTP_ERRORS

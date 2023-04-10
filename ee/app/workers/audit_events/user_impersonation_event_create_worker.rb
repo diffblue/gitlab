@@ -8,11 +8,13 @@ module AuditEvents
     feature_category :audit_events
 
     def perform(impersonator_id, user_id, remote_ip, action, created_at)
-      ::AuditEvents::UserImpersonationGroupAuditEventService.new(impersonator: User.find_by_id(impersonator_id),
-                                                                 user: User.find_by_id(user_id),
-                                                                 remote_ip: remote_ip,
-                                                                 action: action,
-                                                                 created_at: created_at).execute
+      ::AuditEvents::UserImpersonationGroupAuditEventService.new(
+        impersonator: User.find_by_id(impersonator_id),
+        user: User.find_by_id(user_id),
+        remote_ip: remote_ip,
+        action: action,
+        created_at: created_at
+      ).execute
     end
   end
 end

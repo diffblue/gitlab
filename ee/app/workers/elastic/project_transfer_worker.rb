@@ -12,8 +12,9 @@ module Elastic
 
     def perform(project_id, old_namespace_id, new_namespace_id)
       project = Project.find(project_id)
-      should_invalidate_elasticsearch_indexes_cache = should_invalidate_elasticsearch_indexes_cache?(old_namespace_id,
-new_namespace_id)
+      should_invalidate_elasticsearch_indexes_cache = should_invalidate_elasticsearch_indexes_cache?(
+        old_namespace_id, new_namespace_id
+      )
 
       if should_invalidate_elasticsearch_indexes_cache
         project.invalidate_elasticsearch_indexes_cache!

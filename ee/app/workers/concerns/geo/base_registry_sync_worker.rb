@@ -76,13 +76,11 @@ module Geo
     end
 
     def max_capacity
-      raise NotImplementedError,
-            "#{self.class.name} does not implement #{__method__}"
+      raise NotImplementedError, "#{self.class.name} does not implement #{__method__}"
     end
 
     def replicator_classes
-      raise NotImplementedError,
-            "#{self.class.name} does not implement #{__method__}"
+      raise NotImplementedError, "#{self.class.name} does not implement #{__method__}"
     end
   end
 end
