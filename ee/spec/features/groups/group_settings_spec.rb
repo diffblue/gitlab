@@ -437,6 +437,17 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
             expect(find(code_suggestion_selector)).to be_checked
           end
         end
+
+        context 'when group is a subgroup' do
+          it 'is not visible' do
+            visit edit_group_path(create(:group, parent: group))
+
+            expect(page).to have_content('Permissions and group features')
+            within(permissions_selector) do
+              expect(page).not_to have_content('Code Suggestion')
+            end
+          end
+        end
       end
 
       context 'when ui is not enabled' do
