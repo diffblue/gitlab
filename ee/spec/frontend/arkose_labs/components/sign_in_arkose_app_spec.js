@@ -1,6 +1,7 @@
 import { nextTick } from 'vue';
 import AxiosMockAdapter from 'axios-mock-adapter';
-import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import htmlPipelineSchedulesEdit from 'test_fixtures/sessions/new.html';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SignInArkoseApp from 'ee/arkose_labs/components/sign_in_arkose_app.vue';
 import axios from '~/lib/utils/axios_utils';
@@ -50,7 +51,7 @@ describe('SignInArkoseApp', () => {
 
   // Helpers
   const createForm = (username = '') => {
-    loadHTMLFixture('sessions/new.html');
+    setHTMLFixture(htmlPipelineSchedulesEdit);
     findUsernameInput().value = username;
   };
   const initArkoseLabs = (username) => {
