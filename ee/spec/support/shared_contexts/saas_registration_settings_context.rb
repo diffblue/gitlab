@@ -7,7 +7,7 @@
 # - .com specific type things like enforcing of terms
 # things that don't belong in here:
 # - unsettled feature flag settings in SaaS(still in rollout), instead test both branches to cover SaaS
-RSpec.shared_context 'with saas settings for registration flows', shared_context: :metadata do
+RSpec.shared_context 'with saas settings for registration flows', shared_context: :metadata do # rubocop: disable RSpec/SharedGroupsMetadata
   include TermsHelper
   include SaasRegistrationHelpers
 
