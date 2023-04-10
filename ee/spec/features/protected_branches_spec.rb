@@ -216,6 +216,7 @@ RSpec.describe 'Protected Branches', :js, feature_category: :source_code_managem
 
     before do
       stub_feature_flags(group_protected_branches: true)
+      stub_feature_flags(allow_protected_branches_for_group: true)
       stub_licensed_features(
         group_protected_branches: true,
         code_owner_approval_required: true
