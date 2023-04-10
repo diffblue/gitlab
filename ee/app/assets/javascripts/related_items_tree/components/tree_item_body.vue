@@ -208,7 +208,7 @@ export default {
         'item-closed': isClosed,
       }"
     >
-      <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-flex-grow-1 flex-xl-nowrap">
+      <div class="gl-display-flex gl-align-items-center gl-flex-nowrap gl-flex-grow-1">
         <div class="item-title-wrapper gl-flex-grow-1 gl-mr-3">
           <div class="item-title gl-display-flex gl-mb-0 gl-py-1">
             <gl-icon
