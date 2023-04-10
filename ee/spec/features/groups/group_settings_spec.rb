@@ -402,6 +402,68 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
     end
   end
 
+  describe 'permissions and group features', :js do
+    context 'for code suggestions' do
+      before do
+        stub_licensed_features(ai_assist: true)
+        stub_feature_flags(ai_assist_flag: true)
+      end
+
+      context 'when ui is enabled' do
+        before do
+          stub_feature_flags(ai_assist_ui: true)
+        end
+
+        it 'allows to save settings' do
+          visit edit_group_path(group)
+          wait_for_all_requests
+
+          expect(page).to have_content('Permissions and group features')
+
+          within(permissions_selector) do
+            checkbox = find(code_suggestion_selector)
+
+            expect(checkbox).not_to be_checked
+
+            checkbox.set(true)
+            click_button 'Save changes'
+            wait_for_all_requests
+          end
+
+          page.refresh
+          wait_for_all_requests
+
+          within(permissions_selector) do
+            expect(find(code_suggestion_selector)).to be_checked
+          end
+        end
+      end
+
+      context 'when ui is not enabled' do
+        before do
+          stub_feature_flags(ai_assist_ui: false)
+        end
+
+        it 'is not visible' do
+          visit edit_group_path(group)
+
+          expect(page).to have_content('Permissions and group features')
+          within(permissions_selector) do
+            expect(page).not_to have_content('Code Suggestion')
+          end
+        end
+      end
+
+      def code_suggestion_selector
+        '[data-testid="code-suggestions-enable"]'
+      end
+    end
+
+    def permissions_selector
+      '[data-testid="permissions-settings"]'
+    end
+  end
+
   describe 'email domain validation', :js do
     let(:domain_field_selector) { '[placeholder="example.com"]' }
 

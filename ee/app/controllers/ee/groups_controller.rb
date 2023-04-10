@@ -25,6 +25,8 @@ module EE
         @seat_count_data = generate_seat_count_alert_data(@group)
       end
 
+      helper_method :ai_assist_ui_enabled?
+
       feature_category :subgroups, [:restore]
     end
 
@@ -94,6 +96,7 @@ module EE
         params_ee << :max_pages_size if can?(current_user, :update_max_pages_size)
         params_ee << :max_personal_access_token_lifetime if current_group&.personal_access_token_expiration_policy_available?
         params_ee << :prevent_forking_outside_group if can_change_prevent_forking?(current_user, current_group)
+        params_ee << :code_suggestions if ai_assist_ui_enabled?
 
         if current_group&.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
             ::Feature.disabled?(:always_perform_delayed_deletion)
@@ -101,6 +104,13 @@ module EE
           params_ee << :lock_delayed_project_removal
         end
       end
+    end
+
+    def ai_assist_ui_enabled?
+      current_group.present? &&
+        ::Feature.enabled?(:ai_assist_ui) &&
+        ::Feature.enabled?(:ai_assist_flag, current_group) &&
+        current_group.licensed_feature_available?(:ai_assist)
     end
 
     def current_group

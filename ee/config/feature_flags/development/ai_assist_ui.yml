@@ -1,0 +1,8 @@
+---
+name: ai_assist_ui
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117017
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/405163
+milestone: '15.11'
+type: development
+group: group::ai assisted
+default_enabled: false

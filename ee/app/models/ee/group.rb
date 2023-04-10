@@ -63,7 +63,7 @@ module EE
 
       has_one :deletion_schedule, class_name: 'GroupDeletionSchedule'
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
-      delegate :repository_read_only, to: :namespace_settings, allow_nil: true
+      delegate :repository_read_only, :code_suggestions, :code_suggestions=, to: :namespace_settings, allow_nil: true
 
       has_one :group_wiki_repository
       has_many :repository_storage_moves, class_name: 'Groups::RepositoryStorageMove', inverse_of: :container
@@ -558,6 +558,10 @@ module EE
       else
         ::Gitlab::CurrentSettings.max_personal_access_token_lifetime_from_now
       end
+    end
+
+    def code_suggestions_enabled?
+      ::Feature.enabled?(:ai_assist_flag, self) && code_suggestions
     end
 
     def personal_access_token_expiration_policy_available?

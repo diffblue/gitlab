@@ -282,6 +282,11 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
+  describe 'delegations' do
+    it { is_expected.to delegate_method(:code_suggestions).to(:namespace_settings).allow_nil }
+    it { is_expected.to delegate_method(:code_suggestions=).to(:namespace_settings).with_arguments(true).allow_nil }
+  end
+
   describe 'states' do
     it { is_expected.to be_ldap_sync_ready }
 
@@ -698,6 +703,31 @@ RSpec.describe Group, feature_category: :subgroups do
     it 'is graceful when current state is not valid for the fail transition' do
       expect(group).to be_ldap_sync_ready
       expect { group.mark_ldap_sync_as_failed('Error') }.not_to raise_error
+    end
+  end
+
+  describe '#code_suggestions_enabled?' do
+    where(:feature_ai_assist_flag, :code_suggestions, :result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | false
+      false | false | false
+    end
+
+    subject { group.code_suggestions_enabled? }
+
+    with_them do
+      let(:group) do
+        build_stubbed(
+          :group, namespace_settings: build_stubbed(:namespace_settings, code_suggestions: code_suggestions)
+        )
+      end
+
+      before do
+        stub_feature_flags(ai_assist_flag: feature_ai_assist_flag)
+      end
+
+      it { is_expected.to eq(result) }
     end
   end
 
