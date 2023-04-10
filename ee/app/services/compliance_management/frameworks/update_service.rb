@@ -66,10 +66,11 @@ module ComplianceManagement
 
         default_framework_id = params[:default] ? framework.id : nil
 
-        setting_params = ActionController::Parameters.new(default_compliance_framework_id: default_framework_id)
-                                                     .permit!
-
-        ::Groups::UpdateService.new(framework.namespace, current_user, setting_params).execute
+        ::Groups::UpdateService.new(
+          framework.namespace,
+          current_user,
+          default_compliance_framework_id: default_framework_id
+        ).execute
       end
 
       def after_execute

@@ -61,9 +61,11 @@ module ComplianceManagement
       def set_default_framework
         return unless params[:default].present?
 
-        setting_params = ActionController::Parameters.new(default_compliance_framework_id: framework.id).permit!
-
-        ::Groups::UpdateService.new(framework.namespace, current_user, setting_params).execute
+        ::Groups::UpdateService.new(
+          framework.namespace,
+          current_user,
+          default_compliance_framework_id: framework.id
+        ).execute
       end
 
       def after_execute
