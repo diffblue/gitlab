@@ -15,7 +15,7 @@ module API
 
         # Check if the feature is enabled for any of the user's groups
         accessible_root_groups = current_user.groups.by_parent(nil)
-        not_found! unless accessible_root_groups.any? { |g| Feature.enabled?(:ai_assist_flag, g) }
+        not_found! unless accessible_root_groups.any?(&:code_suggestions_enabled?)
       end
 
       allow_access_with_scope :api

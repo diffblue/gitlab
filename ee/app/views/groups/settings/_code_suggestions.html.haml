@@ -1,0 +1,17 @@
+- return unless ai_assist_ui_enabled?
+
+- docs_link_url = help_page_path('user/project/repository/vscode', anchor: 'code-suggestions-closed-beta')
+- docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
+- terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
+
+%h5
+  = s_('CodeSuggestions|Code Suggestions')
+  = gl_badge_tag _('beta'), variant: :info, size: :sm
+
+%p= s_('CodeSuggestions|%{link_start}What are code suggestions?%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
+
+.form-group.gl-mb-3
+  = f.gitlab_ui_checkbox_component :code_suggestions,
+    s_('CodeSuggestions|Projects in this group can use Code Suggestions in VS Code'),
+    help_text: s_('CodeSuggestions|By enabling this feature, you accept the %{link_start}Testing Terms of Use%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe },
+    checkbox_options: { data: { testid: 'code-suggestions-enable' } }

@@ -10,9 +10,10 @@ RSpec.describe API::Ml::AiAssist, :saas, feature_category: :code_suggestions do
   let(:api_feature_flag) { true }
 
   let(:allowed_group) do
-    group = create(:group_with_plan, plan: plan)
-    group.add_owner(group_user)
-    group
+    create(:group_with_plan, plan: plan).tap do |record|
+      record.add_owner(group_user)
+      record.update_attribute(:code_suggestions, true)
+    end
   end
 
   describe 'GET /ml/ai-assist user_is_allowed' do

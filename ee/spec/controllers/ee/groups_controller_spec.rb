@@ -501,6 +501,59 @@ RSpec.describe GroupsController, feature_category: :subgroups do
       end
     end
 
+    context 'when `code_suggestions` is specified', :saas do
+      let_it_be(:managed_group) { create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_owner(user) } }
+      let(:params) { { code_suggestions: '1' } }
+
+      subject(:put_update) do
+        put :update, params: { id: managed_group.to_param, group: params }
+      end
+
+      before do
+        sign_in(user)
+      end
+
+      context 'with `ai_assist_ui_enabled` enabled' do
+        before do
+          stub_licensed_features(ai_assist: true)
+          stub_feature_flags(ai_assist_ui: true)
+          stub_feature_flags(ai_assist_flag: true)
+        end
+
+        context 'when enabling' do
+          it 'allows the parameter' do
+            expect(managed_group.code_suggestions).to eq(false)
+
+            put_update
+
+            expect(managed_group.reload.code_suggestions).to eq(true)
+          end
+        end
+
+        context 'when disabling' do
+          let(:params) { { code_suggestions: '0' } }
+
+          it 'allows the parameter' do
+            managed_group.update!(code_suggestions: true)
+
+            put_update
+
+            expect(managed_group.reload.code_suggestions).to eq(false)
+          end
+        end
+      end
+
+      context 'with `ai_assist_ui_enabled` disabled' do
+        let_it_be(:managed_group) { create(:group_with_plan, plan: :free_plan).tap { |g| g.add_owner(user) } }
+
+        it 'does not allow the parameter' do
+          put_update
+
+          expect(managed_group.reload.code_suggestions).to eq(false)
+        end
+      end
+    end
+
     context 'when `default_branch_protection` is specified' do
       let(:params) do
         { id: group.to_param, group: { default_branch_protection: Gitlab::Access::PROTECTION_NONE } }
@@ -757,6 +810,40 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           expect(group.reload.ip_restriction_ranges).not_to eq(ip_address)
         end
       end
+    end
+  end
+
+  describe '#ai_assist_ui_enabled?' do
+    where(:feature_ai_assist_ui, :feature_ai_assist, :ai_assist_flag, :current_group, :result) do
+      false | false | false | ref(:group) | false
+      false | false | false | nil         | false
+      false | true  | true  | ref(:group) | false
+      false | true  | true  | nil         | false
+      false | false | true  | ref(:group) | false
+      false | false | true  | nil         | false
+      true  | false | false | ref(:group) | false
+      true  | false | false | nil         | false
+      true  | true  | false | ref(:group) | false
+      true  | true  | false | nil         | false
+      true  | true  | true  | ref(:group) | true
+      true  | true  | true  | nil         | false
+      true  | false | true  | ref(:group) | false
+      true  | false | true  | nil         | false
+      false | true  | false | ref(:group) | false
+      false | true  | false | nil         | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(ai_assist: feature_ai_assist)
+        stub_feature_flags(ai_assist_ui: feature_ai_assist_ui)
+        stub_feature_flags(ai_assist_flag: ai_assist_flag)
+        allow(controller).to receive(:current_group).and_return(current_group)
+      end
+
+      subject { controller.helpers.ai_assist_ui_enabled? }
+
+      it { is_expected.to eq(result) }
     end
   end
 end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'groups/edit.html.haml' do
+RSpec.describe 'groups/edit.html.haml', feature_category: :subgroups do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
@@ -12,6 +12,7 @@ RSpec.describe 'groups/edit.html.haml' do
 
     assign(:group, group)
     allow(view).to receive(:current_user) { user }
+    allow(view).to receive(:ai_assist_ui_enabled?)
   end
 
   context 'ip_restriction' do
