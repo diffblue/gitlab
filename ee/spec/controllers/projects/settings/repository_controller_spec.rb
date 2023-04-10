@@ -61,6 +61,7 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
       with_them do
         before do
           stub_feature_flags(group_protected_branches: feature_flag)
+          stub_feature_flags(allow_protected_branches_for_group: feature_flag)
           stub_licensed_features(group_protected_branches: licensed_feature)
         end
 
@@ -89,6 +90,7 @@ RSpec.describe Projects::Settings::RepositoryController, feature_category: :sour
       context 'when the feature group protected branches enabled' do
         before do
           stub_feature_flags(group_protected_branches: true)
+          stub_feature_flags(allow_protected_branches_for_group: true)
           stub_licensed_features(group_protected_branches: true)
         end
 

@@ -30,6 +30,7 @@ RSpec.describe Groups::ProtectedBranchesController, feature_category: :source_co
     context 'when feature flag disabled' do
       before do
         stub_feature_flags(group_protected_branches: false)
+        stub_feature_flags(allow_protected_branches_for_group: false)
       end
 
       it 'respond status :not_found' do

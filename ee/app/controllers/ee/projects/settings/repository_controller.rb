@@ -49,8 +49,12 @@ module EE
         end
 
         def group_protected_branches_feature_available?(group)
-          ::Feature.enabled?(:group_protected_branches, group) &&
-            ::License.feature_available?(:group_protected_branches)
+          allow_protected_branches_for_group?(group) && ::License.feature_available?(:group_protected_branches)
+        end
+
+        def allow_protected_branches_for_group?(group)
+          ::Feature.enabled?(:group_protected_branches, group) ||
+            ::Feature.enabled?(:allow_protected_branches_for_group, group)
         end
       end
     end
