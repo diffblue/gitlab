@@ -27,11 +27,9 @@ module EE
       def after_create_hook
         super
 
-        if group.persisted? && create_event
+        group.persisted? &&
+          create_event &&
           ::Groups::CreateEventWorker.perform_async(group.id, current_user.id, :created)
-        end
-
-        track_verification_experiment_conversion
       end
 
       override :remove_unallowed_params
@@ -51,13 +49,6 @@ module EE
           group,
           action: :create
         ).for_group.security_event
-      end
-
-      def track_verification_experiment_conversion
-        return unless group.persisted?
-        return unless group.root?
-
-        experiment(:require_verification_for_namespace_creation, user: current_user).track(:finish_create_group, namespace: group)
       end
     end
   end

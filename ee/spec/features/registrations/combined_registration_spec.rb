@@ -70,24 +70,4 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
     expect(page).to have_content('To connect GitHub repositories, you first need to authorize GitLab to')
   end
-
-  context 'with exiting onboarding' do
-    it 'does not show a link to exit the page' do
-      expect(page).not_to have_link('Exit.')
-    end
-
-    context 'when require_verification_for_namespace_creation experiment is enabled' do
-      let(:experiments) do
-        {
-          require_verification_for_namespace_creation: :candidate
-        }
-      end
-
-      it 'shows a link to exit the page and verification' do
-        expect(page).to have_button('Verify your identity')
-        expect(page).to have_link('Exit.', href: exit_users_sign_up_groups_projects_path)
-        expect(page).to have_content('You can always verify your account at a later time to create a group.')
-      end
-    end
-  end
 end

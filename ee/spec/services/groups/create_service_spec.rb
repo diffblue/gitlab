@@ -172,49 +172,6 @@ RSpec.describe Groups::CreateService, '#execute', feature_category: :subgroups d
     end
   end
 
-  describe 'require_verification_for_namespace_creation experiment conversion tracking', :experiment do
-    subject(:execute) { create_group(user, group_params) }
-
-    before do
-      stub_experiments(require_verification_for_namespace_creation: :control)
-    end
-
-    it 'tracks a "finish_create_group" event with the correct context and payload' do
-      expect(experiment(:require_verification_for_namespace_creation)).to track(
-        :finish_create_group,
-        namespace: an_instance_of(Group)
-      ).on_next_instance.with_context(user: user)
-
-      execute
-    end
-
-    shared_examples 'does not track' do
-      it 'does not track a "finish_create_group" event' do
-        expect(experiment(:require_verification_for_namespace_creation)).not_to track(:finish_create_group)
-
-        execute
-      end
-    end
-
-    context 'when group has not been persisted' do
-      subject(:execute) { create_group(user, group_params.merge(name: '<script>alert("Attack!")</script>')) }
-
-      include_examples 'does not track'
-    end
-
-    context 'when created group is a sub-group' do
-      let(:parent_group) { create :group }
-
-      subject(:execute) { create_group(user, group_params.merge(parent_id: parent_group.id)) }
-
-      before do
-        parent_group.add_owner(user)
-      end
-
-      include_examples 'does not track'
-    end
-  end
-
   def create_group(user, opts)
     described_class.new(user, opts).execute
   end
