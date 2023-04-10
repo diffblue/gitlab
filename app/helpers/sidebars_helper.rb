@@ -65,7 +65,7 @@ module SidebarsHelper
       can_sign_out: current_user_menu?(:sign_out),
       sign_out_link: destroy_user_session_path,
       assigned_open_issues_count: format_user_bar_count(user.assigned_open_issues_count),
-      todos_pending_count: format_user_bar_count(user.todos_pending_count),
+      todos_pending_count: user.todos_pending_count,
       issues_dashboard_path: issues_dashboard_path(assignee_username: user.username),
       total_merge_requests_count: format_user_bar_count(user_merge_requests_counts[:total]),
       create_new_menu_groups: create_new_menu_groups(group: group, project: project),
