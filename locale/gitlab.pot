@@ -26304,6 +26304,9 @@ msgstr ""
 msgid "MD5"
 msgstr ""
 
+msgid "MLExperimentTracking|Delete experiment?"
+msgstr ""
+
 msgid "MR widget|Back to the merge request"
 msgstr ""
 
@@ -28167,6 +28170,12 @@ msgid "MlExperimentTracking|Create new candidates"
 msgstr ""
 
 msgid "MlExperimentTracking|Created at"
+msgstr ""
+
+msgid "MlExperimentTracking|Delete experiment"
+msgstr ""
+
+msgid "MlExperimentTracking|Deleting this experiment will also delete its candidates and their associated metadata."
 msgstr ""
 
 msgid "MlExperimentTracking|Details"
