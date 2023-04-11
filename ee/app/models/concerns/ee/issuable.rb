@@ -5,6 +5,10 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
+    prepended do
+      include Ai::Model
+    end
+
     def supports_epic?
       false
     end

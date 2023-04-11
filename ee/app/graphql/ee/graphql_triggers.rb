@@ -5,6 +5,12 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
+      def self.ai_completion_response(user_gid, resource_gid, response)
+        ::GitlabSchema.subscriptions.trigger(
+          'aiCompletionResponse', { user_id: user_gid, resource_id: resource_gid }, response
+        )
+      end
+
       def self.issuable_weight_updated(issuable)
         ::GitlabSchema.subscriptions.trigger('issuableWeightUpdated', { issuable_id: issuable.to_gid }, issuable)
       end

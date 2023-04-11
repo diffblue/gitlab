@@ -106,6 +106,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::Streaming::EventTypeFilters::Destroy
         mount_mutation ::Mutations::Deployments::DeploymentApprove
         mount_mutation ::Mutations::MergeRequests::UpdateApprovalRule
+        mount_mutation ::Mutations::Ai::Action, alpha: { milestone: '15.11' }
 
         prepend(Types::DeprecatedMutations)
       end
