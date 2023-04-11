@@ -27,6 +27,10 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
     }
   end
 
+  it_behaves_like 'an idempotent worker' do
+    let(:job_args) { [configuration.project.id, configuration.id] }
+  end
+
   before do
     allow_next_instance_of(Repository) do |repository|
       allow(repository).to receive(:blob_data_at).and_return(active_policies.to_yaml)
@@ -148,54 +152,6 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
           .not_to receive(:execute)
 
         worker.perform(configuration.project_id, 'invalid_id')
-      end
-    end
-
-    describe "lease acquisition" do
-      let(:lease_key) { described_class.lease_key(configuration.project, configuration) }
-
-      subject { worker.perform(configuration.project_id, configuration.id) }
-
-      it "obtains a #{described_class::LEASE_TTL} second exclusive lease" do
-        expect(Gitlab::ExclusiveLeaseHelpers::SleepingLock)
-          .to receive(:new)
-                .with(lease_key, hash_including(timeout: described_class::LEASE_TTL))
-                .and_call_original
-
-        subject
-      end
-
-      context 'when lease is not obtained' do
-        before do
-          stub_const('Security::ProcessScanResultPolicyWorker::LEASE_RETRY_BASE', 0)
-          Gitlab::ExclusiveLease.new(lease_key, timeout: described_class::LEASE_TTL).try_obtain
-        end
-
-        it 'does not invoke Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService' do
-          allow_next_instance_of(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService) do |service|
-            expect(service).not_to receive(:execute)
-          end
-
-          expect { subject }.to raise_error(Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError)
-        end
-      end
-
-      describe "#lease_sleep_sec" do
-        let(:retry_count) { Gitlab::ExclusiveLeaseHelpers::SleepingLock::DEFAULT_ATTEMPTS }
-
-        subject do
-          (0..retry_count).to_a.map do |attempt|
-            worker.lease_sleep_sec(attempt).round(2)
-          end
-        end
-
-        it "uses exponential backoff" do
-          expect(subject).to eq [0.1, 0.13, 0.17, 0.22, 0.29, 0.37, 0.48, 0.63, 0.82, 1.06, 1.38]
-        end
-
-        it "retries for at least 5 seconds" do
-          expect(subject.sum).to be > 5
-        end
       end
     end
   end

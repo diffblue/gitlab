@@ -1612,7 +1612,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: security_scans_purge_by_job_id
   :worker_name: Security::Scans::PurgeByJobIdWorker
