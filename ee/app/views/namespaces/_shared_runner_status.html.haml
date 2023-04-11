@@ -7,4 +7,4 @@
     %span.light= _('Quota of CI/CD minutes:')
     %strong
       = ci_minutes_report(minutes_usage_presenter.monthly_minutes_report)
-      = link_to sprite_icon('question-o'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'
+      = link_to sprite_icon('question-o', css_class: 'gl-text-blue-500'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'
