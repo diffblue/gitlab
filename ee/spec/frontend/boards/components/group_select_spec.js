@@ -1,10 +1,11 @@
 import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GroupSelect from 'ee/boards/components/group_select.vue';
 import defaultState from 'ee/boards/stores/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { mockList } from 'jest/boards/mock_data';
 import { mockGroup0, mockSubGroups } from '../mock_data';
 
@@ -22,7 +23,13 @@ describe('GroupSelect component', () => {
   const findInMenuLoadingIcon = () => wrapper.findByTestId('dropdown-text-loading-icon');
   const findEmptySearchMessage = () => wrapper.findByTestId('empty-result-message');
 
-  const createStore = ({ state = {}, subGroups, selectedGroup, moreGroupsLoading = false }) => {
+  const createStore = ({
+    state = {},
+    subGroups,
+    selectedGroup,
+    moreGroupsLoading,
+    fetchSubGroupsMock,
+  }) => {
     Vue.use(Vuex);
 
     store = new Vuex.Store({
@@ -38,7 +45,7 @@ describe('GroupSelect component', () => {
         },
       },
       actions: {
-        fetchSubGroups: jest.fn(),
+        fetchSubGroups: fetchSubGroupsMock,
         setSelectedGroup: jest.fn(),
       },
     });
@@ -50,6 +57,7 @@ describe('GroupSelect component', () => {
     selectedGroup = {},
     loading = false,
     moreGroupsLoading = false,
+    fetchSubGroupsMock = jest.fn(),
   } = {}) => {
     createStore({
       state,
@@ -57,17 +65,13 @@ describe('GroupSelect component', () => {
       selectedGroup,
       loading,
       moreGroupsLoading,
+      fetchSubGroupsMock,
     });
 
     wrapper = extendedWrapper(
       mount(GroupSelect, {
         propsData: {
           list: mockList,
-        },
-        data() {
-          return {
-            initialLoading: loading,
-          };
         },
         store,
         provide: {
@@ -92,13 +96,18 @@ describe('GroupSelect component', () => {
 
   describe('when mounted', () => {
     it('displays a loading icon while descendant groups are being fetched', async () => {
-      createWrapper({ loading: true });
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ initialLoading: true });
-      await nextTick();
+      let promiseResolve;
+      const mockPromise = new Promise((resolve) => {
+        promiseResolve = resolve;
+      });
+      createWrapper({ fetchSubGroupsMock: () => mockPromise });
 
       expect(findGlDropdownLoadingIcon().exists()).toBe(true);
+
+      promiseResolve();
+      await waitForPromises();
+
+      expect(findGlDropdownLoadingIcon().exists()).toBe(false);
     });
   });
 
@@ -121,7 +130,7 @@ describe('GroupSelect component', () => {
         expect(findFirstGlDropdownItem().text()).toContain(mockGroup0.name);
       });
 
-      it("doesn't render loading icon in the menu", () => {
+      it('does not render loading icon in the menu', () => {
         expect(findInMenuLoadingIcon().isVisible()).toBe(false);
       });
 
