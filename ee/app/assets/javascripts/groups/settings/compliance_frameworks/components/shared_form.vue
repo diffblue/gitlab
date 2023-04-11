@@ -7,7 +7,11 @@ import { validateHexColor } from '~/lib/utils/color_utils';
 import { s__ } from '~/locale';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
 import { DEBOUNCE_DELAY } from '../constants';
-import { fetchPipelineConfigurationFileExists, validatePipelineConfirmationFormat } from '../utils';
+import {
+  fetchPipelineConfigurationFileExists,
+  isModalsRefactorEnabled,
+  validatePipelineConfirmationFormat,
+} from '../utils';
 
 export default {
   components: {
@@ -19,6 +23,7 @@ export default {
     GlLink,
     GlSprintf,
   },
+  inject: ['groupEditPath', 'pipelineConfigurationFullPathEnabled'],
   props: {
     color: {
       type: String,
@@ -30,19 +35,10 @@ export default {
       required: false,
       default: null,
     },
-    groupEditPath: {
-      type: String,
-      required: true,
-    },
     name: {
       type: String,
       required: false,
       default: null,
-    },
-    pipelineConfigurationFullPathEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     pipelineConfigurationFullPath: {
       type: String,
@@ -127,6 +123,14 @@ export default {
     validatePipelineInput: debounce(function debounceValidation(path) {
       this.validatePipelineConfigurationPath(path);
     }, DEBOUNCE_DELAY),
+    onCancel(event) {
+      if (!isModalsRefactorEnabled()) {
+        return;
+      }
+
+      event.preventDefault();
+      this.$emit('cancel');
+    },
   },
   i18n: {
     titleInputLabel: s__('ComplianceFrameworks|Name'),
@@ -223,7 +227,7 @@ export default {
         :disabled="disableSubmitBtn"
         >{{ submitButtonText }}</gl-button
       >
-      <gl-button :href="groupEditPath" data-testid="cancel-btn">{{
+      <gl-button :href="groupEditPath" data-testid="cancel-btn" @click="onCancel">{{
         $options.i18n.cancelBtnText
       }}</gl-button>
     </div>

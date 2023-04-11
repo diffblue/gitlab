@@ -11,7 +11,6 @@ describe('createComplianceFrameworksFormApp', () => {
 
   const groupEditPath = 'group-1/edit';
   const groupPath = 'group-1';
-  const pipelineConfigurationFullPathEnabled = true;
   const graphqlFieldName = 'field';
   const testId = '1';
 
@@ -48,11 +47,7 @@ describe('createComplianceFrameworksFormApp', () => {
     });
 
     it('parses and passes props', () => {
-      expect(findFormApp(CreateForm).props()).toStrictEqual({
-        groupEditPath,
-        groupPath,
-        pipelineConfigurationFullPathEnabled,
-      });
+      expect(findFormApp(CreateForm).props()).toStrictEqual({});
     });
   });
 
@@ -63,11 +58,7 @@ describe('createComplianceFrameworksFormApp', () => {
 
     it('parses and passes props', () => {
       expect(findFormApp(EditForm).props()).toStrictEqual({
-        graphqlFieldName,
-        groupEditPath,
-        groupPath,
         id: testId,
-        pipelineConfigurationFullPathEnabled,
       });
     });
   });

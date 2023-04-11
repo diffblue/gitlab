@@ -15,18 +15,31 @@ const createComplianceFrameworksTableApp = (el) => {
     return false;
   }
 
-  const { addFrameworkPath, editFrameworkPath, emptyStateSvgPath, groupPath } = el.dataset;
+  const {
+    addFrameworkPath,
+    editFrameworkPath,
+    emptyStateSvgPath,
+    graphqlFieldName = null,
+    groupPath,
+    groupEditPath,
+    pipelineConfigurationFullPathEnabled,
+  } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
+    provide: {
+      graphqlFieldName,
+      groupEditPath,
+      groupPath,
+      pipelineConfigurationFullPathEnabled: Boolean(pipelineConfigurationFullPathEnabled),
+    },
     render(createElement) {
       return createElement(Table, {
         props: {
           addFrameworkPath,
           editFrameworkPath,
           emptyStateSvgPath,
-          groupPath,
         },
       });
     },

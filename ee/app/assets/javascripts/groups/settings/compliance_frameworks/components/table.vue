@@ -1,10 +1,20 @@
 <script>
-import { GlAlert, GlBadge, GlButton, GlLoadingIcon, GlTableLite, GlLabel } from '@gitlab/ui';
+import Vue from 'vue';
+import {
+  GlAlert,
+  GlBadge,
+  GlButton,
+  GlLoadingIcon,
+  GlTableLite,
+  GlLabel,
+  GlToast,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
@@ -12,11 +22,15 @@ import { injectIdIntoEditPath } from '../utils';
 import DeleteModal from './delete_modal.vue';
 import EmptyState from './table_empty_state.vue';
 import TableActions from './table_actions.vue';
+import FormModal from './form_modal.vue';
+
+Vue.use(GlToast);
 
 export default {
   components: {
     DeleteModal,
     EmptyState,
+    FormModal,
     GlAlert,
     GlBadge,
     GlButton,
@@ -25,6 +39,8 @@ export default {
     GlLabel,
     TableActions,
   },
+  mixins: [glFeatureFlagMixin()],
+  inject: ['groupPath'],
   props: {
     addFrameworkPath: {
       type: String,
@@ -37,10 +53,6 @@ export default {
       default: null,
     },
     emptyStateSvgPath: {
-      type: String,
-      required: true,
-    },
-    groupPath: {
       type: String,
       required: true,
     },
@@ -129,8 +141,21 @@ export default {
     showAddButton() {
       return this.hasLoaded && this.addFrameworkPath && !this.isEmpty;
     },
+    addFrameworkHref() {
+      return this.glFeatures.manageComplianceFrameworksModalsRefactor
+        ? undefined
+        : this.addFrameworkPath;
+    },
   },
   methods: {
+    onClickAdd(event) {
+      if (!this.glFeatures.manageComplianceFrameworksModalsRefactor) {
+        return;
+      }
+
+      event?.preventDefault();
+      this.markForAdd();
+    },
     setError(error, userFriendlyText) {
       this.error = userFriendlyText;
       Sentry.captureException(error);
@@ -138,12 +163,19 @@ export default {
     dismissAlertMessage() {
       this.message = null;
     },
+    markForAdd() {
+      this.$refs.formModal.show();
+    },
     markForDeletion(framework) {
       this.markedForDeletion = framework;
-      this.$refs.modal.show();
+      this.$refs.deleteModal.show();
     },
     onError() {
       this.error = this.$options.i18n.deleteError;
+    },
+    onChange(userFriendlyText) {
+      this.$refs.formModal.hide();
+      this.$toast.show(userFriendlyText);
     },
     onDelete(id) {
       this.message = this.$options.i18n.deleteMessage;
@@ -227,6 +259,7 @@ export default {
       v-if="isEmpty"
       :image-path="emptyStateSvgPath"
       :add-framework-path="addFrameworkPath"
+      @addFramework="onClickAdd"
     />
 
     <gl-table-lite v-if="hasFrameworks" :items="complianceFrameworks" :fields="tableFields">
@@ -269,16 +302,23 @@ export default {
       category="secondary"
       variant="confirm"
       size="small"
-      :href="addFrameworkPath"
+      data-testid="add-framework-btn"
+      :href="addFrameworkHref"
+      @click="onClickAdd"
     >
       {{ $options.i18n.addBtn }}
     </gl-button>
+
+    <form-modal
+      v-if="glFeatures.manageComplianceFrameworksModalsRefactor"
+      ref="formModal"
+      @change="onChange"
+    />
     <delete-modal
       v-if="hasFrameworks"
       :id="markedForDeletion.id"
-      ref="modal"
+      ref="deleteModal"
       :name="markedForDeletion.name"
-      :group-path="groupPath"
       @deleting="onDeleting"
       @delete="onDelete"
       @error="onError"

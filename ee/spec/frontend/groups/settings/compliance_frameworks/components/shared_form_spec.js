@@ -11,9 +11,11 @@ import { GlFormGroup, GlFormInput } from '../stubs';
 describe('SharedForm', () => {
   let wrapper;
   const defaultPropsData = {
+    submitButtonText: 'Save changes',
+  };
+  const defaultProvideData = {
     groupEditPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
-    submitButtonText: 'Save changes',
   };
 
   const findForm = () => wrapper.findComponent(GlForm);
@@ -29,11 +31,15 @@ describe('SharedForm', () => {
   const findSubmitBtn = () => wrapper.find('[data-testid="submit-btn"]');
   const findCancelBtn = () => wrapper.find('[data-testid="cancel-btn"]');
 
-  function createComponent(props = {}) {
+  function createComponent(props = {}, provide = {}) {
     return shallowMount(SharedForm, {
       propsData: {
         ...defaultPropsData,
         ...props,
+      },
+      provide: {
+        ...defaultProvideData,
+        ...provide,
       },
       stubs: {
         GlFormGroup,
@@ -68,7 +74,7 @@ describe('SharedForm', () => {
     it.each([true, false])(
       'renders the pipeline configuration correctly when enabled is %s',
       (enabled) => {
-        wrapper = createComponent({ pipelineConfigurationFullPathEnabled: enabled });
+        wrapper = createComponent({}, { pipelineConfigurationFullPathEnabled: enabled });
 
         expect(findPipelineConfigurationGroup().exists()).toBe(enabled);
       },
@@ -232,6 +238,26 @@ describe('SharedForm', () => {
        * https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56013#note_524874122
        */
       expect(Utils.fetchPipelineConfigurationFileExists).toHaveBeenCalledWith('foo.yaml@bar/baz');
+    });
+  });
+
+  describe('on cancelling', () => {
+    it('should emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
+      jest.spyOn(Utils, 'isModalsRefactorEnabled').mockReturnValue(true);
+      wrapper = createComponent();
+
+      findCancelBtn().vm.$emit('click', new MouseEvent('click'));
+
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
+    });
+
+    it('should not emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is disabled', () => {
+      jest.spyOn(Utils, 'isModalsRefactorEnabled').mockReturnValue(false);
+      wrapper = createComponent();
+
+      findCancelBtn().vm.$emit('click', new MouseEvent('click'));
+
+      expect(wrapper.emitted('cancel')).toBeUndefined();
     });
   });
 });
