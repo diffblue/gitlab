@@ -1,5 +1,6 @@
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
+import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
@@ -8,6 +9,8 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   emptyBuildRule,
   SCAN_FINDING,
+  securityScanBuildRule,
+  licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 
 describe('PolicyRuleBuilder', () => {
@@ -33,7 +36,7 @@ describe('PolicyRuleBuilder', () => {
   };
 
   const factory = (propsData = {}, provide = {}) => {
-    wrapper = mountExtended(PolicyRuleBuilder, {
+    wrapper = shallowMountExtended(PolicyRuleBuilder, {
       propsData: {
         initRule: emptyBuildRule(),
         ...propsData,
@@ -43,6 +46,9 @@ describe('PolicyRuleBuilder', () => {
         namespaceType: NAMESPACE_TYPES.PROJECT,
         softwareLicenses: '[]',
         ...provide,
+      },
+      stubs: {
+        BaseLayoutComponent,
       },
     });
   };
@@ -88,6 +94,22 @@ describe('PolicyRuleBuilder', () => {
       factory({ initRule: rule });
       expect(findSecurityScanRule().exists()).toBe(showSecurityRule);
       expect(findLicenseScanRule().exists()).toBe(showLicenseRule);
+    });
+  });
+
+  describe('selects correct rule', () => {
+    it.each`
+      initialRule                | findComponent           | expectedRule
+      ${licenseScanBuildRule()}  | ${findLicenseScanRule}  | ${securityScanBuildRule()}
+      ${securityScanBuildRule()} | ${findSecurityScanRule} | ${licenseScanBuildRule()}
+    `('selects correct rule for scan type', ({ initialRule, findComponent, expectedRule }) => {
+      factory({
+        initRule: initialRule,
+      });
+
+      findComponent().vm.$emit('changed', expectedRule);
+
+      expect(wrapper.emitted('changed')).toEqual([[expectedRule]]);
     });
   });
 });

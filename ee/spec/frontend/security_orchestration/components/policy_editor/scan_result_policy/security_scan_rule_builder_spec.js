@@ -4,11 +4,18 @@ import Api from 'ee/api';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
+import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   securityScanBuildRule,
   SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
+import {
+  SEVERITY,
+  STATUS,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
 describe('SecurityScanRuleBuilder', () => {
   let wrapper;
@@ -46,6 +53,9 @@ describe('SecurityScanRuleBuilder', () => {
   const findVulnStates = () => wrapper.findByTestId('vulnerability-states-select');
   const findVulnAllowed = () => wrapper.findByTestId('vulnerabilities-allowed-input');
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
+  const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
+  const findStatusFilter = () => wrapper.findComponent(StatusFilter);
+  const findSeverityFilter = () => wrapper.findComponent(SeverityFilter);
 
   beforeEach(() => {
     jest
@@ -62,8 +72,8 @@ describe('SecurityScanRuleBuilder', () => {
       expect(findBranches().exists()).toBe(true);
       expect(findGroupLevelBranches().exists()).toBe(false);
       expect(findScanners().exists()).toBe(true);
-      expect(findSeverities().exists()).toBe(true);
-      expect(findVulnStates().exists()).toBe(true);
+      expect(findSeverities().exists()).toBe(false);
+      expect(findVulnStates().exists()).toBe(false);
       expect(findVulnAllowed().exists()).toBe(true);
     });
 
@@ -85,8 +95,6 @@ describe('SecurityScanRuleBuilder', () => {
       currentComponent   | newValue                                | expected
       ${findBranches}    | ${PROTECTED_BRANCHES_MOCK[0]}           | ${{ branches: UPDATED_RULE.branches }}
       ${findScanners}    | ${UPDATED_RULE.scanners}                | ${{ scanners: UPDATED_RULE.scanners }}
-      ${findSeverities}  | ${UPDATED_RULE.severity_levels}         | ${{ severity_levels: UPDATED_RULE.severity_levels }}
-      ${findVulnStates}  | ${UPDATED_RULE.vulnerability_states}    | ${{ vulnerability_states: UPDATED_RULE.vulnerability_states }}
       ${findVulnAllowed} | ${UPDATED_RULE.vulnerabilities_allowed} | ${{ vulnerabilities_allowed: UPDATED_RULE.vulnerabilities_allowed }}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
@@ -99,6 +107,39 @@ describe('SecurityScanRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  it.each`
+    currentComponent  | selectedFilter
+    ${findSeverities} | ${SEVERITY}
+    ${findVulnStates} | ${STATUS}
+  `('select different filters', async ({ currentComponent, selectedFilter }) => {
+    factory();
+    await findScanFilterSelector().vm.$emit('select', selectedFilter);
+
+    expect(currentComponent().exists()).toBe(true);
+  });
+
+  it('renders filters for exiting rule', () => {
+    factory({ initRule: UPDATED_RULE });
+
+    expect(findSeverities().exists()).toBe(true);
+    expect(findVulnStates().exists()).toBe(true);
+  });
+
+  it.each`
+    currentComponent      | selectedFilter
+    ${findSeverityFilter} | ${SEVERITY}
+    ${findStatusFilter}   | ${STATUS}
+  `('removes existing filters', async ({ currentComponent, selectedFilter }) => {
+    factory();
+    await findScanFilterSelector().vm.$emit('select', selectedFilter);
+    expect(currentComponent().exists()).toBe(true);
+
+    await currentComponent().vm.$emit('remove', selectedFilter);
+
+    expect(currentComponent().exists()).toBe(false);
+    expect(wrapper.emitted('changed')).toHaveLength(1);
   });
 
   it('does render branches label when a branch is selected', async () => {

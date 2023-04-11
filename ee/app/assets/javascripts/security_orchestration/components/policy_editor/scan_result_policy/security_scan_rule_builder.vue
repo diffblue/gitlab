@@ -3,13 +3,19 @@ import { GlSprintf, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
+import SeverityFilter from './scan_filters/severity_filter.vue';
+import StatusFilter from './scan_filters/status_filter.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
+import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
+import { SEVERITY, STATUS, FILTER_POLICY_PROPERTY_MAP } from './scan_filters/constants';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
 export default {
+  SEVERITY,
+  STATUS,
   scanResultRuleCopy: s__(
-    'ScanResultPolicy|from %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}',
+    'ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) more than %{vulnerabilitiesAllowed} %{boldDescription} of the following criteria:',
   ),
   components: {
     BaseLayoutComponent,
@@ -17,6 +23,9 @@ export default {
     GlFormInput,
     PolicyRuleBranchSelection,
     PolicyRuleMultiSelect,
+    ScanFilterSelector,
+    SeverityFilter,
+    StatusFilter,
   },
   props: {
     initRule: {
@@ -29,14 +38,25 @@ export default {
       default: '',
     },
   },
+  data() {
+    const {
+      severity_levels: severityLevels,
+      vulnerability_states: vulnerabilityStates,
+    } = this.initRule;
+
+    return {
+      addedFilters: [
+        ...(severityLevels.length ? [SEVERITY] : []),
+        ...(vulnerabilityStates.length ? [STATUS] : []),
+      ],
+    };
+  },
   computed: {
-    severityLevelsToAdd: {
-      get() {
-        return this.initRule.severity_levels;
-      },
-      set(values) {
-        this.triggerChanged({ severity_levels: values });
-      },
+    severityLevelsToAdd() {
+      return this.initRule.severity_levels;
+    },
+    vulnerabilityStates() {
+      return this.initRule.vulnerability_states;
     },
     scannersToAdd: {
       get() {
@@ -50,14 +70,6 @@ export default {
         });
       },
     },
-    vulnerabilityStates: {
-      get() {
-        return this.initRule.vulnerability_states;
-      },
-      set(values) {
-        this.triggerChanged({ vulnerability_states: values });
-      },
-    },
     vulnerabilitiesAllowed: {
       get() {
         return this.initRule.vulnerabilities_allowed;
@@ -66,10 +78,28 @@ export default {
         this.triggerChanged({ vulnerabilities_allowed: parseInt(value, 10) });
       },
     },
+    isSeverityFilterSelected() {
+      return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
+    },
+    isStatusFilterSelected() {
+      return this.isFilterSelected(this.$options.STATUS) || this.vulnerabilityStates.length > 0;
+    },
   },
   methods: {
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
+    },
+    isFilterSelected(filter) {
+      return this.addedFilters.includes(filter);
+    },
+    selectFilter(filter) {
+      if (!this.isFilterSelected(filter)) {
+        this.addedFilters.push(filter);
+      }
+    },
+    removeFilter(filter) {
+      this.addedFilters = this.addedFilters.filter((item) => item !== filter);
+      this.triggerChanged({ [FILTER_POLICY_PROPERTY_MAP[filter]]: [] });
     },
   },
   REPORT_TYPES_DEFAULT_KEYS: Object.keys(REPORT_TYPES_DEFAULT),
@@ -81,68 +111,88 @@ export default {
     scanners: s__('ScanResultPolicy|scanners'),
     vulnerabilityStates: s__('ScanResultPolicy|vulnerability states'),
     vulnerabilitiesAllowed: s__('ScanResultPolicy|vulnerabilities allowed'),
+    vulnerabilityMatchDescription: s__('ScanResultPolicy|vulnerabilities that match all'),
   },
 };
 </script>
 
 <template>
-  <base-layout-component
-    :rule-label="ruleLabel"
-    :type="initRule.type"
-    :show-scan-type-dropdown="true"
-    @changed="$emit('changed', $event)"
-    @remove="$emit('remove')"
-  >
-    <template #content>
-      <gl-sprintf :message="$options.scanResultRuleCopy">
-        <template #scanners>
-          <policy-rule-multi-select
-            v-model="scannersToAdd"
-            class="gl-display-inline! gl-vertical-align-middle"
-            :item-type-name="$options.i18n.scanners"
-            :items="$options.REPORT_TYPES_DEFAULT"
-            data-testid="scanners-select"
-          />
-        </template>
+  <div>
+    <base-layout-component
+      class="gl-pb-0"
+      :type="initRule.type"
+      :show-scan-type-dropdown="false"
+      :show-remove-button="false"
+      @changed="$emit('changed', $event)"
+    >
+      <template #content>
+        <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
+          <template #content>
+            <gl-sprintf :message="$options.scanResultRuleCopy">
+              <template #scanners>
+                <policy-rule-multi-select
+                  v-model="scannersToAdd"
+                  class="gl-display-inline! gl-vertical-align-middle"
+                  :item-type-name="$options.i18n.scanners"
+                  :items="$options.REPORT_TYPES_DEFAULT"
+                  data-testid="scanners-select"
+                />
+              </template>
 
-        <template #branches>
-          <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged($event)" />
-        </template>
+              <template #branches>
+                <policy-rule-branch-selection
+                  :init-rule="initRule"
+                  @changed="triggerChanged($event)"
+                />
+              </template>
 
-        <template #vulnerabilitiesAllowed>
-          <label for="vulnerabilities-allowed" class="gl-sr-only">{{
-            $options.i18n.vulnerabilitiesAllowed
-          }}</label>
-          <gl-form-input
-            id="vulnerabilities-allowed"
-            v-model="vulnerabilitiesAllowed"
-            type="number"
-            class="gl-w-11! gl-display-inline! gl-vertical-align-middle"
-            :min="0"
-            data-testid="vulnerabilities-allowed-input"
-          />
-        </template>
+              <template #vulnerabilitiesAllowed>
+                <label for="vulnerabilities-allowed" class="gl-sr-only">{{
+                  $options.i18n.vulnerabilitiesAllowed
+                }}</label>
+                <gl-form-input
+                  id="vulnerabilities-allowed"
+                  v-model="vulnerabilitiesAllowed"
+                  type="number"
+                  class="gl-w-11! gl-display-inline! gl-vertical-align-middle"
+                  :min="0"
+                  data-testid="vulnerabilities-allowed-input"
+                />
+              </template>
 
-        <template #severities>
-          <policy-rule-multi-select
-            v-model="severityLevelsToAdd"
-            class="gl-display-inline! gl-vertical-align-middle"
-            :item-type-name="$options.i18n.severityLevels"
-            :items="$options.SEVERITY_LEVELS"
-            data-testid="severities-select"
-          />
-        </template>
+              <template #boldDescription>
+                <b>{{ $options.i18n.vulnerabilityMatchDescription }}</b>
+              </template>
+            </gl-sprintf>
+          </template>
+        </base-layout-component>
+      </template>
+    </base-layout-component>
 
-        <template #vulnerabilityStates>
-          <policy-rule-multi-select
-            v-model="vulnerabilityStates"
-            class="gl-display-inline! gl-vertical-align-middle"
-            :item-type-name="$options.i18n.vulnerabilityStates"
-            :items="$options.APPROVAL_VULNERABILITY_STATES"
-            data-testid="vulnerability-states-select"
-          />
-        </template>
-      </gl-sprintf>
-    </template>
-  </base-layout-component>
+    <base-layout-component class="gl-pt-3" :show-remove-button="false">
+      <template #content>
+        <severity-filter
+          v-if="isSeverityFilterSelected"
+          :selected="severityLevelsToAdd"
+          class="gl-bg-white!"
+          @remove="removeFilter"
+          @input="triggerChanged({ severity_levels: $event })"
+        />
+
+        <status-filter
+          v-if="isStatusFilterSelected"
+          :selected="vulnerabilityStates"
+          class="gl-bg-white!"
+          @remove="removeFilter"
+          @input="triggerChanged({ vulnerability_states: $event })"
+        />
+
+        <scan-filter-selector
+          class="gl-bg-white! gl-w-full"
+          :selected="addedFilters"
+          @select="selectFilter"
+        />
+      </template>
+    </base-layout-component>
+  </div>
 </template>

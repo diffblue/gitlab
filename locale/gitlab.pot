@@ -38713,10 +38713,40 @@ msgstr ""
 msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:"
 msgstr ""
 
+msgid "ScanResultPolicy|Add new criteria"
+msgstr ""
+
+msgid "ScanResultPolicy|Choose an option"
+msgstr ""
+
+msgid "ScanResultPolicy|Choose criteria type"
+msgstr ""
+
+msgid "ScanResultPolicy|Maximum number of severity-criteria is one"
+msgstr ""
+
+msgid "ScanResultPolicy|Maximum number of status-criteria is one"
+msgstr ""
+
+msgid "ScanResultPolicy|New severity"
+msgstr ""
+
+msgid "ScanResultPolicy|New status"
+msgstr ""
+
 msgid "ScanResultPolicy|Newly Detected"
 msgstr ""
 
 msgid "ScanResultPolicy|Pre-existing"
+msgstr ""
+
+msgid "ScanResultPolicy|Severity is:"
+msgstr ""
+
+msgid "ScanResultPolicy|Status is:"
+msgstr ""
+
+msgid "ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) more than %{vulnerabilitiesAllowed} %{boldDescription} of the following criteria:"
 msgstr ""
 
 msgid "ScanResultPolicy|add an approver"
@@ -38726,9 +38756,6 @@ msgid "ScanResultPolicy|except"
 msgstr ""
 
 msgid "ScanResultPolicy|finds any license %{matchType} %{licenseType} and is %{licenseStates} in an open merge request targeting %{branches}"
-msgstr ""
-
-msgid "ScanResultPolicy|from %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
 msgstr ""
 
 msgid "ScanResultPolicy|license states"
@@ -38750,6 +38777,9 @@ msgid "ScanResultPolicy|severity levels"
 msgstr ""
 
 msgid "ScanResultPolicy|vulnerabilities allowed"
+msgstr ""
+
+msgid "ScanResultPolicy|vulnerabilities that match all"
 msgstr ""
 
 msgid "ScanResultPolicy|vulnerability states"
