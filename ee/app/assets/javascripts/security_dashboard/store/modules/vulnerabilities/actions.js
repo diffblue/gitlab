@@ -267,7 +267,13 @@ export const dismissVulnerability = (
         action: {
           text: s__('SecurityReports|Undo dismiss'),
           onClick: (e, toastObject) => {
-            if (vulnerability.dismissal_feedback) {
+            const shouldRevertDismiss = Boolean(
+              gon.features.deprecateVulnerabilitiesFeedback
+                ? getDismissalTransitionForVulnerability(vulnerability)
+                : vulnerability.dismissal_feedback,
+            );
+
+            if (shouldRevertDismiss) {
               dispatch('revertDismissVulnerability', { vulnerability })
                 .then(() => dispatch('fetchVulnerabilities', { page }))
                 .catch(() => {});
@@ -434,7 +440,7 @@ export const revertDismissVulnerability = ({ dispatch }, { vulnerability, flashE
       })
     : axios.delete(vulnerability.dismissal_feedback.destroy_vulnerability_feedback_dismissal_path);
 
-  action
+  return action
     .then(({ data }) => {
       dispatch('receiveUndoDismissSuccess', { vulnerability, data });
     })
