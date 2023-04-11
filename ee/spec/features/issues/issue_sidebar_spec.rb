@@ -16,7 +16,6 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
 
   before do
     sign_in(user)
-    stub_feature_flags(moved_mr_sidebar: false)
   end
 
   context 'for Assignees', :js do
@@ -114,7 +113,7 @@ RSpec.describe 'Issue Sidebar', feature_category: :team_planning do
     context 'when health status feature is available' do
       before do
         stub_licensed_features(issuable_health_status: true)
-        stub_feature_flags(moved_mr_sidebar: false)
+
         visit_issue(project, issue)
       end
 
