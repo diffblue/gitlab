@@ -5,7 +5,6 @@ description: Number of custom value stream analytics stages.
 product_section: dev
 product_stage: manage
 product_group: optimize
-product_category: value_stream_management
 value_type: number
 status: active
 time_frame: all

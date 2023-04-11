@@ -6,7 +6,6 @@ description: Number of all billable users (active users excluding bots and guest
 product_section: analytics
 product_stage: analytics
 product_group: product_intelligence
-product_category: collection
 value_type: number
 status: active
 milestone: "14.0"

@@ -5,7 +5,6 @@ description: Count of merge requests merged using approval rules
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: broken
 repair_issue_url: https://gitlab.com/gitlab-data/analytics/-/issues/11466

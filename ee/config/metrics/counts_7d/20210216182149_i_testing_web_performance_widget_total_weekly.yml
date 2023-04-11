@@ -6,7 +6,6 @@ description: Count of unique users per week who expanded the browser performance
 product_section: ops
 product_stage: verify
 product_group: pipeline_execution
-product_category: web_performance
 value_type: number
 status: removed
 time_frame: 7d

@@ -4,7 +4,6 @@ description: Whether this is a trial license or not
 product_section: fulfillment
 product_stage: fulfillment
 product_group: license
-product_category: license
 value_type: boolean
 status: active
 time_frame: none

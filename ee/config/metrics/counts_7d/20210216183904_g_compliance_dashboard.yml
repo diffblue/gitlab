@@ -5,7 +5,6 @@ description: Number of unique visitors to the compliance dashboard.
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: active
 time_frame: 7d

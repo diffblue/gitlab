@@ -4,7 +4,6 @@ description: "Count of approval project rules"
 product_section: sec
 product_stage: govern
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: active
 milestone: "15.8"

@@ -5,7 +5,6 @@ description: Projects with a GitHub service pipeline enabled
 product_section: ops
 product_stage: verify
 product_group: continuous_integration
-product_category: continuous_integration
 value_type: number
 status: active
 time_frame: all

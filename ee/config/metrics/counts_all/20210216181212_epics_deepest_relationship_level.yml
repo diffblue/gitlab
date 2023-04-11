@@ -5,7 +5,6 @@ description: Count of the deepest relationship level for epics
 product_section: dev
 product_stage: plan
 product_group: product_planning
-product_category: epics
 value_type: number
 status: active
 time_frame: all

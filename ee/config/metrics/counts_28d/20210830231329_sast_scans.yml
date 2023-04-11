@@ -4,7 +4,6 @@ description: Number of SAST security scans run
 product_section: sec
 product_stage: secure
 product_group: static_analysis
-product_category: static_application_security_testing
 value_type: number
 status: active
 milestone: "<13.9"

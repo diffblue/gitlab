@@ -5,7 +5,6 @@ description: Counts dast jobs
 product_section: sec
 product_stage: secure
 product_group: dynamic_analysis
-product_category: dynamic_application_security_testing
 value_type: number
 status: active
 time_frame: all

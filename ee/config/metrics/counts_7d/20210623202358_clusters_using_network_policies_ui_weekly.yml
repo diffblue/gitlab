@@ -4,7 +4,6 @@ description: Weekly number of distinct clusters with network policies using the 
 product_section: sec
 product_stage: protect_stage_was_removed
 product_group: container_security_group_was_removed
-product_category: container_network_security_category_was_removed
 value_type: number
 status: removed
 milestone_removed: '15.5'

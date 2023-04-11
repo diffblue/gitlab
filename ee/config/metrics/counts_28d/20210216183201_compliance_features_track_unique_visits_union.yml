@@ -6,7 +6,6 @@ description: Unique users that have used audit event screen, audit event API, co
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: active
 time_frame: 28d

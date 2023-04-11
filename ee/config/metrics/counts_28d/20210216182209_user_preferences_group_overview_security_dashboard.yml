@@ -6,7 +6,6 @@ description: Users who set personal preference to see Security Dashboard on Grou
 product_section: sec
 product_stage: govern
 product_group: threat_insights
-product_category: vulnerability_management
 value_type: number
 status: active
 time_frame: 28d

@@ -5,7 +5,6 @@ description: Number of users creating an issue from an epic
 product_section: dev
 product_stage: plan
 product_group: product_planning
-product_category: epics_usage
 value_type: number
 status: active
 milestone: '13.12'

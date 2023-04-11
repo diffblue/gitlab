@@ -4,7 +4,6 @@ description: Count of MAU removing related epics
 product_section: dev
 product_stage: plan
 product_group: product_planning
-product_category: epics_usage
 value_type: number
 status: active
 milestone: "14.10"

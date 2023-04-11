@@ -5,7 +5,6 @@ description: Whether group SAML is enabled
 product_section: dev
 product_stage: manage
 product_group: access
-product_category: system_access
 value_type: boolean
 status: active
 time_frame: none

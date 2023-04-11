@@ -5,7 +5,6 @@ description: Unique count of compliance actions in a given week
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: broken
 repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378091

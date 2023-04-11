@@ -6,7 +6,6 @@ description: Number of unique visitors to group-level audit events screen in a g
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: audit_events
 value_type: number
 status: active
 time_frame: 7d

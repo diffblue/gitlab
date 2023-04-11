@@ -5,7 +5,6 @@ description: Unique users who have looked at the compliance report in a given we
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: active
 time_frame: 7d
