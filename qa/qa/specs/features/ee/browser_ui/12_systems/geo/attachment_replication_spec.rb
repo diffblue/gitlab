@@ -39,7 +39,7 @@ module QA
             dashboard.go_to_project(project.name)
           end
 
-          Page::Project::Menu.act { click_issues }
+          Page::Project::Menu.act { go_to_issues }
 
           Page::Project::Issue::Index.perform do |index|
             index.wait_for_issue_replication(issue)

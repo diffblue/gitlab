@@ -42,7 +42,7 @@ module QA
       it 'shows the first three assignees and a +n sign in the issues list', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347976' do
         project.visit!
 
-        Page::Project::Menu.perform(&:click_issues)
+        Page::Project::Menu.perform(&:go_to_issues)
 
         Page::Project::Issue::Index.perform do |index|
           expect(index).to have_assignee_link_count(3)

@@ -12,6 +12,7 @@ module QA
 
             base.class_eval do
               if QA::Runtime::Env.super_sidebar_enabled?
+                prepend SubMenus::SuperSidebar::Main
                 prepend SubMenus::SuperSidebar::Secure
                 prepend SubMenus::SuperSidebar::Plan
                 prepend SubMenus::SuperSidebar::Analyze
@@ -77,6 +78,8 @@ module QA
           end
 
           def click_group_epics_link
+            return go_to_epics if QA::Runtime::Env.super_sidebar_enabled?
+
             within_sidebar do
               click_element(:sidebar_menu_link, menu_item: 'Epics')
             end
