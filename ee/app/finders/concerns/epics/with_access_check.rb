@@ -19,28 +19,30 @@ module Epics
 
     private
 
-    def epics_with_read_access
+    def epics_with_read_access(preload: false)
       groups_with_read_access = if current_user.present?
-                                  permissioned_groups
+                                  permissioned_groups(preload: preload)
                                 else
                                   epic_groups.public_to_user
                                 end
 
       permissioned_epics = epics_collection.in_selected_groups(groups_with_read_access)
 
-      with_confidentiality_access(permissioned_epics)
+      with_confidentiality_access(permissioned_epics, preload: preload)
     end
 
-    def with_confidentiality_access(epics)
-      return epics unless current_user && epics.confidential.any?
+    def with_confidentiality_access(epics, preload: false)
+      return epics if epics.confidential.none?
 
-      with_confidential_access = permissioned_groups(ability: :read_confidential_epic)
+      with_confidential_access = permissioned_groups(ability: :read_confidential_epic, preload: preload)
 
       epics.not_confidential_or_in_groups(with_confidential_access)
     end
 
-    def permissioned_groups(ability: :read_epic)
-      Group.groups_user_can(epic_groups, current_user, ability)
+    def permissioned_groups(ability: :read_epic, preload: false)
+      groups = preload ? Group.preload_root_saml_providers(epic_groups) : epic_groups
+
+      Group.groups_user_can(groups, current_user, ability)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord

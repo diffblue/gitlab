@@ -99,7 +99,6 @@ module EE
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
       scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: :route) }
-      scope :with_child_api_entity_associations, -> { preload(:author, :labels, :parent, { group: [:route, :saml_provider] }) }
 
       scope :within_timeframe, -> (start_date, end_date) do
         epics = ::Epic.arel_table

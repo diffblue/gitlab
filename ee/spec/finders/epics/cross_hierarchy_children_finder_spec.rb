@@ -103,6 +103,20 @@ RSpec.describe Epics::CrossHierarchyChildrenFinder do
             create(:epic, :opened, group: other_subgroup, parent: parent_epic)
           end
 
+          context 'when preload is `true`' do
+            before do
+              allow(Group).to receive(:preload_root_saml_providers).and_return(Group.all)
+            end
+
+            it 'calls method to preload groups relationships' do
+              finder = described_class.new(search_user, { parent: parent_epic })
+
+              expect(Group).to receive(:preload_root_saml_providers)
+
+              finder.execute(preload: true)
+            end
+          end
+
           context 'when user is member of private top level group' do
             before do
               other_ancestor.add_developer(search_user)
