@@ -28714,7 +28714,7 @@ msgstr ""
 msgid "Navigation|Retrieving search results"
 msgstr ""
 
-msgid "Navigation|Search for projects or groups"
+msgid "Navigation|Search your projects or groups"
 msgstr ""
 
 msgid "Navigation|Secure"
@@ -28732,10 +28732,10 @@ msgstr ""
 msgid "Navigation|Unpin item"
 msgstr ""
 
-msgid "Navigation|View all groups"
+msgid "Navigation|View all your groups"
 msgstr ""
 
-msgid "Navigation|View all projects"
+msgid "Navigation|View all your projects"
 msgstr ""
 
 msgid "Navigation|Your pinned items appear here."
