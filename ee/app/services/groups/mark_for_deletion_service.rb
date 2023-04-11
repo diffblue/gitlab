@@ -31,12 +31,15 @@ module Groups
     end
 
     def log_audit_event
-      AuditEvents::CustomAuditEventService.new(
-        current_user,
-        group,
-        nil,
-        'Group marked for deletion'
-      ).for_group.security_event
+      audit_context = {
+        name: 'group_deletion_marked',
+        author: current_user,
+        scope: group,
+        target: group,
+        message: 'Group marked for deletion'
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
   end
 end

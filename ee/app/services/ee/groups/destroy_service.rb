@@ -51,11 +51,19 @@ module EE
       end
 
       def log_audit_event
-        ::AuditEventService.new(
-          current_user,
-          group,
-          action: :destroy
-        ).for_group.security_event
+        audit_context = {
+          name: 'group_destroyed',
+          author: current_user,
+          scope: group.root_ancestor,
+          target: group,
+          message: 'Group destroyed',
+          target_details: group.full_path,
+          additional_details: {
+            remove: 'group'
+          }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end

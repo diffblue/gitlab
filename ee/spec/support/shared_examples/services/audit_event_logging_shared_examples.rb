@@ -16,6 +16,16 @@ RSpec.shared_examples 'audit event logging' do
 
         expect(AuditEvent.last).to have_attributes(attributes)
       end
+
+      it 'calls the audit method with the event type' do
+        if defined?(event_type)
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+            hash_including(name: event_type)
+          ).and_call_original
+
+          operation
+        end
+      end
     end
 
     it 'does not log audit event if operation fails' do

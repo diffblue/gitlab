@@ -1,0 +1,9 @@
+---
+name: group_restored
+description: Event triggered when a group is restored.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374106
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/116986
+feature_category: compliance_management
+milestone: '15.11'
+saved_to_database: true
+streamed: true

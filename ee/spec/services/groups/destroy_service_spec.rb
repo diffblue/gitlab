@@ -16,6 +16,8 @@ RSpec.describe Groups::DestroyService, feature_category: :subgroups do
           .to receive(:destroy).and_return(group)
       end
 
+      let_it_be(:event_type) { 'group_destroyed' }
+
       let(:attributes) do
         {
            author_id: user.id,
@@ -24,9 +26,11 @@ RSpec.describe Groups::DestroyService, feature_category: :subgroups do
            details: {
              remove: 'group',
              author_name: user.name,
+             author_class: user.class.name,
              target_id: group.id,
              target_type: 'Group',
-             target_details: group.full_path
+             target_details: group.full_path,
+             custom_message: 'Group destroyed'
            }
          }
       end
@@ -47,7 +51,7 @@ RSpec.describe Groups::DestroyService, feature_category: :subgroups do
 
     it 'sends the audit streaming event with json format' do
       expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
-        'audit_operation',
+        'group_destroyed',
         nil,
         a_string_including("group_entity_id\":#{parent_group.id}"))
 
