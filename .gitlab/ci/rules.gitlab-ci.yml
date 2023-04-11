@@ -593,7 +593,6 @@
 ##################
 # Conditions set #
 ##################
-
 .strict-ee-only-rules:
   rules:
     - <<: *if-not-ee
@@ -651,6 +650,143 @@
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *code-backstage-patterns
+
+###########################
+# Conditions set for JiHu #
+###########################
+.rails:rules:predictive-default-rules:
+  rules:
+    - <<: *if-merge-request-approved
+      when: never
+    - <<: *if-automated-merge-request
+      when: never
+    - <<: *if-security-merge-request
+      when: never
+
+.rails:rules:as-if-foss-migration-unit-integration:predictive-default-rules:
+  rules:
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *ci-patterns
+      when: never
+
+.rails:rules:unit-integration:predictive-default-rules:
+  rules:
+    - <<: *if-merge-request-labels-run-all-rspec
+      when: never
+    - !reference [".rails:rules:as-if-foss-migration-unit-integration:predictive-default-rules", rules]
+
+.rails:rules:system:predictive-default-rules:
+  rules:
+    - <<: *if-merge-request-labels-run-all-rspec
+      when: never
+    - <<: *if-merge-request
+      changes: *core-backend-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *workhorse-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *ci-patterns
+      when: never
+    - <<: *if-merge-request
+      changes: *code-backstage-patterns
+
+.rails:rules:ee-and-foss-migration:predictive:
+  rules:
+    - <<: *if-fork-merge-request
+      changes: *db-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    # When DB schema changes, many migrations spec may be affected. However, the test mapping from Crystalball does not map db change to a specific migration spec well.
+    # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68840.
+    - <<: *if-merge-request
+      changes: *db-patterns
+      when: never
+
+.rails:rules:ee-and-foss-background-migration:predictive:
+  rules:
+    - !reference [".rails:rules:ee-and-foss-migration:predictive", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+
+.rails:rules:ee-and-foss-unit:predictive:
+  rules:
+    - <<: *if-fork-merge-request
+      changes: *backend-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+    - <<: *if-merge-request
+      changes: *backstage-patterns
+
+.rails:rules:ee-and-foss-integration:predictive:
+  rules:
+    - <<: *if-fork-merge-request
+      changes: *backend-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+
+.rails:rules:ee-and-foss-system:predictive:
+  rules:
+    - <<: *if-fork-merge-request
+      changes: *code-backstage-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:system:predictive-default-rules", rules]
+
+.rails:rules:ee-only-migration:predictive:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    # When DB schema changes, many migrations spec may be affected. However, the test mapping from Crystalball does not map db change to a specific migration spec well.
+    # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68840.
+    - <<: *if-merge-request
+      changes: *db-patterns
+      when: never
+
+.rails:rules:ee-only-background-migration:predictive:
+  rules:
+    - !reference [".rails:rules:ee-only-migration:predictive", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+
+.rails:rules:ee-only-unit:predictive:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-fork-merge-request
+      changes: *backend-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+
+.rails:rules:ee-only-integration:predictive:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-fork-merge-request
+      changes: *backend-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:unit-integration:predictive-default-rules", rules]
+    - <<: *if-merge-request
+      changes: *backend-patterns
+
+.rails:rules:ee-only-system:predictive:
+  rules:
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-fork-merge-request
+      changes: *code-backstage-patterns
+    - !reference [".rails:rules:predictive-default-rules", rules]
+    - !reference [".rails:rules:system:predictive-default-rules", rules]
 
 ################
 # Shared rules #
