@@ -4,7 +4,6 @@ description: Number of users who have run a Cluster image scan
 product_section: sec
 product_stage: secure
 product_group: composition_analysis
-product_category: container_scanning
 value_type: number
 status: removed
 milestone_removed: '15.5'

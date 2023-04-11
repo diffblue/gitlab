@@ -6,7 +6,6 @@ description: Aggregated count of users who have engaged with a Premium or Ultima
 product_section: ops
 product_stage: verify
 product_group: pipeline_execution
-product_category: code_testing
 value_type: number
 status: active
 time_frame: 7d

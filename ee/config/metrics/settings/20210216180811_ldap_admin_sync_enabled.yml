@@ -5,7 +5,6 @@ description: Has the instance configured [LDAP Admin Sync](https://docs.gitlab.c
 product_section: dev
 product_stage: manage
 product_group: authentication_and_authorization
-product_category: system_access
 value_type: boolean
 status: active
 time_frame: none

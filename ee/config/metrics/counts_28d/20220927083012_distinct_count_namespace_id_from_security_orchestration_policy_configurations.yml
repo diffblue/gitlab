@@ -4,7 +4,6 @@
   product_section: sec
   product_stage: govern
   product_group: security_policies
-  product_category: security_policy_management
   value_type: number
   status: active
   milestone: "15.5"

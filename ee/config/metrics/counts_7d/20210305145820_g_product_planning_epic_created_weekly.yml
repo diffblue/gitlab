@@ -8,7 +8,6 @@ description: Count of WAU creating epics
 product_section: dev
 product_stage: plan
 product_group: product_planning
-product_category: epics
 value_type: number
 status: active
 milestone: "13.10"

@@ -5,7 +5,6 @@ description: Number of LDAP servers configured
 product_section: dev
 product_stage: manage
 product_group: manage
-product_category: system_access
 value_type: number
 status: active
 time_frame: 28d

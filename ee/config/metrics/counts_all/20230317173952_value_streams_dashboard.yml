@@ -4,7 +4,6 @@ description: 'Total number of visits to value stream dashboards page'
 product_section: dev
 product_stage: plan
 product_group: optimize
-product_category: planning_analytics
 value_type: number
 status: active
 milestone: "15.11"

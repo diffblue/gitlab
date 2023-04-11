@@ -6,7 +6,6 @@ description: Count of users who set personal preference to see Details on Group 
 product_section: sec
 product_stage: govern
 product_group: threat_insights
-product_category: vulnerability_management
 value_type: number
 status: active
 time_frame: all

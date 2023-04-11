@@ -6,7 +6,6 @@ description: Count of unique users per month who expanded the load performance r
 product_section: ops
 product_stage: verify
 product_group: pipeline_execution
-product_category: load_testing
 value_type: number
 status: removed
 time_frame: 28d

@@ -4,7 +4,6 @@ description: The peak active user count. Active is defined in UsersStatistics mo
 product_section: fulfillment
 product_stage: fulfillment
 product_group: license
-product_category: license
 value_type: number
 status: active
 instrumentation_class: HistoricalMaxUsersMetric

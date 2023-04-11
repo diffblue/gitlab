@@ -4,7 +4,6 @@ description: Number of users who have run a SAST scan
 product_section: sec
 product_stage: secure
 product_group: static_analysis
-product_category: static_application_security_testing
 value_type: number
 status: removed
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/49444

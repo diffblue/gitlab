@@ -5,7 +5,6 @@ description: Count of unique users per month who visited the group code coverage
 product_section: ops
 product_stage: verify
 product_group: pipeline_execution
-product_category: code_testing
 value_type: number
 status: active
 time_frame: 28d

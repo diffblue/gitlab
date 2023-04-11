@@ -5,7 +5,6 @@ description: Monthly count of Dependency Scanning security scans run
 product_section: sec
 product_stage: secure
 product_group: composition_analysis
-product_category: dependency_scanning
 value_type: number
 status: active
 time_frame: 28d

@@ -4,7 +4,6 @@ description: Unique signed in users through Geo proxied requests
 product_section: enablement
 product_stage: enablement
 product_group: geo
-product_category: geo_replication
 value_type: number
 status: active
 milestone: "14.6"

@@ -5,7 +5,6 @@ description: Count of SAST CI jobs for the month. Job names ending in '-sast'
 product_section: sec
 product_stage: secure
 product_group: static_analysis
-product_category: static_application_security_testing
 value_type: number
 status: active
 time_frame: all

@@ -4,7 +4,6 @@ description: Whether User Cap feature is enabled
 product_section: fulfillment
 product_stage: fulfillment
 product_group: utilization
-product_category: utilization
 value_type: number
 status: active
 milestone: "14.4"

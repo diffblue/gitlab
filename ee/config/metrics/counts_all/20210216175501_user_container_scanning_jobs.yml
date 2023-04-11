@@ -5,7 +5,6 @@ description: Distinct count per user of Container Scanning jobs run
 product_section: sec
 product_stage: secure
 product_group: composition_analysis
-product_category: container_scanning
 value_type: number
 status: active
 time_frame: all

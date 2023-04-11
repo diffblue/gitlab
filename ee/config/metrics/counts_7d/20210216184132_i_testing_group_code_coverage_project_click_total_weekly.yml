@@ -6,7 +6,6 @@ description: Aggregated count of unique users who have clicked from group code c
 product_section: ops
 product_stage: verify
 product_group: pipeline_execution
-product_category: code_testing
 value_type: number
 status: active
 time_frame: 7d

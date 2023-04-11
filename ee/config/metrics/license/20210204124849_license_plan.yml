@@ -4,7 +4,6 @@ description: The plan of the GitLab license
 product_section: fulfillment
 product_stage: fulfillment
 product_group: license
-product_category: license
 value_type: string
 status: active
 time_frame: none

@@ -4,7 +4,6 @@ description: "Count of event triggered on updating prevent merge request approva
 product_section: sec
 product_stage: govern
 product_group: compliance
-product_category: audit_events
 value_type: number
 status: active
 milestone: "15.6"

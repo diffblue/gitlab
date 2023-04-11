@@ -5,7 +5,6 @@ description: Unique projects with Slack ‘/’ commands enabled
 product_section: dev
 product_stage: manage
 product_group: integrations
-product_category: chatops
 value_type: number
 status: active
 time_frame: all

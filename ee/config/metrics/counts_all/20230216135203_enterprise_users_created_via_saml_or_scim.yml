@@ -4,7 +4,6 @@ description: "Number of enterprise users created via SAML or SCIM"
 product_section: dev
 product_stage: manage
 product_group: authentication_and_authorization
-product_category: user_management
 value_type: number
 status: active
 milestone: "15.10"

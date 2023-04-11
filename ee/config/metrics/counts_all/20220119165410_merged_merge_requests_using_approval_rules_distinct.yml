@@ -5,7 +5,6 @@ description: Count of distinct merge requests merged using approval rules
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: compliance_management
 value_type: number
 status: active
 milestone: "14.8"
