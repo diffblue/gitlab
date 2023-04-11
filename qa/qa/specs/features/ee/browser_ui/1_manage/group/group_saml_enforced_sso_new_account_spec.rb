@@ -41,7 +41,7 @@ module QA
         it 'creates a new account automatically and allows to leave group and join again' do
           # When the user signs in via IDP for the first time
 
-          visit_group_sso_url
+          group.visit!
 
           EE::Page::Group::SamlSSOSignIn.perform(&:click_sign_in)
 
@@ -126,7 +126,7 @@ module QA
     end
 
     def visit_group_sso_url
-      Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
+      Runtime::Logger.info(%(Visiting managed_group_url at "#{group_sso_url}"))
 
       page.visit group_sso_url
       Support::Waiter.wait_until { current_url == group_sso_url }
