@@ -16,7 +16,8 @@ module ProductAnalytics
     end
 
     def step_definition
-      "doc_path = '#{target}'" if action == 'pageview'
+      path_name = Feature.enabled?(:product_analytics_snowplow_support) ? 'page_urlpath' : 'doc_path'
+      "#{path_name} = '#{target}'" if action == 'pageview'
     end
   end
 end
