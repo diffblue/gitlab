@@ -946,6 +946,28 @@ Input type: `AdminSidekiqQueuesDeleteJobsInput`
 | <a id="mutationadminsidekiqqueuesdeletejobserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationadminsidekiqqueuesdeletejobsresult"></a>`result` | [`DeleteJobsResponse`](#deletejobsresponse) | Information about the status of the deletion request. |
 
+### `Mutation.aiAction`
+
+WARNING:
+**Introduced** in 15.11.
+This feature is in Alpha. It can be changed or removed at any time.
+
+Input type: `AiActionInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiactionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiactionsummarizecomments"></a>`summarizeComments` | [`AiSummarizeCommentsInput`](#aisummarizecommentsinput) | Input for summarize_comments AI action. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationaiactionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationaiactionerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.alertSetAssignees`
 
 Input type: `AlertSetAssigneesInput`
@@ -11114,6 +11136,15 @@ Information about a connected Agent.
 | <a id="agentmetadatapodname"></a>`podName` | [`String`](#string) | Name of the pod running the Agent. |
 | <a id="agentmetadatapodnamespace"></a>`podNamespace` | [`String`](#string) | Namespace of the pod running the Agent. |
 | <a id="agentmetadataversion"></a>`version` | [`String`](#string) | Agent version tag. |
+
+### `AiResponse`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="airesponseerrors"></a>`errors` | [`[String!]`](#string) | Errors return by AI API as response. |
+| <a id="airesponseresponsebody"></a>`responseBody` | [`String`](#string) | Response body from AI API. |
 
 ### `AlertManagementAlert`
 
@@ -25070,6 +25101,12 @@ A `AchievementsUserAchievementID` is a global ID. It is encoded as a string.
 
 An example `AchievementsUserAchievementID` is: `"gid://gitlab/Achievements::UserAchievement/1"`.
 
+### `AiModelID`
+
+A `AiModelID` is a global ID. It is encoded as a string.
+
+An example `AiModelID` is: `"gid://gitlab/Ai::Model/1"`.
+
 ### `AlertManagementAlertID`
 
 A `AlertManagementAlertID` is a global ID. It is encoded as a string.
@@ -26434,6 +26471,14 @@ be used as arguments).
 
 Only general use input types are listed here. For mutation input types,
 see the associated mutation type above.
+
+### `AiSummarizeCommentsInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="aisummarizecommentsinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | GID of the resource to mutate. |
 
 ### `AlertManagementPayloadAlertFieldInput`
 

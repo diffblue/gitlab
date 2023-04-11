@@ -6,14 +6,22 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        field :issuable_weight_updated, subscription: Subscriptions::IssuableUpdated, null: true,
-                                        description: 'Triggered when the weight of an issuable is updated.'
+        field :ai_completion_response,
+          subscription: ::Subscriptions::AiCompletionResponse, null: true,
+          description: 'Triggered when a response from AI integration is received.',
+          alpha: { milestone: '15.11' }
 
-        field :issuable_iteration_updated, subscription: Subscriptions::IssuableUpdated, null: true,
-                                           description: 'Triggered when the iteration of an issuable is updated.'
+        field :issuable_weight_updated,
+          subscription: Subscriptions::IssuableUpdated, null: true,
+          description: 'Triggered when the weight of an issuable is updated.'
 
-        field :issuable_health_status_updated, subscription: Subscriptions::IssuableUpdated, null: true,
-                                            description: 'Triggered when the health status of an issuable is updated.'
+        field :issuable_iteration_updated,
+          subscription: Subscriptions::IssuableUpdated, null: true,
+          description: 'Triggered when the iteration of an issuable is updated.'
+
+        field :issuable_health_status_updated,
+          subscription: Subscriptions::IssuableUpdated, null: true,
+          description: 'Triggered when the health status of an issuable is updated.'
 
         field :issuable_epic_updated,
           subscription: Subscriptions::IssuableUpdated, null: true,
