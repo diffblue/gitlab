@@ -23,7 +23,8 @@ RSpec.describe WorkItems::WidgetDefinition, feature_category: :team_planning do
         ::WorkItems::Widgets::RequirementLegacy,
         ::WorkItems::Widgets::TestReports,
         ::WorkItems::Widgets::Notifications,
-        ::WorkItems::Widgets::CurrentUserTodos
+        ::WorkItems::Widgets::CurrentUserTodos,
+        ::WorkItems::Widgets::AwardEmoji
       )
     end
   end
