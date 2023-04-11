@@ -28,10 +28,12 @@ jest.mock('~/lib/utils/url_utility');
 describe('EditForm', () => {
   let wrapper;
   const propsData = {
+    id: '1',
+  };
+  const provideData = {
     graphqlFieldName: 'ComplianceManagement::Framework',
     groupEditPath: 'group-1/edit',
     groupPath: 'group-1',
-    id: '1',
     pipelineConfigurationFullPathEnabled: true,
   };
 
@@ -59,6 +61,7 @@ describe('EditForm', () => {
   function createComponent(requestHandlers = []) {
     return shallowMount(EditForm, {
       apolloProvider: createMockApolloProvider(requestHandlers),
+      provide: provideData,
       propsData,
     });
   }
@@ -95,10 +98,8 @@ describe('EditForm', () => {
       expect(findForm().props()).toStrictEqual({
         color: frameworkFoundResponse.color,
         description: frameworkFoundResponse.description,
-        groupEditPath: propsData.groupEditPath,
         name: frameworkFoundResponse.name,
         pipelineConfigurationFullPath: frameworkFoundResponse.pipelineConfigurationFullPath,
-        pipelineConfigurationFullPathEnabled: true,
         submitButtonText: 'Save changes',
       });
       expect(findForm().exists()).toBe(true);
@@ -189,7 +190,7 @@ describe('EditForm', () => {
 
       expect(update).toHaveBeenCalledWith(updateProps);
       expect(findFormStatus().props('loading')).toBe(true);
-      expect(visitUrl).toHaveBeenCalledWith(propsData.groupEditPath);
+      expect(visitUrl).toHaveBeenCalledWith(provideData.groupEditPath);
     });
   });
 });

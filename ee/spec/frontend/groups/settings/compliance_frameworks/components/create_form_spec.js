@@ -8,20 +8,25 @@ import FormStatus from 'ee/groups/settings/compliance_frameworks/components/form
 import SharedForm from 'ee/groups/settings/compliance_frameworks/components/shared_form.vue';
 import { SAVE_ERROR } from 'ee/groups/settings/compliance_frameworks/constants';
 import createComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql/queries/create_compliance_framework.mutation.graphql';
+import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { visitUrl } from '~/lib/utils/url_utility';
-
-import { validCreateResponse, errorCreateResponse } from '../mock_data';
+import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
+import { errorCreateResponse, validCreateResponse, validFetchResponse } from '../mock_data';
 
 Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/url_utility');
+jest.mock('ee/groups/settings/compliance_frameworks/utils', () => ({
+  ...jest.requireActual('ee/groups/settings/compliance_frameworks/utils'),
+  isModalsRefactorEnabled: jest.fn(),
+}));
 
 describe('CreateForm', () => {
   let wrapper;
 
-  const propsData = {
+  const provideData = {
     groupPath: 'group-1',
     groupEditPath: 'group-1/edit',
     pipelineConfigurationFullPathEnabled: true,
@@ -33,6 +38,7 @@ describe('CreateForm', () => {
   const create = jest.fn().mockResolvedValue(validCreateResponse);
   const createWithNetworkErrors = jest.fn().mockRejectedValue(sentryError);
   const createWithErrors = jest.fn().mockResolvedValue(errorCreateResponse);
+  const refetchFrameworks = jest.fn().mockResolvedValue(validFetchResponse);
 
   const findForm = () => wrapper.findComponent(SharedForm);
   const findFormStatus = () => wrapper.findComponent(FormStatus);
@@ -46,7 +52,7 @@ describe('CreateForm', () => {
   function createComponent(requestHandlers = []) {
     return shallowMount(CreateForm, {
       apolloProvider: createMockApolloProvider(requestHandlers),
-      propsData,
+      provide: provideData,
     });
   }
 
@@ -101,7 +107,10 @@ describe('CreateForm', () => {
 
     it('passes the error to the form status when saving causes an exception and does not redirect', async () => {
       const captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      wrapper = createComponent([[createComplianceFrameworkMutation, createWithNetworkErrors]]);
+      wrapper = createComponent([
+        [createComplianceFrameworkMutation, createWithNetworkErrors],
+        [getComplianceFrameworkQuery, refetchFrameworks],
+      ]);
 
       await submitForm(name, description, pipelineConfigurationFullPath, color);
 
@@ -114,7 +123,10 @@ describe('CreateForm', () => {
 
     it('passes the errors to the form status when saving fails and does not redirect', async () => {
       const captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
-      wrapper = createComponent([[createComplianceFrameworkMutation, createWithErrors]]);
+      wrapper = createComponent([
+        [createComplianceFrameworkMutation, createWithErrors],
+        [getComplianceFrameworkQuery, refetchFrameworks],
+      ]);
 
       await submitForm(name, description, pipelineConfigurationFullPath, color);
 
@@ -126,13 +138,36 @@ describe('CreateForm', () => {
     });
 
     it('saves inputted values, redirects and continues to show loading while redirecting', async () => {
-      wrapper = createComponent([[createComplianceFrameworkMutation, create]]);
+      wrapper = createComponent([
+        [createComplianceFrameworkMutation, create],
+        [getComplianceFrameworkQuery, refetchFrameworks],
+      ]);
 
       await submitForm(name, description, pipelineConfigurationFullPath, color);
 
       expect(create).toHaveBeenCalledWith(creationProps);
       expect(findFormStatus().props('loading')).toBe(true);
-      expect(visitUrl).toHaveBeenCalledWith(propsData.groupEditPath);
+      expect(visitUrl).toHaveBeenCalledWith(provideData.groupEditPath);
+    });
+  });
+
+  describe('onCancel', () => {
+    beforeEach(() => {
+      wrapper = createComponent();
+    });
+
+    it('should emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
+      isModalsRefactorEnabled.mockReturnValue(true);
+      findForm().vm.$emit('cancel');
+
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
+    });
+
+    it('should not emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is disabled', () => {
+      isModalsRefactorEnabled.mockReturnValue(false);
+      findForm().vm.$emit('cancel');
+
+      expect(wrapper.emitted('cancel')).toBeUndefined();
     });
   });
 });

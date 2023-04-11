@@ -47,6 +47,8 @@ describe('DeleteModal', () => {
       propsData: {
         name: frameworkFoundResponse.name,
         id: frameworkFoundResponse.id,
+      },
+      provide: {
         groupPath: 'group-1',
       },
       stubs: {

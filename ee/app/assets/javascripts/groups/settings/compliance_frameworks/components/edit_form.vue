@@ -16,28 +16,17 @@ export default {
     FormStatus,
     SharedForm,
   },
+  inject: [
+    'graphqlFieldName',
+    'groupEditPath',
+    'groupPath',
+    'pipelineConfigurationFullPathEnabled',
+  ],
   props: {
-    graphqlFieldName: {
-      type: String,
-      required: true,
-    },
-    groupEditPath: {
-      type: String,
-      required: true,
-    },
-    groupPath: {
-      type: String,
-      required: true,
-    },
     id: {
       type: String,
       required: false,
       default: null,
-    },
-    pipelineConfigurationFullPathEnabled: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
   },
   data() {

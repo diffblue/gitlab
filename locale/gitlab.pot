@@ -10790,6 +10790,9 @@ msgstr ""
 msgid "ComplianceFrameworks|Cancel"
 msgstr ""
 
+msgid "ComplianceFrameworks|Compliance framework created"
+msgstr ""
+
 msgid "ComplianceFrameworks|Compliance framework deleted successfully"
 msgstr ""
 
@@ -10839,6 +10842,9 @@ msgid "ComplianceFrameworks|Name"
 msgstr ""
 
 msgid "ComplianceFrameworks|Name is required"
+msgstr ""
+
+msgid "ComplianceFrameworks|New compliance framework"
 msgstr ""
 
 msgid "ComplianceFrameworks|No compliance frameworks are set up yet"

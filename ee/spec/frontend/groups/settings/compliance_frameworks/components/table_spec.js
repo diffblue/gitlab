@@ -1,25 +1,27 @@
-import { GlAlert, GlButton, GlLoadingIcon, GlLabel, GlTableLite } from '@gitlab/ui';
+import { GlAlert, GlLabel, GlLoadingIcon, GlTableLite, GlModal } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
-
 import VueApollo from 'vue-apollo';
 
 import Table from 'ee/groups/settings/compliance_frameworks/components/table.vue';
 import EmptyState from 'ee/groups/settings/compliance_frameworks/components/table_empty_state.vue';
 import TableActions from 'ee/groups/settings/compliance_frameworks/components/table_actions.vue';
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
+import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
+import FormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 import { PIPELINE_CONFIGURATION_PATH_FORMAT } from 'ee/groups/settings/compliance_frameworks/constants';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import updateComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql//queries/update_compliance_framework.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
-  validFetchResponse,
   emptyFetchResponse,
-  validSetDefaultFrameworkResponse,
   errorSetDefaultFrameworkResponse,
+  validFetchResponse,
+  validSetDefaultFrameworkResponse,
 } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -28,6 +30,9 @@ describe('Table', () => {
   let wrapper;
   const sentryError = new Error('Network error');
 
+  const mockModalShow = jest.fn();
+  const mockModalHide = jest.fn();
+  const mockToastShow = jest.fn();
   const fetch = jest.fn().mockResolvedValue(validFetchResponse);
   const fetchEmpty = jest.fn().mockResolvedValue(emptyFetchResponse);
   const fetchLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
@@ -42,8 +47,9 @@ describe('Table', () => {
   const findDeleteModal = () => wrapper.findComponent(DeleteModal);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
-  const findAddBtn = () => wrapper.findComponent(GlButton);
+  const findAddBtn = () => wrapper.findByTestId('add-framework-btn');
   const findAllTableActions = () => wrapper.findAllComponents(TableActions);
+  const findFormModal = () => wrapper.findComponent(FormModal);
 
   function createMockApolloProvider(fetchMockResolver, updateMockResolver = updateDefault) {
     Vue.use(VueApollo);
@@ -59,6 +65,7 @@ describe('Table', () => {
     updateMockResolver,
     props = {},
     mountFn = shallowMount,
+    glFeatures = {},
   ) {
     return extendedWrapper(
       mountFn(Table, {
@@ -67,11 +74,29 @@ describe('Table', () => {
           addFrameworkPath: 'group/framework/new',
           editFrameworkPath: 'group/framework/id/edit',
           emptyStateSvgPath: 'dir/image.svg',
-          groupPath: 'group-1',
           ...props,
         },
         stubs: {
+          CreateForm: stubComponent(CreateForm),
           GlLoadingIcon,
+          GlModal: stubComponent(GlModal, {
+            methods: {
+              show: mockModalShow,
+              hide: mockModalHide,
+            },
+          }),
+        },
+        mocks: {
+          $toast: {
+            show: mockToastShow,
+          },
+        },
+        provide: {
+          groupEditPath: '/groups/group-1/-/edit#js-compliance-frameworks-settings',
+          groupPath: 'group-1',
+          graphqlFieldName: 'ComplianceManagement::Framework',
+          pipelineConfigurationFullPathEnabled: true,
+          glFeatures,
         },
       }),
     );
@@ -339,6 +364,44 @@ describe('Table', () => {
             expect(findAlert().exists()).toBe(false);
           });
         });
+      });
+    });
+  });
+
+  describe('create framework', () => {
+    describe('with "manageComplianceFrameworksModalsRefactor" feature flag enabled', () => {
+      beforeEach(async () => {
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount, {
+          manageComplianceFrameworksModalsRefactor: true,
+        });
+        await waitForPromises();
+      });
+
+      it('renders a button instead of a link', () => {
+        const btn = findAddBtn();
+
+        expect(btn.find('button').exists()).toBe(true);
+        expect(btn.find('a').exists()).toBe(false);
+      });
+
+      it('shows modal when clicking add framework button', () => {
+        findAddBtn().vm.$emit('click', new MouseEvent('click'));
+
+        expect(mockModalShow).toHaveBeenCalled();
+      });
+
+      it('hides modal when successful', () => {
+        const successMessage = 'woo!';
+        findFormModal().vm.$emit('change', successMessage);
+
+        expect(mockModalHide).toHaveBeenCalled();
+      });
+
+      it('shows a toast when successful', () => {
+        const successMessage = 'woo!';
+        findFormModal().vm.$emit('change', successMessage);
+
+        expect(mockToastShow).toHaveBeenCalledWith(successMessage);
       });
     });
   });

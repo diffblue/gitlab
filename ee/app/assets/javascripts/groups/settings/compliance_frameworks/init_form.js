@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import createDefaultClient from '~/lib/graphql';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import CreateForm from './components/create_form.vue';
 import EditForm from './components/edit_form.vue';
 
@@ -28,17 +27,19 @@ const createComplianceFrameworksFormApp = (el) => {
   return new Vue({
     el,
     apolloProvider,
+    provide: {
+      graphqlFieldName,
+      groupEditPath,
+      groupPath,
+      pipelineConfigurationFullPathEnabled: Boolean(pipelineConfigurationFullPathEnabled),
+    },
     render(createElement) {
       let element = CreateForm;
-      let props = {
-        groupEditPath,
-        groupPath,
-        pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
-      };
+      let props = {};
 
       if (id) {
         element = EditForm;
-        props = { ...props, graphqlFieldName, id };
+        props = { id };
       }
 
       return createElement(element, {

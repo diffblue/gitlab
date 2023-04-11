@@ -37,14 +37,18 @@ RSpec.describe ComplianceManagement::ComplianceFramework::GroupSettingsHelper do
 
     before do
       allow(helper).to receive(:can?).with(current_user, :admin_compliance_framework, group).and_return(true)
+      allow(helper).to receive(:can?).with(current_user, :admin_compliance_pipeline_configuration, group).and_return(true)
     end
 
     it 'returns the correct data' do
       expect(helper.compliance_frameworks_list_data(group)).to contain_exactly(
         [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/welcome/ee_trial.svg')],
+        [:group_edit_path, edit_group_path(group, anchor: 'js-compliance-frameworks-settings')],
         [:group_path, group.full_path],
         [:add_framework_path, new_group_compliance_framework_path(group)],
-        [:edit_framework_path, edit_group_compliance_framework_path(group, :id)]
+        [:edit_framework_path, edit_group_compliance_framework_path(group, :id)],
+        [:pipeline_configuration_full_path_enabled, 'true'],
+        [:graphql_field_name, ComplianceManagement::Framework.name]
       )
     end
 

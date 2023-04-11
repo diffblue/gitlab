@@ -11,6 +11,7 @@ export default {
     GlModal,
     GlSprintf,
   },
+  inject: ['groupPath'],
   props: {
     name: {
       type: String,
@@ -21,10 +22,6 @@ export default {
       type: String,
       required: false,
       default: null,
-    },
-    groupPath: {
-      type: String,
-      required: true,
     },
   },
   computed: {

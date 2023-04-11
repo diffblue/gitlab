@@ -1,11 +1,14 @@
 <script>
-import { GlEmptyState } from '@gitlab/ui';
+import { GlButton, GlEmptyState } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 export default {
   components: {
+    GlButton,
     GlEmptyState,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     imagePath: {
       type: String,
@@ -16,6 +19,23 @@ export default {
       type: String,
       required: false,
       default: null,
+    },
+  },
+  computed: {
+    addFrameworkHref() {
+      return this.glFeatures.manageComplianceFrameworksModalsRefactor
+        ? undefined
+        : this.addFrameworkPath;
+    },
+  },
+  methods: {
+    onAddFramework(event) {
+      if (!this.glFeatures.manageComplianceFrameworksModalsRefactor) {
+        return;
+      }
+
+      event.preventDefault();
+      this.$emit('addFramework', event);
     },
   },
   i18n: {
@@ -30,13 +50,21 @@ export default {
   <gl-empty-state
     :description="$options.i18n.description"
     :svg-path="imagePath"
-    :primary-button-link="addFrameworkPath"
-    :primary-button-text="$options.i18n.addButton"
     compact
     :svg-height="100"
   >
     <template #title>
       <h5 class="gl-mt-0">{{ $options.i18n.heading }}</h5>
+    </template>
+    <template #actions>
+      <gl-button
+        :href="addFrameworkHref"
+        category="primary"
+        variant="confirm"
+        class="gl-mb-3"
+        @click="onAddFramework"
+        >{{ $options.i18n.addButton }}
+      </gl-button>
     </template>
   </gl-empty-state>
 </template>
