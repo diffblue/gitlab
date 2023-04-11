@@ -4,6 +4,7 @@ import * as constants from 'ee/subscriptions/constants';
 import defaultClient from 'ee/subscriptions/new/graphql';
 import * as actions from 'ee/subscriptions/new/store/actions';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
+import { ActiveModelError } from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
@@ -171,7 +172,12 @@ describe('Subscriptions Actions', () => {
         null,
         {},
         [],
-        [{ type: 'confirmOrderError', payload: 'Failed to load countries. Please try again.' }],
+        [
+          {
+            type: 'confirmOrderError',
+            payload: new Error('Failed to load countries. Please try again.'),
+          },
+        ],
       );
     });
   });
@@ -239,7 +245,12 @@ describe('Subscriptions Actions', () => {
         null,
         {},
         [],
-        [{ type: 'confirmOrderError', payload: 'Failed to load states. Please try again.' }],
+        [
+          {
+            type: 'confirmOrderError',
+            payload: new Error('Failed to load states. Please try again.'),
+          },
+        ],
       );
     });
   });
@@ -416,7 +427,12 @@ describe('Subscriptions Actions', () => {
         { errors: 'error message' },
         {},
         [],
-        [{ type: 'confirmOrderError', payload: 'Credit card form failed to load: error message' }],
+        [
+          {
+            type: 'confirmOrderError',
+            payload: new Error('Credit card form failed to load: error message'),
+          },
+        ],
       );
     });
   });
@@ -431,7 +447,7 @@ describe('Subscriptions Actions', () => {
         [
           {
             type: 'confirmOrderError',
-            payload: 'Credit card form failed to load. Please try again.',
+            payload: new Error('Credit card form failed to load. Please try again.'),
           },
         ],
       );
@@ -498,8 +514,9 @@ describe('Subscriptions Actions', () => {
         [
           {
             type: 'confirmOrderError',
-            payload:
+            payload: new Error(
               'Submitting the credit card form failed with code codeFromResponse: messageFromResponse',
+            ),
           },
         ],
       );
@@ -574,7 +591,7 @@ describe('Subscriptions Actions', () => {
             payload: creditCardDetails,
           },
         ],
-        [{ type: 'confirmOrderError', payload: error.message }],
+        [{ type: 'confirmOrderError', payload: error }],
       );
     });
   });
@@ -589,7 +606,7 @@ describe('Subscriptions Actions', () => {
         [
           {
             type: 'confirmOrderError',
-            payload: 'Failed to register credit card. Please try again.',
+            payload: new Error('Failed to register credit card. Please try again.'),
           },
         ],
       );
@@ -646,7 +663,7 @@ describe('Subscriptions Actions', () => {
           null,
           {},
           [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError', payload: '"errors"' }],
+          [{ type: 'confirmOrderError', payload: new ActiveModelError(null, '"errors"') }],
         );
 
         expect(spy).toHaveBeenCalledWith('default', 'click_button', {
@@ -663,7 +680,12 @@ describe('Subscriptions Actions', () => {
           null,
           {},
           [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError', payload: '"Name: Error_1, Error \' 2"' }],
+          [
+            {
+              type: 'confirmOrderError',
+              payload: new ActiveModelError(null, '"Name: Error_1, Error \' 2"'),
+            },
+          ],
         );
       });
 
@@ -681,7 +703,34 @@ describe('Subscriptions Actions', () => {
           null,
           {},
           [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError', payload: '"Promo code is invalid"' }],
+          [
+            {
+              type: 'confirmOrderError',
+              payload: new ActiveModelError(null, '"Promo code is invalid"'),
+            },
+          ],
+        );
+      });
+
+      it('sends the error_attribute_map in the paylod', async () => {
+        const errors = { email: ["can't be blank"] };
+        const errorAttributeMap = { email: ['taken'] };
+        mock.onPost(confirmOrderPath).replyOnce(HTTP_STATUS_OK, {
+          errors,
+          error_attribute_map: errorAttributeMap,
+        });
+
+        await testAction(
+          actions.confirmOrder,
+          null,
+          {},
+          [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
+          [
+            {
+              type: 'confirmOrderError',
+              payload: new ActiveModelError(errorAttributeMap, JSON.stringify(errors)),
+            },
+          ],
         );
       });
     });
@@ -697,7 +746,12 @@ describe('Subscriptions Actions', () => {
           null,
           {},
           [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: true }],
-          [{ type: 'confirmOrderError', payload: 'Request failed with status code 500' }],
+          [
+            {
+              type: 'confirmOrderError',
+              payload: new Error('Request failed with status code 500'),
+            },
+          ],
         );
 
         expect(spy).toHaveBeenCalledWith('default', 'click_button', {

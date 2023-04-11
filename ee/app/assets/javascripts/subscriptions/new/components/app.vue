@@ -35,7 +35,7 @@ export default {
     },
     handleVuexActionDispatch(action) {
       if (action.type === 'confirmOrderError') {
-        this.handleError(new Error(action.payload));
+        this.handleError(action.payload);
       }
     },
     hideError() {

@@ -53,7 +53,7 @@ describe('Purchase Error Alert', () => {
     });
 
     it('invokes mapSystemToFriendlyError', () => {
-      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error.message);
+      expect(mapSystemToFriendlyError).toHaveBeenCalledWith(error);
     });
 
     it('passes the correct html', () => {

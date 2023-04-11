@@ -8867,7 +8867,7 @@ msgstr ""
 msgid "Checkout|Name of company or organization using GitLab"
 msgstr ""
 
-msgid "Checkout|Name: %{errors}"
+msgid "Checkout|Name: %{errorMessage}"
 msgstr ""
 
 msgid "Checkout|Need more users? Purchase GitLab for your %{company}."

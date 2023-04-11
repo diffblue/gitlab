@@ -21,7 +21,7 @@ export default {
   },
   computed: {
     friendlyError() {
-      return mapSystemToFriendlyError(this.error?.message);
+      return mapSystemToFriendlyError(this.error);
     },
     friendlyErrorMessage() {
       return generateHelpTextWithLinks(this.friendlyError);
