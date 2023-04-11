@@ -66,6 +66,10 @@ RSpec.describe Groups::RestoreService, feature_category: :subgroups do
 
       context 'audit events' do
         it 'logs audit event' do
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+            hash_including(name: 'group_restored')
+          ).and_call_original
+
           expect { subject }.to change { AuditEvent.count }.by(1)
         end
       end

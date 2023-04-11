@@ -68,6 +68,10 @@ RSpec.describe Groups::MarkForDeletionService, feature_category: :subgroups do
 
       context 'audit events' do
         it 'logs audit event' do
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+            hash_including(name: 'group_deletion_marked')
+          ).and_call_original
+
           expect { subject }.to change { AuditEvent.count }.by(1)
         end
       end
