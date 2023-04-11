@@ -20,7 +20,7 @@ RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_categ
     end
 
     it 'displays error message after merge request is clicked' do
-      click_button 'Merge'
+      click_merge_button
 
       expect(page).to have_content("Commit message does not follow the pattern '#{push_rule.commit_message_regex}'")
     end
@@ -35,7 +35,7 @@ RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_categ
     end
 
     it 'displays error message after merge request is clicked' do
-      click_button 'Merge'
+      click_merge_button
 
       expect(page).to have_content("Author's commit email '#{user.email}' does not follow the pattern '#{push_rule.author_email_regex}'")
     end
@@ -43,5 +43,11 @@ RSpec.describe 'Merge request > User merges with Push Rules', :js, feature_categ
 
   def visit_merge_request(merge_request)
     visit project_merge_request_path(merge_request.project, merge_request)
+  end
+
+  def click_merge_button
+    page.within('.mr-state-widget') do
+      click_button 'Merge'
+    end
   end
 end

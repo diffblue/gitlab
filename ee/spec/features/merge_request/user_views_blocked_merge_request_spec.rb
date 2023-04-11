@@ -29,7 +29,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :
     it 'is mergeable' do
       visit project_merge_request_path(project, blocked_mr)
 
-      expect(page).to have_button('Merge', disabled: false)
+      expect(page).to have_button('Merge', exact: true, disabled: false)
     end
   end
 
@@ -43,7 +43,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :
         visit project_merge_request_path(project, blocked_mr)
 
         expect(page).to have_content('Depends on 1 merge request')
-        expect(page).not_to have_button('Merge')
+        expect(page).not_to have_button('Merge', exact: true)
 
         click_expand_button
 
@@ -61,7 +61,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js, feature_category: :
         visit project_merge_request_path(project, blocked_mr)
 
         expect(page).to have_content('Depends on 1 merge request')
-        expect(page).not_to have_button('Merge')
+        expect(page).not_to have_button('Merge', exact: true)
 
         click_expand_button
 
