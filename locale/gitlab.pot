@@ -33007,7 +33007,7 @@ msgstr ""
 msgid "Preferences|Choose between fixed (max. 1280px) and fluid (%{percentage}) application layout."
 msgstr ""
 
-msgid "Preferences|Choose what content you want to see by default on your dashboard."
+msgid "Preferences|Choose what content you want to see by default on your homepage."
 msgstr ""
 
 msgid "Preferences|Choose what content you want to see on a project’s overview page."
@@ -33040,9 +33040,6 @@ msgstr ""
 msgid "Preferences|Customize the colors of removed and added lines in diffs."
 msgstr ""
 
-msgid "Preferences|Dashboard"
-msgstr ""
-
 msgid "Preferences|Diff colors"
 msgstr ""
 
@@ -33062,6 +33059,9 @@ msgid "Preferences|For example: 30 minutes ago."
 msgstr ""
 
 msgid "Preferences|Gitpod"
+msgstr ""
+
+msgid "Preferences|Homepage"
 msgstr ""
 
 msgid "Preferences|Instead of all the files changed, show only one file at a time. To switch between files, use the file browser."
