@@ -219,7 +219,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
     context 'without valid query parameters set' do
       before do
-        create_value_stream_group_aggregation(group)
+        create_value_stream_aggregation(group)
       end
 
       context 'with created_after date > created_before date' do
@@ -259,7 +259,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       projects_dropdown = '.js-projects-dropdown-filter'
 
       before do
-        create_value_stream_group_aggregation(group)
+        create_value_stream_aggregation(group)
       end
 
       context 'with project_ids set' do
@@ -356,7 +356,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       Gitlab::Analytics::CycleAnalytics::DefaultStages.all.map do |params|
         group.cycle_analytics_stages.build(params.merge(value_stream: value_stream)).save!
       end
-      create_value_stream_group_aggregation(group)
+      create_value_stream_aggregation(group)
 
       select_group(group)
     end

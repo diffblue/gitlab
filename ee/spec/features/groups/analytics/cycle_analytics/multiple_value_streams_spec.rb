@@ -256,7 +256,7 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
       end
 
       it 'displays the value stream once an aggregation is run' do
-        create_value_stream_group_aggregation(group)
+        create_value_stream_aggregation(group)
 
         reload_value_stream
 
@@ -267,8 +267,8 @@ RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_ma
 
     context 'with an aggregation created' do
       before do
-        create_value_stream_group_aggregation(group)
-        create_value_stream_group_aggregation(sub_group)
+        create_value_stream_aggregation(group)
+        create_value_stream_aggregation(sub_group)
 
         # ensure we have a value stream already available
         create(:cycle_analytics_value_stream, namespace: group, name: 'default')
