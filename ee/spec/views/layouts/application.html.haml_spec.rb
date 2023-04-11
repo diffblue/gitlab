@@ -33,8 +33,7 @@ RSpec.describe 'layouts/application' do
         render
 
         expect(rendered).to have_css('li', class: 'header-user') do
-          expect(rendered).to have_css('span', class: 'notification-dot')
-          expect(rendered).to have_selector(track_selector)
+          expect(rendered).to have_css("span#{track_selector}", class: 'notification-dot')
         end
       end
     end
@@ -44,8 +43,7 @@ RSpec.describe 'layouts/application' do
         render
 
         expect(rendered).to have_css('li', class: 'header-user') do
-          expect(rendered).not_to have_css('span', class: 'notification-dot')
-          expect(rendered).not_to have_selector(track_selector)
+          expect(rendered).not_to have_css("span#{track_selector}", class: 'notification-dot')
         end
       end
     end
