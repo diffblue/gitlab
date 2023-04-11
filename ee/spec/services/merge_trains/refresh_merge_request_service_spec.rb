@@ -50,7 +50,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
         result = subject
         expect(result[:status]).to eq(:success)
         expect(result[:pipeline_created]).to eq(true)
-        expect(merge_request.merge_train).to be_fresh
+        expect(merge_request.merge_train_car).to be_fresh
       end
     end
 
@@ -64,7 +64,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
         end
 
         result = subject
-        new_pipeline = merge_request.merge_train.pipeline
+        new_pipeline = merge_request.merge_train_car.pipeline
         pipeline.reset
 
         expect(result[:status]).to eq(:success)
@@ -118,7 +118,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       let(:pipeline) { create(:ci_pipeline, :failed) }
 
       before do
-        merge_request.merge_train.update!(pipeline: pipeline)
+        merge_request.merge_train_car.update!(pipeline: pipeline)
       end
 
       it_behaves_like 'drops the merge request from the merge train' do
@@ -140,7 +140,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       let(:previous_ref) { 'refs/tmp/test' }
 
       before do
-        allow(merge_request.merge_train).to receive(:previous_ref) { previous_ref }
+        allow(merge_request.merge_train_car).to receive(:previous_ref) { previous_ref }
       end
 
       it_behaves_like 'drops the merge request from the merge train' do
@@ -173,7 +173,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       let(:previous_ref_sha) { project.repository.commit('refs/heads/master').sha }
 
       before do
-        merge_request.merge_train.refresh_pipeline!(pipeline.id)
+        merge_request.merge_train_car.refresh_pipeline!(pipeline.id)
       end
 
       context 'when the pipeline is not stale' do
@@ -182,7 +182,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       context 'when the pipeline is stale' do
         before do
-          merge_request.merge_train.update_column(:status, MergeTrains::Car.state_machines[:status].states[:stale].value)
+          merge_request.merge_train_car.update_column(:status, MergeTrains::Car.state_machines[:status].states[:stale].value)
         end
 
         it_behaves_like 'cancels and recreates a pipeline for the merge train'
@@ -200,7 +200,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       let(:previous_ref_sha) { project.repository.commit('refs/heads/master').sha }
 
       before do
-        merge_request.merge_train.refresh_pipeline!(pipeline.id)
+        merge_request.merge_train_car.refresh_pipeline!(pipeline.id)
         merge_request.merge_params[:sha] = merge_request.diff_head_sha
         merge_request.save!
       end
@@ -208,14 +208,14 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
       context 'when the merge request is the first queue' do
         it 'merges the merge request' do
           expect(merge_request).to receive(:cleanup_refs).with(only: :train)
-          expect(merge_request.merge_train).to receive(:start_merge!).and_call_original
-          expect(merge_request.merge_train).to receive(:finish_merge!).and_call_original
+          expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
+          expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
           expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
             expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true).and_call_original
           end
 
           expect { subject }
-            .to change { merge_request.merge_train.status_name }.from(:fresh).to(:merged)
+            .to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
         end
 
         context 'when it failed to merge the merge request' do
@@ -229,8 +229,8 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
           it 'does not finish merge and drops the merge request from train' do
             expect(merge_request).to be_on_train
-            expect(merge_request.merge_train).to receive(:start_merge!).and_call_original
-            expect(merge_request.merge_train).not_to receive(:finish_merge!)
+            expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
+            expect(merge_request.merge_train_car).not_to receive(:finish_merge!)
 
             subject
 
@@ -245,7 +245,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       context 'when the merge request is not the first queue' do
         before do
-          allow(merge_request.merge_train).to receive(:first_in_train?) { false }
+          allow(merge_request.merge_train_car).to receive(:first_in_train?) { false }
         end
 
         it 'does not merge the merge request' do

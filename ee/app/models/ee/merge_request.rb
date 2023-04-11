@@ -38,7 +38,7 @@ module EE
       end
       has_many :approval_merge_request_rule_sources, through: :approval_rules
       has_many :approval_project_rules, through: :approval_merge_request_rule_sources
-      has_one :merge_train, class_name: 'MergeTrains::Car', inverse_of: :merge_request, dependent: :destroy
+      has_one :merge_train_car, class_name: 'MergeTrains::Car', inverse_of: :merge_request, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
 
       has_many :blocks_as_blocker,
                class_name: 'MergeRequestBlock',
@@ -71,7 +71,7 @@ module EE
       end
 
       scope :including_merge_train, -> do
-        includes(:merge_train)
+        includes(:merge_train_car)
       end
 
       scope :with_head_pipeline, -> { where.not(head_pipeline_id: nil) }
@@ -155,7 +155,7 @@ module EE
     end
 
     def on_train?
-      merge_train&.active?
+      merge_train_car&.active?
     end
 
     def allows_multiple_assignees?

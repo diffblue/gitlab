@@ -7,7 +7,7 @@ require 'spec_helper'
 #
 # For instance, `ee/spec/models/merge_request/blocking_spec.rb` tests the
 # "blocking MRs" feature.
-RSpec.describe MergeRequest do
+RSpec.describe MergeRequest, feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
   include ReactiveCachingHelpers
 
@@ -24,7 +24,7 @@ RSpec.describe MergeRequest do
     it { is_expected.to have_many(:approver_users).through(:approvers) }
     it { is_expected.to have_many(:approver_groups).dependent(:delete_all) }
     it { is_expected.to have_many(:approved_by_users) }
-    it { is_expected.to have_one(:merge_train) }
+    it { is_expected.to have_one(:merge_train_car) }
     it { is_expected.to have_many(:approval_rules) }
     it { is_expected.to have_many(:approval_merge_request_rule_sources).through(:approval_rules) }
     it { is_expected.to have_many(:approval_project_rules).through(:approval_merge_request_rule_sources) }

@@ -31,8 +31,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
     let(:params) { {} }
 
     context 'when there are two merge trains' do
-      let_it_be(:merge_train_1) { create(:merge_train, :merged, target_project: project) }
-      let_it_be(:merge_train_2) { create(:merge_train, :idle, target_project: project) }
+      let_it_be(:train_car_1) { create(:merge_train_car, :merged, target_project: project) }
+      let_it_be(:train_car_2) { create(:merge_train_car, :idle, target_project: project) }
 
       it 'returns merge trains sorted by id in descending order' do
         subject
@@ -40,14 +40,14 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/merge_trains', dir: 'ee')
         expect(json_response.count).to eq(2)
-        expect(json_response.first['id']).to eq(merge_train_2.id)
-        expect(json_response.second['id']).to eq(merge_train_1.id)
+        expect(json_response.first['id']).to eq(train_car_2.id)
+        expect(json_response.second['id']).to eq(train_car_1.id)
       end
 
       it 'does not have N+1 problem' do
         control_count = ActiveRecord::QueryRecorder.new { subject }
 
-        create_list(:merge_train, 3, target_project: project)
+        create_list(:merge_train_car, 3, target_project: project)
 
         expect { get api("/projects/#{project.id}/merge_trains", user) }
           .not_to exceed_query_limit(control_count)
@@ -59,8 +59,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
         it 'returns merge trains sorted by id in ascending order' do
           subject
 
-          expect(json_response.first['id']).to eq(merge_train_1.id)
-          expect(json_response.second['id']).to eq(merge_train_2.id)
+          expect(json_response.first['id']).to eq(train_car_1.id)
+          expect(json_response.second['id']).to eq(train_car_2.id)
         end
       end
 
@@ -72,7 +72,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
             subject
 
             expect(json_response.count).to eq(1)
-            expect(json_response.first['id']).to eq(merge_train_2.id)
+            expect(json_response.first['id']).to eq(train_car_2.id)
           end
         end
 
@@ -83,7 +83,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
             subject
 
             expect(json_response.count).to eq(1)
-            expect(json_response.first['id']).to eq(merge_train_1.id)
+            expect(json_response.first['id']).to eq(train_car_1.id)
           end
         end
       end
@@ -101,14 +101,14 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
   end
 
   describe 'GET /projects/:id/merge_trains/:target_branch' do
-    let!(:merge_train_1) { create(:merge_train, :idle, target_project: project, target_branch: 'master') }
-    let!(:merge_train_2) { create(:merge_train, :merged, target_project: project, target_branch: 'master') }
-    let!(:merge_train_3) { create(:merge_train, target_project: project, target_branch: 'feature') }
-    let!(:merge_train_4) { create(:merge_train, target_project: other_project, target_branch: 'master') }
+    let!(:train_car_1) { create(:merge_train_car, :idle, target_project: project, target_branch: 'master') }
+    let!(:train_car_2) { create(:merge_train_car, :merged, target_project: project, target_branch: 'master') }
+    let!(:train_car_3) { create(:merge_train_car, target_project: project, target_branch: 'feature') }
+    let!(:train_car_4) { create(:merge_train_car, target_project: other_project, target_branch: 'master') }
 
     context 'when the project and target branch exist' do
       subject do
-        get api("/projects/#{project.id}/merge_trains/#{merge_train_1.target_branch}", developer), params: params
+        get api("/projects/#{project.id}/merge_trains/#{train_car_1.target_branch}", developer), params: params
       end
 
       context 'with no params' do
@@ -130,8 +130,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.count).to eq(2)
-          expect(json_response.first['id']).to eq(merge_train_1.id)
-          expect(json_response.second['id']).to eq(merge_train_2.id)
+          expect(json_response.first['id']).to eq(train_car_1.id)
+          expect(json_response.second['id']).to eq(train_car_2.id)
         end
       end
 
@@ -143,8 +143,8 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.count).to eq(2)
-          expect(json_response.first['id']).to eq(merge_train_2.id)
-          expect(json_response.second['id']).to eq(merge_train_1.id)
+          expect(json_response.first['id']).to eq(train_car_2.id)
+          expect(json_response.second['id']).to eq(train_car_1.id)
         end
       end
 
@@ -156,7 +156,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.count).to eq(1)
-          expect(json_response.first['id']).to eq(merge_train_1.id)
+          expect(json_response.first['id']).to eq(train_car_1.id)
         end
       end
     end
@@ -173,7 +173,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
     end
 
     context 'when the user does not have project access' do
-      subject { get api("/projects/#{project.id}/merge_trains/#{merge_train_1.target_branch}", guest) }
+      subject { get api("/projects/#{project.id}/merge_trains/#{train_car_1.target_branch}", guest) }
 
       it 'returns forbidden' do
         subject
@@ -190,7 +190,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
              target_project: project, target_branch: 'master', title: 'Test')
     end
 
-    let!(:merge_train_1) { create(:merge_train, merge_request: merge_request_1) }
+    let!(:train_car_1) { create(:merge_train_car, merge_request: merge_request_1) }
 
     context 'when the project and target branch exist' do
       subject { get api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_1.iid}", developer) }
@@ -199,7 +199,7 @@ RSpec.describe API::MergeTrains, feature_category: :continuous_integration do
         subject
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response["id"]).to eq(merge_train_1.id)
+        expect(json_response["id"]).to eq(train_car_1.id)
         expect(json_response["merge_request"]["iid"]).to eq(merge_request_1.iid)
       end
     end

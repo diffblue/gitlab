@@ -14,8 +14,8 @@ module MergeTrains
       @merge_request = merge_request
 
       validate!
-      pipeline_created = create_pipeline! if merge_train.requires_new_pipeline? || require_recreate?
-      merge! if merge_train.mergeable?
+      pipeline_created = create_pipeline! if merge_train_car.requires_new_pipeline? || require_recreate?
+      merge! if merge_train_car.mergeable?
 
       success(pipeline_created: pipeline_created.present?)
     rescue ProcessError => e
@@ -37,41 +37,41 @@ module MergeTrains
         raise ProcessError, 'merge request is not mergeable'
       end
 
-      unless merge_train.previous_ref_sha.present?
+      unless merge_train_car.previous_ref_sha.present?
         raise ProcessError, 'previous ref does not exist'
       end
 
-      if merge_train.pipeline_not_succeeded?
+      if merge_train_car.pipeline_not_succeeded?
         raise ProcessError, 'pipeline did not succeed'
       end
     end
 
     def create_pipeline!
-      result = MergeTrains::CreatePipelineService.new(merge_train.project, merge_train.user)
-        .execute(merge_train.merge_request, merge_train.previous_ref)
+      result = MergeTrains::CreatePipelineService.new(merge_train_car.project, merge_train_car.user)
+        .execute(merge_train_car.merge_request, merge_train_car.previous_ref)
 
       raise ProcessError, result[:message] unless result[:status] == :success
 
       pipeline = result[:pipeline]
-      merge_train.cancel_pipeline!(pipeline)
-      merge_train.refresh_pipeline!(pipeline.id)
+      merge_train_car.cancel_pipeline!(pipeline)
+      merge_train_car.refresh_pipeline!(pipeline.id)
 
       pipeline
     end
 
     def merge!
-      merge_train.start_merge!
+      merge_train_car.start_merge!
 
       MergeRequests::MergeService.new(project: project, current_user: merge_user, params: merge_request.merge_params.with_indifferent_access)
                                  .execute(merge_request, skip_discussions_check: true)
 
       raise ProcessError, "failed to merge. #{merge_request.merge_error}" unless merge_request.merged?
 
-      merge_train.finish_merge!
+      merge_train_car.finish_merge!
     end
 
-    def merge_train
-      merge_request.merge_train
+    def merge_train_car
+      merge_request.merge_train_car
     end
 
     def merge_user

@@ -51,18 +51,18 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
   end
 
   it 'creates a pipeline for merge request 1', :sidekiq_might_not_need_inline do
-    expect(merge_request_1.merge_train.pipeline).to be_merged_result_pipeline
-    expect(merge_request_1.merge_train.pipeline.user).to eq(maintainer_1)
-    expect(merge_request_1.merge_train.pipeline.ref).to eq(merge_request_1.train_ref_path)
-    expect(merge_request_1.merge_train.pipeline.target_sha)
+    expect(merge_request_1.merge_train_car.pipeline).to be_merged_result_pipeline
+    expect(merge_request_1.merge_train_car.pipeline.user).to eq(maintainer_1)
+    expect(merge_request_1.merge_train_car.pipeline.ref).to eq(merge_request_1.train_ref_path)
+    expect(merge_request_1.merge_train_car.pipeline.target_sha)
       .to eq(project.repository.commit('refs/heads/master').sha)
   end
 
   it 'creates a pipeline for merge request 2', :sidekiq_might_not_need_inline do
-    expect(merge_request_2.merge_train.pipeline).to be_merged_result_pipeline
-    expect(merge_request_2.merge_train.pipeline.user).to eq(maintainer_2)
-    expect(merge_request_2.merge_train.pipeline.ref).to eq(merge_request_2.train_ref_path)
-    expect(merge_request_2.merge_train.pipeline.target_sha)
+    expect(merge_request_2.merge_train_car.pipeline).to be_merged_result_pipeline
+    expect(merge_request_2.merge_train_car.pipeline.user).to eq(maintainer_2)
+    expect(merge_request_2.merge_train_car.pipeline.ref).to eq(merge_request_2.train_ref_path)
+    expect(merge_request_2.merge_train_car.pipeline.target_sha)
       .to eq(project.repository.commit(merge_request_1.train_ref_path).sha)
   end
 
@@ -74,7 +74,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
   shared_examples_for 'drops merge request 1 from the merge train' do
     it 'drops merge request 1 from the merge train', :sidekiq_might_not_need_inline do
       expect(merge_request_1).to be_opened
-      expect(merge_request_1.merge_train).to be_nil
+      expect(merge_request_1.merge_train_car).to be_nil
       expect(merge_request_1.notes.last.note).to eq(system_note)
     end
   end
@@ -86,7 +86,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     context 'when the pipeline for merge request 2 succeeded' do
       before do
-        merge_request_2.merge_train.pipeline.succeed!
+        merge_request_2.merge_train_car.pipeline.succeed!
 
         merge_request_2.reload
       end
@@ -94,7 +94,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
       it 'merges merge request 2', :sidekiq_might_not_need_inline do
         expect(merge_request_2).to be_merged
         expect(merge_request_2.metrics.merged_by).to eq(maintainer_2)
-        expect(merge_request_2.merge_train).to be_merged
+        expect(merge_request_2.merge_train_car).to be_merged
       end
     end
   end
@@ -102,13 +102,13 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
   shared_examples_for 're-creates a pipeline for merge request 2' do
     it 'has recreated pipeline', :sidekiq_might_not_need_inline do
       expect(merge_request_2.all_pipelines.count).to eq(2)
-      expect(merge_request_2.merge_train.pipeline.target_sha)
+      expect(merge_request_2.merge_train_car.pipeline.target_sha)
         .to eq(target_branch_sha)
     end
 
     context 'when the pipeline for merge request 2 succeeded' do
       before do
-        merge_request_2.merge_train.pipeline.succeed!
+        merge_request_2.merge_train_car.pipeline.succeed!
 
         merge_request_2.reload
       end
@@ -116,14 +116,14 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
       it 'merges merge request 2', :sidekiq_might_not_need_inline do
         expect(merge_request_2).to be_merged
         expect(merge_request_2.metrics.merged_by).to eq(maintainer_2)
-        expect(merge_request_2.merge_train).to be_merged
+        expect(merge_request_2.merge_train_car).to be_merged
       end
     end
   end
 
   context 'when the pipeline for merge request 1 succeeded' do
     before do
-      merge_request_1.merge_train.pipeline.succeed!
+      merge_request_1.merge_train_car.pipeline.succeed!
 
       merge_request_1.reload
       merge_request_2.reload
@@ -132,7 +132,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
     it 'merges merge request 1', :sidekiq_might_not_need_inline do
       expect(merge_request_1).to be_merged
       expect(merge_request_1.metrics.merged_by).to eq(maintainer_1)
-      expect(merge_request_1.merge_train).to be_merged
+      expect(merge_request_1.merge_train_car).to be_merged
     end
 
     it_behaves_like 'has an intact pipeline for merge request 2'
@@ -140,7 +140,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
   context 'when the pipeline for merge request 1 failed' do
     before do
-      merge_request_1.merge_train.pipeline.drop!
+      merge_request_1.merge_train_car.pipeline.drop!
 
       merge_request_1.reload
       merge_request_2.reload
@@ -202,7 +202,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
   context 'when merge request 1 is not mergeable' do
     before do
       merge_request_1.update!(title: merge_request_1.draft_title)
-      merge_request_1.merge_train.pipeline.succeed!
+      merge_request_1.merge_train_car.pipeline.succeed!
 
       merge_request_1.reload
       merge_request_2.reload
@@ -229,13 +229,13 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     it 're-creates a pipeline for merge request 1' do
       expect(merge_request_1.all_pipelines.count).to eq(2)
-      expect(merge_request_1.merge_train.pipeline.target_sha)
+      expect(merge_request_1.merge_train_car.pipeline.target_sha)
         .to eq(merge_request_1.target_branch_sha)
     end
 
     it 're-creates a pipeline for merge request 2' do
       expect(merge_request_2.all_pipelines.count).to eq(2)
-      expect(merge_request_2.merge_train.pipeline.target_sha)
+      expect(merge_request_2.merge_train_car.pipeline.target_sha)
         .to eq(project.repository.commit(merge_request_1.train_ref_path).sha)
     end
 
@@ -246,7 +246,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     context 'when the pipeline for merge request 1 succeeded' do
       before do
-        merge_request_1.merge_train.pipeline.succeed!
+        merge_request_1.merge_train_car.pipeline.succeed!
 
         merge_request_1.reload
       end
@@ -258,7 +258,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
       context 'when the pipeline for merge request 2 succeeded' do
         before do
-          merge_request_2.merge_train.pipeline.succeed!
+          merge_request_2.merge_train_car.pipeline.succeed!
 
           merge_request_2.reload
         end

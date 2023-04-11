@@ -15,7 +15,7 @@ module EE
       end
 
       expose :merge_train_index, if: -> (merge_request) { merge_request.on_train? } do |merge_request|
-        merge_request.merge_train.index
+        merge_request.merge_train_car.index
       end
 
       expose :can_retry_external_status_checks do |merge_request|

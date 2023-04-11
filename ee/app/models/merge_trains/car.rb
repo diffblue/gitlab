@@ -6,14 +6,14 @@ module MergeTrains
     include Gitlab::Utils::StrongMemoize
     include AfterCommitQueue
 
-    # For legacy reasons, each row is a merge_train in the database
+    # For legacy reasons, each row is a merge train in the database
     self.table_name = 'merge_trains'
 
     ACTIVE_STATUSES = %w[idle stale fresh].freeze
     COMPLETE_STATUSES = %w[merged merging].freeze
 
     belongs_to :target_project, class_name: "Project"
-    belongs_to :merge_request, inverse_of: :merge_train
+    belongs_to :merge_request, inverse_of: :merge_train_car
     belongs_to :user
     belongs_to :pipeline, class_name: 'Ci::Pipeline'
 
@@ -85,7 +85,7 @@ module MergeTrains
 
     class << self
       def all_active_mrs_in_train(target_project_id, target_branch)
-        MergeRequest.joins(:merge_train).merge(
+        MergeRequest.joins(:merge_train_car).merge(
           all_cars(target_project_id, target_branch)
         )
       end
