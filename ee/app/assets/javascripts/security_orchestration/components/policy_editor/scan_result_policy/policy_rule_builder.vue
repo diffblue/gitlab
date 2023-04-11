@@ -33,7 +33,7 @@ export default {
       this.$emit('remove');
     },
     updateRule(value) {
-      this.$emit('changed', { ...this.initRule, ...value });
+      this.$emit('changed', value);
     },
   },
   i18n: {
@@ -46,6 +46,7 @@ export default {
   <base-layout-component
     v-if="isEmptyRule"
     :rule-label="$options.i18n.scanResultIfLabel"
+    :show-label="false"
     :show-scan-type-dropdown="true"
     :type="initRule.type"
     @changed="updateRule"
