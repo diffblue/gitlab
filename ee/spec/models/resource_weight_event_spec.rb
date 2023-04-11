@@ -23,6 +23,21 @@ RSpec.describe ResourceWeightEvent, feature_category: :team_planning, type: :mod
     it { is_expected.to belong_to(:issue) }
   end
 
+  describe '.aliased_for_timebox_report', :freeze_time do
+    let!(:event) { create(:resource_weight_event, issue: issue1) }
+
+    let(:scope) { described_class.aliased_for_timebox_report.first }
+
+    it 'returns correct values with aliased names', :aggregate_failures do
+      expect(scope.event_type).to eq('weight')
+      expect(scope.id).to eq(event.id)
+      expect(scope.issue_id).to eq(event.issue_id)
+      expect(scope.value).to eq(issue1.weight)
+      expect(scope.action).to eq(nil)
+      expect(scope.created_at).to eq(event.created_at)
+    end
+  end
+
   describe '.by_issue' do
     let_it_be(:event1) { create(:resource_weight_event, issue: issue1) }
     let_it_be(:event2) { create(:resource_weight_event, issue: issue2) }
