@@ -349,33 +349,4 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       end
     end
   end
-
-  describe 'PUT #exit' do
-    subject(:put_exit) { put :exit }
-
-    context 'with an unauthenticated user' do
-      it { is_expected.to have_gitlab_http_status(:redirect) }
-      it { is_expected.to redirect_to(new_user_session_path) }
-    end
-
-    context 'with an authenticated user' do
-      before do
-        sign_in(user)
-        allow(::Gitlab).to receive(:com?).and_return(true)
-      end
-
-      it { is_expected.to have_gitlab_http_status(:redirect) }
-      it { is_expected.to redirect_to(root_url) }
-
-      it_behaves_like 'finishing onboarding'
-
-      context 'when the `exit_registration_verification` feature flag is disabled' do
-        before do
-          stub_feature_flags(exit_registration_verification: false)
-        end
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
-      end
-    end
-  end
 end
