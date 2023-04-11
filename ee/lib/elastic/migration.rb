@@ -4,6 +4,7 @@ module Elastic
   class Migration
     include Elastic::MigrationOptions
     include Elastic::MigrationState
+    include Gitlab::Loggable
 
     attr_reader :version
 
@@ -47,16 +48,22 @@ module Elastic
       migration_record.fail(options)
     end
 
-    def log(message)
-      logger.info "[Elastic::Migration: #{self.version}] #{message}"
+    def log(message, payload = {})
+      logger.info(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
     end
 
-    def log_warn(message)
-      logger.warn "[Elastic::Migration: #{self.version}] #{message}"
+    def log_warn(message, payload = {})
+      logger.warn(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
     end
 
-    def log_raise(message)
-      logger.error "[Elastic::Migration: #{self.version}] #{message}"
+    def log_raise(message, payload = {})
+      logger.error(build_structured_payload(
+        **payload.merge(message: "[Elastic::Migration: #{self.version}] #{message}")
+      ))
       raise message
     end
 

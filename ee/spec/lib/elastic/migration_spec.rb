@@ -24,7 +24,7 @@ RSpec.describe Elastic::Migration, :elastic do
 
   describe '#migrate' do
     it 'executes method' do
-      expect(logger).to receive(:info).with(/number_of_nodes/)
+      expect(logger).to receive(:info).with(a_hash_including('message' => /number_of_nodes/))
       expect { migration.migrate }.not_to raise_error
     end
 
