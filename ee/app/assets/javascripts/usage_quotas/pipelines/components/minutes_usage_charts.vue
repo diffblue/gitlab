@@ -1,6 +1,5 @@
 <script>
 import { GlDropdown, GlDropdownItem, GlFormGroup, GlTab, GlTabs } from '@gitlab/ui';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import {
   CI_CD_MINUTES_USAGE,
@@ -10,22 +9,16 @@ import {
 import { USAGE_BY_MONTH_HEADER, USAGE_BY_PROJECT_HEADER } from '../../constants';
 import { getSortedYears, getUsageDataByYear, getUsageDataByYearObject } from '../utils';
 import MinutesUsageMonthChart from './minutes_usage_month_chart.vue';
-import MinutesUsageMonthChartLegacy from './minutes_usage_month_chart_legacy.vue';
 import MinutesUsageProjectChart from './minutes_usage_project_chart.vue';
-import MinutesUsageProjectChartLegacy from './minutes_usage_project_chart_legacy.vue';
 import SharedRunnerUsageMonthChart from './shared_runner_usage_month_chart.vue';
-import SharedRunnerUsageMonthChartLegacy from './shared_runner_usage_month_chart_legacy.vue';
 import NoMinutesAlert from './no_minutes_alert.vue';
 
 export default {
   name: 'MinutesUsageCharts',
   components: {
     MinutesUsageMonthChart,
-    MinutesUsageMonthChartLegacy,
     MinutesUsageProjectChart,
-    MinutesUsageProjectChartLegacy,
     SharedRunnerUsageMonthChart,
-    SharedRunnerUsageMonthChartLegacy,
     NoMinutesAlert,
     HelpPopover,
     GlDropdown,
@@ -34,7 +27,6 @@ export default {
     GlTab,
     GlTabs,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     ciMinutesUsage: {
       type: Array,
@@ -55,9 +47,6 @@ export default {
     };
   },
   computed: {
-    showYearDropdownFilter() {
-      return this.glFeatures.moveYearDropdownUsageCharts;
-    },
     hasCiMinutes() {
       return Boolean(this.ciMinutesUsage.find((usage) => usage.minutes > 0));
     },
@@ -101,42 +90,32 @@ export default {
 
 <template>
   <div :class="$options.borderStyles" class="gl-my-7">
-    <div v-if="showYearDropdownFilter">
-      <div class="gl-display-flex">
-        <gl-form-group :label="s__('UsageQuota|Filter charts by year')">
-          <gl-dropdown :text="selectedYear" data-testid="minutes-usage-year-dropdown">
-            <gl-dropdown-item
-              v-for="year in years"
-              :key="year"
-              :is-checked="selectedYear === year"
-              is-check-item
-              data-testid="minutes-usage-year-dropdown-item"
-              @click="changeSelectedYear(year)"
-            >
-              {{ year }}
-            </gl-dropdown-item>
-          </gl-dropdown>
-        </gl-form-group>
-      </div>
+    <div class="gl-display-flex">
+      <gl-form-group :label="s__('UsageQuota|Filter charts by year')">
+        <gl-dropdown :text="selectedYear" data-testid="minutes-usage-year-dropdown">
+          <gl-dropdown-item
+            v-for="year in years"
+            :key="year"
+            :is-checked="selectedYear === year"
+            is-check-item
+            data-testid="minutes-usage-year-dropdown-item"
+            @click="changeSelectedYear(year)"
+          >
+            {{ year }}
+          </gl-dropdown-item>
+        </gl-dropdown>
+      </gl-form-group>
     </div>
     <h4 class="gl-font-lg gl-mb-3">{{ $options.USAGE_BY_MONTH_HEADER }}</h4>
     <gl-tabs>
       <gl-tab :title="$options.CI_CD_MINUTES_USAGE">
         <no-minutes-alert v-if="!hasCiMinutes" />
-        <template v-else>
-          <minutes-usage-month-chart
-            v-if="showYearDropdownFilter"
-            :selected-year="selectedYear"
-            :usage-data-by-year="usageDataByYear"
-            data-testid="minutes-by-namespace"
-          />
-          <minutes-usage-month-chart-legacy
-            v-else
-            :class="$options.borderStyles"
-            :ci-minutes-usage="ciMinutesUsage"
-            data-testid="minutes-by-namespace"
-          />
-        </template>
+        <minutes-usage-month-chart
+          v-else
+          :selected-year="selectedYear"
+          :usage-data-by-year="usageDataByYear"
+          data-testid="minutes-by-namespace"
+        />
       </gl-tab>
       <gl-tab>
         <template #title>
@@ -146,38 +125,24 @@ export default {
           </div>
         </template>
         <no-minutes-alert v-if="!hasSharedRunnersMinutes" />
-        <template v-else>
-          <shared-runner-usage-month-chart
-            v-if="showYearDropdownFilter"
-            :selected-year="selectedYear"
-            :usage-data-by-year="usageDataByYear"
-            data-testid="shared-runner-by-namespace"
-          />
-          <shared-runner-usage-month-chart-legacy
-            v-else
-            :ci-minutes-usage="ciMinutesUsage"
-            data-testid="shared-runner-by-namespace"
-          />
-        </template>
+        <shared-runner-usage-month-chart
+          v-else
+          :selected-year="selectedYear"
+          :usage-data-by-year="usageDataByYear"
+          data-testid="shared-runner-by-namespace"
+        />
       </gl-tab>
     </gl-tabs>
     <h4 class="gl-font-lg gl-mb-3">{{ $options.USAGE_BY_PROJECT_HEADER }}</h4>
     <gl-tabs>
       <gl-tab :title="$options.CI_CD_MINUTES_USAGE">
         <no-minutes-alert v-if="!hasCiMinutes" />
-        <template v-else>
-          <minutes-usage-project-chart
-            v-if="showYearDropdownFilter"
-            :usage-data-by-year="usageDataByYearObject"
-            :selected-year="selectedYear"
-            data-testid="minutes-by-project"
-          />
-          <minutes-usage-project-chart-legacy
-            v-else
-            :minutes-usage-data="ciMinutesUsage"
-            data-testid="minutes-by-project"
-          />
-        </template>
+        <minutes-usage-project-chart
+          v-else
+          :usage-data-by-year="usageDataByYearObject"
+          :selected-year="selectedYear"
+          data-testid="minutes-by-project"
+        />
       </gl-tab>
       <gl-tab>
         <template #title>
@@ -187,21 +152,13 @@ export default {
           </div>
         </template>
         <no-minutes-alert v-if="!hasSharedRunnersMinutes" />
-        <template v-else>
-          <minutes-usage-project-chart
-            v-if="showYearDropdownFilter"
-            :usage-data-by-year="usageDataByYearObject"
-            :selected-year="selectedYear"
-            display-shared-runner-data
-            data-testid="shared-runner-by-project"
-          />
-          <minutes-usage-project-chart-legacy
-            v-else
-            :minutes-usage-data="ciMinutesUsage"
-            display-shared-runner-data
-            data-testid="shared-runner-by-project"
-          />
-        </template>
+        <minutes-usage-project-chart
+          v-else
+          :usage-data-by-year="usageDataByYearObject"
+          :selected-year="selectedYear"
+          display-shared-runner-data
+          data-testid="shared-runner-by-project"
+        />
       </gl-tab>
     </gl-tabs>
   </div>
