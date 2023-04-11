@@ -16,26 +16,19 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
 
   let_it_be(:push_rule) { create(:push_rule, project: project, max_file_size: 10) }
 
-  shared_examples 'EE saves project tree successfully' do |ndjson_enabled|
+  shared_examples 'EE saves project tree successfully' do
     include ::ImportExport::CommonUtil
 
-    let(:full_path) do
-      if ndjson_enabled
-        File.join(shared.export_path, 'tree')
-      else
-        File.join(shared.export_path, Gitlab::ImportExport.project_filename)
-      end
-    end
+    let(:full_path) { File.join(shared.export_path, 'tree') }
 
     let(:shared) { project.import_export_shared }
     let(:project_tree_saver) { described_class.new(project: project, current_user: user, shared: shared) }
-    let(:issue_json) { get_json(full_path, exportable_path, :issues, ndjson_enabled).first }
+    let(:issue_json) { get_json(full_path, exportable_path, :issues).first }
     let(:exportable_path) { 'project' }
     let(:epics_available) { true }
 
     before do
       stub_all_feature_flags
-      stub_feature_flags(project_export_as_ndjson: ndjson_enabled)
       stub_licensed_features(epics: epics_available)
       project.add_maintainer(user)
     end
@@ -67,8 +60,8 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
 
     context 'security setting' do
       let(:security_json) do
-        json = get_json(full_path, exportable_path, :security_setting, ndjson_enabled)
-        ndjson_enabled ? json.first : json
+        json = get_json(full_path, exportable_path, :security_setting)
+        json.first
       end
 
       it 'has security settings' do
@@ -79,8 +72,8 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
 
     context 'push_rule' do
       let(:push_rule_json) do
-        json = get_json(full_path, exportable_path, :push_rule, ndjson_enabled)
-        ndjson_enabled ? json.first : json
+        json = get_json(full_path, exportable_path, :push_rule)
+        json.first
       end
 
       it 'has push rules' do
@@ -91,11 +84,5 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
     end
   end
 
-  context 'with JSON' do
-    it_behaves_like "EE saves project tree successfully", false
-  end
-
-  context 'with NDJSON' do
-    it_behaves_like "EE saves project tree successfully", true
-  end
+  it_behaves_like "EE saves project tree successfully"
 end
