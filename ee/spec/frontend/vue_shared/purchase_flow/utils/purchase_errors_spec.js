@@ -1,5 +1,8 @@
 import {
+  ActiveModelError,
   errorDictionary,
+  EMAIL_TAKEN_ERROR,
+  EMAIL_TAKEN_ERROR_TYPE,
   CONTACT_SUPPORT_DEFAULT_MESSAGE,
   generateHelpTextWithLinks,
   mapSystemToFriendlyError,
@@ -8,7 +11,7 @@ import {
 describe('Purchase Dynamic Errors', () => {
   describe('errorDictionary', () => {
     it('contains all the declared errors', () => {
-      expect(Object.keys(errorDictionary)).toHaveLength(7);
+      expect(Object.keys(errorDictionary)).toHaveLength(10);
     });
   });
 
@@ -17,36 +20,80 @@ describe('Purchase Dynamic Errors', () => {
       const friendlyError = errorDictionary[systemError];
 
       it('maps the system error to the friendly one', () => {
-        expect(mapSystemToFriendlyError(systemError)).toEqual(friendlyError);
+        expect(mapSystemToFriendlyError(new Error(systemError))).toEqual(friendlyError);
       });
 
       it('maps the system error to the friendly one from uppercase', () => {
-        expect(mapSystemToFriendlyError(systemError.toUpperCase())).toEqual(friendlyError);
+        expect(mapSystemToFriendlyError(new Error(systemError.toUpperCase()))).toEqual(
+          friendlyError,
+        );
       });
     });
 
-    describe.each(['', {}, [], undefined, null])('when system error is %s', (systemError) => {
-      it('maps the system error to the friendly one', () => {
-        expect(mapSystemToFriendlyError(systemError)).toEqual(CONTACT_SUPPORT_DEFAULT_MESSAGE);
-      });
-    });
+    describe.each(['', {}, [], undefined, null, new Error()])(
+      'when system error is %s',
+      (systemError) => {
+        it('defaults to the general error message', () => {
+          expect(mapSystemToFriendlyError(systemError)).toEqual(CONTACT_SUPPORT_DEFAULT_MESSAGE);
+        });
+      },
+    );
 
-    describe('when system error is a non existent key', () => {
-      const message = 'a non existent key';
+    describe('when system error is a non-existent key', () => {
+      const message = 'a non-existent key';
       const nonExistentKeyError = { message, links: {} };
 
       it('maps the system error to the friendly one', () => {
-        expect(mapSystemToFriendlyError(message)).toEqual(nonExistentKeyError);
+        expect(mapSystemToFriendlyError(new Error(message))).toEqual(nonExistentKeyError);
       });
     });
 
-    describe('when error is email already taken', () => {
-      const EMAIL_TAKEN_ERROR = JSON.stringify({ email: ['has already been taken'] });
+    describe('when system error consists of multiple non-existent keys', () => {
+      const message = 'a non-existent key, another non-existent key';
+      const nonExistentKeyError = { message, links: {} };
+
+      it('maps the system error to the friendly one', () => {
+        expect(mapSystemToFriendlyError(new Error(message))).toEqual(nonExistentKeyError);
+      });
+    });
+
+    describe('when system error consists of multiple messages with one matching key', () => {
+      const message = `a non-existent key, ${EMAIL_TAKEN_ERROR}`;
+
+      it('maps the system error to the friendly one', () => {
+        expect(mapSystemToFriendlyError(new Error(message))).toEqual(
+          errorDictionary[EMAIL_TAKEN_ERROR.toLowerCase()],
+        );
+      });
+    });
+
+    describe('when error is email already taken message', () => {
+      it('maps the email friendly error', () => {
+        expect(mapSystemToFriendlyError(new Error(EMAIL_TAKEN_ERROR))).toEqual(
+          errorDictionary[EMAIL_TAKEN_ERROR.toLowerCase()],
+        );
+      });
+    });
+
+    describe('when error is email:taken error_attribute_map', () => {
+      const errorAttributeMap = { email: ['taken'] };
 
       it('maps the email friendly error', () => {
-        expect(mapSystemToFriendlyError(EMAIL_TAKEN_ERROR)).toEqual(
-          errorDictionary[EMAIL_TAKEN_ERROR],
-        );
+        expect(
+          mapSystemToFriendlyError(new ActiveModelError(errorAttributeMap, EMAIL_TAKEN_ERROR)),
+        ).toEqual(errorDictionary[EMAIL_TAKEN_ERROR_TYPE.toLowerCase()]);
+      });
+    });
+
+    describe('when there are multiple errors in the error_attribute_map', () => {
+      const errorAttributeMap = { email: ['taken', 'invalid'] };
+
+      it('maps the email friendly error', () => {
+        expect(
+          mapSystemToFriendlyError(
+            new ActiveModelError(errorAttributeMap, `${EMAIL_TAKEN_ERROR}, Email is invalid`),
+          ),
+        ).toEqual(errorDictionary[EMAIL_TAKEN_ERROR_TYPE.toLowerCase()]);
       });
     });
   });

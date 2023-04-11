@@ -16,6 +16,7 @@ Vue.use(Vuex);
 
 describe('App component', () => {
   let wrapper;
+  let store;
 
   const findModalComponent = () => wrapper.findComponent(Modal);
   const findCheckout = () => wrapper.findComponent(Checkout);
@@ -25,7 +26,7 @@ describe('App component', () => {
   const findOrderSummary = () => wrapper.findComponent(OrderSummary);
 
   const createComponent = () => {
-    const store = new Vuex.Store({
+    store = new Vuex.Store({
       ...initialStore,
       actions: {
         confirmOrderError: jest.fn(),
@@ -117,7 +118,7 @@ describe('App component', () => {
       beforeEach(() => {
         createComponent();
 
-        wrapper.vm.$store.dispatch('confirmOrderError', errorMessage);
+        store.dispatch('confirmOrderError', error);
       });
 
       it('passes the correct props', () => {
@@ -133,7 +134,7 @@ describe('App component', () => {
       beforeEach(() => {
         createComponent();
 
-        wrapper.vm.$store.dispatch('fakeAction');
+        store.dispatch('fakeAction');
       });
 
       it('does not the alert', () => {

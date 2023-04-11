@@ -7,6 +7,7 @@ import { redirectTo } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
+import { ActiveModelError } from 'ee/vue_shared/purchase_flow/utils/purchase_errors';
 import defaultClient from '../graphql';
 import * as types from './mutation_types';
 
@@ -60,7 +61,10 @@ export const fetchCountriesSuccess = ({ commit }, data = []) => {
 };
 
 export const fetchCountriesError = ({ dispatch }) => {
-  dispatch('confirmOrderError', s__('Checkout|Failed to load countries. Please try again.'));
+  dispatch(
+    'confirmOrderError',
+    new Error(s__('Checkout|Failed to load countries. Please try again.')),
+  );
 };
 
 export const fetchStates = ({ state, dispatch }) => {
@@ -82,7 +86,10 @@ export const fetchStatesSuccess = ({ commit }, data = {}) => {
 };
 
 export const fetchStatesError = ({ dispatch }) => {
-  dispatch('confirmOrderError', s__('Checkout|Failed to load states. Please try again.'));
+  dispatch(
+    'confirmOrderError',
+    new Error(s__('Checkout|Failed to load states. Please try again.')),
+  );
 };
 
 export const resetStates = ({ commit }) => {
@@ -139,14 +146,17 @@ export const fetchPaymentFormParamsSuccess = ({ commit, dispatch }, data) => {
       },
       false,
     );
-    dispatch('confirmOrderError', message);
+    dispatch('confirmOrderError', new Error(message));
   } else {
     commit(types.UPDATE_PAYMENT_FORM_PARAMS, data);
   }
 };
 
 export const fetchPaymentFormParamsError = ({ dispatch }) => {
-  dispatch('confirmOrderError', s__('Checkout|Credit card form failed to load. Please try again.'));
+  dispatch(
+    'confirmOrderError',
+    new Error(s__('Checkout|Credit card form failed to load. Please try again.')),
+  );
 };
 
 export const zuoraIframeRendered = ({ commit }) =>
@@ -174,7 +184,7 @@ export const paymentFormSubmittedError = ({ dispatch }, response) => {
     response,
     false,
   );
-  dispatch('confirmOrderError', message);
+  dispatch('confirmOrderError', new Error(message));
 };
 
 export const fetchPaymentMethodDetails = ({ state, dispatch, commit }) =>
@@ -191,12 +201,15 @@ export const fetchPaymentMethodDetailsSuccess = ({ commit, dispatch }, creditCar
       mutation: activateNextStepMutation,
     })
     .catch((error) => {
-      dispatch('confirmOrderError', error.message);
+      dispatch('confirmOrderError', error);
     });
 };
 
 export const fetchPaymentMethodDetailsError = ({ dispatch }) => {
-  dispatch('confirmOrderError', s__('Checkout|Failed to register credit card. Please try again.'));
+  dispatch(
+    'confirmOrderError',
+    new Error(s__('Checkout|Failed to register credit card. Please try again.')),
+  );
 };
 
 const shouldShowErrorMessageOnly = (errors) => {
@@ -228,26 +241,29 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
           location: data.location,
         });
       } else {
-        let errors;
+        let errorMessage;
         if (data.name) {
-          errors = sprintf(
-            s__('Checkout|Name: %{errors}'),
-            { errors: data.name.join(', ') },
+          errorMessage = sprintf(
+            s__('Checkout|Name: %{errorMessage}'),
+            { errorMessage: data.name.join(', ') },
             false,
           );
         } else if (shouldShowErrorMessageOnly(data.errors)) {
-          errors = data.errors?.message;
+          errorMessage = data.errors?.message;
         } else {
-          errors = data.errors;
+          errorMessage = data.errors;
         }
 
-        trackConfirmOrder(errors);
-        dispatch('confirmOrderError', JSON.stringify(errors));
+        trackConfirmOrder(errorMessage);
+        dispatch(
+          'confirmOrderError',
+          new ActiveModelError(data.error_attribute_map, JSON.stringify(errorMessage)),
+        );
       }
     })
-    .catch(({ message }) => {
-      trackConfirmOrder(message);
-      dispatch('confirmOrderError', message);
+    .catch((error) => {
+      trackConfirmOrder(error.message);
+      dispatch('confirmOrderError', error);
     });
 };
 

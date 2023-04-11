@@ -44,7 +44,7 @@ module Gitlab
             { success: true, data: parsed_response }
           when Net::HTTPUnprocessableEntity
             log_error(http_response)
-            { success: false, data: { errors: parsed_response['errors'] } }
+            { success: false, data: parsed_response.slice('errors', 'error_attribute_map') }
           else
             log_error(http_response)
             { success: false, data: { errors: "HTTP status code: #{http_response.code}" } }

@@ -1,4 +1,4 @@
-import { isEmpty, isString } from 'lodash';
+import { isEmpty, isString, isObject } from 'lodash';
 import { sprintf, s__ } from '~/locale';
 import {
   GENERAL_ERROR_MESSAGE,
@@ -8,6 +8,22 @@ import {
   userProfileLink,
 } from 'ee/vue_shared/purchase_flow/constants';
 import { convertObjectPropsToLowerCase } from '~/lib/utils/common_utils';
+
+export class ActiveModelError extends Error {
+  constructor(errorAttributeMap = {}, ...params) {
+    // Pass remaining arguments (including vendor specific ones) to parent constructor
+    super(...params);
+
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ActiveModelError);
+    }
+
+    this.name = 'ActiveModelError';
+    // Custom debugging information
+    this.errorAttributeMap = errorAttributeMap;
+  }
+}
 
 export const CONTACT_SUPPORT_DEFAULT_MESSAGE = {
   message: GENERAL_ERROR_MESSAGE,
@@ -62,45 +78,122 @@ export const UNLINKED_ACCOUNT_ERROR = {
   },
 };
 
-/* eslint-disable-next-line @gitlab/require-i18n-strings */
+/* eslint-disable @gitlab/require-i18n-strings */
 const cannotBeBlank = "can't be blank";
-/* eslint-disable-next-line @gitlab/require-i18n-strings */
 const alreadyTaken = 'has already been taken';
 
 export const CONTRACT_EFFECTIVE_ERROR =
   'The Contract effective date should not be later than the term end date of the basic subscription';
 export const GENERIC_DECLINE_ERROR =
   'Transaction declined.generic_decline - Your card was declined';
-export const EMAIL_TAKEN_ERROR = JSON.stringify({ email: [alreadyTaken] });
+export const EMAIL_TAKEN_ERROR = `Email ${alreadyTaken}`;
+export const EMAIL_TAKEN_ERROR_TYPE = 'email:taken';
 export const INSUFFICIENT_FUNDS_ERROR = 'Your card has insufficient funds.';
+export const FIRST_NAME_BLANK_ERROR = `First name ${cannotBeBlank}`;
+export const LAST_NAME_BLANK_ERROR = `Last name ${cannotBeBlank}`;
+
+// The following messages can be removed after this MR has landed:
+// https://gitlab.com/gitlab-org/customers-gitlab-com/-/merge_requests/6970
 export const FIRST_NAME_BLANK_ERROR_VARIATION = JSON.stringify({ first_name: [cannotBeBlank] });
-export const LAST_NAME_BLANK_ERROR = JSON.stringify({ last_name: [cannotBeBlank] });
-export const LAST_NAME_BLANK_ERROR_VARIATION = `{${LAST_NAME_BLANK_ERROR}}`;
+export const LAST_NAME_BLANK_ERROR_VARIATION_1 = JSON.stringify({ last_name: [cannotBeBlank] });
+export const LAST_NAME_BLANK_ERROR_VARIATION_2 = `{${LAST_NAME_BLANK_ERROR}}`;
+/* eslint-enable @gitlab/require-i18n-strings */
 
 export const errorDictionary = convertObjectPropsToLowerCase({
   [CONTRACT_EFFECTIVE_ERROR]: EXPIRED_SUBSCRIPTION_ERROR,
   [GENERIC_DECLINE_ERROR]: DECLINED_CARD_GENERIC_ERROR,
   [EMAIL_TAKEN_ERROR]: UNLINKED_ACCOUNT_ERROR,
+  [EMAIL_TAKEN_ERROR_TYPE]: UNLINKED_ACCOUNT_ERROR,
   [INSUFFICIENT_FUNDS_ERROR]: DECLINED_CARD_FUNDS_ERROR,
+  [FIRST_NAME_BLANK_ERROR]: FULL_NAME_REQUIRED_ERROR,
   [FIRST_NAME_BLANK_ERROR_VARIATION]: FULL_NAME_REQUIRED_ERROR,
   [LAST_NAME_BLANK_ERROR]: FULL_NAME_REQUIRED_ERROR,
-  [LAST_NAME_BLANK_ERROR_VARIATION]: FULL_NAME_REQUIRED_ERROR,
+  [LAST_NAME_BLANK_ERROR_VARIATION_1]: FULL_NAME_REQUIRED_ERROR,
+  [LAST_NAME_BLANK_ERROR_VARIATION_2]: FULL_NAME_REQUIRED_ERROR,
 });
 
-export const mapSystemToFriendlyError = (systemError) => {
-  if (systemError && isString(systemError)) {
-    return (
-      errorDictionary[systemError.toLowerCase()] || {
-        message: systemError,
-        links: {},
-      }
+/**
+ * @typedef {Object<ErrorAttribute,ErrorType[]>} ErrorAttributeMap - Map of attributes to error details
+ * @typedef {string} ErrorAttribute - the error attribute https://api.rubyonrails.org/v7.0.4.2/classes/ActiveModel/Error.html
+ * @typedef {string} ErrorType - the error type https://api.rubyonrails.org/v7.0.4.2/classes/ActiveModel/Error.html
+ *
+ * @example { "email": ["taken", ...] }
+ * // returns `${UNLINKED_ACCOUNT_ERROR}`, i.e. the `EMAIL_TAKEN_ERROR_TYPE` error message
+ *
+ * @param {ErrorAttributeMap} errorAttributeMap
+ * @returns {(null|string)} null or error message if found
+ */
+function getMessageFromType(errorAttributeMap = {}) {
+  if (!isObject(errorAttributeMap)) {
+    return null;
+  }
+
+  return Object.keys(errorAttributeMap).reduce((_, attribute) => {
+    const errorType = errorAttributeMap[attribute].find(
+      (type) => errorDictionary[`${attribute}:${type}`.toLowerCase()],
     );
+    if (errorType) {
+      return errorDictionary[`${attribute}:${errorType}`.toLowerCase()];
+    }
+
+    return null;
+  }, null);
+}
+
+/**
+ * @example "Email has already been taken, Email is invalid"
+ * // returns `${UNLINKED_ACCOUNT_ERROR}`, i.e. the `EMAIL_TAKEN_ERROR_TYPE` error message
+ *
+ * @param {string} errorString
+ * @returns {(null|string)} null or error message if found
+ */
+function getMessageFromErrorString(errorString) {
+  if (isEmpty(errorString) || !isString(errorString)) {
+    return null;
+  }
+
+  const messages = errorString.split(', ');
+  const errorMessage = messages.find((message) => errorDictionary[message.toLowerCase()]);
+  if (errorMessage) {
+    return errorDictionary[errorMessage.toLowerCase()];
+  }
+
+  return {
+    message: errorString,
+    links: {},
+  };
+}
+
+/**
+ * Receives an Error and attempts to extract the `errorAttributeMap` in
+ * case it is an `ActiveModelError` and return the message if it exists.
+ * If a match is not found it will attempt to map a message from the
+ * Error.message to be returned.
+ * Otherwise, it will return a general error message
+ *
+ * @param {Error} systemError
+ * @returns error message
+ */
+export function mapSystemToFriendlyError(systemError) {
+  if (!(systemError instanceof Error)) {
+    return CONTACT_SUPPORT_DEFAULT_MESSAGE;
+  }
+
+  const { errorAttributeMap, message } = systemError;
+  const messageFromType = getMessageFromType(errorAttributeMap);
+  if (messageFromType) {
+    return messageFromType;
+  }
+
+  const messageFromErrorString = getMessageFromErrorString(message);
+  if (messageFromErrorString) {
+    return messageFromErrorString;
   }
 
   return CONTACT_SUPPORT_DEFAULT_MESSAGE;
-};
+}
 
-const generateLinks = (links) => {
+function generateLinks(links) {
   return Object.keys(links).reduce((allLinks, link) => {
     /* eslint-disable-next-line @gitlab/require-i18n-strings */
     const linkStart = `${link}Start`;
@@ -113,7 +206,7 @@ const generateLinks = (links) => {
       [linkEnd]: '</a>',
     };
   }, {});
-};
+}
 
 export const generateHelpTextWithLinks = (error) => {
   if (isString(error)) {
