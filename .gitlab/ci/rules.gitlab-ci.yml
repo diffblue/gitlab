@@ -773,6 +773,16 @@
     - <<: *if-default-refs
       changes: *code-qa-patterns
 
+.build-images:rules:build-assets-image-as-if-foss:
+  rules:
+    - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
+    - !reference [".build-images:rules:build-assets-image", "rules"]
+
 #################
 # Caching rules #
 #################
@@ -940,6 +950,16 @@
       changes: *code-qa-patterns
     - <<: *if-default-refs
       changes: *workhorse-patterns
+
+.frontend:rules:compile-production-assets-as-if-foss:
+  rules:
+    - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
+    - !reference [.frontend:rules:compile-production-assets, rules]
 
 .frontend:rules:compile-test-assets:
   rules:
@@ -1233,7 +1253,7 @@
       when: manual
       allow_failure: true
 
-.qa:rules:package-and-test:
+.qa:rules:package-and-test-ee:
   rules:
     - !reference [".qa:rules:package-and-test-mrs", rules]
     - <<: *if-dot-com-gitlab-org-schedule
@@ -1246,11 +1266,23 @@
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false" # on main runs, metrics are exported to separate bucket via rake task for better consistency
 
+.qa:rules:package-and-test-ce:
+  rules:
+    - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
+    - <<: *if-dot-com-gitlab-org-and-security-merge-request
+      when: manual
+      allow_failure: true
+
 .qa:rules:e2e:test-on-gdk:
   rules:
     - if: '$QA_RUN_TESTS_ON_GDK !~ /true|yes|1/i'
       when: never
-    - !reference [".qa:rules:package-and-test", rules]
+    - !reference [".qa:rules:package-and-test-ee", rules]
 
 ###############
 # Rails rules #
