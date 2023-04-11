@@ -19,18 +19,18 @@ RSpec.describe MergeTrainsFinder do
   describe '#execute' do
     subject { finder.execute }
 
-    let!(:merge_train_1) { create(:merge_train, target_project: project, target_branch: 'main') }
-    let!(:merge_train_2) { create(:merge_train, target_project: project, target_branch: 'main') }
+    let!(:train_car_1) { create(:merge_train_car, target_project: project, target_branch: 'main') }
+    let!(:train_car_2) { create(:merge_train_car, target_project: project, target_branch: 'main') }
 
     it 'returns merge trains ordered by id' do
-      is_expected.to eq([merge_train_1, merge_train_2])
+      is_expected.to eq([train_car_1, train_car_2])
     end
 
     context 'when sort is asc' do
       let(:params) { { sort: 'asc' } }
 
       it 'returns merge trains in ascending order' do
-        is_expected.to eq([merge_train_1, merge_train_2])
+        is_expected.to eq([train_car_1, train_car_2])
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe MergeTrainsFinder do
       let(:params) { { sort: 'desc' } }
 
       it 'returns merge trains in descending order' do
-        is_expected.to eq([merge_train_2, merge_train_1])
+        is_expected.to eq([train_car_2, train_car_1])
       end
     end
 
@@ -51,14 +51,14 @@ RSpec.describe MergeTrainsFinder do
     end
 
     context 'when scope is given' do
-      let!(:merge_train_1) { create(:merge_train, :idle, target_project: project) }
-      let!(:merge_train_2) { create(:merge_train, :merged, target_project: project) }
+      let!(:train_car_1) { create(:merge_train_car, :idle, target_project: project) }
+      let!(:train_car_2) { create(:merge_train_car, :merged, target_project: project) }
 
       context 'when scope is active' do
         let(:params) { { scope: 'active' } }
 
         it 'returns active merge train' do
-          is_expected.to eq([merge_train_1])
+          is_expected.to eq([train_car_1])
         end
       end
 
@@ -66,7 +66,7 @@ RSpec.describe MergeTrainsFinder do
         let(:params) { { scope: 'complete' } }
 
         it 'returns complete merge train' do
-          is_expected.to eq([merge_train_2])
+          is_expected.to eq([train_car_2])
         end
       end
     end
@@ -75,14 +75,14 @@ RSpec.describe MergeTrainsFinder do
       let(:params) { { target_branch: 'main' } }
 
       it 'returns merge train for target branch' do
-        is_expected.to match_array([merge_train_1, merge_train_2])
+        is_expected.to match_array([train_car_1, train_car_2])
       end
 
       context 'with multiple merge trains for project' do
-        let!(:merge_train_3) { create(:merge_train, target_project: project, target_branch: 'develop') }
+        let!(:train_car_3) { create(:merge_train_car, target_project: project, target_branch: 'develop') }
 
         it 'returns merge train for target branch' do
-          is_expected.to match_array([merge_train_1, merge_train_2])
+          is_expected.to match_array([train_car_1, train_car_2])
         end
       end
     end

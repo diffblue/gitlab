@@ -41,8 +41,8 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       subject
 
       merge_request.reload
-      expect(merge_request.merge_train).to be_present
-      expect(merge_request.merge_train.user).to eq(user)
+      expect(merge_request.merge_train_car).to be_present
+      expect(merge_request.merge_train_car.user).to eq(user)
     end
 
     it 'creates system note' do
@@ -80,7 +80,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         merge_request.reload
         expect(merge_request).not_to be_auto_merge_enabled
-        expect(merge_request.merge_train).not_to be_present
+        expect(merge_request.merge_train_car).not_to be_present
       end
 
       it 'tracks the exception' do
@@ -143,7 +143,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       expect(merge_request.merge_params).not_to include('commit_message')
       expect(merge_request.merge_params).not_to include('squash_commit_message')
       expect(merge_request.merge_params).not_to include('auto_merge_strategy')
-      expect(merge_request.merge_train).not_to be_present
+      expect(merge_request.merge_train_car).not_to be_present
     end
 
     it 'writes system note to the merge request' do
@@ -155,7 +155,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
     context 'when pipeline exists' do
       before do
-        merge_request.merge_train.update!(pipeline: pipeline)
+        merge_request.merge_train_car.update!(pipeline: pipeline)
       end
 
       let(:pipeline) { create(:ci_pipeline) }
@@ -199,7 +199,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         subject
 
-        expect(merge_request_2.reset.merge_train).to be_stale
+        expect(merge_request_2.reset.merge_train_car).to be_stale
       end
 
       context 'when the status is stale already' do
@@ -210,7 +210,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
           expect { subject }.not_to raise_error
 
-          expect(merge_request_2.reset.merge_train).to be_stale
+          expect(merge_request_2.reset.merge_train_car).to be_stale
         end
       end
     end
@@ -230,7 +230,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         merge_request.reload
         expect(merge_request).to be_auto_merge_enabled
-        expect(merge_request.merge_train).to be_present
+        expect(merge_request.merge_train_car).to be_present
       end
 
       it 'tracks the exception' do
@@ -264,7 +264,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       expect(merge_request.merge_params).not_to include('commit_message')
       expect(merge_request.merge_params).not_to include('squash_commit_message')
       expect(merge_request.merge_params).not_to include('auto_merge_strategy')
-      expect(merge_request.merge_train).not_to be_present
+      expect(merge_request.merge_train_car).not_to be_present
     end
 
     it 'writes system note to the merge request' do
@@ -287,7 +287,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         subject
 
-        expect(merge_request_2.reset.merge_train).to be_stale
+        expect(merge_request_2.reset.merge_train_car).to be_stale
       end
 
       context 'when process_next is false' do
@@ -316,7 +316,7 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
 
         merge_request.reload
         expect(merge_request).to be_auto_merge_enabled
-        expect(merge_request.merge_train).to be_present
+        expect(merge_request.merge_train_car).to be_present
       end
 
       it 'tracks the exception' do

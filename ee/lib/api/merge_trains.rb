@@ -84,11 +84,11 @@ module API
             ]
           end
           get do
-            merge_train = find_project_merge_request(params[:merge_request_iid]).merge_train
+            train_car = find_project_merge_request(params[:merge_request_iid]).merge_train_car
 
-            not_found!('Merge Train') unless merge_train
+            not_found!('Merge Train') unless train_car
 
-            present merge_train, with: EE::API::Entities::MergeTrain
+            present train_car, with: EE::API::Entities::MergeTrain
           end
         end
 
@@ -132,7 +132,7 @@ module API
               .execute
               .preload_api_entities
 
-            if merge_request.merge_train
+            if merge_request.merge_train_car
               status 201
             else
               status 202

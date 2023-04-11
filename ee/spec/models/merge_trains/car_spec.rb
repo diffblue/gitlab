@@ -16,11 +16,11 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   it { is_expected.to belong_to(:pipeline) }
 
   shared_context 'with train cars in many states' do
-    let_it_be(:merge_train_idle) { create(:merge_train, :idle) }
-    let_it_be(:merge_train_stale) { create(:merge_train, :stale) }
-    let_it_be(:merge_train_fresh) { create(:merge_train, :fresh) }
-    let_it_be(:merge_train_merged) { create(:merge_train, :merged) }
-    let_it_be(:merge_train_merging) { create(:merge_train, :merging) }
+    let_it_be(:idle_car) { create(:merge_train_car, :idle) }
+    let_it_be(:stale_car) { create(:merge_train_car, :stale) }
+    let_it_be(:fresh_car) { create(:merge_train_car, :fresh) }
+    let_it_be(:merged_car) { create(:merge_train_car, :merged) }
+    let_it_be(:merging_car) { create(:merge_train_car, :merging) }
   end
 
   describe '.active' do
@@ -29,7 +29,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     include_context 'with train cars in many states'
 
     it 'returns only active merge trains' do
-      is_expected.to contain_exactly(merge_train_idle, merge_train_stale, merge_train_fresh)
+      is_expected.to contain_exactly(idle_car, stale_car, fresh_car)
     end
   end
 
@@ -39,31 +39,31 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     include_context 'with train cars in many states'
 
     it 'returns only merged merge trains' do
-      is_expected.to contain_exactly(merge_train_merged, merge_train_merging)
+      is_expected.to contain_exactly(merged_car, merging_car)
     end
   end
 
   describe '.for_target' do
     subject { described_class.for_target(project_id, branch) }
 
-    let!(:merge_train_1) { create(:merge_train) }
-    let!(:merge_train_2) { create(:merge_train) }
+    let!(:train_car_1) { create(:merge_train_car) }
+    let!(:train_car_2) { create(:merge_train_car) }
 
     context "when target merge train 1's project" do
-      let(:project_id) { merge_train_1.target_project_id }
-      let(:branch) { merge_train_1.target_branch }
+      let(:project_id) { train_car_1.target_project_id }
+      let(:branch) { train_car_1.target_branch }
 
       it 'returns merge train 1 only' do
-        is_expected.to eq([merge_train_1])
+        is_expected.to eq([train_car_1])
       end
     end
 
     context "when target merge train 2's project" do
-      let(:project_id) { merge_train_2.target_project_id }
-      let(:branch) { merge_train_2.target_branch }
+      let(:project_id) { train_car_2.target_project_id }
+      let(:branch) { train_car_2.target_branch }
 
       it 'returns merge train 2 only' do
-        is_expected.to eq([merge_train_2])
+        is_expected.to eq([train_car_2])
       end
     end
   end
@@ -71,11 +71,11 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   describe '.by_id' do
     subject { described_class.by_id }
 
-    let!(:merge_train_1) { create(:merge_train, target_project: project, target_branch: 'master') }
-    let!(:merge_train_2) { create(:merge_train, target_project: project, target_branch: 'master') }
+    let!(:train_car_1) { create(:merge_train_car, target_project: project, target_branch: 'master') }
+    let!(:train_car_2) { create(:merge_train_car, target_project: project, target_branch: 'master') }
 
     it 'returns merge trains by id ASC' do
-      is_expected.to eq([merge_train_1, merge_train_2])
+      is_expected.to eq([train_car_1, train_car_2])
     end
   end
 
@@ -121,14 +121,14 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     let!(:merge_request) { create_merge_request_on_train }
 
     it 'returns the merge request' do
-      is_expected.to eq(merge_request.merge_train)
+      is_expected.to eq(merge_request.merge_train_car)
     end
 
     context 'when the other merge request is on the merge train' do
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it 'returns the merge request' do
-        is_expected.to eq(merge_request.merge_train)
+        is_expected.to eq(merge_request.merge_train_car)
       end
     end
 
@@ -162,7 +162,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     subject { described_class.first_cars_in_trains(project) }
 
     it 'returns only first merge requests per merge train' do
-      is_expected.to contain_exactly(first_on_master.merge_train, first_on_stable.merge_train)
+      is_expected.to contain_exactly(first_on_master.merge_train_car, first_on_stable.merge_train_car)
     end
 
     context 'when first_on_master has already been merged' do
@@ -171,7 +171,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       end
 
       it 'returns second on master as active MR' do
-        is_expected.to contain_exactly(second_on_master.merge_train, first_on_stable.merge_train)
+        is_expected.to contain_exactly(second_on_master.merge_train_car, first_on_stable.merge_train_car)
       end
     end
   end
@@ -273,9 +273,9 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#all_next' do
-    subject { merge_train.all_next }
+    subject { car.all_next }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     it 'returns nil' do
@@ -286,15 +286,15 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it 'returns the next merge requests' do
-        is_expected.to eq([merge_request_2.merge_train])
+        is_expected.to eq([merge_request_2.merge_train_car])
       end
     end
   end
 
   describe '#all_prev' do
-    subject { merge_train.all_prev }
+    subject { train_car.all_prev }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when the merge request is at first on the train' do
@@ -304,11 +304,11 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
 
     context 'when the merge request is at last on the train' do
-      let(:merge_train) { merge_request_2.merge_train }
+      let(:train_car) { merge_request_2.merge_train_car }
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it 'returns the previous merge requests' do
-        is_expected.to eq([merge_request.merge_train])
+        is_expected.to eq([merge_request.merge_train_car])
       end
 
       context 'when the previous merge request has already been merged' do
@@ -322,9 +322,9 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#next' do
-    subject { merge_train.next }
+    subject { train_car.next }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when the merge request is at last on the train' do
@@ -337,15 +337,15 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it 'returns the next merge request' do
-        is_expected.to eq(merge_request_2.merge_train)
+        is_expected.to eq(merge_request_2.merge_train_car)
       end
     end
   end
 
   describe '#prev' do
-    subject { merge_train.prev }
+    subject { train_car.prev }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when the merge request is at first on the train' do
@@ -355,19 +355,19 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
 
     context 'when the merge request is at last on the train' do
-      let(:merge_train) { merge_request_2.merge_train }
+      let(:train_car) { merge_request_2.merge_train_car }
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it 'returns the next merge request' do
-        is_expected.to eq(merge_request.merge_train)
+        is_expected.to eq(merge_request.merge_train_car)
       end
     end
   end
 
   describe '#previous_ref' do
-    subject { merge_train.previous_ref }
+    subject { train_car.previous_ref }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when merge request is first on train' do
@@ -377,7 +377,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
 
     context 'when merge request is not first on train' do
-      let(:merge_train) { merge_request_2.merge_train }
+      let(:train_car) { merge_request_2.merge_train_car }
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'feature-2') }
 
       it 'returns the ref of the previous merge request' do
@@ -387,21 +387,21 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#requires_new_pipeline?' do
-    subject { merge_train.requires_new_pipeline? }
+    subject { train_car.requires_new_pipeline? }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when merge train has a pipeline associated' do
       before do
-        merge_train.update!(pipeline: create(:ci_pipeline, project: merge_train.project))
+        train_car.update!(pipeline: create(:ci_pipeline, project: train_car.project))
       end
 
       it { is_expected.to be_falsey }
 
       context 'when merge train is stale' do
         before do
-          merge_train.update!(status: described_class.state_machines[:status].states[:stale].value)
+          train_car.update!(status: described_class.state_machines[:status].states[:stale].value)
         end
 
         it { is_expected.to be_truthy }
@@ -410,7 +410,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
 
     context 'when merge train does not have a pipeline' do
       before do
-        merge_train.update!(pipeline: nil)
+        train_car.update!(pipeline: nil)
       end
 
       it { is_expected.to be_truthy }
@@ -418,9 +418,9 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#pipeline_not_succeeded?' do
-    subject { merge_train.pipeline_not_succeeded? }
+    subject { train_car.pipeline_not_succeeded? }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when merge train does not have a pipeline' do
@@ -428,10 +428,10 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
 
     context 'when merge train has a pipeline' do
-      let(:pipeline) { create(:ci_pipeline, project: merge_train.project, status: status) }
+      let(:pipeline) { create(:ci_pipeline, project: train_car.project, status: status) }
 
       before do
-        merge_train.update!(pipeline: pipeline)
+        train_car.update!(pipeline: pipeline)
       end
 
       context 'when pipeline failed' do
@@ -455,16 +455,16 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#cancel_pipeline!' do
-    subject { merge_train.cancel_pipeline!(new_pipeline) }
+    subject { train_car.cancel_pipeline!(new_pipeline) }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
-    let!(:pipeline) { create(:ci_pipeline, :running, project: merge_train.project) }
+    let!(:pipeline) { create(:ci_pipeline, :running, project: train_car.project) }
     let!(:build) { create(:ci_build, :running, pipeline: pipeline) }
-    let!(:new_pipeline) { create(:ci_pipeline, project: merge_train.project) }
+    let!(:new_pipeline) { create(:ci_pipeline, project: train_car.project) }
 
     before do
-      merge_train.update!(pipeline: pipeline)
+      train_car.update!(pipeline: pipeline)
     end
 
     it 'cancels the existing pipeline', :sidekiq_inline do
@@ -478,14 +478,14 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#mergeable?' do
-    subject { merge_train.mergeable? }
+    subject { train_car.mergeable? }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     context 'when merge train has successful pipeline' do
       before do
-        merge_train.update!(pipeline: create(:ci_pipeline, :success, project: merge_request.project))
+        train_car.update!(pipeline: create(:ci_pipeline, :success, project: merge_request.project))
       end
 
       context 'when merge request is first on train' do
@@ -493,7 +493,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       end
 
       context 'when the other merge request is on the merge train' do
-        let(:merge_train) { merge_request_2.merge_train }
+        let(:train_car) { merge_request_2.merge_train_car }
         let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
         it { is_expected.to be_falsy }
@@ -502,7 +502,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
 
     context 'when merge train has non successful pipeline' do
       before do
-        merge_train.update!(pipeline: create(:ci_pipeline, :failed, project: merge_request.project))
+        train_car.update!(pipeline: create(:ci_pipeline, :failed, project: merge_request.project))
       end
 
       context 'when merge request is first on train' do
@@ -512,15 +512,15 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#index' do
-    subject { merge_train.index }
+    subject { train_car.index }
 
-    let(:merge_train) { merge_request.merge_train }
+    let(:train_car) { merge_request.merge_train_car }
     let!(:merge_request) { create_merge_request_on_train }
 
     it { is_expected.to eq(0) }
 
     context 'when the merge train is at the second queue' do
-      let(:merge_train) { merge_request_2.merge_train }
+      let(:train_car) { merge_request_2.merge_train_car }
       let!(:merge_request_2) { create_merge_request_on_train(source_branch: 'improve/awesome') }
 
       it { is_expected.to eq(1) }
@@ -529,40 +529,40 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
 
   describe 'status transition' do
     context 'when status is idle' do
-      let(:merge_train) { create(:merge_train) }
+      let(:train_car) { create(:merge_train_car) }
 
       context 'and transits to fresh' do
         let!(:pipeline) { create(:ci_pipeline) }
 
         it 'refreshes the state and set a pipeline' do
-          merge_train.refresh_pipeline!(pipeline.id)
+          train_car.refresh_pipeline!(pipeline.id)
 
-          expect(merge_train).to be_fresh
-          expect(merge_train.pipeline).to eq(pipeline)
+          expect(train_car).to be_fresh
+          expect(train_car.pipeline).to eq(pipeline)
         end
       end
 
       context 'and transits to merged' do
         it 'does not allow the transition' do
-          expect { merge_train.finish_merge! }
+          expect { train_car.finish_merge! }
             .to raise_error(StateMachines::InvalidTransition)
         end
       end
 
       context 'and transits to stale' do
         it 'does not allow the transition' do
-          expect { merge_train.outdate_pipeline! }
+          expect { train_car.outdate_pipeline! }
             .to raise_error(StateMachines::InvalidTransition)
         end
       end
     end
 
     context 'when status is fresh' do
-      let(:merge_train) { create(:merge_train, :fresh) }
+      let(:train_car) { create(:merge_train_car, :fresh) }
 
       context 'and transits to merged' do
         it 'does not allow the transition' do
-          expect { merge_train.finish_merge! }
+          expect { train_car.finish_merge! }
             .to raise_error(StateMachines::InvalidTransition)
         end
       end
@@ -570,44 +570,44 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
       context 'and transits to stale' do
         it 'refreshes asynchronously' do
           expect(MergeTrains::RefreshWorker)
-            .to receive(:perform_async).with(merge_train.target_project_id, merge_train.target_branch).once
+            .to receive(:perform_async).with(train_car.target_project_id, train_car.target_branch).once
 
-          merge_train.outdate_pipeline!
+          train_car.outdate_pipeline!
         end
       end
     end
 
     context 'when status is merging' do
-      let!(:merge_train) { create(:merge_train, :merging) }
+      let!(:train_car) { create(:merge_train_car, :merging) }
 
       context 'and transits to merged' do
         it 'persists duration and merged_at' do
-          expect(merge_train.duration).to be_nil
-          expect(merge_train.merged_at).to be_nil
+          expect(train_car.duration).to be_nil
+          expect(train_car.merged_at).to be_nil
 
           travel_to(1.hour.from_now) do
-            merge_train.finish_merge!
+            train_car.finish_merge!
 
-            merge_train.reload
-            expect(merge_train.merged_at.to_i).to eq(Time.current.to_i)
-            expect(merge_train.duration).to be_within(1.hour.to_i).of(1.hour.to_i + 1)
+            train_car.reload
+            expect(train_car.merged_at.to_i).to eq(Time.current.to_i)
+            expect(train_car.duration).to be_within(1.hour.to_i).of(1.hour.to_i + 1)
           end
         end
 
-        it 'cleans up train ref' do
-          expect(merge_train).to receive(:cleanup_ref)
+        it 'cleans up train car ref' do
+          expect(train_car).to receive(:cleanup_ref)
 
-          merge_train.finish_merge!
+          train_car.finish_merge!
         end
       end
     end
 
     context 'when status is merged' do
-      let(:merge_train) { create(:merge_train, :merged) }
+      let(:train_car) { create(:merge_train_car, :merged) }
 
       context 'and transits to merged' do
         it 'does not allow the transition' do
-          expect { merge_train.finish_merge! }
+          expect { train_car.finish_merge! }
             .to raise_error(StateMachines::InvalidTransition)
         end
       end
@@ -615,10 +615,10 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#destroy' do
-    subject { merge_train.destroy! }
+    subject { train_car.destroy! }
 
     context 'when merge train has a pipeline' do
-      let(:merge_train) { create(:merge_train, pipeline: pipeline) }
+      let(:train_car) { create(:merge_train_car, pipeline: pipeline) }
       let(:pipeline) { create(:ci_pipeline, :running) }
       let(:build) { create(:ci_build, :running, pipeline: pipeline) }
 
@@ -629,28 +629,28 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   end
 
   describe '#cleanup_ref' do
-    subject { merge_train.cleanup_ref }
+    subject { train_car.cleanup_ref }
 
-    let(:merge_train) { create(:merge_train) }
+    let(:train_car) { create(:merge_train_car) }
 
     it 'executes cleanup_refs for merge request' do
-      expect(merge_train.merge_request).to receive(:cleanup_refs).with(only: :train)
+      expect(train_car.merge_request).to receive(:cleanup_refs).with(only: :train)
 
       subject
     end
   end
 
   describe '#active?' do
-    subject { merge_train.active? }
+    subject { train_car.active? }
 
     context 'when status is idle' do
-      let(:merge_train) { create(:merge_train, :idle) }
+      let(:train_car) { create(:merge_train_car, :idle) }
 
       it { is_expected.to eq(true) }
     end
 
     context 'when status is merged' do
-      let(:merge_train) { create(:merge_train, :merged) }
+      let(:train_car) { create(:merge_train_car, :merged) }
 
       it { is_expected.to eq(false) }
     end
@@ -671,7 +671,7 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
   context 'with loose foreign key on merge_trains.pipeline_id' do
     it_behaves_like 'cleanup by a loose foreign key' do
       let!(:parent) { create(:ci_pipeline) }
-      let!(:model) { create(:merge_train, pipeline: parent) }
+      let!(:model) { create(:merge_train_car, pipeline: parent) }
     end
   end
 end

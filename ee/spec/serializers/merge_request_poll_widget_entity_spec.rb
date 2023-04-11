@@ -21,7 +21,7 @@ RSpec.describe MergeRequestPollWidgetEntity do
   end
 
   describe 'Merge Trains' do
-    let!(:merge_train) { create(:merge_train, merge_request: merge_request) }
+    let!(:merge_train) { create(:merge_train_car, merge_request: merge_request) }
 
     before do
       stub_licensed_features(merge_pipelines: true, merge_trains: true)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :merge_train, class: 'MergeTrains::Car' do
+  factory :merge_train_car, class: 'MergeTrains::Car' do
     target_branch { 'master' }
     target_project factory: :project
     merge_request

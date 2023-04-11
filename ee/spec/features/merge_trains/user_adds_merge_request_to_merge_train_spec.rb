@@ -65,7 +65,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     context 'when pipeline for merge train succeeds', :sidekiq_might_not_need_inline do
       before do
         visit project_merge_request_path(project, merge_request)
-        merge_request.merge_train.pipeline.builds.map(&:success!)
+        merge_request.merge_train_car.pipeline.builds.map(&:success!)
       end
 
       it 'displays pipeline control' do

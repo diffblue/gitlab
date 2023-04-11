@@ -17,7 +17,7 @@ RSpec.describe SystemNotes::MergeTrainService, feature_category: :merge_trains d
   end
 
   describe '#enqueue' do
-    subject { described_class.new(noteable: noteable, project: project, author: author).enqueue(noteable.merge_train) }
+    subject { described_class.new(noteable: noteable, project: project, author: author).enqueue(noteable.merge_train_car) }
 
     let(:noteable) { create(:merge_request, :on_train, source_project: project, target_project: project) }
 
@@ -31,7 +31,7 @@ RSpec.describe SystemNotes::MergeTrainService, feature_category: :merge_trains d
 
     context 'when index of the merge request is not zero' do
       before do
-        allow(noteable.merge_train).to receive(:index) { 1 }
+        allow(noteable.merge_train_car).to receive(:index) { 1 }
       end
 
       it "posts the 'merge train' system note" do

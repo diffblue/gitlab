@@ -3,12 +3,12 @@
 module AutoMerge
   class MergeTrainService < AutoMerge::BaseService
     def execute(merge_request)
-      merge_request.build_merge_train(user: current_user,
+      merge_request.build_merge_train_car(user: current_user,
                                       target_project: merge_request.target_project,
                                       target_branch: merge_request.target_branch)
 
       super do
-        SystemNoteService.merge_train(merge_request, project, current_user, merge_request.merge_train)
+        SystemNoteService.merge_train(merge_request, project, current_user, merge_request.merge_train_car)
       end
     end
 
@@ -22,10 +22,10 @@ module AutoMerge
     def cancel(merge_request)
       # Before dropping a merge request from a merge train, get the next
       # merge request in order to refresh it later.
-      next_car = merge_request.merge_train&.next
+      next_car = merge_request.merge_train_car&.next
 
       super do
-        if merge_request.merge_train&.destroy
+        if merge_request.merge_train_car&.destroy
           SystemNoteService.cancel_merge_train(merge_request, project, current_user)
           next_car.outdate_pipeline if next_car
         end
@@ -35,10 +35,10 @@ module AutoMerge
     def abort(merge_request, reason, process_next: true)
       # Before dropping a merge request from a merge train, get the next
       # merge request in order to refresh it later.
-      next_car = merge_request.merge_train&.next
+      next_car = merge_request.merge_train_car&.next
 
       super(merge_request, reason) do
-        if merge_request.merge_train&.destroy
+        if merge_request.merge_train_car&.destroy
           SystemNoteService.abort_merge_train(merge_request, project, current_user, reason)
           next_car.outdate_pipeline if next_car && process_next
         end

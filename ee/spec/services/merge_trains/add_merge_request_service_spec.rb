@@ -49,8 +49,8 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
 
       merge_request.reload
 
-      expect(merge_request.merge_train).to be_present
-      expect(merge_request.merge_train.user).to eq(user)
+      expect(merge_request.merge_train_car).to be_present
+      expect(merge_request.merge_train_car.user).to eq(user)
     end
   end
 
@@ -64,7 +64,7 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
 
       merge_request.reload
 
-      expect(merge_request.merge_train).not_to be_present
+      expect(merge_request.merge_train_car).not_to be_present
     end
   end
 
@@ -112,7 +112,7 @@ RSpec.describe MergeTrains::AddMergeRequestService, feature_category: :continuou
 
           merge_request.reload
 
-          expect(merge_request.merge_train).not_to be_present
+          expect(merge_request.merge_train_car).not_to be_present
         end
       end
     end
