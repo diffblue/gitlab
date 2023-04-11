@@ -9403,6 +9403,9 @@ msgstr ""
 msgid "Close %{tabname}"
 msgstr ""
 
+msgid "Close %{workItemType}"
+msgstr ""
+
 msgid "Close design"
 msgstr ""
 
@@ -36745,6 +36748,9 @@ msgid "Reopen %{issueType}"
 msgstr ""
 
 msgid "Reopen %{noteable}"
+msgstr ""
+
+msgid "Reopen %{workItemType}"
 msgstr ""
 
 msgid "Reopen epic"
