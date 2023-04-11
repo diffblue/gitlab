@@ -38377,6 +38377,9 @@ msgstr ""
 msgid "Runners|You have used %{quotaUsed} out of %{quotaLimit} of your shared Runners pipeline minutes."
 msgstr ""
 
+msgid "Runners|You may lose access to the runner token if you leave this page."
+msgstr ""
+
 msgid "Runners|You've created a new runner!"
 msgstr ""
 
