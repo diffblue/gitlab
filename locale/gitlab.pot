@@ -18558,6 +18558,9 @@ msgstr ""
 msgid "ForksDivergence|Source project has a limited visibility."
 msgstr ""
 
+msgid "ForksDivergence|Successfully fetched and merged from the upstream repository."
+msgstr ""
+
 msgid "ForksDivergence|The upstream changes could not be synchronized to this project due to file conflicts in the default branch. You must resolve the conflicts manually:"
 msgstr ""
 

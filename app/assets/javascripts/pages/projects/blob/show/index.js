@@ -103,6 +103,7 @@ const initForkInfo = () => {
     aheadComparePath,
     behindComparePath,
     canUserCreateMrInFork,
+    createMrPath,
   } = forkEl.dataset;
   return new Vue({
     el: forkEl,
@@ -118,6 +119,7 @@ const initForkInfo = () => {
           aheadComparePath,
           behindComparePath,
           canUserCreateMrInFork,
+          createMrPath,
         },
       });
     },
