@@ -89,8 +89,8 @@ module EE
 
             ::Sidebars::MenuItem.new(
               title: _('Domain Verification'),
-              link: group_settings_domain_verification_path(context.group),
-              active_routes: { path: 'domain_verification#show' },
+              link: group_settings_domain_verification_index_path(context.group),
+              active_routes: { path: 'domain_verification#index' },
               item_id: :domain_verification
             )
           end

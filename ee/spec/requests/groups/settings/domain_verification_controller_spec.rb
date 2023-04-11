@@ -15,7 +15,7 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
 
     let(:group) { create(:group) }
 
-    subject(:perform_request) { get group_settings_domain_verification_path(group) }
+    subject(:perform_request) { get group_settings_domain_verification_index_path(group) }
 
     before do
       stub_licensed_features(domain_verification: licensed_feature_available)
@@ -32,9 +32,9 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
       context 'when the user is an owner' do
         let(:access_level) { :owner }
 
-        it 'renders show with 200 status code' do
+        it 'renders index with 200 status code' do
           expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to render_template(:show)
+          expect(response).to render_template(:index)
         end
 
         context 'when subgroup' do
