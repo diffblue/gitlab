@@ -69,7 +69,7 @@ RSpec.shared_examples 'migration backfills fields' do
         allow(migration).to receive(:batch_size).and_return(2)
         allow(migration).to receive(:update_batch_size).and_return(1)
 
-        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).exactly(objects.count).times.and_call_original
+        expect(::Elastic::ProcessInitialBookkeepingService).to receive(:track!).exactly(3).times.and_call_original
 
         # cannot use subject in spec because it is memoized
         migration.migrate
