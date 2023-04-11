@@ -23,7 +23,3 @@ export const STORAGE_USAGE_THRESHOLDS = {
   [ALERT_THRESHOLD]: 0.95,
   [ERROR_THRESHOLD]: 1.0,
 };
-
-export const namespaceContainerRegistryPopoverContent = s__(
-  'UsageQuotas|This project-level storage statistic does not include savings for site-wide deduplication and is not used to calculate total namespace storage.',
-);

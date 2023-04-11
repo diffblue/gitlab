@@ -7,12 +7,6 @@ export default {
     GlPopover,
     GlIcon,
   },
-  props: {
-    content: {
-      type: String,
-      required: true,
-    },
-  },
   data() {
     return {
       mounted: false,
@@ -27,12 +21,8 @@ export default {
 <template>
   <span>
     <gl-icon ref="glIcon" name="warning" class="gl-ml-2 gl-text-gray-500" />
-    <gl-popover
-      v-if="mounted"
-      :target="$refs.glIcon"
-      triggers="hover focus"
-      placement="top"
-      :content="content"
-    />
+    <gl-popover v-if="mounted" :target="$refs.glIcon" triggers="hover focus" placement="top">
+      <slot></slot>
+    </gl-popover>
   </span>
 </template>

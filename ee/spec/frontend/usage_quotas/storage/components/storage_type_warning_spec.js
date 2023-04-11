@@ -5,10 +5,13 @@ import StorageTypeWarning from 'ee/usage_quotas/storage/components/storage_type_
 
 let wrapper;
 
-const createComponent = (props = {}) => {
+const createComponent = ({ content }) => {
   wrapper = shallowMount(StorageTypeWarning, {
-    propsData: {
-      ...props,
+    slots: {
+      default: content,
+    },
+    stubs: {
+      GlPopover,
     },
   });
 };
@@ -28,6 +31,6 @@ describe('StorageTypeWarning', () => {
   });
 
   it('will pass through content to popover', () => {
-    expect(findGlPopover().attributes('content')).toBe(content);
+    expect(findGlPopover().html()).toContain(content);
   });
 });
