@@ -19,6 +19,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   />
    
   <boardsidebartitle-stub
+    activeitem="[object Object]"
     data-testid="sidebar-title"
   />
    
@@ -605,6 +606,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   />
    
   <boardsidebartitle-stub
+    activeitem="[object Object]"
     data-testid="sidebar-title"
   />
    

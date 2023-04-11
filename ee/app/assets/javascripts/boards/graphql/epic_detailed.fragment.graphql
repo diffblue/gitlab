@@ -1,0 +1,28 @@
+#import "ee/graphql_shared/fragments/epic.fragment.graphql"
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
+fragment EpicDetailed on Epic {
+  ...EpicNode
+  relativePosition
+  referencePath: reference(full: true)
+  confidential
+  subscribed
+  blocked
+  blockedByCount
+  labels {
+    nodes {
+      ...Label
+    }
+  }
+  hasIssues
+  descendantCounts {
+    closedEpics
+    closedIssues
+    openedEpics
+    openedIssues
+  }
+  descendantWeightSum {
+    closedIssues
+    openedIssues
+  }
+}
