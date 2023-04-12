@@ -114,7 +114,7 @@ export default {
       selectedArtifacts: [],
       pagination: INITIAL_PAGINATION_STATE,
       isBulkDeleteModalVisible: false,
-      isDeletingArtifactsForJob: null,
+      jobArtifactsToDelete: [],
       isBulkDeleting: false,
     };
   },
@@ -154,10 +154,11 @@ export default {
     canBulkDestroyArtifacts() {
       return this.glFeatures[BULK_DELETE_FEATURE_FLAG] && this.canDestroyArtifacts;
     },
+    isDeletingArtifactsForJob() {
+      return this.jobArtifactsToDelete.length > 0;
+    },
     artifactsToDelete() {
-      return this.isDeletingArtifactsForJob
-        ? this.isDeletingArtifactsForJob
-        : this.selectedArtifacts;
+      return this.isDeletingArtifactsForJob ? this.jobArtifactsToDelete : this.selectedArtifacts;
     },
   },
   methods: {
@@ -250,7 +251,7 @@ export default {
         .finally(() => {
           this.isBulkDeleting = false;
           this.isBulkDeleteModalVisible = false;
-          this.isDeletingArtifactsForJob = null;
+          this.jobArtifactsToDelete = [];
         });
     },
     onError(error) {
@@ -263,9 +264,9 @@ export default {
     handleBulkDeleteModalShow() {
       this.isBulkDeleteModalVisible = true;
     },
-    handleBulkDeleteModalHide() {
+    handleBulkDeleteModalHidden() {
       this.isBulkDeleteModalVisible = false;
-      this.isDeletingArtifactsForJob = null;
+      this.jobArtifactsToDelete = [];
     },
     clearSelectedArtifacts() {
       this.selectedArtifacts = [];
@@ -283,7 +284,7 @@ export default {
       return !job.hasArtifacts || !this.canBulkDestroyArtifacts;
     },
     deleteArtifactsForJob(job) {
-      this.isDeletingArtifactsForJob = job.artifacts.nodes.map((node) => node.id);
+      this.jobArtifactsToDelete = job.artifacts.nodes.map((node) => node.id);
       this.handleBulkDeleteModalShow();
     },
   },
@@ -347,7 +348,7 @@ export default {
       :artifacts-to-delete="artifactsToDelete"
       :is-deleting="isBulkDeleting"
       @primary="onConfirmBulkDelete"
-      @hidden="handleBulkDeleteModalHide"
+      @hidden="handleBulkDeleteModalHidden"
     />
     <gl-table
       :items="jobArtifacts"
