@@ -503,6 +503,82 @@ describe('vulnerability actions', () => {
       state = initialState();
     });
 
+    describe('reFetchVulnerabilitiesAfterDismissal', () => {
+      let mock;
+
+      beforeEach(() => {
+        mock = new MockAdapter(axios);
+        state.filters = { filters: { scope: DISMISSAL_STATES.DISMISSED } };
+      });
+
+      afterEach(() => {
+        mock.restore();
+      });
+
+      describe('on success', () => {
+        it.each`
+          context                                    | expectation                 | hideDismissed | currentPage | expectedPage
+          ${'not showing dismissed vulnerabilities'} | ${'load the previous page'} | ${true}       | ${2}        | ${1}
+          ${'showing all vulnerabilities'}           | ${'load the current page'}  | ${false}      | ${2}        | ${2}
+        `('when $context then $expectation', ({ hideDismissed, currentPage, expectedPage }) => {
+          const [vulnerabilityToDismiss] = mockDataVulnerabilities;
+          state.vulnerabilities = [vulnerabilityToDismiss];
+          state.pageInfo.page = currentPage;
+          state.filters = {
+            filters: { scope: hideDismissed ? DISMISSAL_STATES.DISMISSED : DISMISSAL_STATES.ALL },
+          };
+
+          return testAction(
+            actions.reFetchVulnerabilitiesAfterDismissal,
+            { vulnerability: vulnerabilityToDismiss },
+            state,
+            [],
+            [
+              {
+                type: 'fetchVulnerabilities',
+                payload: { page: expectedPage, ...state.filters.filters },
+              },
+            ],
+          );
+        });
+
+        it.each`
+          hideDismissed | expectedToastMessage                                                                  | expectedToastOptions
+          ${true}       | ${`Dismissed 'Insecure variable usage'. Turn off the hide dismissed toggle to view.`} | ${expect.objectContaining({ action: { onClick: expect.any(Function), text: 'Undo dismiss' } })}
+          ${false}      | ${`Dismissed 'Insecure variable usage'`}                                              | ${{}}
+        `(
+          'should show a toast message with the correct message and options when hideDismissed is "$hideDismissed"',
+          async ({ hideDismissed, expectedToastMessage, expectedToastOptions }) => {
+            const [vulnerabilityToDismiss] = mockDataVulnerabilities;
+            state.vulnerabilities = mockDataVulnerabilities;
+            state.pageInfo.page = 1;
+            state.filters = {
+              filters: { scope: hideDismissed ? DISMISSAL_STATES.DISMISSED : DISMISSAL_STATES.ALL },
+            };
+
+            expect(toast).not.toHaveBeenCalled();
+
+            await testAction(
+              actions.reFetchVulnerabilitiesAfterDismissal,
+              {
+                vulnerability: vulnerabilityToDismiss,
+              },
+              state,
+              [],
+              [
+                {
+                  type: 'fetchVulnerabilities',
+                  payload: { page: 1, ...state.filters.filters },
+                },
+              ],
+            );
+
+            expect(toast).toHaveBeenCalledWith(expectedToastMessage, expectedToastOptions);
+          },
+        );
+      });
+    });
+
     describe('dismissVulnerability', () => {
       const vulnerability = mockDataVulnerabilities[0];
       const data = { vulnerability };
@@ -1145,7 +1221,7 @@ describe('vulnerability actions', () => {
           context                                    | expectation                 | hideDismissed | currentPage | expectedPage
           ${'not showing dismissed vulnerabilities'} | ${'load the previous page'} | ${true}       | ${2}        | ${1}
           ${'showing all vulnerabilities'}           | ${'load the current page'}  | ${false}      | ${2}        | ${2}
-        `('when $context then $expecation', ({ hideDismissed, currentPage, expectedPage }) => {
+        `('when $context then $expectation', ({ hideDismissed, currentPage, expectedPage }) => {
           state.vulnerabilities = [mockDataVulnerabilities[0]];
           state.selectedVulnerabilities = {
             [mockDataVulnerabilities[0].id]: true,

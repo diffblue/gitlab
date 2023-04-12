@@ -168,6 +168,55 @@ export const deselectVulnerability = ({ commit }, { id }) => {
   commit(types.DESELECT_VULNERABILITY, id);
 };
 
+export const reFetchVulnerabilitiesAfterDismissal = (
+  { dispatch, state, rootState },
+  { vulnerability },
+) => {
+  const { filters } = rootState.filters;
+  const { vulnerabilities, pageInfo } = state;
+
+  const currentPage = pageInfo?.page || 1;
+  const vulnerabilitiesOnPage = vulnerabilities.length - 1;
+  const hideDismissed = filters?.scope === DISMISSAL_STATES.DISMISSED;
+  const shouldLoadPreviousPage = hideDismissed && vulnerabilitiesOnPage < 1;
+  const pageToFetch = shouldLoadPreviousPage ? currentPage - 1 : currentPage;
+
+  const toastMsg = sprintf(
+    hideDismissed
+      ? s__(
+          "SecurityReports|Dismissed '%{vulnerabilityName}'. Turn off the hide dismissed toggle to view.",
+        )
+      : s__("SecurityReports|Dismissed '%{vulnerabilityName}'"),
+    {
+      vulnerabilityName: vulnerability.name,
+    },
+  );
+  const toastOptions = hideDismissed
+    ? {
+        action: {
+          text: s__('SecurityReports|Undo dismiss'),
+          onClick: (e, toastObject) => {
+            dispatch('revertDismissVulnerability', { vulnerability })
+              .then(() => {
+                dispatch('fetchVulnerabilities', { ...filters, page: pageToFetch });
+              })
+              .catch(() => {});
+            toastObject.hide();
+          },
+        },
+      }
+    : {};
+
+  dispatch('fetchVulnerabilities', {
+    ...filters,
+    // If we just dismissed the last vulnerability on the active page,
+    // we load the previous page if any
+    page: pageToFetch,
+  });
+
+  toast(toastMsg, toastOptions);
+};
+
 export const dismissSelectedVulnerabilities = (
   { dispatch, state, rootState },
   { comment } = {},

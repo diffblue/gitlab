@@ -1,0 +1,8 @@
+---
+name: standalone_finding_modal
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/116810
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/386265
+milestone: '15.11'
+type: development
+group: group::threat insights
+default_enabled: false
