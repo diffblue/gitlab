@@ -48,6 +48,12 @@ describe('Purchase Dynamic Errors', () => {
           errorDictionary[EMAIL_TAKEN_ERROR],
         );
       });
+
+      it('directs the user to the legacy Customers Portal login', () => {
+        expect(mapSystemToFriendlyError(EMAIL_TAKEN_ERROR).links.customersPortalLink).toEqual(
+          gon.subscriptions_legacy_sign_in_url,
+        );
+      });
     });
   });
 

@@ -57,7 +57,7 @@ export const UNLINKED_ACCOUNT_ERROR = {
   ),
   links: {
     linkCustomersPortalHelpLink,
-    customersPortalLink: gon.subscriptions_url,
+    customersPortalLink: gon.subscriptions_legacy_sign_in_url,
     supportLink: licensingAndRenewalsProblemsLink,
   },
 };
