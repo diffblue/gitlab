@@ -119,11 +119,6 @@ export default class Shortcuts {
       });
     }
 
-    $(document).on('click.more_help', '.js-more-help-button', function clickMoreHelp(e) {
-      $(this).remove();
-      e.preventDefault();
-    });
-
     const shortcutsModalTriggerEvent = 'click.shortcutsModalTrigger';
     // eslint-disable-next-line @gitlab/no-global-event-off
     $(document)
