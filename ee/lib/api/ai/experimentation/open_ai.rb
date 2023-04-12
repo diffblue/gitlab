@@ -31,10 +31,11 @@ module API
             response = Gitlab::HTTP.post(url, headers: header, body: Gitlab::Json.dump(json_body))
             response_body = Gitlab::Json.parse(response.body, symbolize_names: true)
 
+            status response.code unless response.success?
             body response_body
-
           rescue Gitlab::HTTP::Error, StandardError => error
             Gitlab::AppLogger.info("#{self.class.name}: Error while connecting to OpenAI: #{error.message}")
+            raise error
           end
         end
 

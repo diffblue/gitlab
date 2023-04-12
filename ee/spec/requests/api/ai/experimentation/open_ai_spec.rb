@@ -29,6 +29,30 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
       post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
 
       expect(json_response).to eq(body)
+      expect(response).to have_gitlab_http_status(:created)
+    end
+
+    context 'when request is not successful' do
+      let(:response_double) { instance_double(HTTParty::Response, code: 401, success?: false, body: body.to_json) }
+
+      it 'returns json received with status' do
+        expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
+
+        post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
+
+        expect(json_response).to eq(body)
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when error is raised during the request' do
+      it 'returns status 500' do
+        expect(Gitlab::HTTP).to receive(:post).and_raise(Gitlab::HTTP::Error)
+
+        post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
+
+        expect(response).to have_gitlab_http_status(:internal_server_error)
+      end
     end
   end
 
