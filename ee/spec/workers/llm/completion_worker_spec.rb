@@ -15,16 +15,16 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     let(:user_id) { user.id }
     let(:issuable_id) { issuable.id }
     let(:issuable_type) { issuable.class.name }
-    let(:options) { {} }
+    let(:options) { { 'key' => 'value' } }
     let(:ai_template) { { method: :completions, prompt: 'something', options: { temperature: 0.7 } } }
     let(:ai_action_name) { :summarize_comments }
 
-    subject { described_class.new.perform(user_id, issuable_id, issuable_type, ai_action_name) }
+    subject { described_class.new.perform(user_id, issuable_id, issuable_type, ai_action_name, options) }
 
     shared_examples 'performs successfully' do
       it 'calls Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes and Gitlab::Llm::OpenAi::Client services' do
         expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes) do |completion_service|
-          expect(completion_service).to receive(:execute).with(user, issuable).and_call_original
+          expect(completion_service).to receive(:execute).with(user, issuable, options.symbolize_keys).and_call_original
         end
 
         expect(Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes).to receive(:get_prompt).and_return(ai_template)
