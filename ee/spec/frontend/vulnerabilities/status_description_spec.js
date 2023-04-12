@@ -50,7 +50,7 @@ describe('Vulnerability status description component', () => {
     it.each(ALL_STATES)('shows the correct string for the vulnerability state "%s"', (state) => {
       createWrapper({ vulnerability: { state, pipeline: {} } });
 
-      expect(statusEl().text()).toBe(`${capitalize(state)}`);
+      expect(statusEl().text()).toBe(`${capitalize(state)} ·`);
     });
 
     it.each(Object.entries(DISMISSAL_REASONS))(
@@ -68,7 +68,7 @@ describe('Vulnerability status description component', () => {
           },
         });
 
-        expect(statusEl().text()).toBe(`Dismissed: ${translation}`);
+        expect(statusEl().text()).toBe(`Dismissed: ${translation} ·`);
       },
     );
 
@@ -76,7 +76,7 @@ describe('Vulnerability status description component', () => {
       description                          | isStatusBolded
       ${'does not show bolded state text'} | ${false}
       ${'shows bolded state text'}         | ${true}
-    `('$description if isStatusBolded is isStatusBolded', ({ isStatusBolded }) => {
+    `('$description if isStatusBolded is $isStatusBolded', ({ isStatusBolded }) => {
       createWrapper({
         vulnerability: { state: 'detected', pipeline: { createdAt: createDate('2001') } },
         isStatusBolded,
@@ -104,7 +104,7 @@ describe('Vulnerability status description component', () => {
         false,
       );
 
-      expect(statusEl().text()).toBe('Dismissed');
+      expect(statusEl().text()).toBe('Dismissed ·');
     });
   });
 
