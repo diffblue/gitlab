@@ -1434,6 +1434,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: merge_requests_llm_summarize_merge_request
+  :worker_name: MergeRequests::Llm::SummarizeMergeRequestWorker
+  :feature_category: :code_review_workflow
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_requests_stream_approval_audit_event
   :worker_name: MergeRequests::StreamApprovalAuditEventWorker
   :feature_category: :code_review_workflow
