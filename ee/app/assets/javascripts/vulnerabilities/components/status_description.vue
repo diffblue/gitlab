@@ -106,9 +106,9 @@ export default {
       <template #status="{ content }">
         <span :class="{ 'gl-font-weight-bold': isStatusBolded }" data-testid="status">
           <template v-if="shouldShowDismissalReason && hasDismissalReason">
-            {{ content }}: {{ dismissalReasonText }}
+            {{ content }}: {{ dismissalReasonText }} &middot;
           </template>
-          <template v-else>{{ content }}</template>
+          <template v-else>{{ content }} &middot;</template>
         </span>
       </template>
       <template #timeago>
