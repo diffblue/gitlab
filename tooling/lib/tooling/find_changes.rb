@@ -9,7 +9,10 @@ module Tooling
     include Helpers::FileHandler
 
     def initialize(
-      changed_files_pathname = nil, predictive_tests_pathname = nil, frontend_fixtures_mapping_pathname = nil
+      changed_files_pathname: nil,
+      predictive_tests_pathname: nil,
+      frontend_fixtures_mapping_pathname: nil,
+      append: false
     )
       @gitlab_token                       = ENV['PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE'] || ''
       @gitlab_endpoint                    = ENV['CI_API_V4_URL']
@@ -18,11 +21,12 @@ module Tooling
       @changed_files_pathname             = changed_files_pathname
       @predictive_tests_pathname          = predictive_tests_pathname
       @frontend_fixtures_mapping_pathname = frontend_fixtures_mapping_pathname
+      @append                             = append
     end
 
     def execute
       if changed_files_pathname.nil?
-        raise ArgumentError, "A path to the changed files file must be given as first argument."
+        raise ArgumentError, "A path to the changed files file must be given as :changed_files_pathname"
       end
 
       add_frontend_fixture_files!
@@ -30,8 +34,6 @@ module Tooling
     end
 
     def only_js_files_changed
-      @changed_files_pathname = nil # We ensure that we'll get the diff from the MR directly, not from a file.
-
       file_changes.any? && file_changes.all? { |file| file.end_with?('.js') }
     end
 
@@ -68,7 +70,7 @@ module Tooling
 
     def file_changes
       @file_changes ||=
-        if changed_files_pathname && File.exist?(changed_files_pathname)
+        if @append && File.exist?(changed_files_pathname)
           read_array_from_file(changed_files_pathname)
         else
           mr_changes.changes.flat_map do |change|

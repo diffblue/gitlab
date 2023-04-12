@@ -11,12 +11,17 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
   attr_accessor :changed_files_file, :predictive_tests_file, :frontend_fixtures_mapping_file
 
   let(:instance) do
-    described_class.new(changed_files_pathname, predictive_tests_pathname, frontend_fixtures_mapping_pathname)
+    described_class.new(
+      changed_files_pathname: changed_files_pathname,
+      predictive_tests_pathname: predictive_tests_pathname,
+      frontend_fixtures_mapping_pathname: frontend_fixtures_mapping_pathname,
+      append: append)
   end
 
   let(:changed_files_pathname)             { changed_files_file.path }
   let(:predictive_tests_pathname)          { predictive_tests_file.path }
   let(:frontend_fixtures_mapping_pathname) { frontend_fixtures_mapping_file.path }
+  let(:append)                             { false }
   let(:gitlab_client)                      { double('GitLab') } # rubocop:disable RSpec/VerifiedDoubles
 
   around do |example|
@@ -57,12 +62,24 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
 
       it 'raises an ArgumentError' do
         expect { subject }.to raise_error(
-          ArgumentError, "A path to the changed files file must be given as first argument."
+          ArgumentError, "A path to the changed files file must be given as :changed_files_pathname"
         )
       end
     end
 
-    context 'when an changed files file is provided' do
+    context 'when not in append mode' do
+      let(:append) { false }
+
+      it 'calls GitLab API to retrieve the MR diff' do
+        expect(gitlab_client).to receive_message_chain(:merge_request_changes, :changes).and_return([])
+
+        subject
+      end
+    end
+
+    context 'when in append mode' do
+      let(:append) { true }
+
       it 'does not call GitLab API to retrieve the MR diff' do
         expect(gitlab_client).not_to receive(:merge_request_changes)
 
