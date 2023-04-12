@@ -28684,10 +28684,10 @@ msgstr ""
 msgid "Navigation|Explore"
 msgstr ""
 
-msgid "Navigation|Frequent groups"
+msgid "Navigation|Frequently visited groups"
 msgstr ""
 
-msgid "Navigation|Frequent projects"
+msgid "Navigation|Frequently visited projects"
 msgstr ""
 
 msgid "Navigation|Groups"
