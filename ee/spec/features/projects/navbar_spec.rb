@@ -126,7 +126,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
       stub_feature_flags(harbor_registry_integration: true)
 
-      insert_harbor_registry_nav(_('Infrastructure Registry'))
+      insert_harbor_registry_nav(_('Terraform modules'))
 
       visit project_path(project)
     end
