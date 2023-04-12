@@ -78,5 +78,30 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
 
       expect_to_be_on_group_page
     end
+
+    it 'fails submitting trial and then chooses to create a namespace and apply trial to it' do
+      # setup
+      sign_in(user)
+
+      visit new_trial_path
+
+      fill_in_company_information
+
+      # trial failure
+      submit_company_information_form(trial_success: false)
+
+      expect_to_be_on_namespace_selection_with_errors
+
+      # user pivots and decides to create a new group instead of using existing
+      select_from_listbox 'Create group', from: 'gitlab'
+      wait_for_requests
+
+      fill_in_trial_form_for_new_group
+
+      # success
+      submit_new_group_trial_selection_form
+
+      expect_to_be_on_group_page(path: 'gitlab1')
+    end
   end
 end
