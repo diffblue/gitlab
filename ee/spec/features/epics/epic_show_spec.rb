@@ -118,7 +118,7 @@ RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
       end
 
       it 'has no limit on container width', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299440' do
-        expect(find('.content-wrapper .container-fluid:not(.breadcrumbs)')[:class]).not_to include('container-limited')
+        expect(find('.content-wrapper .container-fluid:not(.top-bar-container)')[:class]).not_to include('container-limited')
       end
     end
 

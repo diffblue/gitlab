@@ -38,13 +38,6 @@ function injectVueRouterIntoBreadcrumbs(router, groupPath) {
       groupPath,
     },
     render(createElement) {
-      // workaround pending https://gitlab.com/gitlab-org/gitlab/-/merge_requests/48115
-      const parentEl = breadCrumbEl.parentElement.parentElement;
-      if (parentEl) {
-        parentEl.classList.remove('breadcrumbs-container');
-        parentEl.classList.add('gl-display-flex');
-        parentEl.classList.add('w-100');
-      }
       return createElement('iteration-breadcrumb');
     },
   });
