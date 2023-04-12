@@ -177,6 +177,7 @@ module GitlabSubscriptions
       api_discovery
       api_fuzzing
       auto_rollback
+      breach_and_attack_simulation
       no_code_automation
       ci_namespace_catalog
       cluster_image_scanning

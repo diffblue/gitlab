@@ -24486,6 +24486,7 @@ The status of the security scan.
 | Value | Description |
 | ----- | ----------- |
 | <a id="securityreporttypeenumapi_fuzzing"></a>`API_FUZZING` | API FUZZING scan report. |
+| <a id="securityreporttypeenumbreach_and_attack_simulation"></a>`BREACH_AND_ATTACK_SIMULATION` | BREACH AND ATTACK SIMULATION scan report. |
 | <a id="securityreporttypeenumcluster_image_scanning"></a>`CLUSTER_IMAGE_SCANNING` | CLUSTER IMAGE SCANNING scan report. |
 | <a id="securityreporttypeenumcontainer_scanning"></a>`CONTAINER_SCANNING` | CONTAINER SCANNING scan report. |
 | <a id="securityreporttypeenumcoverage_fuzzing"></a>`COVERAGE_FUZZING` | COVERAGE FUZZING scan report. |
@@ -24502,6 +24503,7 @@ The type of the security scanner.
 | Value | Description |
 | ----- | ----------- |
 | <a id="securityscannertypeapi_fuzzing"></a>`API_FUZZING` | API Fuzzing scanner. |
+| <a id="securityscannertypebreach_and_attack_simulation"></a>`BREACH_AND_ATTACK_SIMULATION` | Breach And Attack Simulation scanner. |
 | <a id="securityscannertypecluster_image_scanning"></a>`CLUSTER_IMAGE_SCANNING` | Cluster Image Scanning scanner. |
 | <a id="securityscannertypecontainer_scanning"></a>`CONTAINER_SCANNING` | Container Scanning scanner. |
 | <a id="securityscannertypecoverage_fuzzing"></a>`COVERAGE_FUZZING` | Coverage Fuzzing scanner. |

@@ -220,4 +220,10 @@ RSpec.describe 'User sees Security Configuration table', :js, feature_category: 
       yield
     end
   end
+
+  def within_breach_and_attack_simulation_card
+    within '[data-testid="security-testing-card"]:nth-of-type(9)' do
+      yield
+    end
+  end
 end
