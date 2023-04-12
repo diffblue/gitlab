@@ -22,8 +22,8 @@ module EE::GroupMembersFinder
   end
 
   override :all_group_members
-  def all_group_members(groups)
-    return members_of_groups(groups) if group.minimal_access_role_allowed?
+  def all_group_members(groups, shared_from_groups)
+    return members_of_groups(groups, shared_from_groups) if group.minimal_access_role_allowed?
 
     super
   end
