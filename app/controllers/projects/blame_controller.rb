@@ -8,17 +8,12 @@ class Projects::BlameController < Projects::ApplicationController
   before_action :require_non_empty_project
   before_action :assign_ref_vars
   before_action :authorize_read_code!
+  before_action :load_blob
 
   feature_category :source_code_management
   urgency :low, [:show]
 
   def show
-    @blob = @repository.blob_at(@commit.id, @path)
-
-    unless @blob
-      return redirect_to_tree_root_for_missing_path(@project, @ref, @path)
-    end
-
     load_environment
 
     blame_service = Projects::BlameService.new(@blob, @commit, blame_params)
@@ -36,8 +31,6 @@ class Projects::BlameController < Projects::ApplicationController
   end
 
   def page
-    @blob = @repository.blob_at(@commit.id, @path)
-
     load_environment
 
     blame_service = Projects::BlameService.new(@blob, @commit, blame_params)
@@ -48,6 +41,14 @@ class Projects::BlameController < Projects::ApplicationController
   end
 
   private
+
+  def load_blob
+    @blob = @repository.blob_at(@commit.id, @path)
+
+    return if @blob
+
+    redirect_to_tree_root_for_missing_path(@project, @ref, @path)
+  end
 
   def load_environment
     environment_params = @repository.branch_exists?(@ref) ? { ref: @ref } : { commit: @commit }
