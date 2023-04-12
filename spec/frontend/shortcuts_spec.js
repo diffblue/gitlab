@@ -12,10 +12,10 @@ describe('Shortcuts', () => {
     $.Event(type, {
       target,
     });
+  let shortcuts;
 
   beforeAll(() => {
-    // eslint-disable-next-line no-new
-    new Shortcuts();
+    shortcuts = new Shortcuts();
   });
 
   beforeEach(() => {
@@ -139,6 +139,37 @@ describe('Shortcuts', () => {
       it('focuses the search bar', () => {
         Shortcuts.focusSearch(createEvent('KeyboardEvent'));
         expect(document.querySelector('#search').focus).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('bindCommand(s)', () => {
+    it('bindCommand calls Mousetrap.bind correctly', () => {
+      const mockCommand = { defaultKeys: ['m'] };
+      const mockCallback = () => {};
+
+      shortcuts.bindCommand(mockCommand, mockCallback);
+
+      expect(Mousetrap.prototype.bind).toHaveBeenCalledTimes(1);
+      const [callArguments] = Mousetrap.prototype.bind.mock.calls;
+      expect(callArguments[0]).toEqual(mockCommand.defaultKeys);
+      expect(callArguments[1]).toBe(mockCallback);
+    });
+
+    it('bindCommands calls Mousetrap.bind correctly', () => {
+      const mockCommandsAndCallbacks = [
+        [{ defaultKeys: ['1'] }, () => {}],
+        [{ defaultKeys: ['2'] }, () => {}],
+      ];
+
+      shortcuts.bindCommands(mockCommandsAndCallbacks);
+
+      expect(Mousetrap.prototype.bind).toHaveBeenCalledTimes(mockCommandsAndCallbacks.length);
+      const { calls } = Mousetrap.prototype.bind.mock;
+
+      mockCommandsAndCallbacks.forEach(([mockCommand, mockCallback], i) => {
+        expect(calls[i][0]).toEqual(mockCommand.defaultKeys);
+        expect(calls[i][1]).toBe(mockCallback);
       });
     });
   });

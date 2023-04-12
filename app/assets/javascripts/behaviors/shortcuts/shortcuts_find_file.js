@@ -30,9 +30,11 @@ export default class ShortcutsFindFile extends ShortcutsNavigation {
       return oldStopCallback.call(this, e, element, combo);
     };
 
-    Mousetrap.bind(keysFor(PROJECT_FILES_MOVE_SELECTION_UP), projectFindFile.selectRowUp);
-    Mousetrap.bind(keysFor(PROJECT_FILES_MOVE_SELECTION_DOWN), projectFindFile.selectRowDown);
-    Mousetrap.bind(keysFor(PROJECT_FILES_GO_BACK), projectFindFile.goToTree);
-    Mousetrap.bind(keysFor(PROJECT_FILES_OPEN_SELECTION), projectFindFile.goToBlob);
+    this.bindCommands([
+      [PROJECT_FILES_MOVE_SELECTION_UP, projectFindFile.selectRowUp],
+      [PROJECT_FILES_MOVE_SELECTION_DOWN, projectFindFile.selectRowDown],
+      [PROJECT_FILES_GO_BACK, projectFindFile.goToTree],
+      [PROJECT_FILES_OPEN_SELECTION, projectFindFile.goToBlob],
+    ]);
   }
 }

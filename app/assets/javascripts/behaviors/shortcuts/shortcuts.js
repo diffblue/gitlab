@@ -76,45 +76,30 @@ export default class Shortcuts {
     this.helpModalElement = null;
     this.helpModalVueInstance = null;
 
-    Mousetrap.bind(keysFor(TOGGLE_KEYBOARD_SHORTCUTS_DIALOG), this.onToggleHelp);
-    Mousetrap.bind(keysFor(START_SEARCH), Shortcuts.focusSearch);
-    Mousetrap.bind(keysFor(FOCUS_FILTER_BAR), this.focusFilter.bind(this));
-    Mousetrap.bind(keysFor(TOGGLE_PERFORMANCE_BAR), Shortcuts.onTogglePerfBar);
-    Mousetrap.bind(keysFor(HIDE_APPEARING_CONTENT), Shortcuts.hideAppearingContent);
-    Mousetrap.bind(keysFor(TOGGLE_CANARY), Shortcuts.onToggleCanary);
+    this.bindCommands([
+      [TOGGLE_KEYBOARD_SHORTCUTS_DIALOG, this.onToggleHelp],
+      [START_SEARCH, Shortcuts.focusSearch],
+      [FOCUS_FILTER_BAR, this.focusFilter.bind(this)],
+      [TOGGLE_PERFORMANCE_BAR, Shortcuts.onTogglePerfBar],
+      [HIDE_APPEARING_CONTENT, Shortcuts.hideAppearingContent],
+      [TOGGLE_CANARY, Shortcuts.onToggleCanary],
+
+      [GO_TO_YOUR_TODO_LIST, () => findAndFollowLink('.shortcuts-todos')],
+      [GO_TO_ACTIVITY_FEED, () => findAndFollowLink('.dashboard-shortcuts-activity')],
+      [GO_TO_YOUR_ISSUES, () => findAndFollowLink('.dashboard-shortcuts-issues')],
+      [GO_TO_YOUR_MERGE_REQUESTS, () => findAndFollowLink('.dashboard-shortcuts-merge_requests')],
+      [GO_TO_YOUR_REVIEW_REQUESTS, () => findAndFollowLink('.dashboard-shortcuts-review_requests')],
+      [GO_TO_YOUR_PROJECTS, () => findAndFollowLink('.dashboard-shortcuts-projects')],
+      [GO_TO_YOUR_GROUPS, () => findAndFollowLink('.dashboard-shortcuts-groups')],
+      [GO_TO_MILESTONE_LIST, () => findAndFollowLink('.dashboard-shortcuts-milestones')],
+      [GO_TO_YOUR_SNIPPETS, () => findAndFollowLink('.dashboard-shortcuts-snippets')],
+
+      [TOGGLE_MARKDOWN_PREVIEW, Shortcuts.toggleMarkdownPreview],
+    ]);
 
     const findFileURL = document.body.dataset.findFile;
-
-    Mousetrap.bind(keysFor(GO_TO_YOUR_TODO_LIST), () => findAndFollowLink('.shortcuts-todos'));
-    Mousetrap.bind(keysFor(GO_TO_ACTIVITY_FEED), () =>
-      findAndFollowLink('.dashboard-shortcuts-activity'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_ISSUES), () =>
-      findAndFollowLink('.dashboard-shortcuts-issues'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_MERGE_REQUESTS), () =>
-      findAndFollowLink('.dashboard-shortcuts-merge_requests'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_REVIEW_REQUESTS), () =>
-      findAndFollowLink('.dashboard-shortcuts-review_requests'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_PROJECTS), () =>
-      findAndFollowLink('.dashboard-shortcuts-projects'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_GROUPS), () =>
-      findAndFollowLink('.dashboard-shortcuts-groups'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_MILESTONE_LIST), () =>
-      findAndFollowLink('.dashboard-shortcuts-milestones'),
-    );
-    Mousetrap.bind(keysFor(GO_TO_YOUR_SNIPPETS), () =>
-      findAndFollowLink('.dashboard-shortcuts-snippets'),
-    );
-
-    Mousetrap.bind(keysFor(TOGGLE_MARKDOWN_PREVIEW), Shortcuts.toggleMarkdownPreview);
-
     if (typeof findFileURL !== 'undefined' && findFileURL !== null) {
-      Mousetrap.bind(keysFor(GO_TO_PROJECT_FIND_FILE), () => {
+      this.bindCommand(GO_TO_PROJECT_FIND_FILE, () => {
         visitUrl(findFileURL);
       });
     }
@@ -128,6 +113,32 @@ export default class Shortcuts {
     if (shouldDisableShortcuts()) {
       disableShortcuts();
     }
+  }
+
+  /**
+   * Bind the keyboard shortcut(s) defined by the given command to the given
+   * callback.
+   *
+   * @param {Object} command A command object.
+   * @param {Function} callback The callback to call when the command's key
+   *     combo has been pressed.
+   * @returns {undefined}
+   */
+  // eslint-disable-next-line class-methods-use-this
+  bindCommand(command, callback) {
+    Mousetrap.bind(keysFor(command), callback);
+  }
+
+  /**
+   * Bind the keyboard shortcut(s) defined by the given commands to the given
+   * callbacks.
+   *
+   * @param {Array<[Object, Function]>} commandsAndCallbacks An array of
+   *     command/callback pairs.
+   * @returns {undefined}
+   */
+  bindCommands(commandsAndCallbacks) {
+    commandsAndCallbacks.map((commandAndCallback) => this.bindCommand(...commandAndCallback));
   }
 
   onToggleHelp(e) {
