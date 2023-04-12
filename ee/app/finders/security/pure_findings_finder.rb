@@ -23,9 +23,11 @@ module Security
       security_findings
     end
 
+    # rubocop: disable CodeReuse/ActiveRecord
     def available?
-      pipeline.security_findings.first&.finding_data.present?
+      pipeline.security_findings.take&.finding_data.present?
     end
+    # rubocop: enable CodeReuse/ActiveRecord
 
     private
 
