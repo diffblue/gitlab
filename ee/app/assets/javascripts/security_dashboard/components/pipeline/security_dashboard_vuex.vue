@@ -1,7 +1,11 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import IssueModal from 'ee/vue_shared/security_reports/components/modal.vue';
+import VulnerabilityFindingModal from 'ee/security_dashboard/components/pipeline/vulnerability_finding_modal.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { vulnerabilityModalMixin } from 'ee/vue_shared/security_reports/mixins/vulnerability_modal_mixin';
+import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { setupStore } from '../../store';
 import VulnerabilityReportLayout from '../shared/vulnerability_report_layout.vue';
 import Filters from './filters.vue';
@@ -12,12 +16,13 @@ export default {
   components: {
     Filters,
     IssueModal,
+    VulnerabilityFindingModal,
     VulnerabilityReportLayout,
     SecurityDashboardTable,
     LoadingError,
   },
-  mixins: [vulnerabilityModalMixin('vulnerabilities')],
-  inject: ['pipeline', 'projectId'],
+  mixins: [glFeatureFlagMixin(), vulnerabilityModalMixin('vulnerabilities')],
+  inject: ['pipeline', 'projectId', 'projectFullPath'],
   props: {
     vulnerabilitiesEndpoint: {
       type: String,
@@ -38,6 +43,11 @@ export default {
       required: false,
       default: () => ({}),
     },
+  },
+  data() {
+    return {
+      shouldShowModal: false,
+    };
   },
   computed: {
     ...mapState('vulnerabilities', [
@@ -73,6 +83,16 @@ export default {
     this.setPipelineId(this.pipelineId);
     this.setVulnerabilitiesEndpoint(this.vulnerabilitiesEndpoint);
     this.fetchPipelineJobs();
+
+    if (this.glFeatures.standaloneFindingModal) {
+      // the click on a report row will trigger the BV_SHOW_MODAL event
+      this.$root.$on(BV_SHOW_MODAL, this.showModal);
+    }
+  },
+  beforeDestroy() {
+    if (this.glFeatures.standaloneFindingModal) {
+      this.$root.$off(BV_SHOW_MODAL, this.showModal);
+    }
   },
   methods: {
     ...mapActions('vulnerabilities', [
@@ -86,9 +106,15 @@ export default {
       'showDismissalDeleteButtons',
       'hideDismissalDeleteButtons',
       'downloadPatch',
+      'reFetchVulnerabilitiesAfterDismissal',
     ]),
     ...mapActions('pipelineJobs', ['setPipelineJobsPath', 'setProjectId', 'fetchPipelineJobs']),
     ...mapActions('filters', ['lockFilter', 'setHideDismissedToggleInitialState']),
+    showModal(modalId) {
+      if (modalId === VULNERABILITY_MODAL_ID) {
+        this.shouldShowModal = true;
+      }
+    },
   },
 };
 </script>
@@ -113,7 +139,16 @@ export default {
         </security-dashboard-table>
       </vulnerability-report-layout>
 
+      <vulnerability-finding-modal
+        v-if="glFeatures.standaloneFindingModal && shouldShowModal"
+        :finding-uuid="vulnerability.uuid"
+        :pipeline-iid="pipeline.iid"
+        :project-full-path="projectFullPath"
+        @state-updated="reFetchVulnerabilitiesAfterDismissal({ vulnerability })"
+        @hidden="shouldShowModal = false"
+      />
       <issue-modal
+        v-if="!glFeatures.standaloneFindingModal"
         :modal="modal"
         :can-create-issue="canCreateIssue"
         :can-dismiss-vulnerability="canDismissVulnerability"
