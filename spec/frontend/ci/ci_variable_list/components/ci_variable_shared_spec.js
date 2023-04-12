@@ -259,7 +259,7 @@ describe('Ci Variable Shared Component', () => {
             });
           });
 
-          it('initial query is called with the correct variables', async () => {
+          it('initial query is called with the correct variables', () => {
             expect(mockEnvironments).toHaveBeenCalledWith({ fullPath: '/namespace/project/' });
           });
 
