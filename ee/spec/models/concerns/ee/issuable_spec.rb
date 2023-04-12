@@ -108,6 +108,66 @@ RSpec.describe EE::Issuable do
     end
   end
 
+  describe '#send_to_ai?' do
+    context 'for issues' do
+      where(:confidentiality, :visibility, :send_to_ai) do
+        [
+          [true, :public, false],
+          [true, :private, false],
+          [false, :public, true],
+          [false, :private, false]
+        ]
+      end
+
+      with_them do
+        let(:project) { build_stubbed(:project, visibility) }
+        let(:issuable) { build_stubbed(:issue, confidential: confidentiality, project: project) }
+
+        subject { issuable.send_to_ai? }
+
+        it { is_expected.to eq(send_to_ai) }
+      end
+    end
+
+    context 'for epics' do
+      where(:confidentiality, :visibility, :send_to_ai) do
+        [
+          [true, :public, false],
+          [true, :private, false],
+          [false, :public, true],
+          [false, :private, false]
+        ]
+      end
+
+      with_them do
+        let(:group) { build_stubbed(:group, visibility) }
+        let(:issuable) { build_stubbed(:epic, confidential: confidentiality, group: group) }
+
+        subject { issuable.send_to_ai? }
+
+        it { is_expected.to eq(send_to_ai) }
+      end
+    end
+
+    context 'for merge requests' do
+      where(:visibility, :send_to_ai) do
+        [
+          [Gitlab::VisibilityLevel::PUBLIC, true],
+          [Gitlab::VisibilityLevel::INTERNAL, false],
+          [Gitlab::VisibilityLevel::PRIVATE, false]
+        ]
+      end
+
+      with_them do
+        let(:issuable) { build_stubbed(:merge_request, project: build_stubbed(:project, visibility_level: visibility)) }
+
+        subject { issuable.send_to_ai? }
+
+        it { is_expected.to eq(send_to_ai) }
+      end
+    end
+  end
+
   describe '#supports_confidentiality?' do
     let(:issuable) { build_stubbed(:epic) }
 
