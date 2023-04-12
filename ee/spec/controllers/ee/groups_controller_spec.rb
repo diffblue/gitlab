@@ -519,6 +519,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           stub_licensed_features(ai_assist: true)
           stub_feature_flags(ai_assist_ui: true)
           stub_feature_flags(ai_assist_flag: true)
+          stub_ee_application_setting(check_namespace_plan: true)
         end
 
         context 'when enabling' do
@@ -827,34 +828,59 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     end
   end
 
-  describe '#ai_assist_ui_enabled?' do
+  describe '#ai_assist_ui_enabled?', :saas do
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:subgroup) { create(:group, parent: group) }
 
-    where(:feature_ai_assist_ui, :feature_ai_assist, :ai_assist_flag, :current_group, :result) do
-      false | false | false | ref(:group)    | false
-      false | false | false | nil            | false
-      false | false | false | ref(:subgroup) | false
-      false | true  | true  | ref(:group)    | false
-      false | true  | true  | nil            | false
-      false | true  | true  | ref(:subgroup) | false
-      false | false | true  | ref(:group)    | false
-      false | false | true  | nil            | false
-      false | false | true  | ref(:subgroup) | false
-      true  | false | false | ref(:group)    | false
-      true  | false | false | nil            | false
-      true  | false | false | ref(:subgroup) | false
-      true  | true  | false | ref(:group)    | false
-      true  | true  | false | nil            | false
-      true  | true  | false | ref(:subgroup) | false
-      true  | true  | true  | ref(:group)    | true
-      true  | true  | true  | nil            | false
-      true  | true  | true  | ref(:subgroup) | false
-      true  | false | true  | ref(:group)    | false
-      true  | false | true  | nil            | false
-      true  | false | true  | ref(:subgroup) | false
-      false | true  | false | ref(:group)    | false
-      false | true  | false | nil            | false
-      false | true  | false | ref(:subgroup) | false
+    where(:feature_ai_assist_ui, :feature_ai_assist, :ai_assist_flag, :current_group, :check_namespace_plan, :result) do
+      false | false | false | ref(:group)    | false | false
+      false | false | false | nil            | false | false
+      false | false | false | ref(:subgroup) | false | false
+      false | false | false | ref(:group)    | true  | false
+      false | false | false | nil            | true  | false
+      false | false | false | ref(:subgroup) | true  | false
+      false | true  | true  | ref(:group)    | false | false
+      false | true  | true  | nil            | false | false
+      false | true  | true  | ref(:subgroup) | false | false
+      false | true  | true  | ref(:group)    | true  | false
+      false | true  | true  | nil            | true  | false
+      false | true  | true  | ref(:subgroup) | true  | false
+      false | false | true  | ref(:group)    | false | false
+      false | false | true  | nil            | false | false
+      false | false | true  | ref(:subgroup) | false | false
+      false | false | true  | ref(:group)    | true  | false
+      false | false | true  | nil            | true  | false
+      false | false | true  | ref(:subgroup) | true  | false
+      true  | false | false | ref(:group)    | false | false
+      true  | false | false | nil            | false | false
+      true  | false | false | ref(:subgroup) | false | false
+      true  | false | false | ref(:group)    | true  | false
+      true  | false | false | nil            | true  | false
+      true  | false | false | ref(:subgroup) | true  | false
+      true  | true  | false | ref(:group)    | false | false
+      true  | true  | false | nil            | false | false
+      true  | true  | false | ref(:subgroup) | false | false
+      true  | true  | false | ref(:group)    | true  | false
+      true  | true  | false | nil            | true  | false
+      true  | true  | false | ref(:subgroup) | true  | false
+      true  | true  | true  | ref(:group)    | false | false
+      true  | true  | true  | nil            | false | false
+      true  | true  | true  | ref(:subgroup) | false | false
+      true  | true  | true  | ref(:group)    | true  | true
+      true  | true  | true  | nil            | true  | false
+      true  | true  | true  | ref(:subgroup) | true  | false
+      true  | false | true  | ref(:group)    | false | false
+      true  | false | true  | nil            | false | false
+      true  | false | true  | ref(:subgroup) | false | false
+      true  | false | true  | ref(:group)    | true  | false
+      true  | false | true  | nil            | true  | false
+      true  | false | true  | ref(:subgroup) | true  | false
+      false | true  | false | ref(:group)    | false | false
+      false | true  | false | nil            | false | false
+      false | true  | false | ref(:subgroup) | false | false
+      false | true  | false | ref(:group)    | true  | false
+      false | true  | false | nil            | true  | false
+      false | true  | false | ref(:subgroup) | true  | false
     end
 
     with_them do
@@ -863,6 +889,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         stub_feature_flags(ai_assist_ui: feature_ai_assist_ui)
         stub_feature_flags(ai_assist_flag: ai_assist_flag)
         allow(controller).to receive(:current_group).and_return(current_group)
+        stub_ee_application_setting(check_namespace_plan: check_namespace_plan)
       end
 
       subject { controller.helpers.ai_assist_ui_enabled? }
