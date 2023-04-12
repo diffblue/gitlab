@@ -215,6 +215,20 @@ describe('ForkInfo component', () => {
     });
   });
 
+  describe('User cannot sync the branch', () => {
+    beforeEach(async () => {
+      mockResolvedForkDetailsQuery({ ahead: 0, behind: 7, isSyncing: false, hasConflicts: false });
+      await createComponent(
+        { canSyncBranch: false },
+        { ahead: 0, behind: 7, isSyncing: false, hasConflicts: false },
+      );
+    });
+
+    it('does not render Update Fork button', async () => {
+      expect(findUpdateForkButton().exists()).toBe(false);
+    });
+  });
+
   describe.each([
     {
       ahead: 7,
