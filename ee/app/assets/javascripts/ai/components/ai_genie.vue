@@ -2,8 +2,8 @@
 import { debounce } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { explainCode } from 'ee_else_ce/ai/utils';
-import AiGenieChat from 'ee_else_ce/ai/components/ai_genie_chat.vue';
+import { explainCode } from 'ee/ai/utils';
+import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { renderMarkdown } from '~/notes/utils';
 import { i18n, AI_GENIE_DEBOUNCE } from '../constants';
 
