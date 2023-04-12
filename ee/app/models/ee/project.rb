@@ -101,7 +101,7 @@ module EE
       has_many :software_license_policies, inverse_of: :project, class_name: 'SoftwareLicensePolicy'
       has_many :software_licenses, through: :software_license_policies
       accepts_nested_attributes_for :software_license_policies, allow_destroy: true
-      has_many :merge_trains, class_name: 'MergeTrains::Car', foreign_key: 'target_project_id', inverse_of: :target_project
+      has_many :merge_train_cars, class_name: 'MergeTrains::Car', foreign_key: 'target_project_id', inverse_of: :target_project
 
       has_many :project_aliases
 

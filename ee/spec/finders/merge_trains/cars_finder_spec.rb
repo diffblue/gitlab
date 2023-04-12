@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeTrainsFinder do
+RSpec.describe MergeTrains::CarsFinder, feature_category: :merge_trains do
   let_it_be(:project) { create(:project) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:guest) { create(:user) }
@@ -34,7 +34,7 @@ RSpec.describe MergeTrainsFinder do
       end
     end
 
-    context 'when sort is asc' do
+    context 'when sort is desc' do
       let(:params) { { sort: 'desc' } }
 
       it 'returns merge trains in descending order' do
