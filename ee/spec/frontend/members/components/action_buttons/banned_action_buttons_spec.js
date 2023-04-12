@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import BannedActionButtons from 'ee/members/components/action_buttons/banned_action_buttons.vue';
 import { MEMBER_TYPES } from '~/members/constants';
+import { assertProps } from 'helpers/assert_props';
 import { bannedMember as member } from '../../mock_data';
 
 jest.mock('~/lib/utils/csrf', () => ({ token: 'mock-csrf-token' }));
@@ -14,6 +15,8 @@ const DEFAULT_MEMBERS_PATH = '/groups/foo-bar/-/group_members';
 
 describe('BannedActionButtons', () => {
   let wrapper;
+
+  const defaultProps = { member, isCurrentUser: false, isInvitedUser: false, permissions: {} };
 
   const createStore = (state = {}) => {
     return new Vuex.Store({
@@ -36,10 +39,7 @@ describe('BannedActionButtons', () => {
         namespace: MEMBER_TYPES.banned,
       },
       propsData: {
-        member,
-        isCurrentUser: false,
-        isInvitedUser: false,
-        permissions: {},
+        ...defaultProps,
         ...propsData,
       },
     });
@@ -86,8 +86,12 @@ describe('BannedActionButtons', () => {
   });
 
   it('fails validation when member prop does not have id property with a number value', () => {
-    expect(() => {
-      createComponent({ member: {} });
-    }).toThrow('Invalid prop: custom validator check failed');
+    expect(() =>
+      assertProps(
+        BannedActionButtons,
+        { ...defaultProps, member: {} },
+        { provide: { namespace: 'fake ' } },
+      ),
+    ).toThrow('Invalid prop: custom validator check failed');
   });
 });
