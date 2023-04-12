@@ -11,7 +11,6 @@ import { updateRefPortionOfTitle } from '~/repository/utils/title';
 import Shortcuts from './shortcuts';
 
 const defaults = {
-  skipResetBindings: false,
   fileBlobPermalinkUrl: null,
   fileBlobPermalinkUrlElement: null,
 };
@@ -24,7 +23,7 @@ function eventHasModifierKeys(event) {
 export default class ShortcutsBlob extends Shortcuts {
   constructor(opts) {
     const options = { ...defaults, ...opts };
-    super(options.skipResetBindings);
+    super();
     this.options = options;
 
     this.shortcircuitPermalinkButton();
