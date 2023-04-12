@@ -54,7 +54,7 @@ html.group-epics-roadmap-html {
   .group-epics-roadmap {
     // This size is total of breadcrumb height and computed height of
     // filters container (70px)
-    $header-size: $breadcrumb-min-height + 70px;
+    $header-size: $top-bar-height + 70px;
     height: calc(100% - #{$header-size});
   }
 
@@ -93,10 +93,10 @@ html.group-epics-roadmap-html {
   padding-bottom: 0;
 }
 
-.breadcrumbs.group-epics-roadmap {
+.group-epics-roadmap:nth-of-type(1) {
   border-bottom: $border-style;
 
-  .breadcrumbs-container {
+  .top-bar-container {
     border-bottom: 0;
   }
 }
