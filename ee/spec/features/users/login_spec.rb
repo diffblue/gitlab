@@ -249,10 +249,10 @@ RSpec.describe 'Login', feature_category: :system_access do
           }
         JS
 
-        click_link('Try again', href: false)
+        click_button(_('Try again?'))
 
         expect(page).to have_content('Trying to communicate with your device')
-        expect(page).to have_link('Sign in via 2FA code')
+        expect(page).to have_button(_('Sign in via 2FA code'))
 
         fake_successful_webauthn_authentication
 
