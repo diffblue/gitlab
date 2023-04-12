@@ -4,7 +4,6 @@ description: Total number of distinct projects with external status checks
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: "Compliance Management"
 value_type: number
 status: active
 milestone: "14.9"

@@ -5,11 +5,10 @@ description: Number of distinct owner ids from secodary geo nodes oauth access g
 product_section: enablement
 product_stage: enablement
 product_group: geo
-product_category: 
 value_type: number
 status: active
 milestone: "13.12"
-introduced_by_url: 
+introduced_by_url:
 time_frame: 28d
 data_source: database
 distribution:

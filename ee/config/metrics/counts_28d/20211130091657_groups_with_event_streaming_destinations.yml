@@ -4,7 +4,6 @@ description: "Distinct count of groups with any event streaming destinations"
 product_section: "dev"
 product_stage: "manage"
 product_group: "compliance"
-product_category: "Audit Events"
 value_type: number
 status: broken
 repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/369871
