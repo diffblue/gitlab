@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Note do
+RSpec.describe Note, feature_category: :team_planning do
   include ::EE::GeoHelpers
 
   it_behaves_like 'an editable mentionable with EE-specific mentions' do
@@ -97,6 +97,17 @@ RSpec.describe Note do
       note = create(:note_on_epic, noteable: create(:epic, group: group))
 
       expect(note.resource_parent).to eq(group)
+    end
+  end
+
+  describe '.for_summarize_by_ai', feature_category: :not_owned do # rubocop: disable RSpec/InvalidFeatureCategory
+    it 'excludes system, confidential and internal notes' do
+      note = create(:note)
+      create(:note, :system)
+      create(:note, :confidential)
+      create(:note, :internal)
+
+      expect(described_class.for_summarize_by_ai).to contain_exactly(note)
     end
   end
 

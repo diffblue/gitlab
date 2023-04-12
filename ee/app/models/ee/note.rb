@@ -9,6 +9,7 @@ module EE
       include Elastic::ApplicationVersionedSearch
       include UsageStatistics
 
+      scope :for_summarize_by_ai, -> { by_humans.not_internal }
       scope :searchable, -> { where(system: false).includes(:noteable) }
       scope :by_humans, -> { user.joins(:author).merge(::User.humans) }
       scope :count_for_vulnerability_id, ->(vulnerability_id) do

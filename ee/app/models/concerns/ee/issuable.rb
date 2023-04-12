@@ -65,6 +65,10 @@ module EE
       false
     end
 
+    def send_to_ai?
+      !try(:confidential) && resource_parent.public?
+    end
+
     override :hook_association_changes
     def hook_association_changes(old_associations)
       changes = super

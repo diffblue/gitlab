@@ -1398,6 +1398,15 @@
   :weight: 2
   :idempotent: false
   :tags: []
+- :name: llm_completion
+  :worker_name: Llm::CompletionWorker
+  :feature_category: :team_planning
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_request_reset_approvals
   :worker_name: MergeRequestResetApprovalsWorker
   :feature_category: :source_code_management
