@@ -195,6 +195,7 @@ module GitlabSubscriptions
       enterprise_templates
       environment_alerts
       evaluate_group_level_compliance_pipeline
+      explain_code
       external_audit_events
       git_abuse_rate_limit
       group_ci_cd_analytics
