@@ -22178,6 +22178,9 @@ msgstr ""
 msgid "Import|GitHub import details"
 msgstr ""
 
+msgid "Import|No import details"
+msgstr ""
+
 msgid "Import|Partially completed"
 msgstr ""
 
