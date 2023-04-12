@@ -1616,6 +1616,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
   describe 'DELETE /projects/:id' do
     let(:group) { create(:group) }
     let(:project) { create(:project, group: group) }
+    let(:params) { {} }
 
     before do
       group.add_member(user, Gitlab::Access::OWNER)
@@ -1623,10 +1624,19 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
 
     shared_examples 'deletes project immediately' do
       it :aggregate_failures do
-        delete api("/projects/#{project.id}", user)
-
+        expect { delete api("/projects/#{project.id}", user), params: params }
+          .to change { ProjectDestroyWorker.jobs.size }.by(1)
         expect(response).to have_gitlab_http_status(:accepted)
-        expect(project.reload.pending_delete).to eq(true)
+      end
+    end
+
+    shared_examples 'immediately delete project error' do
+      it :aggregate_failures do
+        expect { delete api("/projects/#{project.id}", user), params: params }
+          .not_to change { ProjectDestroyWorker.jobs.size }
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(Gitlab::Json.parse(response.body)['message']).to eq(error_message)
       end
     end
 
@@ -1652,6 +1662,42 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
         end
 
         it_behaves_like 'marks project for deletion'
+
+        context 'when permanently_remove param is true' do
+          before do
+            params.merge!(permanently_remove: true)
+          end
+
+          context 'when project is already marked for deletion' do
+            before do
+              project.update!(archived: true, marked_for_deletion_at: 1.day.ago, deleting_user: user)
+            end
+
+            context 'with correct project full path' do
+              before do
+                params.merge!(full_path: project.full_path)
+              end
+
+              it_behaves_like 'deletes project immediately'
+            end
+
+            context 'with incorrect project full path' do
+              let(:error_message) { '`full_path` is incorrect. You must enter the complete path for the project.' }
+
+              before do
+                params.merge!(full_path: "#{project.full_path}-wrong-path")
+              end
+
+              it_behaves_like 'immediately delete project error'
+            end
+          end
+
+          context 'when project is not marked for deletion' do
+            let(:error_message) { 'Project must be marked for deletion first.' }
+
+            it_behaves_like 'immediately delete project error'
+          end
+        end
 
         it 'returns error if project cannot be marked for deletion' do
           message = 'Error'

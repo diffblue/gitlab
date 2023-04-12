@@ -143,10 +143,25 @@ module EE
             can?(current_user, :admin_project, user_project) ? params : params.merge(author_id: current_user.id)
           end
 
+          def immediately_delete_project_error(project)
+            if !project.marked_for_deletion_at?
+              'Project must be marked for deletion first.'
+            elsif project.full_path != params[:full_path]
+              '`full_path` is incorrect. You must enter the complete path for the project.'
+            end
+          end
+
           override :delete_project
           def delete_project(user_project)
             return super unless License.feature_available?(:adjourned_deletion_for_projects_and_groups)
             return super unless user_project.adjourned_deletion_configured?
+
+            if ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+              error = immediately_delete_project_error(user_project)
+              return super if error.nil?
+
+              render_api_error!(error, 400)
+            end
 
             result = destroy_conditionally!(user_project) do
               ::Projects::MarkForDeletionService.new(user_project, current_user, {}).execute
