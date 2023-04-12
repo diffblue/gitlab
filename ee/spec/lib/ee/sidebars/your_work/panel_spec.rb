@@ -9,6 +9,10 @@ RSpec.describe Sidebars::YourWork::Panel, feature_category: :navigation do
 
   subject(:panel) { described_class.new(context) }
 
+  it 'renders Workspaces' do
+    expect(contains_menu?(::Sidebars::YourWork::Menus::WorkspacesMenu)).to be(true)
+  end
+
   it 'renders Environments dashboard' do
     expect(contains_menu?(::Sidebars::YourWork::Menus::EnvironmentsDashboardMenu)).to be(true)
   end

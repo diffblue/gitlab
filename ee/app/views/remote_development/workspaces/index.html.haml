@@ -1,0 +1,9 @@
+- page_title s_('Workspaces')
+- nav 'your_work'
+- @left_sidebar = true
+
+#js-workspaces{ data: {
+    workspaces_list_path: remote_development_workspaces_path,
+    empty_state_svg_path: image_path('illustrations/empty-state/empty-workspaces-md.svg')
+  }
+}

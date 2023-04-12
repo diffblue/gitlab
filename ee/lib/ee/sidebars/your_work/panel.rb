@@ -10,6 +10,7 @@ module EE
         def configure_menus
           super
 
+          add_menu(workspaces_menu)
           add_menu(environments_dashboard_menu)
           add_menu(operations_dashboard_menu)
           add_menu(security_dashboard_menu)
@@ -18,6 +19,10 @@ module EE
         end
 
         private
+
+        def workspaces_menu
+          ::Sidebars::YourWork::Menus::WorkspacesMenu.new(context)
+        end
 
         def environments_dashboard_menu
           ::Sidebars::YourWork::Menus::EnvironmentsDashboardMenu.new(context)
