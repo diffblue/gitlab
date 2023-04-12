@@ -20,7 +20,8 @@ module API
 
         helpers do
           def check_feature_enabled
-            not_found!('REST API endpoint not found') unless Feature.enabled?(:openai_experimentation, current_user)
+            not_found!('REST API endpoint not found') unless Feature.enabled?(:openai_experimentation) &&
+              Feature.enabled?(:ai_experimentation_api, current_user)
           end
 
           def open_ai_post(endpoint, json_body: nil)
