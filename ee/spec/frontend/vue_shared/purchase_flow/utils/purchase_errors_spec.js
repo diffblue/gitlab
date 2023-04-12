@@ -95,6 +95,12 @@ describe('Purchase Dynamic Errors', () => {
           ),
         ).toEqual(errorDictionary[EMAIL_TAKEN_ERROR_TYPE.toLowerCase()]);
       });
+
+      it('directs the user to the legacy Customers Portal login', () => {
+        expect(mapSystemToFriendlyError(EMAIL_TAKEN_ERROR).links.customersPortalLink).toEqual(
+          gon.subscriptions_legacy_sign_in_url,
+        );
+      });
     });
   });
 
