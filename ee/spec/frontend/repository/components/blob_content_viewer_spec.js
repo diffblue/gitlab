@@ -4,6 +4,7 @@ import VueRouter from 'vue-router';
 import VueApollo from 'vue-apollo';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import AiGenie from 'ee_component/ai/components/ai_genie.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import BlobButtonGroup from '~/repository/components/blob_button_group.vue';
@@ -43,6 +44,7 @@ const createComponent = async (mockData = {}) => {
     createMergeRequestIn = userPermissionsMock.createMergeRequestIn,
     isBinary,
     path = propsMock.projectPath,
+    glFeatures = {},
   } = mockData;
 
   const project = {
@@ -78,11 +80,17 @@ const createComponent = async (mockData = {}) => {
       path,
     },
     mixins: [{ data: () => ({ ref: refMock }) }],
-    provide: { targetBranch: 'test', originalBranch: 'test' },
+    provide: {
+      targetBranch: 'test',
+      originalBranch: 'test',
+      glFeatures,
+    },
   });
 
   await waitForPromises();
 };
+
+const findAiGenie = () => wrapper.findComponent(AiGenie);
 
 describe('Blob content viewer component', () => {
   const findBlobButtonGroup = () => wrapper.findComponent(BlobButtonGroup);
@@ -94,6 +102,46 @@ describe('Blob content viewer component', () => {
 
   afterEach(() => {
     mockAxios.reset();
+  });
+
+  describe('AI Genie component', () => {
+    const prepGonAndLoad = async (ffEnabled = true, licenseEnabled = true) => {
+      const glFeatures = {
+        explainCodeSnippet: ffEnabled,
+        explainCode: licenseEnabled,
+      };
+
+      createComponent({ glFeatures });
+      await waitForPromises();
+    };
+
+    beforeEach(() => {
+      window.gon = {};
+    });
+
+    afterEach(() => {
+      window.gon = {};
+    });
+
+    it.each`
+      prefix        | ffEnabled | licenseEnabled | shouldRender
+      ${'does not'} | ${false}  | ${false}       | ${false}
+      ${'does not'} | ${true}   | ${false}       | ${false}
+      ${'does not'} | ${false}  | ${true}        | ${false}
+      ${'does'}     | ${true}   | ${true}        | ${true}
+    `(
+      '$prefix render the AI Genie component when licensed feature is $licenseEnabled and feature flag is $ffEnabled',
+      async ({ ffEnabled, licenseEnabled, shouldRender }) => {
+        await prepGonAndLoad(ffEnabled, licenseEnabled);
+        expect(findAiGenie().exists()).toBe(shouldRender);
+      },
+    );
+
+    it('sets correct props on the AI Genie component', async () => {
+      await prepGonAndLoad();
+      expect(findAiGenie().props('containerId')).toBe('fileHolder');
+      expect(findAiGenie().props('filePath')).toBe(propsMock.projectPath);
+    });
   });
 
   describe('BlobHeader action slot', () => {
