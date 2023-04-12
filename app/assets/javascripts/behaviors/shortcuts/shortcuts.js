@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
-import Mousetrap from 'mousetrap';
 import Vue from 'vue';
+import Mousetrap, { addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
 import { getCookie, setCookie, parseBoolean } from '~/lib/utils/common_utils';
 
 import findAndFollowLink from '~/lib/utils/navigation_utility';
@@ -27,15 +27,6 @@ import {
   GO_TO_YOUR_REVIEW_REQUESTS,
 } from './keybindings';
 import { disableShortcuts, shouldDisableShortcuts } from './shortcuts_toggle';
-
-const defaultStopCallback = Mousetrap.prototype.stopCallback;
-Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo) {
-  if (keysFor(TOGGLE_MARKDOWN_PREVIEW).indexOf(combo) !== -1) {
-    return false;
-  }
-
-  return defaultStopCallback.call(this, e, element, combo);
-};
 
 /**
  * The key used to save and fetch the local Mousetrap instance
@@ -96,6 +87,10 @@ export default class Shortcuts {
 
       [TOGGLE_MARKDOWN_PREVIEW, Shortcuts.toggleMarkdownPreview],
     ]);
+
+    this.addStopCallback((e, element, combo) =>
+      keysFor(TOGGLE_MARKDOWN_PREVIEW).includes(combo) ? false : undefined,
+    );
 
     const findFileURL = document.body.dataset.findFile;
     if (typeof findFileURL !== 'undefined' && findFileURL !== null) {
@@ -169,6 +164,16 @@ export default class Shortcuts {
         },
       });
     }
+  }
+
+  /**
+   * Add a stop callback to Mousetrap.
+   *
+   * @see ~/lib/utils/mousetrap.js for more details.
+   */
+  // eslint-disable-next-line class-methods-use-this
+  addStopCallback(stopCallback) {
+    addMousetrapStopCallback(stopCallback);
   }
 
   static onTogglePerfBar(e) {

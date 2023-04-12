@@ -1,4 +1,3 @@
-import Mousetrap from 'mousetrap';
 import {
   keysFor,
   PROJECT_FILES_MOVE_SELECTION_UP,
@@ -12,9 +11,7 @@ export default class ShortcutsFindFile extends ShortcutsNavigation {
   constructor(projectFindFile) {
     super();
 
-    const oldStopCallback = Mousetrap.prototype.stopCallback;
-
-    Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo) {
+    this.addStopCallback((e, element, combo) => {
       if (
         element === projectFindFile.inputElement[0] &&
         (keysFor(PROJECT_FILES_MOVE_SELECTION_UP).includes(combo) ||
@@ -27,8 +24,8 @@ export default class ShortcutsFindFile extends ShortcutsNavigation {
         return false;
       }
 
-      return oldStopCallback.call(this, e, element, combo);
-    };
+      return undefined;
+    });
 
     this.bindCommands([
       [PROJECT_FILES_MOVE_SELECTION_UP, projectFindFile.selectRowUp],

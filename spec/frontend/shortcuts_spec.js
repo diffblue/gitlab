@@ -1,8 +1,14 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
-import Mousetrap from 'mousetrap';
+import Mousetrap, { addStopCallback } from '~/lib/utils/mousetrap';
 import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import Shortcuts, { LOCAL_MOUSETRAP_DATA_KEY } from '~/behaviors/shortcuts/shortcuts';
+
+jest.mock('~/lib/utils/mousetrap', () => ({
+  __esModule: true,
+  default: jest.requireActual('~/lib/utils/mousetrap').default,
+  addStopCallback: jest.fn(),
+}));
 
 jest.mock('mousetrap/plugins/pause/mousetrap-pause', () => {});
 
@@ -171,6 +177,17 @@ describe('Shortcuts', () => {
         expect(calls[i][0]).toEqual(mockCommand.defaultKeys);
         expect(calls[i][1]).toBe(mockCallback);
       });
+    });
+  });
+
+  describe('addStopCallback', () => {
+    it('delegates to the addStopCallback from Mousetrap utils', () => {
+      expect(addStopCallback).not.toHaveBeenCalled();
+
+      const callback = () => {};
+      shortcuts.addStopCallback(callback);
+
+      expect(addStopCallback).toHaveBeenCalledWith(callback);
     });
   });
 });
