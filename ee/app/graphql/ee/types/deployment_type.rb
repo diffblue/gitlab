@@ -6,6 +6,12 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
+        field :pending_approval_count,
+               GraphQL::Types::Int,
+               description: 'Number of pending unified approvals on the deployment.' do
+          extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
+        end
+
         field :approval_summary,
               ::Types::Deployments::ApprovalSummaryType,
               description: 'Approval summary of the deployment.' \
