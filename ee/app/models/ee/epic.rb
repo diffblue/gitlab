@@ -98,7 +98,7 @@ module EE
       scope :from_id, -> (epic_id) { where('epics.id >= ?', epic_id) }
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
-      scope :with_api_entity_associations, -> { preload(:author, :labels) }
+      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: :route) }
       scope :with_child_api_entity_associations, -> { preload(:author, :labels, :parent, { group: [:route, :saml_provider] }) }
 
       scope :within_timeframe, -> (start_date, end_date) do
@@ -161,7 +161,6 @@ module EE
         where(boards_epic_board_positions: { relative_position: nil })
       end
 
-      scope :with_api_entity_associations, -> { preload(:author, :labels, :parent, group: :route) }
       scope :start_date_inherited, -> { where(start_date_is_fixed: [nil, false]) }
       scope :due_date_inherited, -> { where(due_date_is_fixed: [nil, false]) }
 
