@@ -72,6 +72,20 @@ RSpec.describe Audit::GroupChangesAuditor do
           expect(event.details[:change]).to eq column.to_s
         end
       end
+
+      context 'when namespace setting is updated' do
+        context 'when code_suggestions is changed' do
+          before do
+            group.namespace_settings.update!(code_suggestions: true)
+          end
+
+          it 'creates an audit event' do
+            group.namespace_settings.update!(code_suggestions: false)
+
+            expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          end
+        end
+      end
     end
   end
 end

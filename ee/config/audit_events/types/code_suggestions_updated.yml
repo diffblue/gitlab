@@ -1,0 +1,9 @@
+---
+name: code_suggestions_updated
+description: Code Suggestion UI group setting change
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405295
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117174
+feature_category: code_suggestions
+milestone: '15.11'
+saved_to_database: true
+streamed: true

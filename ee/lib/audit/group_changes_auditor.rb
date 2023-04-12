@@ -25,6 +25,8 @@ module Audit
         audit_changes(column, as: column_human_name(column), model: model,
                               event_type: event_name)
       end
+
+      audit_namespace_setting_changes
     end
 
     def attributes_from_auditable_model(column)
@@ -54,6 +56,10 @@ module Audit
 
     def column_human_name(column)
       COLUMN_HUMAN_NAME.fetch(column, column.to_s)
+    end
+
+    def audit_namespace_setting_changes
+      Audit::NamespaceSettingChangesAuditor.new(@current_user, model.namespace_settings, model).execute
     end
   end
 end
