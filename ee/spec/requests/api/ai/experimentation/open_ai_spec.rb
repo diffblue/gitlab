@@ -10,8 +10,8 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
 
   before do
     stub_application_setting(openai_api_key: 'test-key')
-    stub_feature_flags(openai_experimentation: false)
-    stub_feature_flags(openai_experimentation: current_user)
+    stub_feature_flags(openai_experimentation: true)
+    stub_feature_flags(ai_experimentation_api: current_user)
   end
 
   RSpec.shared_examples 'proxies request to ai api endpoint' do
@@ -38,6 +38,20 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
     [:completions, :embeddings, 'chat/completions'].each do |endpoint|
       it 'returns not found' do
         post api("/ai/experimentation/openai/#{endpoint}", not_authorized_user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'when general feature flag not enabled' do
+    before do
+      stub_feature_flags(openai_experimentation: false)
+    end
+
+    [:completions, :embeddings, 'chat/completions'].each do |endpoint|
+      it 'returns not found' do
+        post api("/ai/experimentation/openai/#{endpoint}", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
