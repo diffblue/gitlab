@@ -109,6 +109,7 @@ module EE
 
     def ai_assist_ui_enabled?
       current_group.present? &&
+        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
         ::Feature.enabled?(:ai_assist_ui) &&
         ::Feature.enabled?(:ai_assist_flag, current_group) &&
         current_group.root? &&
