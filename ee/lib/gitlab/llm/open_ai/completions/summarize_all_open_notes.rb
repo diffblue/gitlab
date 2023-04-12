@@ -29,7 +29,7 @@ module Gitlab
             @ai_prompt_class = ai_prompt_class
           end
 
-          def execute(user, issuable)
+          def execute(user, issuable, _ = {})
             return unless user
             return unless issuable
 
