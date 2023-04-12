@@ -22,6 +22,8 @@ Prerequisites:
   and the email address you used to create the token.
   See [authentication in Jira](index.md#authentication-in-jira).
 
+## Configure a project
+
 To configure your project:
 
 1. On the top bar, select **Main menu > Projects** and find your project.
