@@ -5240,7 +5240,6 @@ RSpec/MissingFeatureCategory:
     - 'spec/models/namespaces/user_namespace_spec.rb'
     - 'spec/models/network/graph_spec.rb'
     - 'spec/models/note_diff_file_spec.rb'
-    - 'spec/models/note_spec.rb'
     - 'spec/models/notification_setting_spec.rb'
     - 'spec/models/oauth_access_grant_spec.rb'
     - 'spec/models/oauth_access_token_spec.rb'
