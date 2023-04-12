@@ -35,6 +35,38 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'reading workspaces' do
+    context 'when feature flag is disabled' do
+      before do
+        stub_feature_flags(remote_development_feature_flag: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_workspace) }
+    end
+
+    context 'when licensed' do
+      before do
+        stub_licensed_features(remote_development: true)
+      end
+
+      it { is_expected.to be_allowed(:read_workspace) }
+
+      context 'and the user is not logged in' do
+        let(:current_user) { nil }
+
+        it { is_expected.to be_disallowed(:read_workspace) }
+      end
+    end
+
+    context 'when unlicensed' do
+      before do
+        stub_licensed_features(remote_development: false)
+      end
+
+      it { is_expected.to be_disallowed(:read_workspace) }
+    end
+  end
+
   it { is_expected.to be_disallowed(:read_licenses) }
   it { is_expected.to be_disallowed(:destroy_licenses) }
   it { is_expected.to be_disallowed(:read_all_geo) }

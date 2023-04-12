@@ -50034,6 +50034,18 @@ msgstr ""
 msgid "WorkItem|You're only seeing %{boldStart}other activity%{boldEnd} in the feed. To add a comment, switch to one of the following options."
 msgstr ""
 
+msgid "Workspaces"
+msgstr ""
+
+msgid "Workspaces|Develop anywhere"
+msgstr ""
+
+msgid "Workspaces|Get started with GitLab Workspaces"
+msgstr ""
+
+msgid "Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a comprehensive set of tools for software development teams to manage their entire development lifecycle."
+msgstr ""
+
 msgid "Would you like to create a new branch?"
 msgstr ""
 

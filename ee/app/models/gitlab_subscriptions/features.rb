@@ -151,6 +151,7 @@ module GitlabSubscriptions
       protected_environments
       reject_non_dco_commits
       reject_unsigned_commits
+      remote_development
       saml_group_sync
       service_accounts
       scoped_labels
