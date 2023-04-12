@@ -226,13 +226,13 @@ You can export the raw data for a specific dimension by passing a list of dimens
 POST /api/v4/projects/PROJECT_ID/product_analytics/request/load?queryType=multi
 
 {
+    "query":{
   "dimensions": [
     "TrackedEvents.docEncoding",
     "TrackedEvents.docHost",
     "TrackedEvents.docPath",
     "TrackedEvents.docSearch",
     "TrackedEvents.eventType",
-    "TrackedEvents.idsAjsAnonymousId",
     "TrackedEvents.localTzOffset",
     "TrackedEvents.pageTitle",
     "TrackedEvents.src",
@@ -242,6 +242,7 @@ POST /api/v4/projects/PROJECT_ID/product_analytics/request/load?queryType=multi
   "order": {
     "TrackedEvents.apiKey": "asc"
   }
+    }
 }
 ```
 
