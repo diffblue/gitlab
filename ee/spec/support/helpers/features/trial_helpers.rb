@@ -110,7 +110,7 @@ module Features
 
     def submit_trial_selection_form(success: true, extra_params: {})
       trial_user_params = {
-        namespace_id: group.id.to_s,
+        namespace_id: group.id,
         gitlab_com_trial: true,
         sync_to_gl: true,
         trial_entity: 'company'

@@ -10,9 +10,9 @@ class TrialsController < ApplicationController
 
   layout 'minimal'
 
+  skip_before_action :set_confirm_warning
   before_action :check_if_gl_com_or_dev
   before_action :authenticate_user!
-  before_action :find_or_create_namespace, only: :apply
   before_action only: [:new, :select] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
@@ -20,39 +20,83 @@ class TrialsController < ApplicationController
   feature_category :purchase
   urgency :low
 
-  def new
-  end
+  def new; end
 
-  def select
-  end
+  def select; end
 
   def create_lead
     @result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
 
-    render(:new) && return unless @result.success?
+    if @result.success?
+      @namespace = helpers.only_trialable_group_namespace
+      if @namespace.present? # only 1 possible namespace to apply trial, so we'll just automatically apply it
+        params[:namespace_id] = @namespace.id
 
-    @namespace = helpers.only_trialable_group_namespace
+        @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
 
-    if @namespace.present?
-      params[:namespace_id] = @namespace.id
-      apply_trial_and_redirect
+        if @result.success?
+          Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
+
+          redirect_to trial_success_path(@namespace)
+        else
+          # We couldn't apply the trial, so we'll bounce the user to the select form with errors
+          # and give them option to create a group or try to re-apply the trial on the 1 namespace
+          # in the select dropdown.
+          render :select
+        end
+      else # more than 1 possible namespace for trial, so we'll ask user and then apply trial
+        redirect_to select_trials_path(glm_tracking_params)
+      end
     else
-      redirect_to select_trials_path(glm_tracking_params)
+      render :new
     end
   end
 
   def apply
-    apply_trial_and_redirect
-  end
+    # We only get to this action after the `create_lead` action has at least been tried, so the lead is captured
+    # already.
+    @namespace =
+      if find_namespace?
+        current_user.namespaces.find_by_id(params[:namespace_id])
+      elsif can_create_group?
+        name = sanitize(params[:new_group_name])
+        path = Namespace.clean_path(name.parameterize)
+        Groups::CreateService.new(current_user, name: name, path: path).execute
+      end
 
-  protected
+    return render_404 unless @namespace
 
-  # override the ConfirmEmailWarning method in order to skip
-  def show_confirm_warning?
-    false
+    if @namespace.persisted? # we possibly create a new namespace when we apply the trial due to `select` template form
+      # namespace_id already set if namespace is found, resetting will not hurt and will lend to predictably always
+      # setting as an integer instead of string sometimes and integer other times.
+      params[:namespace_id] = @namespace.id
+      @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
+
+      if @result.success?
+        Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
+
+        redirect_to trial_success_path(@namespace)
+      else
+        # We couldn't apply the trial, so we'll bounce the user to the select form with errors
+        # and give them the option to create a group or try to re-apply the trial on a namespace.
+        # This assumes that the lead was already captured on initial try of `create_lead`.
+        render :select
+      end
+    else
+      # We didn't successfully create the group, so we get dumped here with form errors.
+      render :select
+    end
   end
 
   private
+
+  def trial_success_path(namespace)
+    if discover_group_security_flow?
+      group_security_dashboard_url(namespace, { trial: true })
+    else
+      stored_location_or_provided_path(group_url(namespace, { trial: true }))
+    end
+  end
 
   def stored_location_or_provided_path(path)
     if current_user.setup_for_company
@@ -92,19 +136,10 @@ class TrialsController < ApplicationController
     gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
 
     {
-      trial_user_information: params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params),
+      trial_user_information: params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content)
+                                    .merge(gl_com_params),
       uid: current_user.id
     }
-  end
-
-  def find_or_create_namespace
-    @namespace = if find_namespace?
-                   current_user.namespaces.find_by_id(params[:namespace_id])
-                 elsif can_create_group?
-                   create_group
-                 end
-
-    render_404 unless @namespace
   end
 
   def find_namespace?
@@ -117,35 +152,8 @@ class TrialsController < ApplicationController
     params[:new_group_name].present? && can?(current_user, :create_group)
   end
 
-  def create_group
-    name = sanitize(params[:new_group_name])
-    group = Groups::CreateService.new(current_user, name: name, path: Namespace.clean_path(name.parameterize)).execute
-
-    params[:namespace_id] = group.id if group.persisted?
-
-    group
-  end
-
   def discover_group_security_flow?
-    %w(discover-group-security discover-project-security).include?(params[:glm_content])
-  end
-
-  def apply_trial_and_redirect
-    return render(:select) if @namespace.invalid?
-
-    @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
-
-    if @result.success?
-      Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
-
-      if discover_group_security_flow?
-        redirect_to group_security_dashboard_url(@namespace, { trial: true })
-      else
-        redirect_to stored_location_or_provided_path(group_url(@namespace, { trial: true }))
-      end
-    else
-      render :select
-    end
+    %w[discover-group-security discover-project-security].include?(params[:glm_content])
   end
 end
 

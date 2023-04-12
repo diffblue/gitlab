@@ -41,6 +41,43 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
     end
   end
 
+  shared_examples 'successful trial creation' do
+    it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+
+    it 'tracks the trial creation event' do
+      subject
+
+      expect_snowplow_event(category: described_class.name, action: 'create_trial', namespace: namespace, user: user)
+    end
+
+    context 'when the user is registered as a member of a company' do
+      let(:user) { create(:user, setup_for_company: true) }
+
+      context 'when there is a stored_location_for(:user) set' do
+        let(:stored_location_for) do
+          onboarding_project_learn_gitlab_path(build(:project))
+        end
+
+        before do
+          controller.store_location_for(:user, stored_location_for)
+        end
+
+        it { is_expected.to redirect_to(stored_location_for) }
+      end
+
+      it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+    end
+
+    where(glm_content: %w[discover-group-security discover-project-security])
+
+    with_them do
+      let(:post_params) { { namespace_id: namespace.id, glm_content: glm_content } }
+      let(:redirect_url) { group_security_dashboard_url(namespace, { trial: true }) }
+
+      it { is_expected.to redirect_to(redirect_url) }
+    end
+  end
+
   describe '#new' do
     subject(:get_new) do
       get :new
@@ -53,6 +90,35 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
+
+    context 'with confirm email warning' do
+      before do
+        get_new
+      end
+
+      context 'with an unconfirmed email address present' do
+        let(:user) { create(:user, confirmed_at: nil, unconfirmed_email: 'unconfirmed@gitlab.com') }
+
+        before do
+          sign_in(user)
+        end
+
+        it { is_expected.not_to set_confirm_warning_for(user.unconfirmed_email) }
+      end
+
+      context 'without an unconfirmed email address present' do
+        let(:user) { create(:user, confirmed_at: nil) }
+
+        it { is_expected.not_to set_confirm_warning_for(user.email) }
+      end
+
+      RSpec::Matchers.define :set_confirm_warning_for do |email|
+        match do |_response|
+          msg = "Please check your email (#{email}) to verify that you own this address and unlock the power of CI/CD."
+          expect(controller).to set_flash.now[:warning].to include(msg)
+        end
+      end
+    end
   end
 
   describe '#create_lead' do
@@ -90,7 +156,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
 
       it { is_expected.to redirect_to(select_trials_path(post_params)) }
 
-      context 'when user has 1 trial eligible namespace', :experiment do
+      context 'when user has 1 trial eligible namespace' do
         let_it_be(:namespace) { create(:group, path: 'namespace-test') }
 
         let(:apply_trial_result) do
@@ -123,36 +189,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
             post_create_lead
           end
 
-          it 'tracks for the trial creation' do
-            post_create_lead
-
-            expect_snowplow_event(
-              category: described_class.name,
-              action: 'create_trial',
-              namespace: namespace,
-              user: user
-            )
-          end
-
-          context 'when the user is `setup_for_company: true`' do
-            let(:user) { create(:user, setup_for_company: true) }
-
-            context 'when there is a stored_location_for(:user) set' do
-              let(:stored_location_for) do
-                onboarding_project_learn_gitlab_path(build(:project))
-              end
-
-              before do
-                controller.store_location_for(:user, stored_location_for)
-              end
-
-              it { is_expected.to redirect_to(stored_location_for) }
-            end
-
-            it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
-          end
-
-          it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+          it_behaves_like 'successful trial creation'
         end
 
         context 'when the ApplyTrialService is unsuccessful' do
@@ -166,6 +203,53 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           it { is_expected.to render_template(:select) }
         end
       end
+
+      context 'with request params to Lead Service' do
+        let(:post_params) do
+          {
+            company_name: 'Gitlab',
+            company_size: '1-99',
+            first_name: user.first_name,
+            last_name: user.last_name,
+            phone_number: '1111111111',
+            country: 'US',
+            state: 'CA',
+            glm_content: 'free-billing',
+            glm_source: 'about.gitlab.com'
+          }
+        end
+
+        let(:expected_params) do
+          {
+            company_name: 'Gitlab',
+            company_size: '1-99',
+            first_name: user.first_name,
+            last_name: user.last_name,
+            phone_number: '1111111111',
+            country: 'US',
+            state: 'CA',
+            glm_content: 'free-billing',
+            glm_source: 'about.gitlab.com',
+            work_email: user.email,
+            uid: user.id,
+            setup_for_company: nil,
+            skip_email_confirmation: true,
+            gitlab_com_trial: true,
+            provider: 'gitlab',
+            newsletter_segment: user.email_opted_in
+          }
+        end
+
+        it 'sends appropriate request params' do
+          expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |lead_service|
+            expect(lead_service).to receive(:execute)
+                                      .with({ trial_user: ActionController::Parameters.new(expected_params).permit! })
+                                      .and_return(ServiceResponse.success)
+          end
+
+          post_create_lead
+        end
+      end
     end
 
     context 'with failure' do
@@ -174,65 +258,6 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
       let(:create_lead_result) { ServiceResponse.error(message: '_fail_') }
 
       it { is_expected.to render_template(:new) }
-    end
-
-    context 'with request params to Lead Service' do
-      let(:post_params) do
-        {
-          company_name: 'Gitlab',
-          company_size: '1-99',
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone_number: '1111111111',
-          country: 'US',
-          state: 'CA',
-          glm_content: 'free-billing',
-          glm_source: 'about.gitlab.com'
-        }
-      end
-
-      let(:extra_params) do
-        {
-          work_email: user.email,
-          uid: user.id,
-          setup_for_company: nil,
-          skip_email_confirmation: true,
-          gitlab_com_trial: true,
-          provider: 'gitlab',
-          newsletter_segment: user.email_opted_in
-        }
-      end
-
-      let(:expected_params) do
-        {
-          company_name: 'Gitlab',
-          company_size: '1-99',
-          first_name: user.first_name,
-          last_name: user.last_name,
-          phone_number: '1111111111',
-          country: 'US',
-          state: 'CA',
-          glm_content: 'free-billing',
-          glm_source: 'about.gitlab.com',
-          work_email: user.email,
-          uid: user.id,
-          setup_for_company: nil,
-          skip_email_confirmation: true,
-          gitlab_com_trial: true,
-          provider: 'gitlab',
-          newsletter_segment: user.email_opted_in
-        }
-      end
-
-      it 'sends appropriate request params' do
-        expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |lead_service|
-          expect(lead_service).to receive(:execute)
-                                    .with({ trial_user: ActionController::Parameters.new(expected_params).permit! })
-                                    .and_return(ServiceResponse.success)
-        end
-
-        post_create_lead
-      end
     end
   end
 
@@ -274,33 +299,30 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
         instance_double(GitlabSubscriptions::Trials::ApplyTrialService, execute: ServiceResponse.success)
       end
 
-      it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
+      it 'calls the ApplyTrialService with correct parameters' do
+        gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
+        post_params = {
+          namespace_id: namespace.id,
+          trial_entity: 'company',
+          glm_source: 'source',
+          glm_content: 'content'
+        }
+        apply_trial_params = {
+          uid: user.id,
+          trial_user_information: ActionController::Parameters.new(post_params)
+                                                              .permit(
+                                                                :namespace_id,
+                                                                :trial_entity,
+                                                                :glm_source,
+                                                                :glm_content
+                                                              ).merge(gl_com_params)
+        }
 
-      it 'tracks the trial creation event' do
-        subject
-
-        expect_snowplow_event(
-          category: described_class.name,
-          action: 'create_trial',
-          namespace: namespace,
-          user: user
-        )
-      end
-
-      context 'with redirect trial user to feature' do
-        using RSpec::Parameterized::TableSyntax
-
-        where(:glm_content, :redirect) do
-          'discover-group-security' | :group_security_dashboard_url
-          'discover-project-security' | :group_security_dashboard_url
+        expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|
+          expect(instance).to receive(:execute).and_return(ServiceResponse.success)
         end
 
-        with_them do
-          let(:post_params) { { namespace_id: namespace.id, glm_content: glm_content } }
-          let(:redirect_url) { group_security_dashboard_url(namespace, { trial: true }) }
-
-          it { is_expected.to redirect_to(redirect_url) }
-        end
+        post :apply, params: post_params
       end
 
       context 'with a new Group' do
@@ -335,61 +357,6 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           expect { post_apply }.not_to change { Group.count }
         end
       end
-    end
-
-    it 'calls the ApplyTrialService with correct parameters' do
-      gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
-      post_params = {
-        namespace_id: namespace.id.to_s,
-        trial_entity: 'company',
-        glm_source: 'source',
-        glm_content: 'content'
-      }
-      apply_trial_params = {
-        uid: user.id,
-        trial_user_information: ActionController::Parameters.new(post_params)
-                                                            .permit(
-                                                              :namespace_id,
-                                                              :trial_entity,
-                                                              :glm_source,
-                                                              :glm_content
-                                                            ).merge(gl_com_params)
-      }
-
-      expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|
-        expect(instance).to receive(:execute).and_return(ServiceResponse.success)
-      end
-
-      post :apply, params: post_params
-    end
-  end
-
-  describe 'confirm email warning' do
-    before do
-      get :new
-    end
-
-    RSpec::Matchers.define :set_confirm_warning_for do |email|
-      match do |_response|
-        msg = "Please check your email (#{email}) to verify that you own this address and unlock the power of CI/CD."
-        expect(controller).to set_flash.now[:warning].to include(msg)
-      end
-    end
-
-    context 'with an unconfirmed email address present' do
-      let(:user) { create(:user, confirmed_at: nil, unconfirmed_email: 'unconfirmed@gitlab.com') }
-
-      before do
-        sign_in(user)
-      end
-
-      it { is_expected.not_to set_confirm_warning_for(user.unconfirmed_email) }
-    end
-
-    context 'without an unconfirmed email address present' do
-      let(:user) { create(:user, confirmed_at: nil) }
-
-      it { is_expected.not_to set_confirm_warning_for(user.email) }
     end
   end
 end
