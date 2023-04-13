@@ -1,0 +1,18 @@
+query UserWorkspacesList {
+  userWorkspacesList @client {
+    nodes {
+      id
+      name
+      namespace
+      projectFullPath
+      desiredState
+      actualState
+      displayedState
+      url
+      editor
+      devfile
+      branch
+      lastUsed
+    }
+  }
+}
