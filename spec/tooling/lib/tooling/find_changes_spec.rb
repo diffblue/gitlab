@@ -15,13 +15,13 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
       changed_files_pathname: changed_files_pathname,
       predictive_tests_pathname: predictive_tests_pathname,
       frontend_fixtures_mapping_pathname: frontend_fixtures_mapping_pathname,
-      append: append)
+      from: from)
   end
 
   let(:changed_files_pathname)             { changed_files_file.path }
   let(:predictive_tests_pathname)          { predictive_tests_file.path }
   let(:frontend_fixtures_mapping_pathname) { frontend_fixtures_mapping_file.path }
-  let(:append)                             { false }
+  let(:from)                               { :api }
   let(:gitlab_client)                      { double('GitLab') } # rubocop:disable RSpec/VerifiedDoubles
 
   around do |example|
@@ -50,12 +50,26 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
       'CI_MERGE_REQUEST_PROJECT_PATH' => 'dummy-project',
       'PROJECT_TOKEN_FOR_CI_SCRIPTS_API_USAGE' => 'dummy-token'
     )
+  end
 
-    allow(instance).to receive(:gitlab).and_return(gitlab_client)
+  describe '#initialize' do
+    context 'when fetching changes from unknown' do
+      let(:from) { :unknown }
+
+      it 'raises an ArgumentError' do
+        expect { instance }.to raise_error(
+          ArgumentError, ":from can only be :api or :changed_files"
+        )
+      end
+    end
   end
 
   describe '#execute' do
     subject { instance.execute }
+
+    before do
+      allow(instance).to receive(:gitlab).and_return(gitlab_client)
+    end
 
     context 'when there is no changed files file' do
       let(:changed_files_pathname) { nil }
@@ -67,8 +81,8 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
       end
     end
 
-    context 'when not in append mode' do
-      let(:append) { false }
+    context 'when fetching changes from API' do
+      let(:from) { :api }
 
       it 'calls GitLab API to retrieve the MR diff' do
         expect(gitlab_client).to receive_message_chain(:merge_request_changes, :changes).and_return([])
@@ -77,8 +91,8 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
       end
     end
 
-    context 'when in append mode' do
-      let(:append) { true }
+    context 'when fetching changes from changed files' do
+      let(:from) { :changed_files }
 
       it 'does not call GitLab API to retrieve the MR diff' do
         expect(gitlab_client).not_to receive(:merge_request_changes)
@@ -174,6 +188,8 @@ RSpec.describe Tooling::FindChanges, feature_category: :tooling do
     let(:mr_changes_array) { [] }
 
     before do
+      allow(instance).to receive(:gitlab).and_return(gitlab_client)
+
       # The class from the GitLab gem isn't public, so we cannot use verified doubles for it.
       #
       # rubocop:disable RSpec/VerifiedDoubles
