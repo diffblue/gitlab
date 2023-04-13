@@ -50,24 +50,43 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
     subject { described_class.new(project: project, policy_configuration: policy_configuration).execute }
 
     context 'without head_pipeline for merge request' do
-      it 'does not trigger SyncReportsToReportApprovalRulesWorker' do
+      it 'does not trigger workers' do
         expect(::Ci::SyncReportsToReportApprovalRulesWorker).not_to receive(:perform_async)
+        expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to receive(:perform_async)
 
         subject
       end
     end
 
     context 'with head_pipeline' do
-      let_it_be(:head_pipeline) { create(:ci_pipeline, project: project, ref: opened_merge_request.source_branch) }
+      let(:head_pipeline) { create(:ci_pipeline, project: project, ref: opened_merge_request.source_branch) }
 
       before do
         opened_merge_request.update!(head_pipeline_id: head_pipeline.id)
       end
 
-      it 'triggers SyncReportsToReportApprovalRulesWorker' do
-        expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
+      context 'with sync_approval_rules_from_findings enabled' do
+        it 'triggers both workers' do
+          expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
+          expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
+            .to receive(:perform_async).with(head_pipeline.id)
 
-        subject
+          subject
+        end
+      end
+
+      context 'with sync_approval_rules_from_findings disabled' do
+        before do
+          stub_feature_flags(sync_approval_rules_from_findings: false)
+        end
+
+        it 'triggers SyncReportsToReportApprovalRulesWorker only' do
+          expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
+          expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
+            .not_to receive(:perform_async).with(head_pipeline.id)
+
+          subject
+        end
       end
     end
 

@@ -16,8 +16,8 @@ module Security
       grouped_report_artifacts.each { |artifacts| StoreGroupedScansService.execute(artifacts) }
 
       schedule_store_reports_worker
-
       schedule_scan_security_report_secrets_worker
+      sync_findings_to_approval_rules
     end
 
     private
@@ -58,6 +58,13 @@ module Security
 
     def secret_detection_scans_found?
       pipeline.security_scans.by_scan_types(:secret_detection).any?
+    end
+
+    def sync_findings_to_approval_rules
+      return unless project.licensed_feature_available?(:security_orchestration_policies) &&
+        Feature.enabled?(:sync_approval_rules_from_findings, project)
+
+      Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(pipeline.id)
     end
   end
 end
