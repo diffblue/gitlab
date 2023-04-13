@@ -274,7 +274,7 @@ export default {
           <h5>{{ $options.i18n.yamlPreview }}</h5>
           <pre
             data-testid="yaml-preview"
-            class="security-policies-bg-gray-10 gl-border-none gl-p-0"
+            class="security-policies-bg-gray-10 security-policies-pre-min-width gl-white-space-pre-wrap gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
             >{{ policyYaml || yamlEditorValue }}</pre
           >
