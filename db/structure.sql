@@ -29239,8 +29239,6 @@ CREATE INDEX idx_merge_requests_on_merged_state ON merge_requests USING btree (i
 
 CREATE INDEX idx_merge_requests_on_source_project_and_branch_state_opened ON merge_requests USING btree (source_project_id, source_branch) WHERE (state_id = 1);
 
-CREATE INDEX idx_merge_requests_on_state_id_and_merge_status ON merge_requests USING btree (state_id, merge_status) WHERE ((state_id = 1) AND ((merge_status)::text = 'can_be_merged'::text));
-
 CREATE INDEX idx_merge_requests_on_target_project_id_and_iid_opened ON merge_requests USING btree (target_project_id, iid) WHERE (state_id = 1);
 
 CREATE INDEX idx_merge_requests_on_target_project_id_and_locked_state ON merge_requests USING btree (target_project_id) WHERE (state_id = 4);
