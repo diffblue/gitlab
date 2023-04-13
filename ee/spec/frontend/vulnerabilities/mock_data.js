@@ -93,13 +93,6 @@ export const getVulnerabilityStatusMutationResponse = (queryName, expected) => (
         stateTransitions: {
           nodes: [
             {
-              author: {
-                id: 'gid://gitlab/User/16',
-              },
-              comment: null,
-              createdAt: '2023-03-06T01:20:01.000Z',
-              fromState: expected !== 'detected' ? 'DETECTED' : 'CONFIRMED',
-              toState: expected.toUpperCase(),
               dismissalReason: 'USED_IN_TESTS',
             },
           ],

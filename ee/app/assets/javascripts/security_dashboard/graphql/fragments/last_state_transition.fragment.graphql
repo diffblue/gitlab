@@ -1,0 +1,7 @@
+fragment LastStateTransition on Vulnerability {
+  stateTransitions(first: 1) {
+    nodes {
+      dismissalReason
+    }
+  }
+}

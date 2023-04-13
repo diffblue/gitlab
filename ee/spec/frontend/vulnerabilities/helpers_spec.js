@@ -87,11 +87,6 @@ describe('Vulnerabilities helpers', () => {
       stateTransitions: {
         nodes: [
           {
-            author: { id: 'gid://gitlab/User/1' },
-            comment: null,
-            createdAt: '2023-03-06T01:20:01.000Z',
-            fromState: 'CONFIRMED',
-            toState: 'DISMISSED',
             dismissalReason: 'USED_IN_TESTS',
           },
         ],
@@ -99,11 +94,6 @@ describe('Vulnerabilities helpers', () => {
     };
 
     const normalizedLastStateTransition = {
-      author: { id: 'gid://gitlab/User/1' },
-      comment: null,
-      createdAt: '2023-03-06T01:20:01.000Z',
-      fromState: 'confirmed',
-      toState: 'dismissed',
       dismissalReason: 'used_in_tests',
     };
 

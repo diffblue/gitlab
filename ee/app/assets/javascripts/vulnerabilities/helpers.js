@@ -81,8 +81,6 @@ export const normalizeGraphQLLastStateTransition = (graphQLVulnerability, vulner
   const [graphQLLastStateTransitions] = graphQLVulnerability.stateTransitions.nodes;
   stateTransitions.push({
     ...graphQLLastStateTransitions,
-    fromState: graphQLLastStateTransitions.fromState.toLowerCase(),
-    toState: graphQLLastStateTransitions.toState.toLowerCase(),
     dismissalReason: graphQLLastStateTransitions.dismissalReason?.toLowerCase(),
   });
 
