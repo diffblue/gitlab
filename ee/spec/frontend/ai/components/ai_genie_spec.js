@@ -1,16 +1,34 @@
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlButton } from '@gitlab/ui';
+import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import AiGenie from 'ee/ai/components/ai_genie.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
-import { explainCode } from 'ee/ai/utils';
+import { generatePrompt } from 'ee/ai/utils';
 import { i18n } from 'ee/ai/constants';
 import { renderMarkdown } from '~/notes/utils';
-import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import explainCodeMutation from 'ee/ai/graphql/explain_code.mutation.graphql';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+
+const aiResponseFormatted = 'Formatted AI response';
 
 jest.mock('ee/ai/utils');
-jest.mock('~/notes/utils');
+jest.mock('~/notes/utils', () => ({
+  renderMarkdown: jest.fn().mockReturnValue(aiResponseFormatted),
+}));
+
+Vue.use(VueApollo);
+
+const aiResponse = 'AI response';
+const explainCodeMutationResponse = { data: { aiAction: { errors: [] } } };
+const explainCodeSubscriptionResponse = {
+  data: { aiCompletionResponse: { responseBody: aiResponse, errors: [] } },
+};
+const mutationHandlerMock = jest.fn().mockResolvedValue(explainCodeMutationResponse);
+const subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
 
 const SELECTION_START_POSITION = 50;
 const SELECTION_END_POSITION = 150;
@@ -21,14 +39,23 @@ describe('AiGenie', () => {
   let wrapper;
   const containerId = 'container';
   const language = 'vue';
+  const resourceId = 'gid://gitlab/Project/1';
+  const userId = 'gid://gitlab/User/1';
 
   const getContainer = () => document.getElementById(containerId);
-  const createComponent = (propsData = {}) => {
+  const createComponent = (propsData = {}, mutationHandler = mutationHandlerMock) => {
+    const apolloProvider = createMockApollo([
+      [aiResponseSubscription, subscriptionHandlerMock],
+      [explainCodeMutation, mutationHandler],
+    ]);
+
     wrapper = shallowMountExtended(AiGenie, {
       propsData,
+      provide: { resourceId, userId },
       stubs: {
         AiGenieChat,
       },
+      apolloProvider,
     });
   };
   const findButton = () => wrapper.findComponent(GlButton);
@@ -79,7 +106,6 @@ describe('AiGenie', () => {
 
   const requestExplanation = async () => {
     findButton().vm.$emit('click');
-    await waitForPromises();
   };
 
   beforeEach(() => {
@@ -178,21 +204,33 @@ describe('AiGenie', () => {
       expect(findGenieChat().exists()).toBe(true);
     });
 
-    it('once the response arrives, :content is set with the response message', async () => {
-      const content = 'Returned Foo';
-      explainCode.mockResolvedValue({ message: { content } });
-      renderMarkdown.mockReturnValue(content);
+    it('calls a GraphQL mutation when explain code requested', async () => {
       await requestExplanation();
-      expect(explainCode).toHaveBeenCalledTimes(1);
-      expect(renderMarkdown).toHaveBeenCalledTimes(1);
-      expect(findGenieChat().props().content).toBe(content);
+      expect(generatePrompt).toHaveBeenCalledTimes(1);
+      expect(mutationHandlerMock).toHaveBeenCalledWith({ resourceId });
     });
 
-    it('if the response fails, genie gets :error set with the error message', async () => {
-      const message = 'Network error!';
-      explainCode.mockRejectedValue({ message });
+    it('if the mutation fails, genie gets :error set with the error message', async () => {
+      const mutationRejectedMock = jest.fn().mockRejectedValue();
+      createComponent({ containerId }, mutationRejectedMock);
       await requestExplanation();
-      expect(findGenieChat().props().error).toBe(message);
+      await waitForPromises();
+      expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
+    });
+
+    it('calls the subscription with correct variables', async () => {
+      await requestExplanation();
+      await waitForPromises();
+      expect(subscriptionHandlerMock).toHaveBeenCalledWith({ resourceId, userId });
+    });
+
+    it('once the response arrives, :content is set with the response message', async () => {
+      await requestExplanation();
+      await waitForPromises();
+      await nextTick();
+      expect(subscriptionHandlerMock).toHaveBeenCalledWith({ resourceId, userId });
+      expect(renderMarkdown).toHaveBeenCalledWith(aiResponse);
+      expect(findGenieChat().props().content).toBe(aiResponseFormatted);
     });
 
     it('when a snippet is selected, :selected-text gets the same content', async () => {

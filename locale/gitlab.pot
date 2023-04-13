@@ -1857,6 +1857,9 @@ msgstr ""
 msgid "AI|Explain the code from %{filePath} in human understandable language presented in Markdown format. In the response add neither original code snippet nor any title. `%{text}`"
 msgstr ""
 
+msgid "AI|Something went wrong. Please try again later"
+msgstr ""
+
 msgid "AI|The container element wasn't found, stopping AI Genie."
 msgstr ""
 

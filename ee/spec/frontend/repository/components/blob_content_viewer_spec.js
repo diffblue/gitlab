@@ -20,6 +20,7 @@ import {
   propsMock,
   refMock,
 } from 'jest/repository/mock_data';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 
 jest.mock('~/lib/utils/common_utils');
 Vue.use(VueRouter);
@@ -30,6 +31,11 @@ let wrapper;
 let mockResolver;
 
 Vue.use(VueApollo);
+
+const explainCodeSubscriptionResponse = {
+  data: { aiCompletionResponse: { responseBody: 'test' } },
+};
+const subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
 
 const createMockStore = () =>
   new Vuex.Store({ actions: { fetchData: jest.fn, setInitialData: jest.fn() } });
@@ -69,6 +75,7 @@ const createComponent = async (mockData = {}) => {
   const fakeApollo = createMockApollo([
     [blobInfoQuery, mockResolver],
     [projectInfoQuery, mockResolver],
+    [aiResponseSubscription, subscriptionHandlerMock],
   ]);
 
   wrapper = mountExtended(BlobContentViewer, {
@@ -83,6 +90,8 @@ const createComponent = async (mockData = {}) => {
     provide: {
       targetBranch: 'test',
       originalBranch: 'test',
+      resourceId: 'test',
+      userId: 'test',
       glFeatures,
     },
   });
