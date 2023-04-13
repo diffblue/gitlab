@@ -18,6 +18,7 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
   before do
     allow(Ci::Pipeline).to receive(:find).with(pipeline.id) { pipeline }
 
+    stub_feature_flags(sync_approval_rules_from_findings: false)
     stub_licensed_features(dependency_scanning: true, dast: true, license_scanning: true)
   end
 
@@ -388,6 +389,16 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
 
     before do
       create(:approval_merge_request_rule_source, approval_merge_request_rule: report_approver_rule, approval_project_rule: approval_project_rule)
+    end
+
+    context 'when sync_approval_rules_from_findings is enabled' do
+      before do
+        stub_feature_flags(sync_approval_rules_from_findings: true)
+      end
+
+      it 'does not update approval rules' do
+        expect { subject }.not_to change { report_approver_rule.reload.approvals_required }
+      end
     end
 
     context 'when there are security reports' do

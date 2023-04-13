@@ -9,14 +9,23 @@ module EE
       def prepare_merge_request(merge_request)
         super
 
-        schedule_sync_for(merge_request.head_pipeline_id)
+        schedule_sync_for(merge_request)
         schedule_fetch_suggested_reviewers(merge_request)
       end
 
       private
 
-      def schedule_sync_for(pipeline_id)
-        ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline_id) if pipeline_id
+      def schedule_sync_for(merge_request)
+        pipeline_id = merge_request.head_pipeline_id
+        return unless pipeline_id
+
+        ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline_id)
+
+        return unless ::Feature.enabled?(:sync_approval_rules_from_findings, merge_request.target_project)
+
+        # This is needed here to avoid inconsistent state when the scan result policy is updated after the
+        # head pipeline completes and before the merge request is created, we might have inconsistent state.
+        ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(pipeline_id)
       end
 
       def schedule_fetch_suggested_reviewers(merge_request)

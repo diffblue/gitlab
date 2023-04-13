@@ -948,6 +948,15 @@
   :weight: 2
   :idempotent: true
   :tags: []
+- :name: security_scans:security_scan_result_policies_sync_findings_to_approval_rules
+  :worker_name: Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 2
+  :idempotent: true
+  :tags: []
 - :name: security_scans:security_store_scans
   :worker_name: Security::StoreScansWorker
   :feature_category: :vulnerability_management
