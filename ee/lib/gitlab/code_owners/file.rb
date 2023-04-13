@@ -116,12 +116,12 @@ module Gitlab
       end
 
       def normalize_pattern(pattern)
+        return '/**/*' if pattern == '*'
+
         # Remove `\` when escaping `\#`
         pattern = pattern.sub(/\A\\#/, '#')
         # Replace all whitespace preceded by a \ with a regular whitespace
         pattern = pattern.gsub(/\\\s+/, ' ')
-
-        return '/**/*' if pattern == '*'
 
         unless pattern.start_with?('/')
           pattern = "/**/#{pattern}"
