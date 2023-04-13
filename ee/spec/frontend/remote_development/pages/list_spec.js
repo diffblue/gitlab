@@ -1,20 +1,126 @@
-import { shallowMount } from '@vue/test-utils';
-import WorkspacesList from 'ee/remote_development/pages/list.vue';
-import EmptyState from 'ee/remote_development/components/list/empty_state.vue';
+import { mount } from '@vue/test-utils';
+import VueApollo from 'vue-apollo';
+import Vue, { nextTick } from 'vue';
+import { GlAlert, GlLink, GlTableLite, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { logError } from '~/lib/logger';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import WorkspaceList from 'ee/remote_development/pages/list.vue';
+import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
+import { MOCK_GROUP_WORKSPACE_DATA } from '../mock_data';
+
+jest.mock('~/lib/logger');
+
+Vue.use(VueApollo);
+
+const SVG_PATH = '/assets/illustrations/empty_states/empty_workspaces.svg';
+
+const findAlert = (wrapper) => wrapper.findComponent(GlAlert);
+const findTable = (wrapper) => wrapper.findComponent(GlTableLite);
+const findTableRows = (wrapper) => findTable(wrapper).findAll('tbody tr');
+const findTableRowsAsData = (wrapper) =>
+  findTableRows(wrapper).wrappers.map((x) => {
+    const tds = x.findAll('td');
+
+    return {
+      nameText: tds.at(0).text(),
+      statusIcon: tds.at(0).findComponent(GlIcon).props('name'),
+      branchText: tds.at(1).text(),
+      previewText: tds.at(2).text(),
+      previewHref: tds.at(2).findComponent(GlLink).attributes('href'),
+      lastUsedText: tds.at(3).text(),
+    };
+  });
 
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
 
-  const findEmptyState = () => wrapper.findComponent(EmptyState);
+  const createWrapper = (mockData) => {
+    const mockApollo = createMockApollo([], {
+      Query: {
+        userWorkspacesList: () => mockData,
+      },
+    });
 
-  const createComponent = () => {
-    wrapper = shallowMount(WorkspacesList, {});
+    wrapper = mount(WorkspaceList, {
+      apolloProvider: mockApollo,
+      provide: {
+        emptyStateSvgPath: SVG_PATH,
+      },
+    });
   };
 
-  describe('when no workspaces exist', () => {
-    it('should render empty workspace state', () => {
-      createComponent();
-      expect(findEmptyState().exists()).toBe(true);
+  it('shows empty state when no workspaces are available', async () => {
+    createWrapper({ nodes: [] });
+    await waitForPromises();
+    expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+  });
+
+  it('shows loading state when workspaces are being fetched', () => {
+    createWrapper();
+    expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
+  });
+
+  describe('default (with nodes)', () => {
+    beforeEach(async () => {
+      createWrapper(MOCK_GROUP_WORKSPACE_DATA);
+      await waitForPromises();
+    });
+
+    it('shows table when workspaces are available', async () => {
+      expect(findTable(wrapper).exists()).toBe(true);
+    });
+
+    it('displays user workspaces correctly', async () => {
+      expect(findTableRowsAsData(wrapper)).toEqual(
+        MOCK_GROUP_WORKSPACE_DATA.nodes.map((x) => ({
+          nameText: `${x.projectFullPath}   ${x.name}`,
+          statusIcon: 'status-stopped',
+          branchText: x.branch,
+          previewText: x.url,
+          previewHref: x.url,
+          lastUsedText: '6 months ago',
+        })),
+      );
+    });
+
+    it('does not call log error', () => {
+      expect(logError).not.toHaveBeenCalled();
+    });
+
+    it('does not show alert', () => {
+      expect(findAlert(wrapper).exists()).toBe(false);
+    });
+  });
+
+  describe('when query fails', () => {
+    const ERROR = new Error('Something bad!');
+
+    beforeEach(async () => {
+      createWrapper(Promise.reject(ERROR));
+      await waitForPromises();
+    });
+
+    it('does not render table', async () => {
+      expect(findTable(wrapper).exists()).toBe(false);
+    });
+
+    it('logs error', () => {
+      expect(logError).toHaveBeenCalledWith(ERROR);
+    });
+
+    it('shows alert', () => {
+      expect(findAlert(wrapper).text()).toBe(
+        'Unable to load current Workspaces. Please try again or contact an administrator.',
+      );
+    });
+
+    it('hides error when alert is dismissed', async () => {
+      findAlert(wrapper).vm.$emit('dismiss');
+
+      await nextTick();
+
+      expect(findAlert(wrapper).exists()).toBe(false);
     });
   });
 });

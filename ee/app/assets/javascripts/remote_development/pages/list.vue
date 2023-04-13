@@ -1,15 +1,134 @@
 <script>
-import EmptyState from '../components/list/empty_state.vue';
+import { GlAlert, GlButton, GlLink, GlIcon, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+import { getTimeago } from '~/lib/utils/datetime_utility';
+import { logError } from '~/lib/logger';
+import { __ } from '~/locale';
+import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
+import WorkspaceEmptyState from '../components/list/empty_state.vue';
 
 export default {
   components: {
-    EmptyState,
+    GlAlert,
+    GlButton,
+    GlLink,
+    GlIcon,
+    GlSkeletonLoader,
+    GlTableLite,
+    WorkspaceEmptyState,
+  },
+  apollo: {
+    workspaces: {
+      query: userWorkspacesListQuery,
+      update(data) {
+        const { userWorkspacesList: { nodes = [] } = {} } = data || {};
+        return nodes;
+      },
+      error(err) {
+        logError(err);
+        this.error = __(
+          'Unable to load current Workspaces. Please try again or contact an administrator.',
+        );
+      },
+    },
+  },
+  fields: [
+    {
+      key: 'name',
+      label: __('Name'),
+      thClass: 'gl-w-25p',
+    },
+    {
+      key: 'branch',
+      label: __('Branch'),
+      thClass: 'gl-w-25p',
+    },
+    {
+      key: 'preview',
+      label: __('Preview'),
+      thClass: 'gl-w-30p',
+    },
+    {
+      key: 'lastUsed',
+      label: __('Last used'),
+      thClass: 'gl-w-20p',
+    },
+    {
+      key: 'actions',
+      label: '',
+      thClass: 'gl-w-10p',
+    },
+  ],
+  data() {
+    return {
+      workspaces: [],
+      error: '',
+    };
+  },
+  computed: {
+    isEmpty() {
+      return !this.workspaces.length && !this.isLoading;
+    },
+    isLoading() {
+      return this.$apollo.loading;
+    },
+  },
+  methods: {
+    clearError() {
+      this.error = '';
+    },
+    deleteWorkspace: () => {
+      // TDOD: implement deleteWorkspace
+    },
+    formatDate(lastUsed) {
+      return getTimeago().format(lastUsed);
+    },
   },
 };
 </script>
 
 <template>
   <div>
-    <empty-state />
+    <gl-alert v-if="error" variant="danger" @dismiss="clearError">
+      {{ error }}
+    </gl-alert>
+
+    <workspace-empty-state v-if="isEmpty" />
+
+    <template v-else>
+      <div>
+        <h1>{{ s__('Workspaces|Workspaces') }}</h1>
+      </div>
+
+      <div v-if="isLoading" class="gl-p-5 gl-display-flex gl-justify-content-left">
+        <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
+      </div>
+
+      <gl-table-lite v-else :items="workspaces" :fields="$options.fields">
+        <template #cell(name)="{ item }">
+          <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
+            <gl-icon name="status-stopped" class="gl-mr-5" />
+            <div class="gl-display-flex gl-flex-direction-column">
+              <span> {{ item.projectFullPath }} </span>
+              <span> {{ item.name }} </span>
+            </div>
+          </div>
+        </template>
+        <template #cell(branch)="{ item }">
+          <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
+            <gl-icon name="branch" class="gl-mr-3" />
+            {{ item.branch }}
+          </div>
+        </template>
+        <template #cell(preview)="{ item }">
+          <gl-link :href="item.url" target="_blank">{{ item.url }}</gl-link>
+        </template>
+        <template #cell(lastUsed)="{ item }">
+          {{ formatDate(item.lastUsed) }}
+        </template>
+        <template #cell(actions)="{ item }">
+          <gl-button icon="remove" @click="deleteWorkspace(item)" />
+        </template>
+      </gl-table-lite>
+    </template>
   </div>
 </template>

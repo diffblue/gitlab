@@ -1,6 +1,6 @@
 import { createWrapper } from '@vue/test-utils';
 import { initWorkspacesApp } from 'ee/remote_development/init_workspaces_app';
-import EmptyState from 'ee/remote_development/components/list/empty_state.vue';
+import WorkspaceList from 'ee/remote_development/pages/list.vue';
 
 describe('ee/remote_development/init_workspaces_app', () => {
   let wrapper;
@@ -18,8 +18,8 @@ describe('ee/remote_development/init_workspaces_app', () => {
       wrapper = createWrapper(initWorkspacesApp());
     });
 
-    it('renders empty state', () => {
-      expect(wrapper.findComponent(EmptyState).exists()).toBe(true);
+    it('renders list state', () => {
+      expect(wrapper.findComponent(WorkspaceList).exists()).toBe(true);
     });
   });
 
