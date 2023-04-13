@@ -7,7 +7,7 @@ class RefreshLicenseComplianceChecksWorker # rubocop:disable Scalability/Idempot
 
   sidekiq_options retry: 3
 
-  feature_category :license_compliance
+  feature_category :software_composition_analysis
   weight 2
 
   def perform(project_id)

@@ -14,7 +14,7 @@ module EE
           push_frontend_feature_flag(:standalone_finding_modal, project, type: :development)
         end
 
-        feature_category :license_compliance, [:licenses]
+        feature_category :software_composition_analysis, [:licenses]
         feature_category :vulnerability_management, [:security]
         feature_category :code_quality, [:codequality_report]
 

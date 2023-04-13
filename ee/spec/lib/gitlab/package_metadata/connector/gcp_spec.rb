@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :license_compliance do
+RSpec.describe Gitlab::PackageMetadata::Connector::Gcp, feature_category: :software_composition_analysis do
   let(:connector) { described_class.new(bucket_name, version_format, purl_type) }
   let(:bucket_name) { 'gitlab-pm-bucket1' }
   let(:version_format) { 'v1' }

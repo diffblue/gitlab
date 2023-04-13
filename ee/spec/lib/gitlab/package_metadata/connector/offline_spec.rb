@@ -52,7 +52,7 @@ RSpec.shared_examples "full offline license-db sync" do
   end
 end
 
-RSpec.describe ::Gitlab::PackageMetadata::Connector::Offline, feature_category: :license_compliance do
+RSpec.describe ::Gitlab::PackageMetadata::Connector::Offline, feature_category: :software_composition_analysis do
   let(:archive_path) { ::PackageMetadata::SyncConfiguration.archive_path }
   let(:file_prefix) { File.join(archive_path, version_format, registry_id) }
   let(:registry_id) { "rubygem" }

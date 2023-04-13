@@ -10,7 +10,7 @@ module PackageMetadata
     MAX_SYNC_DURATION = 4.minutes
 
     data_consistency :always
-    feature_category :license_compliance
+    feature_category :software_composition_analysis
     urgency :low
 
     idempotent!

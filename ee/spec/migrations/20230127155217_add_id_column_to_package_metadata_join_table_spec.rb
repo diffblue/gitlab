@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe AddIdColumnToPackageMetadataJoinTable, feature_category: :license_compliance do
+RSpec.describe AddIdColumnToPackageMetadataJoinTable, feature_category: :software_composition_analysis do
   let(:purl_types) { (1..8) }
 
   context 'when table is up to date' do

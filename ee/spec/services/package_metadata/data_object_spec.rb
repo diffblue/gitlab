@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::DataObject, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::DataObject, feature_category: :software_composition_analysis do
   describe '.from_csv' do
     let(:purl_type) { 'npm' }
 

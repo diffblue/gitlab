@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::SyncService, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::SyncService, feature_category: :software_composition_analysis do
   describe '#execute' do
     let(:version_format) { 'v1' }
     let(:purl_type) { :composer }

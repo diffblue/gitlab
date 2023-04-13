@@ -22,7 +22,7 @@ module EE
           end
 
           feature_category :static_application_security_testing, [:show]
-          feature_category :dependency_scanning, [:auto_fix]
+          feature_category :software_composition_analysis, [:auto_fix]
 
           urgency :low, [:show, :auto_fix]
         end

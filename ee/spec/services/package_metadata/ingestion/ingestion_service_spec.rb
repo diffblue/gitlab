@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::Ingestion::IngestionService, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::Ingestion::IngestionService, feature_category: :software_composition_analysis do
   describe '.execute' do
     let(:import_data) { build_list(:pm_data_object, 4) }
     let(:tasks) do

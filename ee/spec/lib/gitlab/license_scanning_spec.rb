@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe ::Gitlab::LicenseScanning, feature_category: :license_compliance do
+RSpec.describe ::Gitlab::LicenseScanning, feature_category: :software_composition_analysis do
   let_it_be(:project) { create(:project, :repository, create_branch: "license_scanning_branch") }
 
   describe "#scanner_for_project" do

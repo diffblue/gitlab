@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::Ingestion::Tasks::IngestPackageVersionLicenses, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::Ingestion::Tasks::IngestPackageVersionLicenses, feature_category: :software_composition_analysis do
   describe '#execute' do
     let(:data_map) { PackageMetadata::Ingestion::DataMap.new(import_data) }
 

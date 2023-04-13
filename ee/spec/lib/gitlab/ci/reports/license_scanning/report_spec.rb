@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :license_compliance do
+RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Report, feature_category: :software_composition_analysis do
   include LicenseScanningReportHelpers
 
   describe '#by_license_name' do

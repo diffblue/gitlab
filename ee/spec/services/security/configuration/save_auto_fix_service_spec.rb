@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Configuration::SaveAutoFixService, feature_category: :dependency_scanning do
+RSpec.describe Security::Configuration::SaveAutoFixService, feature_category: :software_composition_analysis do
   describe '#execute' do
     let_it_be_with_reload(:project) { create(:project) }
 

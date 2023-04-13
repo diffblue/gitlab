@@ -109,7 +109,7 @@ RSpec.describe Projects::Security::ConfigurationController do
     end
   end
 
-  describe 'POST #auto_fix', feature_category: :dependency_scanning do
+  describe 'POST #auto_fix', feature_category: :software_composition_analysis do
     subject(:request) { post :auto_fix, params: params }
 
     let_it_be(:maintainer) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::Package, type: :model, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::Package, type: :model, feature_category: :software_composition_analysis do
   let(:purl_types) do
     {
       composer: 1,

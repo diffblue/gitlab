@@ -356,7 +356,7 @@
   :tags: []
 - :name: cronjob:import_software_licenses
   :worker_name: ImportSoftwareLicensesWorker
-  :feature_category: :license_compliance
+  :feature_category: :software_composition_analysis
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -464,7 +464,7 @@
   :tags: []
 - :name: cronjob:package_metadata_sync
   :worker_name: PackageMetadata::SyncWorker
-  :feature_category: :license_compliance
+  :feature_category: :software_composition_analysis
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1553,7 +1553,7 @@
   :tags: []
 - :name: refresh_license_compliance_checks
   :worker_name: RefreshLicenseComplianceChecksWorker
-  :feature_category: :license_compliance
+  :feature_category: :software_composition_analysis
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -1607,7 +1607,7 @@
   :tags: []
 - :name: security_auto_fix
   :worker_name: Security::AutoFixWorker
-  :feature_category: :dependency_scanning
+  :feature_category: :software_composition_analysis
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe SCA::LicensePolicy, feature_category: :license_compliance do
+RSpec.describe SCA::LicensePolicy, feature_category: :software_composition_analysis do
   subject { described_class.new(license, policy, approval_status) }
 
   let(:license) { build(:license_scanning_license, :mit) }
