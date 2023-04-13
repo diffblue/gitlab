@@ -318,6 +318,20 @@ module EE
       end
     end
 
+    def sync_project_approval_rules_for_policy_configuration(configuration_id)
+      return if merged?
+
+      project_rules = target_project
+        .approval_rules
+        .report_approver
+        .for_policy_configuration(configuration_id)
+        .includes(:users, :groups)
+
+      project_rules.find_each do |project_rule|
+        project_rule.apply_report_approver_rules_to(self)
+      end
+    end
+
     def applicable_approval_rules_for_user(user_id)
       wrapped_approval_rules.select do |rule|
         rule.approvers.pluck(:id).include?(user_id)

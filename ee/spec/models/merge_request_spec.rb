@@ -1373,6 +1373,69 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#sync_project_approval_rules_for_policy_configuration' do
+    let_it_be(:merge_request) { create(:ee_merge_request, source_project: project) }
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:project_approval_rule_without_configuration) { create(:approval_project_rule, project: project) }
+
+    let_it_be(:project_approval_rule) do
+      create(:approval_project_rule, :scan_finding,
+        project: project,
+        security_orchestration_policy_configuration: policy_configuration,
+        scanners: %w[sast],
+        approvals_required: 2
+      )
+    end
+
+    subject do
+      merge_request.sync_project_approval_rules_for_policy_configuration(policy_configuration.id)
+    end
+
+    it 'creates approval rules for project' do
+      subject
+
+      expect(merge_request.approval_rules.first.approval_project_rule).to eq(project_approval_rule)
+    end
+
+    it 'does not create approval rules for other configuration' do
+      subject
+
+      expect(merge_request.approval_rules.map(&:approval_project_rule)).not_to include(project_approval_rule_without_configuration)
+    end
+
+    context 'when mr approval rules already exist' do
+      let_it_be(:mr_approval_rule) do
+        create(:report_approver_rule, :scan_finding,
+          merge_request: merge_request,
+          approvals_required: 1
+        )
+      end
+
+      let_it_be(:approval_rule_source) do
+        create(:approval_merge_request_rule_source,
+          approval_merge_request_rule: mr_approval_rule,
+          approval_project_rule: project_approval_rule
+        )
+      end
+
+      it 'updates approval rule' do
+        subject
+
+        expect(mr_approval_rule.reload.approvals_required).to eq(2)
+      end
+    end
+
+    context 'when merge request is already merged' do
+      let_it_be(:merge_request) { create(:ee_merge_request, source_project: project, state: :merged) }
+
+      it 'does not create or update approval rule' do
+        subject
+
+        expect(merge_request.approval_rules).to be_empty
+      end
+    end
+  end
+
   context 'scopes' do
     let_it_be(:merge_request) { create(:ee_merge_request) }
     let_it_be(:merge_request_with_head_pipeline) { create(:ee_merge_request, :with_metrics_reports) }
