@@ -15,6 +15,7 @@ module Llm
       super &&
         SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
         Feature.enabled?(:summarize_comments, resource.resource_parent) &&
+        resource.resource_parent.root_ancestor.licensed_feature_available?(:summarize_notes) &&
         !resource.notes.for_summarize_by_ai.empty?
     end
   end

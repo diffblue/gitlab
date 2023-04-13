@@ -52,7 +52,8 @@ module Mutations
       def authorized_resource?(object)
         return unless object
 
-        current_user.can?("read_#{object.to_ability_name}", object)
+        object.resource_parent.member?(current_user) &&
+          current_user.can?("read_#{object.to_ability_name}", object)
       end
 
       def extract_method_params!(attributes)

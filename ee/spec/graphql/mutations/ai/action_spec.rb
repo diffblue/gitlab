@@ -60,6 +60,17 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
         end
       end
 
+      context 'when user is allowed to read resource but is not a member' do
+        it 'raises error' do
+          allow(Ability)
+            .to receive(:allowed?)
+            .with(user, "read_#{resource.to_ability_name}", resource)
+            .and_return(true)
+
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        end
+      end
+
       context 'when the user can perform AI action' do
         before do
           resource.project.add_developer(user)
