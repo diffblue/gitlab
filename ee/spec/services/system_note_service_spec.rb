@@ -21,7 +21,7 @@ RSpec.describe SystemNoteService, feature_category: :team_planning do
         expect(service).to receive(:change_health_status_note)
       end
 
-      described_class.change_health_status_note(noteable, project, author)
+      described_class.change_health_status_note(noteable, project, author, nil)
     end
   end
 

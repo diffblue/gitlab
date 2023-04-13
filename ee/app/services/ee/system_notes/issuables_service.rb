@@ -12,9 +12,13 @@ module EE
       #   "changed health status to at risk"
       #
       # Returns the created Note object
-      def change_health_status_note
+      def change_health_status_note(previous_status)
         health_status = noteable.health_status&.humanize(capitalize: false)
-        body = health_status ? "changed health status to **#{health_status}**" : 'removed the health status'
+        body = if health_status
+                 "changed health status to **#{health_status}**"
+               else
+                 "removed health status **#{previous_status&.humanize(capitalize: false)}**"
+               end
 
         if noteable.is_a?(Issue)
           issue_activity_counter.track_issue_health_status_changed_action(author: author, project: project)

@@ -48,8 +48,8 @@ module EE
     #   "changed health status to 'at risk'"
     #
     # Returns the created Note object
-    def change_health_status_note(noteable, project, author)
-      issuables_service(noteable, project, author).change_health_status_note
+    def change_health_status_note(noteable, project, author, previous_status)
+      issuables_service(noteable, project, author).change_health_status_note(previous_status)
     end
 
     # Called when the start or end date of an Issuable is changed
