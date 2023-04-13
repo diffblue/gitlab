@@ -18,6 +18,12 @@ module EE
                            'This field can only be resolved for one deployment in any single request.' do
           extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
         end
+
+        field :approvals,
+              type: [::Types::Deployments::ApprovalType],
+              description: 'Current approvals of the deployment.' do
+          extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
+        end
       end
     end
   end
