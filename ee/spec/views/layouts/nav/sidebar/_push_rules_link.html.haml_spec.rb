@@ -2,7 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'layouts/nav/sidebar/_push_rules_link' do
+RSpec.describe 'layouts/nav/sidebar/_admin', feature_category: :navigation do
+  let(:user) { build_stubbed(:admin) }
+
+  before do
+    allow(user).to receive(:can_admin_all_resources?).and_return(true)
+    allow(view).to receive(:current_user).and_return(user)
+  end
+
   context 'license includes push rules feature' do
     it 'shows the link' do
       stub_licensed_features(push_rules: true)
