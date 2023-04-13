@@ -11,14 +11,14 @@ module Gitlab
           @options = options
         end
 
-        def execute
+        def execute(response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Completions.new)
           return unless user
 
           data = {
             id: SecureRandom.uuid,
             model_name: resource.class.name,
             # todo: do we need to sanitize/refine this response in any ways?
-            response_body: ai_response&.dig(:choices, 0, :text).to_s.strip,
+            response_body: response_modifier.execute(ai_response).to_s.strip,
             errors: [ai_response&.dig(:error)].compact!
           }
 

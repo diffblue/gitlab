@@ -5,7 +5,8 @@ module Llm
     # This list of methods will expand as we add more methods to support.
     # Could also be abstracted to another class specific to find the appropriate method service.
     METHODS = {
-      summarize_comments: Llm::GenerateSummaryService
+      summarize_comments: Llm::GenerateSummaryService,
+      explain_code: Llm::ExplainCodeService
     }.freeze
 
     def initialize(user, resource, method, options = {})
