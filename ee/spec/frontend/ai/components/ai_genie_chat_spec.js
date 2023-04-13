@@ -1,4 +1,4 @@
-import { GlButton, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -20,7 +20,8 @@ describe('AiGenieChat', () => {
   const findSceletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
   const findSelectedText = () => wrapper.findComponent(CodeBlockHighlighted);
   const findChatContent = () => wrapper.findByTestId('chat-content');
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findAlert = () => wrapper.findByTestId('chat-error');
+  const findWarning = () => wrapper.findByTestId('chat-legal-warning');
 
   beforeEach(() => {
     createComponent();
@@ -75,5 +76,10 @@ describe('AiGenieChat', () => {
     const snippetLanguage = 'vue';
     createComponent({ snippetLanguage });
     expect(findSelectedText().props('language')).toBe(snippetLanguage);
+  });
+
+  it('renders a legal warning when renderd', () => {
+    createComponent();
+    expect(findWarning().exists()).toBe(true);
   });
 });
