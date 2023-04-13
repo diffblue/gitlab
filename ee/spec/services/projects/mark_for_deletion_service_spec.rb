@@ -5,13 +5,16 @@ require 'spec_helper'
 RSpec.describe Projects::MarkForDeletionService do
   let(:user) { create(:user) }
   let(:marked_for_deletion_at) { nil }
-  let(:project) do
+  let!(:project) do
     create(:project,
       :repository,
       namespace: user.namespace,
       name: 'test project xyz',
       marked_for_deletion_at: marked_for_deletion_at)
   end
+
+  let(:original_project_path) { project.path }
+  let(:original_project_name) { project.name }
 
   context 'with delayed delete feature turned on' do
     before do
