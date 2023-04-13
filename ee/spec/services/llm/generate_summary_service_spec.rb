@@ -10,7 +10,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
     subject { described_class.new(user, resource, {}).execute }
 
     shared_examples 'issuable without notes' do
-      it { is_expected.to be_nil }
+      it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
     end
 
     shared_examples 'issuable with notes' do
@@ -19,7 +19,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
           user.id, resource.id, resource.class.name, :summarize_comments
         )
 
-        subject
+        expect(subject).to be_success
       end
     end
 

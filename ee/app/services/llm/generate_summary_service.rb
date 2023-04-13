@@ -8,6 +8,7 @@ module Llm
 
     def perform
       ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, :summarize_comments)
+      success
     end
 
     def valid?

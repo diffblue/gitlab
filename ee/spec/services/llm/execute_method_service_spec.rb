@@ -15,10 +15,24 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
 
       it 'calls the correct service' do
         expect_next_instance_of(Llm::GenerateSummaryService, user, resource, options) do |instance|
-          allow(instance).to receive(:execute)
+          allow(instance)
+            .to receive(:execute)
+            .and_return(instance_double(ServiceResponse, success?: true, error?: false, payload: nil))
         end
 
-        subject
+        expect(subject).to be_success
+      end
+
+      context 'when service returns an error' do
+        it 'returns an error' do
+          expect_next_instance_of(Llm::GenerateSummaryService, user, resource, options) do |instance|
+            allow(instance)
+              .to receive(:execute)
+              .and_return(instance_double(ServiceResponse, success?: false, error?: true, message: 'failed'))
+          end
+
+          expect(subject).to be_error.and have_attributes(message: eq('failed'))
+        end
       end
     end
 
