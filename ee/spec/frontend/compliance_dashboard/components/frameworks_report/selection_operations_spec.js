@@ -61,7 +61,7 @@ describe('SelectionOperations component', () => {
     wrapper = mount(SelectionOperations, {
       apolloProvider,
       propsData: {
-        groupPath: 'group-path',
+        rootAncestorPath: 'group-path',
         newGroupComplianceFrameworkPath: 'new-framework-path',
         ...props,
       },

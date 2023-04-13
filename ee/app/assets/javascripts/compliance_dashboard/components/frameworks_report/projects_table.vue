@@ -30,6 +30,10 @@ export default {
       type: String,
       required: true,
     },
+    rootAncestorPath: {
+      type: String,
+      required: true,
+    },
     newGroupComplianceFrameworkPath: {
       type: String,
       required: true,
@@ -109,7 +113,7 @@ export default {
   <div>
     <selection-operations
       :selection="selectedRows"
-      :group-path="groupPath"
+      :root-ancestor-path="rootAncestorPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
     />
     <gl-table
