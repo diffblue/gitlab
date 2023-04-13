@@ -11,6 +11,7 @@ module EE
     extend ::Gitlab::Cache::RequestCache
     include ::Gitlab::Utils::StrongMemoize
     include ::Admin::RepoSizeLimitHelper
+    include ::Ai::Model
     include FromUnion
 
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
@@ -1106,6 +1107,14 @@ module EE
 
     def should_check_index_integrity?
       use_elasticsearch? && repository_exists? && !empty_repo?
+    end
+
+    def send_to_ai?
+      public? && repository_access_level > ::ProjectFeature::PRIVATE
+    end
+
+    def resource_parent
+      self
     end
 
     private

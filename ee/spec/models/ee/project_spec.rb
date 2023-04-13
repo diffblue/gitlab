@@ -4234,4 +4234,23 @@ RSpec.describe Project, feature_category: :projects do
       expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::ENABLED)
     end
   end
+
+  describe '#send_to_ai?' do
+    where(:project, :send_to_ai) do
+      build_stubbed(:project, :private) | false
+      build_stubbed(:project, :public) | true
+    end
+
+    with_them do
+      it 'returns whether a project can be sent to ai' do
+        expect(project.send_to_ai?).to eq(send_to_ai)
+      end
+    end
+
+    it 'returns false for public projects with private repo' do
+      project = create(:project, :public, :repository_private)
+
+      expect(project.send_to_ai?).to eq(false)
+    end
+  end
 end
