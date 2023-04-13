@@ -74,6 +74,9 @@ export const SNOWPLOW_EPIC_ACTIVITY = {
   LABEL: 'redis_hll_counters.epics_usage.epics_usage_total_unique_counts_monthly',
 };
 
+export const ROADMAP_ACTIVITY_TRACK_ACTION_LABEL = 'roadmap_tab_click';
+export const ROADMAP_ACTIVITY_TRACK_LABEL = 'roadmap';
+
 export const ITEM_TABS = {
   TREE: 'tree',
   ROADMAP: 'roadmap',
