@@ -48,5 +48,11 @@ RSpec.describe Gitlab::Ci::Minutes::PipelineConsumption, feature_category: :cont
 
       expect(subject).to eq(7.94)
     end
+
+    it 'does not error for completed builds with no duration' do
+      build_3.update!(started_at: nil)
+
+      expect { subject }.not_to raise_error
+    end
   end
 end

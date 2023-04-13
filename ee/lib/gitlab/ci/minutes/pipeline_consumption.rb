@@ -13,13 +13,17 @@ module Gitlab
             ::Gitlab::Ci::Minutes::Consumption.new(
               pipeline: pipeline,
               runner_matcher: runner_matcher,
-              duration: builds.sum(&:duration)).amount
+              duration: total_duration(builds)).amount
           end.round(2)
         end
 
         private
 
         attr_reader :pipeline
+
+        def total_duration(builds)
+          builds.sum { |build| build.duration || 0 }
+        end
 
         # rubocop: disable CodeReuse/ActiveRecord
         def builds_by_runner_matcher
