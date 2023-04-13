@@ -13,7 +13,7 @@ import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
 import { NAMESPACE_TYPES } from '../../../vue_shared/components/runner_tags_dropdown/constants';
 
 export const isProjectNamespace = ({ namespace }) =>
-  Boolean(namespace.type === NAMESPACE_TYPES.PROJECT);
+  Boolean(namespace.type?.toLowerCase() === NAMESPACE_TYPES.PROJECT);
 
 export const namespacePath = ({ namespace }) => namespace?.fullPath || null;
 

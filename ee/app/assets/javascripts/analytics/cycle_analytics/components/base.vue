@@ -221,6 +221,7 @@ export default {
         v-if="!shouldRenderAggregationWarning"
         class="gl-mb-6"
         :namespace-path="namespacePath"
+        :group-path="groupPath"
         :selected-projects="selectedProjects"
         :start-date="createdAfter"
         :end-date="createdBefore"
