@@ -15,6 +15,29 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
   let_it_be(:export_path) { "#{Dir.tmpdir}/project_tree_saver_spec_ee" }
 
   let_it_be(:push_rule) { create(:push_rule, project: project, max_file_size: 10) }
+  let_it_be(:approval_rule) { create :approval_project_rule, project: project, approvals_required: 1 }
+  let_it_be(:protected_branch) { create(:protected_branch, name: 'main', project: project) }
+  let_it_be(:approval_rules_protected_branch) do
+    joint_instance = create(
+      :approval_project_rules_protected_branch,
+      approval_project_rule: approval_rule,
+      protected_branch: protected_branch
+    )
+
+    approval_rule.reload
+    joint_instance
+  end
+
+  let_it_be(:approval_rules_user) do
+    joint_instance = create(
+      :approval_project_rules_user,
+      approval_project_rule: approval_rule,
+      user: user
+    )
+
+    approval_rule.reload
+    joint_instance
+  end
 
   shared_examples 'EE saves project tree successfully' do
     include ::ImportExport::CommonUtil
@@ -80,6 +103,35 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
         expect(project_tree_saver.save).to be true
         expect(push_rule_json['max_file_size']).to eq(10)
         expect(push_rule_json['force_push_regex']).to eq('feature\/.*')
+      end
+    end
+
+    context 'approval_rules' do
+      let(:approval_rules_json) do
+        json = get_json(full_path, exportable_path, :approval_rules)
+        json.is_a?(Array) ? json.first : json
+      end
+
+      it 'has approval rules' do
+        expect(project_tree_saver.save).to be true
+        expect(approval_rules_json['approvals_required']).to eq(1)
+        expect(approval_rules_json['rule_type']).to eq('regular')
+      end
+
+      it 'has approval rules have protected branches' do
+        expect(project_tree_saver.save).to be true
+        expect(approval_rules_json['approval_project_rules_protected_branches'].count).to eq(1)
+
+        joint_instance = approval_rules_json['approval_project_rules_protected_branches'].first
+        expect(joint_instance['branch_name']).to eq(protected_branch.name)
+      end
+
+      it 'has approval rules have protected users' do
+        expect(project_tree_saver.save).to be true
+        expect(approval_rules_json['approval_project_rules_users'].count).to eq(1)
+
+        joint_instance = approval_rules_json['approval_project_rules_users'].first
+        expect(joint_instance['user_id']).to eq(user.id)
       end
     end
   end

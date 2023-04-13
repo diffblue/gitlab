@@ -77,4 +77,14 @@ FactoryBot.define do
       applies_to_all_protected_branches { true }
     end
   end
+
+  factory :approval_project_rules_protected_branch do
+    approval_project_rule
+    protected_branch
+  end
+
+  factory :approval_project_rules_user do
+    approval_project_rule
+    user
+  end
 end

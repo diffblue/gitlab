@@ -150,6 +150,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     protected_branch_merge_access_level
     protected_branch_push_access_level
     protected_branch_unprotect_access_level
+    approval_project_rules_protected_branch
     protected_tag
     protected_tag_create_access_level
     release
