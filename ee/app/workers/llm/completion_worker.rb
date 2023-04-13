@@ -19,6 +19,8 @@ module Llm
 
       resource = find_resource(resource_id, resource_class)
       return unless resource
+      return unless user.can?("read_#{resource.to_ability_name}", resource)
+      return unless resource.send_to_ai?
 
       ai_completion = ::Gitlab::Llm::OpenAi::Completions::Factory.completion(ai_action_name.to_sym)
       ai_completion.execute(user, resource, options) if ai_completion
