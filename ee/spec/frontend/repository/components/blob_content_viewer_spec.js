@@ -124,14 +124,16 @@ describe('Blob content viewer component', () => {
     });
 
     it.each`
-      prefix        | ffEnabled | licenseEnabled | shouldRender
-      ${'does not'} | ${false}  | ${false}       | ${false}
-      ${'does not'} | ${true}   | ${false}       | ${false}
-      ${'does not'} | ${false}  | ${true}        | ${false}
-      ${'does'}     | ${true}   | ${true}        | ${true}
+      prefix        | ffEnabled | licenseEnabled | loggedIn | shouldRender
+      ${'does not'} | ${false}  | ${false}       | ${true}  | ${false}
+      ${'does not'} | ${true}   | ${false}       | ${true}  | ${false}
+      ${'does not'} | ${false}  | ${true}        | ${true}  | ${false}
+      ${'does not'} | ${true}   | ${true}        | ${false} | ${false}
+      ${'does'}     | ${true}   | ${true}        | ${true}  | ${true}
     `(
       '$prefix render the AI Genie component when licensed feature is $licenseEnabled and feature flag is $ffEnabled',
-      async ({ ffEnabled, licenseEnabled, shouldRender }) => {
+      async ({ ffEnabled, licenseEnabled, shouldRender, loggedIn }) => {
+        isLoggedIn.mockReturnValue(loggedIn);
         await prepGonAndLoad(ffEnabled, licenseEnabled);
         expect(findAiGenie().exists()).toBe(shouldRender);
       },
