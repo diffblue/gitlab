@@ -1,0 +1,9 @@
+mutation securityFindingCreateIssue($findingUuid: String!, $projectId: ProjectID!) {
+  securityFindingCreateIssue(input: { uuid: $findingUuid, project: $projectId }) {
+    errors
+    issue {
+      id
+      webUrl
+    }
+  }
+}

@@ -146,6 +146,12 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           webUrl
         }
         stateComment
+        vulnerability {
+          id
+          userPermissions {
+            createVulnerabilityFeedback
+          }
+        }
       }
     }
   }

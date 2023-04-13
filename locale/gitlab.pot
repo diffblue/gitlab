@@ -39929,6 +39929,9 @@ msgstr ""
 msgid "SecurityReports|Configure security testing"
 msgstr ""
 
+msgid "SecurityReports|Create Issue"
+msgstr ""
+
 msgid "SecurityReports|Create Jira issue"
 msgstr ""
 
@@ -39996,6 +39999,9 @@ msgid "SecurityReports|Hide dismissed"
 msgstr ""
 
 msgid "SecurityReports|Image"
+msgstr ""
+
+msgid "SecurityReports|Investigate this vulnerability by creating an issue"
 msgstr ""
 
 msgid "SecurityReports|Issue"
@@ -40149,6 +40155,9 @@ msgid "SecurityReports|There was an error adding the comment."
 msgstr ""
 
 msgid "SecurityReports|There was an error creating the issue."
+msgstr ""
+
+msgid "SecurityReports|There was an error creating the issue. Please try again."
 msgstr ""
 
 msgid "SecurityReports|There was an error creating the merge request."
