@@ -191,6 +191,8 @@ module EE
                 presence: true,
                 if: :product_analytics_enabled
 
+      validates :package_metadata_purl_types, inclusion: { in: ::Enums::PackageMetadata.purl_types.values }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
@@ -503,6 +505,10 @@ module EE
 
     def git_rate_limit_users_alertlist
       self[:git_rate_limit_users_alertlist].presence || ::User.admins.active.pluck_primary_key
+    end
+
+    def package_metadata_purl_types_names
+      ::Enums::PackageMetadata.purl_types_numerical.values_at(*package_metadata_purl_types)
     end
 
     def unique_project_download_limit_enabled?

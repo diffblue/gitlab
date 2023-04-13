@@ -125,4 +125,33 @@ RSpec.describe EE::ApplicationSettingsHelper do
                           auto_ban_user_on_excessive_projects_download: 'true' })
     end
   end
+
+  describe '#sync_purl_types_checkboxes', feature_category: :software_composition_analysis do
+    let_it_be(:application_setting) { build(:application_setting) }
+
+    before do
+      application_setting.package_metadata_purl_types = [1, 5]
+
+      helper.instance_variable_set(:@application_setting, application_setting)
+    end
+
+    it 'returns correctly checked purl type checkboxes' do
+      helper.gitlab_ui_form_for(application_setting, url: '/admin/application_settings/security_and_compliance') do |form|
+        result = helper.sync_purl_types_checkboxes(form)
+
+        expect(result[0]).to have_checked_field('composer', with: 1)
+        expect(result[1]).to have_unchecked_field('conan', with: 2)
+        expect(result[2]).to have_unchecked_field('gem', with: 3)
+        expect(result[3]).to have_unchecked_field('golang', with: 4)
+        expect(result[4]).to have_checked_field('maven', with: 5)
+        expect(result[5]).to have_unchecked_field('npm', with: 6)
+        expect(result[6]).to have_unchecked_field('nuget', with: 7)
+        expect(result[7]).to have_unchecked_field('pypi', with: 8)
+        expect(result[8]).to have_unchecked_field('apk', with: 9)
+        expect(result[9]).to have_unchecked_field('rpm', with: 10)
+        expect(result[10]).to have_unchecked_field('deb', with: 11)
+        expect(result[11]).to have_unchecked_field('cbl_mariner', with: 12)
+      end
+    end
+  end
 end

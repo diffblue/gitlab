@@ -21,9 +21,10 @@ module PackageMetadata
 
     }.with_indifferent_access.freeze
 
-    def self.all
+    def self.all_by_enabled_purl_type
       storage_type = get_storage_type
-      ::Enums::PackageMetadata.purl_types.map do |purl_type, _|
+
+      permitted_purl_types.map do |purl_type, _|
         new(storage_type, BUCKET_NAME, VERSION_FORMAT, purl_type)
       end
     end
@@ -38,6 +39,10 @@ module PackageMetadata
 
     def self.registry_id(purl_type)
       PURL_TYPE_TO_REGISTRY_ID[purl_type].freeze
+    end
+
+    def self.permitted_purl_types
+      ::Gitlab::CurrentSettings.current_application_settings.package_metadata_purl_types_names
     end
 
     attr_accessor :storage_type, :base_uri, :version_format, :purl_type

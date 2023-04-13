@@ -7,7 +7,7 @@ module PackageMetadata
     THROTTLE_RATE = 0.75.seconds
 
     def self.execute(signal)
-      SyncConfiguration.all.each do |config|
+      SyncConfiguration.all_by_enabled_purl_type.each do |config|
         if signal.stop?
           break Gitlab::AppJsonLogger.debug(class: name,
             message: "Stop signal received before starting #{config.purl_type} sync")

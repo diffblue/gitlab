@@ -219,5 +219,20 @@ module EE
         auto_ban_user_on_excessive_projects_download: auto_ban_users
       }
     end
+
+    def sync_purl_types_checkboxes(form)
+      ::Enums::PackageMetadata.purl_types.keys.map do |name|
+        checked = @application_setting.package_metadata_purl_types_names.include?(name)
+        numeric = ::Enums::PackageMetadata.purl_types[name]
+
+        form.gitlab_ui_checkbox_component(
+          :package_metadata_purl_types,
+          name,
+          checkbox_options: { checked: checked, multiple: true, autocomplete: 'off' },
+          checked_value: numeric,
+          unchecked_value: nil
+        )
+      end
+    end
   end
 end

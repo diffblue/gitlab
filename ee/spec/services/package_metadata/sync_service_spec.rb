@@ -114,6 +114,10 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     subject(:execute) { described_class.execute(stop_signal) }
 
+    before do
+      stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
+    end
+
     context 'when stop_signal.stop? is false' do
       let(:should_stop) { false }
 
@@ -129,6 +133,19 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     context 'when stop_signal.stop? is true' do
       let(:should_stop) { true }
+
+      it 'does not proceed' do
+        expect(described_class).not_to receive(:new)
+        execute
+      end
+    end
+
+    context 'when none purl types enabled to sync' do
+      let(:should_stop) { false }
+
+      before do
+        stub_application_setting(package_metadata_purl_types: [])
+      end
 
       it 'does not proceed' do
         expect(described_class).not_to receive(:new)
