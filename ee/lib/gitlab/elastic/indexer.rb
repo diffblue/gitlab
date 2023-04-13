@@ -101,13 +101,13 @@ module Gitlab
         command << "--search-curation" if Feature.enabled?(:search_index_curation)
         command << "--from-sha=#{base_sha}"
         command << "--to-sha=#{to_sha}"
+        command << "--full-path=#{project.full_path}"
+        command << "--visibility-level=#{project.visibility_level}"
 
         command += if index_wiki?
-                     %W[--blob-type=wiki_blob --skip-commits --full-path=#{project.full_path}]
+                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{project.wiki_access_level}]
                    else
                      %W[
-                       --full-path=#{project.full_path}
-                       --visibility-level=#{project.visibility_level}
                        --repository-access-level=#{project.repository_access_level}
                      ].tap do |c|
                        migration_name = :add_hashed_root_namespace_id_to_commits
