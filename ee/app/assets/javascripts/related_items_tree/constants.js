@@ -92,3 +92,7 @@ export const i18nConfidentialParent = {
 export const treeTitle = {
   [ParentType.Epic]: __('Issues'),
 };
+
+export const EPIC_CREATE_ERROR_MESSAGE = s__(
+  'Epics|Something went wrong while creating child epics.',
+);

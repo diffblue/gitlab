@@ -4,6 +4,7 @@ import {
   ChildType,
   SNOWPLOW_EPIC_ACTIVITY,
   trackingAddedIssue,
+  EPIC_CREATE_ERROR_MESSAGE,
 } from 'ee/related_items_tree/constants';
 import * as actions from 'ee/related_items_tree/store/actions';
 import * as types from 'ee/related_items_tree/store/mutation_types';
@@ -1160,8 +1161,8 @@ describe('RelatedItemTree', () => {
           );
         });
 
-        it('should show alert error with message "Something went wrong while creating child epics."', () => {
-          const message = 'Something went wrong while creating child epics.';
+        it('should show alert error with message from API', () => {
+          const message = 'Error message from API';
           actions.receiveCreateItemFailure(
             {
               commit: () => {},
@@ -1174,6 +1175,22 @@ describe('RelatedItemTree', () => {
 
           expect(createAlert).toHaveBeenCalledWith({
             message,
+          });
+        });
+
+        it('should show alert error without message from API', () => {
+          actions.receiveCreateItemFailure(
+            {
+              commit: () => {},
+              state: {},
+            },
+            {
+              message: undefined,
+            },
+          );
+
+          expect(createAlert).toHaveBeenCalledWith({
+            message: EPIC_CREATE_ERROR_MESSAGE,
           });
         });
       });
@@ -1235,6 +1252,9 @@ describe('RelatedItemTree', () => {
               },
               {
                 type: 'receiveCreateItemFailure',
+                payload: {
+                  message: undefined,
+                },
               },
             ],
           );
