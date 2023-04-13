@@ -22,6 +22,7 @@ module EE
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
+        feature_category :software_composition_analysis, [:security_and_compliance]
         urgency :low, [:advanced_search, :seat_link_payload]
 
         def elasticsearch_reindexing_task
@@ -65,7 +66,7 @@ module EE
         end
       end
 
-      EE_VALID_SETTING_PANELS = %w(advanced_search templates).freeze
+      EE_VALID_SETTING_PANELS = %w(advanced_search templates security_and_compliance).freeze
 
       EE_VALID_SETTING_PANELS.each do |action|
         define_method(action) { perform_update if submitted? }

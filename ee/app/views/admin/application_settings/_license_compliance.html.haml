@@ -1,0 +1,14 @@
+= gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-license-compliance-settings'), html: { class: 'fieldset-form', id: 'license-compliance-settings' } do |f|
+  = form_errors(@application_setting)
+
+  %fieldset
+    .form-group
+      = f.label :package_metadata_purl_types, s_('AdminSettings|Package registry metadata to sync'), class: 'label-bold gl-mb-0'
+      %span.form-text.gl-mt-0.gl-mb-3#package_metadata_purl_types-help
+        = _('Package registry types for which metadata is stored, required for License Compliance for CycloneDX files')
+        = link_to sprite_icon('question-o'), help_page_path("user/compliance/license_scanning_of_cyclonedx_files/index")
+      = hidden_field_tag 'application_setting[package_metadata_purl_types][]'
+      - sync_purl_types_checkboxes(f).each do |checkbox|
+        = checkbox
+  = f.submit _('Save changes'), pajamas_button: true
+

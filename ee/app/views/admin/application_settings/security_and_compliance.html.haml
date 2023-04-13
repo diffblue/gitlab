@@ -1,0 +1,14 @@
+- breadcrumb_title _("Security and Compliance")
+- page_title _("Security and Compliance")
+- add_page_specific_style 'page_bundles/settings'
+
+%section.settings.as-license-compliance.no-animate#js-license-compliance-settings{ class: ('expanded' if expanded_by_default?), data: { testid: 'admin-license-compliance-settings' } }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = _('License Compliance')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded_by_default? ? _('Collapse') : _('Expand')
+    %p
+      = _('Settings for the License Compliance feature')
+  .settings-content
+    = render 'license_compliance'

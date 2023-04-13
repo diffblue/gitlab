@@ -453,6 +453,13 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value(nil).for(:product_analytics_data_collector_host) }
       end
     end
+
+    describe 'package_metadata_purl_types', feature_category: :software_composition_analysis do
+      it { is_expected.to allow_value(1).for(:package_metadata_purl_types) }
+      it { is_expected.to allow_value(12).for(:package_metadata_purl_types) }
+      it { is_expected.not_to allow_value(13).for(:package_metadata_purl_types) }
+      it { is_expected.not_to allow_value(0).for(:package_metadata_purl_types) }
+    end
   end
 
   describe 'search curation settings after .create_from_defaults', feature_category: :global_search do
