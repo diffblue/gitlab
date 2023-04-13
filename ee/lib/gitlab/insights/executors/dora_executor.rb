@@ -55,6 +55,8 @@ module Gitlab
             value ? value.fdiv(1.day).round(1) : nil
           when 'change_failure_rate'
             value ? (value * 100).round(2) : 0
+          when 'deployment_frequency'
+            value ? value.round(2) : 0
           else
             value
           end

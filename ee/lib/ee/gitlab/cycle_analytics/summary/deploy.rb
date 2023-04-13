@@ -27,7 +27,7 @@ module EE
 
             return 0 unless result[:status] == :success
 
-            result[:data].first[metric_key] || 0
+            result[:data].first['deployment_count'] || 0
           end
 
           def dora_aggregate_metrics_params
@@ -36,12 +36,8 @@ module EE
               end_date: (options[:to] || Date.today).to_date,
               interval: 'all',
               environment_tiers: %w[production],
-              metrics: [metric_key]
+              metrics: ['deployment_frequency']
             }
-          end
-
-          def metric_key
-            'deployment_frequency'
           end
         end
       end

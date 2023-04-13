@@ -6,6 +6,9 @@ module Dora
 
     METRIC_NAME = 'deployment_frequency'
 
+    # The SQL query returns deployments count which will be post-processed
+    # in the AggregateMetricsService class. Reasoning: The frequency calculation
+    # must take into account the given date range (count / number of days).
     def self.calculation_query
       'SUM(deployment_frequency)'
     end

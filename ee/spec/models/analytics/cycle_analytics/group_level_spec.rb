@@ -39,7 +39,17 @@ RSpec.describe Analytics::CycleAnalytics::GroupLevel, feature_category: :value_s
     end
 
     it 'returns medians for each stage for a specific group', :sidekiq_inline do
-      expect(subject.summary.map { |summary| summary[:value] }).to contain_exactly('0.1', '1', '1')
+      expect(subject.summary.map { |summary| summary[:value] }).to eq(['1', '1', '0.1'])
+    end
+
+    context 'when the fix_dora_deployment_frequency_calculation is off' do
+      before do
+        stub_feature_flags(fix_dora_deployment_frequency_calculation: false)
+      end
+
+      it 'returns medians for each stage for a specific group', :sidekiq_inline do
+        expect(subject.summary.map { |summary| summary[:value] }).to eq(['1', '1', '0.1'])
+      end
     end
   end
 
