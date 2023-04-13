@@ -104,6 +104,27 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
   end
 
+  describe '.for_policy_configuration scope' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:any_approver_rule) { create(:approval_project_rule, rule_type: :any_approver) }
+    let_it_be(:approval_rule) do
+      create(:approval_project_rule, :scan_finding, :requires_approval,
+        project: project,
+        orchestration_policy_idx: 1,
+        scanners: [:sast],
+        severity_levels: [:high],
+        vulnerability_states: [:confirmed],
+        vulnerabilities_allowed: 2,
+        security_orchestration_policy_configuration: policy_configuration
+      )
+    end
+
+    it 'returns rules matching configuration id' do
+      expect(described_class.for_policy_configuration(policy_configuration.id)).to match_array([approval_rule])
+    end
+  end
+
   describe '.code_owner scope' do
     it 'returns nothing' do
       create_list(:approval_project_rule, 2)

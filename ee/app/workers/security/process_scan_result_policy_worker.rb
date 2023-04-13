@@ -28,14 +28,10 @@ module Security
             .new(project: project, policy_configuration: configuration, policy: policy, policy_index: policy_index)
             .execute
         end
-
-        Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
-          .new(project: project)
-          .execute
       end
 
-      Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService
-        .new(project: project)
+      Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
+        .new(project: project, policy_configuration: configuration)
         .execute
     end
   end

@@ -41,7 +41,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
   describe '#perform' do
     subject(:worker) { described_class.new }
 
-    it 'calls three services to general merge request approval rules from the policy YAML' do
+    it 'calls two services to general merge request approval rules from the policy YAML' do
       active_policies[:scan_result_policy].each_with_index do |policy, policy_index|
         expect_next_instance_of(
           Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
@@ -54,13 +54,8 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
         end
         expect_next_instance_of(
           Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService,
-          project: configuration.project
-        ) do |service|
-          expect(service).to receive(:execute)
-        end
-        expect_next_instance_of(
-          Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService,
-          project: configuration.project
+          project: configuration.project,
+          policy_configuration: configuration
         ) do |service|
           expect(service).to receive(:execute)
         end
@@ -120,8 +115,6 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
       it 'returns prior to triggering any service' do
         expect(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService).not_to receive(:execute)
         expect(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService).not_to receive(:execute)
-        expect(Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService)
-          .not_to receive(:execute)
 
         worker.perform('invalid_id', configuration.id)
       end
@@ -131,8 +124,6 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
       it 'returns prior to triggering any service' do
         expect(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService).not_to receive(:execute)
         expect(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService).not_to receive(:execute)
-        expect(Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService)
-          .not_to receive(:execute)
 
         worker.perform(configuration.project_id, 'invalid_id')
       end
@@ -148,8 +139,6 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
       it 'returns prior to triggering any service' do
         expect(Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService).not_to receive(:execute)
         expect(Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService).not_to receive(:execute)
-        expect(Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService)
-          .not_to receive(:execute)
 
         worker.perform(configuration.project_id, 'invalid_id')
       end
