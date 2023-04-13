@@ -2,7 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'layouts/nav/sidebar/_admin' do
+RSpec.describe 'layouts/nav/sidebar/_admin', feature_category: :navigation do
+  let(:user) { build_stubbed(:admin) }
+
+  before do
+    allow(user).to receive(:can_admin_all_resources?).and_return(true)
+    allow(view).to receive(:current_user).and_return(user)
+  end
+
   context 'on templates settings' do
     before do
       stub_licensed_features(custom_file_templates: custom_file_templates)

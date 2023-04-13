@@ -10,6 +10,7 @@ RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replicatio
   let_it_be(:primary_node) { create(:geo_node, :primary) }
 
   before do
+    allow(admin).to receive(:can_admin_all_resources?).and_return(true)
     stub_licensed_features(geo: true)
     stub_current_geo_node(primary_node)
     sign_in(admin)
