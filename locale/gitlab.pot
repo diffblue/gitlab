@@ -32188,9 +32188,6 @@ msgstr ""
 msgid "Pipelines|2. Configure deployment pipeline"
 msgstr ""
 
-msgid "Pipelines|A GitLab Runner is an application that works with GitLab CI/CD to run jobs in a pipeline. Install GitLab Runner and register your own runners to get started with CI/CD."
-msgstr ""
-
 msgid "Pipelines|API"
 msgstr ""
 
@@ -32266,9 +32263,6 @@ msgstr ""
 msgid "Pipelines|GitLab Runner is an application that works with GitLab CI/CD to run jobs in a pipeline."
 msgstr ""
 
-msgid "Pipelines|GitLab Runner is an application that works with GitLab CI/CD to run jobs in a pipeline. There are active runners available to run your jobs right now. If you prefer, you can %{settingsLinkStart}configure your runners%{settingsLinkEnd} or %{docsLinkStart}learn more%{docsLinkEnd} about runners."
-msgstr ""
-
 msgid "Pipelines|Go to the pipeline editor"
 msgstr ""
 
@@ -32276,9 +32270,6 @@ msgid "Pipelines|If you are unsure, ask a project maintainer to review it for yo
 msgstr ""
 
 msgid "Pipelines|If you are unsure, please ask a project maintainer to review it for you."
-msgstr ""
-
-msgid "Pipelines|Install GitLab Runner"
 msgstr ""
 
 msgid "Pipelines|It is recommended the code is reviewed thoroughly before running this pipeline with the parent project's CI resource."
@@ -32311,9 +32302,6 @@ msgstr ""
 msgid "Pipelines|Need more information to set up your runner? %{linkStart}Check out our documentation%{linkEnd}."
 msgstr ""
 
-msgid "Pipelines|No runners detected"
-msgstr ""
-
 msgid "Pipelines|No triggers have been created yet. Add one using the form above."
 msgstr ""
 
@@ -32339,9 +32327,6 @@ msgid "Pipelines|Rebasing creates a pipeline that runs code originating from a f
 msgstr ""
 
 msgid "Pipelines|Revoke trigger"
-msgstr ""
-
-msgid "Pipelines|Runners are available to run your jobs now"
 msgstr ""
 
 msgid "Pipelines|Set up a runner"
