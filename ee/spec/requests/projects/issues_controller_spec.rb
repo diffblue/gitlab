@@ -69,6 +69,52 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
 
       expect(response.body).to have_pushed_frontend_feature_flags(escalationPolicies: true)
     end
+
+    context 'for summarize notes feature' do
+      context 'when user is a member' do
+        before do
+          project.add_guest(user)
+        end
+
+        context 'when license is set' do
+          before do
+            stub_licensed_features(summarize_notes: true)
+          end
+
+          it 'exposes the required feature flags' do
+            get_show
+
+            expect(response.body).to have_pushed_frontend_feature_flags(summarizeComments: true)
+            expect(response.body).to have_pushed_frontend_feature_flags(summarizeNotes: true)
+            expect(response.body).to have_pushed_frontend_feature_flags(openaiExperimentation: true)
+          end
+        end
+
+        context 'when license is not set' do
+          it 'does not expose the feature flags' do
+            get_show
+
+            expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
+            expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeNotes: true)
+            expect(response.body).not_to have_pushed_frontend_feature_flags(openaiExperimentation: true)
+          end
+        end
+      end
+
+      context 'when user is not a member' do
+        before do
+          stub_licensed_features(summarize_notes: true)
+        end
+
+        it 'does not expose the feature flags' do
+          get_show
+
+          expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
+          expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeNotes: true)
+          expect(response.body).not_to have_pushed_frontend_feature_flags(openaiExperimentation: true)
+        end
+      end
+    end
   end
 
   describe 'GET #index' do

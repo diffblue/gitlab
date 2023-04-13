@@ -17,7 +17,7 @@ module Llm
     end
 
     def valid?
-      ai_integration_enabled? && resource.send_to_ai?
+      resource.resource_parent.member?(user) && ai_integration_enabled? && resource.send_to_ai?
     end
 
     private
