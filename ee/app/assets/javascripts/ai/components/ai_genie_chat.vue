@@ -82,6 +82,17 @@ export default {
         @click="closeCodeExplanation"
       />
     </header>
+    <gl-alert
+      :dismissible="false"
+      variant="warning"
+      class="gl-mb-5 gl-border-t"
+      role="alert"
+      data-testid="chat-legal-warning"
+      primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
+      :primary-button-text="__('Read more')"
+    >
+      <span v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></span>
+    </gl-alert>
     <code-block-highlighted
       :language="snippetLanguage"
       :code="selectedText"
@@ -90,7 +101,13 @@ export default {
     <section class="gl-bg-gray-10 gl-p-5">
       <gl-skeleton-loader v-if="isLoading" />
       <div v-else>
-        <gl-alert v-if="error" :dismissible="false" variant="danger" class="gl-mb-0" role="alert"
+        <gl-alert
+          v-if="error"
+          :dismissible="false"
+          variant="danger"
+          class="gl-mb-0"
+          role="alert"
+          data-testid="chat-error"
           ><span v-safe-html="error"></span
         ></gl-alert>
         <div v-else v-safe-html="content" class="md" data-testid="chat-content"></div>
