@@ -12,5 +12,6 @@ export const i18n = {
     { gitlabOrg: '<code>/gitlab-org</code>', gitlabCom: '<code>/gitlab-com</code>' },
     false,
   ),
+  REQUEST_ERROR: s__('AI|Something went wrong. Please try again later'),
 };
 export const AI_GENIE_DEBOUNCE = 300;

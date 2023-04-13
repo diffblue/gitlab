@@ -2,9 +2,11 @@
 import { debounce } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { explainCode } from 'ee/ai/utils';
+import { generatePrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { renderMarkdown } from '~/notes/utils';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import explainCodeMutation from '../graphql/explain_code.mutation.graphql';
 import { i18n, AI_GENIE_DEBOUNCE } from '../constants';
 
 const linesWithDigitsOnly = /^\d+$\n/gm;
@@ -20,6 +22,7 @@ export default {
     SafeHtml,
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['resourceId', 'userId'],
   props: {
     containerId: {
       type: String,
@@ -29,6 +32,33 @@ export default {
       type: String,
       required: false,
       default: '',
+    },
+  },
+  apollo: {
+    // https://apollo.vuejs.org/guide/apollo/subscriptions.html#simple-subscription
+    $subscribe: {
+      aiCompletionResponse: {
+        query: aiResponseSubscription,
+        variables() {
+          return {
+            resourceId: this.resourceId,
+            userId: this.userId,
+          };
+        },
+        result({ data }) {
+          const explanation = data.aiCompletionResponse?.responseBody;
+          if (explanation) {
+            this.codeExplanationLoading = false;
+            this.codeExplanation = renderMarkdown(explanation);
+          }
+        },
+        error(err) {
+          this.codeExplanationError = err;
+        },
+        skip() {
+          return !this.codeExplanationLoading;
+        },
+      },
     },
   },
   data() {
@@ -96,17 +126,18 @@ export default {
     async requestCodeExplanation() {
       this.codeExplanationLoading = true;
       this.selectedText = window.getSelection().toString().replace(linesWithDigitsOnly, '').trim();
-      try {
-        const aiResponse = await explainCode(this.selectedText, this.filePath);
-        const {
-          message: { content: explanation },
-        } = aiResponse;
-        this.codeExplanation = renderMarkdown(explanation);
-      } catch (err) {
-        this.codeExplanationError = err.message;
-      } finally {
-        this.codeExplanationLoading = false;
-      }
+      this.$apollo
+        .mutate({
+          mutation: explainCodeMutation,
+          variables: {
+            messages: generatePrompt(this.selectedText, this.filePath),
+            resourceId: this.resourceId,
+          },
+        })
+        .catch(() => {
+          this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
+          this.codeExplanationLoading = false;
+        });
     },
   },
 };
