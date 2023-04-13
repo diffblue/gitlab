@@ -30,7 +30,7 @@ module Tooling
       end
 
       add_frontend_fixture_files!
-      write_array_to_file(changed_files_pathname, file_changes, overwrite: true)
+      write_array_to_file(changed_files_pathname, file_changes, append: false)
     end
 
     def only_js_files_changed
