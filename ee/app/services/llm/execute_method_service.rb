@@ -17,19 +17,15 @@ module Llm
     def execute
       return error('Unknown method') unless METHODS.key?(method)
 
-      success(METHODS[method].new(user, resource, options).execute)
+      result = METHODS[method].new(user, resource, options).execute
+
+      return success(result.payload) if result.success?
+
+      error(result.message)
     end
 
     private
 
     attr_reader :method
-
-    def success(data)
-      ServiceResponse.success(payload: data)
-    end
-
-    def error(message)
-      ServiceResponse.error(message: message)
-    end
   end
 end
