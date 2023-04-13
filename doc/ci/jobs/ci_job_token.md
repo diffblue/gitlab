@@ -76,6 +76,10 @@ be accessed unless projects are explicitly authorized.
 There is a proposal to add more strategic control of the access permissions,
 see [epic 3559](https://gitlab.com/groups/gitlab-org/-/epics/3559).
 
+NOTE:
+Since the `CI_REGISTRY_TOKEN` uses the `CI_JOB_TOKEN` to authenticate, the access configuration
+will also apply to `CI_REGISTRY_TOKEN`.
+
 ### Allow access to your project with a job token
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/346298/) in GitLab 15.9. [Deployed behind the `:inbound_ci_scoped_job_token` feature flag](../../user/feature_flags.md), enabled by default.
