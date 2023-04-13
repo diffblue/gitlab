@@ -493,6 +493,80 @@ module AwesomeCo
           end
         end
       end
+
+      describe Parsers::Ruby do
+        let(:seed_file_name) { 'awesome.rb' }
+        let(:seed_file_content) do
+          <<~RUBY
+            class DataSeeder
+              def seed
+                create(:group_label, name: 'Test Group', group: @group, color: '#FF0000')
+              end
+            end
+          RUBY
+        end
+
+        it 'parses and creates a group label' do
+          expect { parser.parse }.to change { GroupLabel.count }.by(1)
+        end
+
+        context 'with instance variables' do
+          let(:seed_file_content) do
+            <<~RUBY
+              class DataSeeder
+                def seed
+                  puts @seed_file.path
+                  puts @owner.name
+                  puts @name == nil
+                  puts @group.name
+                end
+              end
+            RUBY
+          end
+
+          it 'can refer to instance variables' do
+            expect { parser.parse }.to output(/#{seed_file.path}/).to_stdout
+            expect { parser.parse }.to output(/#{owner.name}/).to_stdout
+            expect { parser.parse }.to output(/false/).to_stdout
+            expect { parser.parse }.to output(/#{File.basename(seed_file)}/).to_stdout
+          end
+        end
+
+        context 'when the ruby is invalid' do
+          context 'with a syntax error' do
+            let(:seed_file_content) do
+              <<~RUBY
+                class DataSeeder
+                  def seed
+                    create(:group, name: 'Test Group', 'my-group-path')
+                  end
+                end
+              RUBY
+            end
+
+            it 'throws an error' do
+              expect { parser.parse }.to raise_error(SyntaxError)
+            end
+          end
+
+          context 'with a database uniqueness constraint' do
+            let(:seed_file_content) do
+              <<~RUBY
+                class DataSeeder
+                  def seed
+                    create(:group, id: 99, name: 'Test Group', path: 'my-group-path')
+                    create(:group, id: 99, name: 'Test Group', path: 'my-group-path')
+                  end
+                end
+              RUBY
+            end
+
+            it 'throws an error' do
+              expect { parser.parse }.to raise_error(ActiveRecord::RecordNotUnique)
+            end
+          end
+        end
+      end
     end
   end
 end
