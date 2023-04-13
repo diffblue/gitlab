@@ -1,4 +1,4 @@
-import { GlSprintf, GlButton } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import mockGetJobArtifactsResponse from 'test_fixtures/graphql/ci/artifacts/graphql/queries/get_job_artifacts.query.graphql.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ArtifactsBulkDelete from '~/ci/artifacts/components/artifacts_bulk_delete.vue';
@@ -20,12 +20,12 @@ describe('ArtifactsBulkDelete component', () => {
       propsData: {
         selectedArtifacts,
       },
-      stubs: { GlSprintf, GlButton },
+      stubs: { GlSprintf },
     });
   };
 
   describe('selected artifacts box', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       createComponent();
     });
 
@@ -34,13 +34,13 @@ describe('ArtifactsBulkDelete component', () => {
     });
 
     it('emits showBulkDeleteModal event when the delete button is clicked', () => {
-      findDeleteButton().trigger('click');
+      findDeleteButton().vm.$emit('click');
 
       expect(wrapper.emitted('showBulkDeleteModal')).toBeDefined();
     });
 
     it('emits clearSelectedArtifacts event when the clear button is clicked', () => {
-      findClearButton().trigger('click');
+      findClearButton().vm.$emit('click');
 
       expect(wrapper.emitted('clearSelectedArtifacts')).toBeDefined();
     });

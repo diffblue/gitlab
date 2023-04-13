@@ -284,7 +284,7 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsInRow(0).exists()).toBe(false);
         expect(findDetailsInRow(1).exists()).toBe(true);
 
-        findArtifactDeleteButton().trigger('click');
+        findArtifactDeleteButton().vm.$emit('click');
         await waitForPromises();
 
         expect(findDeleteModal().findComponent(GlModal).props('visible')).toBe(true);
@@ -364,7 +364,7 @@ describe('JobArtifactsTable component', () => {
       });
 
       it('opens the confirmation modal with the artifacts from the job', async () => {
-        await findDeleteButton().trigger('click');
+        await findDeleteButton().vm.$emit('click');
 
         expect(findBulkDeleteModal().props()).toMatchObject({
           visible: true,
@@ -373,8 +373,8 @@ describe('JobArtifactsTable component', () => {
       });
 
       it('on confirm, deletes the artifacts from the job and shows a toast', async () => {
-        findDeleteButton().trigger('click');
-        findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+        findDeleteButton().vm.$emit('click');
+        findBulkDeleteModal().vm.$emit('primary');
 
         expect(bulkDestroyMutationHandler).toHaveBeenCalledWith({
           projectId: convertToGraphQLId(TYPENAME_PROJECT, projectId),
@@ -393,7 +393,7 @@ describe('JobArtifactsTable component', () => {
         findJobCheckbox(2).vm.$emit('input', true);
 
         // click delete button job 1
-        findDeleteButton().trigger('click');
+        findDeleteButton().vm.$emit('click');
 
         // job 2's artifacts should still be selected
         expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual(
@@ -401,7 +401,7 @@ describe('JobArtifactsTable component', () => {
         );
 
         // confirm delete
-        findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+        findBulkDeleteModal().vm.$emit('primary');
 
         // job 1's artifacts should be deleted
         expect(bulkDestroyMutationHandler).toHaveBeenCalledWith({
@@ -433,10 +433,10 @@ describe('JobArtifactsTable component', () => {
       findJobCheckbox(2).vm.$emit('input', true);
 
       // click delete button job 1
-      findDeleteButton().trigger('click');
+      findDeleteButton().vm.$emit('click');
 
       // confirm delete
-      findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+      findBulkDeleteModal().vm.$emit('primary');
 
       await waitForPromises();
 
@@ -518,7 +518,7 @@ describe('JobArtifactsTable component', () => {
       it('deletes the selected artifacts and shows a toast', async () => {
         findJobCheckbox().vm.$emit('input', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
-        findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+        findBulkDeleteModal().vm.$emit('primary');
 
         expect(bulkDestroyMutationHandler).toHaveBeenCalledWith({
           projectId: convertToGraphQLId(TYPENAME_PROJECT, projectId),
@@ -535,7 +535,7 @@ describe('JobArtifactsTable component', () => {
       it('clears selected artifacts on success', async () => {
         findJobCheckbox().vm.$emit('input', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
-        findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+        findBulkDeleteModal().vm.$emit('primary');
 
         await waitForPromises();
 
@@ -557,7 +557,7 @@ describe('JobArtifactsTable component', () => {
 
       findJobCheckbox().vm.$emit('input', true);
       findBulkDelete().vm.$emit('showBulkDeleteModal');
-      findBulkDeleteModal().findComponent(GlModal).vm.$emit('primary');
+      findBulkDeleteModal().vm.$emit('primary');
 
       await waitForPromises();
 

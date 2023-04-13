@@ -68,9 +68,6 @@ export default {
     v-bind="$attrs"
     v-on="$listeners"
   >
-    <gl-sprintf
-      data-testid="bulk-delete-modal-content"
-      :message="$options.i18n.modalBody(checkedCount)"
-    />
+    <gl-sprintf :message="$options.i18n.modalBody(checkedCount)" />
   </gl-modal>
 </template>
