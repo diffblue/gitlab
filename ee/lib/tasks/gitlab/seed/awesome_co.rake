@@ -12,7 +12,7 @@ namespace :ee do
 
         seed_file = Rails.root.join('ee/db/seeds/awesome_co', argv[:co])
 
-        raise 'Invalid seed file' unless File.exist?(seed_file)
+        raise "Seed file `#{seed_file}` does not exist" unless File.exist?(seed_file)
 
         puts "Seeding AwesomeCo demo data for #{Namespace.find(argv[:namespace_id]).name}"
 
