@@ -1,0 +1,6 @@
+subscription aiCompletionResponse($userId: UserID, $resourceId: AiModelID!) {
+  aiCompletionResponse(userId: $userId, resourceId: $resourceId) {
+    responseBody
+    errors
+  }
+}
