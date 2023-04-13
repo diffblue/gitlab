@@ -59,11 +59,11 @@ describe('ComplianceReportsApp component', () => {
       });
     });
 
-    it('renders the merge commit export button', async () => {
+    it('renders the merge commit export button', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(true);
     });
 
-    it('does not render the merge commit export button when there is no CSV path', async () => {
+    it('does not render the merge commit export button when there is no CSV path', () => {
       wrapper = createComponent({ mergeCommitsCsvExportPath: null }, mount);
       findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
 
@@ -72,7 +72,7 @@ describe('ComplianceReportsApp component', () => {
   });
 
   describe('frameworks report', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       wrapper = createComponent();
       findTabs().vm.$emit('input', TABS.indexOf(ROUTE_FRAMEWORKS));
     });
@@ -89,7 +89,7 @@ describe('ComplianceReportsApp component', () => {
       });
     });
 
-    it('does not render the merge commit export button', async () => {
+    it('does not render the merge commit export button', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(false);
     });
   });

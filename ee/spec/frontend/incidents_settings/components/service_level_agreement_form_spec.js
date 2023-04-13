@@ -51,7 +51,7 @@ describe('Alert integration settings form', () => {
   });
 
   describe('Form fields', () => {
-    it('should call service `updateSettings` on submit', async () => {
+    it('should call service `updateSettings` on submit', () => {
       mountComponent({}, mount);
 
       findForm().trigger('submit');

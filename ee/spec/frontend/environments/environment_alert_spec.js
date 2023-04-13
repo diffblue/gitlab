@@ -16,7 +16,7 @@ describe('Environment Alert', () => {
 
   const createApolloProvider = () => createMockApollo([[alertQuery, alertResolver]]);
 
-  const factory = async (props = {}, provide = {}) => {
+  const factory = (props = {}, provide = {}) => {
     const apolloProvider = createApolloProvider();
 
     wrapper = mount(EnvironmentAlert, {
@@ -62,7 +62,7 @@ describe('Environment Alert', () => {
       await factory();
     });
 
-    it('displays the alert details', async () => {
+    it('displays the alert details', () => {
       const text = wrapper.text();
       expect(text).toContain('Critical');
       expect(text).toContain('alert title >0.1% jest.');

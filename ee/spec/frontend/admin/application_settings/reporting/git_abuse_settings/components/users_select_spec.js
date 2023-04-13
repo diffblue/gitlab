@@ -111,7 +111,7 @@ describe('Users Select component', () => {
       expect(findUserSelector().props('selectedTokens')[0]).toEqual(mockUser1);
     });
 
-    it('emits a selection-changed event with only users from the result', async () => {
+    it('emits a selection-changed event with only users from the result', () => {
       expect(wrapper.emitted('selection-changed')[0][0]).toEqual([mockUser1.username]);
     });
   });
@@ -144,7 +144,7 @@ describe('Users Select component', () => {
       await waitForPromises();
     });
 
-    it('emits a selection-changed event with only users from the result', async () => {
+    it('emits a selection-changed event with only users from the result', () => {
       expect(wrapper.emitted('selection-changed')[0][0]).toEqual([1]);
     });
   });

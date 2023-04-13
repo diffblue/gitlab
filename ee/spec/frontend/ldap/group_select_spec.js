@@ -117,7 +117,7 @@ describe('GroupSelect', () => {
       expect(createAlert).toHaveBeenCalledTimes(1);
     });
 
-    it('dismisses the error on a new group search', async () => {
+    it('dismisses the error on a new group search', () => {
       expect(createAlert).toHaveBeenCalledTimes(1);
       expect(mockAlertDismiss).toHaveBeenCalledTimes(0);
 

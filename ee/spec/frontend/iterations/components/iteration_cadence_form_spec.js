@@ -395,7 +395,7 @@ describe('Iteration cadence form', () => {
         await nextTick();
       });
 
-      it('highlights fields required for automatic scheduling', async () => {
+      it('highlights fields required for automatic scheduling', () => {
         expect(findStartDateGroup().text()).toContain('This field is required');
         expect(findDurationGroup().text()).toContain('This field is required');
         expect(findUpcomingIterationsGroup().text()).toContain('This field is required');

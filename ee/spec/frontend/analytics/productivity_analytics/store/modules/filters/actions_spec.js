@@ -50,7 +50,7 @@ describe('Productivity analytics filter actions', () => {
       expect(store.dispatch.mock.calls[2]).toEqual(['table/setPage', 0, { root: true }]);
     });
 
-    it("commits the SET_INITIAL_DATA mutation and doesn't fetch data when skipFetch=true", async () =>
+    it("commits the SET_INITIAL_DATA mutation and doesn't fetch data when skipFetch=true", () =>
       testAction(
         actions.setInitialData,
         { skipFetch: true, data: initialData },

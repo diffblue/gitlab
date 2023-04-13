@@ -223,7 +223,7 @@ describe('BoardAddNewColumn', () => {
       await nextTick();
     });
 
-    it('sets assignee placeholder text in form', async () => {
+    it('sets assignee placeholder text in form', () => {
       expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
       expect(findDropdown().props('searchPlaceholder')).toBe(
         listTypeInfo.assignee.searchPlaceholder,

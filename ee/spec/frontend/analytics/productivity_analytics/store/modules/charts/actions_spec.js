@@ -73,7 +73,7 @@ describe('Productivity analytics chart actions', () => {
             expect(axios.get).toHaveBeenCalledWith(mockedState.endpoint, { params: globalParams });
           });
 
-          it('dispatches success with received data', async () =>
+          it('dispatches success with received data', () =>
             testAction(
               actions.fetchChartData,
               chartKey,

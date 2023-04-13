@@ -102,13 +102,13 @@ describe('SignUpArkoseApp', () => {
         await submitForm(mockSubmitEvent);
       });
 
-      it('shows verification required error message', async () => {
+      it('shows verification required error message', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: VERIFICATION_REQUIRED_MESSAGE,
         });
       });
 
-      it('stops the submit event', async () => {
+      it('stops the submit event', () => {
         expect(mockSubmitEvent.preventDefault).toHaveBeenCalledTimes(1);
         expect(mockSubmitEvent.stopPropagation).toHaveBeenCalledTimes(1);
       });
@@ -124,11 +124,11 @@ describe('SignUpArkoseApp', () => {
         submitForm(mockSubmitEvent);
       });
 
-      it('does not show verification required error message', async () => {
+      it('does not show verification required error message', () => {
         expect(createAlert).not.toHaveBeenCalled();
       });
 
-      it('does not stop the submit event', async () => {
+      it('does not stop the submit event', () => {
         expect(mockSubmitEvent.preventDefault).not.toHaveBeenCalled();
         expect(mockSubmitEvent.stopPropagation).not.toHaveBeenCalled();
       });
@@ -139,7 +139,7 @@ describe('SignUpArkoseApp', () => {
         await submitForm(mockSubmitEvent);
       });
 
-      it('shows verification loading message', async () => {
+      it('shows verification loading message', () => {
         expect(createAlert).toHaveBeenCalledWith({
           message: VERIFICATION_LOADING_MESSAGE,
         });

@@ -83,7 +83,7 @@ describe('ProjectsTable component', () => {
         expect(findSelectAllCheckbox().exists()).toBe(true);
       });
 
-      it('renders empty state when no rows are selected', async () => {
+      it('renders empty state when no rows are selected', () => {
         expect(findSelectAllCheckbox().find('input').element.checked).toBe(false);
       });
 

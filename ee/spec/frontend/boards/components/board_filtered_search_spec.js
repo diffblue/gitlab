@@ -73,7 +73,7 @@ describe('ee/BoardFilteredSearch', () => {
       await nextTick();
     });
 
-    it('updates url and tokens when board watcher is triggered', async () => {
+    it('updates url and tokens when board watcher is triggered', () => {
       expect(urlUtility.updateHistory).toHaveBeenCalledWith({
         url: '?label_name[]=test',
       });

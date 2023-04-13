@@ -391,7 +391,7 @@ describe('EE Value Stream Analytics component', () => {
   });
 
   describe('with failed requests while loading', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
     });
@@ -530,7 +530,7 @@ describe('EE Value Stream Analytics component', () => {
     const selectedStage = { title: 'Plan', id: 2 };
     const selectedProjectIds = selectedProjects.map(({ id }) => getIdFromGraphQLId(id));
 
-    beforeEach(async () => {
+    beforeEach(() => {
       commonUtils.historyPushState = jest.fn();
       urlUtils.mergeUrlParams = jest.fn();
 

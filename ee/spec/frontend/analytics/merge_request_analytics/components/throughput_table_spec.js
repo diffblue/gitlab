@@ -267,7 +267,7 @@ describe('ThroughputTable', () => {
         describe('approval details', () => {
           const iconName = 'approval';
 
-          it('does not display by default', async () => {
+          it('does not display by default', () => {
             const approved = findColSubItem(TEST_IDS.MERGE_REQUEST_DETAILS, TEST_IDS.APPROVED);
 
             expect(approved.exists()).toBe(false);

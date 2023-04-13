@@ -95,7 +95,7 @@ describe('LdapOverrideConfirmationModal', () => {
     });
 
     describe('When "Edit permissions" button is clicked', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         getEditPermissionsButton().trigger('click');
       });
 

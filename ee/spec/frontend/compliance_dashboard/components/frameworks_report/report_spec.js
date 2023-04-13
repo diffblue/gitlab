@@ -239,7 +239,7 @@ describe('ComplianceFrameworksReport component', () => {
   });
 
   describe('when there are no projects', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       const emptyProjectsResponse = createComplianceFrameworksResponse({ count: 0 });
       const mockResolver = jest.fn().mockResolvedValue(emptyProjectsResponse);
       wrapper = createComponent(mount, {}, mockResolver);

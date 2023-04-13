@@ -152,7 +152,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
   });
 
   describe('when timedimension is selected', () => {
-    it('should setTimeDimensions when a granularity is selected', async () => {
+    it('should setTimeDimensions when a granularity is selected', () => {
       createWrapper({ measureType: 'events' });
 
       wrapper
@@ -202,7 +202,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
       expect(overViewButton.exists()).toBe(false);
     });
 
-    it('should setTimeDimensions with session field when a granularity is selected', async () => {
+    it('should setTimeDimensions with session field when a granularity is selected', () => {
       wrapper
         .findByTestId('event-granularities-dd')
         .findComponent(GlDropdownItem)

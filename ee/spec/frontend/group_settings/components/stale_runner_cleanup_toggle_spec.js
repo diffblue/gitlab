@@ -86,7 +86,7 @@ describe('StaleRunnerCleanupToggle', () => {
     confirmAction.mockReset();
   });
 
-  it('Displays a toggle in loading state', async () => {
+  it('Displays a toggle in loading state', () => {
     mockPruningQueryHandler();
     createComponent();
 
@@ -147,7 +147,7 @@ describe('StaleRunnerCleanupToggle', () => {
     const newValue = true;
 
     describe('when user confirms', () => {
-      const confirmByUser = async () => {
+      const confirmByUser = () => {
         mockPruningQueryHandler({ value: false });
         mockPruningMutationHandler({ newValue });
 

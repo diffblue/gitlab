@@ -145,7 +145,7 @@ describe('Table', () => {
       expect(fetchWithErrors).toHaveBeenCalledTimes(1);
     });
 
-    it('sends the error to Sentry', async () => {
+    it('sends the error to Sentry', () => {
       expect(Sentry.captureException.mock.calls[0][0].networkError).toBe(sentryError);
     });
   });
@@ -264,7 +264,7 @@ describe('Table', () => {
       const tableAction = findAllTableActions().at(0);
       const framework = tableAction.props('framework');
       tableAction.vm.$emit('setDefault', { framework, defaultVal: true });
-      return waitForPromises();
+      await waitForPromises();
     };
 
     it('calls the update mutation with the framework ID', async () => {
