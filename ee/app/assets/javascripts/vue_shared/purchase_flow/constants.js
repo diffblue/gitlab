@@ -9,6 +9,6 @@ export const licensingAndRenewalsProblemsLink =
   'https://support.gitlab.com/hc/en-us/requests/new?ticket_form_id=360000071293';
 export const salesLink = 'https://about.gitlab.com/sales/';
 export const userProfileLink = 'https://gitlab.com/-/profile';
-export const linkCustomersPortalHelpLink = helpPagePath('subscriptions/index', {
+export const linkCustomersPortalHelpLink = helpPagePath('subscriptions/customers_portal', {
   anchor: '#change-the-linked-account',
 });
