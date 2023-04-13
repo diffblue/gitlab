@@ -77,8 +77,8 @@ There is a proposal to add more strategic control of the access permissions,
 see [epic 3559](https://gitlab.com/groups/gitlab-org/-/epics/3559).
 
 NOTE:
-Since the `CI_REGISTRY_TOKEN` uses the `CI_JOB_TOKEN` to authenticate, the access configuration
-will also apply to `CI_REGISTRY_TOKEN`.
+Because `CI_REGISTRY_TOKEN` uses `CI_JOB_TOKEN` to authenticate, the access configuration
+also applies to `CI_REGISTRY_TOKEN`.
 
 ### Allow access to your project with a job token
 
