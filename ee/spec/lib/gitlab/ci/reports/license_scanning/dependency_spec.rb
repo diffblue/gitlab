@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency, feature_category: :license_compliance do
+RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency, feature_category: :software_composition_analysis do
   describe 'object equality' do
     let(:attributes) { { name: 'bundler', package_manager: 'rubygems', purl_type: 'gem', version: '1.0.0' } }
     let(:dependency1) { described_class.new(attributes) }

@@ -8,7 +8,7 @@ class ImportSoftwareLicensesWorker # rubocop:disable Scalability/IdempotentWorke
   sidekiq_options retry: 3
 
   queue_namespace :cronjob
-  feature_category :license_compliance
+  feature_category :software_composition_analysis
 
   def perform
     catalogue.each do |spdx_license|

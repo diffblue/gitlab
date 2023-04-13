@@ -220,7 +220,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#has_denied_policies?', feature_category: :license_compliance do
+  describe '#has_denied_policies?', feature_category: :software_composition_analysis do
     let(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project) }
     let(:apache) { build(:software_license, :apache_2_0) }
 
@@ -764,7 +764,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#compare_license_scanning_reports', feature_category: :license_compliance do
+  describe '#compare_license_scanning_reports', feature_category: :software_composition_analysis do
     subject { merge_request.compare_license_scanning_reports(current_user) }
 
     let(:current_user) { project.users.first }
@@ -884,7 +884,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#compare_license_scanning_reports_collapsed', feature_category: :license_compliance do
+  describe '#compare_license_scanning_reports_collapsed', feature_category: :software_composition_analysis do
     subject(:report) { merge_request.compare_license_scanning_reports_collapsed(current_user) }
 
     let(:current_user) { project.users.first }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :license_compliance do
+RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :software_composition_analysis do
   let_it_be(:components_to_fetch) do
     [
       Hashie::Mash.new({ name: "beego", purl_type: "golang", version: "v1.10.0" }),

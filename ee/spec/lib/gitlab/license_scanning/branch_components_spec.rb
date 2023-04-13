@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::LicenseScanning::BranchComponents, feature_category: :license_compliance do
+RSpec.describe Gitlab::LicenseScanning::BranchComponents, feature_category: :software_composition_analysis do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:branch) { project.repository.branches[2] }
 

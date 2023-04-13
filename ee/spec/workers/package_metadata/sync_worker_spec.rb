@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :software_composition_analysis do
   include_examples 'an idempotent worker' do
     before do
       allow(PackageMetadata::SyncService).to receive(:execute)

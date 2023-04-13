@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'benchmark/ips'
 
-RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :license_compliance do
+RSpec.describe Gitlab::Ci::Reports::DependencyList::Report, feature_category: :software_composition_analysis do
   let(:report) { described_class.new }
 
   describe '#dependencies' do

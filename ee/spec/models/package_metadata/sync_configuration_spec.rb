@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_composition_analysis do
   describe '.all' do
     subject(:registries) { described_class.all }
 

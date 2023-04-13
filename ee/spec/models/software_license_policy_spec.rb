@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SoftwareLicensePolicy, feature_category: :license_compliance do
+RSpec.describe SoftwareLicensePolicy, feature_category: :software_composition_analysis do
   subject { build(:software_license_policy) }
 
   describe 'validations' do

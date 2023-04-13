@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::Ingestion::DataMap, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::Ingestion::DataMap, feature_category: :software_composition_analysis do
   context 'when storing packages' do
     let(:import_data) do
       [

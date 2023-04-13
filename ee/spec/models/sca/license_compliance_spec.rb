@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe SCA::LicenseCompliance, feature_category: :license_compliance do
+RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_analysis do
   let(:license_compliance) { described_class.new(project, pipeline) }
 
   let_it_be(:project) { create(:project, :repository, :private) }

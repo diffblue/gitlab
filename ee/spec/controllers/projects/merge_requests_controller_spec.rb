@@ -655,7 +655,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'a security resource'
   end
 
-  describe 'GET #license_scanning_reports', feature_category: :license_compliance do
+  describe 'GET #license_scanning_reports', feature_category: :software_composition_analysis do
     let(:comparison_status) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
     let(:expected_response) { { "new_licenses" => [], "existing_licenses" => [], "removed_licenses" => [] } }
 
@@ -700,7 +700,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'GET #license_scanning_reports_collapsed', feature_category: :license_compliance do
+  describe 'GET #license_scanning_reports_collapsed', feature_category: :software_composition_analysis do
     let(:comparison_status) { { status: :parsed, data: { new_licenses: 0, existing_licenses: 0, removed_licenses: 0 } } }
     let(:comparison_status_extended) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
     let(:expected_response) { { "new_licenses" => 0, "existing_licenses" => 0, "removed_licenses" => 0 } }

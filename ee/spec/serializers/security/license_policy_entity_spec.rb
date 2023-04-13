@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::LicensePolicyEntity, feature_category: :license_compliance do
+RSpec.describe Security::LicensePolicyEntity, feature_category: :software_composition_analysis do
   let(:license) { build(:license_scanning_license, :mit).tap { |x| x.add_dependency(name: 'rails', package_manager: 'bundler', path: './Gemfile.lock', version: '6.0.3.4') } }
   let(:policy) { build(:software_license_policy, :allowed) }
   let(:entity) { described_class.new(SCA::LicensePolicy.new(license, policy)) }

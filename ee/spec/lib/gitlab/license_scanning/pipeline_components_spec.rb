@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Gitlab::LicenseScanning::PipelineComponents, feature_category: :license_compliance do
+RSpec.describe Gitlab::LicenseScanning::PipelineComponents, feature_category: :software_composition_analysis do
   let_it_be(:project) { create(:project, :repository) }
 
   describe '#fetch' do

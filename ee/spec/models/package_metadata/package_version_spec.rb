@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PackageMetadata::PackageVersion, type: :model, feature_category: :license_compliance do
+RSpec.describe PackageMetadata::PackageVersion, type: :model, feature_category: :software_composition_analysis do
   describe 'association' do
     it { is_expected.to belong_to(:package).required }
   end

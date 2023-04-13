@@ -2,7 +2,7 @@
 
 require "fast_spec_helper"
 
-RSpec.describe ::Gitlab::LicenseScanning::BaseScanner, feature_category: :license_compliance do
+RSpec.describe ::Gitlab::LicenseScanning::BaseScanner, feature_category: :software_composition_analysis do
   let(:project) { nil }
   let(:pipeline) { nil }
 

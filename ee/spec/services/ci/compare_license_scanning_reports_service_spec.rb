@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :license_compliance do
+RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :software_composition_analysis do
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project, :repository) }

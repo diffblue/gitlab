@@ -8,7 +8,7 @@ module Security
 
     sidekiq_options retry: 3
 
-    feature_category :dependency_scanning
+    feature_category :software_composition_analysis
 
     idempotent!
 
