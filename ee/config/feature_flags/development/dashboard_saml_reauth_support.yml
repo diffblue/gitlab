@@ -1,0 +1,8 @@
+---
+name: dashboard_saml_reauth_support
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115254
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/396592
+milestone: '15.11'
+type: development
+group: group::authentication and authorization
+default_enabled: false

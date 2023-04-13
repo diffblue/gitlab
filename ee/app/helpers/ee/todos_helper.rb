@@ -18,5 +18,13 @@ module EE
     def show_todo_state?(todo)
       super || (todo.target.is_a?(Epic) && todo.target.state == 'closed')
     end
+
+    def todo_groups_requiring_saml_reauth(todos)
+      return [] unless ::Feature.enabled?(:dashboard_saml_reauth_support, current_user)
+
+      groups = todos.map { |todo| todo.group || todo.project.group }
+
+      ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted_groups(groups, user: current_user)
+    end
   end
 end

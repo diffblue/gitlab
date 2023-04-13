@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe ::TodosHelper do
+  include Devise::Test::ControllerHelpers
+
   describe '#todo_types_options' do
     it 'includes options for an epic todo' do
       expect(helper.todo_types_options).to include(
@@ -80,6 +82,61 @@ RSpec.describe ::TodosHelper do
 
     it 'returns true for a closed epic' do
       expect(helper.show_todo_state?(todo)).to eq(true)
+    end
+  end
+
+  describe '#todo_groups_requiring_saml_reauth' do
+    let_it_be(:restricted_group) do
+      create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: true))
+    end
+
+    let_it_be(:restricted_group2) do
+      create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: true))
+    end
+
+    let_it_be(:restricted_subgroup) { create(:group, parent: restricted_group) }
+    let_it_be(:unrestricted_group) { create(:group) }
+
+    let_it_be(:epic_todo) { create(:todo, group: restricted_group, target: create(:epic, group: restricted_subgroup)) }
+
+    let_it_be(:restricted_project) { create(:project, namespace: restricted_group2) }
+
+    let_it_be(:issue_todo) do
+      create(:todo, project: restricted_project, target: create(:issue, project: restricted_project))
+    end
+
+    let_it_be(:unrestricted_project) { create(:project, namespace: unrestricted_group) }
+
+    let_it_be(:mr_todo) do
+      create(:todo, project: unrestricted_project, target: create(:merge_request, source_project: unrestricted_project))
+    end
+
+    let_it_be(:todos) { [epic_todo, issue_todo, mr_todo] }
+
+    let(:session) { {} }
+
+    before do
+      stub_licensed_features(group_saml: true)
+    end
+
+    around do |example|
+      Gitlab::Session.with_session(session) do
+        example.run
+      end
+    end
+
+    context 'when the feature flag is disabled' do
+      before do
+        stub_feature_flags(dashboard_saml_reauth_support: false)
+      end
+
+      it 'returns an empty array of groups' do
+        expect(helper.todo_groups_requiring_saml_reauth(todos)).to match_array([])
+      end
+    end
+
+    it 'returns root groups for todos with targets in SSO enforced groups' do
+      expect(helper.todo_groups_requiring_saml_reauth(todos)).to match_array([restricted_group, restricted_group2])
     end
   end
 end

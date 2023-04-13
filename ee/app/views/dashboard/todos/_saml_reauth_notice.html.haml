@@ -1,0 +1,11 @@
+- groups_requiring_saml_reauth = todo_groups_requiring_saml_reauth(@todos)
+- return unless groups_requiring_saml_reauth.any?
+
+= render Pajamas::AlertComponent.new(variant: :warning, dismissible: false) do |c|
+  = c.body do
+    = s_('GroupSAML|Some todos may be hidden because your SAML session has expired. Click to reauthenticate with the following groups to view hidden todos:')
+  = c.actions do
+    .gl-display-flex.gl-flex-wrap-wrap
+      - groups_requiring_saml_reauth.each do |group|
+        = render Pajamas::ButtonComponent.new(href: sso_group_saml_providers_path(group, { token: group.saml_discovery_token, redirect: dashboard_todos_path }), button_options: { class: "gl-mr-3 gl-mb-3" }) do
+          = group.path
