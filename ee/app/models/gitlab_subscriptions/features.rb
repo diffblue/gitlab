@@ -239,6 +239,7 @@ module GitlabSubscriptions
       security_orchestration_policies
       security_training
       ssh_key_expiration_policy
+      summarize_notes
       stale_runner_cleanup_for_namespace
       status_page
       suggested_reviewers

@@ -1,0 +1,5 @@
+mutation AiAction($input: AiActionInput!) {
+  aiAction(input: $input) {
+    errors
+  }
+}
