@@ -13053,7 +13053,7 @@ CREATE TABLE p_ci_builds_metadata (
     id bigint NOT NULL,
     runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
     id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
-    partition_id bigint DEFAULT 100 NOT NULL,
+    partition_id bigint NOT NULL,
     debug_trace_enabled boolean DEFAULT false NOT NULL
 )
 PARTITION BY LIST (partition_id);
@@ -13082,7 +13082,7 @@ CREATE TABLE ci_builds_metadata (
     id bigint DEFAULT nextval('ci_builds_metadata_id_seq'::regclass) NOT NULL,
     runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
     id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
-    partition_id bigint DEFAULT 100 NOT NULL,
+    partition_id bigint NOT NULL,
     debug_trace_enabled boolean DEFAULT false NOT NULL
 );
 ALTER TABLE ONLY p_ci_builds_metadata ATTACH PARTITION ci_builds_metadata FOR VALUES IN ('100');
