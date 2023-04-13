@@ -10,6 +10,7 @@ RSpec.describe Tooling::PredictiveTests, feature_category: :tooling do
 
   let(:instance)                       { described_class.new }
   let(:matching_tests_initial_content) { 'initial_matching_spec' }
+  let(:fixtures_mapping_content)       { '{}' }
 
   attr_accessor :changed_files, :changed_files_path, :fixtures_mapping,
     :matching_js_files, :matching_tests, :views_with_partials
@@ -58,7 +59,7 @@ RSpec.describe Tooling::PredictiveTests, feature_category: :tooling do
 
     # We write some data to later on verify that we only append to this file.
     File.write(matching_tests.path, matching_tests_initial_content)
-    File.write(fixtures_mapping.path, '{}') # We write valid JSON, so that the file can be processed
+    File.write(fixtures_mapping.path, fixtures_mapping_content)
 
     allow(Gitlab).to receive(:configure)
   end
@@ -102,19 +103,24 @@ RSpec.describe Tooling::PredictiveTests, feature_category: :tooling do
         end
       end
 
-      context 'when some files were changed' do
-        let(:changed_files_content) { 'tooling/lib/tooling/predictive_tests.rb' }
+      context 'when some files used for frontend fixtures were changed' do
+        let(:changed_files_content) { 'app/models/todo.rb' }
+        let(:changed_files_matching_test) { 'spec/models/todo_spec.rb' }
+        let(:matching_frontend_fixture) { 'tmp/tests/frontend/fixtures-ee/todos/todos.html' }
+        let(:fixtures_mapping_content) do
+          JSON.dump(changed_files_matching_test => [matching_frontend_fixture]) # rubocop:disable Gitlab/Json
+        end
 
-        it 'writes to RSPEC_CHANGED_FILES_PATH with API contents' do
+        it 'writes to RSPEC_CHANGED_FILES_PATH with API contents and appends with matching fixtures' do
           subject
 
-          expect(File.read(changed_files_path)).to eq(changed_files_content)
+          expect(File.read(changed_files_path)).to eq("#{changed_files_content} #{matching_frontend_fixture}")
         end
 
         it 'appends the spec file to RSPEC_MATCHING_TESTS_PATH' do
           expect { subject }.to change { File.read(matching_tests.path) }
             .from(matching_tests_initial_content)
-            .to("#{matching_tests_initial_content} spec/tooling/lib/tooling/predictive_tests_spec.rb")
+            .to("#{matching_tests_initial_content} #{changed_files_matching_test}")
         end
 
         it 'does not change files other than RSPEC_CHANGED_FILES_PATH nor RSPEC_MATCHING_TESTS_PATH' do
