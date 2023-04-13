@@ -41,7 +41,7 @@ Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo
  * The key used to save and fetch the local Mousetrap instance
  * attached to a `<textarea>` element using `jQuery.data`
  */
-const LOCAL_MOUSETRAP_DATA_KEY = 'local-mousetrap-instance';
+export const LOCAL_MOUSETRAP_DATA_KEY = 'local-mousetrap-instance';
 
 /**
  * Gets a mapping of toolbar button => keyboard shortcuts
