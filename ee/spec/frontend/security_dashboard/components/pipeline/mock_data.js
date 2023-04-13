@@ -558,6 +558,12 @@ export const pipelineSecurityReportFinding = {
   dismissedAt: null,
   dismissedBy: null,
   stateComment: null,
+  vulnerability: {
+    id: '1',
+    userPermissions: {
+      createVulnerabilityFeedback: true,
+    },
+  },
 };
 
 export const getPipelineSecurityReportFindingResponse = ({
@@ -628,6 +634,18 @@ export const securityFindingCreateMergeRequestMutationResponse = {
       mergeRequest: {
         id: '1',
         iid: '1',
+        webUrl: 'https://gitlab.com',
+      },
+    },
+  },
+};
+
+export const securityFindingCreateIssueMutationResponse = {
+  data: {
+    securityFindingCreateIssue: {
+      errors: [],
+      issue: {
+        id: '1',
         webUrl: 'https://gitlab.com',
       },
     },
