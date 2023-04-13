@@ -15493,6 +15493,9 @@ msgstr ""
 msgid "Download artifacts"
 msgstr ""
 
+msgid "Download as CSV"
+msgstr ""
+
 msgid "Download codes"
 msgstr ""
 
