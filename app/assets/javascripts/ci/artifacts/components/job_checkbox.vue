@@ -19,10 +19,17 @@ export default {
       type: Array,
       required: true,
     },
+    isSelectedArtifactsLimitReached: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
     disabled() {
-      return !this.hasArtifacts;
+      return (
+        !this.hasArtifacts ||
+        (this.isSelectedArtifactsLimitReached && !(this.checked || this.indeterminate))
+      );
     },
     checked() {
       return this.hasArtifacts && this.unselectedArtifacts.length === 0;

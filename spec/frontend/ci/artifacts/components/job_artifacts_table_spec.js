@@ -18,6 +18,7 @@ import ArtifactsTableRowDetails from '~/ci/artifacts/components/artifacts_table_
 import ArtifactDeleteModal from '~/ci/artifacts/components/artifact_delete_modal.vue';
 import ArtifactsBulkDelete from '~/ci/artifacts/components/artifacts_bulk_delete.vue';
 import BulkDeleteModal from '~/ci/artifacts/components/bulk_delete_modal.vue';
+import JobCheckbox from '~/ci/artifacts/components/job_checkbox.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getJobArtifactsQuery from '~/ci/artifacts/graphql/queries/get_job_artifacts.query.graphql';
@@ -31,6 +32,7 @@ import {
   INITIAL_CURRENT_PAGE,
   BULK_DELETE_FEATURE_FLAG,
   I18N_BULK_DELETE_ERROR,
+  SELECTED_ARTIFACTS_MAX_COUNT,
 } from '~/ci/artifacts/constants';
 import { totalArtifactsSizeForJob } from '~/ci/artifacts/utils';
 import { createAlert } from '~/alert';
@@ -122,6 +124,11 @@ describe('JobArtifactsTable component', () => {
       bulkDestroyJobArtifacts: { errors: [], destroyedCount, destroyedIds },
     },
   });
+
+  const maxSelectedArtifacts = [];
+  while (maxSelectedArtifacts.length < SELECTED_ARTIFACTS_MAX_COUNT) {
+    maxSelectedArtifacts.push({});
+  }
 
   const createComponent = ({
     handlers = {
@@ -540,6 +547,35 @@ describe('JobArtifactsTable component', () => {
         await waitForPromises();
 
         expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([]);
+      });
+    });
+
+    describe('when the selected artifacts limit is reached', () => {
+      beforeEach(async () => {
+        createComponent({
+          canDestroyArtifacts: true,
+          glFeatures: { [BULK_DELETE_FEATURE_FLAG]: true },
+          data: { selectedArtifacts: maxSelectedArtifacts },
+        });
+
+        await waitForPromises();
+      });
+
+      it('passes isSelectedArtifactsLimitReached to bulk delete', () => {
+        expect(findBulkDelete().props('isSelectedArtifactsLimitReached')).toBe(true);
+      });
+
+      it('passes isSelectedArtifactsLimitReached to job checkbox', () => {
+        expect(wrapper.findComponent(JobCheckbox).props('isSelectedArtifactsLimitReached')).toBe(
+          true,
+        );
+      });
+
+      it('passes isSelectedArtifactsLimitReached to table row details', async () => {
+        findCount().trigger('click');
+        await waitForPromises();
+
+        expect(findDetailsInRow(1).props('isSelectedArtifactsLimitReached')).toBe(true);
       });
     });
 

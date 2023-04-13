@@ -16,12 +16,14 @@ describe('JobCheckbox component', () => {
     hasArtifacts = true,
     selectedArtifacts = mockSelectedArtifacts,
     unselectedArtifacts = mockUnselectedArtifacts,
+    isSelectedArtifactsLimitReached = false,
   } = {}) => {
     wrapper = shallowMountExtended(JobCheckbox, {
       propsData: {
         hasArtifacts,
         selectedArtifacts,
         unselectedArtifacts,
+        isSelectedArtifactsLimitReached,
       },
       mocks: { GlFormCheckbox },
     });
@@ -66,6 +68,28 @@ describe('JobCheckbox component', () => {
         [mockSelectedArtifacts[0], false],
         [mockSelectedArtifacts[1], false],
       ]);
+    });
+  });
+
+  describe('when no artifacts are selected', () => {
+    beforeEach(() => {
+      createComponent({ selectedArtifacts: [] });
+    });
+
+    it('is not checked', () => {
+      expect(findCheckbox().attributes('checked')).toBeUndefined();
+    });
+
+    it('selects the artifacts on click', () => {
+      findCheckbox().vm.$emit('input', true);
+
+      expect(wrapper.emitted('selectArtifact')).toMatchObject([[mockUnselectedArtifacts[0], true]]);
+    });
+
+    it('is disabled when the selected artifacts limit has been reached', () => {
+      createComponent({ selectedArtifacts: [], isSelectedArtifactsLimitReached: true });
+
+      expect(findCheckbox().attributes('disabled')).toBe('true');
     });
   });
 });

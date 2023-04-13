@@ -28,6 +28,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    isSelectedArtifactsLimitReached: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
     isExpired() {
@@ -64,7 +68,11 @@ export default {
   >
     <div class="gl-display-inline-flex gl-align-items-center gl-w-full">
       <span v-if="canBulkDestroyArtifacts" class="gl-pl-5">
-        <gl-form-checkbox :checked="isSelected" @input="handleInput" />
+        <gl-form-checkbox
+          :checked="isSelected"
+          :disabled="isSelectedArtifactsLimitReached && !isSelected"
+          @input="handleInput"
+        />
       </span>
       <span
         class="gl-w-half gl-pl-8 gl-display-flex gl-align-items-center"
