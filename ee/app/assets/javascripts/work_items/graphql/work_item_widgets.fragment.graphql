@@ -110,4 +110,8 @@ fragment WorkItemWidgets on WorkItemWidget {
     type
     healthStatus
   }
+  ... on WorkItemWidgetNotifications {
+    type
+    subscribed
+  }
 }
