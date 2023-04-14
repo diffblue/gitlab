@@ -11,6 +11,8 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
 
   let(:merge_request) { create(:merge_request) }
 
+  let(:subject_traits) { [] }
+
   shared_examples 'approval rule like' do
     describe '#approvers' do
       let(:group1_user) { create(:user) }
@@ -107,6 +109,48 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
       end
     end
 
+    describe '#from_scan_result_policy?' do
+      context 'when report_type is scan_finding' do
+        let(:subject_traits) { %i[scan_finding] }
+
+        it 'returns true' do
+          expect(subject.from_scan_result_policy?).to eq(true)
+        end
+      end
+
+      context 'when report_type is license_scanning' do
+        let(:subject_traits) { %i[license_scanning] }
+
+        context 'when scan_result_policy_read is defined' do
+          let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
+
+          before do
+            subject.update!(scan_result_policy_read: scan_result_policy_read)
+          end
+
+          it 'returns true' do
+            expect(subject.from_scan_result_policy?).to eq(true)
+          end
+        end
+
+        context 'when scan_result_policy_read is not defined' do
+          it 'returns false' do
+            expect(subject.from_scan_result_policy?).to eq(false)
+          end
+        end
+      end
+
+      context 'when report_type is nil' do
+        before do
+          subject.update!(report_type: nil)
+        end
+
+        it 'returns false' do
+          expect(subject.from_scan_result_policy?).to eq(false)
+        end
+      end
+    end
+
     describe 'validation' do
       context 'when value is too big' do
         it 'is invalid' do
@@ -125,7 +169,7 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
         end
       end
 
-      context 'with report_type set to report_approver' do
+      context 'with rule_type set to report_approver' do
         before do
           subject.rule_type = :report_approver
         end
@@ -139,7 +183,7 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
   end
 
   context 'MergeRequest' do
-    subject { create(:approval_merge_request_rule, merge_request: merge_request) }
+    subject { create(:approval_merge_request_rule, *subject_traits, merge_request: merge_request) }
 
     it_behaves_like 'approval rule like'
 
@@ -223,7 +267,7 @@ RSpec.describe ApprovalRuleLike, feature_category: :source_code_management do
   end
 
   context 'Project' do
-    subject { create(:approval_project_rule) }
+    subject { create(:approval_project_rule, *subject_traits) }
 
     it_behaves_like 'approval rule like'
 

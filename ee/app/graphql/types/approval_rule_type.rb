@@ -85,5 +85,17 @@ module Types
           method: :commented_approvers,
           null: true,
           description: 'List of users, defined in the rule, who commented on the merge request.'
+
+    field :invalid,
+          type: GraphQL::Types::Boolean,
+          method: :invalid_rule?,
+          null: true,
+          description: 'Indicates if the rule is invalid and cannot be approved.'
+
+    field :allow_merge_when_invalid,
+          type: GraphQL::Types::Boolean,
+          method: :allow_merge_when_invalid?,
+          null: true,
+          description: 'Indicates if the rule can be ignored if it is invalid.'
   end
 end

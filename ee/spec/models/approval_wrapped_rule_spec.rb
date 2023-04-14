@@ -84,6 +84,82 @@ RSpec.describe ApprovalWrappedRule do
     end
   end
 
+  describe '#invalid_rule?' do
+    context 'when there are no unactioned approvers and approvals are required' do
+      let(:approvals_required) { 1 }
+
+      it 'return true' do
+        expect(subject.invalid_rule?).to eq(true)
+      end
+    end
+
+    context 'when there are unactioned approvers and approvals are required' do
+      let(:approvals_required) { 1 }
+
+      before do
+        rule.users << approver1
+      end
+
+      it 'returns false' do
+        expect(subject.invalid_rule?).to eq(false)
+      end
+    end
+
+    context 'when no approvals are required' do
+      let(:approvals_required) { 0 }
+
+      it 'returns false' do
+        expect(subject.invalid_rule?).to eq(false)
+      end
+    end
+  end
+
+  describe 'allow_merge_when_invalid?' do
+    context 'when feature "invalid_scan_result_policy_prevents_merge" is disabled' do
+      before do
+        stub_feature_flags(invalid_scan_result_policy_prevents_merge: false)
+      end
+
+      it 'returns true' do
+        expect(subject.allow_merge_when_invalid?).to eq(true)
+      end
+    end
+
+    context 'when feature "invalid_scan_result_policy_prevents_merge" is enabled' do
+      before do
+        stub_feature_flags(invalid_scan_result_policy_prevents_merge: merge_request.target_project)
+      end
+
+      context 'when report_type is scan_finding' do
+        let(:rule) { create(:report_approver_rule, :scan_finding) }
+
+        it 'returns false' do
+          expect(subject.allow_merge_when_invalid?).to eq(false)
+        end
+      end
+
+      context 'when report_type is license_scanning and scan_result_policy_read is attached' do
+        let(:rule) do
+          create(:report_approver_rule, :license_scanning, scan_result_policy_read: scan_result_policy_read)
+        end
+
+        let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
+
+        it 'returns false' do
+          expect(subject.allow_merge_when_invalid?).to eq(false)
+        end
+      end
+
+      context 'when report_type is nil' do
+        let(:rule) { create(:approval_merge_request_rule, report_type: nil) }
+
+        it 'returns true' do
+          expect(subject.allow_merge_when_invalid?).to eq(true)
+        end
+      end
+    end
+  end
+
   describe '#approved_approvers' do
     context 'when some approvers has made the approvals' do
       before do
