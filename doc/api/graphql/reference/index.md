@@ -13054,6 +13054,7 @@ The deployment of an environment.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="deploymentapprovalsummary"></a>`approvalSummary` | [`DeploymentApprovalSummary`](#deploymentapprovalsummary) | Approval summary of the deployment.This field can only be resolved for one deployment in any single request. |
+| <a id="deploymentapprovals"></a>`approvals` | [`[DeploymentApproval!]`](#deploymentapproval) | Current approvals of the deployment. |
 | <a id="deploymentcommit"></a>`commit` | [`Commit`](#commit) | Commit details of the deployment. |
 | <a id="deploymentcreatedat"></a>`createdAt` | [`Time`](#time) | When the deployment record was created. |
 | <a id="deploymentfinishedat"></a>`finishedAt` | [`Time`](#time) | When the deployment finished. |
