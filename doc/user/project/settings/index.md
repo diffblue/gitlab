@@ -175,7 +175,7 @@ Learn how to [export a project](import_export.md#import-a-project-and-its-data) 
 ## Advanced project settings
 
 Use the advanced settings to archive, rename, transfer,
-remove a fork relationship, or delete a project.
+[remove a fork relationship](../repository/forking_workflow.md#unlink-a-fork), or delete a project.
 
 ### Archive a project
 
@@ -348,24 +348,6 @@ To restore a project marked for deletion:
 1. Navigate to your project, and select **Settings > General > Advanced**.
 1. In the Restore project section, select **Restore project**.
 
-## Remove a fork relationship
-
-Prerequisites:
-
-- You must be a project owner to remove a fork relationship.
-
-WARNING:
-If you remove a fork relationship, you can't send merge requests to the source. If anyone has forked your project, their fork also loses the relationship.
-To restore the fork relationship, [use the API](../../../api/projects.md#create-a-forked-fromto-relation-between-existing-projects).
-
-To remove a fork relationship:
-
-1. On the top bar, select **Main menu > Projects** and find your project.
-1. On the left sidebar, select **Settings > General**.
-1. Expand **Advanced**.
-1. In the **Remove fork relationship** section, select **Remove fork relationship**.
-1. To confirm, enter the project path and select **Confirm**.
-
 ## Monitor settings
 
 ### Alerts
@@ -398,16 +380,6 @@ to enable the syncing of public Issues to a [deployed status page](../../../oper
 ## Troubleshooting
 
 When working with project settings, you might encounter the following issues, or require alternate methods to complete specific tasks.
-
-### Remove a fork relationship through console
-
-If removing the fork through the UI or API is not working, you can attempt the fork relationship removal in a [Rails console session](../../../administration/operations/rails_console.md#starting-a-rails-console-session).
-
-```ruby
-p = Project.find_by_full_path('<project_path>')
-u = User.find_by_username('<username>')
-Projects::UnlinkForkService.new(p, u).execute
-```
 
 ### Transfer a project through console
 
