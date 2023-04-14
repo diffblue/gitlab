@@ -49,8 +49,15 @@ export const EMPTY_STATE_I18N = {
   },
 };
 
-export const ONBOARDING_VIEW_I18N = {
-  fetchErrorMessage: s__(
-    'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
+export const FETCH_ERROR_MESSAGE = s__(
+  'ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.',
+);
+
+export const ONBOARDING_LIST_ITEM_I18N = {
+  title: __('Product Analytics'),
+  description: s__(
+    'ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes.',
   ),
+  waitingForEvents: s__('ProductAnalytics|Waiting for events'),
+  loadingInstance: s__('ProductAnalytics|Loading instance'),
 };

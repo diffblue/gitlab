@@ -1,3 +1,4 @@
+import ProductAnalyticsOnboarding from 'ee/product_analytics/onboarding/components/onboarding_list_item.vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import DashboardListItem from 'ee/analytics/analytics_dashboards/components/list/dashboard_list_item.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,6 +11,7 @@ import {
 import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
+import { createAlert } from '~/alert';
 
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
@@ -19,12 +21,14 @@ import {
   TEST_CUSTOM_DASHBOARDS_LIST,
 } from '../mock_data';
 
+jest.mock('~/alert');
 jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
 
 describe('DashboardsList', () => {
   let wrapper;
 
   const findListItems = () => wrapper.findAllComponents(DashboardListItem);
+  const findProductAnalyticsOnboarding = () => wrapper.findComponent(ProductAnalyticsOnboarding);
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
   const findHelpLink = () => wrapper.findByTestId('help-link');
@@ -35,7 +39,6 @@ describe('DashboardsList', () => {
   const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
   const NUMBER_OF_CUSTOM_DASHBOARDS = 1;
-  const NUMBER_OF_DASHBOARDS = jsonList.productAnalytics.length + NUMBER_OF_CUSTOM_DASHBOARDS;
 
   const $router = {
     push: jest.fn(),
@@ -53,6 +56,7 @@ describe('DashboardsList', () => {
         collectorHost: TEST_COLLECTOR_HOST,
         jitsuKey: TEST_JITSU_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         ...provided,
       },
     });
@@ -115,20 +119,51 @@ describe('DashboardsList', () => {
     });
   });
 
-  describe('when the feature dashboards are enabled', () => {
+  describe('when the product analytics feature is enabled', () => {
     const FEATURE = 'productAnalytics';
 
     beforeEach(() => {
       createWrapper({ features: [FEATURE] });
     });
 
-    it('renders a list item for each dashboard', () => {
-      expect(findListItems()).toHaveLength(NUMBER_OF_DASHBOARDS);
+    it('renders the feature component', () => {
+      expect(findProductAnalyticsOnboarding().exists()).toBe(true);
     });
 
-    it('renders a list item for each feature dashboard at the start of the list', () => {
-      jsonList[FEATURE].forEach((dashboard, idx) => {
-        expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+    it('does not render any feature dashboards', () => {
+      expect(findListItems()).toHaveLength(1);
+    });
+
+    describe('and the feature has been set up', () => {
+      beforeEach(() => {
+        return findProductAnalyticsOnboarding().vm.$emit('complete');
+      });
+
+      it('does not render the feature component', () => {
+        expect(findProductAnalyticsOnboarding().exists()).toBe(false);
+      });
+
+      it('renders a list item for each feature dashboard at the start of the list', () => {
+        jsonList[FEATURE].forEach((dashboard, idx) => {
+          expect(findListItems().at(idx).props('dashboard')).toEqual(dashboard);
+        });
+      });
+    });
+
+    describe('and the feature component throws an error', () => {
+      const message = 'some error';
+      const error = new Error(message);
+
+      beforeEach(() => {
+        return findProductAnalyticsOnboarding().vm.$emit('error', error, true, message);
+      });
+
+      it('creates an alert for the error', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          captureError: true,
+          message,
+          error,
+        });
       });
     });
   });

@@ -5,6 +5,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
 import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { createAlert } from '~/alert';
 
 import LIST_OF_FEATURE_DASHBOARDS from '../gl_dashboards/analytics_dashboards.json';
 import {
@@ -22,6 +23,11 @@ import {
   I18N_ALERT_NO_POINTER_DESCRIPTION,
 } from '../constants';
 import DashboardListItem from './list/dashboard_list_item.vue';
+
+const ONBOARDING_FEATURE_COMPONENTS = {
+  productAnalytics: () =>
+    import('ee/product_analytics/onboarding/components/onboarding_list_item.vue'),
+};
 
 export default {
   name: 'DashboardsList',
@@ -56,6 +62,7 @@ export default {
   },
   data() {
     return {
+      requiresOnboarding: Object.keys(ONBOARDING_FEATURE_COMPONENTS),
       featureDashboards: [],
       userDashboards: [],
     };
@@ -64,15 +71,26 @@ export default {
     dashboards() {
       return [...this.featureDashboards, ...this.userDashboards];
     },
+    activeOnboardingComponents() {
+      return Object.fromEntries(
+        Object.entries(ONBOARDING_FEATURE_COMPONENTS)
+          .filter(this.featureEnabled)
+          .filter(this.featureRequiresOnboarding),
+      );
+    },
   },
   async created() {
-    this.loadFeatureDashboards();
-
     if (this.customDashboardsProject) {
       this.loadCustomDashboards();
     }
   },
   methods: {
+    featureEnabled([feature]) {
+      return this.features.includes(feature);
+    },
+    featureRequiresOnboarding([feature]) {
+      return this.requiresOnboarding.includes(feature);
+    },
     routeToDashboard(dashboardId) {
       return this.$router.push(dashboardId);
     },
@@ -82,11 +100,6 @@ export default {
         `${gon.relative_url_root || ''}/${group}/${project}/edit#js-analytics-dashboards-settings`,
       );
     },
-    loadFeatureDashboards() {
-      this.featureDashboards = this.features
-        .map((feature) => LIST_OF_FEATURE_DASHBOARDS[feature])
-        .flat();
-    },
     async loadCustomDashboards() {
       const customFiles = await getCustomDashboards(this.customDashboardsProject);
 
@@ -94,6 +107,17 @@ export default {
         .filter(({ file_name }) => isValidConfigFileName(file_name))
         .map(({ file_name }) => configFileNameToID(file_name))
         .map((id) => ({ id, title: id }));
+    },
+    onboardingComplete(feature) {
+      this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
+      this.featureDashboards.push(...LIST_OF_FEATURE_DASHBOARDS[feature]);
+    },
+    onError(error, captureError = true, message = '') {
+      createAlert({
+        message: message || error.message,
+        captureError,
+        error,
+      });
     },
   },
   I18N_DASHBOARD_LIST_TITLE,
@@ -169,6 +193,14 @@ export default {
       >{{ $options.I18N_ALERT_NO_POINTER_DESCRIPTION }}</gl-alert
     >
     <ul class="content-list gl-border-t gl-border-gray-50">
+      <component
+        :is="setupComponent"
+        v-for="(setupComponent, feature) in activeOnboardingComponents"
+        :key="feature"
+        @complete="onboardingComplete(feature)"
+        @error="onError"
+      />
+
       <dashboard-list-item
         v-for="dashboard in dashboards"
         :key="dashboard.id"

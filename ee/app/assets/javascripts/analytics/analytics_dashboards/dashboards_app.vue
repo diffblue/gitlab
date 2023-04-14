@@ -24,6 +24,11 @@ export default {
           ),
       },
       {
+        name: 'product-analytics-onboarding',
+        path: '/product-analytics-onboarding',
+        component: () => import('ee/product_analytics/onboarding/onboarding_view.vue'),
+      },
+      {
         name: 'instrumentation-detail',
         path: '/setup',
         component: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),

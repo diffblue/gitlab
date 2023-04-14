@@ -6,7 +6,7 @@ import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
   STATE_WAITING_FOR_EVENTS,
-  ONBOARDING_VIEW_I18N,
+  FETCH_ERROR_MESSAGE,
 } from './constants';
 
 export default {
@@ -35,6 +35,15 @@ export default {
     },
   },
   methods: {
+    onComplete() {
+      // Temporary logic to support both /analytics and /product_analytics pages.
+      // Can be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/390551
+      if (this.$listeners.complete) {
+        this.$emit('complete');
+      } else {
+        this.$router.push({ name: 'index' });
+      }
+    },
     onInitialized() {
       this.pollState = true;
     },
@@ -46,7 +55,9 @@ export default {
       });
     },
   },
-  i18n: ONBOARDING_VIEW_I18N,
+  i18n: {
+    fetchErrorMessage: FETCH_ERROR_MESSAGE,
+  },
 };
 </script>
 
@@ -55,7 +66,7 @@ export default {
     <onboarding-state
       v-model="state"
       :poll-state="pollState"
-      @complete="$emit('complete')"
+      @complete="onComplete"
       @error="showError($event, false, $options.i18n.fetchErrorMessage)"
     />
 
