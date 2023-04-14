@@ -55,6 +55,8 @@ module ComplianceManagement
 
         base_scope = base_scope.merged_after(params[:merged_after].beginning_of_day) if params[:merged_after].present?
 
+        base_scope = base_scope.by_target_branch(params[:target_branch]) if params[:target_branch].present?
+
         base_scope.sort_by_attribute(params[:sort])
       end
 

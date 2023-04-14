@@ -18,6 +18,10 @@ module Types
         argument :merged_after, ::Types::DateType,
                  required: false,
                  description: 'Merge requests merged after this date (inclusive).'
+
+        argument :target_branch, ::GraphQL::Types::String,
+                 required: false,
+                 description: 'Filter compliance violations by target branch.'
       end
     end
   end

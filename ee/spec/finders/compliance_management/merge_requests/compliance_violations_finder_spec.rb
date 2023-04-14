@@ -10,8 +10,8 @@ RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsFinder, 
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:project2) { create(:project, :repository, group: group) }
   let_it_be(:project_outside_group) { create(:project, :repository, group: create(:group)) }
-  let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, state: :merged, title: 'abcd') }
-  let_it_be(:merge_request2) { create(:merge_request, source_project: project2, target_project: project2, state: :merged, title: 'zyxw') }
+  let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, state: :merged, title: 'abcd', target_branch: 'dev') }
+  let_it_be(:merge_request2) { create(:merge_request, source_project: project2, target_project: project2, state: :merged, title: 'zyxw', target_branch: 'stable') }
   let_it_be(:merge_request_outside_group) { create(:merge_request, source_project: project_outside_group, target_project: project_outside_group, state: :merged) }
   let_it_be(:compliance_violation) do
     create(:compliance_violation, :approved_by_committer, severity_level: :low, merge_request: merge_request,
@@ -81,6 +81,14 @@ RSpec.describe ComplianceManagement::MergeRequests::ComplianceViolationsFinder, 
             it 'finds the filtered compliance violations' do
               expect(subject).to contain_exactly(result)
             end
+          end
+        end
+
+        context 'when given a target branch' do
+          let(:params) { { target_branch: merge_request.target_branch } }
+
+          it 'finds the filtered compliance violations' do
+            expect(subject).to contain_exactly(compliance_violation)
           end
         end
       end

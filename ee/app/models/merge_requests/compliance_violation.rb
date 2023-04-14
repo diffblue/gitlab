@@ -22,7 +22,7 @@ module MergeRequests
     scope :by_projects, -> (project_ids) { join_merge_requests.where(merge_requests: { target_project_id: project_ids }) }
     scope :merged_before, -> (date) { where("merged_at <= ?", date.end_of_day) }
     scope :merged_after, -> (date) { where("merged_at >= ?", date.beginning_of_day) }
-
+    scope :by_target_branch, -> (branch) { where(target_branch: branch) }
     scope :order_by_reason, -> (direction) { order(reason: direction, id: direction) }
     scope :order_by_severity_level, -> (direction) { order(severity_level: direction, id: direction) }
     scope :order_by_merge_request_title, -> (direction) { join_merge_requests.order("\"merge_requests\".\"title\" #{direction.to_s.upcase}", id: direction).references(:merge_request) }
