@@ -25,7 +25,8 @@ RSpec.describe TreeHelper, feature_category: :source_code_management do
         escaped_ref: sha,
         full_name: project.name_with_namespace,
         resource_id: project.to_global_id,
-        user_id: user.to_global_id
+        user_id: user.to_global_id,
+        explain_code_available: 'false'
       )
     end
   end

@@ -10,7 +10,8 @@ module EE
         path_locks_available: project.feature_available?(:file_locks).to_s,
         path_locks_toggle: toggle_project_path_locks_path(project),
         resource_id: project.to_global_id,
-        user_id: current_user.present? ? current_user.to_global_id : ''
+        user_id: current_user.present? ? current_user.to_global_id : '',
+        explain_code_available: ::Llm::ExplainCodeService.new(current_user, project).valid?.to_s
       })
     end
   end
