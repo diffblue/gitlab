@@ -103,7 +103,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_upload_pack.body[:status]).to be_falsey
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.info_refs_upload_pack.body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -131,7 +131,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_upload_pack.body[:status]).to be_falsey
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.info_refs_upload_pack.body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -157,7 +157,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_upload_pack.body[:status]).to be_truthy
           end
 
-          it 'has no messsage' do
+          it 'has no message' do
             expect(subject.info_refs_upload_pack.body[:message]).to be_nil
           end
 
@@ -197,7 +197,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.upload_pack(irrelevant_encoded_message)).to be_a(Gitlab::Geo::GitSSHProxy::FailedAPIResponse)
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.upload_pack(irrelevant_encoded_message).body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -217,7 +217,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.upload_pack(irrelevant_encoded_message)).to be_a(Gitlab::Geo::GitSSHProxy::APIResponse)
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.upload_pack(irrelevant_encoded_message).body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -245,7 +245,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
               expect(subject.upload_pack(base64_encoded_response).code).to be(201)
             end
 
-            it 'has no messsage' do
+            it 'has no message' do
               expect(subject.upload_pack(base64_encoded_response).body[:message]).to be_nil
             end
 
@@ -272,7 +272,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
               expect(subject.upload_pack(base64_encoded_response).code).to be(201)
             end
 
-            it 'has no messsage' do
+            it 'has no message' do
               expect(subject.upload_pack(base64_encoded_response).body[:message]).to be_nil
             end
 
@@ -330,7 +330,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_receive_pack.body[:status]).to be_falsey
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.info_refs_receive_pack.body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -358,7 +358,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_receive_pack.body[:status]).to be_falsey
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.info_refs_receive_pack.body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -384,7 +384,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.info_refs_receive_pack.body[:status]).to be_truthy
           end
 
-          it 'has no messsage' do
+          it 'has no message' do
             expect(subject.info_refs_receive_pack.body[:message]).to be_nil
           end
 
@@ -424,7 +424,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.receive_pack(irrelevant_encoded_message)).to be_a(Gitlab::Geo::GitSSHProxy::FailedAPIResponse)
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.receive_pack(irrelevant_encoded_message).body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -444,7 +444,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.receive_pack(irrelevant_encoded_message)).to be_a(Gitlab::Geo::GitSSHProxy::APIResponse)
           end
 
-          it 'has a messsage' do
+          it 'has a message' do
             expect(subject.receive_pack(irrelevant_encoded_message).body[:message]).to eql("Failed to contact primary #{primary_repo_http}\nError: #{error_msg}")
           end
 
@@ -471,7 +471,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo, feature_category: :geo_replicatio
             expect(subject.receive_pack(base64_encoded_response).code).to be(201)
           end
 
-          it 'has no messsage' do
+          it 'has no message' do
             expect(subject.receive_pack(base64_encoded_response).body[:message]).to be_nil
           end
 

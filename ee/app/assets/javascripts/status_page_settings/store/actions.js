@@ -41,7 +41,7 @@ export const updateStatusPageSettings = ({ state, dispatch, commit }) => {
 export const receiveStatusPageSettingsUpdateSuccess = () => {
   /**
    * The operations_controller currently handles successful requests
-   * by creating an alert banner messsage to notify the user.
+   * by creating an alert banner message to notify the user.
    */
   refreshCurrentPage();
 };
