@@ -15919,6 +15919,12 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
+msgid "Editing markdown"
+msgstr ""
+
+msgid "Editing rich text"
+msgstr ""
+
 msgid "Elapsed time"
 msgstr ""
 
@@ -48665,13 +48671,7 @@ msgstr ""
 msgid "Viewing commit"
 msgstr ""
 
-msgid "Viewing markdown"
-msgstr ""
-
 msgid "Viewing projects and designs data from a primary site is not possible when using a unified URL. Visit the secondary site directly. %{geo_help_url}"
-msgstr ""
-
-msgid "Viewing rich text"
 msgstr ""
 
 msgid "Violation"
