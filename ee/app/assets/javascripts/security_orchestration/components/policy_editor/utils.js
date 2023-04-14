@@ -3,7 +3,12 @@ import createPolicyProject from 'ee/security_orchestration/graphql/mutations/cre
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import createMergeRequestMutation from '~/graphql_shared/mutations/create_merge_request.mutation.graphql';
-import { DEFAULT_MR_TITLE, RULE_MODE_SCANNERS, SECURITY_POLICY_ACTIONS } from './constants';
+import {
+  DEFAULT_MR_TITLE,
+  PRIMARY_POLICY_KEYS,
+  RULE_MODE_SCANNERS,
+  SECURITY_POLICY_ACTIONS,
+} from './constants';
 
 /**
  * Checks if an error exists and throws it if it does
@@ -141,7 +146,7 @@ export const createHumanizedScanners = (scanners = []) =>
  */
 export const isValidPolicy = ({
   policy = {},
-  primaryKeys = [],
+  primaryKeys = PRIMARY_POLICY_KEYS,
   rulesKeys = [],
   actionsKeys = [],
 }) => {

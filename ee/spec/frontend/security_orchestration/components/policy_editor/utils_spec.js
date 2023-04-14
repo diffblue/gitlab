@@ -125,7 +125,7 @@ describe('isValidPolicy', () => {
     ${{}}                                                                                                                                          | ${true}
     ${{ policy: {}, primaryKeys: [], rulesKeys: [], actionsKeys: [] }}                                                                             | ${true}
     ${{ policy: { foo: 'bar' }, primaryKeys: ['foo'], rulesKeys: [], actionsKeys: [] }}                                                            | ${true}
-    ${{ policy: { foo: 'bar' }, primaryKeys: [], rulesKeys: [], actionsKeys: [] }}                                                                 | ${false}
+    ${{ policy: { foo: 'bar' }, rulesKeys: [], actionsKeys: [] }}                                                                                  | ${false}
     ${{ policy: { foo: 'bar', rules: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'rules'], rulesKeys: ['zoo'], actionsKeys: [] }}                     | ${true}
     ${{ policy: { foo: 'bar', rules: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'rules'], rulesKeys: [], actionsKeys: [] }}                          | ${false}
     ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: ['zoo'] }}                 | ${true}
