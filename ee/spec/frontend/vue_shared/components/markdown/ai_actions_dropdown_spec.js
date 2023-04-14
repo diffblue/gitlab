@@ -115,7 +115,7 @@ describe('AI actions dropdown component', () => {
       it('sets the textarea value', () => {
         expect(updateText).toHaveBeenCalledWith({
           textArea: document.querySelector('textarea'),
-          tag: 'yay',
+          tag: `yay\n***\n_This comment was generated using OpenAI_`,
           cursorOffset: 0,
           wrap: false,
         });
