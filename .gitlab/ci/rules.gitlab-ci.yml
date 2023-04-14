@@ -619,6 +619,8 @@
 
 .rails:rules:ee-and-foss-default-rules:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
@@ -631,6 +633,8 @@
 
 .rails:rules:system-default-rules:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
@@ -645,6 +649,8 @@
 
 .rails:rules:previous-failed-tests-default-rules:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-security-merge-request
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
@@ -811,6 +817,8 @@
   rules:
     - <<: *if-not-canonical-namespace
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
@@ -858,6 +866,8 @@
 .build-images:rules:build-assets-image:
   rules:
     - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-ruby2-branch
@@ -954,12 +964,16 @@
 ######################
 .dev-fixtures:rules:ee-and-foss:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-refs
       changes: *code-backstage-patterns
 
 .dev-fixtures:rules:ee-only:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-default-refs
       changes: *code-backstage-patterns
@@ -1006,6 +1020,8 @@
   rules:
     # The `glfm-verify` job has dependencies on EE, so only run it for EE
     - !reference [".strict-ee-only-rules", rules]
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     # If any of the files that are DIRECTLY related to generating or managing the GLFM specification change,
     # run `glfm-verify` to get quick feedback on any needed updates, even if the MR is not yet approved
     - changes: *glfm-patterns
@@ -1032,7 +1048,6 @@
 ##################
 # Frontend rules #
 ##################
-
 .frontend:rules:predictive-default-rules:
   rules:
     - <<: *if-merge-request-approved
@@ -1041,10 +1056,14 @@
       when: never
     - <<: *if-security-merge-request
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
 
 .frontend:rules:compile-production-assets:
   rules:
     - <<: *if-not-canonical-namespace
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
@@ -1063,8 +1082,6 @@
     - <<: *if-not-canonical-namespace
       when: never
     - <<: *if-not-ee
-      when: never
-    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - !reference [.frontend:rules:compile-production-assets, rules]
 
@@ -1092,6 +1109,8 @@
 
 .frontend:rules:default-frontend-jobs:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request-labels-frontend-and-feature-flag
     - <<: *if-default-refs
@@ -1100,6 +1119,8 @@
 .frontend:rules:default-frontend-jobs-as-if-foss:
   rules:
     - !reference [".strict-ee-only-rules", rules]
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
     - <<: *if-merge-request-labels-as-if-foss
@@ -1136,6 +1157,8 @@
 
 .frontend:rules:jest:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-fork-merge-request
       when: never
     - <<: *if-merge-request-labels-run-all-jest
@@ -1175,6 +1198,8 @@
   rules:
     - !reference [".strict-ee-only-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-jest
     - <<: *if-merge-request
       changes: *frontend-dependency-patterns
@@ -1205,6 +1230,8 @@
   rules:
     - !reference [".strict-ee-only-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *frontend-patterns-for-as-if-foss
 
@@ -1223,6 +1250,8 @@
   rules:
     - <<: *if-not-canonical-namespace
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-branch-refs
       changes: *frontend-build-patterns
       allow_failure: true
@@ -1235,6 +1264,8 @@
 ################
 .memory:rules:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-refs
       changes: *code-patterns
 
@@ -1294,6 +1325,8 @@
 .qa:rules:determine-e2e-tests:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
       allow_failure: true
@@ -1408,6 +1441,8 @@
 .rails:rules:single-db:
   rules:
     - <<: *if-merge-request-labels-run-single-db
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *db-patterns
     - <<: *if-merge-request
@@ -1417,6 +1452,8 @@
 .rails:rules:db:check-migrations-single-db:
   rules:
     - <<: *if-merge-request-labels-run-single-db
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *db-patterns
     - <<: *if-merge-request
@@ -1425,6 +1462,8 @@
 .rails:rules:single-db-ci-connection:
   rules:
     - <<: *if-merge-request-labels-run-single-db
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *db-patterns
     - <<: *if-merge-request
@@ -1434,6 +1473,8 @@
 .rails:rules:db:check-migrations-single-db-ci-connection:
   rules:
     - <<: *if-merge-request-labels-run-single-db
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *db-patterns
     - <<: *if-merge-request
@@ -1441,6 +1482,8 @@
 
 .rails:rules:db-backup:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-default-refs
       changes: *db-backup-patterns
@@ -1467,6 +1510,8 @@
   rules:
     - <<: *if-fork-merge-request
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
@@ -1481,6 +1526,8 @@
 
 .rails:rules:rspec-predictive:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-approved
       when: never
     - <<: *if-automated-merge-request
@@ -1500,6 +1547,8 @@
 
 .rails:rules:ee-and-foss-mr-with-migration:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request
       changes: *db-patterns
     - <<: *if-merge-request-labels-run-all-rspec
@@ -1555,6 +1604,8 @@
 .rails:rules:ee-only-migration:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
@@ -1612,6 +1663,8 @@
   rules:
     - <<: *if-not-ee
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
       changes: *core-backend-patterns
@@ -1638,6 +1691,8 @@
       when: never
     - <<: *if-fork-merge-request
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - !reference [".rails:rules:ee-and-foss-default-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
       changes: *backend-patterns
@@ -1647,6 +1702,8 @@
     - <<: *if-not-ee
       when: never
     - <<: *if-fork-merge-request
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - !reference [".rails:rules:ee-and-foss-default-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
@@ -1658,12 +1715,16 @@
       when: never
     - <<: *if-fork-merge-request
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - !reference [".rails:rules:system-default-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
       changes: *code-backstage-patterns
 
 .rails:rules:ee-and-foss-db-library-code:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-refs
       changes: *db-library-patterns
     - <<: *if-merge-request-labels-run-all-rspec
@@ -1672,6 +1733,8 @@
 .rails:rules:ee-mr-and-default-branch-only:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-labels-run-all-rspec
     - <<: *if-merge-request
@@ -1701,6 +1764,8 @@
       when: never
     - <<: *if-merge-request-labels-as-if-foss
       when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
     - <<: *if-dot-com-gitlab-org-merge-request
@@ -1729,6 +1794,8 @@
 .rails:rules:deprecations:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-default-branch-schedule-nightly
     - <<: *if-ruby2-branch-schedule-nightly
@@ -1768,6 +1835,8 @@
 
 .rails:rules:default-branch-schedule-nightly--code-backstage-default-rules:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-branch-schedule-nightly
     - <<: *if-merge-request
       changes: [".gitlab/ci/rails.gitlab-ci.yml"]
@@ -1785,6 +1854,8 @@
 .rails:rules:rspec-feature-flags:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-default-refs
       changes: *code-backstage-patterns
@@ -2002,6 +2073,8 @@
 #################
 .reports:rules:code_quality:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$CODE_QUALITY_DISABLED'
       when: never
     # Run code_quality on master until https://gitlab.com/gitlab-org/gitlab/-/issues/363747 is resolved
@@ -2013,6 +2086,8 @@
 
 .reports:rules:brakeman-sast:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: $SAST_DISABLED
       when: never
     - if: $SAST_EXCLUDED_ANALYZERS =~ /brakeman/
@@ -2024,6 +2099,8 @@
 
 .reports:rules:semgrep-sast:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: $SAST_DISABLED
       when: never
     - if: $SAST_EXCLUDED_ANALYZERS =~ /semgrep/
@@ -2041,6 +2118,8 @@
 
 .reports:rules:secret_detection:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$SECRET_DETECTION_DISABLED'
       when: never
     # Scan each commit on master to feed the Vulnerability Reports with detected secrets
@@ -2050,6 +2129,8 @@
 
 .reports:rules:gemnasium-dependency_scanning:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$DEPENDENCY_SCANNING_DISABLED || $GITLAB_FEATURES !~ /\bdependency_scanning\b/ || $DS_EXCLUDED_ANALYZERS =~ /gemnasium([^-]|$)/'
       when: never
     # Run Dependency Scanning on master until https://gitlab.com/gitlab-org/gitlab/-/issues/361657 is resolved
@@ -2059,6 +2140,8 @@
 
 .reports:rules:gemnasium-python-dependency_scanning:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$DEPENDENCY_SCANNING_DISABLED || $GITLAB_FEATURES !~ /\bdependency_scanning\b/ || $DS_EXCLUDED_ANALYZERS =~ /gemnasium-python/'
       when: never
     # Run Dependency Scanning on master until https://gitlab.com/gitlab-org/gitlab/-/issues/361657 is resolved
@@ -2068,6 +2151,8 @@
 
 .reports:rules:yarn-audit-dependency_scanning:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$DEPENDENCY_SCANNING_DISABLED || $GITLAB_FEATURES !~ /\bdependency_scanning\b/'
       when: never
     # Run Dependency Scanning on master until https://gitlab.com/gitlab-org/gitlab/-/issues/361657 is resolved
@@ -2077,6 +2162,8 @@
 
 .reports:rules:test-dast:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - if: '$DAST_DISABLED || $GITLAB_FEATURES !~ /\bdast\b/'
       when: never
     - <<: *if-merge-request
@@ -2258,6 +2345,8 @@
 
 .setup:rules:gitlab_git_test:
   rules:
+    - <<: *if-merge-request-labels-pipeline-expedite
+      when: never
     - <<: *if-default-refs
       changes: *code-backstage-patterns
 
@@ -2287,6 +2376,8 @@
 .setup:rules:verify-tests-yml:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-default-refs
       changes: *code-backstage-patterns
