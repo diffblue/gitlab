@@ -46,7 +46,7 @@ module Users
 
       unless result.success?
         log_identity_verification('Phone', :failed_attempt, result.reason)
-        return render status: :bad_request, json: { message: result.message }
+        return render status: :bad_request, json: { message: result.message, reason: result.reason }
       end
 
       log_identity_verification('Phone', :sent_phone_verification_code)
@@ -58,7 +58,7 @@ module Users
 
       unless result.success?
         log_identity_verification('Phone', :failed_attempt, result.reason)
-        return render status: :bad_request, json: { message: result.message }
+        return render status: :bad_request, json: { message: result.message, reason: result.reason }
       end
 
       log_identity_verification('Phone', :success)

@@ -5,6 +5,8 @@ module PhoneVerification
     class VerifyCodeService
       include ActionView::Helpers::DateHelper
 
+      TELESIGN_ERROR = :unknown_telesign_error
+
       def initialize(user, params = {})
         @user = user
         @params = params
@@ -71,6 +73,8 @@ module PhoneVerification
       end
 
       def error_downstream_service(result)
+        force_verify if result.reason == TELESIGN_ERROR
+
         ServiceResponse.error(
           message: result.message,
           reason: result.reason
@@ -81,6 +85,13 @@ module PhoneVerification
         ServiceResponse.error(
           message: s_('PhoneVerification|Something went wrong. Please try again.'),
           reason: :internal_server_error
+        )
+      end
+
+      def force_verify
+        record.update!(
+          telesign_reference_xid: TELESIGN_ERROR.to_s,
+          validated_at: Time.now.utc
         )
       end
 

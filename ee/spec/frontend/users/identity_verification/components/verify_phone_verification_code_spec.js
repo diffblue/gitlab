@@ -194,10 +194,13 @@ describe('Verify phone verification code input component', () => {
     });
 
     describe('when request is unsuccessful', () => {
+      const errorMessage = 'Enter a valid code';
+      const reason = 'bad_request';
+
       beforeEach(() => {
         axiosMock
           .onPost(VERIFY_CODE_PATH)
-          .reply(HTTP_STATUS_BAD_REQUEST, { message: 'Enter a valid code' });
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
 
         enterCode('000');
         submitForm();
@@ -210,6 +213,25 @@ describe('Verify phone verification code input component', () => {
           captureError: true,
           error: expect.any(Error),
         });
+      });
+    });
+
+    describe('when TeleSign is down', () => {
+      const errorMessage = 'Something went wrong';
+      const reason = 'unknown_telesign_error';
+
+      beforeEach(() => {
+        axiosMock
+          .onPost(VERIFY_CODE_PATH)
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
+
+        enterCode('000');
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('emits the verified event', () => {
+        expect(wrapper.emitted('verified')).toHaveLength(1);
       });
     });
   });

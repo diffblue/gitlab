@@ -18,7 +18,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
     end
   end
 
-  describe '#execute', :aggregate_failures do
+  describe '#execute' do
     context 'when phone number is valid' do
       let(:risk_score) { 80 }
       let(:telesign_response) do
@@ -34,7 +34,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         )
       end
 
-      it 'returns a success ServiceResponse' do
+      it 'returns a success ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -71,7 +71,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -94,7 +94,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         end
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -120,7 +120,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -146,7 +146,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
       end
     end
 
-    context 'when there is a server error' do
+    context 'when TeleSign returns an unsuccessful response' do
       let(:telesign_response) do
         instance_double(
           Telesign::RestClient::Response,
@@ -159,13 +159,13 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_error
         expect(response.message).to eq('Something went wrong. Please try again.')
-        expect(response.reason).to be(:internal_server_error)
+        expect(response.reason).to be(:unknown_telesign_error)
       end
     end
 
@@ -179,7 +179,7 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         end
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)

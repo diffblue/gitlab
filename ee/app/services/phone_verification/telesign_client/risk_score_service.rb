@@ -3,7 +3,7 @@
 module PhoneVerification
   module TelesignClient
     class RiskScoreService < BaseService
-      # TeleSign API: https://developer.telesign.com/enterprise/reference/submitphonenumberforscore
+      # TeleSign API: https://developer.telesign.com/enterprise/reference/submitphonenumberforintelligence
 
       # High risk: https://developer.telesign.com/enterprise/docs/codes-languages-and-time-zones#phone-type-codes
       BLOCKED_PHONE_TYPES = %w[TOLL_FREE PAGER VOIP INVALID OTHER VOICEMAIL RESTRICTED_PREMIUM PAYPHONE].freeze
@@ -34,7 +34,7 @@ module PhoneVerification
         when HTTP_CLIENT_ERROR
           invalid_phone_number_error
         else
-          generic_error
+          telesign_error
         end
 
       rescue URI::InvalidURIError

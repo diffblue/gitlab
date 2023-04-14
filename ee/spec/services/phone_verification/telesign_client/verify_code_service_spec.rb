@@ -24,7 +24,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
     end
   end
 
-  describe '#execute', :aggregate_failures do
+  describe '#execute' do
     context 'when verification code is verified successfully' do
       let(:telesign_response) do
         instance_double(
@@ -38,7 +38,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         )
       end
 
-      it 'returns a success ServiceResponse' do
+      it 'returns a success ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -75,7 +75,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -97,7 +97,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -119,7 +119,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -129,7 +129,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
       end
     end
 
-    context 'when there is an error with TeleSign' do
+    context 'when TeleSign returns an unsuccessful response' do
       let(:telesign_response) do
         instance_double(
           Telesign::RestClient::Response,
@@ -142,13 +142,13 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         )
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_error
         expect(response.message).to eq('Something went wrong. Please try again.')
-        expect(response.reason).to eq(:internal_server_error)
+        expect(response.reason).to eq(:unknown_telesign_error)
       end
 
       it 'logs the error message' do
@@ -175,7 +175,7 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         end
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
