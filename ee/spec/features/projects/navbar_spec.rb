@@ -17,6 +17,7 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
 
     stub_config(registry: { enabled: false })
     stub_feature_flags(harbor_registry_integration: false)
+    stub_feature_flags(ml_experiment_tracking: false)
     stub_feature_flags(combined_analytics_dashboards: false)
     insert_package_nav(_('Deployments'))
     insert_infrastructure_registry_nav
@@ -144,6 +145,18 @@ RSpec.describe 'Project navbar', feature_category: :navigation do
         within: _('Analytics'),
         new_sub_nav_item_name: _('Dashboards')
       )
+
+      visit project_path(project)
+    end
+
+    it_behaves_like 'verified navigation bar'
+  end
+
+  context 'when model experiments is available' do
+    before do
+      stub_feature_flags(ml_experiment_tracking: true)
+
+      insert_model_experiments_nav(_('Terraform modules'))
 
       visit project_path(project)
     end
