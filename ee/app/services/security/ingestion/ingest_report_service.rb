@@ -25,7 +25,6 @@ module Security
       def execute
         finding_map_collection.each_slice(BATCH_SIZE)
           .flat_map { |slice| ingest_slice(slice) }
-          .tap { |ids| mark_resolved_vulnerabilities(ids) }
       end
 
       private
@@ -59,12 +58,6 @@ module Security
 
         self.errored = true
         security_scan.add_processing_error!(INGESTION_ERROR)
-      end
-
-      def mark_resolved_vulnerabilities(ingested_ids)
-        scanners.each do |scanner|
-          MarkAsResolvedService.execute(scanner, ingested_ids)
-        end
       end
     end
   end

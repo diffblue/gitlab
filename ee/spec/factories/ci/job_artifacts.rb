@@ -44,6 +44,30 @@ FactoryBot.define do
       end
     end
 
+    trait :semgrep_web_vulnerabilities do
+      file_type { :sast }
+      file_format { :raw }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/master/semgrep-web-vulnerabilities.json'),
+          'application/json'
+        )
+      end
+    end
+
+    trait :semgrep_api_vulnerabilities do
+      file_type { :sast }
+      file_format { :raw }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/master/semgrep-api-vulnerabilities.json'),
+          'application/json'
+        )
+      end
+    end
+
     trait :dast_with_evidence do
       file_type { :dast }
       file_format { :raw }
