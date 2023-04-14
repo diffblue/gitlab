@@ -71,10 +71,13 @@ export default {
 
           if (data?.aiCompletionResponse?.responseBody) {
             const textArea = this.$el.closest('.md-area')?.querySelector('textarea');
+            const generatedByText = `${data.aiCompletionResponse.responseBody}\n***\n_${__(
+              'This comment was generated using OpenAI',
+            )}_`;
             if (textArea) {
               updateText({
                 textArea,
-                tag: data.aiCompletionResponse.responseBody,
+                tag: generatedByText,
                 cursorOffset: 0,
                 wrap: false,
               });
