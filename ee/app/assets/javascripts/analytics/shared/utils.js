@@ -4,6 +4,7 @@ import { extractVSAFeaturesFromGON } from '~/analytics/shared/utils';
 import dateFormat from '~/lib/dateformat';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { fractionDigits } from '../dashboards/utils';
 import { DEFAULT_NULL_SERIES_OPTIONS, DEFAULT_SERIES_DATA_OPTIONS } from './constants';
 
 export const formattedDate = (d) => dateFormat(d, dateFormats.defaultDate);
@@ -290,3 +291,14 @@ export const pairDataAndLabels = ({ datasetNames, datasets = [], axisLabels }) =
     data: zip(axisLabels, dataset.data),
   })),
 ];
+
+/**
+ * Takes average duration in days of a stage on a specific date and returns it with the correct amount digits after the decimal point
+ * @param {Number} metric - Average duration in days of a stage on a specific date
+ * @returns {number} Formatted metric with correct amount of digits after decimal point
+ */
+export const formatDurationOverviewTooltipMetric = (metric) => {
+  const decimalPlaces = fractionDigits(metric);
+
+  return Number(metric.toFixed(decimalPlaces));
+};

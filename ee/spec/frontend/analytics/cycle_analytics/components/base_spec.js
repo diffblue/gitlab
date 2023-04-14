@@ -6,6 +6,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Component from 'ee/analytics/cycle_analytics/components/base.vue';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
+import DurationOverviewChart from 'ee/analytics/cycle_analytics/components/duration_overview_chart.vue';
 import TypeOfWorkCharts from 'ee/analytics/cycle_analytics/components/type_of_work_charts.vue';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import ValueStreamAggregationStatus from 'ee/analytics/cycle_analytics/components/value_stream_aggregation_status.vue';
@@ -195,6 +196,10 @@ describe('EE Value Stream Analytics component', () => {
     expect(wrapper.findComponent(DurationChart).exists()).toBe(flag);
   };
 
+  const displaysDurationOverviewChart = (flag) => {
+    expect(wrapper.findComponent(DurationOverviewChart).exists()).toBe(flag);
+  };
+
   const displaysTypeOfWork = (flag) => {
     expect(wrapper.findComponent(TypeOfWorkCharts).exists()).toBe(flag);
   };
@@ -246,6 +251,10 @@ describe('EE Value Stream Analytics component', () => {
       displaysDurationChart(false);
     });
 
+    it('does not display the duration overview chart', () => {
+      displaysDurationOverviewChart(false);
+    });
+
     it('does not display the path navigation', () => {
       displaysPathNavigation(false);
     });
@@ -290,6 +299,10 @@ describe('EE Value Stream Analytics component', () => {
       displaysDurationChart(false);
     });
 
+    it('does not display the duration overview chart', () => {
+      displaysDurationOverviewChart(false);
+    });
+
     it('does not display the path navigation', () => {
       displaysPathNavigation(false);
     });
@@ -330,8 +343,12 @@ describe('EE Value Stream Analytics component', () => {
       displaysTypeOfWork(true);
     });
 
-    it('displays the duration chart', () => {
-      displaysDurationChart(true);
+    it('displays the duration overview chart', () => {
+      displaysDurationOverviewChart(true);
+    });
+
+    it('does not display the duration chart', () => {
+      displaysDurationChart(false);
     });
 
     it('hides the stage table', () => {
@@ -368,6 +385,10 @@ describe('EE Value Stream Analytics component', () => {
 
       it('displays the duration chart', () => {
         displaysDurationChart(true);
+      });
+
+      it('does not display the duration overview chart', () => {
+        displaysDurationOverviewChart(false);
       });
     });
   });

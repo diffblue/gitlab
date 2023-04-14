@@ -17,6 +17,7 @@ import ValueStreamAggregationStatus from './value_stream_aggregation_status.vue'
 import ValueStreamAggregatingWarning from './value_stream_aggregating_warning.vue';
 import ValueStreamEmptyState from './value_stream_empty_state.vue';
 import ValueStreamSelect from './value_stream_select.vue';
+import DurationOverviewChart from './duration_overview_chart.vue';
 
 export default {
   name: 'CycleAnalytics',
@@ -33,6 +34,7 @@ export default {
     ValueStreamMetrics,
     ValueStreamSelect,
     UrlSync,
+    DurationOverviewChart,
   },
   props: {
     emptyStateSvgPath: {
@@ -265,7 +267,13 @@ export default {
           :dashboards-path="dashboardsPath"
         />
         <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
-          <duration-chart class="gl-mb-6" :stages="activeStages" :selected-stage="selectedStage" />
+          <duration-overview-chart v-if="isOverviewStageSelected" class="gl-mb-6" />
+          <duration-chart
+            v-else
+            class="gl-mb-6"
+            :stages="activeStages"
+            :selected-stage="selectedStage"
+          />
           <type-of-work-charts v-if="shouldRenderTasksByType" class="gl-mb-6" />
         </div>
         <stage-table

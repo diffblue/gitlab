@@ -25,7 +25,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
   } = rootGetters;
   return Promise.all(
     activeStages.map((stage) => {
-      const { id } = stage;
+      const { id, name } = stage;
 
       return getDurationChart({
         namespacePath,
@@ -34,7 +34,7 @@ export const fetchDurationData = ({ dispatch, commit, rootGetters }) => {
         params: cycleAnalyticsRequestParams,
       })
         .then(checkForDataError)
-        .then(({ data }) => ({ id, selected: true, data }));
+        .then(({ data }) => ({ id, name, selected: true, data }));
     }),
   )
     .then((data) => commit(types.RECEIVE_DURATION_DATA_SUCCESS, data))

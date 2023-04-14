@@ -8,6 +8,7 @@ import {
   getLabelEventsIdentifiers,
   flattenDurationChartData,
   getDurationChartData,
+  getDurationOverviewChartData,
   transformRawStages,
   getTasksByTypeData,
   flattenTaskByTypeSeries,
@@ -17,6 +18,8 @@ import {
   formatMedianValuesWithOverview,
   generateFilterTextDescription,
   groupDurationsByDay,
+  progressiveSummation,
+  formatDurationOverviewChartData,
 } from 'ee/analytics/cycle_analytics/utils';
 import {
   TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
@@ -39,6 +42,8 @@ import {
   transformedDurationData,
   flattenedDurationData,
   durationChartPlottableData,
+  durationOverviewChartPlottableData,
+  summedDurationOverviewData,
   issueStage,
   rawCustomStage,
   rawTasksByTypeData,
@@ -194,6 +199,122 @@ describe('Value Stream Analytics utils', () => {
 
       expect(plottableData).toEqual(expect.arrayContaining(result));
       expect(plottableData).toHaveLength(totalDays + 1);
+    });
+  });
+
+  describe('formatDurationOverviewChartData', () => {
+    it('formats the duration overview chart data as expected', () => {
+      const durationData = [
+        { average_duration_in_seconds: null, date: '2023-04-01' },
+        { average_duration_in_seconds: 259200, date: '2023-04-02' },
+        { average_duration_in_seconds: null, date: '2023-04-03' },
+      ];
+
+      const groupedDataByDay = new Map();
+
+      groupedDataByDay.set('2023-04-01', [null, null, null]);
+      groupedDataByDay.set('2023-04-02', [86400, 259200, null]);
+      groupedDataByDay.set('2023-04-03', [432000, 172800, null]);
+
+      const formattedDurationOverviewChartData = [
+        ['2023-04-01', null],
+        ['2023-04-02', 3],
+        ['2023-04-03', 0],
+      ];
+
+      expect(formatDurationOverviewChartData(durationData, groupedDataByDay)).toStrictEqual(
+        formattedDurationOverviewChartData,
+      );
+    });
+  });
+
+  describe('getDurationOverviewChartData', () => {
+    const nulledData = [
+      {
+        name: 'Plan',
+        data: [
+          { average_duration_in_seconds: null, date: '2019-01-01T00:00:00.000Z' },
+          { average_duration_in_seconds: null, date: '2019-01-02T00:00:00.000Z' },
+        ],
+      },
+    ];
+
+    const zerodData = [
+      {
+        name: 'Issue',
+        data: [
+          { average_duration_in_seconds: 0, date: '2019-01-01T00:00:00.000Z' },
+          { average_duration_in_seconds: 0, date: '2019-01-02T00:00:00.000Z' },
+        ],
+      },
+    ];
+
+    const nullAndPositiveData = [
+      {
+        name: 'Issue',
+        data: [
+          { average_duration_in_seconds: null, date: '2019-01-01T00:00:00.000Z' },
+          { average_duration_in_seconds: 259200, date: '2019-01-02T00:00:00.000Z' },
+        ],
+      },
+      ...nulledData,
+    ];
+
+    const nulledPlottableData = [
+      {
+        name: 'Plan',
+        data: [
+          ['2019-01-01', null],
+          ['2019-01-02', null],
+        ],
+      },
+    ];
+
+    const zeroedPlottableData = [
+      {
+        name: 'Issue',
+        data: [
+          ['2019-01-01', 0],
+          ['2019-01-02', 0],
+        ],
+      },
+    ];
+
+    const nullAndPositivePlottableData = [
+      {
+        name: 'Issue',
+        data: [
+          ['2019-01-01', null],
+          ['2019-01-02', 3],
+        ],
+      },
+      {
+        name: 'Plan',
+        data: [
+          ['2019-01-01', null],
+          ['2019-01-02', 0],
+        ],
+      },
+    ];
+
+    it.each`
+      description                                    | rawData                    | result
+      ${'with positive average durations'}           | ${transformedDurationData} | ${durationOverviewChartPlottableData}
+      ${'with zeroes'}                               | ${zerodData}               | ${zeroedPlottableData}
+      ${'with nulls'}                                | ${nulledData}              | ${nulledPlottableData}
+      ${'with positive average durations and nulls'} | ${nullAndPositiveData}     | ${nullAndPositivePlottableData}
+    `('computes the plottable data for each stage $description', ({ rawData, result }) => {
+      const plottableDurationOverviewData = getDurationOverviewChartData(rawData);
+
+      expect(plottableDurationOverviewData).toEqual(expect.arrayContaining(result));
+    });
+  });
+
+  describe('progressiveSummation', () => {
+    it('progressively sums up the duration data as expected', () => {
+      expect(progressiveSummation(durationOverviewChartPlottableData)).toStrictEqual(
+        summedDurationOverviewData,
+      );
     });
   });
 
