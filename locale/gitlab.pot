@@ -1376,6 +1376,9 @@ msgstr ""
 msgid "(removed)"
 msgstr ""
 
+msgid "(required)"
+msgstr ""
+
 msgid "(revoked)"
 msgstr ""
 
@@ -1386,9 +1389,6 @@ msgid "(we need your current password to confirm your changes)"
 msgstr ""
 
 msgid "* All times are in UTC unless specified"
-msgstr ""
-
-msgid "*Required"
 msgstr ""
 
 msgid "+ %{amount} more"
@@ -12359,9 +12359,6 @@ msgstr ""
 msgid "Create snippet"
 msgstr ""
 
-msgid "Create tag %{tagName}"
-msgstr ""
-
 msgid "Create testing scenarios by defining project conditions in your development platform."
 msgstr ""
 
@@ -12386,7 +12383,7 @@ msgstr ""
 msgid "Create, update, or delete a merge request."
 msgstr ""
 
-msgid "CreateGitTag|Add a message to the tag. Leaving this blank creates a %{linkStart}lightweight tag%{linkEnd}."
+msgid "CreateGitTag|Add a message to the tag. Leaving this blank creates a lightweight tag."
 msgstr ""
 
 msgid "CreateGitTag|Set tag message"
@@ -29427,9 +29424,6 @@ msgstr ""
 msgid "No suggestions found"
 msgstr ""
 
-msgid "No tag selected"
-msgstr ""
-
 msgid "No template"
 msgstr ""
 
@@ -36625,6 +36619,12 @@ msgstr ""
 msgid "Release|Create a new release"
 msgstr ""
 
+msgid "Release|Create tag"
+msgstr ""
+
+msgid "Release|Create tag %{tag}"
+msgstr ""
+
 msgid "Release|Getting started with releases"
 msgstr ""
 
@@ -36637,10 +36637,19 @@ msgstr ""
 msgid "Release|More information"
 msgstr ""
 
+msgid "Release|Or type a new tag name"
+msgstr ""
+
 msgid "Release|Release %{createdRelease} has been successfully created."
 msgstr ""
 
 msgid "Release|Releases are based on Git tags and mark specific points in a project's development history. They can contain information about the type of changes and can also deliver binaries, like compiled versions of your software."
+msgstr ""
+
+msgid "Release|Search or create tag name"
+msgstr ""
+
+msgid "Release|Select another tag"
 msgstr ""
 
 msgid "Release|Something went wrong while creating a new release."
@@ -39096,9 +39105,6 @@ msgid "Search merge requests"
 msgstr ""
 
 msgid "Search milestones"
-msgstr ""
-
-msgid "Search or create tag"
 msgstr ""
 
 msgid "Search or filter commits"
