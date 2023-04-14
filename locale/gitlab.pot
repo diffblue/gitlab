@@ -47822,13 +47822,7 @@ msgstr ""
 msgid "User-based escalation rules must have a user with access to the project"
 msgstr ""
 
-msgid "UserAvailability|%{author} %{spanStart}(Busy)%{spanEnd}"
-msgstr ""
-
-msgid "UserAvailability|%{author} (Busy)"
-msgstr ""
-
-msgid "UserAvailability|(Busy)"
+msgid "UserAvailability|%{author}%{badgeStart}Busy%{badgeEnd}"
 msgstr ""
 
 msgid "UserLists|Add"
@@ -47906,9 +47900,6 @@ msgstr ""
 msgid "UserList|created %{timeago}"
 msgstr ""
 
-msgid "UserProfile|(Busy)"
-msgstr ""
-
 msgid "UserProfile|Activity"
 msgstr ""
 
@@ -47916,6 +47907,9 @@ msgid "UserProfile|Blocked user"
 msgstr ""
 
 msgid "UserProfile|Bot activity"
+msgstr ""
+
+msgid "UserProfile|Busy"
 msgstr ""
 
 msgid "UserProfile|Contributed projects"
