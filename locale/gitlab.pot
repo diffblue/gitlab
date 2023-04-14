@@ -1854,6 +1854,9 @@ msgstr ""
 msgid "AI|Code Explanation"
 msgstr ""
 
+msgid "AI|Experiment"
+msgstr ""
+
 msgid "AI|Explain the code from %{filePath} in human understandable language presented in Markdown format. In the response add neither original code snippet nor any title. `%{text}`"
 msgstr ""
 

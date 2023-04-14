@@ -13,5 +13,7 @@ export const i18n = {
     false,
   ),
   REQUEST_ERROR: s__('AI|Something went wrong. Please try again later'),
+  EXPERIMENT_BADGE: s__('AI|Experiment'),
 };
+
 export const AI_GENIE_DEBOUNCE = 300;
