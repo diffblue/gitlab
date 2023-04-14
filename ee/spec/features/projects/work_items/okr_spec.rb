@@ -6,10 +6,8 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:type_objective) { WorkItems::Type.default_by_type(:objective) }
-  let_it_be(:type_key_result) { WorkItems::Type.default_by_type(:key_result) }
-  let_it_be(:objective) { create(:work_item, work_item_type: type_objective, project: project) }
-  let_it_be(:key_result) { create(:work_item, work_item_type: type_key_result, project: project) }
+  let_it_be(:objective) { create(:work_item, :objective, project: project) }
+  let_it_be(:key_result) { create(:work_item, :key_result, project: project) }
 
   before do
     group.add_developer(user)
