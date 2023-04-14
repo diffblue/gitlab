@@ -355,7 +355,7 @@ describe('Iteration cadence list item', () => {
     });
 
     describe('canEditCadence = true', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         createComponent({
           canEditCadence: true,
         });

@@ -447,7 +447,7 @@ describe('Api', () => {
     const rest = { max_tokens: 50, temperature: 0.5 };
 
     describe('requestAICompletions', () => {
-      it('queries the completions AI endpoint', async () => {
+      it('queries the completions AI endpoint', () => {
         const expectedUrl = Api.buildUrl(Api.aiCompletionsPath);
         const expectedResponse = { choices: { text: msg } };
         mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
@@ -460,7 +460,7 @@ describe('Api', () => {
     });
 
     describe('requestAIEmbeddings', () => {
-      it('queries the completions AI endpoint', async () => {
+      it('queries the completions AI endpoint', () => {
         const expectedUrl = Api.buildUrl(Api.aiEmbeddingsPath);
         const expectedResponse = { data: [{ embedding: [msg] }] };
         mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
@@ -473,7 +473,7 @@ describe('Api', () => {
     });
 
     describe('requestAIChat', () => {
-      it('queries the completions AI endpoint', async () => {
+      it('queries the completions AI endpoint', () => {
         const expectedUrl = Api.buildUrl(Api.aiChatPath);
         const expectedResponse = { choices: { message: msg } };
         mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);

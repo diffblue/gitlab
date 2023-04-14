@@ -190,7 +190,7 @@ describe('IssuesLaneList', () => {
     });
 
     describe('when issue count exceeds max issue count', () => {
-      it('sets background to red-100', async () => {
+      it('sets background to red-100', () => {
         store.state.fullBoardIssuesCount = { [mockList.id]: 4 };
         createComponent({ listProps: { maxIssueCount: 3 } });
         const block = wrapper.find('.gl-bg-red-100');

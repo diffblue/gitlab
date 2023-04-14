@@ -408,7 +408,7 @@ describe('ProductivityApp component', () => {
                     expect(findMrTableSection().findComponent(GlAlert).exists()).toBe(false);
                   });
 
-                  it('should change the column metric', async () => {
+                  it('should change the column metric', () => {
                     findMrTable().vm.$emit('columnMetricChange', 'time_to_first_comment');
                     const { calls } = tableActionSpies.setColumnMetric.mock;
                     expect(calls[calls.length - 1][1]).toBe('time_to_first_comment');

@@ -66,7 +66,7 @@ describe('EscalationRule', () => {
       );
     });
 
-    it('should have default status selected', async () => {
+    it('should have default status selected', () => {
       expect(findStatusDropdownOptions().at(0).props('isChecked')).toBe(true);
     });
   });
@@ -78,7 +78,7 @@ describe('EscalationRule', () => {
       );
     });
 
-    it('should have default action selected', async () => {
+    it('should have default action selected', () => {
       expect(findActionDropdownOptions().at(0).props('isChecked')).toBe(true);
     });
   });

@@ -18,7 +18,7 @@ describe('initGeoSites', () => {
     mock.onGet(/api\/(.*)\/geo_nodes\/status/).reply(HTTP_STATUS_OK, apiMocks.statusRes);
   };
 
-  const createAppWrapper = async (fixture, apiMocks) => {
+  const createAppWrapper = (fixture, apiMocks) => {
     mockAPI(apiMocks);
     setHTMLFixture(fixture);
     wrapper = createWrapper(initGeoSites());

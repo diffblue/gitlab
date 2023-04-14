@@ -30,7 +30,7 @@ describe('AiGenieChat', () => {
   });
 
   describe('component with default props', () => {
-    it('renders chat component', async () => {
+    it('renders chat component', () => {
       expect(findChatComponent().exists()).toBe(true);
     });
     it('does not not render skeleton', () => {

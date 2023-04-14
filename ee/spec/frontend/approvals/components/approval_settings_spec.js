@@ -323,7 +323,7 @@ describe('ApprovalSettings', () => {
         radios = null;
       });
 
-      it(`triggers the relevant actions with the relevant values when the value is changed`, async () => {
+      it(`triggers the relevant actions with the relevant values when the value is changed`, () => {
         radios.vm.$emit('input', value);
 
         expect(store.dispatch).toHaveBeenCalledWith(

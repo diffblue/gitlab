@@ -89,7 +89,7 @@ describe('HandRaiseLeadButton', () => {
       expect(button.text()).toBe(PQL_BUTTON_TEXT);
     });
 
-    it('has the default injected values', async () => {
+    it('has the default injected values', () => {
       const formInputValues = [
         { id: 'first-name', value: 'Joe' },
         { id: 'last-name', value: 'Doe' },
@@ -262,13 +262,13 @@ describe('HandRaiseLeadButton', () => {
     });
 
     describe('successful submission', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockResolvedValue();
 
         findModal().vm.$emit('primary');
       });
 
-      it('primary submits the valid form', async () => {
+      it('primary submits the valid form', () => {
         expect(SubscriptionsApi.sendHandRaiseLead).toHaveBeenCalledWith({
           namespaceId: 1,
           comment: 'comment',
@@ -277,7 +277,7 @@ describe('HandRaiseLeadButton', () => {
         });
       });
 
-      it('clears the form after submission', async () => {
+      it('clears the form after submission', () => {
         ['first-name', 'last-name', 'company-name', 'phone-number'].forEach((f) =>
           expect(wrapper.findByTestId(f).attributes('value')).toBe(''),
         );
@@ -290,7 +290,7 @@ describe('HandRaiseLeadButton', () => {
         });
       });
 
-      it('tracks successful submission', async () => {
+      it('tracks successful submission', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_succeeded', {
           label: 'hand_raise_lead_form',
         });
@@ -298,13 +298,13 @@ describe('HandRaiseLeadButton', () => {
     });
 
     describe('failed submission', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         jest.spyOn(SubscriptionsApi, 'sendHandRaiseLead').mockRejectedValue();
 
         findModal().vm.$emit('primary');
       });
 
-      it('tracks failed submission', async () => {
+      it('tracks failed submission', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_submit_form_failed', {
           label: 'hand_raise_lead_form',
         });
@@ -312,11 +312,11 @@ describe('HandRaiseLeadButton', () => {
     });
 
     describe('form cancel', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         findModal().vm.$emit('cancel');
       });
 
-      it('tracks failed submission', async () => {
+      it('tracks failed submission', () => {
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'hand_raise_form_canceled', {
           label: 'hand_raise_lead_form',
         });

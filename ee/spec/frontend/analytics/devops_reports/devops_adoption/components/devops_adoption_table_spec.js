@@ -207,7 +207,7 @@ describe('DevopsAdoptionTable', () => {
       await wrapper.findByTestId('select-namespace').vm.$emit('click');
     });
 
-    it('re emits trackModalOpenState with the given value', async () => {
+    it('re emits trackModalOpenState with the given value', () => {
       findDeleteModal().vm.$emit('trackModalOpenState', true);
 
       expect(wrapper.emitted('trackModalOpenState')).toStrictEqual([[true]]);

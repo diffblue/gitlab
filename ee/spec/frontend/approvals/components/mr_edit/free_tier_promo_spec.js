@@ -166,7 +166,7 @@ describe('FreeTierPromo component', () => {
       localStorage.setItem.mockClear();
     });
 
-    it('should show collapse container as collapsed', async () => {
+    it('should show collapse container as collapsed', () => {
       expect(findCollapse().attributes('visible')).toBeUndefined();
     });
 

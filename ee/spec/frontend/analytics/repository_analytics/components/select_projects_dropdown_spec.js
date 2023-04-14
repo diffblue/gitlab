@@ -87,7 +87,7 @@ describe('Select projects dropdown component', () => {
       ).toContain('gl-visibility-hidden');
     });
 
-    it('should emit select-all-projects event', async () => {
+    it('should emit select-all-projects event', () => {
       selectAllProjects();
 
       expect(wrapper.emitted('select-all-projects')).toMatchObject([
@@ -127,7 +127,7 @@ describe('Select projects dropdown component', () => {
       );
     });
 
-    it('should emit select-project event', async () => {
+    it('should emit select-project event', () => {
       const project = initialData.groupProjects[0];
       selectProjectById(project.id);
       expect(wrapper.emitted('select-project')).toMatchObject([

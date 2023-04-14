@@ -24,7 +24,7 @@ describe('SidebarTodoComponent', () => {
   });
 
   describe('when `isUserSignedIn` & `sidebarCollapsed` is `true`', () => {
-    it('renders component container element with classes `block` & `todo`', async () => {
+    it('renders component container element with classes `block` & `todo`', () => {
       wrapper = createComponent({ sidebarCollapsed: true });
 
       expect(wrapper.classes('block')).toBe(true);
@@ -32,7 +32,7 @@ describe('SidebarTodoComponent', () => {
     });
   });
 
-  it('renders Todo toggle button element', async () => {
+  it('renders Todo toggle button element', () => {
     wrapper = createComponent();
 
     const buttonWrapper = wrapper.find('button.btn-todo');

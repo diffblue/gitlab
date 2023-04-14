@@ -161,7 +161,7 @@ describe('MetricChart component', () => {
               await wrapper.setProps({ selectedMetric: 'time_to_last_commit' });
             });
 
-            it('should only set `invisible` class on the icon of first dropdown item', async () => {
+            it('should only set `invisible` class on the icon of first dropdown item', () => {
               const iconInvisibility = findMetricDropdownItems().wrappers.map((item) =>
                 item.findComponent(GlIcon).classes('invisible'),
               );

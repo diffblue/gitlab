@@ -89,7 +89,7 @@ describe('AnalyticsDashboard', () => {
   };
 
   describe('when mounted', () => {
-    it('should render with mock dashboard with filter properties', async () => {
+    it('should render with mock dashboard with filter properties', () => {
       createWrapper({
         dashboard,
       });

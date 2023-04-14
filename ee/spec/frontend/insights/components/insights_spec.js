@@ -80,7 +80,7 @@ describe('Insights component', () => {
   });
 
   describe('when loading config', () => {
-    it('renders config loading state', async () => {
+    it('renders config loading state', () => {
       vuexStore.state.insights.configLoading = true;
 
       expect(wrapper.find('.insights-config-loading').exists()).toBe(true);

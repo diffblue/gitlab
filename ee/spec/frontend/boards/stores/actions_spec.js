@@ -636,7 +636,7 @@ describe('fetchIssuesForEpic', () => {
 });
 
 describe('toggleEpicSwimlanes', () => {
-  it('should commit mutation TOGGLE_EPICS_SWIMLANES', async () => {
+  it('should commit mutation TOGGLE_EPICS_SWIMLANES', () => {
     const startURl = `${TEST_HOST}/groups/gitlab-org/-/boards/1?group_by=epic`;
     setWindowLocation(startURl);
 
@@ -1372,7 +1372,7 @@ describe('fetchAssignees', () => {
     expect(() => actions.fetchAssignees(store)).toThrow(new Error('Unknown board type'));
   });
 
-  it('sets assigneesLoading to true', async () => {
+  it('sets assigneesLoading to true', () => {
     jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
 
     const store = createStore();

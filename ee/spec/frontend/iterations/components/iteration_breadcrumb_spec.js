@@ -132,7 +132,7 @@ describe('Iteration Breadcrumb', () => {
   });
 
   describe('when cadenceId isnt present', () => {
-    it('skips the call to graphql', async () => {
+    it('skips the call to graphql', () => {
       const cadenceSpy = jest
         .fn()
         .mockResolvedValue({ data: { group: { id: '', iterationCadences: { nodes: [] } } } });
@@ -163,7 +163,7 @@ describe('Iteration Breadcrumb', () => {
 
     let cadenceSpy;
 
-    beforeEach(async () => {
+    beforeEach(() => {
       cadenceSpy = jest.fn().mockResolvedValue({
         data: {
           group: {

@@ -62,7 +62,7 @@ describe('diffs/components/app', () => {
       expect(wrapper.vm.fetchCodequality).toHaveBeenCalled();
     });
 
-    it('does not fetch code quality data when endpoint is blank', async () => {
+    it('does not fetch code quality data when endpoint is blank', () => {
       createComponent({ endpointCodequality: '' });
       jest.spyOn(wrapper.vm, 'fetchCodequality');
       wrapper.vm.fetchData(false);

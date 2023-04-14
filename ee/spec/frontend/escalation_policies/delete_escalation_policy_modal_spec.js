@@ -95,7 +95,7 @@ describe('DeleteEscalationPolicyModal', () => {
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
 
-  async function deleteEscalationPolicy(localWrapper) {
+  function deleteEscalationPolicy(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
   }
 
@@ -159,10 +159,10 @@ describe('DeleteEscalationPolicyModal', () => {
       expect(findModal().text()).toContain(cachedPolicy.name);
     });
 
-    it('calls a mutation with correct parameters to a policy', async () => {
+    it('calls a mutation with correct parameters to a policy', () => {
       createComponentWithApollo();
 
-      await deleteEscalationPolicy(wrapper);
+      deleteEscalationPolicy(wrapper);
 
       expect(destroyPolicyHandler).toHaveBeenCalledWith({
         input: { id: cachedPolicy.id },
@@ -174,7 +174,7 @@ describe('DeleteEscalationPolicyModal', () => {
         destroyHandler: jest.fn().mockResolvedValue(destroyPolicyResponseWithErrors),
       });
 
-      await deleteEscalationPolicy(wrapper);
+      deleteEscalationPolicy(wrapper);
       await waitForPromises();
 
       const alert = findAlert();

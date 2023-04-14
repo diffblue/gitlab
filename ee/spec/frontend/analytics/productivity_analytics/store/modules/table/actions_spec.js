@@ -105,7 +105,7 @@ describe('Productivity analytics table actions', () => {
         });
       });
 
-      it('dispatches success with received data', async () =>
+      it('dispatches success with received data', () =>
         testAction(
           actions.fetchMergeRequests,
           null,
@@ -145,7 +145,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('requestMergeRequests', () => {
-    it('should commit the request mutation', async () =>
+    it('should commit the request mutation', () =>
       testAction(
         actions.requestMergeRequests,
         null,
@@ -156,7 +156,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('receiveMergeRequestsSuccess', () => {
-    it('should commit received data', async () =>
+    it('should commit received data', () =>
       testAction(
         actions.receiveMergeRequestsSuccess,
         { headers, data: mockMergeRequests },
@@ -172,7 +172,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('receiveMergeRequestsError', () => {
-    it('should commit error', async () =>
+    it('should commit error', () =>
       testAction(
         actions.receiveMergeRequestsError,
         { response: { status: HTTP_STATUS_INTERNAL_SERVER_ERROR } },
@@ -183,7 +183,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('setSortField', () => {
-    it('should commit setSortField', async () =>
+    it('should commit setSortField', () =>
       testAction(
         actions.setSortField,
         'time_to_last_commit',
@@ -195,7 +195,7 @@ describe('Productivity analytics table actions', () => {
         ],
       ));
 
-    it('should not dispatch setColumnMetric when metric is "days_to_merge"', async () =>
+    it('should not dispatch setColumnMetric when metric is "days_to_merge"', () =>
       testAction(
         actions.setSortField,
         'days_to_merge',
@@ -206,7 +206,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('toggleSortOrder', () => {
-    it('should commit toggleSortOrder', async () =>
+    it('should commit toggleSortOrder', () =>
       testAction(
         actions.toggleSortOrder,
         null,
@@ -217,7 +217,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('setColumnMetric', () => {
-    it('should commit setColumnMetric', async () =>
+    it('should commit setColumnMetric', () =>
       testAction(
         actions.setColumnMetric,
         'time_to_first_comment',
@@ -228,7 +228,7 @@ describe('Productivity analytics table actions', () => {
   });
 
   describe('setPage', () => {
-    it('should commit setPage', async () =>
+    it('should commit setPage', () =>
       testAction(
         actions.setPage,
         2,

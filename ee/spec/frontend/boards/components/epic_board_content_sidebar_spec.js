@@ -170,7 +170,7 @@ describe('EpicBoardContentSidebar', () => {
       createComponent();
     });
 
-    it('calls toggleBoardItem with correct parameters', async () => {
+    it('calls toggleBoardItem with correct parameters', () => {
       wrapper.findComponent(GlDrawer).vm.$emit('close');
 
       expect(toggleBoardItem).toHaveBeenCalledTimes(1);

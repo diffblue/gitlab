@@ -121,7 +121,7 @@ describe('ComplianceViolationsReport component', () => {
       });
     });
 
-    it('syncs the URL query with "set" strategy', async () => {
+    it('syncs the URL query with "set" strategy', () => {
       expect(findUrlSync().props('urlParamsUpdateStrategy')).toBe(URL_SET_PARAMS_STRATEGY);
     });
   });
@@ -137,7 +137,7 @@ describe('ComplianceViolationsReport component', () => {
       expect(findTableLoadingIcon().exists()).toBe(true);
     });
 
-    it('fetches the list of merge request violations with the default filter and sort params', async () => {
+    it('fetches the list of merge request violations with the default filter and sort params', () => {
       expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         fullPath: groupPath,
@@ -156,7 +156,7 @@ describe('ComplianceViolationsReport component', () => {
       wrapper = createComponent(mount, {}, mockGraphQlLoading);
     });
 
-    it('fetches the list of merge request violations with sort params', async () => {
+    it('fetches the list of merge request violations with sort params', () => {
       expect(mockGraphQlLoading).toHaveBeenCalledTimes(1);
       expect(mockGraphQlLoading).toHaveBeenCalledWith({
         fullPath: groupPath,
@@ -299,7 +299,8 @@ describe('ComplianceViolationsReport component', () => {
       const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
 
       const changeFilters = async () => {
-        return findViolationFilter().vm.$emit('filters-changed', query);
+        findViolationFilter().vm.$emit('filters-changed', query);
+        await nextTick();
       };
 
       it('updates the URL query', async () => {
@@ -323,7 +324,8 @@ describe('ComplianceViolationsReport component', () => {
       it('clears the project URL query param if the project array is empty', async () => {
         await changeFilters();
 
-        await findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
+        findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
+        await nextTick();
 
         expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
       });

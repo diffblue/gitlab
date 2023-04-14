@@ -183,7 +183,7 @@ describe('SubscriptionActivationForm', () => {
         expect(preventDefault).toHaveBeenCalled();
       });
 
-      it('calls mutate with the correct variables', async () => {
+      it('calls mutate with the correct variables', () => {
         expect(mutationMock).toHaveBeenCalledWith({
           gitlabSubscriptionActivateInput: {
             activationCode: fakeActivationCodeTrimmed,
