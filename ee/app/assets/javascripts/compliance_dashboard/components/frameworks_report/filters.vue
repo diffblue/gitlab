@@ -17,7 +17,7 @@ export default {
       required: false,
       default: () => [],
     },
-    groupPath: {
+    rootAncestorPath: {
       type: String,
       required: true,
     },
@@ -32,7 +32,7 @@ export default {
           type: FRAMEWORKS_FILTER_TYPE_FRAMEWORK,
           entityType: 'framework',
           token: ComplianceFrameworkToken,
-          groupPath: this.groupPath,
+          rootAncestorPath: this.rootAncestorPath,
         },
         {
           unique: true,
