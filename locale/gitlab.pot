@@ -26454,6 +26454,9 @@ msgstr ""
 msgid "MD5"
 msgstr ""
 
+msgid "MLExperimentTracking|Delete candidate?"
+msgstr ""
+
 msgid "MLExperimentTracking|Delete experiment?"
 msgstr ""
 
@@ -28328,7 +28331,13 @@ msgstr ""
 msgid "MlExperimentTracking|Created at"
 msgstr ""
 
+msgid "MlExperimentTracking|Delete candidate"
+msgstr ""
+
 msgid "MlExperimentTracking|Delete experiment"
+msgstr ""
+
+msgid "MlExperimentTracking|Deleting this candidate will delete the associated parameters, metrics, and metadata."
 msgstr ""
 
 msgid "MlExperimentTracking|Deleting this experiment will also delete its candidates and their associated metadata."
