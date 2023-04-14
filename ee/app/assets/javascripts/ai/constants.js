@@ -14,6 +14,9 @@ export const i18n = {
   ),
   REQUEST_ERROR: s__('AI|Something went wrong. Please try again later'),
   EXPERIMENT_BADGE: s__('AI|Experiment'),
+  FEEDBACK_LINK: s__('AI|Give feedback on code explanation'),
 };
 
 export const AI_GENIE_DEBOUNCE = 300;
+
+export const FEEDBACK_LINK_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/407285';
