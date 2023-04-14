@@ -113,14 +113,6 @@ export default {
     policy: {
       type: Object,
       required: true,
-      validator: (policy) => {
-        return ['name', 'enabled'].every((value) => value in policy);
-      },
-    },
-    policyYaml: {
-      type: String,
-      required: false,
-      default: '',
     },
     yamlEditorValue: {
       type: String,
@@ -276,7 +268,7 @@ export default {
             data-testid="yaml-preview"
             class="security-policies-bg-gray-10 gl-border-none gl-p-0"
             :class="{ 'gl-opacity-5': hasParsingError }"
-            >{{ policyYaml || yamlEditorValue }}</pre
+            >{{ yamlEditorValue }}</pre
           >
         </section>
       </div>

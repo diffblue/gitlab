@@ -18,10 +18,7 @@ import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import {
-  mockDastScanExecutionManifest,
-  mockDastScanExecutionObject,
-} from '../../mocks/mock_scan_execution_policy_data';
+import { mockDastScanExecutionObject } from '../../mocks/mock_scan_execution_policy_data';
 import { mockDefaultBranchesScanResultObject } from '../../mocks/mock_scan_result_policy_data';
 
 describe('PolicyEditorLayout component', () => {
@@ -31,7 +28,6 @@ describe('PolicyEditorLayout component', () => {
   const namespaceType = NAMESPACE_TYPES.PROJECT;
   const defaultProps = {
     policy: mockDastScanExecutionObject,
-    policyYaml: mockDastScanExecutionManifest,
   };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {

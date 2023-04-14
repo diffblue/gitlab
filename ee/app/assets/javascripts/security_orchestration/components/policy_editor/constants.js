@@ -85,3 +85,5 @@ export const RULE_MODE_SCANNERS = {
   container_scanning: CONTAINER_SCANNING_NAME,
   dependency_scanning: DEPENDENCY_SCANNING_NAME,
 };
+
+export const MAX_ALLOWED_RULES_LENGTH = 5;

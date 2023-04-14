@@ -1,5 +1,6 @@
 export const unsupportedManifest = `---
 name: This policy has an unsupported attribute
+enabled: false
 UNSUPPORTED: ATTRIBUTE
 rules:
 - type: pipeline
@@ -11,6 +12,7 @@ actions:
 
 export const unsupportedManifestObject = {
   name: 'This policy has an unsupported attribute',
+  enabled: false,
   UNSUPPORTED: 'ATTRIBUTE',
   rules: [
     {

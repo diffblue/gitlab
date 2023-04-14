@@ -20,6 +20,7 @@ import {
   mockDefaultBranchesScanResultManifest,
   mockDefaultBranchesScanResultObject,
 } from 'ee_jest/security_orchestration/mocks/mock_scan_result_policy_data';
+import { unsupportedManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
@@ -93,7 +94,6 @@ describe('ScanResultPolicyEditor', () => {
         ...provide,
       },
     });
-    nextTick();
   };
 
   const factoryWithExistingPolicy = (policy = {}, provide = {}) => {
@@ -134,37 +134,36 @@ describe('ScanResultPolicyEditor', () => {
   });
 
   describe('default', () => {
-    it('loads the correct policy config', async () => {
+    it.each`
+      prop                 | compareFn          | expected
+      ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_SCAN_RESULT_POLICY}
+      ${'hasParsingError'} | ${'toBe'}          | ${false}
+      ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY })}
+    `(
+      'passes the correct $prop prop to the PolicyEditorLayout component',
+      async ({ prop, compareFn, expected }) => {
+        factory();
+
+        expect(findPolicyEditorLayout().props(prop))[compareFn](expected);
+      },
+    );
+
+    it('updates the policy yaml and policy object when "update-yaml" is emitted', async () => {
       factory();
-      await nextTick();
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toEqual(DEFAULT_SCAN_RESULT_POLICY);
-    });
 
-    it('does not display an error', async () => {
-      factory();
+      findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
       await nextTick();
 
-      expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
-    });
-
-    it('updates the policy yaml when "update-yaml" is emitted', async () => {
-      const newManifest = 'new yaml!';
-      factory();
-      await nextTick();
-
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
-        DEFAULT_SCAN_RESULT_POLICY,
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
+        mockDefaultBranchesScanResultManifest,
       );
-
-      findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
-      await nextTick();
-
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
+      expect(findPolicyEditorLayout().props('policy')).toMatchObject(
+        mockDefaultBranchesScanResultObject,
+      );
     });
 
     it('displays the initial rule and add rule button', async () => {
       factory();
-      await nextTick();
 
       expect(findAllRuleBuilders().length).toBe(1);
       expect(findAddRuleButton().exists()).toBe(true);
@@ -172,26 +171,18 @@ describe('ScanResultPolicyEditor', () => {
 
     it('disables all rule mode related components when the yaml is invalid', async () => {
       factory();
-      await nextTick();
 
-      findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
+      findPolicyEditorLayout().vm.$emit('update-yaml', unsupportedManifest);
       await nextTick();
 
       expect(findAllDisabledComponents().at(0).props('disabled')).toBe(true);
       expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
     });
 
-    it('defaults to rule mode', async () => {
-      factory();
-      await nextTick();
-
-      expect(findPolicyEditorLayout().attributes().defaulteditormode).toBe(EDITOR_MODE_RULE);
-    });
-
     it('uses name from policy rule builder', async () => {
       const newPolicyName = 'new policy name';
       factory();
-      await nextTick();
+
       findPolicyEditorLayout().vm.$emit('set-policy-property', 'name', newPolicyName);
       findPolicyEditorLayout().vm.$emit('save-policy');
       await waitForPromises();
@@ -210,7 +201,6 @@ describe('ScanResultPolicyEditor', () => {
       ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
       factory();
-      await nextTick();
 
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
 
@@ -229,7 +219,6 @@ describe('ScanResultPolicyEditor', () => {
       'navigates to the new merge request when "modifyPolicy" is emitted $status',
       async ({ action, event, factoryFn, yamlEditorValue, currentlyAssignedPolicyProject }) => {
         factoryFn();
-        await nextTick();
 
         findPolicyEditorLayout().vm.$emit(event);
 
@@ -240,7 +229,7 @@ describe('ScanResultPolicyEditor', () => {
           assignedPolicyProject: currentlyAssignedPolicyProject,
           name:
             action === SECURITY_POLICY_ACTIONS.APPEND
-              ? fromYaml(yamlEditorValue).name
+              ? fromYaml({ manifest: yamlEditorValue }).name
               : mockDefaultBranchesScanResultObject.name,
           namespacePath: defaultProjectPath,
           yamlEditorValue,
@@ -254,7 +243,6 @@ describe('ScanResultPolicyEditor', () => {
     it('adds a new rule', async () => {
       const rulesCount = 1;
       factory();
-      await nextTick();
 
       expect(findAllRuleBuilders().length).toBe(rulesCount);
 
@@ -268,7 +256,6 @@ describe('ScanResultPolicyEditor', () => {
       const limit = 5;
       const rule = mockDefaultBranchesScanResultObject.rules[0];
       factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
-      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(limit);
       expect(findAddRuleButton().exists()).toBe(false);
@@ -284,7 +271,7 @@ describe('ScanResultPolicyEditor', () => {
         vulnerability_states: [],
       };
       factory();
-      await nextTick();
+
       findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
       await nextTick();
 
@@ -295,7 +282,6 @@ describe('ScanResultPolicyEditor', () => {
     it('deletes the initial rule', async () => {
       const initialRuleCount = 1;
       factory();
-      await nextTick();
 
       expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
 
@@ -309,7 +295,6 @@ describe('ScanResultPolicyEditor', () => {
   describe('when a user is not an owner of the project', () => {
     it('displays the empty state with the appropriate properties', async () => {
       factory({ provide: { disableScanPolicyUpdate: true } });
-      await nextTick();
 
       const emptyState = findEmptyState();
 
@@ -323,8 +308,6 @@ describe('ScanResultPolicyEditor', () => {
     it('renders a single policy action builder', async () => {
       factory();
 
-      await nextTick();
-
       expect(findAllPolicyActionBuilders()).toHaveLength(1);
       expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
         scanResultPolicyApprovers,
@@ -335,7 +318,6 @@ describe('ScanResultPolicyEditor', () => {
       const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
       factory();
 
-      await nextTick();
       findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
       await nextTick();
 
@@ -346,7 +328,6 @@ describe('ScanResultPolicyEditor', () => {
   describe('errors', () => {
     it('creates an error for invalid yaml', async () => {
       factory();
-      await nextTick();
 
       findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
       await nextTick();
@@ -356,21 +337,21 @@ describe('ScanResultPolicyEditor', () => {
 
     it('creates an error when policy does not match existing approvers', async () => {
       factory();
-      await nextTick();
+
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('creates an error when policy scanners are invalid', async () => {
       factoryWithExistingPolicy({ rules: [{ scanners: ['cluster_image_scanning'] }] });
-      await nextTick();
+
       await changesToRuleMode();
       verifiesParsingError();
     });
 
     it('does not create an error when policy matches existing approvers', async () => {
       factoryWithExistingPolicy();
-      await nextTick();
+
       await changesToRuleMode();
       expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
     });
@@ -434,7 +415,7 @@ describe('ScanResultPolicyEditor', () => {
           },
           scanResultPolicyApprovers: approver,
         });
-        await nextTick();
+
         await changesToRuleMode();
         expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
       },
