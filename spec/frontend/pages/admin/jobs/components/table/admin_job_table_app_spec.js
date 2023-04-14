@@ -5,8 +5,8 @@ import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import JobsTable from '~/jobs/components/table/jobs_table.vue';
-import getJobsQuery from '../../../../../../../app/assets/javascripts/pages/admin/jobs/components/table/graphql/queries/get_all_jobs.query.graphql';
-import AdminJobsTableApp from '../../../../../../../app/assets/javascripts/pages/admin/jobs/components/table/admin_jobs_table_app.vue';
+import getJobsQuery from '~/pages/admin/jobs/components/table/graphql/queries/get_all_jobs.query.graphql';
+import AdminJobsTableApp from '~/pages/admin/jobs/components/table/admin_jobs_table_app.vue';
 
 import { mockAllJobsResponsePaginated, statuses } from '../../../../../jobs/mock_data';
 

@@ -49,7 +49,6 @@ RSpec.describe 'Jobs (JavaScript fixtures)' do
     let!(:with_coverage) { create(:ci_build, :success, name: 'with_coverage', coverage: 40.0, pipeline: pipeline) }
 
     shared_examples 'graphql queries' do |path, jobs_query|
-      let_it_be(:user) { create(:admin) }
       let_it_be(:variables) { {} }
 
       let_it_be(:query) do
