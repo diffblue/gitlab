@@ -1542,6 +1542,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: projects_deregister_suggested_reviewers_project
+  :worker_name: Projects::DeregisterSuggestedReviewersProjectWorker
+  :feature_category: :workflow_automation
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: projects_register_suggested_reviewers_project
   :worker_name: Projects::RegisterSuggestedReviewersProjectWorker
   :feature_category: :workflow_automation
