@@ -12,7 +12,7 @@ When a pipeline job is about to run, GitLab generates a unique token and injects
 You can use a GitLab CI/CD job token to authenticate with specific API endpoints:
 
 - Packages:
-  - [Package Registry](../../user/packages/package_registry/index.md#use-gitlab-cicd-to-build-packages).
+  - [Package Registry](../../user/packages/package_registry/index.md#to-build-packages).
   - [Packages API](../../api/packages.md) (project-level).
   - [Container Registry](../../user/packages/container_registry/build_and_push_images.md#use-gitlab-cicd)
     (the `$CI_REGISTRY_PASSWORD` is `$CI_JOB_TOKEN`).
