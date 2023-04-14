@@ -42,6 +42,12 @@ RSpec.describe Gitlab::Geo::JwtRequestDecoder, feature_category: :geo_replicatio
       expect(described_class.new(data).decode).to be_nil
     end
 
+    it 'successfully decodes when clocks are off' do
+      subject
+
+      travel_to(30.seconds.ago) { expect(subject.decode).to eq(data) }
+    end
+
     it 'raises InvalidSignatureTimeError after expiring' do
       subject
 

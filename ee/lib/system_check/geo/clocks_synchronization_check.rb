@@ -55,7 +55,7 @@ module SystemCheck
       end
 
       def max_clock_difference
-        Gitlab::Geo::SignedData::IAT_LEEWAY
+        Gitlab::Geo::SignedData::LEEWAY
       end
     end
   end

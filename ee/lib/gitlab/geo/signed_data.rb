@@ -6,7 +6,7 @@ module Gitlab
       include LogHelpers
 
       VALIDITY_PERIOD = 1.minute
-      IAT_LEEWAY = 60.seconds.to_i
+      LEEWAY = 60.seconds.to_i
 
       attr_reader :geo_node
 
@@ -37,7 +37,7 @@ module Gitlab
           @encoded_message,
           @secret_access_key,
           true,
-          { leeway: IAT_LEEWAY, verify_iat: true, algorithm: 'HS256' }
+          { leeway: LEEWAY, algorithm: 'HS256' }
         )
 
         message = decoded.first
@@ -45,7 +45,7 @@ module Gitlab
         data&.deep_symbolize_keys!
         data
       rescue JWT::ImmatureSignature, JWT::ExpiredSignature
-        message = "Signature not within leeway of #{IAT_LEEWAY} seconds. Check your system clocks!"
+        message = "Signature not within leeway of #{LEEWAY} seconds. Check your system clocks!"
         log_error(message)
         raise InvalidSignatureTimeError, message
       rescue JWT::DecodeError => e
