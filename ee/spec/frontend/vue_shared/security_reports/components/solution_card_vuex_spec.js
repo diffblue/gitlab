@@ -71,7 +71,7 @@ describe('Solution Card', () => {
           );
         });
 
-        it('does not render the download and apply solution message when there is a file download and a merge request already exists', async () => {
+        it('does not render the download and apply solution message when there is a file download and a merge request already exists', () => {
           createShallowComponent({ remediation, hasDownload: true, hasMr: true });
           expect(findCardFooter().exists()).toBe(false);
         });

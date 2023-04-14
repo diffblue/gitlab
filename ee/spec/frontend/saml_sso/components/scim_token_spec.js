@@ -224,7 +224,7 @@ describe('ScimToken', () => {
 
     describe('when `reset it` button is clicked', () => {
       describe('when API request is successful', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           axiosMock.onPost(defaultProvide.generateTokenPath).reply(HTTP_STATUS_OK, mockApiResponse);
 
           resetAndConfirm();
@@ -234,7 +234,7 @@ describe('ScimToken', () => {
       });
 
       describe('when API request is not successful', () => {
-        beforeEach(async () => {
+        beforeEach(() => {
           axiosMock.onPost(defaultProvide.initialEndpointUrl).networkError();
 
           resetAndConfirm();

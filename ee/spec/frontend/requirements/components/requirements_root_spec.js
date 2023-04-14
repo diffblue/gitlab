@@ -1126,7 +1126,7 @@ describe('RequirementsRoot', () => {
           });
         };
 
-        beforeEach(async () => {
+        beforeEach(() => {
           updateRequirementSpy = jest.fn().mockResolvedValue(mockUpdateRequirementTitle);
 
           wrapper = createComponentWithApollo({

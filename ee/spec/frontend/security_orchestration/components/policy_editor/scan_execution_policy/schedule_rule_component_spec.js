@@ -137,7 +137,7 @@ describe('ScheduleRuleComponent', () => {
   });
 
   describe('parse existing rules', () => {
-    it('should parse existing rules correctly', async () => {
+    it('should parse existing rules correctly', () => {
       createComponent({
         initRule: {
           type: SCAN_EXECUTION_SCHEDULE_RULE,

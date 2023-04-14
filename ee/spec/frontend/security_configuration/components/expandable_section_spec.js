@@ -71,7 +71,7 @@ describe('ExpandableSection component', () => {
   });
 
   describe('expand/collapse behavior', () => {
-    it('hides the content by default', async () => {
+    it('hides the content by default', () => {
       createComponent({}, mount);
 
       expect(findContent().isVisible()).toBe(false);

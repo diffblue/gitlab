@@ -91,11 +91,11 @@ describe('ee/protected_environments/show_more.vue', () => {
         button.trigger('click');
       });
 
-      it('shows the "Show less" button after clicking', async () => {
+      it('shows the "Show less" button after clicking', () => {
         expect(button.text()).toBe(__('Show less'));
       });
 
-      it('shows all items after clicking', async () => {
+      it('shows all items after clicking', () => {
         items.forEach((item) => {
           expect(wrapper.findByTestId(item).exists()).toBe(true);
         });

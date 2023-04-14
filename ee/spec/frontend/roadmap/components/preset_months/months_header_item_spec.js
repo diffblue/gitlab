@@ -65,7 +65,7 @@ describe('MonthsHeaderItemComponent', () => {
       expect(findTimelineHeader().classes()).toContain('label-bold');
     });
 
-    it('includes `label-dark` when current year and month is less than timeframeItem year and month', async () => {
+    it('includes `label-dark` when current year and month is less than timeframeItem year and month', () => {
       const timeframeIndex = 2;
       const timeframeItem = new Date(
         mockTimeframeMonths[timeframeIndex].getFullYear(),

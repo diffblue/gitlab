@@ -67,11 +67,11 @@ describe('remote_development/pages/list.vue', () => {
       await waitForPromises();
     });
 
-    it('shows table when workspaces are available', async () => {
+    it('shows table when workspaces are available', () => {
       expect(findTable(wrapper).exists()).toBe(true);
     });
 
-    it('displays user workspaces correctly', async () => {
+    it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
         MOCK_GROUP_WORKSPACE_DATA.nodes.map((x) => ({
           nameText: `${x.projectFullPath}   ${x.name}`,
@@ -101,7 +101,7 @@ describe('remote_development/pages/list.vue', () => {
       await waitForPromises();
     });
 
-    it('does not render table', async () => {
+    it('does not render table', () => {
       expect(findTable(wrapper).exists()).toBe(false);
     });
 

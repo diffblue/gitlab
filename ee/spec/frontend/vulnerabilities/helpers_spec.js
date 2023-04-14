@@ -37,7 +37,7 @@ describe('Vulnerabilities helpers', () => {
       ${'http://something/@#$%/@#$%/-/issues/1234'}      | ${'http://something/@#$%/@#$%/-/issues/1234'} | ${defaultPath}
     `(
       'gets correct request params for the reference "$reference"',
-      async ({ reference, target_issue_iid, target_project_id }) => {
+      ({ reference, target_issue_iid, target_project_id }) => {
         const params = getAddRelatedIssueRequestParams(reference, defaultPath);
 
         expect(params).toMatchObject({ target_issue_iid, target_project_id });

@@ -179,9 +179,9 @@ describe('PolicyProjectModal Component', () => {
     });
 
     it.each`
-      messageType  | factoryFn                                                                                                        | text                                   | variant      | hasPolicyProject | selectedProject
-      ${'success'} | ${createWrapperAndSelectProject}                                                                                 | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${[sampleProject]}
-      ${'failure'} | ${async () => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${POLICY_PROJECT_LINK_ERROR_MESSAGE}   | ${'danger'}  | ${false}         | ${undefined}
+      messageType  | factoryFn                                                                                                  | text                                   | variant      | hasPolicyProject | selectedProject
+      ${'success'} | ${createWrapperAndSelectProject}                                                                           | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${[sampleProject]}
+      ${'failure'} | ${() => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${POLICY_PROJECT_LINK_ERROR_MESSAGE}   | ${'danger'}  | ${false}         | ${undefined}
     `(
       'emits an event with $messageType message',
       async ({ factoryFn, text, variant, hasPolicyProject, selectedProject }) => {

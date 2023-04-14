@@ -84,7 +84,7 @@ describe('LockButton component', () => {
       expect(findModal().props('visible')).toBe(false);
     });
 
-    it('executes a lock mutation once lock is confirmed', async () => {
+    it('executes a lock mutation once lock is confirmed', () => {
       lockMutationMock = jest.fn().mockRejectedValue('Test');
       createComponent({}, lockMutationMock);
       findLockButton().vm.$emit('click');

@@ -286,7 +286,7 @@ describe('TestCaseSidebar', () => {
       expect(todoEl.findComponent(GlIcon).exists()).toBe(true);
     });
 
-    it('renders label-select', async () => {
+    it('renders label-select', () => {
       const { testCaseId, canEditTestCase, projectFullPath, testCasesPath } = mockProvide;
       const labelSelectEl = wrapper.findComponent(LabelsSelectWidget);
 
@@ -306,7 +306,7 @@ describe('TestCaseSidebar', () => {
       expect(labelSelectEl.text()).toBe('None');
     });
 
-    it('renders project-select', async () => {
+    it('renders project-select', () => {
       const { selectProjectDropdownButtonTitle, testCaseMoveInProgress } = wrapper.vm;
       const { projectsFetchPath } = mockProvide;
       const projectSelectEl = wrapper.findComponent(ProjectSelect);

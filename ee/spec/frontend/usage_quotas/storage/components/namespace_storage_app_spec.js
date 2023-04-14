@@ -89,7 +89,7 @@ describe('NamespaceStorageApp', () => {
   let mockApollo;
 
   describe('Dependency proxy usage', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       mockApollo = createMockApolloProvider();
     });
 
@@ -268,7 +268,7 @@ describe('NamespaceStorageApp', () => {
         await waitForPromises();
       });
 
-      it('contains correct `first` and `last` values when clicking "Prev" button', async () => {
+      it('contains correct `first` and `last` values when clicking "Prev" button', () => {
         findPrevButton().trigger('click');
         expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledWith(
           expect.objectContaining({

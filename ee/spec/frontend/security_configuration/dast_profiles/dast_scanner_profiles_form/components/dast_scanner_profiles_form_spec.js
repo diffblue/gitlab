@@ -110,7 +110,7 @@ describe('DastScannerProfileForm', () => {
       expect(wrapper.text()).not.toContain(errorMessage);
     });
 
-    it('should allow only numbers', async () => {
+    it('should allow only numbers', () => {
       expect(finder().find('input').props('type')).toBe('number');
     });
   });

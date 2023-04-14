@@ -171,15 +171,15 @@ describe('License Compliance extension', () => {
         await waitForPromises();
       });
 
-      it('displays denied licenses', async () => {
+      it('displays denied licenses', () => {
         expect(findAllExtensionListItems().at(0).element).toMatchSnapshot();
       });
 
-      it('displays uncategorized licenses', async () => {
+      it('displays uncategorized licenses', () => {
         expect(findAllExtensionListItems().at(1).element).toMatchSnapshot();
       });
 
-      it('displays allowed licenses', async () => {
+      it('displays allowed licenses', () => {
         expect(findAllExtensionListItems().at(2).element).toMatchSnapshot();
       });
     });

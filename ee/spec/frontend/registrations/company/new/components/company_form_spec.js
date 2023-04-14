@@ -32,11 +32,11 @@ describe('RegistrationForm', () => {
       wrapper = createComponent({ propsData: { trial: true } });
     });
 
-    it('sets the trial value to be true', async () => {
+    it('sets the trial value to be true', () => {
       expect(wrapper.props().trial).toBe(true);
     });
 
-    it('hides trial toggle', async () => {
+    it('hides trial toggle', () => {
       expect(findToggle()).not.toBeVisible();
     });
   });

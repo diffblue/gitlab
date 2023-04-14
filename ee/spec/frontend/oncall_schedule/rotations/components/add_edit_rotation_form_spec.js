@@ -84,14 +84,14 @@ describe('AddEditRotationForm', () => {
   });
 
   describe('Rotation length and start time', () => {
-    it('renders the rotation length value', async () => {
+    it('renders the rotation length value', () => {
       createComponent();
       const rotationLength = findRotationLength();
       expect(rotationLength.exists()).toBe(true);
       expect(rotationLength.attributes('value')).toBe('1');
     });
 
-    it('renders the rotation starts on datepicker', async () => {
+    it('renders the rotation starts on datepicker', () => {
       createComponent();
       const startsOn = findRotationStartTime();
       expect(startsOn.exists()).toBe(true);
@@ -99,7 +99,7 @@ describe('AddEditRotationForm', () => {
       expect(startsOn.attributes('headertext')).toBe('');
     });
 
-    it('should emit an event with selected value on time selection', async () => {
+    it('should emit an event with selected value on time selection', () => {
       const option = 3;
       createComponent();
       findStartsOnTimeOptions().at(option).vm.$emit('click');
@@ -129,7 +129,7 @@ describe('AddEditRotationForm', () => {
   });
 
   describe('Rotation end time', () => {
-    it('toggle state depends on isEndDateEnabled', async () => {
+    it('toggle state depends on isEndDateEnabled', () => {
       createComponent();
       expect(findEndDateToggle().props('value')).toBe(false);
       expect(findRotationEndsContainer().exists()).toBe(false);
@@ -138,7 +138,7 @@ describe('AddEditRotationForm', () => {
       expect(findRotationEndsContainer().exists()).toBe(true);
     });
 
-    it('toggles end time visibility on', async () => {
+    it('toggles end time visibility on', () => {
       createComponent();
       const toggle = findEndDateToggle().vm;
       toggle.$emit('change', true);
@@ -147,7 +147,7 @@ describe('AddEditRotationForm', () => {
       expect(emittedEvent[0][0]).toEqual({ type: 'isEndDateEnabled', value: true });
     });
 
-    it('toggles end time visibility off', async () => {
+    it('toggles end time visibility off', () => {
       createComponent({ props: { form: { isEndDateEnabled: true } } });
       const toggle = findEndDateToggle().vm;
       toggle.$emit('change', false);
@@ -156,7 +156,7 @@ describe('AddEditRotationForm', () => {
       expect(emittedEvent[0][0]).toEqual({ type: 'isEndDateEnabled', value: false });
     });
 
-    it('should emit an event with selected value on time selection', async () => {
+    it('should emit an event with selected value on time selection', () => {
       createComponent({ props: { form: { isEndDateEnabled: true } } });
       const option = 3;
       findEndsOnTimeOptions().at(option).vm.$emit('click');
@@ -191,7 +191,7 @@ describe('AddEditRotationForm', () => {
   });
 
   describe('Rotation restricted to time', () => {
-    it('toggle state depends on isRestrictedToTime', async () => {
+    it('toggle state depends on isRestrictedToTime', () => {
       createComponent();
       expect(findRestrictedToToggle().props('value')).toBe(false);
       expect(findRestrictedToContainer().exists()).toBe(false);
@@ -201,7 +201,7 @@ describe('AddEditRotationForm', () => {
       expect(findRestrictedToContainer().exists()).toBe(true);
     });
 
-    it('toggles end time visibility on', async () => {
+    it('toggles end time visibility on', () => {
       createComponent();
       const toggle = findRestrictedToToggle().vm;
       toggle.$emit('change', true);
@@ -210,7 +210,7 @@ describe('AddEditRotationForm', () => {
       expect(emittedEvent[0][0]).toEqual({ type: 'isRestrictedToTime', value: true });
     });
 
-    it('toggles end time visibility off', async () => {
+    it('toggles end time visibility off', () => {
       createComponent({ props: { form: { ...formEmptyState, isRestrictedToTime: true } } });
       const toggle = findRestrictedToToggle().vm;
       toggle.$emit('change', false);
@@ -223,7 +223,7 @@ describe('AddEditRotationForm', () => {
       const timeFrom = 5;
       const timeTo = 22;
 
-      it('should emit an event with selected value on restricted FROM time selection', async () => {
+      it('should emit an event with selected value on restricted FROM time selection', () => {
         createComponent({ props: { form: { ...formEmptyState, isRestrictedToTime: true } } });
         findRestrictedFromOptions().at(timeFrom).vm.$emit('click');
         findRestrictedToOptions().at(timeTo).vm.$emit('click');
@@ -233,7 +233,7 @@ describe('AddEditRotationForm', () => {
         expect(emittedEvent[1][0]).toEqual({ type: 'restrictedTo.endTime', value: timeTo });
       });
 
-      it('should add a checkmark to a selected restricted FROM time', async () => {
+      it('should add a checkmark to a selected restricted FROM time', () => {
         createComponent({
           props: {
             form: {
@@ -258,7 +258,7 @@ describe('AddEditRotationForm', () => {
       expect(findUserSelector().props('dropdownItems')).toHaveLength(participants.length);
     });
 
-    it('calls the API and sets dropdown items as request result', async () => {
+    it('calls the API and sets dropdown items as request result', () => {
       const tokenSelector = findUserSelector();
 
       tokenSelector.vm.$emit('focus');
@@ -275,7 +275,7 @@ describe('AddEditRotationForm', () => {
       expect(findUserSelector().emitted().input[0][0]).toEqual(participants);
     });
 
-    it('when text input is blurred the text input clears', async () => {
+    it('when text input is blurred the text input clears', () => {
       const tokenSelector = findUserSelector();
       tokenSelector.vm.$emit('blur');
 

@@ -43,7 +43,7 @@ describe('ee/protected_environments/group_protected_environment.vue', () => {
       await createComponent();
     });
 
-    it('shows the number of groups with deploy acces', async () => {
+    it('shows the number of groups with deploy acces', () => {
       const button = wrapper.findByRole('button', { name: '2 groups' });
 
       expect(button.exists()).toBe(true);

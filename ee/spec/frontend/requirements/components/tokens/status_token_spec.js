@@ -72,7 +72,7 @@ describe('StatusToken', () => {
       },
     );
 
-    it('renders provided statuses as suggestions', async () => {
+    it('renders provided statuses as suggestions', () => {
       const suggestions = wrapper.findAllComponents(GlFilteredSearchSuggestion);
 
       expect(suggestions).toHaveLength(mockStatuses.length);

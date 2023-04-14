@@ -221,7 +221,7 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    it('shows title box and sets title in object', async () => {
+    it('shows title box and sets title in object', () => {
       const textinput = findDashboardTB();
       expect(textinput.exists()).toBe(true);
       expect(textinput.element.value).toBe('Analytics Overview');
@@ -311,7 +311,7 @@ describe('CustomizableDashboard', () => {
         });
       });
 
-      it('passes the date range limit to the date range filter', async () => {
+      it('passes the date range limit to the date range filter', () => {
         expect(findDateRangeFilter().props()).toMatchObject({
           dateRangeLimit,
         });

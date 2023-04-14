@@ -97,7 +97,7 @@ describe('TestCaseListRoot', () => {
         ${true}         | ${true}      | ${true}
       `(
         'returns $returnValue when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `testCases.pageInfo`',
-        async ({ hasPreviousPage, hasNextPage, returnValue }) => {
+        ({ hasPreviousPage, hasNextPage, returnValue }) => {
           createComponent({
             data: {
               project: {
@@ -121,7 +121,7 @@ describe('TestCaseListRoot', () => {
         ${[mockIssuable]} | ${'not empty'}          | ${true}
       `(
         'returns $returnValue when testCases array is $testCaseListDescription',
-        async ({ testCasesList, returnValue }) => {
+        ({ testCasesList, returnValue }) => {
           createComponent({
             data: {
               project: {
@@ -192,7 +192,7 @@ describe('TestCaseListRoot', () => {
 
   describe('methods', () => {
     describe('updateUrl', () => {
-      it('updates window URL based on presence of props for filtered search and sort criteria', async () => {
+      it('updates window URL based on presence of props for filtered search and sort criteria', () => {
         createComponent({
           data: {
             currentState: 'opened',

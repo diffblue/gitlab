@@ -261,7 +261,7 @@ describe('Saved tab', () => {
         expect(wrapper.text()).not.toContain(errorMessage);
       });
 
-      it("resets the button's state", async () => {
+      it("resets the button's state", () => {
         const runScanButton = findRunScanButton();
 
         expect(runScanButton.props('loading')).toBe(false);
@@ -365,7 +365,7 @@ describe('Saved tab', () => {
         ${false}    | ${false}
       `(
         'should display Pre-scan verification based on  feature flag',
-        async ({ featureFlag, expectedResult }) => {
+        ({ featureFlag, expectedResult }) => {
           createComponent(
             {},
             {

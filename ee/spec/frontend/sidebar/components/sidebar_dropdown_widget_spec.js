@@ -108,11 +108,11 @@ describe('SidebarDropdownWidget', () => {
           await clickEdit(wrapper);
         });
 
-        it('renders the dropdown on clicking edit', async () => {
+        it('renders the dropdown on clicking edit', () => {
           expect(findDropdown().isVisible()).toBe(true);
         });
 
-        it('focuses on the input when dropdown is shown', async () => {
+        it('focuses on the input when dropdown is shown', () => {
           expect(document.activeElement).toEqual(wrapper.findComponent(GlFormInput).element);
         });
 

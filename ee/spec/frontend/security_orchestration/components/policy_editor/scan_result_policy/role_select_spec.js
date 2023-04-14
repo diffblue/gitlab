@@ -33,7 +33,7 @@ describe('RoleSelect component', () => {
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
   describe('default', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       createComponent();
     });
 

@@ -320,7 +320,7 @@ describe('Subscription Details', () => {
         createComponent({ store, billableMembersCountMock });
 
         store.commit(types.UPDATE_SELECTED_GROUP, secondGroup.id);
-        return nextTick();
+        await nextTick();
       });
 
       it('should set the label description', () => {

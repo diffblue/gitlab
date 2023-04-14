@@ -110,7 +110,7 @@ describe('ReadyToMerge', () => {
       },
     );
 
-    it('displays "Merge in progress"', async () => {
+    it('displays "Merge in progress"', () => {
       createComponent({}, shallowMountExtended, { isMergingImmediately: true });
 
       expect(findMergeButton().text()).toBe('Merge in progress');

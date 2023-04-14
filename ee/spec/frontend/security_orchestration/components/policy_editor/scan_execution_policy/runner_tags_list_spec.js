@@ -117,7 +117,7 @@ describe('RunnerTagsList', () => {
       await findTagsList().vm.$emit('tags-loaded', []);
     });
 
-    it('should have disabled listbox', async () => {
+    it('should have disabled listbox', () => {
       expect(findTagsList().exists()).toBe(false);
     });
 

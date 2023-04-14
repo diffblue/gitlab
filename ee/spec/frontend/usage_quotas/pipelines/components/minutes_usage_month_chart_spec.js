@@ -42,7 +42,7 @@ describe('Minutes usage by month chart component', () => {
     ${'US/Pacific'}
   `('when viewing in timezone', ({ timezone }) => {
     describe(timezone, () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         createComponent();
         timezoneMock.register(timezone);
       });

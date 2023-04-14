@@ -93,7 +93,7 @@ describe('AddEditScheduleForm', () => {
   });
 
   describe('Schedule form validation', () => {
-    it('should show feedback for an invalid name input validation state', async () => {
+    it('should show feedback for an invalid name input validation state', () => {
       createComponent({
         props: {
           validationState: { name: false },
@@ -119,7 +119,7 @@ describe('AddEditScheduleForm', () => {
         ]);
       });
 
-      it('does not have a validation red border when timezone field is valid', async () => {
+      it('does not have a validation red border when timezone field is valid', () => {
         createComponent({
           props: {
             validationState: { timezone: true },

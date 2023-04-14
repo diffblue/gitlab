@@ -771,7 +771,7 @@ describe('Order Summary', () => {
     });
 
     describe('when changing plan', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
       });
 
@@ -793,7 +793,7 @@ describe('Order Summary', () => {
     });
 
     describe('when changing users', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
       });
 

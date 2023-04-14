@@ -96,7 +96,7 @@ describe('CreateIssueForm', () => {
         createComponent({ defaultProjectForIssueCreation: mockDefaultProjectForIssueCreation });
       });
 
-      it('returns project name of default project', async () => {
+      it('returns project name of default project', () => {
         expect(findDropdown().props().text).toBe(
           mockDefaultProjectForIssueCreation.nameWithNamespace,
         );
