@@ -450,6 +450,58 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       end
     end
 
+    context "summarize_diff command" do
+      let(:content) { "/summarize_diff" }
+
+      context "when :openai_experimentation feature flag is disabled" do
+        before do
+          stub_feature_flags(openai_experimentation: false)
+        end
+
+        it "doesn't apply /summarize_diff" do
+          _, _, msg = service.execute(content, merge_request)
+
+          expect(msg).to include("Could not apply summarize_diff command")
+        end
+      end
+
+      context "when :summarize_diff_quick_action feature flag is disabled" do
+        before do
+          stub_feature_flags(summarize_diff_quick_action: false)
+        end
+
+        it "doesn't apply /summarize_diff" do
+          _, _, msg = service.execute(content, merge_request)
+
+          expect(msg).to include("Could not apply summarize_diff command")
+        end
+      end
+
+      context "when :openai_experimentation feature flag is enabled" do
+        before do
+          stub_feature_flags(openai_experimentation: true)
+        end
+
+        it "applies /summarize_diff" do
+          _, _, msg = service.execute(content, merge_request)
+
+          expect(msg).to include("Request for summary queued")
+        end
+
+        context "when :summarize_diff_quick_action feature flag is disabled" do
+          before do
+            stub_feature_flags(summarize_diff_quick_action: false)
+          end
+
+          it "doesn't apply /summarize_diff" do
+            _, _, msg = service.execute(content, merge_request)
+
+            expect(msg).to include("Could not apply summarize_diff command")
+          end
+        end
+      end
+    end
+
     context 'iteration command' do
       let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 

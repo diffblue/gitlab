@@ -41,14 +41,20 @@ module MergeRequests
           noteable_id: @merge_request.id
         }
 
-        Notes::CreateService.new(@project, @user, opts).execute
+        # Create the note, but attribute it to the LLM bot
+        #
+        Notes::CreateService.new(@project, llm_service_bot, opts).execute
       end
 
       private
 
+      def llm_service_bot
+        @_llm_service_bot ||= User.llm_bot
+      end
+
       # Until we decide the best way to represent generated content
       def note_content(summary, rev)
-        summary + "\n\n(Summary note created by LLM 🤖 for revision #{rev})"
+        summary + "\n\n---\n_(🤖 has created a summary note for revision #{rev})_"
       end
 
       def service

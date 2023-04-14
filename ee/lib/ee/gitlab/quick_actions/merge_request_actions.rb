@@ -21,6 +21,21 @@ module EE
           command :reassign_reviewer do |reassign_param|
             @updates[:reviewer_ids] = extract_users(reassign_param).map(&:id)
           end
+
+          desc { _('Create LLM-generated summary from diff(s)') }
+          explanation { _('Creates a LLM-generated summary from diff(s).') }
+          execution_message { _('Request for summary queued.') }
+          types MergeRequest
+          condition do
+            ::Feature.enabled?(:openai_experimentation, current_user) &&
+              ::Feature.enabled?(:summarize_diff_quick_action, current_user)
+          end
+          command :summarize_diff do
+            ::MergeRequests::Llm::SummarizeMergeRequestWorker.new.perform(
+              quick_action_target.id,
+              current_user.id
+            )
+          end
         end
       end
     end
