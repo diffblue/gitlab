@@ -18,11 +18,16 @@ exports[`Code owners component matches the snapshot 2`] = `
         size="16"
       />
        
-      <strong>
+      <gl-link-stub
+        class="gl-font-weight-bold gl-text-black-normal!"
+        data-testid="codeowners-file-link"
+        href="path/to/codeowners/file"
+      >
         Code owners
-      </strong>
+      </gl-link-stub>
        
       <gl-link-stub
+        data-testid="codeowners-docs-link"
         href="/help/user/project/code_owners"
         target="_blank"
         title="About this feature"
@@ -91,11 +96,16 @@ exports[`Code owners component matches the snapshot 3`] = `
         size="16"
       />
        
-      <strong>
+      <gl-link-stub
+        class="gl-font-weight-bold gl-text-black-normal!"
+        data-testid="codeowners-file-link"
+        href="path/to/codeowners/file"
+      >
         Code owners
-      </strong>
+      </gl-link-stub>
        
       <gl-link-stub
+        data-testid="codeowners-docs-link"
         href="/help/user/project/code_owners"
         target="_blank"
         title="About this feature"
@@ -182,11 +192,16 @@ exports[`Code owners component matches the snapshot 4`] = `
         size="16"
       />
        
-      <strong>
+      <gl-link-stub
+        class="gl-font-weight-bold gl-text-black-normal!"
+        data-testid="codeowners-file-link"
+        href="path/to/codeowners/file"
+      >
         Code owners
-      </strong>
+      </gl-link-stub>
        
       <gl-link-stub
+        data-testid="codeowners-docs-link"
         href="/help/user/project/code_owners"
         target="_blank"
         title="About this feature"
@@ -291,11 +306,16 @@ exports[`Code owners component matches the snapshot 5`] = `
         size="16"
       />
        
-      <strong>
+      <gl-link-stub
+        class="gl-font-weight-bold gl-text-black-normal!"
+        data-testid="codeowners-file-link"
+        href="path/to/codeowners/file"
+      >
         Code owners
-      </strong>
+      </gl-link-stub>
        
       <gl-link-stub
+        data-testid="codeowners-docs-link"
         href="/help/user/project/code_owners"
         target="_blank"
         title="About this feature"

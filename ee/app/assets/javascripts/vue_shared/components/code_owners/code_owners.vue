@@ -70,22 +70,15 @@ export default {
     return {
       isFetching: false,
       isCodeOwnersExpanded: false,
-      project: {
-        repository: {
-          blobs: {
-            nodes: [
-              {
-                codeOwners: [],
-              },
-            ],
-          },
-        },
-      },
+      project: {},
     };
   },
   computed: {
     blobInfo() {
       return this.project?.repository?.blobs?.nodes[0];
+    },
+    codeOwnersPath() {
+      return this.project?.repository?.codeOwnersPath;
     },
     visibleCodeOwners() {
       return this.blobInfo?.codeOwners.slice(0, 5) || [];
@@ -130,8 +123,18 @@ export default {
     <div class="gl-display-flex gl-flex-wrap-wrap">
       <div class="gl-display-inline gl-mr-2">
         <gl-icon name="users" data-testid="users-icon" />
-        <strong>{{ $options.i18n.title }}</strong>
-        <gl-link :href="$options.codeOwnersHelpPath" target="_blank" :title="$options.i18n.about">
+        <gl-link
+          class="gl-font-weight-bold gl-text-black-normal!"
+          :href="codeOwnersPath"
+          data-testid="codeowners-file-link"
+          >{{ $options.i18n.title }}</gl-link
+        >
+        <gl-link
+          :href="$options.codeOwnersHelpPath"
+          target="_blank"
+          :title="$options.i18n.about"
+          data-testid="codeowners-docs-link"
+        >
           <gl-icon name="question-o" data-testid="help-icon" />
         </gl-link>
         :

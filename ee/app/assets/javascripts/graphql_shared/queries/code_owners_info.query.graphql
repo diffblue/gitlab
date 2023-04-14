@@ -2,6 +2,7 @@ query getCodeOwnersInfo($projectPath: ID!, $filePath: String!, $ref: String!) {
   project(fullPath: $projectPath) {
     id
     repository {
+      codeOwnersPath(ref: $ref)
       blobs(paths: [$filePath], ref: $ref) {
         nodes {
           id

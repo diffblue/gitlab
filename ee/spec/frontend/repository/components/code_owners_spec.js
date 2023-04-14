@@ -1,4 +1,3 @@
-import { GlLink } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -8,9 +7,9 @@ import CodeOwners from 'ee_component/vue_shared/components/code_owners/code_owne
 import codeOwnersInfoQuery from 'ee/graphql_shared/queries/code_owners_info.query.graphql';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
+  codeOwnersPath,
   codeOwnerMock,
   codeOwnersMultipleMock,
-  codeOwnersDataMock,
   codeOwnersPropsMock,
 } from '../mock_data';
 
@@ -20,15 +19,16 @@ let mockResolver;
 const createComponent = async ({
   mountFn = shallowMount,
   props = {},
-  codeOwnerMockData = [codeOwnerMock],
+  codeOwnerDataMock = [codeOwnerMock],
 } = {}) => {
   Vue.use(VueApollo);
 
   const project = {
-    ...codeOwnersDataMock,
+    id: '1234',
     repository: {
+      codeOwnersPath,
       blobs: {
-        nodes: [{ id: '345', codeOwners: codeOwnerMockData }],
+        nodes: [{ id: '345', codeOwners: codeOwnerDataMock }],
       },
     },
   };
@@ -56,16 +56,20 @@ describe('Code owners component', () => {
   const findAndSeparators = () => wrapper.findAllByTestId('and-separator');
   const findToggle = () => wrapper.findByTestId('collapse-toggle');
   const findBranchRulesLink = () => wrapper.findByTestId('branch-rules-link');
-  const findLink = () => wrapper.findComponent(GlLink);
+  const findLinkToFile = () => wrapper.findByTestId('codeowners-file-link');
+  const findLinkToDocs = () => wrapper.findByTestId('codeowners-docs-link');
 
   beforeEach(() => createComponent());
 
   describe('help link', () => {
-    it('renders a GlLink component', () => {
-      expect(findLink().exists()).toBe(true);
-      expect(findLink().attributes('href')).toBe('/help/user/project/code_owners');
-      expect(findLink().attributes('target')).toBe('_blank');
-      expect(findLink().attributes('title')).toBe('About this feature');
+    it('renders a link to CODEOWNERS file', () => {
+      expect(findLinkToFile().attributes('href')).toBe(codeOwnersPath);
+    });
+
+    it('renders a link to docs component', () => {
+      expect(findLinkToDocs().attributes('href')).toBe('/help/user/project/code_owners');
+      expect(findLinkToDocs().attributes('target')).toBe('_blank');
+      expect(findLinkToDocs().attributes('title')).toBe('About this feature');
     });
 
     it('renders a Help icon', () => {
@@ -88,7 +92,7 @@ describe('Code owners component', () => {
     expect(findBranchRulesLink().exists()).toBe(false);
   });
 
-  it('renders a link to branch rules settings for users with maintainer access and higher', async () => {
+  it('renders a link to branch rules settings for users with maintainer access and higher', () => {
     expect(findBranchRulesLink().attributes('href')).toBe(codeOwnersPropsMock.branchRulesPath);
   });
 
@@ -100,7 +104,7 @@ describe('Code owners component', () => {
     ${codeOwnersMultipleMock.slice(0, 3)} | ${2}            | ${3}
     ${codeOwnersMultipleMock}             | ${4}            | ${5}
   `('matches the snapshot', async ({ codeOwners, commaSeparators, codeOwnersLength }) => {
-    await createComponent({ codeOwnerMockData: codeOwners });
+    await createComponent({ codeOwnerDataMock: codeOwners });
 
     expect(findCommaSeparators().length).toBe(commaSeparators);
     expect(findCodeOwners().length).toBe(codeOwnersLength);
@@ -109,7 +113,7 @@ describe('Code owners component', () => {
 
   describe('when the number of code owners is more than 5', () => {
     beforeEach(() =>
-      createComponent({ codeOwnerMockData: codeOwnersMultipleMock, mountFn: mount }),
+      createComponent({ codeOwnerDataMock: codeOwnersMultipleMock, mountFn: mount }),
     );
 
     it('renders a toggle button with correct text', () => {
