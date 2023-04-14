@@ -2,6 +2,8 @@ export const refMock = 'default-ref';
 
 export const codeOwnerMock = { id: '8765', name: 'John Doe', webPath: 'path/to/@johnDoe' };
 
+export const codeOwnersPath = 'path/to/codeowners/file';
+
 export const codeOwnersMultipleMock = [
   { id: '1', name: 'Idella Welch', webPath: '/raisa' },
   { id: '2', name: 'Winston Von', webPath: '/noella' },
@@ -18,17 +20,4 @@ export const codeOwnersPropsMock = {
   branch: 'main',
   branchRulesPath: '/some/Project/-/settings/repository#js-branch-rules',
   canViewBranchRules: true,
-};
-
-export const codeOwnersDataMock = {
-  id: '1234',
-  repository: {
-    blobs: {
-      nodes: [
-        {
-          codeOwners: [],
-        },
-      ],
-    },
-  },
 };
