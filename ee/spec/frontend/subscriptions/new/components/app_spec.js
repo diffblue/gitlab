@@ -5,8 +5,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Component from 'ee/subscriptions/new/components/app.vue';
 import OrderSummary from 'ee/subscriptions/new/components/order_summary.vue';
 import Checkout from 'ee/subscriptions/new/components/checkout.vue';
-import Modal from 'ee/subscriptions/new/components/modal.vue';
-import { stubExperiments } from 'helpers/experimentation_helper';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 import ErrorAlert from 'ee/vue_shared/purchase_flow/components/checkout/error_alert.vue';
@@ -18,7 +16,6 @@ describe('App component', () => {
   let wrapper;
   let store;
 
-  const findModalComponent = () => wrapper.findComponent(Modal);
   const findCheckout = () => wrapper.findComponent(Checkout);
   const findConfirmOrderDesktop = () => wrapper.findByTestId('confirm-order-desktop');
   const findConfirmOrderMobile = () => wrapper.findByTestId('confirm-order-mobile');
@@ -52,30 +49,6 @@ describe('App component', () => {
 
   beforeEach(() => {
     jest.spyOn(Sentry, 'captureException');
-  });
-
-  describe('cart_abandonment_modal experiment', () => {
-    describe('control', () => {
-      beforeEach(() => {
-        stubExperiments({ cart_abandonment_modal: 'control' });
-        createComponent();
-      });
-
-      it('renders the modal', () => {
-        expect(findModalComponent().exists()).toBe(false);
-      });
-    });
-
-    describe('candidate', () => {
-      beforeEach(() => {
-        stubExperiments({ cart_abandonment_modal: 'candidate' });
-        createComponent();
-      });
-
-      it('renders the modal', () => {
-        expect(findModalComponent().exists()).toBe(true);
-      });
-    });
   });
 
   describe('step order app', () => {
