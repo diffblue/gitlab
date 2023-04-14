@@ -95,6 +95,10 @@ module ApprovalRuleLike
       source_rule.group_ids.to_set != group_ids.to_set
   end
 
+  def from_scan_result_policy?
+    scan_finding? || (license_scanning? && scan_result_policy_id.present?)
+  end
+
   private
 
   def direct_approvers

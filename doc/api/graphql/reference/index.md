@@ -11330,6 +11330,7 @@ Describes a rule for who can approve merge requests.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="approvalruleallowmergewheninvalid"></a>`allowMergeWhenInvalid` | [`Boolean`](#boolean) | Indicates if the rule can be ignored if it is invalid. |
 | <a id="approvalruleapprovalsrequired"></a>`approvalsRequired` | [`Int`](#int) | Number of required approvals. |
 | <a id="approvalruleapproved"></a>`approved` | [`Boolean`](#boolean) | Indicates if the rule is satisfied. |
 | <a id="approvalruleapprovedby"></a>`approvedBy` | [`UserCoreConnection`](#usercoreconnection) | List of users defined in the rule that approved the merge request. (see [Connections](#connections)) |
@@ -11338,6 +11339,7 @@ Describes a rule for who can approve merge requests.
 | <a id="approvalruleeligibleapprovers"></a>`eligibleApprovers` | [`[UserCore!]`](#usercore) | List of all users eligible to approve the merge request (defined explicitly and from associated groups). |
 | <a id="approvalrulegroups"></a>`groups` | [`GroupConnection`](#groupconnection) | List of groups added as approvers for the rule. (see [Connections](#connections)) |
 | <a id="approvalruleid"></a>`id` | [`GlobalID!`](#globalid) | ID of the rule. |
+| <a id="approvalruleinvalid"></a>`invalid` | [`Boolean`](#boolean) | Indicates if the rule is invalid and cannot be approved. |
 | <a id="approvalrulename"></a>`name` | [`String`](#string) | Name of the rule. |
 | <a id="approvalruleoverridden"></a>`overridden` | [`Boolean`](#boolean) | Indicates if the rule was overridden for the merge request. |
 | <a id="approvalrulesection"></a>`section` | [`String`](#string) | Named section of the Code Owners file that the rule applies to. |

@@ -86,8 +86,18 @@ class ApprovalWrappedRule
 
   def approved?
     strong_memoize(:approved) do
-      approvals_left <= 0 || unactioned_approvers.size <= 0
+      approvals_left <= 0 || (invalid_rule? && allow_merge_when_invalid?)
     end
+  end
+
+  def invalid_rule?
+    approvals_required > 0 && unactioned_approvers.size <= 0
+  end
+
+  def allow_merge_when_invalid?
+    return true if Feature.disabled?(:invalid_scan_result_policy_prevents_merge, merge_request.target_project)
+
+    !approval_rule.from_scan_result_policy?
   end
 
   # Number of approvals remaining (excluding existing approvals)
