@@ -1,0 +1,8 @@
+---
+name: dora_charts_forecast
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117248
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/403630
+milestone: '15.11'
+type: development
+group: group::optimize
+default_enabled: true

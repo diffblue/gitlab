@@ -13,7 +13,7 @@ export const areaChartOptions = {
     type: 'category',
   },
   yAxis: {
-    name: s__('DORA4Metrics|Number of deployments'),
+    name: s__('DORA4Metrics|Predicted number of deployments'),
     type: 'value',
     minInterval: 1,
   },

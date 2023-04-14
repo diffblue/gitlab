@@ -14,6 +14,9 @@ RSpec.describe 'Group CI/CD Analytics', :js, feature_category: :value_stream_man
   let_it_be(:releases) { create_list(:release, 5, project: project_3) }
   let_it_be(:unrelated_release) { create(:release, project: unrelated_project) }
 
+  forecast_toggle_selector = '[data-testid="data-forecast-toggle"] button'
+  chart_series_legend_selector = '[data-testid="deployment-frequency-charts"] .gl-legend-inline'
+
   before do
     stub_licensed_features(group_ci_cd_analytics: true, dora4_analytics: true)
     group.add_reporter(user)
@@ -52,5 +55,53 @@ RSpec.describe 'Group CI/CD Analytics', :js, feature_category: :value_stream_man
     it_behaves_like 'a DORA chart', '[data-testid="time-to-restore-service-charts"]', 'Time to restore service'
 
     it_behaves_like 'a DORA chart', '[data-testid="change-failure-rate-charts"]', 'Change failure rate'
+  end
+
+  describe 'Deployment frequency' do
+    let(:toggle) { page.find(forecast_toggle_selector) }
+
+    before do
+      click_link('Deployment frequency')
+    end
+
+    it 'can toggle data forecasting' do
+      expect(page).to have_css(forecast_toggle_selector)
+      expect(toggle[:class].include?('is-checked')).to be(false)
+
+      within chart_series_legend_selector do
+        expect(page).not_to have_content "Forecast"
+      end
+
+      find(forecast_toggle_selector).click
+      expect(page).to have_text("Accept testing terms of use?")
+
+      click_button('Accept testing terms')
+      wait_for_requests
+      expect(toggle[:class].include?('is-checked')).to be(true)
+
+      within chart_series_legend_selector do
+        expect(page).to have_content "Forecast"
+      end
+
+      find(forecast_toggle_selector).click
+      expect(toggle[:class].include?('is-checked')).to be(false)
+    end
+  end
+
+  describe 'when dora_charts_forecast is disabled' do
+    before do
+      stub_licensed_features(group_ci_cd_analytics: true, dora4_analytics: true)
+      stub_feature_flags(dora_charts_forecast: false)
+      group.add_reporter(user)
+      sign_in(user)
+      visit group_analytics_ci_cd_analytics_path(group)
+      wait_for_requests
+    end
+
+    it 'can not toggle data forecasting' do
+      click_link('Deployment frequency')
+
+      expect(page).not_to have_css(forecast_toggle_selector)
+    end
   end
 end
