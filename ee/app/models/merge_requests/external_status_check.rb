@@ -93,3 +93,5 @@ module MergeRequests
     end
   end
 end
+
+::MergeRequests::ExternalStatusCheck.prepend_mod

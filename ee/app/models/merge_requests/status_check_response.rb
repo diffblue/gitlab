@@ -18,3 +18,5 @@ module MergeRequests
     validates :sha, presence: true
   end
 end
+
+::MergeRequests::StatusCheckResponse.prepend_mod
