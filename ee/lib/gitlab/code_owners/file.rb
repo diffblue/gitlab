@@ -5,6 +5,10 @@ module Gitlab
     class File
       include ::Gitlab::Utils::StrongMemoize
 
+      # `FNM_DOTMATCH` makes sure we also match files starting with a `.`
+      # `FNM_PATHNAME` makes sure ** matches path separators
+      FNMATCH_FLAGS = (::File::FNM_DOTMATCH | ::File::FNM_PATHNAME).freeze
+
       def initialize(blob)
         @blob = blob
       end
@@ -65,11 +69,9 @@ module Gitlab
       end
 
       def data
-        if @blob && !@blob.binary?
-          @blob.data
-        else
-          ""
-        end
+        return "" if @blob.nil? || @blob.binary?
+
+        @blob.data
       end
 
       def get_parsed_data
@@ -135,11 +137,7 @@ module Gitlab
       end
 
       def path_matches?(pattern, path)
-        # `FNM_DOTMATCH` makes sure we also match files starting with a `.`
-        # `FNM_PATHNAME` makes sure ** matches path separators
-        flags = ::File::FNM_DOTMATCH | ::File::FNM_PATHNAME
-
-        ::File.fnmatch?(pattern, path, flags)
+        ::File.fnmatch?(pattern, path, FNMATCH_FLAGS)
       end
     end
   end
