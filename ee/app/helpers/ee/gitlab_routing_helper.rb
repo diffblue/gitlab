@@ -26,12 +26,17 @@ module EE
 
     def geo_proxied_ssh_url_to_repo(proxied_site, container)
       primary_ssh_url = container.ssh_url_to_repo
-      secondary_host = proxied_site.uri.host
 
-      # Note: if ssh_port is configured to 22, resulting ssh url does not contain the port
-      # URI.parse does not parse urls with no port
-      # Substitute original ssh_host with the proxied site host
-      primary_ssh_url.gsub(::Gitlab.config.gitlab_shell.ssh_host, secondary_host)
+      if ::Gitlab.config.gitlab_shell.ssh_host != Settings.gitlab.host
+        primary_ssh_url
+      else
+        secondary_host = proxied_site.uri.host
+
+        # Note: if ssh_port is configured to 22, resulting ssh url does not contain the port
+        # URI.parse does not parse urls with no port
+        # Substitute original ssh_host with the proxied site host
+        primary_ssh_url.gsub(::Gitlab.config.gitlab_shell.ssh_host, secondary_host)
+      end
     end
 
     def geo_primary_http_internal_url_to_repo(container)
