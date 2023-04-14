@@ -50,7 +50,7 @@ const createComponent = async (mockData = {}) => {
     createMergeRequestIn = userPermissionsMock.createMergeRequestIn,
     isBinary,
     path = propsMock.projectPath,
-    glFeatures = {},
+    explainCodeAvailable = true,
   } = mockData;
 
   const project = {
@@ -92,7 +92,7 @@ const createComponent = async (mockData = {}) => {
       originalBranch: 'test',
       resourceId: 'test',
       userId: 'test',
-      glFeatures,
+      explainCodeAvailable,
     },
   });
 
@@ -114,13 +114,8 @@ describe('Blob content viewer component', () => {
   });
 
   describe('AI Genie component', () => {
-    const prepGonAndLoad = async (ffEnabled = true, licenseEnabled = true) => {
-      const glFeatures = {
-        explainCodeSnippet: ffEnabled,
-        explainCode: licenseEnabled,
-      };
-
-      createComponent({ glFeatures });
+    const prepGonAndLoad = async (explainCodeAvailable = true) => {
+      createComponent({ explainCodeAvailable });
       await waitForPromises();
     };
 
@@ -133,17 +128,14 @@ describe('Blob content viewer component', () => {
     });
 
     it.each`
-      prefix        | ffEnabled | licenseEnabled | loggedIn | shouldRender
-      ${'does not'} | ${false}  | ${false}       | ${true}  | ${false}
-      ${'does not'} | ${true}   | ${false}       | ${true}  | ${false}
-      ${'does not'} | ${false}  | ${true}        | ${true}  | ${false}
-      ${'does not'} | ${true}   | ${true}        | ${false} | ${false}
-      ${'does'}     | ${true}   | ${true}        | ${true}  | ${true}
+      prefix        | explainCodeAvailable | shouldRender
+      ${'does not'} | ${false}             | ${false}
+      ${'does'}     | ${true}              | ${true}
     `(
-      '$prefix render the AI Genie component when licensed feature is $licenseEnabled and feature flag is $ffEnabled',
-      async ({ ffEnabled, licenseEnabled, shouldRender, loggedIn }) => {
+      '$prefix render the AI Genie component when explainCodeAvailable flag is $explainCodeAvailable',
+      async ({ explainCodeAvailable, shouldRender, loggedIn }) => {
         isLoggedIn.mockReturnValue(loggedIn);
-        await prepGonAndLoad(ffEnabled, licenseEnabled);
+        await prepGonAndLoad(explainCodeAvailable);
         expect(findAiGenie().exists()).toBe(shouldRender);
       },
     );
