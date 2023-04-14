@@ -11,7 +11,7 @@ import {
   STATE_LOADING_INSTANCE,
   STATE_CREATE_INSTANCE,
   STATE_WAITING_FOR_EVENTS,
-  ONBOARDING_VIEW_I18N,
+  FETCH_ERROR_MESSAGE,
 } from 'ee/product_analytics/onboarding/constants';
 import {
   TEST_JITSU_KEY,
@@ -24,6 +24,10 @@ jest.mock('~/alert');
 describe('ProductAnalyticsOnboardingView', () => {
   let wrapper;
 
+  const $router = {
+    push: jest.fn(),
+  };
+
   const errorMessage = 'some error';
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
@@ -31,7 +35,7 @@ describe('ProductAnalyticsOnboardingView', () => {
   const findSetupView = () => wrapper.findComponent(ProductAnalyticsOnboardingSetup);
   const findStateComponent = () => wrapper.findComponent(ProductAnalyticsOnboardingState);
 
-  const createWrapper = () => {
+  const createWrapper = (listeners = {}) => {
     wrapper = shallowMountExtended(ProductAnalyticsOnboardingView, {
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
@@ -39,6 +43,10 @@ describe('ProductAnalyticsOnboardingView', () => {
         collectorHost: TEST_COLLECTOR_HOST,
         jitsuKey: TEST_JITSU_KEY,
       },
+      mocks: {
+        $router,
+      },
+      listeners,
     });
   };
 
@@ -130,11 +138,31 @@ describe('ProductAnalyticsOnboardingView', () => {
   });
 
   describe('state component events', () => {
+    it('routes to "index" on complete when there is no event listener', async () => {
+      findStateComponent().vm.$emit('complete');
+
+      await nextTick();
+
+      expect($router.push).toHaveBeenCalledWith({ name: 'index' });
+      expect(wrapper.emitted('complete')).toBeUndefined();
+    });
+
+    it('emits "complete" on complete when there is an event listener', async () => {
+      createWrapper({ complete: () => {} });
+
+      findStateComponent().vm.$emit('complete');
+
+      await nextTick();
+
+      expect(wrapper.emitted('complete')).toHaveLength(1);
+      expect($router.push).not.toHaveBeenCalled();
+    });
+
     it('creates an alert on error with a fixed message', async () => {
       expectAlertOnError({
         finder: findStateComponent,
         captureError: false,
-        message: ONBOARDING_VIEW_I18N.fetchErrorMessage,
+        message: FETCH_ERROR_MESSAGE,
       });
     });
   });

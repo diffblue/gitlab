@@ -33431,6 +33431,9 @@ msgstr ""
 msgid "Proceed"
 msgstr ""
 
+msgid "Product Analytics"
+msgstr ""
+
 msgid "Product analytics"
 msgstr ""
 
@@ -33554,6 +33557,9 @@ msgstr ""
 msgid "ProductAnalytics|Instrumentation details"
 msgstr ""
 
+msgid "ProductAnalytics|Loading instance"
+msgstr ""
+
 msgid "ProductAnalytics|Measure All tracked Events"
 msgstr ""
 
@@ -33593,6 +33599,9 @@ msgstr ""
 msgid "ProductAnalytics|Set up product analytics"
 msgstr ""
 
+msgid "ProductAnalytics|Set up to track how your product is performing and optimize your product and development processes."
+msgstr ""
+
 msgid "ProductAnalytics|Steps to add product analytics as a CommonJS module"
 msgstr ""
 
@@ -33627,6 +33636,9 @@ msgid "ProductAnalytics|User activity"
 msgstr ""
 
 msgid "ProductAnalytics|Users"
+msgstr ""
+
+msgid "ProductAnalytics|Waiting for events"
 msgstr ""
 
 msgid "ProductAnalytics|What do you want to measure?"
@@ -40891,6 +40903,9 @@ msgid "Set time estimate to %{time_estimate}."
 msgstr ""
 
 msgid "Set to 0 for no size limit."
+msgstr ""
+
+msgid "Set up"
 msgstr ""
 
 msgid "Set up CI/CD"
