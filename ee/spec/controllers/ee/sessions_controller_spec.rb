@@ -162,19 +162,19 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
       end
 
       context 'when the user was verified by Arkose' do
+        let(:low_risk) { true }
+
         before do
           allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
             response = ServiceResponse.success(payload: { low_risk: low_risk })
             allow(instance).to receive(:execute).and_return(response)
           end
-
-          post(:create, params: params, session: {})
         end
 
         context 'when user is low risk' do
-          let(:low_risk) { true }
-
           it 'successfully logs in the user' do
+            post(:create, params: params, session: {})
+
             expect(subject.current_user).to eq user
           end
         end
@@ -183,9 +183,29 @@ RSpec.describe SessionsController, :geo, feature_category: :system_access do
           let(:low_risk) { false }
 
           it 'prevents the user from logging in' do
+            post(:create, params: params, session: {})
+
             expect(response).to render_template(:new)
             expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
             expect(subject.current_user).to be_nil
+          end
+        end
+
+        context 'when request is for QA' do
+          before do
+            allow(Gitlab::Qa).to receive(:request?).and_return(true)
+          end
+
+          it 'skips token verification' do
+            expect(Arkose::TokenVerificationService).not_to receive(:new)
+
+            post(:create, params: params, session: {})
+          end
+
+          it 'logs in the user' do
+            post(:create, params: params, session: {})
+
+            expect(subject.current_user).to eq user
           end
         end
       end

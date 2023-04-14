@@ -104,6 +104,8 @@ module EE
     end
 
     def verify_arkose_token(user)
+      return if ::Gitlab::Qa.request?(request.user_agent)
+
       result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
 
       if result.success? && result.payload[:low_risk]

@@ -119,4 +119,14 @@ RSpec.shared_examples 'creates a user with ArkoseLabs risk band on signup reques
 
     it_behaves_like 'skips verification and data recording'
   end
+
+  context 'when request is for QA' do
+    before do
+      allow(Gitlab::Qa).to receive(:request?).and_return(true)
+    end
+
+    it_behaves_like 'skips verification and data recording'
+
+    it_behaves_like 'creates the user'
+  end
 end
