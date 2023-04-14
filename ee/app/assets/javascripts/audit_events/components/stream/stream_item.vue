@@ -1,23 +1,29 @@
 <script>
 import {
-  GlButton,
   GlBadge,
+  GlDisclosureDropdown,
+  GlFormInputGroup,
   GlLink,
+  GlModal,
   GlPopover,
   GlSprintf,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { sprintf } from '~/locale';
+import { __, sprintf } from '~/locale';
 import { createAlert } from '~/alert';
+import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
 
 export default {
   components: {
-    GlButton,
+    ClipboardButton,
     GlBadge,
+    GlDisclosureDropdown,
+    GlFormInputGroup,
     GlLink,
+    GlModal,
     GlPopover,
     GlSprintf,
     StreamDestinationEditor,
@@ -42,6 +48,34 @@ export default {
     };
   },
   computed: {
+    primaryModalAction() {
+      return { text: __('Done') };
+    },
+    actions() {
+      return [
+        {
+          text: __('Edit'),
+          extraAttrs: { 'data-testid': 'edit-btn' },
+          action: () => {
+            this.setEditMode(true);
+            this.$refs.actionsDropdown.close();
+          },
+        },
+        {
+          text: this.$options.i18n.VIEW_BUTTON_LABEL,
+          extraAttrs: { 'data-testid': 'view-btn' },
+          action: () => {
+            this.$refs.actionsDropdown.close();
+            this.$refs.tokenModal.show();
+          },
+        },
+        {
+          text: __('Delete'),
+          extraAttrs: { 'data-testid': 'delete-btn', class: 'gl-text-red-500!' },
+          action: () => this.deleteDestination(),
+        },
+      ];
+    },
     itemClasses() {
       return this.isEditing ? 'gl-py-5' : 'gl-py-3';
     },
@@ -118,16 +152,6 @@ export default {
       :class="itemClasses"
     >
       <span class="gl-display-block" tabindex="0">{{ item.destinationUrl }}</span>
-      <code
-        v-gl-tooltip
-        :title="$options.i18n.VERIFICATION_TOKEN_TOOLTIP"
-        class="gl-ml-auto"
-        :class="verificationTokenClasses"
-        tabindex="0"
-      >
-        <span class="gl-sr-only">{{ $options.i18n.VERIFICATION_TOKEN_TOOLTIP }}:</span>
-        {{ item.verificationToken }}
-      </code>
       <template v-if="isItemFiltered">
         <gl-popover :target="item.id" data-testid="filter-popover">
           <gl-sprintf :message="$options.i18n.FILTER_TOOLTIP_LABEL">
@@ -138,32 +162,42 @@ export default {
             </template>
           </gl-sprintf>
         </gl-popover>
-        <gl-badge :id="item.id" icon="filter" variant="info" data-testid="filter-badge">
+        <gl-badge
+          :id="item.id"
+          icon="filter"
+          variant="info"
+          data-testid="filter-badge"
+          class="gl-ml-auto"
+        >
           {{ $options.i18n.FILTER_BADGE_LABEL }}
         </gl-badge>
       </template>
-      <template v-if="!isEditing">
-        <gl-button
-          v-gl-tooltip
-          :aria-label="editButtonLabel"
-          :disabled="isDeleting"
-          :title="$options.i18n.EDIT_BUTTON_TOOLTIP"
-          category="tertiary"
-          icon="pencil"
-          data-testid="edit-btn"
-          @click="setEditMode(true)"
-        />
-        <gl-button
-          v-gl-tooltip
-          :aria-label="deleteButtonLabel"
-          :loading="isDeleting"
-          :title="$options.i18n.DELETE_BUTTON_TOOLTIP"
-          category="tertiary"
-          icon="remove"
-          data-testid="delete-btn"
-          @click="deleteDestination"
-        />
-      </template>
+      <gl-disclosure-dropdown
+        ref="actionsDropdown"
+        class="gl-ml-3"
+        icon="ellipsis_v"
+        :loading="isDeleting"
+        :toggle-text="__('Actions')"
+        no-caret
+        text-sr-only
+        :items="actions"
+      />
+      <gl-modal
+        ref="tokenModal"
+        :title="$options.i18n.VERIFICATION_TOKEN_TOOLTIP"
+        modal-id="tokenModal"
+        :action-primary="primaryModalAction"
+      >
+        <gl-sprintf :message="$options.i18n.VERIFICATION_TOKEN_MODAL_CONTENT">
+          <template #link>{{ item.destinationUrl }}</template> </gl-sprintf
+        >:
+
+        <gl-form-input-group readonly :value="item.verificationToken" class="gl-mt-5">
+          <template #append>
+            <clipboard-button :text="item.verificationToken" :title="__('Copy to clipboard')" />
+          </template>
+        </gl-form-input-group>
+      </gl-modal>
     </div>
     <div v-if="isEditing" class="gl-p-4">
       <stream-destination-editor

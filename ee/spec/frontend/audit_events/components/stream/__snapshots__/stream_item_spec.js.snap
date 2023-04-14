@@ -1,142 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`StreamItem editing should render correctly 1`] = `
-<li
-  class="list-item py-0"
->
-  <div
-    class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-4 gl-rounded-base gl-py-5"
-  >
-    <span
-      class="gl-display-block"
-      tabindex="0"
-    >
-      https://api.gitlab.com
-    </span>
-     
-    <code
-      class="gl-ml-auto"
-      tabindex="0"
-      title="Verification token"
-    >
-      <span
-        class="gl-sr-only"
-      >
-        Verification token:
-      </span>
-      
-      id5hzCbERzSkQ82tAs16tH5Y
-    
-    </code>
-     
-    <!---->
-     
-    <!---->
-  </div>
-   
-  <div
-    class="gl-p-4"
-  >
-    <stream-destination-editor-stub
-      groupeventfilters="repository_download_operation,update_merge_approval_rule,create_merge_approval_rule"
-      item="[object Object]"
-    />
-  </div>
-</li>
-`;
-
-exports[`StreamItem render should render correctly 1`] = `
-<li
-  class="list-item py-0"
->
-  <div
-    class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-4 gl-rounded-base gl-py-3"
-  >
-    <span
-      class="gl-display-block"
-      tabindex="0"
-    >
-      https://api.gitlab.com
-    </span>
-     
-    <code
-      class="gl-ml-auto gl-mr-3"
-      tabindex="0"
-      title="Verification token"
-    >
-      <span
-        class="gl-sr-only"
-      >
-        Verification token:
-      </span>
-      
-      id5hzCbERzSkQ82tAs16tH5Y
-    
-    </code>
-     
-    <!---->
-     
-    <b-button-stub
-      aria-label="Edit https://api.gitlab.com"
-      class="gl-button btn-default-tertiary btn-icon"
-      data-testid="edit-btn"
-      size="md"
-      tag="button"
-      title="Edit"
-      type="button"
-      variant="default"
-    >
-      <!---->
-       
-      <gl-icon-stub
-        class="gl-button-icon"
-        name="pencil"
-        size="16"
-      />
-        
-      <!---->
-    </b-button-stub>
-     
-    <b-button-stub
-      aria-label="Delete https://api.gitlab.com"
-      class="gl-button btn-default-tertiary btn-icon"
-      data-testid="delete-btn"
-      size="md"
-      tag="button"
-      title="Delete"
-      type="button"
-      variant="default"
-    >
-      <!---->
-       
-      <gl-icon-stub
-        class="gl-button-icon"
-        name="remove"
-        size="16"
-      />
-        
-      <!---->
-    </b-button-stub>
-  </div>
-   
-  <!---->
-</li>
-`;
-
 exports[`StreamItem when an item has event filters renders a popover 1`] = `
-<gl-popover-stub
-  cssclasses=""
+<div
+  class="gl-popover"
   data-testid="filter-popover"
-  target="test_id2"
 >
   Destination has filters applied. 
-  <gl-link-stub
+  <a
+    class="gl-link"
     href="/help/administration/audit_event_streaming#event-type-filters"
+    rel="noopener"
     target="_blank"
   >
     
               What are filters?
             
-  </gl-link-stub>
-</gl-popover-stub>
+  </a>
+</div>
 `;

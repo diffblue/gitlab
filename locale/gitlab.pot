@@ -6183,6 +6183,12 @@ msgstr ""
 msgid "AuditStreams|Verification token"
 msgstr ""
 
+msgid "AuditStreams|Verification token for the %{link} stream"
+msgstr ""
+
+msgid "AuditStreams|View verification token"
+msgstr ""
+
 msgid "AuditStreams|filtered"
 msgstr ""
 

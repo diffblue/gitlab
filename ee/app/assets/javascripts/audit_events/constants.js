@@ -79,8 +79,10 @@ export const DELETE_STREAM_MESSAGE = s__('AuditStreams|Stream deleted successful
 
 export const STREAM_ITEMS_I18N = {
   VERIFICATION_TOKEN_TOOLTIP: s__('AuditStreams|Verification token'),
+  VERIFICATION_TOKEN_MODAL_CONTENT: s__('AuditStreams|Verification token for the %{link} stream'),
   EDIT_BUTTON_LABEL: s__('AuditStreams|Edit %{link}'),
   DELETE_BUTTON_LABEL: s__('AuditStreams|Delete %{link}'),
+  VIEW_BUTTON_LABEL: s__('AuditStreams|View verification token'),
   EDIT_BUTTON_TOOLTIP: __('Edit'),
   DELETE_BUTTON_TOOLTIP: __('Delete'),
   FILTER_TOOLTIP_LABEL: s__(
