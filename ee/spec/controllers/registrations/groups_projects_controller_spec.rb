@@ -92,15 +92,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
           )
         end
 
-        it 'assigns the required verification experiment to a variant' do
-          stub_experiments(require_verification_for_namespace_creation: :control)
-          expect(experiment(:require_verification_for_namespace_creation)).to track(:assignment)
-                                                               .with_context(user: user)
-                                                               .on_next_instance
-
-          get_new
-        end
-
         context 'when on trial' do
           it 'tracks the new group view event' do
             get :new, params: { trial_onboarding_flow: true }

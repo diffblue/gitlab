@@ -362,44 +362,6 @@ RSpec.describe GroupsHelper do
     end
   end
 
-  describe '#require_verification_for_namespace_creation_enabled?' do
-    let(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
-    let(:owner) { create(:user, created_at: user_created_at) }
-    let(:variant) { :control }
-
-    subject { helper.require_verification_for_namespace_creation_enabled? }
-
-    before do
-      stub_experiments(require_verification_for_namespace_creation: variant)
-    end
-
-    context 'when in candidate path' do
-      let(:variant) { :candidate }
-
-      it { is_expected.to eq(true) }
-
-      context 'when creating a sub-group' do
-        before do
-          allow(controller).to receive(:params) { { parent_id: 1 } }
-        end
-
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when user is admin or auditor' do
-        before do
-          allow(current_user).to receive(:can_read_all_resources?).and_return(true)
-        end
-
-        it { is_expected.to eq(false) }
-      end
-    end
-
-    context 'when in control path' do
-      it { is_expected.to eq(false) }
-    end
-  end
-
   describe '#saml_sso_settings_generate_helper_text' do
     let(:text) { 'some text' }
     let(:result) { "<span class=\"js-helper-text gl-clearfix\">#{text}</span>" }

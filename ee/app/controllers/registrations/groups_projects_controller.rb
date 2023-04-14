@@ -6,13 +6,9 @@ module Registrations
     include GoogleAnalyticsCSP
     include Onboarding::SetRedirect
 
-    skip_before_action :require_verification, only: :new
     skip_before_action :set_confirm_warning
     before_action :check_if_gl_com_or_dev
     before_action :authorize_create_group!, only: :new
-    before_action :require_verification,
-      only: [:create, :import],
-      if: -> { current_user.requires_credit_card_verification }
     before_action only: [:new] do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
@@ -24,10 +20,6 @@ module Registrations
     urgency :low, [:create, :import]
 
     def new
-      experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
-        e.candidate { set_requires_verification }
-      end
-
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
 
