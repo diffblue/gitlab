@@ -12,7 +12,7 @@ RSpec.describe Geo::DesignRepositorySyncService, feature_category: :geo_replicat
   let(:user) { create(:user) }
   let(:project) { create(:project_empty_repo, :design_repo, namespace: create(:namespace, owner: user)) }
 
-  let(:repository) { project.design_repository.git_repo }
+  let(:repository) { project.design_repository }
   let(:temp_repo) { subject.send(:temp_repo) }
   let(:lease_key) { "geo_sync_service:design:#{project.id}" }
   let(:lease_uuid) { 'uuid' }
