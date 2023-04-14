@@ -12,7 +12,6 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
     let(:can_store_security_reports) { true }
 
     before do
-      allow(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).to receive(:execute)
       allow_next_found_instance_of(Ci::Pipeline) do |record|
         allow(record).to receive(:can_store_security_reports?).and_return(can_store_security_reports)
       end
@@ -22,17 +21,19 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
       let(:can_store_security_reports) { false }
 
       it 'does not call SyncFindingsToApprovalRulesService' do
-        run_worker
+        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to receive(:new)
 
-        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to have_received(:execute)
+        run_worker
       end
     end
 
     context 'when security reports can be stored for the pipeline' do
       it 'calls SyncFindingsToApprovalRulesService' do
-        run_worker
+        expect_next_instance_of(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService, pipeline) do |service|
+          expect(service).to receive(:execute)
+        end
 
-        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).to have_received(:execute)
+        run_worker
       end
     end
 
@@ -42,9 +43,9 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
       end
 
       it 'does not call SyncFindingsToApprovalRulesService' do
-        run_worker
+        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to receive(:new)
 
-        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to have_received(:execute)
+        run_worker
       end
     end
   end
