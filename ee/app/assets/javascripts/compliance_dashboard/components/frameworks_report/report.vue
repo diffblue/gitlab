@@ -175,7 +175,7 @@ export default {
   <section>
     <filters
       :value="filters"
-      :group-path="groupPath"
+      :root-ancestor-path="rootAncestorPath"
       :error="hasQueryError"
       @submit="onFiltersChanged"
     />

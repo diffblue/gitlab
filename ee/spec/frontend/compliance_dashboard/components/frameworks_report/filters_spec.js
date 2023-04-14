@@ -11,7 +11,7 @@ describe('ComplianceFrameworksFilters', () => {
     wrapper = mount(ComplianceFrameworksFilters, {
       propsData: {
         value: [],
-        groupPath: 'my-group-path',
+        rootAncestorPath: 'my-group-path',
       },
       stubs: {
         GlFilteredSearch: true,
@@ -21,7 +21,7 @@ describe('ComplianceFrameworksFilters', () => {
 
   it('renders a Filtered Search component with correct props', () => {
     expect(findFilteredSearch().exists()).toBe(true);
-    expect(wrapper.props('groupPath')).toBe('my-group-path');
+    expect(wrapper.props('rootAncestorPath')).toBe('my-group-path');
     expect(findFilteredSearch().props('placeholder')).toBe('Search or filter results');
   });
 
