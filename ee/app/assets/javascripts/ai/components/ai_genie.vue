@@ -52,8 +52,8 @@ export default {
             this.codeExplanation = renderMarkdown(explanation);
           }
         },
-        error(err) {
-          this.codeExplanationError = err;
+        error() {
+          this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
         },
         skip() {
           return !this.codeExplanationLoading;

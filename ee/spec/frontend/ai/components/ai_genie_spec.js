@@ -27,13 +27,14 @@ const explainCodeMutationResponse = { data: { aiAction: { errors: [] } } };
 const explainCodeSubscriptionResponse = {
   data: { aiCompletionResponse: { responseBody: aiResponse, errors: [] } },
 };
-const mutationHandlerMock = jest.fn().mockResolvedValue(explainCodeMutationResponse);
-const subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
 
 const SELECTION_START_POSITION = 50;
 const SELECTION_END_POSITION = 150;
 const CONTAINER_TOP = 20;
 const SELECTED_TEXT = 'Foo';
+
+let mutationHandlerMock;
+let subscriptionHandlerMock;
 
 describe('AiGenie', () => {
   let wrapper;
@@ -43,10 +44,10 @@ describe('AiGenie', () => {
   const userId = 'gid://gitlab/User/1';
 
   const getContainer = () => document.getElementById(containerId);
-  const createComponent = (propsData = {}, mutationHandler = mutationHandlerMock) => {
+  const createComponent = (propsData = {}) => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
-      [explainCodeMutation, mutationHandler],
+      [explainCodeMutation, mutationHandlerMock],
     ]);
 
     wrapper = shallowMountExtended(AiGenie, {
@@ -109,6 +110,8 @@ describe('AiGenie', () => {
   };
 
   beforeEach(() => {
+    mutationHandlerMock = jest.fn().mockResolvedValue(explainCodeMutationResponse);
+    subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
     setHTMLFixture(
       `<div id="${containerId}" style="height:1000px; width: 800px"><p lang=${language} id="first-paragraph">Foo</p></div>`,
     );
@@ -116,6 +119,8 @@ describe('AiGenie', () => {
 
   afterEach(() => {
     resetHTMLFixture();
+    mutationHandlerMock.mockRestore();
+    subscriptionHandlerMock.mockRestore();
   });
 
   it('correctly renders the component by default', () => {
@@ -210,14 +215,6 @@ describe('AiGenie', () => {
       expect(mutationHandlerMock).toHaveBeenCalledWith({ resourceId });
     });
 
-    it('if the mutation fails, genie gets :error set with the error message', async () => {
-      const mutationRejectedMock = jest.fn().mockRejectedValue();
-      createComponent({ containerId }, mutationRejectedMock);
-      await requestExplanation();
-      await waitForPromises();
-      expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
-    });
-
     it('calls the subscription with correct variables', async () => {
       await requestExplanation();
       await waitForPromises();
@@ -245,6 +242,23 @@ describe('AiGenie', () => {
       await simulateSelectText();
       await requestExplanation();
       expect(findGenieChat().props().snippetLanguage).toBe(language);
+    });
+
+    describe('error handling', () => {
+      it('if the subscription fails, genie gets :error set with the error message', async () => {
+        subscriptionHandlerMock = jest.fn().mockRejectedValue({ errors: [] });
+        createComponent({ containerId });
+        await requestExplanation();
+        await waitForPromises();
+        expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
+      });
+      it('if the mutation fails, genie gets :error set with the error message', async () => {
+        mutationHandlerMock = jest.fn().mockRejectedValue();
+        createComponent({ containerId });
+        await requestExplanation();
+        await waitForPromises();
+        expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
+      });
     });
   });
 });
