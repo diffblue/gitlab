@@ -87,7 +87,8 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
 
       it 'returns both the super and EE specific properties' do
         expect(subject).to eq(
-          "ci_catalog_path" => "/#{project.full_path}/-/ci/catalog/resources"
+          "ci_catalog_path" => "/#{project.full_path}/-/ci/catalog/resources",
+          "project_full_path" => project.full_path
         )
       end
     end

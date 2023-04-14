@@ -1,11 +1,18 @@
 <script>
+import { GlKeysetPagination } from '@gitlab/ui';
+
 import CiResourcesListItem from './ci_resources_list_item.vue';
 
 export default {
   components: {
     CiResourcesListItem,
+    GlKeysetPagination,
   },
   props: {
+    pageInfo: {
+      type: Object,
+      required: true,
+    },
     resources: {
       type: Array,
       required: true,
@@ -14,7 +21,20 @@ export default {
 };
 </script>
 <template>
-  <ul class="gl-p-0">
-    <ci-resources-list-item v-for="resource in resources" :key="resource.id" :resource="resource" />
-  </ul>
+  <div>
+    <ul class="gl-p-0" data-testId="catalog-list-container">
+      <ci-resources-list-item
+        v-for="resource in resources"
+        :key="resource.id"
+        :resource="resource"
+      />
+    </ul>
+    <div class="gl-display-flex gl-justify-content-center">
+      <gl-keyset-pagination
+        v-bind="pageInfo"
+        @prev="$emit('onPrevPage')"
+        @next="$emit('onNextPage')"
+      />
+    </div>
+  </div>
 </template>

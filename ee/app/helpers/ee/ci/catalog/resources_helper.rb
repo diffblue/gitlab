@@ -16,7 +16,8 @@ module EE
           return super unless can_view_namespace_catalog?(project)
 
           super.merge(
-            "ci_catalog_path" => project_ci_catalog_resources_path(project)
+            "ci_catalog_path" => project_ci_catalog_resources_path(project),
+            "project_full_path" => project.full_path
           )
         end
       end
