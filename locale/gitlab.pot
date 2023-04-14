@@ -42793,6 +42793,9 @@ msgstr ""
 msgid "StatusCheck|Status checks all passed"
 msgstr ""
 
+msgid "StatusCheck|Status checks are API calls to external systems that request the status of an external requirement. %{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
 msgid "StatusCheck|Status checks are being fetched"
 msgstr ""
 
@@ -42803,6 +42806,9 @@ msgid "StatusCheck|Target branch"
 msgstr ""
 
 msgid "StatusCheck|Update status check"
+msgstr ""
+
+msgid "StatusCheck|What is status check?"
 msgstr ""
 
 msgid "StatusCheck|You are about to remove the %{name} status check."

@@ -149,24 +149,28 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   <div
                     class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
                   >
-                    <a
-                      class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
-                      data-qa-selector="mr_widget_extension_actions_button"
-                      data-testid="extension-actions-button"
-                      href="/group-name/project-name/-/merge_requests/78/full_report"
-                    >
-                      <!---->
+                    <span>
+                      <a
+                        class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                        data-qa-selector="mr_widget_extension_actions_button"
+                        data-testid="extension-actions-button"
+                        href="/group-name/project-name/-/merge_requests/78/full_report"
+                      >
+                        <!---->
+                         
+                        <!---->
+                          
+                        <span
+                          class="gl-button-text"
+                        >
+                          
+        Used by 2 packages
+      
+                        </span>
+                      </a>
                        
                       <!---->
-                        
-                      <span
-                        class="gl-button-text"
-                      >
-                        
-      Used by 2 packages
-    
-                      </span>
-                    </a>
+                    </span>
                      
                     <!---->
                   </div>
@@ -509,24 +513,28 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   <div
                     class="gl-display-flex gl-align-items-flex-start gl-ml-auto gl-pl-3"
                   >
-                    <a
-                      class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
-                      data-qa-selector="mr_widget_extension_actions_button"
-                      data-testid="extension-actions-button"
-                      href="/group-name/project-name/-/merge_requests/78/full_report"
-                    >
-                      <!---->
+                    <span>
+                      <a
+                        class="btn gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                        data-qa-selector="mr_widget_extension_actions_button"
+                        data-testid="extension-actions-button"
+                        href="/group-name/project-name/-/merge_requests/78/full_report"
+                      >
+                        <!---->
+                         
+                        <!---->
+                          
+                        <span
+                          class="gl-button-text"
+                        >
+                          
+        Used by 1 package
+      
+                        </span>
+                      </a>
                        
                       <!---->
-                        
-                      <span
-                        class="gl-button-text"
-                      >
-                        
-      Used by 1 package
-    
-                      </span>
-                    </a>
+                    </span>
                      
                     <!---->
                   </div>
