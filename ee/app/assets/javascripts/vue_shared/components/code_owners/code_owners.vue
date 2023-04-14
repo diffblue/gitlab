@@ -55,6 +55,11 @@ export default {
       required: false,
       default: '',
     },
+    canViewBranchRules: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     branchRulesPath: {
       type: String,
       required: false,
@@ -167,7 +172,13 @@ export default {
         </gl-button>
       </template>
     </div>
-    <gl-button size="small" :href="branchRulesPath" class="gl-ml-4" data-testid="branch-rules-link">
+    <gl-button
+      v-if="canViewBranchRules"
+      size="small"
+      :href="branchRulesPath"
+      class="gl-ml-4"
+      data-testid="branch-rules-link"
+    >
       {{ $options.i18n.manageBranchRules }}
     </gl-button>
   </div>

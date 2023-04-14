@@ -17,14 +17,18 @@ import {
 let wrapper;
 let mockResolver;
 
-const createComponent = async (codeOwners = [codeOwnerMock], mountFn = shallowMount) => {
+const createComponent = async ({
+  mountFn = shallowMount,
+  props = {},
+  codeOwnerMockData = [codeOwnerMock],
+} = {}) => {
   Vue.use(VueApollo);
 
   const project = {
     ...codeOwnersDataMock,
     repository: {
       blobs: {
-        nodes: [{ id: '345', codeOwners }],
+        nodes: [{ id: '345', codeOwners: codeOwnerMockData }],
       },
     },
   };
@@ -34,7 +38,10 @@ const createComponent = async (codeOwners = [codeOwnerMock], mountFn = shallowMo
   wrapper = extendedWrapper(
     mountFn(CodeOwners, {
       apolloProvider: createMockApollo([[codeOwnersInfoQuery, mockResolver]]),
-      propsData: codeOwnersPropsMock,
+      propsData: {
+        ...codeOwnersPropsMock,
+        ...props,
+      },
     }),
   );
 
@@ -76,7 +83,12 @@ describe('Code owners component', () => {
     expect(findToggle().exists()).toBe(false);
   });
 
-  it('renders a link to branch rules settings', () => {
+  it('does not render a link to branch rules settings for non-maintainers', async () => {
+    await createComponent({ props: { canViewBranchRules: false } });
+    expect(findBranchRulesLink().exists()).toBe(false);
+  });
+
+  it('renders a link to branch rules settings for users with maintainer access and higher', async () => {
     expect(findBranchRulesLink().attributes('href')).toBe(codeOwnersPropsMock.branchRulesPath);
   });
 
@@ -88,7 +100,7 @@ describe('Code owners component', () => {
     ${codeOwnersMultipleMock.slice(0, 3)} | ${2}            | ${3}
     ${codeOwnersMultipleMock}             | ${4}            | ${5}
   `('matches the snapshot', async ({ codeOwners, commaSeparators, codeOwnersLength }) => {
-    await createComponent(codeOwners);
+    await createComponent({ codeOwnerMockData: codeOwners });
 
     expect(findCommaSeparators().length).toBe(commaSeparators);
     expect(findCodeOwners().length).toBe(codeOwnersLength);
@@ -96,7 +108,9 @@ describe('Code owners component', () => {
   });
 
   describe('when the number of code owners is more than 5', () => {
-    beforeEach(() => createComponent(codeOwnersMultipleMock, mount));
+    beforeEach(() =>
+      createComponent({ codeOwnerMockData: codeOwnersMultipleMock, mountFn: mount }),
+    );
 
     it('renders a toggle button with correct text', () => {
       expect(findToggle().exists()).toBe(true);

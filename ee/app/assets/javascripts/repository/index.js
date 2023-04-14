@@ -50,7 +50,7 @@ export default () => {
     if (!codeOwnersEl) {
       return false;
     }
-    const { branch, branchRulesPath } = codeOwnersEl.dataset;
+    const { branch, canViewBranchRules, branchRulesPath } = codeOwnersEl.dataset;
     return new Vue({
       el: codeOwnersEl,
       router,
@@ -61,6 +61,7 @@ export default () => {
             filePath: this.$route.params.path,
             projectPath,
             branch,
+            canViewBranchRules,
             branchRulesPath,
           },
         });
