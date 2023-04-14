@@ -1,8 +1,8 @@
 <script>
-import { GlButton, GlSkeletonLoader, GlAlert, GlBadge } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader, GlAlert, GlBadge, GlLink, GlIcon } from '@gitlab/ui';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { i18n } from '../constants';
+import { i18n, FEEDBACK_LINK_URL } from '../constants';
 
 export default {
   name: 'AiGenieChat',
@@ -10,6 +10,8 @@ export default {
     GlButton,
     GlAlert,
     GlBadge,
+    GlLink,
+    GlIcon,
     GlSkeletonLoader,
     CodeBlockHighlighted,
   },
@@ -61,6 +63,7 @@ export default {
     },
   },
   i18n,
+  feedbackLinkUrl: FEEDBACK_LINK_URL,
 };
 </script>
 <template>
@@ -116,6 +119,16 @@ export default {
         ></gl-alert>
         <div v-else v-safe-html="content" class="md" data-testid="chat-content"></div>
       </div>
+      <gl-link
+        :href="$options.feedbackLinkUrl"
+        data-testid="feedback-link"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="gl-display-inline-block gl-mt-4"
+      >
+        <gl-icon name="comment" class="gl-mr-2" />
+        {{ $options.i18n.FEEDBACK_LINK }}
+      </gl-link>
     </section>
   </aside>
 </template>
