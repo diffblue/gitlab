@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe BlobHelper do
   include TreeHelper
+  include FakeBlobHelpers
 
   describe '#licenses_for_select' do
     let_it_be(:group) { create(:group) }
@@ -59,6 +60,21 @@ RSpec.describe BlobHelper do
       expect(by_instance).to be_nil
       expect(by_popular).to be_present
       expect(by_other).to be_present
+    end
+  end
+
+  describe '#vue_blob_app_data' do
+    let(:blob) { fake_blob(path: 'file.md', size: 2.megabytes) }
+    let(:project) { build_stubbed(:project) }
+    let(:ref) { 'main' }
+
+    it 'returns data related to blob app' do
+      allow(helper).to receive(:current_user).and_return(nil)
+
+      expect(helper.vue_blob_app_data(project, blob, ref)).to include({
+        user_id: '',
+        explain_code_available: 'false'
+      })
     end
   end
 end
