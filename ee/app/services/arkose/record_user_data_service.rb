@@ -15,6 +15,9 @@ module Arkose
 
       add_or_update_arkose_attributes
 
+      # Store risk scores as abuse trust scores
+      store_risk_scores
+
       ServiceResponse.success
     end
 
@@ -36,6 +39,11 @@ module Arkose
 
       custom_attributes.map! { |custom_attribute| custom_attribute.merge({ user_id: user.id }) }
       custom_attributes
+    end
+
+    def store_risk_scores
+      Abuse::TrustScore.create!(user: user, score: response.global_score.to_f, source: :arkose_global_score)
+      Abuse::TrustScore.create!(user: user, score: response.custom_score.to_f, source: :arkose_custom_score)
     end
   end
 end
