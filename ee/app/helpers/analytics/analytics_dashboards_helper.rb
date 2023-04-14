@@ -30,24 +30,10 @@ module Analytics
     end
 
     def product_analytics_enabled?(project)
-      all_product_analytics_application_settings_defined? &&
+      ProductAnalytics::Settings.enabled? &&
         ::Feature.enabled?(:product_analytics_dashboards, project) &&
         project.licensed_feature_available?(:product_analytics) &&
         can?(current_user, :read_product_analytics, project)
-    end
-
-    def all_product_analytics_application_settings_defined?
-      return false unless ::Gitlab::CurrentSettings.product_analytics_enabled?
-      return false unless ::Gitlab::CurrentSettings.jitsu_host.present?
-      return false unless ::Gitlab::CurrentSettings.jitsu_project_xid.present?
-      return false unless ::Gitlab::CurrentSettings.jitsu_administrator_email.present?
-      return false unless ::Gitlab::CurrentSettings.jitsu_administrator_password.present?
-      return false unless ::Gitlab::CurrentSettings.product_analytics_data_collector_host.present?
-      return false unless ::Gitlab::CurrentSettings.product_analytics_clickhouse_connection_string.present?
-      return false unless ::Gitlab::CurrentSettings.cube_api_base_url.present?
-      return false unless ::Gitlab::CurrentSettings.cube_api_key.present?
-
-      true
     end
 
     def analytics_dashboard_pointer_project(project)

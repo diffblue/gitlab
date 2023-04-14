@@ -6,11 +6,11 @@ module ProductAnalytics
       @jid = jid
       @project = project
 
-      @root_url = Gitlab::CurrentSettings.jitsu_host
-      @clickhouse_connection_string = Gitlab::CurrentSettings.product_analytics_clickhouse_connection_string
-      @jitsu_project_xid = Gitlab::CurrentSettings.jitsu_project_xid
-      @jitsu_administrator_email = Gitlab::CurrentSettings.jitsu_administrator_email
-      @jitsu_administrator_password = Gitlab::CurrentSettings.jitsu_administrator_password
+      @root_url = ProductAnalytics::Settings.jitsu_host
+      @clickhouse_connection_string = ProductAnalytics::Settings.product_analytics_clickhouse_connection_string
+      @jitsu_project_xid = ProductAnalytics::Settings.jitsu_project_xid
+      @jitsu_administrator_email = ProductAnalytics::Settings.jitsu_administrator_email
+      @jitsu_administrator_password = ProductAnalytics::Settings.jitsu_administrator_password
     end
 
     def create_api_key!
