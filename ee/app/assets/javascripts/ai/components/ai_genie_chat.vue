@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader, GlAlert, GlBadge } from '@gitlab/ui';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { i18n } from '../constants';
@@ -9,6 +9,7 @@ export default {
   components: {
     GlButton,
     GlAlert,
+    GlBadge,
     GlSkeletonLoader,
     CodeBlockHighlighted,
   },
@@ -70,14 +71,17 @@ export default {
     role="complementary"
     data-testid="chat-component"
   >
-    <header class="gl-p-5 gl-display-flex gl-justify-content-space-between gl-align-items-center">
+    <header class="gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center">
       <h3 class="gl-font-base gl-m-0">{{ $options.i18n.GENIE_CHAT_TITLE }}</h3>
+      <gl-badge class="gl-mx-4" variant="info" size="md"
+        >{{ $options.i18n.EXPERIMENT_BADGE }}
+      </gl-badge>
       <gl-button
         category="tertiary"
         variant="default"
         icon="close"
         size="small"
-        class="gl-p-0! gl-ml-2"
+        class="gl-p-0! gl-ml-auto"
         :aria-label="$options.i18n.GENIE_CHAT_CLOSE_LABEL"
         @click="closeCodeExplanation"
       />

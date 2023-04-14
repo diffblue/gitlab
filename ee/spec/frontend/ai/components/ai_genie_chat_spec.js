@@ -1,8 +1,9 @@
-import { GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import { i18n } from 'ee/ai/constants';
 
 describe('AiGenieChat', () => {
   let wrapper;
@@ -22,6 +23,7 @@ describe('AiGenieChat', () => {
   const findChatContent = () => wrapper.findByTestId('chat-content');
   const findAlert = () => wrapper.findByTestId('chat-error');
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
+  const findBadge = () => wrapper.findComponent(GlBadge);
 
   beforeEach(() => {
     createComponent();
@@ -40,6 +42,13 @@ describe('AiGenieChat', () => {
     it('renders "text" as a default language', () => {
       const defaultLanguage = 'text';
       expect(findSelectedText().props('language')).toBe(defaultLanguage);
+    });
+    it('renders Experiment label', () => {
+      const badgeType = 'info';
+      const badgeSize = 'md';
+      expect(findBadge().props('variant')).toBe(badgeType);
+      expect(findBadge().props('size')).toBe(badgeSize);
+      expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
     });
   });
 
