@@ -16588,7 +16588,22 @@ msgstr ""
 msgid "Environment|Deployment tier"
 msgstr ""
 
+msgid "Environment|Failed"
+msgstr ""
+
 msgid "Environment|Kubernetes overview"
+msgstr ""
+
+msgid "Environment|Pending"
+msgstr ""
+
+msgid "Environment|Pods"
+msgstr ""
+
+msgid "Environment|Running"
+msgstr ""
+
+msgid "Environment|Succeeded"
 msgstr ""
 
 msgid "Epic"
