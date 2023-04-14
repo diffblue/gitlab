@@ -11,6 +11,7 @@ describe('ProjectsTable component', () => {
   let wrapper;
 
   const groupPath = 'group-path';
+  const rootAncestorPath = 'root-ancestor-path';
   const newGroupComplianceFrameworkPath = 'new-framework-path';
 
   const findTable = () => wrapper.findComponent(GlTable);
@@ -30,6 +31,7 @@ describe('ProjectsTable component', () => {
     return mountExtended(ProjectsTable, {
       propsData: {
         groupPath,
+        rootAncestorPath,
         newGroupComplianceFrameworkPath,
         ...props,
       },
@@ -130,6 +132,12 @@ describe('ProjectsTable component', () => {
 
       expect(wrapper.findComponent(SelectionOperations).props().selection).toHaveLength(1);
       expect(wrapper.findComponent(SelectionOperations).props().selection[0]).toBe(projects[0]);
+    });
+
+    it('passes root ancestor path to selection operations component', () => {
+      expect(wrapper.findComponent(SelectionOperations).props().rootAncestorPath).toBe(
+        rootAncestorPath,
+      );
     });
 
     it.each(Object.keys(projects))('has the correct data for row %s', (idx) => {

@@ -21,7 +21,7 @@ export default {
       type: Array,
       required: true,
     },
-    groupPath: {
+    rootAncestorPath: {
       type: String,
       required: true,
     },
@@ -42,7 +42,7 @@ export default {
     frameworks: {
       query: getComplianceFrameworkQuery,
       variables() {
-        return { fullPath: this.groupPath };
+        return { fullPath: this.rootAncestorPath };
       },
       update(data) {
         return data.namespace.complianceFrameworks.nodes;

@@ -32,6 +32,10 @@ export default {
       type: String,
       required: true,
     },
+    rootAncestorPath: {
+      type: String,
+      required: true,
+    },
     newGroupComplianceFrameworkPath: {
       type: String,
       required: true,
@@ -184,6 +188,7 @@ export default {
       v-else
       :is-loading="isLoading"
       :projects="projects.list"
+      :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
     />

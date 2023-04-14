@@ -4,5 +4,6 @@
 #js-compliance-report{ data: {
   merge_commits_csv_export_path: group_security_merge_commit_reports_path(@group),
   group_path: @group.full_path,
+  root_ancestor_path: @group.root_ancestor.full_path,
   new_group_compliance_framework_path: new_group_compliance_framework_path(@group),
   base_path: group_security_compliance_dashboard_path(@group) } }

@@ -21,6 +21,7 @@ Vue.use(VueApollo);
 describe('ComplianceFrameworksReport component', () => {
   let wrapper;
   const groupPath = 'group-path';
+  const rootAncestorPath = 'root-ancestor-path';
   const newGroupComplianceFrameworkPath = 'new-framework-path';
   let $router;
 
@@ -56,6 +57,7 @@ describe('ComplianceFrameworksReport component', () => {
         apolloProvider: createMockApolloProvider(resolverMock),
         propsData: {
           groupPath,
+          rootAncestorPath,
           newGroupComplianceFrameworkPath,
           ...props,
         },

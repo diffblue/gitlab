@@ -14,6 +14,7 @@ export default () => {
     basePath,
     mergeCommitsCsvExportPath,
     groupPath,
+    rootAncestorPath,
     newGroupComplianceFrameworkPath,
   } = el.dataset;
 
@@ -28,6 +29,7 @@ export default () => {
     mergeCommitsCsvExportPath,
     newGroupComplianceFrameworkPath,
     groupPath,
+    rootAncestorPath,
   });
 
   return new Vue({
