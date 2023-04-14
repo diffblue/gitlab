@@ -12,7 +12,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
 
   let(:empty_state_selector) { '[data-testid="vsa-empty-state"]' }
   let(:value_stream_selector) { '[data-testid="dropdown-value-streams"]' }
-  let(:duration_chart_selector) { '[data-testid="vsa-duration-chart"]' }
+  let(:duration_chart_selector) { '[data-testid="vsa-duration-overview-chart"]' }
   let(:metrics_groups_selector) { '[data-testid="vsa-metrics-group"]' }
   let(:metrics_selector) { '[data-testid="vsa-metrics"]' }
 

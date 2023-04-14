@@ -395,6 +395,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
         expect(stage_name).to include(stage[:time])
 
         expect(page).to have_selector('[data-testid="vsa-duration-chart"]')
+        expect(page).not_to have_selector('[data-testid="vsa-duration-overview-chart"]')
       end
     end
 
@@ -405,10 +406,16 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       expect(page).to have_selector('[data-testid="vsa-stage-table"]')
     end
 
+    it 'displays the duration overview chart on the overview stage' do
+      expect(page).to have_selector('[data-testid="vsa-duration-overview-chart"]')
+
+      expect(page).not_to have_selector('[data-testid="vsa-duration-chart"]')
+    end
+
     it 'will have data available' do
-      duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
-      expect(duration_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
-      expect(duration_chart_content).to have_text(s_('CycleAnalytics|Average time to completion (days)'))
+      duration_overview_chart = page.find('[data-testid="vsa-duration-overview-chart"]')
+      expect(duration_overview_chart).not_to have_text(_("There is no data available. Please change your selection."))
+      expect(duration_overview_chart).to have_text(s_('CycleAnalytics|Average time to completion (days)'))
 
       tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
       expect(tasks_by_type_chart_content).not_to have_text(_("There is no data available. Please change your selection."))
@@ -422,9 +429,9 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
       end
 
       it 'will filter the data' do
-        duration_chart_content = page.find('[data-testid="vsa-duration-chart"]')
-        expect(duration_chart_content).not_to have_text(s_('CycleAnalytics|Average time to completion (days)'))
-        expect(duration_chart_content).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
+        duration_overview_chart = page.find('[data-testid="vsa-duration-overview-chart"]')
+        expect(duration_overview_chart).not_to have_text(s_('CycleAnalytics|Average time to completion (days)'))
+        expect(duration_overview_chart).to have_text(s_("CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters."))
 
         tasks_by_type_chart_content = page.find('.js-tasks-by-type-chart')
         expect(tasks_by_type_chart_content).to have_text(_("There is no data available. Please change your selection."))

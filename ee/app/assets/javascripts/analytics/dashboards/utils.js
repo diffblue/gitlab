@@ -30,7 +30,7 @@ const trimZeros = (value) =>
  * @param {Number} value - the metric value
  * @returns {Number} The number of fractional digits to render
  */
-const fractionDigits = (value) => {
+export const fractionDigits = (value) => {
   const absVal = Math.abs(value);
   if (absVal === 0) {
     return 1;

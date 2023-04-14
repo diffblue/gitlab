@@ -2,7 +2,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/modules/duration_ch
 import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   transformedDurationData,
-  durationChartPlottableData as mockDurationChartPlottableData,
+  durationOverviewChartPlottableData as mockDurationOverviewChartPlottableData,
 } from '../../../mock_data';
 
 const rootState = {
@@ -85,7 +85,7 @@ describe('DurationChart getters', () => {
           rootGetters,
         );
 
-        expect(res).toEqual(expect.arrayContaining(mockDurationChartPlottableData));
+        expect(res).toEqual(expect.arrayContaining(mockDurationOverviewChartPlottableData));
       });
     });
   });

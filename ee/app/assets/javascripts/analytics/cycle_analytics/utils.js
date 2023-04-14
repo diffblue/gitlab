@@ -219,6 +219,169 @@ export const getDurationChartData = (data, startDate, endDate) => {
   return eventData;
 };
 
+/**
+ * Takes the duration data of a stage and references a Map of grouped data by date to determine whether to render a null series if a day does not have any data across all stages, or flatten the stage line if a stage does not have data on a specific day but other stages do.
+ *
+ * For example, given the following duration data:
+ * [
+ *  { average_duration_in_seconds: null, date: '2023-04-01'},
+ *  { average_duration_in_seconds: 259200, date: '2023-04-02'},
+ *  { average_duration_in_seconds: null, date: '2023-04-03'},
+ * ]
+ *
+ * And the following Map:
+ * Map({
+ *  '2023-04-01' => [null, null, null],
+ *  '2023-04-02' => [86400, 259200, null],
+ *  '2023-04-03' => [432000, 172800, null],
+ * })
+ *
+ * It will return the following array:
+ * [
+ *  ['2023-04-01', null],
+ *  ['2023-04-02', 3],
+ *  ['2023-04-03', 0],
+ * ]
+ *
+ * @param {Array} data - Array of objects with average duration in seconds and date
+ * @param {Map} groupedDataByDay - a map of dates from all stages with an array of duration values
+ * @returns {Array} - Array of arrays with dates and average duration in seconds converted to days
+ */
+export const formatDurationOverviewChartData = (data, groupedDataByDay) => {
+  return data.map(({ average_duration_in_seconds: value, date }) => {
+    const currentISODate = dateFormat(new Date(date), dateFormats.isoDate);
+
+    const valuesByDay = groupedDataByDay.has(currentISODate)
+      ? groupedDataByDay.get(currentISODate)
+      : [];
+
+    if (!valuesByDay.length) return [currentISODate, null];
+
+    const isNonNullSeries = valuesByDay.some((durationData) => isNumeric(durationData));
+
+    if (!isNumeric(value)) {
+      return [currentISODate, isNonNullSeries ? 0 : null];
+    }
+
+    return [currentISODate, secondsToDays(value)];
+  });
+};
+
+/**
+ * Takes the duration data for selected stages, groups them by day and either flattens the stage line on a specific day depending on the data across stages on that day, renders a null series or returns value to be plotted.
+ *
+ * The received data is expected to be the following format; One top level object in the array per stage,
+ * each potentially having multiple data entries.
+ * [
+ *   {
+ *    id: 'issue',
+ *    name: 'Issue',
+ *    selected: true,
+ *    data: [
+ *      {
+ *        'average_duration_in_seconds': 1234,
+ *        'date': '2019-09-02T18:25:43.511Z'
+ *      },
+ *      ...
+ *    ]
+ *   },
+ *   ...
+ * ]
+ *
+ * The data is then computed and transformed into a format that can be passed to the chart:
+ * [
+ *  {
+ *    name: 'Issue',
+ *    data: [
+ *      ['2019-09-02', 7],
+ *      ['2019-09-03', 10],
+ *      ['2019-09-04', 8],
+ *    ]
+ *  }
+ *  ...
+ * ]
+ *
+ * In the data above, each array i in the data array represents a point in the area chart with the following data:
+ * i[0] = date, displayed on x axis
+ * i[1] = metric, displayed on y axis
+ *
+ * @param {Array} data - The duration data for selected stages
+ * @returns {Array} An array of stage objects with their names and arrays containing their duration data
+ */
+export const getDurationOverviewChartData = (data) => {
+  const groupedDurationsByDay = groupDurationsByDay(flattenDurationChartData(data));
+
+  return data.map(({ name, data: chartData }) => ({
+    name,
+    data: formatDurationOverviewChartData(chartData, groupedDurationsByDay),
+  }));
+};
+
+/**
+ * Takes the duration data for selected stages and progressively sums up the date values across stages in order to display a stacked area chart.
+ *
+ * For example, given the following duration data:
+ * [
+ *   {
+ *    name: 'Issue',
+ *    data: [
+ *      ['2023-04-05', 10],
+ *      ['2023-04-06', 20],
+ *      ...
+ *    ]
+ *   },
+ *   {
+ *    name: 'Plan',
+ *    data: [
+ *      ['2023-04-05', 20],
+ *      ['2023-04-06', 30],
+ *      ...
+ *    ]
+ *   },
+ *   ...
+ * ]
+ *
+ * It will return the stages with summed duration data:
+ * [
+ *   {
+ *    name: 'Issue',
+ *    data: [
+ *      ['2023-04-05', 10],
+ *      ['2023-04-06', 20],
+ *      ...
+ *    ]
+ *   },
+ *   {
+ *    name: 'Plan',
+ *    data: [
+ *      ['2023-04-05', 30],
+ *      ['2023-04-06', 50],
+ *      ...
+ *    ]
+ *   },
+ *   ...
+ * ]
+ *
+ * @param {Array} data - The duration data for selected stages
+ * @returns {Array} An array of stage objects with metadata and arrays containing summed duration data
+ */
+export const progressiveSummation = (data) => {
+  const tally = new Map();
+
+  return data.map(({ data: stageData, ...stageDetails }) => ({
+    ...stageDetails,
+    data: stageData.map(([date, value]) => {
+      if (value === null) return [date, null];
+
+      const nextValue = tally.has(date) ? tally.get(date) + value : value;
+
+      tally.set(date, nextValue);
+
+      return [date, nextValue];
+    }),
+  }));
+};
+
 export const orderByDate = (a, b, dateFmt = (datetime) => new Date(datetime).getTime()) =>
   dateFmt(a) - dateFmt(b);
 

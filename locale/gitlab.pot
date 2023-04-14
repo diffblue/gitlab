@@ -13007,6 +13007,9 @@ msgstr ""
 msgid "CycleAnalytics|New value stream…"
 msgstr ""
 
+msgid "CycleAnalytics|No data"
+msgstr ""
+
 msgid "CycleAnalytics|Number of tasks"
 msgstr ""
 

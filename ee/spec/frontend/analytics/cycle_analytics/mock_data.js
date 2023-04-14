@@ -1,4 +1,4 @@
-import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { dataVizBlue500, dataVizOrange600 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { uniq } from 'lodash';
 import valueStreamAnalyticsStages from 'test_fixtures/analytics/value_stream_analytics/stages.json';
 import valueStreamAnalyticsSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/summary.json';
@@ -24,6 +24,7 @@ import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
   DURATION_CHART_Y_AXIS_TITLE,
+  DURATION_OVERVIEW_CHART_NO_DATA,
 } from 'ee/analytics/cycle_analytics/constants';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
@@ -262,6 +263,7 @@ export const taskByTypeFilters = {
 export const transformedDurationData = [
   {
     id: issueStage.id,
+    name: 'Issue',
     selected: true,
     data: [
       {
@@ -276,6 +278,7 @@ export const transformedDurationData = [
   },
   {
     id: planStage.id,
+    name: 'Plan',
     selected: true,
     data: [
       {
@@ -290,6 +293,7 @@ export const transformedDurationData = [
   },
   {
     id: codeStage.id,
+    name: 'Code',
     selected: true,
     data: [
       {
@@ -357,3 +361,68 @@ export const durationDataNullSeries = {
   name: `${DURATION_CHART_Y_AXIS_TITLE} no data series`,
   showSymbol: false,
 };
+
+export const durationOverviewChartPlottableData = [
+  {
+    name: 'Issue',
+    data: [
+      ['2019-01-01', 13],
+      ['2019-01-02', 27],
+    ],
+  },
+  {
+    name: 'Plan',
+    data: [
+      ['2019-01-01', 25],
+      ['2019-01-02', 42],
+    ],
+  },
+];
+
+export const summedDurationOverviewData = [
+  {
+    name: 'Issue',
+    data: [
+      ['2019-01-01', 13],
+      ['2019-01-02', 27],
+    ],
+  },
+  {
+    name: 'Plan',
+    data: [
+      ['2019-01-01', 38],
+      ['2019-01-02', 69],
+    ],
+  },
+];
+
+export const durationOverviewDataSeries = summedDurationOverviewData.map((stageDetails, idx) => {
+  const colors = [dataVizBlue500, dataVizOrange600];
+
+  return {
+    ...stageDetails,
+    lineStyle: {
+      color: colors[idx],
+      type: 'solid',
+    },
+  };
+});
+
+export const durationOverviewDataNullSeries = summedDurationOverviewData.map(() => ({
+  areaStyle: {
+    color: 'none',
+  },
+  data: [
+    ['2019-01-01', null],
+    ['2019-01-02', null],
+  ],
+  itemStyle: {
+    color: '#a4a3a8',
+  },
+  lineStyle: {
+    color: '#a4a3a8',
+    type: 'dashed',
+  },
+  name: DURATION_OVERVIEW_CHART_NO_DATA,
+  showSymbol: false,
+}));

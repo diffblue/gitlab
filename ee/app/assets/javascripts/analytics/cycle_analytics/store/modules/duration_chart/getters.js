@@ -1,4 +1,4 @@
-import { getDurationChartData } from '../../../utils';
+import { getDurationChartData, getDurationOverviewChartData } from '../../../utils';
 
 export const hasPlottableData = ({ durationData = [] }) =>
   durationData.some(({ data }) => data.length);
@@ -15,11 +15,7 @@ export const durationChartPlottableData = (state, _, rootState, rootGetters) => 
     return [];
   }
 
-  const plottableData = getDurationChartData(
-    selectedStagesDurationData,
-    createdAfter,
-    createdBefore,
-  );
-
-  return plottableData;
+  return isOverviewStageSelected
+    ? getDurationOverviewChartData(selectedStagesDurationData)
+    : getDurationChartData(selectedStagesDurationData, createdAfter, createdBefore);
 };
