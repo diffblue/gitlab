@@ -70,10 +70,10 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
         .to change { Note.count }.by(1)
     end
 
-    it "creates a new note by the triggering user" do
+    it "creates a new note by the llm_bot" do
       note = worker.perform(merge_request.id, user.id)
 
-      expect(note.author_id).to eq(user.id)
+      expect(note.author_id).to eq(User.llm_bot.id)
     end
 
     it "creates a new note associated with the provided MR" do
@@ -88,7 +88,7 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
 
       expect(note.note)
         .to include(
-          "(Summary note created by LLM 🤖 for revision #{merge_request.diff_head_sha})"
+          "(🤖 has created a summary note for revision #{merge_request.diff_head_sha})"
         )
     end
   end
