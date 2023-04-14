@@ -16,6 +16,8 @@ module Gitlab
           embeddings: "text-embedding-ada-002"
         }.freeze
 
+        include ExponentialBackoff
+
         def initialize(user)
           @user = user
         end
@@ -68,6 +70,8 @@ module Gitlab
         end
 
         private
+
+        retry_methods_with_exponential_backoff :chat, :completions, :edits, :embeddings
 
         attr_reader :user
 

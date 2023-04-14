@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   let(:default_options) { {} }
   let(:expected_options) { {} }
   let(:options) { {} }
-  let(:response) do
+  let(:example_response) do
     {
       'choices' => [
         {
@@ -26,9 +26,14 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     }
   end
 
+  let(:response_double) do
+    instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: example_response)
+  end
+
   before do
+    allow(response_double).to receive(:too_many_requests?).and_return(false)
     allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
-      allow(open_ai_client).to receive(method).with(hash_including(expected_options)).and_return(response)
+      allow(open_ai_client).to receive(method).with(hash_including(expected_options)).and_return(response_double)
     end
   end
 
@@ -38,14 +43,14 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     end
 
     context 'when feature flag and access token is set' do
-      it { is_expected.to eq(response) }
+      it { is_expected.to eq(response_double) }
     end
 
     context 'when using options' do
       let(:expected_options) { { parameters: hash_including({ temperature: 0.1 }) } }
       let(:options) { { temperature: 0.1 } }
 
-      it { is_expected.to eq(response) }
+      it { is_expected.to eq(response_double) }
     end
 
     context 'when the feature flag is disabled' do
@@ -91,7 +96,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     subject(:embeddings) { described_class.new(user).embeddings(input: 'foo', **options) }
 
     let(:method) { :embeddings }
-    let(:response) do
+    let(:example_response) do
       {
         "data" => [
           {
