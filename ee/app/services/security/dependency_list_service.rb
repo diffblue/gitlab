@@ -4,7 +4,7 @@ module Security
   class DependencyListService
     SORT_BY_VALUES = %w(name packager severity).freeze
     SORT_VALUES = %w(asc desc).freeze
-    FILTER_PACKAGE_MANAGERS_VALUES = %w(bundler yarn npm maven composer pip conan go nuget sbt gradle pipenv setuptools).freeze
+    FILTER_PACKAGE_MANAGERS_VALUES = %w(bundler yarn npm pnpm maven composer pip conan go nuget sbt gradle pipenv setuptools).freeze
     FILTER_VALUES = %w(all vulnerable).freeze
 
     # @param pipeline [Ci::Pipeline]
