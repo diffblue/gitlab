@@ -18,7 +18,7 @@ export const fetchScanResultPolicies = ({ commit }, { fullPath }) => {
         .map((rawPolicy) => {
           try {
             return {
-              ...fromYaml(rawPolicy.yaml),
+              ...fromYaml({ manifest: rawPolicy.yaml }),
               isSelected: false,
               approvers: [...rawPolicy.userApprovers, ...rawPolicy.groupApprovers],
               source: rawPolicy.source || { project: { fullPath } },

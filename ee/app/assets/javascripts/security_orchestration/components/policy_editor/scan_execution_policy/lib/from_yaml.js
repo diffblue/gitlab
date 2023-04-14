@@ -32,7 +32,8 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * These values are what is supported by rule mode. If the yaml has any other values,
        * rule mode will be disabled. This validation should not be used to check whether
        * the yaml is a valid policy; that should be done on the backend with the official
-       * schema.
+       * schema. These values should not be retrieved from the backend schema because
+       * the UI for new attributes may not be available.
        */
       const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
       const rulesKeys = ['type', 'agents', 'branches', 'cadence'];

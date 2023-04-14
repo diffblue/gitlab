@@ -28,7 +28,7 @@ export default {
     },
     parsedYaml() {
       try {
-        return fromYaml(this.policy.yaml);
+        return fromYaml({ manifest: this.policy.yaml });
       } catch (e) {
         return null;
       }

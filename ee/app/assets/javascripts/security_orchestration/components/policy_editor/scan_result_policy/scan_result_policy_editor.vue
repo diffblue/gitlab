@@ -14,6 +14,7 @@ import {
   ACTIONS_LABEL,
   ADD_RULE_LABEL,
   RULES_LABEL,
+  MAX_ALLOWED_RULES_LENGTH,
 } from '../constants';
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
@@ -23,6 +24,7 @@ import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
 import {
+  createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
   DEFAULT_SCAN_RESULT_POLICY_V4,
   fromYaml,
@@ -98,20 +100,21 @@ export default {
         : DEFAULT_SCAN_RESULT_POLICY;
     }
 
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
+
     return {
-      error: '',
       isCreatingMR: false,
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
-      policy: fromYaml(yamlEditorValue),
-      yamlEditorValue,
+      policy,
+      hasParsingError,
       documentationPath: setUrlFragment(
         this.scanPolicyDocumentationPath,
         'scan-result-policy-editor',
       ),
-      yamlEditorError: null,
       mode: EDITOR_MODE_RULE,
       existingApprovers: this.scanResultPolicyApprovers,
+      yamlEditorValue,
     };
   },
   computed: {
@@ -124,14 +127,8 @@ export default {
         ? this.$options.SECURITY_POLICY_ACTIONS.REPLACE
         : this.$options.SECURITY_POLICY_ACTIONS.APPEND;
     },
-    policyYaml() {
-      return this.hasParsingError ? '' : toYaml(this.policy);
-    },
-    hasParsingError() {
-      return Boolean(this.yamlEditorError);
-    },
     isWithinLimit() {
-      return this.policy.rules.length < 5;
+      return this.policy.rules?.length < MAX_ALLOWED_RULES_LENGTH;
     },
     areRolesAvailable() {
       return this.glFeatures.scanResultRoleAction;
@@ -153,15 +150,19 @@ export default {
     ...mapActions('scanResultPolicies', ['fetchBranches']),
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
+      this.updateYamlEditorValue(this.policy);
     },
     addRule() {
       this.policy.rules.push(emptyBuildRule());
+      this.updateYamlEditorValue(this.policy);
     },
     removeRule(ruleIndex) {
       this.policy.rules.splice(ruleIndex, 1);
+      this.updateYamlEditorValue(this.policy);
     },
     updateRule(ruleIndex, values) {
       this.policy.rules.splice(ruleIndex, 1, values);
+      this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
       if (error.message.toLowerCase().includes('graphql')) {
@@ -185,14 +186,12 @@ export default {
 
       try {
         const assignedPolicyProject = await this.getSecurityPolicyProject();
-        const yamlValue =
-          this.mode === EDITOR_MODE_YAML ? this.yamlEditorValue : toYaml(this.policy);
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(yamlValue)?.name,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
           namespacePath: this.namespacePath,
-          yamlEditorValue: yamlValue,
+          yamlEditorValue: this.yamlEditorValue,
         });
 
         this.redirectToMergeRequest({ mergeRequest, assignedPolicyProject });
@@ -210,6 +209,7 @@ export default {
     },
     handleSetPolicyProperty(property, value) {
       this.policy[property] = value;
+      this.updateYamlEditorValue(this.policy);
     },
     redirectToMergeRequest({ mergeRequest, assignedPolicyProject }) {
       visitUrl(
@@ -222,26 +222,20 @@ export default {
       );
     },
     updateYaml(manifest) {
-      this.yamlEditorValue = manifest;
-      this.yamlEditorError = null;
+      const { policy, hasParsingError } = createPolicyObject(manifest);
 
-      try {
-        const newPolicy = fromYaml(manifest);
-        if (newPolicy.error) {
-          throw new Error(newPolicy.error);
-        }
-        this.policy = { ...this.policy, ...newPolicy };
-      } catch (error) {
-        this.yamlEditorError = error;
-      }
+      this.yamlEditorValue = manifest;
+      this.hasParsingError = hasParsingError;
+      this.policy = policy;
+    },
+    updateYamlEditorValue(policy) {
+      this.yamlEditorValue = toYaml(policy);
     },
     changeEditorMode(mode) {
       this.mode = mode;
-      if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
-        this.yamlEditorValue = toYaml(this.policy);
-      } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
+      if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
         if (this.invalidForRuleMode()) {
-          this.yamlEditorError = new Error();
+          this.hasParsingError = true;
         } else if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
           this.fetchBranches({ branches: this.allBranches(), projectId: this.namespaceId });
         }
@@ -279,7 +273,6 @@ export default {
     :is-updating-policy="isCreatingMR"
     :parsing-error="$options.i18n.PARSING_ERROR_MESSAGE"
     :policy="policy"
-    :policy-yaml="policyYaml"
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"
