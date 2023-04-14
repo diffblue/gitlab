@@ -1085,10 +1085,19 @@
   resolved "https://registry.yarnpkg.com/@gitlab/at.js/-/at.js-1.5.7.tgz#1ee6f838cc4410a1d797770934df91d90df8179e"
   integrity sha512-c6ySRK/Ma7lxwpIVbSAF3P+xiTLrNTGTLRx4/pHK111AdFxwgUwrYF6aVZFXvmG65jHOJHoa0eQQ21RW6rm0Rg==
 
+"@gitlab/cluster-client@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@gitlab/cluster-client/-/cluster-client-1.2.0.tgz#3b56da46748403354b5af73678b17db3851cbe53"
+  integrity sha512-2emHgfOF9CdibzwXJ2yZVf2d+ez8b67O47qa+pwlG+NnYatjfIcj9Pkzs4kBcO/9+j2lVH/EegPDyEkZZt8Irg==
+  dependencies:
+    axios "^0.24.0"
+    core-js "^3.29.1"
+
 "@gitlab/eslint-plugin@18.3.2":
   version "18.3.2"
   resolved "https://registry.yarnpkg.com/@gitlab/eslint-plugin/-/eslint-plugin-18.3.2.tgz#dc4d5b487e26a1473106c1a3e34ae3ea219d4dd1"
   integrity sha512-Lz0RnEW5isZ/jkeHcr2k6NqaHISwgKeWN/vkWUU5J4Ax7oYPR0CgA2KO/dEnOvIPmGfbnUKowsekBmmy5SUQHA==
+
   dependencies:
     "@babel/core" "^7.17.0"
     "@babel/eslint-parser" "^7.17.0"

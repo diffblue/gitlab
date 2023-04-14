@@ -53,6 +53,7 @@
     "@cubejs-client/core": "^0.32.17",
     "@cubejs-client/vue": "^0.32.17",
     "@gitlab/at.js": "1.5.7",
+    "@gitlab/cluster-client": "^1.2.0",
     "@gitlab/favicon-overlay": "2.0.0",
     "@gitlab/fonts": "^1.2.0",
     "@gitlab/svgs": "3.38.0",
