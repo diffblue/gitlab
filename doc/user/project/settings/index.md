@@ -75,28 +75,28 @@ To configure visibility, features, and permissions for a project:
 
 Use the toggles to enable or disable features in the project.
 
-| Option                           | More access limit options | Description                                                                                                                                            |
-| :------------------------------- | :------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Issues**                       | ✓                         | Activates the GitLab issues tracker.                                                                                                                   |
-| **Repository**                   | ✓                         | Enables [repository](../repository/index.md) functionality                                                                                             |
-| **Merge requests**               | ✓                         | Enables [merge request](../merge_requests/index.md) functionality; also see [Merge request settings](#configure-merge-request-settings-for-a-project). |
-| **Forks**                        | ✓                         | Enables [forking](../repository/forking_workflow.md) functionality.                                                                                    |
-| **Git Large File Storage (LFS)** |                           | Enables the use of [large files](../../../topics/git/lfs/index.md#git-large-file-storage-lfs).                                                         |
-| **Packages**                     |                           | Supports configuration of a [package registry](../../../administration/packages/index.md#gitlab-package-registry-administration) functionality.        |
-| **CI/CD**                        | ✓                         | Enables [CI/CD](../../../ci/index.md) functionality.                                                                                                   |
-| **Container Registry**           |                           | Activates a [registry](../../packages/container_registry/index.md) for your Docker images.                                                             |
-| **Analytics**                    | ✓                         | Enables [analytics](../../analytics/index.md).                                                                                                         |
-| **Requirements**                 | ✓                         | Control access to [Requirements Management](../requirements/index.md).                                                                                 |
-| **Security and Compliance**      | ✓                         | Control access to [security features](../../application_security/index.md).                                                                            |
-| **Wiki**                         | ✓                         | Enables a separate system for [documentation](../wiki/index.md).                                                                                       |
-| **Snippets**                     | ✓                         | Enables [sharing of code and text](../../snippets.md).                                                                                                 |
-| **Pages**                        | ✓                         | Allows you to [publish static websites](../pages/index.md).                                                                                            |
-| **Metrics Dashboard**            | ✓                         | Control access to [metrics dashboard](../integrations/prometheus.md).                                                                                  |
-| **Releases**                     | ✓                         | Control access to [Releases](../releases/index.md).                                                                                                    |
-| **Environments**                 | ✓                         | Control access to [Environments and Deployments](../../../ci/environments/index.md).                                                                   |
-| **Feature flags**                | ✓                         | Control access to [Feature flags](../../../operations/feature_flags.md).                                                                               |
-| **Monitor**                      | ✓                         | Control access to [Monitor](../../../operations/index.md) features.                                                                                    |
-| **Infrastructure**               | ✓                         | Control access to [Infrastructure](../../infrastructure/index.md) features.                                                                            |
+| Option                           | More access limit options | Description
+| :------------------------------- | :------------------------ | :---------- |
+| **Issues**                       | **{check-circle}** Yes | Activates the GitLab issues tracker.
+| **Repository**                   | **{check-circle}** Yes | Enables [repository](../repository/index.md) functionality.
+| **Merge requests**               | **{check-circle}** Yes | Enables [merge request](../merge_requests/index.md) functionality; also see [Merge request settings](#configure-merge-request-settings-for-a-project).
+| **Forks**                        | **{check-circle}** Yes | Enables [forking](../repository/forking_workflow.md) functionality.
+| **Git Large File Storage (LFS)** | **{dotted-circle}** No | Enables the use of [large files](../../../topics/git/lfs/index.md#git-large-file-storage-lfs).
+| **Packages**                     | **{dotted-circle}** No | Supports configuration of a [package registry](../../../administration/packages/index.md#gitlab-package-registry-administration) functionality.
+| **CI/CD**                        | **{check-circle}** Yes | Enables [CI/CD](../../../ci/index.md) functionality.
+| **Container Registry**           | **{dotted-circle}** No | Activates a [registry](../../packages/container_registry/index.md) for your Docker images.
+| **Analytics**                    | **{check-circle}** Yes | Enables [analytics](../../analytics/index.md).
+| **Requirements**                 | **{check-circle}** Yes | Control access to [Requirements Management](../requirements/index.md).
+| **Security and Compliance**      | **{check-circle}** Yes | Control access to [security features](../../application_security/index.md).
+| **Wiki**                         | **{check-circle}** Yes | Enables a separate system for [documentation](../wiki/index.md).
+| **Snippets**                     | **{check-circle}** Yes | Enables [sharing of code and text](../../snippets.md).
+| **Pages**                        | **{check-circle}** Yes | Allows you to [publish static websites](../pages/index.md).
+| **Metrics Dashboard**            | **{check-circle}** Yes | Control access to [metrics dashboard](../integrations/prometheus.md).
+| **Releases**                     | **{check-circle}** Yes | Control access to [Releases](../releases/index.md).
+| **Environments**                 | **{check-circle}** Yes | Control access to [Environments and Deployments](../../../ci/environments/index.md).
+| **Feature flags**                | **{check-circle}** Yes | Control access to [Feature flags](../../../operations/feature_flags.md).
+| **Monitor**                      | **{check-circle}** Yes | Control access to [Monitor](../../../operations/index.md) features.
+| **Infrastructure**               | **{check-circle}** Yes | Control access to [Infrastructure](../../infrastructure/index.md) features.
 
 When you disable a feature, the following additional features are also disabled:
 
