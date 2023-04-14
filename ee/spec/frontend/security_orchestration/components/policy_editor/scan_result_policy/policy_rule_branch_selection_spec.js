@@ -73,7 +73,7 @@ describe('PolicyRuleBranchSelection', () => {
         await nextTick();
       });
 
-      it('triggers a changed event with the updated branches', async () => {
+      it('triggers a changed event with the updated branches', () => {
         expect(wrapper.emitted().changed).toEqual([
           [expect.objectContaining({ branches: UPDATED_RULE.branches })],
         ]);
@@ -110,7 +110,7 @@ describe('PolicyRuleBranchSelection', () => {
         await nextTick();
       });
 
-      it('shows the specific branch input when "Specific Branches" is selected', async () => {
+      it('shows the specific branch input when "Specific Branches" is selected', () => {
         expect(findSpecificBranchInput().exists()).toBe(true);
       });
 

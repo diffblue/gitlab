@@ -34,7 +34,7 @@ describe('Vulnerability related issues component', () => {
   const issue1 = { id: 3, vulnerabilityLinkId: 987 };
   const issue2 = { id: 25, vulnerabilityLinkId: 876 };
 
-  const createWrapper = async ({ data = {}, provide = {}, stubs = {} } = {}) => {
+  const createWrapper = ({ data = {}, provide = {}, stubs = {} } = {}) => {
     wrapper = shallowMount(RelatedIssues, {
       propsData,
       data: () => data,
@@ -68,7 +68,7 @@ describe('Vulnerability related issues component', () => {
     mockAxios.reset();
   });
 
-  it('passes the expected props to the RelatedIssuesBlock component', async () => {
+  it('passes the expected props to the RelatedIssuesBlock component', () => {
     window.gl = { GfmAutoComplete: { dataSources: {} } };
     const data = {
       isFetching: true,

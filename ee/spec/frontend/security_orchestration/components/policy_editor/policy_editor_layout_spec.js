@@ -81,7 +81,7 @@ describe('PolicyEditorLayout component', () => {
       });
     });
 
-    it('disables the save button tooltip', async () => {
+    it('disables the save button tooltip', () => {
       expect(glTooltipDirectiveMock.mock.calls[0][1].value.disabled).toBe(true);
     });
 
@@ -163,7 +163,7 @@ describe('PolicyEditorLayout component', () => {
       ${'rule mode section'}         | ${'does display'}     | ${findRuleModeSection}        | ${true}
       ${'rule mode preview section'} | ${'does display'}     | ${findRuleModePreviewSection} | ${true}
       ${'yaml mode section'}         | ${'does not display'} | ${findYamlModeSection}        | ${false}
-    `('$status the $component', async ({ findComponent, state }) => {
+    `('$status the $component', ({ findComponent, state }) => {
       expect(findComponent().exists()).toBe(state);
     });
   });
@@ -178,7 +178,7 @@ describe('PolicyEditorLayout component', () => {
       ${'rule mode section'}         | ${'does not display'} | ${findRuleModeSection}        | ${false}
       ${'rule mode preview section'} | ${'does not display'} | ${findRuleModePreviewSection} | ${false}
       ${'yaml mode section'}         | ${'does display'}     | ${findYamlModeSection}        | ${true}
-    `('$status the $component', async ({ findComponent, state }) => {
+    `('$status the $component', ({ findComponent, state }) => {
       expect(findComponent().exists()).toBe(state);
     });
 
@@ -194,7 +194,7 @@ describe('PolicyEditorLayout component', () => {
       factory({ propsData: { hasParsingError: true } });
     });
 
-    it('displays the alert', async () => {
+    it('displays the alert', () => {
       expect(findAlert().exists()).toBe(true);
     });
 

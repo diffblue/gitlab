@@ -182,7 +182,7 @@ describe('DastProfilesConfigurator', () => {
       await waitForPromises();
     });
 
-    it('should have saved profiles selected', async () => {
+    it('should have saved profiles selected', () => {
       expect(findScannerProfilesSelector().find('h3').text()).toContain(savedScannerProfileName);
       expect(findSiteProfilesSelector().find('h3').text()).toContain(savedSiteProfileName);
     });
@@ -277,7 +277,7 @@ describe('DastProfilesConfigurator', () => {
         ? `warns about conflicting profiles when user selects ${description}`
         : `does not report any conflict when user selects ${description}`;
 
-      it(`${testDescription}`, async () => {
+      it(`${testDescription}`, () => {
         expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
       });
     },

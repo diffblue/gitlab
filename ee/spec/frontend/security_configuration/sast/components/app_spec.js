@@ -26,7 +26,7 @@ describe('SAST Configuration App', () => {
   const failureHandlerSpecific = () => ({
     errors: [{ message: `${window.gon.uf_error_prefix} ${specificErrorMessage}` }],
   });
-  const failureHandlerGeneric = async () => ({
+  const failureHandlerGeneric = () => ({
     errors: [{ message: technicalErrorMessage }],
   });
   const createMockApolloProvider = (handler) =>

@@ -83,7 +83,9 @@ describe('ee merge request widget options', () => {
         [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
         [
           securityReportMergeRequestDownloadPathsQuery,
-          async () => ({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
+          jest
+            .fn()
+            .mockResolvedValue({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
         ],
         [securityReportSummaryQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
         [

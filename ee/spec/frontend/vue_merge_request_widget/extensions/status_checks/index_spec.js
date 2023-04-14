@@ -214,7 +214,7 @@ describe('Status checks extension', () => {
           .trigger('click');
       });
 
-      it(`should not show a retry button`, async () => {
+      it(`should not show a retry button`, () => {
         const listItem = wrapper.findAll('[data-testid="extension-list-item"]').at(0);
         const actionButton = listItem.find('[data-testid="extension-actions-button"]');
 

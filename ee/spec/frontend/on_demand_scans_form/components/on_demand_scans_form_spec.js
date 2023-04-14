@@ -302,7 +302,7 @@ describe('OnDemandScansForm', () => {
             actionFunction();
           });
 
-          it('sets correct button states', async () => {
+          it('sets correct button states', () => {
             const [submitButton, saveButton, cancelButton] = [
               findSubmitButton(),
               findSaveButton(),
@@ -333,11 +333,11 @@ describe('OnDemandScansForm', () => {
             });
           });
 
-          it('redirects to the URL provided in the response', async () => {
+          it('redirects to the URL provided in the response', () => {
             expect(redirectTo).toHaveBeenCalledWith(redirectPath);
           });
 
-          it('does not show an alert', async () => {
+          it('does not show an alert', () => {
             expect(findAlert().exists()).toBe(false);
           });
         });
@@ -357,7 +357,7 @@ describe('OnDemandScansForm', () => {
             hasSiteProfileAttributes();
           });
 
-          it(`triggers dastProfileUpdateMutation mutation with runAfterUpdate set to ${runAfter}`, async () => {
+          it(`triggers dastProfileUpdateMutation mutation with runAfterUpdate set to ${runAfter}`, () => {
             expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith({
               mutation: dastProfileUpdateMutation,
               variables: {
@@ -415,7 +415,7 @@ describe('OnDemandScansForm', () => {
         await submitForm();
       };
 
-      beforeEach(async () => {
+      beforeEach(() => {
         createShallowComponent();
       });
 

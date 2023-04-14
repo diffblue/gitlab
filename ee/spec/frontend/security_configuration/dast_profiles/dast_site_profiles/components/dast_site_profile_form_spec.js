@@ -79,7 +79,7 @@ describe('DastSiteProfileForm', () => {
     await setAuthFieldsValues(siteProfileWithSecrets.auth);
   };
 
-  const setTargetType = async (type) => {
+  const setTargetType = (type) => {
     const radio = wrapper
       .findAll('input[type="radio"]')
       .filter((r) => r.attributes('value') === type)
@@ -168,7 +168,7 @@ describe('DastSiteProfileForm', () => {
     });
 
     describe('request-headers and password fields renders correctly', () => {
-      it('when creating a new profile', async () => {
+      it('when creating a new profile', () => {
         expect(findRequestHeadersInput().attributes('placeholder')).toBe(
           'Cache-control: no-cache, User-Agent: DAST/1.0',
         );

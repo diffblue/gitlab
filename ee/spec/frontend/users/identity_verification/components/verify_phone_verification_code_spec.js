@@ -128,7 +128,7 @@ describe('Verify phone verification code input component', () => {
       expect(wrapper.emitted('back')).toHaveLength(1);
     });
 
-    it('resets form', async () => {
+    it('resets form', () => {
       expect(findVerificationCodeFormGroup().attributes('invalid-feedback')).toBe('');
       expect(findVerificationCodeFormGroup().attributes('state')).toBe(undefined);
 

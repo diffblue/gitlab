@@ -141,7 +141,7 @@ describe('Confirm Order', () => {
     });
 
     describe('when failing to receive step data', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         mockApolloProvider = createMockApolloProvider([]);
         createComponent({ apolloProvider: mockApolloProvider });
         mockApolloProvider.clients.defaultClient.clearStore();

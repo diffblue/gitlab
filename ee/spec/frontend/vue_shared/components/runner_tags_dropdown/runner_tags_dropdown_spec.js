@@ -112,7 +112,7 @@ describe('RunnerTagsDropdown', () => {
     expect(findDropdownItems().at(1).text()).toEqual('backup');
   });
 
-  it('should emit select event', async () => {
+  it('should emit select event', () => {
     toggleDropdown();
 
     findDropdownItems().at(0).trigger('click');

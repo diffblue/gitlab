@@ -37,8 +37,9 @@ describe('AddEditRotationModal', () => {
   let userSearchQueryHandler;
   let createRotationHandler;
 
-  async function createRotation(localWrapper) {
+  function createRotation(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
+    return nextTick();
   }
 
   const createComponent = ({ data = {}, props = {}, loading = false } = {}) => {
@@ -381,7 +382,7 @@ describe('AddEditRotationModal', () => {
       });
     });
 
-    it('should load rotation restriction data successfully', async () => {
+    it('should load rotation restriction data successfully', () => {
       expect(findForm().props('form')).toMatchObject({
         isRestrictedToTime: true,
         restrictedTo: { startTime: 2, endTime: 10 },

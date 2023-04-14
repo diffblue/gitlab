@@ -135,7 +135,7 @@ describe('Simple Filter component', () => {
       expectAllOptionSelected();
     });
 
-    it('emits filter-changed event with default options when created', async () => {
+    it('emits filter-changed event with default options when created', () => {
       const expectedIds = optionIdsAt([1, 2, 3]);
       expect(wrapper.emitted('filter-changed')).toHaveLength(1);
       expect(wrapper.emitted('filter-changed')[0][0]).toEqual({ [filter.id]: expectedIds });
@@ -160,7 +160,7 @@ describe('Simple Filter component', () => {
     };
 
     describe('clicking on items', () => {
-      it('updates the querystring when options are clicked', async () => {
+      it('updates the querystring when options are clicked', () => {
         createWrapper();
         const clickedIds = [];
 
@@ -192,7 +192,7 @@ describe('Simple Filter component', () => {
         expectSelectedItems([1, 3, 5, 7]);
       });
 
-      it('selects only valid items when querystring has valid and invalid IDs', async () => {
+      it('selects only valid items when querystring has valid and invalid IDs', () => {
         const ids = optionIdsAt([2, 4, 6]).concat(['some', 'invalid', 'ids']);
         updateQuerystring(ids);
         createWrapper();
@@ -200,14 +200,14 @@ describe('Simple Filter component', () => {
         expectSelectedItems([2, 4, 6]);
       });
 
-      it('selects default options if querystring only has invalid items', async () => {
+      it('selects default options if querystring only has invalid items', () => {
         updateQuerystring(['some', 'invalid', 'ids']);
         createWrapper({ defaultOptions: optionsAt([4, 5, 8]) });
 
         expectSelectedItems([4, 5, 8]);
       });
 
-      it('selects All option if querystring only has invalid IDs and there are no default options', async () => {
+      it('selects All option if querystring only has invalid IDs and there are no default options', () => {
         updateQuerystring(['some', 'invalid', 'ids']);
         createWrapper();
 

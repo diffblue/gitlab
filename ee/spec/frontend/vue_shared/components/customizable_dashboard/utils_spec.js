@@ -110,7 +110,7 @@ describe('isEmptyPanelData', () => {
     ${'LineChart'}    | ${[1]} | ${false}
   `(
     'returns $expected for visualization "$visualizationType" with value "$value"',
-    async ({ visualizationType, value, expected }) => {
+    ({ visualizationType, value, expected }) => {
       const result = isEmptyPanelData(visualizationType, value);
       expect(result).toBe(expected);
     },

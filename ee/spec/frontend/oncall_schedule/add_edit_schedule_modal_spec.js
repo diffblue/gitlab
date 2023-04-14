@@ -57,8 +57,9 @@ describe('AddScheduleModal', () => {
     wrapper.vm.$refs.addUpdateScheduleModal.hide = mockHideModal;
   };
 
-  async function updateSchedule(localWrapper) {
+  function updateSchedule(localWrapper) {
     localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
+    return nextTick();
   }
 
   const createComponentWithApollo = ({

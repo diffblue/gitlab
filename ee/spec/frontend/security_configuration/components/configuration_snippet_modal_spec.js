@@ -80,7 +80,7 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
     expect(helpText().html()).toContain(gitlabCiYamlEditPath);
   });
 
-  it('on primary event, text is copied to the clipbard and user is redirected to CI editor', async () => {
+  it('on primary event, text is copied to the clipbard and user is redirected to CI editor', () => {
     findModal().vm.$emit('primary');
 
     expect(ClipboardJS).toHaveBeenCalledWith('#copy-yaml-snippet-and-edit-button', {
@@ -91,7 +91,7 @@ describe('EE - SecurityConfigurationSnippetModal', () => {
     );
   });
 
-  it('on secondary event, text is copied to the clipbard', async () => {
+  it('on secondary event, text is copied to the clipbard', () => {
     findModal().vm.$emit('secondary');
 
     expect(ClipboardJS).toHaveBeenCalledWith('#copy-yaml-snippet-button', {

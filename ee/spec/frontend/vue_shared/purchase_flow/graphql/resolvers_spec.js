@@ -35,7 +35,7 @@ describe('ee/vue_shared/purchase_flow/graphql/resolvers', () => {
 
   describe('Mutation', () => {
     describe('updateActiveStep', () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         const mockApollo = createMockApolloProvider(STEPS, 0);
         mockApolloClient = mockApollo.clients.defaultClient;
       });

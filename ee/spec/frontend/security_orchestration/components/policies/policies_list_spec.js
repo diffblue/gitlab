@@ -314,7 +314,7 @@ describe('PoliciesList component', () => {
       await waitForPromises();
     });
 
-    it('displays inherited policies only', async () => {
+    it('displays inherited policies only', () => {
       expect(findPolicySourceCells()).toHaveLength(2);
       expect(trimText(findPolicySourceCells().at(0).text())).toBe(
         'Inherited from parent-group-name',
@@ -324,13 +324,13 @@ describe('PoliciesList component', () => {
       );
     });
 
-    it('displays inherited scan execution policies', async () => {
+    it('displays inherited scan execution policies', () => {
       expect(trimText(findPolicyTypeCells().at(0).text())).toBe(
         POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.text,
       );
     });
 
-    it('displays inherited scan result policies', async () => {
+    it('displays inherited scan result policies', () => {
       expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
         POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.text,
       );

@@ -48,7 +48,7 @@ describe('Card Showcase component', () => {
     });
   });
 
-  it('renders secondary button', async () => {
+  it('renders secondary button', () => {
     createWrapper();
 
     expect(findSecondaryButton().props()).toMatchObject({

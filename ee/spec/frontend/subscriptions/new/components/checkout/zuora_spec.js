@@ -144,7 +144,7 @@ describe('Zuora', () => {
         return nextTick();
       });
 
-      it('emits error with message', async () => {
+      it('emits error with message', () => {
         expect(wrapper.emitted().error.length).toEqual(1);
         expect(wrapper.emitted().error[0]).toEqual(['1337']);
       });

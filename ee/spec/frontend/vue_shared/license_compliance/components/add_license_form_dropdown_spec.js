@@ -27,7 +27,7 @@ describe('AddLicenseFormDropdown', () => {
     expect(wrapper.emitted('update-selected-license')).toEqual([['LGPL']]);
   });
 
-  it('shows all defined licenses', async () => {
+  it('shows all defined licenses', () => {
     expect(findCombobox().exists()).toBe(true);
     expect(findCombobox().props('tokenList')).toEqual(KNOWN_LICENSES);
   });

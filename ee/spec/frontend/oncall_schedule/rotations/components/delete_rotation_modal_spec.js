@@ -167,7 +167,7 @@ describe('DeleteRotationModal', () => {
       expect(findModal().attributes('data-testid')).toBe(`delete-rotation-modal-${rotation.id}`);
     });
 
-    it('calls a mutation with correct parameters and destroys a rotation', async () => {
+    it('calls a mutation with correct parameters and destroys a rotation', () => {
       createComponentWithApollo();
       destroyRotation();
 

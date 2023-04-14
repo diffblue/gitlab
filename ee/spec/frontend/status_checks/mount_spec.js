@@ -37,7 +37,7 @@ describe('mountStatusChecks', () => {
     expect(mountStatusChecks()).toBeNull();
   });
 
-  it('returns the Vue component', async () => {
+  it('returns the Vue component', () => {
     dispatch.mockResolvedValue({});
     const wrapper = createWrapper(mountStatusChecks(el));
 

@@ -132,7 +132,7 @@ describe('ProductAnalyticsOnboardingView', () => {
       expect(findStateComponent().props('pollState')).toBe(true);
     });
 
-    it('creates an alert on error with the error message', async () => {
+    it('creates an alert on error with the error message', () => {
       expectAlertOnError({ finder: findEmptyState, captureError: true, message: errorMessage });
     });
   });
@@ -158,7 +158,7 @@ describe('ProductAnalyticsOnboardingView', () => {
       expect($router.push).not.toHaveBeenCalled();
     });
 
-    it('creates an alert on error with a fixed message', async () => {
+    it('creates an alert on error with a fixed message', () => {
       expectAlertOnError({
         finder: findStateComponent,
         captureError: false,

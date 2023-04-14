@@ -515,7 +515,7 @@ describe('Subscription Seats', () => {
       wrapper = createComponent();
     });
 
-    it('input event triggers the setSearchQuery action', async () => {
+    it('input event triggers the setSearchQuery action', () => {
       const SEARCH_STRING = 'search string';
 
       findSearchAndSortBar().vm.$emit('onFilter', SEARCH_STRING);

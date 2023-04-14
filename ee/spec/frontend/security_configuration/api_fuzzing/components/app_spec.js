@@ -16,7 +16,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
   let wrapper;
   const projectFullPath = 'namespace/project';
   const pendingHandler = jest.fn(() => new Promise(() => {}));
-  const successHandler = jest.fn(async () => apiFuzzingConfigurationQueryResponse);
+  const successHandler = jest.fn(() => apiFuzzingConfigurationQueryResponse);
   const createMockApolloProvider = (handler) =>
     createMockApollo([[apiFuzzingCiConfigurationQuery, handler]]);
 

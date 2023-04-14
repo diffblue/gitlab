@@ -367,7 +367,7 @@ describe('TestCaseShowRoot', () => {
       expect(wrapper.find('[data-testid="cancel-test-case-edit"]').exists()).toBe(true);
     });
 
-    it('renders test-case-sidebar', async () => {
+    it('renders test-case-sidebar', () => {
       expect(findTestCaseSidebar().exists()).toBe(true);
     });
 

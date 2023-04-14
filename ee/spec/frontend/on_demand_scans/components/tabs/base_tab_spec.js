@@ -65,7 +65,7 @@ describe('BaseTab', () => {
 
   const triggerActionError = async (errorMessage) => {
     findActions().vm.$emit('error', errorMessage);
-    return nextTick();
+    await nextTick();
   };
 
   const createComponentFactory = (mountFn = shallowMountExtended) => (
@@ -217,7 +217,7 @@ describe('BaseTab', () => {
       await waitForPromises();
     });
 
-    it('renders the title with the item count', async () => {
+    it('renders the title with the item count', () => {
       expect(findTitle().text()).toMatchInterpolatedText('All 30');
     });
 

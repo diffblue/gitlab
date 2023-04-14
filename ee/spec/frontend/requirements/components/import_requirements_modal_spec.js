@@ -16,7 +16,7 @@ describe('ImportRequirementsModal', () => {
   let wrapper;
 
   const findModal = () => wrapper.findComponent(GlModal);
-  const selectFile = async (file = TEST_FILE) => {
+  const selectFile = (file = TEST_FILE) => {
     const input = wrapper.find('input[type="file"]');
     Object.defineProperty(input.element, 'files', { value: [file] });
     return input.trigger('change');

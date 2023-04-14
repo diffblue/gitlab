@@ -113,7 +113,7 @@ describe('Actions', () => {
         expect(requestHandler).toHaveBeenCalled();
       });
 
-      it('emits the action event and puts the button in the loading state on click', async () => {
+      it('emits the action event and puts the button in the loading state on click', () => {
         expect(wrapper.emitted('action')).toHaveLength(1);
         expect(button.props('isLoading')).toBe(true);
       });
@@ -138,11 +138,11 @@ describe('Actions', () => {
         button = null;
       });
 
-      it('removes the loading state once the mutation errors out', async () => {
+      it('removes the loading state once the mutation errors out', () => {
         expect(button.props('isLoading')).toBe(false);
       });
 
-      it('emits the error', async () => {
+      it('emits the error', () => {
         expect(wrapper.emitted('error')).toEqual([eventPayload]);
       });
     });

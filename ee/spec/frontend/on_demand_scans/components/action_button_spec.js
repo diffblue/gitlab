@@ -55,7 +55,7 @@ describe('ActionButton', () => {
     expect(findButton().props('loading')).toBe(false);
   });
 
-  it('passes the loading state down to the button', async () => {
+  it('passes the loading state down to the button', () => {
     createComponent({ isLoading: true });
 
     expect(findButton().props('loading')).toBe(true);

@@ -89,7 +89,7 @@ describe('Policies Header Component', () => {
         await linkSecurityPoliciesProject();
       });
 
-      it('displays the alert component when scan new modal policy emits event', async () => {
+      it('displays the alert component when scan new modal policy emits event', () => {
         expect(findAlert().text()).toBe(projectLinkSuccessText);
         expect(wrapper.emitted('update-policy-list')).toStrictEqual([
           [

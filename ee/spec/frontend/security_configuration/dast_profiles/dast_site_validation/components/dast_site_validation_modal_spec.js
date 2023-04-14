@@ -81,7 +81,7 @@ describe('DastSiteValidationModal', () => {
     withinComponent().queryByRole('radio', {
       name: new RegExp(`${validationMethod} validation`, 'i'),
     });
-  const enableValidationMethod = async (validationMethod) =>
+  const enableValidationMethod = (validationMethod) =>
     createWrapper(findRadioInputForValidationMethod(validationMethod)).setChecked(true);
 
   it("calls GlModal's show method when own show method is called", () => {

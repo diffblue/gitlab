@@ -142,7 +142,7 @@ describe('Learn GitLab Section Link', () => {
       expect(eventHub.$emit).toHaveBeenCalledWith('openModal', { source: LEARN_GITLAB });
     });
 
-    it('tracks the click', async () => {
+    it('tracks the click', () => {
       const trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
 
       findUncompletedLink().trigger('click');

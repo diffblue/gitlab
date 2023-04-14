@@ -851,7 +851,7 @@ describe('MR Widget Security Reports', () => {
       (deprecateVulnerabilitiesFeedback) => {
         let mockDataProps;
 
-        beforeEach(async () => {
+        beforeEach(() => {
           mockDataProps = {
             state: 'dismissed',
             state_transitions: [

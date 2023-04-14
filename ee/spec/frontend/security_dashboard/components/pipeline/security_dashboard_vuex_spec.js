@@ -116,7 +116,7 @@ describe('Security Dashboard component', () => {
 
       beforeEach(openFindingModal);
 
-      it('passes the correct props to the finding modal', async () => {
+      it('passes the correct props to the finding modal', () => {
         expect(wrapper.findComponent(VulnerabilityFindingModal).props()).toMatchObject({
           findingUuid,
           pipelineIid,
@@ -133,7 +133,7 @@ describe('Security Dashboard component', () => {
         expect(wrapper.findComponent(VulnerabilityFindingModal).exists()).toBe(false);
       });
 
-      it('re-fetches the vulnerability list when "stateUpdated" is emitted', async () => {
+      it('re-fetches the vulnerability list when "stateUpdated" is emitted', () => {
         jest.spyOn(store, 'dispatch').mockImplementation(() => Promise.resolve());
 
         wrapper.findComponent(VulnerabilityFindingModal).vm.$emit('state-updated');
@@ -192,7 +192,7 @@ describe('Security Dashboard component', () => {
       );
     });
 
-    it('emits a hide modal event when modal does not have an error and hideModal is called', async () => {
+    it('emits a hide modal event when modal does not have an error and hideModal is called', () => {
       const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
       wrapper.vm.hideModal();
       expect(rootEmit).toHaveBeenCalledWith(BV_HIDE_MODAL, VULNERABILITY_MODAL_ID);

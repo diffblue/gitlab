@@ -78,11 +78,11 @@ describe('PolicyActionApprovers', () => {
       expect(findRemoveButton().exists()).toBe(false);
     });
 
-    it('does not render the user select when the "user" type approver is not selected', async () => {
+    it('does not render the user select when the "user" type approver is not selected', () => {
       expect(findUserSelect().exists()).toBe(false);
     });
 
-    it('does not render the group select when the "group" type approver is not selected', async () => {
+    it('does not render the group select when the "group" type approver is not selected', () => {
       expect(findGroupSelect().exists()).toBe(false);
     });
 

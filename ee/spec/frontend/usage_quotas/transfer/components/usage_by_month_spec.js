@@ -61,7 +61,7 @@ describe('UsageByMonth', () => {
       await waitForPromises();
     });
 
-    it('renders `GlAreaChart` component and correctly passes props', async () => {
+    it('renders `GlAreaChart` component and correctly passes props', () => {
       expect(findGlAreaChart().props()).toMatchObject({
         data: [{ name: UsageByMonth.i18n.DATA_NAME, data: defaultPropsData.chartData }],
         option: {

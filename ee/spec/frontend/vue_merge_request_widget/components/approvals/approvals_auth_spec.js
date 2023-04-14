@@ -48,7 +48,7 @@ describe('Approval auth component', () => {
       createComponent();
     });
 
-    it('emits the approve event', async () => {
+    it('emits the approve event', () => {
       findInput().setValue(TEST_PASSWORD);
       wrapper.findComponent(GlModal).vm.$emit('ok', { preventDefault: () => null });
 

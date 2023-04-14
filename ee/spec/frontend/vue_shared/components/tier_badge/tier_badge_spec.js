@@ -15,14 +15,14 @@ describe('TierBadge', () => {
   };
 
   describe('tracking', () => {
-    it('tracks render on mount', async () => {
+    it('tracks render on mount', () => {
       const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
 
       createComponent();
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render_badge', { label: 'tier-badge' });
     });
 
-    it('tracks when popover shown', async () => {
+    it('tracks when popover shown', () => {
       const trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
       createComponent();
 

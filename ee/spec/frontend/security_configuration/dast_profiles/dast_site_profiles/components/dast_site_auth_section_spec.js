@@ -103,7 +103,7 @@ describe('DastSiteAuthSection', () => {
       });
     });
 
-    it('all inputs have correct required attribute set', async () => {
+    it('all inputs have correct required attribute set', () => {
       const { submitField, ...requiredFields } = inputFieldsWithValues;
 
       Object.keys(requiredFields).forEach((key) => {
