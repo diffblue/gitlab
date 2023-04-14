@@ -2,9 +2,15 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import createDefaultStore from 'ee/related_items_tree/store';
 import RelatedItemsRoadmapApp from 'ee/related_items_tree/components/related_items_roadmap_app.vue';
 
+import { mockTracking } from 'helpers/tracking_helper';
+import {
+  ROADMAP_ACTIVITY_TRACK_ACTION_LABEL,
+  ROADMAP_ACTIVITY_TRACK_LABEL,
+} from 'ee/related_items_tree/constants';
 import { mockInitialConfig, mockRoadmapAppData } from '../mock_data';
 
 Vue.use(Vuex);
@@ -71,6 +77,18 @@ describe('RelatedItemsTree', () => {
       it('loads roadmap', () => {
         createComponent({});
         expect(initRoadmap).toHaveBeenCalled();
+      });
+    });
+
+    describe('roadmap tab', () => {
+      it('tracks loading of the component', async () => {
+        const wrapper = createComponent();
+        const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        await waitForPromises();
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, ROADMAP_ACTIVITY_TRACK_ACTION_LABEL, {
+          label: ROADMAP_ACTIVITY_TRACK_LABEL,
+        });
       });
     });
   });

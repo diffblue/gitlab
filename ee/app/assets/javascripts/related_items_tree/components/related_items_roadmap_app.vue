@@ -1,12 +1,15 @@
 <script>
 import { mapState } from 'vuex';
 import { GlAlert } from '@gitlab/ui';
+import Tracking from '~/tracking';
 import { __ } from '~/locale';
+import { ROADMAP_ACTIVITY_TRACK_LABEL, ROADMAP_ACTIVITY_TRACK_ACTION_LABEL } from '../constants';
 
 export default {
   components: {
     GlAlert,
   },
+  mixins: [Tracking.mixin()],
   inject: ['roadmapAppData'],
   data() {
     return {
@@ -42,6 +45,7 @@ export default {
         .then((roadmapBundle) => {
           roadmapBundle.default();
           this.roadmapLoaded = true;
+          this.track(ROADMAP_ACTIVITY_TRACK_ACTION_LABEL, { label: ROADMAP_ACTIVITY_TRACK_LABEL });
         })
         .catch(() => {
           this.loadingError = true;
