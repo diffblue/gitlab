@@ -17,6 +17,7 @@ export const codeOwnersPropsMock = {
   filePath: 'some/file',
   branch: 'main',
   branchRulesPath: '/some/Project/-/settings/repository#js-branch-rules',
+  canViewBranchRules: true,
 };
 
 export const codeOwnersDataMock = {
