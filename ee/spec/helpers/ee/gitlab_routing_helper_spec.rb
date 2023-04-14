@@ -68,7 +68,13 @@ RSpec.describe EE::GitlabRoutingHelper do
     let(:proxied_site) { instance_double(GeoNode, uri: URI::HTTP.build(host: 'proxied-host', port: 5678)) }
     let(:primary_container) { instance_double(Project, ssh_url_to_repo: ssh_url_to_repo) }
 
-    context 'with default gitlab shell ssh_port' do
+    before do
+      stub_proxied_site(proxied_site)
+
+      allow(Settings.gitlab).to receive(:host).and_return('primary-host')
+    end
+
+    context 'when ssh_port is customized' do
       let(:ssh_url_to_repo) { 'git@primary:bar.git' }
 
       before do
@@ -80,17 +86,17 @@ RSpec.describe EE::GitlabRoutingHelper do
         )
       end
 
-      it { is_expected.to eq('git@proxied-host:bar.git') }
+      it { is_expected.to eq('git@primary:bar.git') }
     end
 
-    context 'with custom gitlab shell ssh_port' do
-      let(:ssh_url_to_repo) { 'ssh://git@primary:123/bar.git' }
+    context 'when ssh_port is the same as host' do
+      let(:ssh_url_to_repo) { 'ssh://git@primary-host:123/bar.git' }
 
       before do
         stub_config(
           gitlab_shell: {
             ssh_port: 123,
-            ssh_host: 'primary'
+            ssh_host: 'primary-host'
           }
         )
       end
