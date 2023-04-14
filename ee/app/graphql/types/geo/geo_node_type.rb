@@ -64,8 +64,7 @@ module Types
             null: true,
             resolver: ::Resolvers::Geo::ProjectWikiRepositoryRegistriesResolver,
             description: 'Find Project Wiki Repository registries on this Geo node. ' \
-                         'Ignored if `geo_project_wiki_repository_replication` feature flag is disabled.',
-            alpha: { milestone: '15.10' }
+                         'Ignored if `geo_project_wiki_repository_replication` feature flag is disabled.'
       field :repos_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of repository backfill for this secondary node.'
       field :selective_sync_namespaces, ::Types::NamespaceType.connection_type, null: true, method: :namespaces, description: 'Namespaces that should be synced, if `selective_sync_type` == `namespaces`.'
       field :selective_sync_shards, type: [GraphQL::Types::String], null: true, description: 'Repository storages whose projects should be synced, if `selective_sync_type` == `shards`.'
