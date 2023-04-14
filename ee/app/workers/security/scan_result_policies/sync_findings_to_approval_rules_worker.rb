@@ -18,7 +18,7 @@ module Security
         return unless pipeline && Feature.enabled?(:sync_approval_rules_from_findings, pipeline.project)
         return unless pipeline.can_store_security_reports?
 
-        Security::ScanResultPolicies::SyncFindingsToApprovalRulesService.execute(pipeline)
+        Security::ScanResultPolicies::SyncFindingsToApprovalRulesService.new(pipeline).execute
       end
     end
   end
