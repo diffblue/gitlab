@@ -64,7 +64,7 @@ module ProductAnalytics
     end
 
     def cube_server_url(endpoint)
-      "#{Gitlab::CurrentSettings.cube_api_base_url}/cubejs-api/v1/" + endpoint
+      "#{ProductAnalytics::Settings.cube_api_base_url}/cubejs-api/v1/" + endpoint
     end
 
     def gitlab_token
@@ -87,7 +87,7 @@ module ProductAnalytics
 
       {
         "Content-Type": 'application/json',
-        Authorization: JWT.encode(payload, Gitlab::CurrentSettings.cube_api_key, 'HS256')
+        Authorization: JWT.encode(payload, ProductAnalytics::Settings.cube_api_key, 'HS256')
       }
     end
 
