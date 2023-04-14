@@ -17,10 +17,12 @@ RSpec.describe NavHelper, feature_category: :navigation do
 
     context 'when nav is supported' do
       %w[your_work project group].each do |context_nav|
-        let(:nav) { context_nav }
+        context "with #{context_nav}" do
+          let(:nav) { context_nav }
 
-        it 'returns true' do
-          expect(subject).to be true
+          it 'returns true' do
+            expect(subject).to be true
+          end
         end
       end
     end
