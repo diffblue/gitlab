@@ -1,12 +1,19 @@
 <script>
 import * as Sentry from '@sentry/browser';
+import { GlToggle, GlBadge } from '@gitlab/ui';
+import { gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
+import { linearRegression } from 'ee/analytics/shared/utils';
 import { createAlert } from '~/alert';
-import { s__, sprintf } from '~/locale';
+import { __, s__, sprintf } from '~/locale';
+import { spriteIcon } from '~/lib/utils/common_utils';
+import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
+import { nDaysAfter } from '~/lib/utils/datetime_utility';
 import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
+import glFeaturesFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
   allChartDefinitions,
@@ -27,13 +34,18 @@ const VISIBLE_METRICS = ['deploys', 'deployment-frequency', 'deployment_frequenc
 const filterFn = (data) =>
   data.filter((d) => VISIBLE_METRICS.includes(d.identifier)).map(({ links, ...rest }) => rest);
 
+const TESTING_TERMS_URL = 'https://about.gitlab.com/handbook/legal/testing-agreement/';
+
 export default {
   name: 'DeploymentFrequencyCharts',
   components: {
     CiCdAnalyticsCharts,
     DoraChartHeader,
     ValueStreamMetrics,
+    GlToggle,
+    GlBadge,
   },
+  mixins: [glFeaturesFlagMixin()],
   inject: {
     projectPath: {
       type: String,
@@ -50,6 +62,29 @@ export default {
     [LAST_90_DAYS]: 90,
     [LAST_180_DAYS]: 180,
   },
+  forecastDays: {
+    [LAST_WEEK]: 3,
+    [LAST_MONTH]: 14,
+    [LAST_90_DAYS]: 45,
+    [LAST_180_DAYS]: 90,
+  },
+  i18n: {
+    showForecast: s__('DORA4Metrics|Show forecast'),
+    forecast: s__('DORA4Metrics|Forecast'),
+    badgeTitle: __('Experiment'),
+    confirmationTitle: s__('DORA4Metrics|Accept testing terms of use?'),
+    confirmationBtnText: s__('DORA4Metrics|Accept testing terms'),
+    confirmationHtmlMessage: sprintf(
+      s__('DORA4Metrics|By enabling this feature, you accept the %{url}'),
+      {
+        url: `<a href="${TESTING_TERMS_URL}" target="_blank" rel="noopener noreferrer nofollow">Testing Terms of Use ${spriteIcon(
+          'external-link',
+          's16',
+        )}</a>`,
+      },
+      false,
+    ),
+  },
   data() {
     return {
       chartData: {
@@ -58,14 +93,25 @@ export default {
         [LAST_90_DAYS]: [],
         [LAST_180_DAYS]: [],
       },
+      showForecast: false,
+      forecastConfirmed: false,
+      forecastChartData: {
+        [LAST_WEEK]: {},
+        [LAST_MONTH]: {},
+        [LAST_90_DAYS]: {},
+        [LAST_180_DAYS]: {},
+      },
     };
   },
   computed: {
     charts() {
-      return allChartDefinitions.map((chart) => ({
-        ...chart,
-        data: this.chartData[chart.id],
-      }));
+      return allChartDefinitions.map((chart) => {
+        const data = [...this.chartData[chart.id]];
+        if (this.showForecast) {
+          data.push(this.forecastChartData[chart.id]);
+        }
+        return { ...chart, data };
+      });
     },
     metricsRequestPath() {
       return this.projectPath ? this.projectPath : `groups/${this.groupPath}`;
@@ -110,6 +156,30 @@ export default {
             ),
           },
         ];
+
+        this.forecastChartData[id] = {
+          name: this.$options.i18n.forecast,
+          data: [],
+          lineStyle: { type: 'dashed', color: gray300 },
+          areaStyle: { opacity: 0 },
+        };
+
+        if (apiData?.length > 0) {
+          const { data: forecastedData } = apiDataToChartSeries(
+            linearRegression(apiData, this.$options.forecastDays[id]),
+            endDate,
+            nDaysAfter(endDate, this.$options.forecastDays[id]),
+            this.$options.i18n.forecast,
+          )[0];
+
+          // Add the last point from the data series so the chart visually joins together
+          const lastDataPoint = seriesData[0].data.slice(-1);
+
+          this.forecastChartData[id] = {
+            ...this.forecastChartData[id],
+            data: [...lastDataPoint, ...forecastedData],
+          };
+        }
       }),
     );
 
@@ -138,6 +208,32 @@ export default {
         created_after: toYmd(start_date),
       };
     },
+    async onToggleForecast(toggleValue) {
+      if (toggleValue) {
+        await this.confirmForecastTerms();
+        if (this.forecastConfirmed) {
+          this.showForecast = toggleValue;
+        }
+      } else {
+        this.showForecast = toggleValue;
+      }
+    },
+    async confirmForecastTerms() {
+      if (this.forecastConfirmed) return;
+
+      const {
+        confirmationTitle: title,
+        confirmationBtnText: primaryBtnText,
+        confirmationHtmlMessage: modalHtmlMessage,
+      } = this.$options.i18n;
+
+      this.forecastConfirmed = await confirmAction('', {
+        primaryBtnVariant: 'info',
+        primaryBtnText,
+        title,
+        modalHtmlMessage,
+      });
+    },
   },
 
   areaChartOptions,
@@ -155,6 +251,20 @@ export default {
       :chart-documentation-href="$options.chartDocumentationHref"
     />
     <ci-cd-analytics-charts :charts="charts" :chart-options="$options.areaChartOptions">
+      <template v-if="glFeatures.doraChartsForecast" #extend-button-group>
+        <div class="gl-display-flex gl-align-items-center">
+          <gl-toggle
+            :value="showForecast"
+            :label="$options.i18n.showForecast"
+            label-position="left"
+            data-testid="data-forecast-toggle"
+            @change="onToggleForecast"
+          />
+          <gl-badge size="md" variant="info" class="gl-ml-3">{{
+            $options.i18n.badgeTitle
+          }}</gl-badge>
+        </div>
+      </template>
       <template #metrics="{ selectedChart }">
         <value-stream-metrics
           :request-path="metricsRequestPath"

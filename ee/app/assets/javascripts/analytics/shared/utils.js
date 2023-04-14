@@ -2,7 +2,12 @@ import { merge, cloneDeep, zip } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
 import { extractVSAFeaturesFromGON } from '~/analytics/shared/utils';
 import dateFormat from '~/lib/dateformat';
-import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
+import {
+  convertObjectPropsToCamelCase,
+  parseBoolean,
+  roundOffFloat,
+} from '~/lib/utils/common_utils';
+import { getDateInFuture } from '~/lib/utils/datetime/date_calculation_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { fractionDigits } from '../dashboards/utils';
 import { DEFAULT_NULL_SERIES_OPTIONS, DEFAULT_SERIES_DATA_OPTIONS } from './constants';
@@ -301,4 +306,94 @@ export const formatDurationOverviewTooltipMetric = (metric) => {
   const decimalPlaces = fractionDigits(metric);
 
   return Number(metric.toFixed(decimalPlaces));
+};
+
+/**
+ * This function takes a time series of data and computes a
+ * slope and intercept to be used for linear regression over the dataset
+ *
+ * @param {Array} timeSeriesData - The historic time series data which will be used for the linear regression
+ * @returns {Object} an object containing the `slope` and `intercept` values
+ */
+export const calculateSlopeAndInterceptFromDataset = (timeSeriesData) => {
+  const x = timeSeriesData.map((element) => new Date(element.date).getTime());
+  const y = timeSeriesData.map((element) => element.value);
+  const sumX = x.reduce((prev, curr) => prev + curr, 0);
+  const avgX = sumX / x.length;
+  const xDifferencesToAverage = x.map((value) => avgX - value);
+  const xDifferencesToAverageSquared = xDifferencesToAverage.map((value) => value ** 2);
+  const SSxx = xDifferencesToAverageSquared.reduce((prev, curr) => prev + curr, 0);
+  const sumY = y.reduce((prev, curr) => prev + curr, 0);
+  const avgY = sumY / y.length;
+  const yDifferencesToAverage = y.map((value) => avgY - value);
+  const xAndYDifferencesMultiplied = xDifferencesToAverage.map(
+    (curr, index) => curr * yDifferencesToAverage[index],
+  );
+  const SSxy = xAndYDifferencesMultiplied.reduce((prev, curr) => prev + curr, 0);
+  const slope = SSxy / SSxx;
+  const intercept = avgY - slope * avgX;
+
+  return {
+    slope,
+    intercept,
+  };
+};
+
+/**
+ * This function generates a sequential array of dates in the future
+ *
+ * @param {Date} startDate - the date to start generating from
+ * @param {Number} maxDays - the maximum number of days to calculate in the future
+ * @returns {Array} an array of dates
+ */
+export const generateFutureDateRange = (startDate, maxDays) => {
+  const futureDates = [];
+  for (let i = 1; i <= maxDays; i += 1) {
+    futureDates.push(getDateInFuture(startDate, i));
+  }
+  return futureDates;
+};
+
+const calculateRegression = ({ slope, intercept, timeInMilliseconds, rounding }) => {
+  return roundOffFloat(intercept + slope * timeInMilliseconds, rounding);
+};
+
+/**
+ * This function accepts time series data and provides forecasted time series data
+ * by applying a least squares linear regression
+ *
+ * Example input times series data format:
+ *
+ * [
+ *   {"date":"2023-01-12","value":160},
+ *   {"date":"2023-01-13","value":52},
+ *   {"date":"2023-01-14","value":47},
+ *   {"date":"2023-01-15","value":37},
+ *   {"date":"2023-01-16","value":106},
+ * ]
+ *
+ *
+ * @param {Array} timeSeriesData - The historic time series data which will be used for the linear regression
+ * @param {Number} forecastAmount - The number of days which should be forecasted
+ * @param {Number} rounding - The number of decimal places to round to
+ * @returns {Array} Array of objects with the same time series format, but future dates equal to the forecastAmount value
+ */
+export const linearRegression = (timeSeriesData, forecastAmount = 30, rounding = 0) => {
+  if (!timeSeriesData.length) return [];
+
+  const { slope, intercept } = calculateSlopeAndInterceptFromDataset(timeSeriesData);
+
+  const { date: lastDate } = timeSeriesData[timeSeriesData.length - 1];
+  const nextDate = new Date(lastDate);
+  const futureDates = generateFutureDateRange(nextDate, forecastAmount);
+
+  return futureDates.map((futureDate) => ({
+    date: dateFormat(futureDate, dateFormats.isoDate),
+    value: calculateRegression({
+      timeInMilliseconds: futureDate.getTime(),
+      intercept,
+      slope,
+      rounding,
+    }),
+  }));
 };

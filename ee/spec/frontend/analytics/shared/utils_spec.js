@@ -6,6 +6,7 @@ import {
   toLocalDate,
   pairDataAndLabels,
   formatDurationOverviewTooltipMetric,
+  linearRegression,
 } from 'ee/analytics/shared/utils';
 
 const rawValueStream = `{
@@ -415,5 +416,90 @@ describe('formatDurationOverviewTooltipMetric', () => {
     const formattedNum = formatDurationOverviewTooltipMetric(num);
 
     expect(formattedNum).toBe(expected);
+  });
+});
+
+describe('linearRegression', () => {
+  let lrResult;
+  const dateAsTime = (ymd) => new Date(ymd).getTime();
+  const currentDateTime = dateAsTime('2023-01-16');
+  const mockTimeSeries = [
+    { date: '2023-01-12', value: 160 },
+    { date: '2023-01-13', value: 52 },
+    { date: '2023-01-14', value: 47 },
+    { date: '2023-01-15', value: 37 },
+    { date: '2023-01-16', value: 106 },
+  ];
+
+  const mockSmallResult = [
+    { date: '2023-01-17', value: 44 },
+    { date: '2023-01-18', value: 31 },
+    { date: '2023-01-19', value: 19 },
+    { date: '2023-01-20', value: 7 },
+    { date: '2023-01-21', value: -6 },
+  ];
+
+  describe('with valid input', () => {
+    beforeEach(() => {
+      lrResult = linearRegression(mockTimeSeries);
+    });
+
+    it('will only return a series of dates in the future', () => {
+      expect(lrResult.every(({ date }) => dateAsTime(date) > currentDateTime)).toBe(true);
+    });
+
+    it('will forecast 30 days in the future by default', () => {
+      expect(lrResult.length).toBe(30);
+    });
+
+    it('can specify the number of days to forecast', () => {
+      lrResult = linearRegression(mockTimeSeries, 5);
+
+      expect(lrResult.length).toBe(mockSmallResult.length);
+      expect(lrResult).toEqual(mockSmallResult);
+    });
+
+    it('will produce predictable results on each run', () => {
+      for (let i = 0; i < 5; i += 1) {
+        lrResult = linearRegression(mockTimeSeries, 5);
+        expect(lrResult).toEqual(mockSmallResult);
+      }
+    });
+  });
+
+  it('with an empty set, returns an empty set', () => {
+    expect(linearRegression([])).toEqual([]);
+  });
+
+  it('with a set of zeroes, returns a set of zeros', () => {
+    lrResult = linearRegression(
+      [
+        { date: '2023-01-12', value: 0 },
+        { date: '2023-01-13', value: 0 },
+        { date: '2023-01-14', value: 0 },
+        { date: '2023-01-15', value: 0 },
+        { date: '2023-01-16', value: 0 },
+      ],
+      5,
+    );
+
+    lrResult.forEach(({ value }) => {
+      expect(value).toBe(0);
+    });
+
+    lrResult = linearRegression(
+      [
+        { date: '2023-01-12', value: null },
+        { date: '2023-01-13', value: null },
+        { date: '2023-01-14', value: null },
+        { date: '2023-01-15', value: null },
+        { date: '2023-01-16', value: null },
+      ],
+      5,
+    );
+
+    lrResult.forEach(({ value }) => {
+      expect(value).toBe(0);
+    });
   });
 });
