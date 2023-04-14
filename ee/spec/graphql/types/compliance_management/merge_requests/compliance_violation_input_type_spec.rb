@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['ComplianceViolationInput'] do
   let(:arguments) do
-    %w[projectIds mergedBefore mergedAfter]
+    %w[projectIds mergedBefore mergedAfter targetBranch]
   end
 
   specify { expect(described_class.graphql_name).to eq('ComplianceViolationInput') }

@@ -209,6 +209,19 @@ RSpec.describe MergeRequests::ComplianceViolation, type: :model, feature_categor
     end
   end
 
+  describe '#by_target_branch' do
+    let_it_be(:violations) do
+      [
+        create(:compliance_violation, :approved_by_committer, merge_request: merge_request, target_branch: 'main', violating_user: create(:user)),
+        create(:compliance_violation, :approved_by_merge_request_author, merge_request: merge_request, target_branch: 'master', violating_user: create(:user))
+      ]
+    end
+
+    it 'returns the correct collection of violations' do
+      expect(described_class.by_target_branch('master')).to contain_exactly(violations[1])
+    end
+  end
+
   describe '.process_merge_request' do
     it 'loops through each violation class', :aggregate_failures do
       expect_next_instance_of(::Gitlab::ComplianceManagement::Violations::ApprovedByMergeRequestAuthor, merge_request) do |violation|
