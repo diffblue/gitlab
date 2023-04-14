@@ -13,6 +13,10 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
   let_it_be(:security_scan_3) { create(:security_scan, build: build, scan_type: :dependency_scanning) }
   let_it_be(:vulnerability_1) { create(:vulnerability, project: pipeline.project) }
   let_it_be(:vulnerability_2) { create(:vulnerability, project: pipeline.project) }
+  let_it_be(:sast_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'find_sec_bugs') }
+  let_it_be(:gemnasium_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'gemnasium-maven') }
+  let_it_be(:sast_artifact) { create(:ee_ci_job_artifact, :sast, job: build, project: project) }
+  let!(:dependency_scanning_artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: build, project: project) }
 
   describe '#execute' do
     let(:ids_1) { [vulnerability_1.id] }
@@ -25,7 +29,7 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
       allow(Security::Ingestion::ScheduleMarkDroppedAsResolvedService).to receive(:execute)
     end
 
-    it 'calls IngestReportService for each succeeded security scan' do
+    it 'calls IngestReportService for each succeeded security scan', :aggregate_failures do
       ingest_reports
 
       expect(Security::Ingestion::IngestReportService).to have_received(:execute).twice
@@ -39,13 +43,44 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
     end
 
     it 'calls ScheduleMarkDroppedAsResolvedService with primary identifier IDs' do
-      artifact = create(:ci_job_artifact, :sast_semgrep_for_gosec, job: build)
-
       ingest_reports
 
       expect(
         Security::Ingestion::ScheduleMarkDroppedAsResolvedService
-      ).to have_received(:execute).with(project.id, 'sast', artifact.security_report.primary_identifiers)
+      ).to have_received(:execute).with(project.id, 'sast', sast_artifact.security_report.primary_identifiers)
+    end
+
+    it 'marks vulnerabilities as resolved' do
+      expect(Security::Ingestion::MarkAsResolvedService).to receive(:execute).once.with(sast_scanner, ids_1)
+      expect(Security::Ingestion::MarkAsResolvedService).to receive(:execute).once.with(gemnasium_scanner, [])
+      ingest_reports
+    end
+
+    context 'when ingesting vulnerabilities for multiple scanners' do
+      let!(:dependency_scanning_artifact) { create(:ee_ci_job_artifact, :dependency_scanning_multiple_scanners, job: build, project: project) }
+      let_it_be(:retirejs_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'retire.js') }
+      let_it_be(:gemnasium_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'gemnasium') }
+      let_it_be(:other_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'other') }
+      let(:sast_ids) { [1] }
+      let(:dependency_scanning_ids) { [3] }
+
+      before do
+        allow(Security::Ingestion::IngestReportService).to receive(:execute).with(security_scan_1).and_return(sast_ids)
+        allow(Security::Ingestion::IngestReportService).to receive(:execute).with(security_scan_3).and_return(dependency_scanning_ids)
+      end
+
+      it 'resolves the missing vulnerabilities' do
+        expect(Security::Ingestion::MarkAsResolvedService)
+          .to receive(:execute).once.with(retirejs_scanner, dependency_scanning_ids)
+
+        expect(Security::Ingestion::MarkAsResolvedService)
+          .to receive(:execute).once.with(gemnasium_scanner, dependency_scanning_ids)
+
+        expect(Security::Ingestion::MarkAsResolvedService)
+          .to receive(:execute).once.with(sast_scanner, sast_ids)
+
+        ingest_reports
+      end
     end
 
     describe 'scheduling the AutoFix background job' do

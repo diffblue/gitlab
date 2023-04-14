@@ -6,7 +6,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
   describe '#perform' do
     let(:group)   { create(:group) }
     let(:project) { create(:project, namespace: group) }
-    let(:pipeline) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+    let(:pipeline) { create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator) }
 
     before do
       allow(::ScanSecurityReportSecretsWorker).to receive(:perform_async).and_return(nil)
@@ -45,7 +45,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
 
           let(:artifact_bandit2) { create(:ee_ci_job_artifact, :sast_bandit, job: bandit2_build) }
           let(:artifact_semgrep) { create(:ee_ci_job_artifact, :sast_semgrep_for_bandit, job: semgrep_build) }
-          let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+          let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator) }
           let(:bandit2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
           let(:semgrep_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
 
@@ -54,8 +54,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               sast: true,
               vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
             )
-            pipeline.update!(user: bandit1_build.user)
-            pipeline2.update!(user: bandit2_build.user)
           end
 
           it 'does not duplicate vulnerabilities' do
@@ -87,7 +85,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
 
           let(:artifact_gosec2) { create(:ee_ci_job_artifact, :sast_gosec, job: gosec2_build) }
           let(:artifact_semgrep) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep_build) }
-          let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+          let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator) }
           let(:gosec2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
           let(:semgrep_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
 
@@ -96,8 +94,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
               sast: true,
               vulnerability_finding_signatures: vulnerability_finding_signatures_enabled
             )
-            pipeline.update!(user: gosec1_build.user)
-            pipeline2.update!(user: gosec2_build.user)
           end
 
           it 'does not duplicate vulnerabilities' do
@@ -129,7 +125,7 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
       let(:artifact_semgrep1) { create(:ee_ci_job_artifact, :sast_semgrep_for_multiple_findings, job: semgrep1_build) }
       let(:semgrep1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
 
-      let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+      let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project, user: project.creator) }
       let(:artifact_semgrep2) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep2_build) }
       let(:semgrep2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
 
@@ -138,8 +134,6 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           sast: true
         )
         stub_feature_flags(sec_mark_dropped_findings_as_resolved: true)
-        pipeline.update!(user: semgrep1_build.user)
-        pipeline2.update!(user: semgrep2_build.user)
       end
 
       it 'resolves vulnerabilities' do
@@ -167,6 +161,37 @@ RSpec.describe StoreSecurityReportsWorker, feature_category: :vulnerability_mana
           .and change { project.vulnerabilities.with_resolution(true).count }.by(1)
           .and change { project.vulnerabilities.with_states(%w[detected]).count }.by(-1)
           .and change { project.vulnerabilities.with_states(%w[resolved]).count }.by(1)
+      end
+    end
+
+    context "when the same scanner runs multiple times in one pipeline" do
+      let(:ci_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
+      let(:ci_build2) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
+      let(:artifact_sast1) { create(:ee_ci_job_artifact, :semgrep_web_vulnerabilities, job: ci_build) }
+      let(:artifact_sast2) { create(:ee_ci_job_artifact, :semgrep_api_vulnerabilities, job: ci_build2) }
+
+      before do
+        stub_licensed_features(
+          sast: true
+        )
+      end
+
+      it "does not mark any of the detected vulnerabilities as resolved", :aggregate_failures do
+        expect do
+          Security::StoreGroupedScansService.execute([artifact_sast2])
+        end.to change { Security::Finding.count }.by(1)
+          .and change { Security::Scan.count }.by(1)
+
+        expect do
+          Security::StoreGroupedScansService.execute([artifact_sast1])
+        end.to change { Security::Finding.count }.by(1)
+          .and change { Security::Scan.count }.by(1)
+
+        expect do
+          described_class.new.perform(pipeline.id)
+        end.to change { Vulnerability.count }.by(2)
+
+        expect(project.vulnerabilities.map(&:resolved_on_default_branch)).not_to include(true)
       end
     end
 

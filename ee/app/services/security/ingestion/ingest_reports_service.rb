@@ -15,6 +15,7 @@ module Security
 
       def execute
         store_reports
+        mark_resolved_vulnerabilities
         mark_project_as_vulnerable!
         set_latest_pipeline!
         schedule_mark_dropped_vulnerabilities
@@ -28,12 +29,23 @@ module Security
       delegate :project, to: :pipeline, private: true
 
       def store_reports
-        latest_security_scans
-          .flat_map { |scan| ingest(scan) }
+        latest_security_scans.flat_map do |scan|
+          ingest(scan).then { |ingested_ids| collect_ingested_ids_for(scan, ingested_ids) }
+        end
+      end
+
+      def collect_ingested_ids_for(scan, ingested_ids)
+        scan.scanners.each do |scanner|
+          ingested_ids_by_scanner[scanner] += ingested_ids
+        end
       end
 
       def latest_security_scans
         @latest_security_scans ||= pipeline.security_scans.without_errors.latest
+      end
+
+      def ingested_ids_by_scanner
+        @ingested_ids_by_scanner ||= Hash.new { [] }
       end
 
       def ingest(security_scan)
@@ -46,6 +58,12 @@ module Security
 
       def set_latest_pipeline!
         Vulnerabilities::Statistic.set_latest_pipeline_with(pipeline)
+      end
+
+      def mark_resolved_vulnerabilities
+        ingested_ids_by_scanner.each do |scanner, ingested_ids|
+          MarkAsResolvedService.execute(scanner, ingested_ids)
+        end
       end
 
       def schedule_mark_dropped_vulnerabilities

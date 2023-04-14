@@ -26,26 +26,6 @@ RSpec.describe Security::Ingestion::IngestReportService, feature_category: :vuln
       expect(Security::Ingestion::IngestReportSliceService).to have_received(:execute).twice
     end
 
-    context 'when ingesting vulnerabilities for multiple scanners' do
-      let_it_be(:security_scan) { create(:security_scan, scan_type: :dependency_scanning) }
-      let_it_be(:artifact) { create(:ee_ci_job_artifact, :dependency_scanning_multiple_scanners, job: security_scan.build, project: security_scan.project) }
-      let_it_be(:retirejs_scanner) { create(:vulnerabilities_scanner, project: security_scan.project, external_id: 'retire.js') }
-      let_it_be(:gemnasium_scanner) { create(:vulnerabilities_scanner, project: security_scan.project, external_id: 'gemnasium') }
-      let_it_be(:other_scanner) { create(:vulnerabilities_scanner, project: security_scan.project, external_id: 'other') }
-
-      it 'resolves the missing vulnerabilities and returns the ingested vulnerability IDs' do
-        allow(Security::Ingestion::MarkAsResolvedService).to receive(:execute)
-
-        expect(ingest_report).to eq([1, 2])
-
-        expect(Security::Ingestion::MarkAsResolvedService)
-          .to have_received(:execute).once.with(retirejs_scanner, [1, 2])
-
-        expect(Security::Ingestion::MarkAsResolvedService)
-          .to have_received(:execute).once.with(gemnasium_scanner, [1, 2])
-      end
-    end
-
     context 'when ingesting a slice of vulnerabilities fails' do
       let(:exception) { RuntimeError.new }
       let(:expected_processing_error) { { 'type' => 'IngestionError', 'message' => 'Ingestion failed for some vulnerabilities' } }
