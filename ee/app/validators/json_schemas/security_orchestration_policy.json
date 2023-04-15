@@ -189,6 +189,7 @@
                 "variables": {
                   "type": "object",
                   "description": "Defines environment variables for specific security jobs. Job level property overrides global variables.",
+                  "additionalProperties": false,
                   "patternProperties": {
                     "^[a-zA-Z_][a-zA-Z0-9_]*$": {
                       "type": "string"

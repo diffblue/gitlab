@@ -368,55 +368,457 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   end
 
   describe '#policy_configuration_validation_errors' do
-    subject { security_orchestration_policy_configuration.policy_configuration_validation_errors }
+    let(:scan_execution_policy) { nil }
+    let(:scan_result_policy) { nil }
 
-    context 'when file is invalid' do
-      let(:policy_yaml) do
-        build(:orchestration_policy_yaml, scan_execution_policy:
-        [build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: 'production' }])])
+    let(:policy_yaml) do
+      {
+        scan_execution_policy: [scan_execution_policy].compact,
+        scan_result_policy: [scan_result_policy].compact
+      }
+    end
+
+    subject(:errors) do
+      security_orchestration_policy_configuration.policy_configuration_validation_errors(policy_yaml)
+    end
+
+    context "without policies" do
+      let(:policy_yaml) { {} }
+
+      specify do
+        expect(errors).to contain_exactly("root is missing required keys: scan_execution_policy",
+          "root is missing required keys: scan_result_policy")
+      end
+    end
+
+    describe "scan execution policies" do
+      let(:scan_execution_policy) { build(:scan_execution_policy, rules: rules, actions: actions) }
+      let(:rules) { [rule].compact }
+      let(:rule) { nil }
+      let(:actions) { [action].compact }
+      let(:action) { nil }
+
+      %i[name enabled rules actions].each do |key|
+        context "without #{key}" do
+          before do
+            scan_execution_policy.delete(key)
+          end
+
+          specify do
+            expect(errors).to contain_exactly("property '/scan_execution_policy/0' is missing required keys: #{key}")
+          end
+        end
       end
 
-      it { is_expected.to eq(["property '/scan_execution_policy/0/rules/0/branches' is not of type: array"]) }
+      describe "name" do
+        context "when too short" do
+          before do
+            scan_execution_policy[:name] = ""
+          end
 
-      context 'when the agent key is invalid' do
-        let(:policy_yaml) do
-          build(
-            :orchestration_policy_yaml,
-            scan_execution_policy: [
-              build(
-                :scan_execution_policy,
-                rules: [
-                  {
-                    type: 'schedule',
-                    cadence: '0 10 * * *',
-                    additional_property: 'value',
-                    agents: {
-                      'my agent' => {
-                        namespaces: [
-                          'default'
-                        ]
-                      }
-                    },
-                    clusters: {
-                      'my cluster' => {
-                        namespaces: [
-                          'default'
-                        ]
-                      }
-                    }
-                  }
-                ]
-              )
-            ]
-          )
+          specify do
+            expect(errors).to contain_exactly("property '/scan_execution_policy/0/name' is invalid: error_type=minLength")
+          end
         end
 
-        it 'has errors for the agent and additional property field' do
-          is_expected.to contain_exactly(
-            "property '/scan_execution_policy/0/rules/0/agents/my agent' is invalid: error_type=schema",
-            "property '/scan_execution_policy/0/rules/0/additional_property' is invalid: error_type=schema",
-            "property '/scan_execution_policy/0/rules/0/clusters/my cluster' is invalid: error_type=schema"
-          )
+        context "when too long" do
+          before do
+            scan_execution_policy[:name] = "a" * 256
+          end
+
+          specify do
+            expect(errors).to contain_exactly("property '/scan_execution_policy/0/name' is invalid: error_type=maxLength")
+          end
+        end
+      end
+
+      describe "rules" do
+        context "with invalid type" do
+          let(:rule) { { type: "foobar" } }
+
+          specify do
+            expect(errors.count).to be(1)
+            expect(errors.first).to match("property '/scan_execution_policy/0/rules/0/type' is not one of")
+          end
+        end
+
+        context "with schedule type" do
+          let(:rule) { { type: "schedule", branches: %w[master], cadence: "5 4 * * *" } }
+
+          specify { expect(errors).to be_empty }
+
+          context "with invalid cadence" do
+            before do
+              rule[:cadence] = "foobar"
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match("property '/scan_execution_policy/0/rules/0/cadence' does not match pattern")
+            end
+          end
+        end
+
+        context "with schedule type and agent" do
+          let(:rule) { { type: "schedule", agents: { foo: { namespaces: %w[bar] } }, cadence: "5 4 * * *" } }
+
+          specify { expect(errors).to be_empty }
+
+          context "with invalid agent name" do
+            before do
+              rule[:agents][:"with spaces"] = rule[:agents].delete(:foo)
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match(
+                "property '/scan_execution_policy/0/rules/0/agents/with spaces' is invalid: error_type=schema")
+            end
+          end
+        end
+      end
+
+      describe "actions" do
+        let(:action) { { scan: "container_scanning" } }
+
+        specify { expect(errors).to be_empty }
+
+        context "with invalid scan" do
+          before do
+            action[:scan] = "foobar"
+          end
+
+          specify do
+            expect(errors.count).to be(1)
+            expect(errors.first).to match("property '/scan_execution_policy/0/actions/0/scan' is not one of")
+          end
+        end
+
+        context "with DAST scan" do
+          let(:action) { { scan: "dast", site_profile: "Site Profile", scanner_profile: "Scanner Profile" } }
+
+          specify { expect(errors).to be_empty }
+
+          context "without site profile" do
+            before do
+              action.delete(:site_profile)
+            end
+
+            specify do
+              expect(errors).to contain_exactly(
+                "property '/scan_execution_policy/0/actions/0' is missing required keys: site_profile")
+            end
+          end
+
+          context "without scanner profile" do
+            before do
+              action.delete(:scanner_profile)
+            end
+
+            specify { expect(errors).to be_empty }
+          end
+        end
+
+        context "with variables" do
+          let(:action) { { scan: "container_scanning", variables: { "FOO" => "BAR" } } }
+
+          specify { expect(errors).to be_empty }
+
+          context "with invalid key" do
+            before do
+              action[:variables]["with spaces"] = action[:variables].delete("FOO")
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match(
+                "property '/scan_execution_policy/0/actions/0/variables/with spaces' is invalid: error_type=schema")
+            end
+          end
+        end
+      end
+    end
+
+    describe "scan result policies" do
+      let(:scan_execution_policy) { nil }
+      let(:scan_result_policy) { build(:scan_result_policy, rules: rules, actions: actions) }
+      let(:rules) { [rule].compact }
+      let(:actions) { [action].compact }
+      let(:action) { nil }
+
+      shared_examples "scan result policy" do |required_rule_keys|
+        %i[name enabled rules actions].each do |key|
+          context "without #{key}" do
+            before do
+              scan_result_policy.delete(key)
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0' is missing required keys: #{key}")
+            end
+          end
+        end
+
+        required_rule_keys.each do |key|
+          context "without #{key}" do
+            before do
+              rule.delete(key)
+            end
+
+            specify do
+              expect(errors).to contain_exactly(
+                "property '/scan_result_policy/0/rules/0' is missing required keys: #{key}")
+            end
+          end
+        end
+
+        describe "name" do
+          context "when too short" do
+            before do
+              scan_result_policy[:name] = ""
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/name' is invalid: error_type=minLength")
+            end
+          end
+
+          context "when too long" do
+            before do
+              scan_result_policy[:name] = "a" * 256
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/name' is invalid: error_type=maxLength")
+            end
+          end
+        end
+
+        describe "rules" do
+          context "with invalid type" do
+            before do
+              rule[:type] = "foobar"
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match("property '/scan_result_policy/0/rules/0/type' is not one of")
+            end
+          end
+        end
+
+        describe "actions" do
+          let(:action) do
+            {
+              type: "require_approval",
+              approvals_required: 1
+            }
+          end
+
+          context "without approvers" do
+            specify do
+              expect(errors).not_to be_empty
+            end
+          end
+
+          context "with user_approvers" do
+            before do
+              action[:user_approvers] = %w[foobar]
+            end
+
+            specify { expect(errors).to be_empty }
+
+            context "when empty" do
+              before do
+                action[:user_approvers] = []
+              end
+
+              specify do
+                expect(errors).to contain_exactly(
+                  "property '/scan_result_policy/0/actions/0/user_approvers' is invalid: error_type=minItems")
+              end
+            end
+          end
+
+          context "with user_approvers_ids" do
+            before do
+              action[:user_approvers_ids] = [42]
+            end
+
+            specify { expect(errors).to be_empty }
+
+            context "when empty" do
+              before do
+                action[:user_approvers_ids] = []
+              end
+
+              specify do
+                expect(errors).to contain_exactly(
+                  "property '/scan_result_policy/0/actions/0/user_approvers_ids' is invalid: error_type=minItems")
+              end
+            end
+          end
+
+          context "with group_approvers" do
+            before do
+              action[:group_approvers] = %w[foobar]
+            end
+
+            specify { expect(errors).to be_empty }
+
+            context "when empty" do
+              before do
+                action[:group_approvers] = []
+              end
+
+              specify do
+                expect(errors).to contain_exactly(
+                  "property '/scan_result_policy/0/actions/0/group_approvers' is invalid: error_type=minItems")
+              end
+            end
+          end
+
+          context "with group_approvers_ids" do
+            before do
+              action[:group_approvers_ids] = [42]
+            end
+
+            specify { expect(errors).to be_empty }
+
+            context "when empty" do
+              before do
+                action[:group_approvers_ids] = []
+              end
+
+              specify do
+                expect(errors).to contain_exactly(
+                  "property '/scan_result_policy/0/actions/0/group_approvers_ids' is invalid: error_type=minItems")
+              end
+            end
+          end
+
+          context "with role_approvers" do
+            before do
+              action[:role_approvers] = %w[guest reporter]
+            end
+
+            specify { expect(errors).to be_empty }
+
+            context "with invalid role" do
+              before do
+                action[:role_approvers] = %w[foobar]
+              end
+
+              specify do
+                expect(errors.count).to be(1)
+                expect(errors.first).to match("property '/scan_result_policy/0/actions/0/role_approvers/0' is not one of")
+              end
+            end
+          end
+        end
+      end
+
+      context "with scan_finding type" do
+        let(:rule) do
+          {
+            type: "scan_finding",
+            branches: %w[master],
+            scanners: %w[container_scanning secret_detection],
+            vulnerabilities_allowed: 0,
+            severity_levels: %w[critical high],
+            vulnerability_states: %w[detected]
+          }
+        end
+
+        specify { expect(errors).to be_empty }
+
+        it_behaves_like "scan result policy",
+          %i[branches scanners vulnerabilities_allowed severity_levels vulnerability_states]
+
+        describe "scanners" do
+          before do
+            rule[:scanners] = [""]
+          end
+
+          specify do
+            expect(errors).to contain_exactly(
+              "property '/scan_result_policy/0/rules/0/scanners/0' is invalid: error_type=minLength")
+          end
+        end
+
+        describe "severity_levels" do
+          before do
+            rule[:severity_levels] = %w[foobar]
+          end
+
+          specify do
+            expect(errors.count).to be(1)
+            expect(errors.first).to match("property '/scan_result_policy/0/rules/0/severity_levels/0' is not one of")
+          end
+        end
+
+        describe "vulnerability_states" do
+          before do
+            rule[:vulnerability_states] = %w[foobar]
+          end
+
+          specify do
+            expect(errors.count).to be(1)
+            expect(errors.first).to match(
+              "property '/scan_result_policy/0/rules/0/vulnerability_states/0' is not one of")
+          end
+        end
+      end
+
+      context "with license_finding type" do
+        let(:rule) do
+          {
+            type: "license_finding",
+            branches: %w[master],
+            match_on_inclusion: true,
+            license_types: %w[BSD MIT],
+            license_states: %w[newly_detected detected]
+          }
+        end
+
+        specify { expect(errors).to be_empty }
+
+        it_behaves_like "scan result policy", %i[branches match_on_inclusion license_types license_states]
+
+        describe "license_types" do
+          before do
+            rule[:license_types] = [""]
+          end
+
+          specify do
+            expect(errors).to contain_exactly(
+              "property '/scan_result_policy/0/rules/0/license_types/0' is invalid: error_type=minLength")
+          end
+        end
+
+        describe "license_states" do
+          context "without states" do
+            before do
+              rule[:license_states] = []
+            end
+
+            specify do
+              expect(errors).to contain_exactly(
+                "property '/scan_result_policy/0/rules/0/license_states' is invalid: error_type=minItems")
+            end
+          end
+
+          context "with invalid state" do
+            before do
+              rule[:license_states] = %w[foobar]
+            end
+
+            specify do
+              expect(errors.count).to be(1)
+              expect(errors.first).to match(
+                "property '/scan_result_policy/0/rules/0/license_states/0' is not one of")
+            end
+          end
         end
       end
     end
