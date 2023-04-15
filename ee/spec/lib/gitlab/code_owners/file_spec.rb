@@ -69,14 +69,14 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
           "@root-docs", "@ruby-owner", "@space-owner"
         ]
 
-        where(:section, :patterns, :owners, :owners_ff_disabled) do
-          "codeowners"       | codeowners_section_paths | codeowners_section_owners | codeowners_section_owners
-          "Documentation"    | ["/**/README.md", "/**/ee/docs", "/**/docs"] | ["@gl-docs"] | ["@gl-docs"]
-          "Database"         | ["/**/README.md", "/**/model/db"] | ["@gl-database"] | ["@gl-database"]
-          "Two Words"        | ["/**/README.md", "/**/model/db"] | ["@gl-database"] | ["@gl-database"]
-          "Double::Colon"    | ["/**/README.md", "/**/model/db"] | ["@gl-database"] | ["@gl-database"]
-          "DefaultOwners"    | ["/**/README.md", "/**/model/db"] | ["@config-owner @gl-docs"] | [""]
-          "OverriddenOwners" | ["/**/README.md", "/**/model/db"] | ["@gl-docs"] | ["@gl-docs"]
+        where(:section, :patterns, :owners) do
+          "codeowners"       | codeowners_section_paths | codeowners_section_owners
+          "Documentation"    | ["/**/README.md", "/**/ee/docs", "/**/docs"] | ["@gl-docs"]
+          "Database"         | ["/**/README.md", "/**/model/db"] | ["@gl-database"]
+          "Two Words"        | ["/**/README.md", "/**/model/db"] | ["@gl-database"]
+          "Double::Colon"    | ["/**/README.md", "/**/model/db"] | ["@gl-database"]
+          "DefaultOwners"    | ["/**/README.md", "/**/model/db"] | ["@config-owner @gl-docs"]
+          "OverriddenOwners" | ["/**/README.md", "/**/model/db"] | ["@gl-docs"]
         end
 
         with_them do
