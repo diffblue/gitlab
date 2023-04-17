@@ -32,6 +32,7 @@ module Security
     declarative_enum Security::ScanStatusEnum
 
     scope :by_scan_types, -> (scan_types) { where(scan_type: sanitize_scan_types(scan_types)) }
+    scope :by_project, -> (project) { where(project: project) }
     scope :distinct_scan_types, -> { select(:scan_type).distinct.pluck(:scan_type) }
     scope :scoped_project, -> { where('security_scans.project_id = projects.id') }
 
@@ -60,6 +61,10 @@ module Security
 
     def self.sanitize_scan_types(given_types)
       scan_types.keys & Array(given_types).map(&:to_s)
+    end
+
+    def self.pipeline_ids(project, scan_type)
+      by_scan_types(scan_type).by_project(project).succeeded.pluck(:pipeline_id)
     end
 
     # If the record is created 3 months ago and purged,

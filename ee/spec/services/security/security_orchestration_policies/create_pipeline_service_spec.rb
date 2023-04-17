@@ -312,24 +312,73 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService, f
         end
       end
 
-      describe "secret_detection scan action" do
+      describe 'secret_detection scan action' do
         let(:actions) do
-          [{ scan: "secret_detection" }]
+          [{ scan: 'secret_detection' }]
         end
 
-        it "creates a build with appropriate variables" do
-          build = pipeline_scan_pipeline.builds.first
+        let(:most_recent_commit_sha) { project.repository.commit(branch).sha }
 
-          expected_variables = [
-            {
-              key: 'SECRET_DETECTION_HISTORIC_SCAN',
-              value: 'false',
-              public: true,
-              masked: false
-            }
-          ]
+        shared_examples 'creates a build with appropriate variables' do
+          it 'creates a build with appropriate variables' do
+            build = pipeline_scan_pipeline.builds.first
+            expect(build.variables.to_runner_variables).to include(*expected_variables)
+          end
+        end
 
-          expect(build.variables.to_runner_variables).to include(*expected_variables)
+        context 'without a previous scan' do
+          let(:expected_variables) { [{ key: 'SECRET_DETECTION_HISTORIC_SCAN', value: 'true', public: true, masked: false }] }
+
+          it_behaves_like 'creates a build with appropriate variables'
+        end
+
+        context 'with a previous scan' do
+          let(:last_scan_pipeline_sha) { '0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33' }
+          let(:last_scan_pipeline) do
+            create(:ci_pipeline, :success,
+                   project: project,
+                   ref: branch,
+                   source: :security_orchestration_policy,
+                   sha: last_scan_pipeline_sha)
+          end
+
+          let(:most_recent_commit_sha) { project.repository.commit(branch).sha }
+
+          let(:expected_variables) do
+            [
+              {
+                key: 'SECRET_DETECTION_LOG_OPTS',
+                value: "#{last_scan_pipeline_sha}..#{most_recent_commit_sha}",
+                public: true,
+                masked: false
+              }
+            ]
+          end
+
+          before do
+            create(:security_scan, :latest_successful, scan_type: :secret_detection, pipeline: last_scan_pipeline, project: project)
+          end
+
+          it_behaves_like 'creates a build with appropriate variables'
+
+          context 'with scans in multiple branches' do
+            let(:other_branch) { project.repository.create_branch('other_branch', project.default_branch) }
+
+            let(:last_scan_pipeline_other_branch_sha) { '570e7b2abdd848b95f2f578043fc23bd6f6fd24d' }
+            let(:last_scan_pipeline_other_branch) do
+              create(:ci_pipeline, :success,
+                     project: project,
+                     ref: other_branch,
+                     source: :security_orchestration_policy,
+                     sha: last_scan_pipeline_sha)
+            end
+
+            before do
+              create(:security_scan, :latest_successful, scan_type: :secret_detection, pipeline: last_scan_pipeline_other_branch, project: project)
+            end
+
+            it_behaves_like 'creates a build with appropriate variables'
+          end
         end
       end
 
