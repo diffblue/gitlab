@@ -56,7 +56,35 @@ module Security
       end
 
       def prepare_ci_configurations(actions)
-        ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project).execute(actions)
+        ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project,
+          scan_variables(actions)).execute(actions)
+      end
+
+      def scan_variables(actions)
+        return {} unless actions.detect { |a| a[:scan] == 'secret_detection' }
+
+        return { secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' } } unless last_scan_commit_sha.present?
+
+        { secret_detection: { 'SECRET_DETECTION_LOG_OPTS' => commit_range } }
+      end
+
+      def pipeline_ids
+        @pipeline_ids ||= Security::Scan.pipeline_ids(project, 'secret_detection')
+      end
+
+      def commit_range
+        "#{last_scan_commit_sha}..#{most_recent_commit_sha}"
+      end
+
+      def last_scan_commit_sha
+        @last_scan_commit_sha ||= Ci::Pipeline.order_id_desc
+                                              .for_project(project).for_ref(params[:branch])
+                                              .with_pipeline_source(:security_orchestration_policy)
+                                              .find_by_id(pipeline_ids)&.sha
+      end
+
+      def most_recent_commit_sha
+        @most_recent_commit_sha ||= project.repository.commit(params[:branch]).sha
       end
 
       def execute_pipeline_scans(ci_config)

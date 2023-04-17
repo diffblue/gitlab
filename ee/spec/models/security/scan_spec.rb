@@ -217,6 +217,20 @@ RSpec.describe Security::Scan, feature_category: :vulnerability_management do
     end
   end
 
+  describe '.by_project' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:other_project) { create(:project) }
+
+    let_it_be(:sast_scan) { create(:security_scan, scan_type: :sast, project: project) }
+    let_it_be(:dast_scan) { create(:security_scan, scan_type: :dast, project: other_project) }
+
+    let(:expected_scans) { [sast_scan] }
+
+    subject { described_class.by_project(project) }
+
+    it { is_expected.to match_array(expected_scans) }
+  end
+
   describe '.distinct_scan_types' do
     let_it_be(:sast_scan) { create(:security_scan, scan_type: :sast) }
     let_it_be(:sast_scan2) { create(:security_scan, scan_type: :sast) }

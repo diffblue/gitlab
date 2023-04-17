@@ -9,10 +9,11 @@ module Security
         }
       }.freeze
 
-      attr_reader :project
+      attr_reader :project, :base_variables
 
-      def initialize(project = nil)
+      def initialize(project = nil, base_variables = SCAN_VARIABLES)
         @project = project
+        @base_variables = base_variables
       end
 
       def execute(actions)
@@ -66,7 +67,7 @@ module Security
       end
 
       def scan_variables(action)
-        SCAN_VARIABLES[action[:scan].to_sym].to_h
+        base_variables[action[:scan].to_sym].to_h
       end
     end
   end

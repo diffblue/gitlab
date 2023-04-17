@@ -7,7 +7,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
     let_it_be(:project) { create(:project) }
     let(:pipeline_scan_config) { subject[:pipeline_scan] }
     let(:on_demand_config) { subject[:on_demand] }
-    let_it_be(:service) { described_class.new(project) }
+    let(:service) { described_class.new(project) }
 
     subject { service.execute(actions) }
 
@@ -65,6 +65,33 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService, fea
         end
 
         subject
+      end
+    end
+
+    context 'when action contains variables that are not allowed' do
+      let(:actions) { [{ scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'true' } }] }
+
+      it 'ignores variables from the action and does not apply them in configuration service' do
+        expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+          expect(ci_configuration_service).to receive(:execute).once
+            .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }, 0).and_call_original
+        end
+
+        subject
+      end
+
+      context 'when base variables are provided when initializing the service' do
+        let(:actions) { [{ scan: 'secret_detection', variables: { SECRET_DETECTION_HISTORIC_SCAN: 'false' } }] }
+        let(:service) { described_class.new(project, secret_detection: { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }) }
+
+        it 'ignores variables from the action and does not apply them in configuration service' do
+          expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+            expect(ci_configuration_service).to receive(:execute).once
+              .with(actions.first, { 'SECRET_DETECTION_HISTORIC_SCAN' => 'true' }, 0).and_call_original
+          end
+
+          subject
+        end
       end
     end
 
