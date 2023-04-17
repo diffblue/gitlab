@@ -39,9 +39,6 @@ if you need clarification or spot any outdated information.
    has_one :foo_bar_integration, class_name: 'Integrations::FooBar'
    ```
 
-1. TEMPORARY: Accommodate the current migration to [rename "services" to "integrations"](#rename-services-to-integrations):
-   - Add the integration's camel-cased name (`'FooBar'`) to `Gitlab::Integrations::StiType::NAMESPACED_INTEGRATIONS`.
-
 ### Define properties
 
 Integrations can define arbitrary properties to store their configuration with the class method `Integration.prop_accessor`.
@@ -347,26 +344,8 @@ The strings should use the integration name as [namespace](../i18n/externalizati
 
 ## Ongoing migrations and refactorings
 
-The Integrations team is in the process of some larger migrations that developers should be aware of.
-
-### [Rename "services" to "integrations"](https://gitlab.com/groups/gitlab-org/-/epics/2504)
-
-The "integrations" in GitLab were historically called "services", which frequently caused
-confusion with our "service" classes in `app/services`. We sometimes also called
-them "project services" because they were initially only available on projects, which is
-not the case anymore.
-
-We decided to change the naming from "services" and "project services" to "integrations".
-This refactoring is an ongoing effort, and there are still references to the old names in some places.
-
-Developers should be especially aware that we still use the old class names for the STI column
-`integrations.type`. For example, a class `Integrations::FooBar` still stores
-the old name `FooBarService` in the database. This mapping is handled via `Gitlab::Integrations::StiType`
-and should be mostly transparent to the rest of the app.
-
-### [Consolidate integration settings](https://gitlab.com/groups/gitlab-org/-/epics/3955)
-
-We want to unify the way integration properties are defined.
+Developers should be aware that the Integrations team is in the process of
+[unifying the way integration properties are defined](https://gitlab.com/groups/gitlab-org/-/epics/3955).
 
 ## Integration examples
 
