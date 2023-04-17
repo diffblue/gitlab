@@ -23,9 +23,11 @@ if you need clarification or spot any outdated information.
    - For example, `Integrations::FooBar` in `app/models/integrations/foo_bar.rb`.
    - For certain types of integrations, you can also build on these base classes:
      - `Integrations::BaseChatNotification`
+     - `Integrations::BaseCi`
      - `Integrations::BaseIssueTracker`
      - `Integrations::BaseMonitoring`
      - `Integrations::BaseSlashCommands`
+     - `Integrations::BaseThirdPartyWiki`
    - For integrations that primarily trigger HTTP calls to external services, you can
      also use the `Integrations::HasWebHook` concern. This reuses the [webhook functionality](../../user/project/integrations/webhooks.md)
      in GitLab through an associated `ServiceHook` model, and automatically records request logs
