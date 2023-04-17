@@ -69,7 +69,7 @@ export default {
 <template>
   <aside
     v-if="!forceHiddenCodeExplanation"
-    class="markdown-code-block gl-fixed gl-top-half gl-right-0 gl-bg-white gl-w-40p gl-rounded-top-left-base gl-rounded-bottom-left-base gl-border gl-border-r-none gl-font-sm"
+    class="markdown-code-block gl-fixed gl-top-half gl-right-0 gl-bg-white gl-w-40p gl-rounded-top-left-base gl-rounded-bottom-left-base gl-border gl-border-r-none gl-font-sm gl-max-h-full gl-overflow-y-auto"
     style="transform: translate(0px, -50%)"
     role="complementary"
     data-testid="chat-component"
@@ -92,7 +92,7 @@ export default {
     <gl-alert
       :dismissible="false"
       variant="warning"
-      class="gl-mb-5 gl-border-t"
+      class="gl-mb-5 gl-border-t gl-font-sm"
       role="alert"
       data-testid="chat-legal-warning"
       primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
@@ -103,7 +103,8 @@ export default {
     <code-block-highlighted
       :language="snippetLanguage"
       :code="selectedText"
-      class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0"
+      max-height="20rem"
+      class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0 gl-overflow-y-auto"
     />
     <section class="gl-bg-gray-10 gl-p-5">
       <gl-skeleton-loader v-if="isLoading" />
