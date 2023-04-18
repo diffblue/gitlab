@@ -1,9 +1,25 @@
+#import "../fragments/deployment_approval_data.fragment.graphql"
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
 query deployment($fullPath: ID!, $iid: ID!) {
   project(fullPath: $fullPath) {
     id
     deployment(iid: $iid) {
       id
+      job {
+        id
+        name
+      }
+      userPermissions {
+        approveDeployment
+      }
+      pendingApprovalCount
+      approvals {
+        ...DeploymentApprovalData
+      }
       approvalSummary {
+        totalRequiredApprovals
+        totalPendingApprovalCount
         rules {
           group {
             id
@@ -11,23 +27,16 @@ query deployment($fullPath: ID!, $iid: ID!) {
             webUrl
           }
           user {
-            id
-            name
-            webPath
+            ...User
           }
           accessLevel {
             stringValue
           }
           approvedCount
           requiredApprovals
+          pendingApprovalCount
           approvals {
-            user {
-              id
-              avatarUrl
-              name
-              webPath
-            }
-            status
+            ...DeploymentApprovalData
           }
         }
       }

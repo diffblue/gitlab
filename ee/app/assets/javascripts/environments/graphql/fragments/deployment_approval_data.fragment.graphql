@@ -1,0 +1,10 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
+fragment DeploymentApprovalData on DeploymentApproval {
+  user {
+    ...User
+  }
+  comment
+  createdAt
+  status
+}
