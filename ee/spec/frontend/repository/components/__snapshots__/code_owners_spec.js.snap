@@ -7,7 +7,7 @@ exports[`Code owners component matches the snapshot 2`] = `
   class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-flex gl-flex-wrap-wrap"
+    class="gl-display-flex gl-flex-wrap"
   >
     <div
       class="gl-display-inline gl-mr-2"
@@ -85,7 +85,7 @@ exports[`Code owners component matches the snapshot 3`] = `
   class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-flex gl-flex-wrap-wrap"
+    class="gl-display-flex gl-flex-wrap"
   >
     <div
       class="gl-display-inline gl-mr-2"
@@ -181,7 +181,7 @@ exports[`Code owners component matches the snapshot 4`] = `
   class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-flex gl-flex-wrap-wrap"
+    class="gl-display-flex gl-flex-wrap"
   >
     <div
       class="gl-display-inline gl-mr-2"
@@ -295,7 +295,7 @@ exports[`Code owners component matches the snapshot 5`] = `
   class="well-segment blob-auxiliary-viewer file-owner-content gl-display-flex gl-justify-content-space-between gl-align-items-center"
 >
   <div
-    class="gl-display-flex gl-flex-wrap-wrap"
+    class="gl-display-flex gl-flex-wrap"
   >
     <div
       class="gl-display-inline gl-mr-2"
