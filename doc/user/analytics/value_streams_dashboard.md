@@ -19,7 +19,20 @@ The Value Streams Dashboard is a customizable dashboard that enables decision-ma
 This page is a work in progress, and we're updating the information as we add more features.
 For more information, see the [Value Stream Management category direction page](https://about.gitlab.com/direction/plan/value_stream_management/).
 
-After the feature flag is enabled, to open the new page, append this path `/analytics/dashboards/value_streams_dashboard` to the group URL
+## View the value streams dashboard
+
+Prerequisite:
+
+- To view the value streams dashboard for a group, you must have at least the Reporter role for the group.
+
+To view the value streams dashboard:
+
+1. On the top bar, select **Main menu**, and:
+   - For a project, select **Projects** and find your project.
+   - For a group, select **Groups** and find your group.
+1. On the left sidebar, select **Analytics > Value stream**.
+1. Below the **Filter results** text box, in the **Key metrics** row, select **Value Streams Dashboard | DORA**.
+1. Optional. To open the new page, append this path `/analytics/dashboards/value_streams_dashboard` to the group URL
 (for example, `https://gitlab.com/groups/gitlab-org/-/analytics/dashboards/value_streams_dashboard`).
 
 ## Initial use case
