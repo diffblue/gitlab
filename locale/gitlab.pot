@@ -11012,6 +11012,9 @@ msgstr ""
 msgid "ComplianceReport|Framework successfully removed"
 msgstr ""
 
+msgid "ComplianceReport|Full target branch name"
+msgstr ""
+
 msgid "ComplianceReport|Less than 2 approvers"
 msgstr ""
 
@@ -11028,6 +11031,9 @@ msgid "ComplianceReport|Remove framework from selected projects"
 msgstr ""
 
 msgid "ComplianceReport|Retrieving the compliance framework report failed. Refresh the page and try again."
+msgstr ""
+
+msgid "ComplianceReport|Search target branch"
 msgstr ""
 
 msgid "ComplianceReport|Select at least one project to apply the bulk action"

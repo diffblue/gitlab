@@ -15,10 +15,16 @@ export const convertProjectIdsToGraphQl = (projectIds) =>
     projectIds.filter((id) => Boolean(id)),
   );
 
-export const parseViolationsQueryFilter = ({ mergedBefore, mergedAfter, projectIds }) => ({
+export const parseViolationsQueryFilter = ({
+  mergedBefore,
+  mergedAfter,
+  projectIds,
+  targetBranch,
+}) => ({
   projectIds: projectIds ? convertProjectIdsToGraphQl(projectIds) : [],
   mergedBefore: formatDate(mergedBefore, ISO_SHORT_FORMAT, true),
   mergedAfter: formatDate(mergedAfter, ISO_SHORT_FORMAT, true),
+  targetBranch,
 });
 
 export const buildDefaultViolationsFilterParams = (queryString) => ({

@@ -37,6 +37,7 @@ describe('ViolationFilter component', () => {
   const findProjectsFilter = () => wrapper.findComponent(ProjectsDropdownFilter);
   const findProjectsFilterLabel = () => wrapper.findByTestId('dropdown-label');
   const findDatePicker = () => wrapper.findComponent(GlDaterangePicker);
+  const findTargetBranchInput = () => wrapper.findByTestId('violations-target-branch-input');
 
   const mockApollo = (mockResponse = groupProjectsSuccess) =>
     createMockApollo([[getGroupProjectsQuery, mockResponse]]);
@@ -120,6 +121,19 @@ describe('ViolationFilter component', () => {
       expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
         {
           ...dateRangeQuery,
+        },
+      ]);
+    });
+
+    it('emits a query with a target branch when it is added', async () => {
+      const NEW_BRANCH = 'new-branch';
+      await findTargetBranchInput().vm.$emit('input', NEW_BRANCH);
+
+      expect(wrapper.emitted('filters-changed')).toHaveLength(1);
+      expect(wrapper.emitted('filters-changed')[0]).toStrictEqual([
+        {
+          ...defaultQuery,
+          targetBranch: NEW_BRANCH,
         },
       ]);
     });
