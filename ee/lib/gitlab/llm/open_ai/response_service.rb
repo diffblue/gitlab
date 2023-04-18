@@ -19,7 +19,7 @@ module Gitlab
             model_name: resource.class.name,
             # todo: do we need to sanitize/refine this response in any ways?
             response_body: response_modifier.execute(ai_response).to_s.strip,
-            errors: [ai_response&.dig(:error)].compact!
+            errors: [ai_response&.dig(:error)].compact
           }
 
           GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)

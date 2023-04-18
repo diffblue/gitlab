@@ -19,6 +19,7 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
       where(:method, :resource, :service_class) do
         :summarize_comments | issue | Llm::GenerateSummaryService
         :explain_code | build_stubbed(:project) | Llm::ExplainCodeService
+        :explain_vulnerability | build_stubbed(:vulnerability, :with_findings) | Llm::ExplainVulnerabilityService
       end
 
       with_them do

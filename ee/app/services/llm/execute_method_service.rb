@@ -5,6 +5,7 @@ module Llm
     # This list of methods will expand as we add more methods to support.
     # Could also be abstracted to another class specific to find the appropriate method service.
     METHODS = {
+      explain_vulnerability: ::Llm::ExplainVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
       explain_code: Llm::ExplainCodeService
     }.freeze
