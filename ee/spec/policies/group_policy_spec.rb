@@ -588,7 +588,7 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
         end
       end
 
-      context 'with sso enforcement enabled' do
+      context 'with SSO enforcement enabled' do
         let(:current_user) { guest }
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
@@ -602,47 +602,6 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
 
           it 'prevents access without a SAML session' do
             is_expected.not_to be_allowed(:read_group)
-          end
-
-          context 'as a group owner' do
-            before do
-              create(:group_saml_identity, user: current_user, saml_provider: saml_provider)
-              group.add_owner(current_user)
-            end
-
-            it 'allows access without a SAML session' do
-              is_expected.to allow_action(:read_group)
-            end
-
-            it 'prevents access without a SAML session for subgroup' do
-              subgroup = create(:group, :private, parent: group)
-
-              expect(described_class.new(current_user, subgroup)).not_to allow_action(:read_group)
-            end
-          end
-
-          context 'as an admin' do
-            let(:current_user) { admin }
-
-            context 'when admin mode is enabled', :enable_admin_mode do
-              it 'allows access without a SAML session' do
-                is_expected.to allow_action(:read_group)
-              end
-            end
-
-            context 'when admin mode is disabled' do
-              it 'prevents access without a SAML session' do
-                is_expected.not_to allow_action(:read_group)
-              end
-            end
-          end
-
-          context 'as an auditor' do
-            let(:current_user) { create(:user, :auditor) }
-
-            it 'allows access without a SAML session' do
-              is_expected.to allow_action(:read_group)
-            end
           end
 
           it 'allows access with a SAML session' do
@@ -667,7 +626,7 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
         end
       end
 
-      context 'without SSO enforcement enabled', feature_category: :system_access do
+      context 'without SSO enforcement enabled' do
         let(:current_user) { guest }
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
@@ -682,22 +641,6 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           it 'allows access when the user has no Group SAML identity' do
             is_expected.to be_allowed(:read_group)
           end
-
-          context 'when the user has a Group SAML identity' do
-            before do
-              create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
-            end
-
-            it 'prevents access without a SAML session' do
-              is_expected.not_to be_allowed(:read_group)
-            end
-
-            it 'allows access with a SAML session' do
-              Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-              is_expected.to be_allowed(:read_group)
-            end
-          end
         end
 
         context 'when there is no global session or sso state' do
@@ -706,6 +649,225 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
 
             it 'allows access without a SAML session' do
               is_expected.to allow_action(:read_group)
+            end
+          end
+        end
+      end
+    end
+
+    context 'reading a group' do
+      context 'when SAML SSO is enabled for resource' do
+        using RSpec::Parameterized::TableSyntax
+
+        let(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: false) }
+        let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
+        let(:root_group) { saml_provider.group }
+        let(:subgroup) { create(:group, parent: root_group) }
+        let(:member_with_identity) { identity.user }
+        let(:member_without_identity) { create(:user) }
+        let(:non_member) { create(:user) }
+        let(:not_signed_in_user) { nil }
+
+        before do
+          stub_licensed_features(group_saml: true)
+          root_group.add_developer(member_with_identity)
+          root_group.add_developer(member_without_identity)
+        end
+
+        subject { described_class.new(current_user, resource) }
+
+        shared_examples 'does not allow read group' do
+          it 'does not allow read group' do
+            is_expected.not_to allow_action(:read_group)
+          end
+        end
+
+        shared_examples 'allows to read group' do
+          it 'allows read group' do
+            is_expected.to allow_action(:read_group)
+          end
+        end
+
+        shared_examples 'does not allow to read group due to its visibility level' do
+          it 'does not allow to read group due to its visibility level', :aggregate_failures do
+            expect(resource.root_ancestor.saml_provider.enforced_sso?).to eq(false)
+
+            is_expected.not_to allow_action(:read_group)
+          end
+        end
+
+        # See https://docs.gitlab.com/ee/user/group/saml_sso/#sso-enforcement
+        where(:resource, :resource_visibility_level, :enforced_sso?, :user, :user_is_resource_owner?, :user_with_saml_session?, :user_is_admin?, :enable_admin_mode?, :user_is_auditor?, :shared_examples) do
+          # Project/Group visibility: Private; Enforce SSO setting: Off
+
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+
+          ref(:root_group) | 'private' | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read group'
+
+          ref(:root_group) | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow to read group due to its visibility level'
+          ref(:root_group) | 'private' | false | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow to read group due to its visibility level'
+          ref(:root_group) | 'private' | false | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:root_group) | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow to read group due to its visibility level'
+          ref(:subgroup)   | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow to read group due to its visibility level'
+          ref(:subgroup)   | 'private' | false | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow to read group due to its visibility level'
+          ref(:subgroup)   | 'private' | false | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow to read group due to its visibility level'
+
+          # Project/Group visibility: Private; Enforce SSO setting: On
+
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+
+          ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
+
+          ref(:root_group) | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:root_group) | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+
+          # Project/Group visibility: Public; Enforce SSO setting: Off
+
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read group'
+
+          ref(:root_group) | 'public'  | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read group'
+
+          ref(:root_group) | 'public'  | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+
+          # Project/Group visibility: Public; Enforce SSO setting: On
+
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
+
+          ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'allows to read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read group'
+          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
+          # ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
+
+          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+          ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+          ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+          ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+          ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+        end
+
+        with_them do
+          context "when SSO for web activity is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
+            around do |example|
+              Gitlab::Session.with_session({}) do
+                example.run
+              end
+            end
+
+            before do
+              saml_provider.update!(enforced_sso: enforced_sso?)
+            end
+
+            context "when resource is #{params[:resource_visibility_level]}" do
+              before do
+                resource.update!(visibility_level: Gitlab::VisibilityLevel.string_options[resource_visibility_level])
+              end
+
+              context 'for user', enable_admin_mode: params[:enable_admin_mode?] do
+                before do
+                  if user_is_resource_owner?
+                    resource.root_ancestor.member(user).update_column(:access_level, Gitlab::Access::OWNER)
+                  end
+
+                  Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session if user_with_saml_session?
+
+                  user.update!(admin: true) if user_is_admin?
+                  user.update!(auditor: true) if user_is_auditor?
+                end
+
+                let(:current_user) { user }
+
+                include_examples params[:shared_examples]
+              end
             end
           end
         end
