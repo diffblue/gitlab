@@ -37,26 +37,6 @@ RSpec.describe Ci::CreatePipelineService, '#execute', :saas, feature_category: :
       end
     end
 
-    context 'when pipeline activity limit is exceeded' do
-      before do
-        plan_limits.update_column(:ci_active_pipelines, 2)
-
-        create(:ci_pipeline, project: project, status: 'pending')
-        create(:ci_pipeline, project: project, status: 'running')
-      end
-
-      it 'drops the pipeline and does not process jobs', :aggregate_failures do
-        response, pipeline = create_pipeline!
-
-        expect(response).to be_error
-        expect(pipeline).to be_persisted
-        expect(pipeline).to be_failed
-        expect(pipeline.statuses).not_to be_empty
-        expect(pipeline.statuses).to all(be_created)
-        expect(pipeline.activity_limit_exceeded?).to be true
-      end
-    end
-
     context 'when pipeline size limit is exceeded' do
       before do
         plan_limits.update_column(:ci_pipeline_size, 2)

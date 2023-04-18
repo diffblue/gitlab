@@ -3084,9 +3084,6 @@ msgstr ""
 msgid "AdminSettings|Maximum number of DAG dependencies that a job can have"
 msgstr ""
 
-msgid "AdminSettings|Maximum number of active pipelines per project"
-msgstr ""
-
 msgid "AdminSettings|Maximum number of custom domains per project"
 msgstr ""
 

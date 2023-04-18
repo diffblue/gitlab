@@ -721,7 +721,6 @@ RSpec.describe Namespace do
         let!(:default_limits) do
           create(:plan_limits,
             plan: default_plan,
-            ci_active_pipelines: 1,
             ci_pipeline_size: 2,
             ci_active_jobs: 3)
         end
@@ -740,7 +739,6 @@ RSpec.describe Namespace do
           let!(:free_limits) do
             create(:plan_limits,
               plan: free_plan,
-              ci_active_pipelines: 3,
               ci_pipeline_size: 4,
               ci_active_jobs: 5)
           end
@@ -759,7 +757,6 @@ RSpec.describe Namespace do
             let!(:subscription_limits) do
               create(:plan_limits,
                 plan: ultimate_plan,
-                ci_active_pipelines: 5,
                 ci_pipeline_size: 6,
                 ci_active_jobs: 7)
             end
