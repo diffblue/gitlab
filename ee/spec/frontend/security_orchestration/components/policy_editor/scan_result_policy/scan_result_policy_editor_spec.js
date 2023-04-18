@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -150,7 +150,7 @@ describe('ScanResultPolicyEditor', () => {
     it('displays the initial rule and add rule button', async () => {
       factory();
 
-      expect(findAllRuleBuilders().length).toBe(1);
+      expect(findAllRuleBuilders()).toHaveLength(1);
       expect(findAddRuleButton().exists()).toBe(true);
     });
 
@@ -230,10 +230,9 @@ describe('ScanResultPolicyEditor', () => {
         const rulesCount = 1;
         factory();
 
-        expect(findAllRuleBuilders().length).toBe(rulesCount);
+        expect(findAllRuleBuilders()).toHaveLength(rulesCount);
 
-        findAddRuleButton().vm.$emit('click');
-        await nextTick();
+        await findAddRuleButton().vm.$emit('click');
 
         expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
       });
@@ -270,8 +269,7 @@ describe('ScanResultPolicyEditor', () => {
 
         expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
 
-        findAllRuleBuilders().at(0).vm.$emit('remove', 0);
-        await nextTick();
+        await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
 
         expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
       });
@@ -282,8 +280,7 @@ describe('ScanResultPolicyEditor', () => {
         factory();
 
         const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
-        findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
-        await nextTick();
+        await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
 
         expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
       });
@@ -294,8 +291,7 @@ describe('ScanResultPolicyEditor', () => {
     beforeEach(factory);
 
     it('updates the policy yaml and policy object when "update-yaml" is emitted', async () => {
-      findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
-      await nextTick();
+      await findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
 
       expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
         mockDefaultBranchesScanResultManifest,
@@ -306,8 +302,7 @@ describe('ScanResultPolicyEditor', () => {
     });
 
     it('disables all rule mode related components when the yaml is invalid', async () => {
-      findPolicyEditorLayout().vm.$emit('update-yaml', unsupportedManifest);
-      await nextTick();
+      await findPolicyEditorLayout().vm.$emit('update-yaml', unsupportedManifest);
 
       expect(findAllDisabledComponents().at(0).props('disabled')).toBe(true);
       expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
@@ -350,8 +345,7 @@ describe('ScanResultPolicyEditor', () => {
     it('creates an error for invalid yaml', async () => {
       factory();
 
-      findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await nextTick();
+      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
 
       verifiesParsingError();
     });
