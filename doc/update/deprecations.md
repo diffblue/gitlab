@@ -87,6 +87,19 @@ Due to limited customer usage, Browser Performance Testing is deprecated and wil
 
 </div>
 
+<div class="deprecation " data-milestone="17.0">
+
+### Deprecate legacy shell escaping and quoting runner shell executor
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.11</span>
+- End of Support: GitLab <span class="milestone">17.9</span>
+</div>
+
+The runner's legacy escape sequence mechanism to handle variable expansion implements a sub-optimal implementation of Ansi-C quoting. This method means that the runner would expand arguments included in double quotes. As of 15.11, we are deprecating the legacy escaping and quoting methods in the runner shell executor.
+
+</div>
+
 <div class="deprecation breaking-change" data-milestone="17.0">
 
 ### DingTalk OmniAuth provider
