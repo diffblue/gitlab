@@ -79,7 +79,7 @@ export default {
       />
     </gl-avatar-link>
     <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
-      <div class="gl-display-flex gl-flex-wrap-wrap gl-flex-grow-1 gl-gap-2">
+      <div class="gl-display-flex gl-flex-wrap gl-flex-grow-1 gl-gap-2">
         <gl-button variant="link" :href="resource.webPath" class="gl-text-gray-900! gl-mr-1">
           {{ resourcePath }} <b> {{ resource.name }}</b>
         </gl-button>

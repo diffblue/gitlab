@@ -133,7 +133,7 @@ export default {
 <template>
   <div>
     <div
-      class="gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-align-items-center gl-flex-wrap-wrap"
+      class="gl-display-flex gl-flex-direction-row gl-justify-content-space-between gl-align-items-center gl-flex-wrap"
     >
       <h4 data-testid="subscription-main-title" class="gl-w-full gl-sm-w-auto">
         {{ $options.i18n.subscriptionMainTitle }}
