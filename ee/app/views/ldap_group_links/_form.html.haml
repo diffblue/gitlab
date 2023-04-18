@@ -3,27 +3,27 @@
     .form-holder
       .form-group.row
         .col-sm-2.col-form-label
-          = f.label :cn, "LDAP Server"
+          = f.label :cn, s_("LDAP|LDAP server")
         .col-sm-10
           = f.select :provider, ldap_server_select_options, {}, class: 'form-control'
 
       - if ::License.feature_available?(:ldap_group_sync_filter)
         .form-group.row
           .col-sm-2.col-form-label
-            = f.label :cn, "Sync method"
-          .col-sm-10
-            .form-check
-              = radio_button_tag :sync_method, :group, true, class: 'form-check-input', data: { qa_selector: 'ldap_sync_group_radio' }
-              = label_tag :sync_method_group, class: 'form-check-label' do
-                LDAP Group cn
-            .form-check
-              = radio_button_tag :sync_method, :filter, class: 'form-check-input'
-              = label_tag :sync_method_filter, class: 'form-check-label' do
-                LDAP user filter
+            = f.label :cn, s_("LDAP|Sync method")
+          %fieldset.col-sm-10
+            .gl-form-radio.custom-control.custom-radio
+              = radio_button_tag :sync_method, :group, true, class: 'custom-control-input', data: { qa_selector: 'ldap_sync_group_radio' }
+              = label_tag :sync_method_group, class: 'custom-control-label' do
+                = s_("LDAP|LDAP group cn")
+            .gl-form-radio.custom-control.custom-radio
+              = radio_button_tag :sync_method, :filter, false, class: 'custom-control-input'
+              = label_tag :sync_method_filter, class: 'custom-control-label' do
+                = s_("LDAP|LDAP user filter")
 
       .form-group.row.cn-link
         .col-sm-2.col-form-label
-          = f.label :cn, "LDAP Group cn"
+          = f.label :cn, s_("LDAP|LDAP group cn")
         .col-sm-10{ data: { qa_selector: 'ldap_group_field' } }
           #js-ldap-groups-select
           .form-text.text-muted
@@ -34,7 +34,7 @@
       - if ::License.feature_available?(:ldap_group_sync_filter)
         .form-group.row.filter-link
           .col-sm-2.col-form-label
-            = f.label :filter, "LDAP User filter"
+            = f.label :filter, s_("LDAP|LDAP user filter")
           .col-sm-10
             = f.text_field :filter, placeholder: 'Ex. (&(objectCategory=person)(objectClass=developer))', class: 'form-control xxlarge input-mn-300', data: { qa_selector: 'ldap_user_filter_field' }
             .form-text.text-muted
@@ -45,7 +45,7 @@
 
       .form-group.row
         .col-sm-2.col-form-label
-          = f.label :group_access, "LDAP Access"
+          = f.label :group_access, s_("LDAP|LDAP access")
         .col-sm-10
           = f.select :group_access, options_for_select(GroupMember.access_level_roles), {}, class: 'form-control'
           .form-text.text-muted
@@ -54,4 +54,4 @@
             You can manage permission levels for individual group members in the Members tab.
 
     .form-actions.gl-mb-5
-      = f.submit 'Add synchronization', class: 'gl-button btn btn-confirm', data: { qa_selector: 'add_sync_button' }
+      = f.submit s_("LDAP|Add synchronization"), class: 'gl-button btn btn-confirm', data: { qa_selector: 'add_sync_button' }
