@@ -1012,9 +1012,6 @@ msgstr ""
 msgid "%{reportType} detected no new vulnerabilities."
 msgstr ""
 
-msgid "%{reported} reported for %{category} by %{reporter}"
-msgstr ""
-
 msgid "%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from:"
 msgid_plural "%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approvals%{approvalEnd} from:"
 msgstr[0] ""
@@ -2070,6 +2067,12 @@ msgid "Abuse reports"
 msgstr ""
 
 msgid "Abuse reports notification email"
+msgstr ""
+
+msgid "AbuseReports|%{reportedUser} reported for %{category} by %{reporter}"
+msgstr ""
+
+msgid "AbuseReports|Deleted user"
 msgstr ""
 
 msgid "AbuseReports|No reports found"
@@ -48224,9 +48227,6 @@ msgid "User is blocked"
 msgstr ""
 
 msgid "User is not allowed to resolve thread"
-msgstr ""
-
-msgid "User joined %{timeAgo}"
 msgstr ""
 
 msgid "User key"
