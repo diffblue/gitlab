@@ -121,6 +121,8 @@ module EE
 
     override :arkose_labs_enabled?
     def arkose_labs_enabled?
+      return false if ::Gitlab::Qa.request?(request.user_agent)
+
       ::Arkose::Settings.enabled_for_signup?
     end
   end
