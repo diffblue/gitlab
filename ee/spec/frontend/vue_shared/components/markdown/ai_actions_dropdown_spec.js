@@ -24,7 +24,7 @@ jest.mock('~/lib/utils/text_markdown');
 
 describe('AI actions dropdown component', () => {
   let wrapper;
-  const issuableId = 1;
+  const resourceGlobalId = 'gid://gitlab/Issue/1';
   const userId = 99;
   let aiResponseSubscriptionHandler;
   let aiActionMutationHandler;
@@ -52,7 +52,7 @@ describe('AI actions dropdown component', () => {
       attachTo: '#root',
       apolloProvider: mockApollo,
       propsData: {
-        issuableId,
+        resourceGlobalId,
         ...props,
       },
     });
@@ -162,6 +162,20 @@ describe('AI actions dropdown component', () => {
 
         await selectSummariseComments();
         await waitForPromises();
+
+        expect(createAlert).toHaveBeenCalledWith(
+          expect.objectContaining({
+            message: 'Something went wrong',
+            captureError: true,
+            error: mockError,
+          }),
+        );
+      });
+
+      it('shows an error and logs to Sentry when the AI subscription fails', async () => {
+        const mockError = new Error('ding');
+
+        aiResponseSubscriptionHandler.error(mockError);
 
         expect(createAlert).toHaveBeenCalledWith(
           expect.objectContaining({

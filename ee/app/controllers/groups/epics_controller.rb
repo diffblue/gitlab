@@ -22,6 +22,9 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:content_editor_on_issues, @group)
     push_frontend_feature_flag(:or_issuable_queries, @group)
     push_frontend_feature_flag(:saved_replies, current_user)
+    push_frontend_feature_flag(:summarize_comments, current_user)
+    push_licensed_feature(:summarize_notes, group) if group.licensed_feature_available?(:summarize_notes)
+    push_frontend_feature_flag(:openai_experimentation, current_user)
   end
 
   feature_category :portfolio_management
