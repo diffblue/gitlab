@@ -1,16 +1,18 @@
 # frozen_string_literal: true
 
-require_relative 'specs/match_with_array_suggestion'
-require_relative 'specs/project_factory_suggestion'
-require_relative 'specs/feature_category_suggestion'
+Dir[File.expand_path('specs/*_suggestion.rb', __dir__)].each { |file| require file }
 
 module Tooling
   module Danger
     module Specs
-      include ::Tooling::Danger::Suggestor
-
       SPEC_FILES_REGEX = 'spec/'
       EE_PREFIX = 'ee/'
+
+      SUGGESTIONS = [
+        FeatureCategorySuggestion,
+        MatchWithArraySuggestion,
+        ProjectFactorySuggestion
+      ].freeze
 
       def changed_specs_files(ee: :include)
         changed_files = helper.all_changed_files
@@ -27,16 +29,10 @@ module Tooling
         changed_files.grep(%r{\A#{folder_prefix}#{SPEC_FILES_REGEX}})
       end
 
-      def add_suggestions_for_match_with_array(filename)
-        MatchWithArraySuggestion.new(filename, context: self).suggest
-      end
-
-      def add_suggestions_for_project_factory_usage(filename)
-        ProjectFactorySuggestion.new(filename, context: self).suggest
-      end
-
-      def add_suggestions_for_feature_category(filename)
-        FeatureCategorySuggestion.new(filename, context: self).suggest
+      def add_suggestions_for(filename)
+        SUGGESTIONS.each do |suggestion|
+          suggestion.new(filename, context: self).suggest
+        end
       end
     end
   end

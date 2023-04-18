@@ -94,6 +94,6 @@ RSpec.describe Tooling::Danger::Specs::FeatureCategorySuggestion, feature_catego
       expect(specs).to receive(:markdown).with(comment, file: filename, line: test_case[:number])
     end
 
-    specs.add_suggestions_for_feature_category(filename)
+    specs.add_suggestions_for(filename)
   end
 end

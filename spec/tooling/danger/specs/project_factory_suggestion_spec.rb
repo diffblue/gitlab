@@ -99,6 +99,6 @@ RSpec.describe Tooling::Danger::Specs::ProjectFactorySuggestion, feature_categor
       expect(specs).to receive(:markdown).with(comment, file: filename, line: test_case[:number])
     end
 
-    specs.add_suggestions_for_project_factory_usage(filename)
+    specs.add_suggestions_for(filename)
   end
 end
