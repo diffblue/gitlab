@@ -5,7 +5,7 @@ import {
   MR_NEXT_UNRESOLVED_DISCUSSION,
   MR_PREVIOUS_UNRESOLVED_DISCUSSION,
 } from '~/behaviors/shortcuts/keybindings';
-import Mousetrap from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/utils/mousetrap';
 import DiscussionNavigator from '~/notes/components/discussion_navigator.vue';
 import eventHub from '~/notes/event_hub';
 

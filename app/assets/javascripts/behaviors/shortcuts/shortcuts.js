@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
 import Vue from 'vue';
-import Mousetrap, { addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
+import { Mousetrap, addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
 import { getCookie, setCookie, parseBoolean } from '~/lib/utils/common_utils';
 
 import findAndFollowLink from '~/lib/utils/navigation_utility';

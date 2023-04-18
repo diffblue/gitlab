@@ -2,7 +2,7 @@
 import { GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import fuzzaldrinPlus from 'fuzzaldrin-plus';
 import VirtualList from 'vue-virtual-scroll-list';
-import Mousetrap, { addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
+import { Mousetrap, addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
 import { keysFor, MR_GO_TO_FILE } from '~/behaviors/shortcuts/keybindings';
 import { UP_KEY_CODE, DOWN_KEY_CODE, ENTER_KEY_CODE, ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import Item from './item.vue';

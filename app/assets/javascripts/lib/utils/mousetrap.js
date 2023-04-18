@@ -43,4 +43,4 @@ export const clearStopCallbacksForTests = () => {
   additionalStopCallbacks.length = 0;
 };
 
-export default Mousetrap;
+export { Mousetrap };

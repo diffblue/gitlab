@@ -1,12 +1,11 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
-import Mousetrap, { addStopCallback } from '~/lib/utils/mousetrap';
+import { Mousetrap, addStopCallback } from '~/lib/utils/mousetrap';
 import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import Shortcuts, { LOCAL_MOUSETRAP_DATA_KEY } from '~/behaviors/shortcuts/shortcuts';
 
 jest.mock('~/lib/utils/mousetrap', () => ({
-  __esModule: true,
-  default: jest.requireActual('~/lib/utils/mousetrap').default,
+  ...jest.requireActual('~/lib/utils/mousetrap'),
   addStopCallback: jest.fn(),
 }));
 

@@ -1,4 +1,4 @@
-import Mousetrap from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/utils/mousetrap';
 import 'mousetrap/plugins/pause/mousetrap-pause';
 
 const shorcutsDisabledKey = 'shortcutsDisabled';

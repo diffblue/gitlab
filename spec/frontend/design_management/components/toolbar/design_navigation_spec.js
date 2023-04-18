@@ -4,7 +4,7 @@ import { GlButtonGroup } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import DesignNavigation from '~/design_management/components/toolbar/design_navigation.vue';
 import { DESIGN_ROUTE_NAME } from '~/design_management/router/constants';
-import Mousetrap from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/utils/mousetrap';
 import getDesignListQuery from 'shared_queries/design_management/get_design_list.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';

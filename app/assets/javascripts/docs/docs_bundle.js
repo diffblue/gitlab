@@ -1,4 +1,4 @@
-import Mousetrap from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/utils/mousetrap';
 
 function addMousetrapClick(el, key) {
   el.addEventListener('click', () => Mousetrap.trigger(key));
