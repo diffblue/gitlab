@@ -54,7 +54,7 @@ module MergeRequests
 
       # Until we decide the best way to represent generated content
       def note_content(summary, rev)
-        summary + "\n\n---\n_(🤖 has created a summary note for revision #{rev})_"
+        summary + "\n\n---\n_(AI-generated summary for revision #{rev})_"
       end
 
       def service
