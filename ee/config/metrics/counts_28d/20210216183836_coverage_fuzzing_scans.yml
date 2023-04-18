@@ -5,7 +5,6 @@ description: Number of Coverage Guided Fuzz Test security scans run
 product_section: sec
 product_stage: secure
 product_group: dynamic_analysis
-product_category: fuzz-testing
 value_type: number
 status: active
 time_frame: 28d

@@ -5,7 +5,6 @@ description: "Count of compliance frameworks that have a pipeline configuration"
 product_section: dev
 product_stage: manage
 product_group: compliance
-product_category: "Compliance management"
 value_type: number
 status: active
 milestone: '14.1'
