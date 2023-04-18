@@ -28667,6 +28667,12 @@ msgstr ""
 msgid "Namespace:"
 msgstr ""
 
+msgid "NamespaceLimits|Free Tier"
+msgstr ""
+
+msgid "NamespaceLimit|Storage Phased Notification"
+msgstr ""
+
 msgid "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked project"
 msgid_plural "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked projects"
 msgstr[0] ""
@@ -32904,12 +32910,6 @@ msgid "Plan"
 msgstr ""
 
 msgid "Plan:"
-msgstr ""
-
-msgid "PlanLimits|Free Tier"
-msgstr ""
-
-msgid "PlanLimit|Storage Phased Notification"
 msgstr ""
 
 msgid "Planning hierarchy"

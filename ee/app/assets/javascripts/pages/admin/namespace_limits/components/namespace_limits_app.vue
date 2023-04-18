@@ -3,7 +3,7 @@
 import { GlLink } from '@gitlab/ui';
 
 export default {
-  name: 'PlanLimitsApp',
+  name: 'NamespaceLimitsApp',
   components: {
     GlLink,
   },
