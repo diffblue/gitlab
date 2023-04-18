@@ -52,7 +52,7 @@ export default {
       if (rule.group) {
         return { name: rule.group.name, link: rule.group.webUrl };
       } else if (rule.user) {
-        return { name: rule.user.name, link: rule.user.webPath };
+        return { name: rule.user.name, link: rule.user.webUrl };
       }
 
       return { name: accessLevelDisplay[rule.accessLevel.stringValue] };
@@ -71,7 +71,7 @@ export default {
         v-for="approval in value"
         :key="approval.user.id"
         v-gl-tooltip
-        :href="approval.user.webPath"
+        :href="approval.user.webUrl"
         :title="approval.user.name"
       >
         <gl-avatar :src="approval.user.avatarUrl" :size="24" />
