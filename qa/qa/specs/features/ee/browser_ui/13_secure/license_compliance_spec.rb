@@ -2,10 +2,6 @@
 
 module QA
   RSpec.describe 'Secure', :runner, product_group: :composition_analysis,
-    quarantine: {
-      type: :flaky,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/396962'
-    },
     feature_flag: { name: 'license_scanning_sbom_scanner' } do
     describe 'License Compliance' do
       before(:all) do
@@ -128,7 +124,10 @@ module QA
       end
 
       # this test relies on the pm_* db tables being populated, so it can only run in live environments
-      describe 'when a CycloneDX SBOM file exists', only: { subdomain: :staging } do
+      describe 'when a CycloneDX SBOM file exists', only: { subdomain: :staging }, quarantine: {
+        type: :flaky,
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/396962'
+      } do
         before(:all) do
           @project = Resource::Project.fabricate_via_api! do |project|
             project.name = Runtime::Env.auto_devops_project_name || 'project-with-secure'
