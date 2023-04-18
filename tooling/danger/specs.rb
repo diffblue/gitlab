@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'specs/match_with_array_suggestion'
+require_relative 'specs/project_factory_suggestion'
 
 module Tooling
   module Danger
@@ -9,33 +10,6 @@ module Tooling
 
       SPEC_FILES_REGEX = 'spec/'
       EE_PREFIX = 'ee/'
-
-      PROJECT_FACTORIES = %w[
-        :project
-        :project_empty_repo
-        :forked_project_with_submodules
-        :project_with_design
-      ].freeze
-
-      PROJECT_FACTORY_REGEX = /
-        ^\+?                                 # Start of the line, which may or may not have a `+`
-        (?<head>\s*)                         # 0-many leading whitespace captured in a group named head
-        let!?                                # Literal `let` which may or may not end in `!`
-        (?<tail>                             # capture group named tail
-          \([^)]+\)                          # Two parenthesis with any non-parenthesis characters between them
-          \s*\{\s*                           # Opening curly brace surrounded by 0-many whitespace characters
-          create\(                           # literal
-          (?:#{PROJECT_FACTORIES.join('|')}) # Any of the project factory names
-          \W                                 # Non-word character, avoid matching factories like :project_authorization
-        )                                    # end capture group named tail
-      /x.freeze
-
-      PROJECT_FACTORY_REPLACEMENT = '\k<head>let_it_be\k<tail>'
-      PROJECT_FACTORY_SUGGESTION = <<~SUGGEST_COMMENT
-      Project creations are very slow. Use `let_it_be`, `build` or `build_stubbed` if possible.
-      See [testing best practices](https://docs.gitlab.com/ee/development/testing_guide/best_practices.html#optimize-factory-usage)
-      for background information and alternative options.
-      SUGGEST_COMMENT
 
       RSPEC_TOP_LEVEL_DESCRIBE_REGEX = /^\+.?RSpec\.describe(.+)/.freeze
       FEATURE_CATEGORY_SUGGESTION = <<~SUGGESTION_MARKDOWN
@@ -64,12 +38,7 @@ module Tooling
       end
 
       def add_suggestions_for_project_factory_usage(filename)
-        add_suggestion(
-          filename: filename,
-          regex: PROJECT_FACTORY_REGEX,
-          replacement: PROJECT_FACTORY_REPLACEMENT,
-          comment_text: PROJECT_FACTORY_SUGGESTION
-        )
+        ProjectFactorySuggestion.new(filename, context: self).suggest
       end
 
       def add_suggestions_for_feature_category(filename)
