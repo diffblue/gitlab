@@ -22,7 +22,7 @@ module Tooling
             \s*\{\s*                           # Opening curly brace surrounded by 0-many whitespace characters
             create\(                           # literal
             (?:#{PROJECT_FACTORIES.join('|')}) # Any of the project factory names
-            \W                                 # Non-word character, avoid matching factories like :project_authorization
+            \W                                 # Non-word character, avoid matching factories like :project_badge
           )                                    # end capture group named tail
         /x
 

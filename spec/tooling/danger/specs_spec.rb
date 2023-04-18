@@ -13,7 +13,12 @@ RSpec.describe Tooling::Danger::Specs, feature_category: :tooling do
   subject(:specs) { fake_danger.new(helper: fake_helper) }
 
   describe '#changed_specs_files' do
-    let(:base_expected_files) { %w[spec/foo_spec.rb ee/spec/foo_spec.rb spec/bar_spec.rb ee/spec/bar_spec.rb spec/zab_spec.rb ee/spec/zab_spec.rb] }
+    let(:base_expected_files) do
+      %w[
+        spec/foo_spec.rb ee/spec/foo_spec.rb spec/bar_spec.rb
+        ee/spec/bar_spec.rb spec/zab_spec.rb ee/spec/zab_spec.rb
+      ]
+    end
 
     before do
       all_changed_files = %w[
@@ -37,13 +42,15 @@ RSpec.describe Tooling::Danger::Specs, feature_category: :tooling do
 
     context 'with include_ee: :exclude' do
       it 'returns spec files without EE-specific files' do
-        expect(specs.changed_specs_files(ee: :exclude)).not_to include(%w[ee/spec/foo_spec.rb ee/spec/bar_spec.rb ee/spec/zab_spec.rb])
+        expect(specs.changed_specs_files(ee: :exclude))
+          .not_to include(%w[ee/spec/foo_spec.rb ee/spec/bar_spec.rb ee/spec/zab_spec.rb])
       end
     end
 
     context 'with include_ee: :only' do
       it 'returns EE-specific spec files only' do
-        expect(specs.changed_specs_files(ee: :only)).to match_array(%w[ee/spec/foo_spec.rb ee/spec/bar_spec.rb ee/spec/zab_spec.rb])
+        expect(specs.changed_specs_files(ee: :only))
+          .to match_array(%w[ee/spec/foo_spec.rb ee/spec/bar_spec.rb ee/spec/zab_spec.rb])
       end
     end
   end

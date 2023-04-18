@@ -27,14 +27,14 @@ RSpec.describe Tooling::Danger::Specs::FeatureCategorySuggestion, feature_catego
     [
       " require 'spec_helper'",
       " \n",
-      " RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController, feature_category: :planning_analytics do",
+      " RSpec.describe Projects::SummaryController, feature_category: :planning_analytics do",
       " end",
-      "RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do",
+      "RSpec.describe Projects::SummaryController do",
       "  let_it_be(:user) { create(:user) }",
       " end",
       " describe 'GET \"time_summary\"' do",
       " end",
-      " RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do",
+      " RSpec.describe Projects::SummaryController do",
       "  let_it_be(:user) { create(:user) }",
       " end",
       " describe 'GET \"time_summary\"' do",
@@ -57,12 +57,12 @@ RSpec.describe Tooling::Danger::Specs::FeatureCategorySuggestion, feature_catego
 
   let(:changed_lines) do
     [
-      "+ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController, feature_category: :planning_analytics do",
-      "+RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do",
+      "+ RSpec.describe Projects::SummaryController, feature_category: :planning_analytics do",
+      "+RSpec.describe Projects::SummaryController do",
       "+ let_it_be(:user) { create(:user) }",
       "- end",
       "+ describe 'GET \"time_summary\"' do",
-      "+ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do",
+      "+ RSpec.describe Projects::SummaryController do",
       "+RSpec.describe Projects :aggregate_failures,",
       "+  feature_category: planning_analytics do",
       "+RSpec.describe Epics :aggregate_failures,",
@@ -85,8 +85,8 @@ RSpec.describe Tooling::Danger::Specs::FeatureCategorySuggestion, feature_catego
 
   it 'adds suggestions at the correct lines', :aggregate_failures do
     [
-      { suggested_line: "RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do", number: 5 },
-      { suggested_line: " RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do", number: 10 },
+      { suggested_line: "RSpec.describe Projects::SummaryController do", number: 5 },
+      { suggested_line: " RSpec.describe Projects::SummaryController do", number: 10 },
       { suggested_line: "RSpec.describe Epics :aggregate_failures,", number: 19 }
 
     ].each do |test_case|
