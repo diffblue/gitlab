@@ -1,7 +1,7 @@
 ---
 data_category: optional
 key_path: counts.ldap_group_links
-description: Number of groups that are synced via LDAP group sync `https://docs.gitlab.com/ee/user/group/index.html#manage-group-memberships-via-ldap`
+description: Number of groups that are synced via LDAP group sync `https://docs.gitlab.com/ee/user/group/access_and_permissions.html#manage-group-memberships-via-ldap`
 product_section: dev
 product_stage: manage
 product_group: authentication_and_authorization

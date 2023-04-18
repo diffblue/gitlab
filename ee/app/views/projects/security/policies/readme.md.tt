@@ -37,5 +37,5 @@ You can read more about the format and policies schema in the [documentation](ht
 
 This project is preconfigured with the default branch set as a protected branch, and only maintainers/owners of
 [<%= @container.name %>](<%= @container.web_url %>) have permission to merge into that branch. This overrides any default branch protection both at the
-[group level](https://docs.gitlab.com/ee/user/group/index.html#change-the-default-branch-protection-of-a-group) and at the
+[group level](https://docs.gitlab.com/ee/user/group/manage.html#change-the-default-branch-protection-of-a-group) and at the
 [instance level](https://docs.gitlab.com/ee/user/admin_area/settings/visibility_and_access_controls.html#default-branch-protection).
