@@ -55,7 +55,7 @@ module Gitlab
 
       def load_bare_entries_for_paths
         entries = @paths.map do |path|
-          code_owners_file.entry_for_path(path)
+          code_owners_file.entries_for_path(path)
         end
 
         entries.flatten.compact.uniq
