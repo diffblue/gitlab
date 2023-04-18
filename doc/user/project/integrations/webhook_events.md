@@ -1074,7 +1074,8 @@ Payload example:
     "message": "adding an awesome page to the wiki",
     "slug": "awesome",
     "url": "http://example.com/root/awesome-project/-/wikis/awesome",
-    "action": "create"
+    "action": "create",
+    "diff_url": "http://example.com/root/awesome-project/-/wikis/home/diff?version_id=78ee4a6705abfbff4f4132c6646dbaae9c8fb6ec"
   }
 }
 ```
