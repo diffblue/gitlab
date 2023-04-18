@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'ostruct'
+
 module AwesomeCo
   class << self
     # Seed test data using AwesomeCo generator
@@ -45,23 +47,61 @@ module AwesomeCo
       # @param [Array<String>] traits FactoryBot traits that should be applied
       # @param [Hash<String, String>] attributes Attributes to apply
       def initialize(factory, *traits, **attributes)
+        # "my id" #=> "my_id"
+        # "my_id" #=> "my_id"
         @id = attributes.delete('_id')
+
+        if @id
+          raise "id `#{@id}` is invalid" if @id.match?(/[\x21-\x2F\x3A-\x40\x5B-\x5E\x60\x7B-\x7F]/) # special chars
+          raise "id `#{@id}` is invalid. id cannot start with a number" if @id.match?(/^[0-9]/)
+
+          if @id.include?(' ')
+            new_id = @id.tr(' ', '_')
+            warn %(parsing id "#{@id}" as "#{new_id}")
+
+            @id = new_id
+          end
+        end
 
         @factory = factory
         @traits = traits
         @attributes = attributes
       end
 
+      # Build and save the Factory
+      # @param [Binding] parser_binding
+      # @return [ApplicationRecord] the built and saved Factory
       def fabricate(parser_binding)
-        Gitlab::AppLogger.info("Creating `#{@factory}` with traits `#{@traits}` and attributes `#{@attributes}`")
+        factory = if @id
+                    parser_binding.local_variable_get(@factory.pluralize)[@id]
+                  else
+                    build(parser_binding)
+                  end
 
-        build(parser_binding).save
+        factory.tap do |f|
+          f.save
+          Gitlab::AppLogger.info(
+            "Created `#{@factory}` with traits `#{@traits}` and attributes `#{@attributes}` [ID: #{f.id}]"
+          )
+
+          parser_binding.local_variable_get(@factory.pluralize)[@id] = f if @id
+        end
       end
 
+      # Build the Factory
+      # @param [Binding] parser_binding
+      # @return [ApplicationRecord] the built factory
       def build(parser_binding)
         @attributes.transform_values! { |v| v.is_a?(String) ? ERB.new(v).result(parser_binding) : v }
 
-        FactoryBot.build(@factory, *@traits, **@attributes)
+        FactoryBot.build(@factory, *@traits, **@attributes).tap do |factory|
+          next unless @id
+          next unless parser_binding.local_variable_defined?(@factory.pluralize)
+
+          raise "id `#{@id}` must be unique" if parser_binding.local_variable_get(@factory.pluralize)[@id]
+
+          parser_binding.local_variable_get(@factory.pluralize)[@id] = factory if @id
+        end
       end
     end
   end
@@ -89,13 +129,16 @@ module AwesomeCo
       end
 
       def parse
+        raise 'Seed file must specify a name' unless @name
+
         # create the seeded group with a path that is hyphenated and random
         @group = FactoryBot.create(:group, name: @name,
                                                path: "#{@name.parameterize}-#{@owner.username}-#{SecureRandom.hex(3)}")
         @group.add_owner(@owner)
 
         @definitions.each do |factory, definitions|
-          @parser_binding.local_variable_set(factory, definitions)
+          # Using OpenStruct for dot-notation and saves a custom class impl. Ruby's discouragement does not apply
+          @parser_binding.local_variable_set(factory, OpenStruct.new) unless @parser_binding.local_variable_defined?(factory) # rubocop:disable Style/OpenStructUse
 
           @factories << FactoryDefinitions.new(factory, group, definitions)
         end
@@ -145,7 +188,7 @@ module AwesomeCo
         begin
           @definitions = YAML.safe_load_file(@seed_file, aliases: true)
         rescue Psych::SyntaxError => e
-          # put the yaml seed file on the top of the backtrace to help with tracability
+          # put the yaml seed file on the top of the backtrace to help with traceability
           e.backtrace.unshift("#{@seed_file.path}:#{e.line}:#{e.column}")
           raise e, "Seed file is malformed. #{e.message}"
         end
