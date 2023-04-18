@@ -7,9 +7,7 @@ RSpec.describe DesignManagement::DeleteDesignsService, feature_category: :design
   let_it_be(:project) { create(:project) }
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:design_repository) do
-    ::Gitlab::GlRepository::DESIGN.repository_resolver.call(project)
-  end
+  let_it_be(:design_repository) { ::Gitlab::GlRepository::DESIGN.repository_resolver.call(project) }
 
   let!(:design) { create(:design, :with_lfs_file, issue: issue) }
 
