@@ -93,5 +93,5 @@ namespace :admin do
     post :retry_migration
   end
 
-  resources :plan_limits, only: :index
+  get 'namespace_limits', to: 'namespace_limits#index'
 end

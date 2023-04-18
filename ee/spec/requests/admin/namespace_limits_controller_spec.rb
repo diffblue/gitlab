@@ -2,17 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::PlanLimitsController, :enable_admin_mode,
+RSpec.describe Admin::NamespaceLimitsController, :enable_admin_mode,
   type: :request,
   feature_category: :consumables_cost_management do
   describe 'GET #index' do
-    subject(:get_index) { get admin_plan_limits_path }
+    subject(:get_index) { get admin_namespace_limits_path }
 
-    shared_examples 'unsuccessful request', status: :not_found do
-      it 'is unsuccessful' do
+    shared_examples 'not found' do
+      it 'is not found' do
         get_index
 
-        expect(response).to have_gitlab_http_status(status)
+        expect(response).to have_gitlab_http_status(:not_found)
       end
     end
 
@@ -36,15 +36,15 @@ RSpec.describe Admin::PlanLimitsController, :enable_admin_mode,
       end
 
       context 'when not on .com' do
-        it_behaves_like 'unsuccessful request'
+        it_behaves_like 'not found'
       end
 
-      context 'when :plan_limits_admin_dashboard is disabled' do
+      context 'when :namespace_limits_admin_dashboard is disabled' do
         before do
-          stub_feature_flags(plan_limits_admin_dashboard: false)
+          stub_feature_flags(namespace_limits_admin_dashboard: false)
         end
 
-        it_behaves_like 'unsuccessful request'
+        it_behaves_like 'not found'
       end
     end
 
@@ -55,11 +55,15 @@ RSpec.describe Admin::PlanLimitsController, :enable_admin_mode,
         sign_in(user)
       end
 
-      it_behaves_like 'unsuccessful request'
+      it_behaves_like 'not found'
     end
 
-    context 'with no user' do
-      it_behaves_like 'unsuccessful request', status: :redirect
+    context 'when no user is logged in' do
+      it 'redirects to login page' do
+        get_index
+
+        expect(response).to have_gitlab_http_status(:redirect)
+      end
     end
   end
 end
