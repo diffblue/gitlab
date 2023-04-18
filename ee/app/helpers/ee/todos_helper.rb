@@ -22,7 +22,7 @@ module EE
     def todo_groups_requiring_saml_reauth(todos)
       return [] unless ::Feature.enabled?(:dashboard_saml_reauth_support, current_user)
 
-      groups = todos.map { |todo| todo.group || todo.project.group }
+      groups = todos.filter_map { |todo| todo.group || todo.project.group }.uniq
 
       ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted_groups(groups, user: current_user)
     end

@@ -105,13 +105,23 @@ RSpec.describe ::TodosHelper do
       create(:todo, project: restricted_project, target: create(:issue, project: restricted_project))
     end
 
+    let_it_be(:issue_todo2) do
+      create(:todo, project: restricted_project, target: create(:issue, project: restricted_project))
+    end
+
     let_it_be(:unrestricted_project) { create(:project, namespace: unrestricted_group) }
 
     let_it_be(:mr_todo) do
       create(:todo, project: unrestricted_project, target: create(:merge_request, source_project: unrestricted_project))
     end
 
-    let_it_be(:todos) { [epic_todo, issue_todo, mr_todo] }
+    let_it_be(:user_namespace) { create(:namespace) }
+    let_it_be(:user_project) { create(:project, namespace: user_namespace) }
+    let_it_be(:user_namespace_issue_todo) do
+      create(:todo, project: user_project, target: create(:issue, project: user_project))
+    end
+
+    let_it_be(:todos) { [epic_todo, issue_todo, issue_todo2, mr_todo, user_namespace_issue_todo] }
 
     let(:session) { {} }
 
@@ -137,6 +147,13 @@ RSpec.describe ::TodosHelper do
 
     it 'returns root groups for todos with targets in SSO enforced groups' do
       expect(helper.todo_groups_requiring_saml_reauth(todos)).to match_array([restricted_group, restricted_group2])
+    end
+
+    it 'sends a unique list of groups to the SSO enforcer' do
+      expect(::Gitlab::Auth::GroupSaml::SsoEnforcer)
+        .to receive(:access_restricted_groups).with([restricted_group, restricted_group2, unrestricted_group], any_args)
+
+      helper.todo_groups_requiring_saml_reauth(todos)
     end
   end
 end
