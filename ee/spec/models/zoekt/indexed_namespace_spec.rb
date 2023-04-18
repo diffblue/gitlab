@@ -57,4 +57,15 @@ RSpec.describe ::Zoekt::IndexedNamespace, feature_category: :global_search do
       expect(described_class.enabled_for_project?(indexed_project_of_child_namespace)).to eq(true)
     end
   end
+
+  describe '#create!' do
+    let(:newly_indexed_namespace) { create(:namespace) }
+
+    it 'triggers indexing for the namespace' do
+      expect(::Search::Zoekt::NamespaceIndexerWorker).to receive(:perform_async)
+        .with(newly_indexed_namespace.id, :index)
+
+      described_class.create!(shard: shard, namespace: newly_indexed_namespace)
+    end
+  end
 end

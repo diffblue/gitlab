@@ -15,7 +15,7 @@ RSpec.describe ::Gitlab::Zoekt::SearchResults, :zoekt, feature_category: :global
     zoekt_ensure_project_indexed!(project_2)
   end
 
-  describe 'blobs', :sidekiq_inline do
+  describe 'blobs' do
     before do
       zoekt_ensure_project_indexed!(project_1)
     end
