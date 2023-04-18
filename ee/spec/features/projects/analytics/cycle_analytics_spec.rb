@@ -14,6 +14,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
   let(:value_stream_selector) { '[data-testid="dropdown-value-streams"]' }
   let(:duration_chart_selector) { '[data-testid="vsa-duration-overview-chart"]' }
   let(:metrics_groups_selector) { '[data-testid="vsa-metrics-group"]' }
+  let(:task_by_type_chart_selector) { '[data-testid="vsa-task-type-chart"]' }
   let(:metrics_selector) { '[data-testid="vsa-metrics"]' }
 
   before_all do
@@ -39,7 +40,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
     end
   end
 
-  context 'with custom value streams feature available' do
+  context 'with cycle_analytics_for_projects licensed feature available' do
     let_it_be(:group) { create(:group, name: 'Project with custom value streams available') }
     let_it_be(:project) do
       create(:project, :repository, namespace: group, group: group, name: 'Important project')
@@ -50,8 +51,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
     before do
       stub_licensed_features(
         cycle_analytics_for_projects: true,
-        cycle_analytics_for_groups: true,
-        group_level_analytics_dashboard: true
+        cycle_analytics_for_groups: true
       )
 
       project.add_maintainer(user)
@@ -65,13 +65,46 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
         expect(page).to have_selector(empty_state_selector)
         expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
       end
+
+      it 'allows to create a custom value stream' do
+        visit project_cycle_analytics_path(project)
+        click_button('New value stream')
+        fill_in('Value Stream name', with: 'foo stream')
+        click_button('Create value stream')
+        # otherwise we get the "Data is collecting and loading"
+        create_value_stream_aggregation(project_namespace)
+        refresh
+
+        wait_for_requests
+
+        expect(page).to have_content('foo stream')
+        expect(page).to have_selector(duration_chart_selector)
+        expect(page).to have_selector(metrics_selector)
+        metrics_tiles = page.find(metrics_selector)
+        expect(metrics_tiles).to have_content('Commit')
+        expect(metrics_tiles).to have_content('Deploy')
+        expect(metrics_tiles).to have_content('Deployment Frequency')
+        expect(metrics_tiles).to have_content('New Issue')
+      end
     end
 
-    context 'with a value stream created', :sidekiq_inline do
-      let_it_be(:value_stream_name) { 'My awesome splendiferous value stream' }
+    context 'with a custom value stream created', :sidekiq_inline do
+      def visit_custom_value_stream
+        # otherwise we get the "Data is collecting and loading"
+        create_value_stream_aggregation(project_namespace)
+
+        visit project_cycle_analytics_path(project)
+        wait_for_requests
+        find(value_stream_selector).click
+        click_button(value_stream_name, match: :first)
+        wait_for_requests
+      end
+
+      let_it_be(:value_stream_name) { 'custom stream' }
       let_it_be(:stages) do
         [
-          create(:cycle_analytics_stage, namespace: project_namespace, name: "Issue", relative_position: 1),
+          create(:cycle_analytics_stage, namespace: project_namespace, name: "Issue", relative_position: 1,
+            start_event_identifier: :issue_created, end_event_identifier: :issue_closed),
           create(:cycle_analytics_stage, namespace: project_namespace, name: "Code", relative_position: 2)
         ]
       end
@@ -83,27 +116,74 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
           stages: stages)
       end
 
-      before do
-        # otherwise we get the "Data is collecting and loading"
-        create_value_stream_aggregation(project_namespace)
+      context 'on overview section' do
+        def create_overview_data
+          issue = travel_to(3.days.ago) { create(:issue, project: project) }
 
-        visit project_cycle_analytics_path(project)
-        wait_for_requests
-        find(value_stream_selector).click
-        click_button(value_stream_name, match: :first)
-        wait_for_requests
+          travel_to(2.days.ago) do
+            create_commit_referencing_issue(issue)
+            create_merge_request_closing_issue(user, project, issue)
+          end
+
+          merge_merge_requests_closing_issue(user, project, issue)
+
+          travel_to(5.days.ago) { create_deployment(project: project) }
+          create_deployment(project: project)
+        end
+
+        before do
+          create_overview_data
+          visit_custom_value_stream
+        end
+
+        it 'displays data' do
+          expect(page).to have_content('Overview')
+          expect(page).to have_css '#lead_time div', text: 3
+          expect(page).to have_css '#cycle_time div', text: 2
+          expect(page).to have_css '#issues div', text: 1
+          expect(page).to have_css '#commits div', text: 2
+          expect(page).to have_css '#deploys div', text: 2
+          expect(page).to have_css '#deployment_frequency div', text: 0.1
+          # Not available on Premium level
+          expect(page).not_to have_css '#lead_time_for_changes'
+          expect(page).not_to have_css '#time_to_restore_service'
+          expect(page).not_to have_css '#change_failure_rate'
+        end
+
+        it 'does not render task by type chart' do
+          task_by_type_chart_selector
+          # Only rendered at group level
+          expect(page).not_to have_selector(task_by_type_chart_selector)
+        end
       end
 
-      it 'displays data' do
-        expect(page).to have_content(value_stream_name)
-        expect(page).to have_selector(duration_chart_selector)
-        expect(page).to have_selector(metrics_selector)
+      context 'on total time chart' do
+        context 'when there is no data' do
+          it 'renders empty state' do
+            visit_custom_value_stream
 
-        metrics_tiles = page.find(metrics_selector)
-        expect(metrics_tiles).to have_content('Commit')
-        expect(metrics_tiles).to have_content('Deploy')
-        expect(metrics_tiles).to have_content('Deployment Frequency')
-        expect(metrics_tiles).to have_content('New Issue')
+            expect(page).to have_content("There is no data for 'Total time' available. Adjust the current filters.")
+          end
+        end
+
+        context 'when there is data' do
+          def create_total_time_chart_data
+            issue_1 = travel_to(4.days.ago) { create(:issue, project: project) }
+            issue_1.close
+          end
+
+          before do
+            create_total_time_chart_data
+            visit_custom_value_stream
+          end
+
+          it 'displays data on chart' do
+            expect(page).not_to have_content("There is no data for 'Total time' available. Adjust the current filters.")
+            page.within(duration_chart_selector) do
+              expect(page).to have_content('Average time to completion (days)')
+            end
+          end
+        end
       end
     end
   end
