@@ -25,7 +25,7 @@ describe('Markdown field header component', () => {
       createWrapper(
         {},
         {
-          issuableId: 1,
+          resourceGlobalId: 'gid://gitlab/Issue/1',
           glFeatures: {
             openaiExperimentation: enabled,
             summarizeComments: enabled,

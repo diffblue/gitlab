@@ -1,5 +1,5 @@
 <script>
-import { GlCollapsibleListbox, GlButton, GlIcon, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlCollapsibleListbox, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import { updateText } from '~/lib/utils/text_markdown';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
@@ -7,7 +7,7 @@ import { createAlert } from '~/alert';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
-import { TYPENAME_USER, TYPENAME_ISSUE } from '~/graphql_shared/constants';
+import { TYPENAME_USER } from '~/graphql_shared/constants';
 
 export const MAX_REQUEST_TIMEOUT = 1000 * 15; // 15 seconds
 export const ACTIONS = {
@@ -22,15 +22,15 @@ export default {
     GlIcon,
   },
   props: {
-    issuableId: {
-      type: Number,
+    resourceGlobalId: {
+      type: String,
       required: true,
     },
   },
   data() {
     return {
       loading: false,
-      error: null,
+      errorAlert: null,
       aiCompletionResponse: {},
     };
   },
@@ -38,7 +38,7 @@ export default {
     subscriptionVariables() {
       return {
         userId: convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
-        resourceId: convertToGraphQLId(TYPENAME_ISSUE, this.issuableId),
+        resourceId: this.resourceGlobalId,
       };
     },
   },
@@ -57,6 +57,9 @@ export default {
         variables() {
           return this.subscriptionVariables;
         },
+        error(error) {
+          this.handleError(error);
+        },
         result({ data }) {
           this.loading = false;
 
@@ -65,7 +68,7 @@ export default {
           }
 
           if (data.error) {
-            this.handleError();
+            this.handleError(new Error(data.error));
             return;
           }
 
@@ -93,6 +96,8 @@ export default {
         return;
       }
 
+      this.errorAlert?.dismiss();
+
       const input = this.getInputForAction(action);
 
       if (!input) {
@@ -117,7 +122,7 @@ export default {
       if (action === ACTIONS.SUMMARIZE_COMMENTS) {
         return {
           summarizeComments: {
-            resourceId: convertToGraphQLId(TYPENAME_ISSUE, this.issuableId),
+            resourceId: this.resourceGlobalId,
           },
         };
       }
@@ -125,7 +130,7 @@ export default {
     },
     handleError(error) {
       const alertOptions = error ? { captureError: true, error } : {};
-      createAlert({ message: __('Something went wrong'), ...alertOptions });
+      this.errorAlert = createAlert({ message: __('Something went wrong'), ...alertOptions });
       this.loading = false;
     },
   },
