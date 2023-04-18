@@ -171,6 +171,7 @@ module GitlabSubscriptions
       group_protected_branches
       group_level_merge_checks_setting
       oidc_client_groups_claim
+      disable_deleting_account_for_users
     ].freeze
 
     ULTIMATE_FEATURES = %i[

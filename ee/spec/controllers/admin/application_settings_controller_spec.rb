@@ -26,7 +26,8 @@ RSpec.describe Admin::ApplicationSettingsController do
         authorized_keys_enabled: true,
         allow_group_owners_to_manage_ldap: false,
         lock_memberships_to_ldap: true,
-        geo_node_allowed_ips: '0.0.0.0/0, ::/0'
+        geo_node_allowed_ips: '0.0.0.0/0, ::/0',
+        allow_account_deletion: true
       }
 
       put :update, params: { application_setting: settings }

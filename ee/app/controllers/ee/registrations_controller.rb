@@ -30,6 +30,16 @@ module EE
       super
     end
 
+    override :destroy
+    def destroy
+      unless allow_account_deletion?
+        redirect_to profile_account_path, status: :see_other, alert: s_('Profiles|Account deletion is not allowed.')
+        return
+      end
+
+      super
+    end
+
     private
 
     override :after_request_hook
@@ -136,6 +146,11 @@ module EE
       return false if ::Gitlab::Qa.request?(request.user_agent)
 
       ::Arkose::Settings.enabled_for_signup?
+    end
+
+    def allow_account_deletion?
+      !License.feature_available?(:disable_deleting_account_for_users) ||
+        !::Feature.enabled?(:deleting_account_disabled_for_users) || ::Gitlab::CurrentSettings.allow_account_deletion?
     end
   end
 end
