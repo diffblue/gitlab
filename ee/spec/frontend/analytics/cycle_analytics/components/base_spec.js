@@ -568,7 +568,7 @@ describe('EE Value Stream Analytics component', () => {
     });
   });
 
-  describe('with`groupAnalyticsDashboardsPage=true` and `groupLevelAnalyticsDashboard=true`', () => {
+  describe('with`groupLevelAnalyticsDashboard=true`', () => {
     beforeEach(() => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
@@ -581,7 +581,7 @@ describe('EE Value Stream Analytics component', () => {
     it('renders a link to the value streams dashboard', async () => {
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        features: { groupLevelAnalyticsDashboard: true },
       });
 
       expect(findOverviewMetrics().props('dashboardsPath')).toBe(
@@ -592,7 +592,7 @@ describe('EE Value Stream Analytics component', () => {
     it('renders the value streams dashboard with selected projects as a query parameter', async () => {
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        features: { groupLevelAnalyticsDashboard: true },
         initialState: {
           ...initialCycleAnalyticsState,
           selectedProjects,
@@ -633,7 +633,7 @@ describe('EE Value Stream Analytics component', () => {
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        features: { groupLevelAnalyticsDashboard: true },
         initialState: {
           ...initialCycleAnalyticsState,
           enableCustomizableStages: false,
@@ -656,7 +656,7 @@ describe('EE Value Stream Analytics component', () => {
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        features: { groupLevelAnalyticsDashboard: true },
         initialState: {
           ...initialCycleAnalyticsState,
           enableProjectsFilter: false,
@@ -679,7 +679,7 @@ describe('EE Value Stream Analytics component', () => {
       mockRequiredRoutes(mock);
       wrapper = await createComponent({
         withStageSelected: true,
-        features: { groupAnalyticsDashboardsPage: true, groupLevelAnalyticsDashboard: true },
+        features: { groupLevelAnalyticsDashboard: true },
         initialState: {
           ...initialCycleAnalyticsState,
           enableProjectsFilter: false,
