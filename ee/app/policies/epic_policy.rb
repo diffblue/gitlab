@@ -23,7 +23,7 @@ class EpicPolicy < BasePolicy
   end
 
   condition(:is_member) do
-    @user && @subject.group.member?(@user)
+    @subject.group.member?(@user)
   end
 
   condition(:ai_available, scope: :subject) do

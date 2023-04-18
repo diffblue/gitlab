@@ -1121,24 +1121,22 @@ RSpec.describe Group, feature_category: :subgroups do
   end
 
   describe '#member?' do
-    subject { group.member?(user) }
-
     let(:group) { create(:group) }
     let(:user) { create(:user) }
 
-    context 'with `minimal_access_role` not licensed' do
-      before do
-        stub_licensed_features(minimal_access_role: false)
-        create(:group_member, :minimal_access, user: user, source: group)
-      end
+    subject { group.member?(user) }
 
+    before do
+      create(:group_member, :minimal_access, user: user, source: group) if user
+    end
+
+    context 'with `minimal_access_role` not licensed' do
       it { is_expected.to be_falsey }
     end
 
     context 'with `minimal_access_role` licensed' do
       before do
         stub_licensed_features(minimal_access_role: true)
-        create(:group_member, :minimal_access, user: user, source: group)
       end
 
       context 'when group is a subgroup' do
@@ -1153,6 +1151,12 @@ RSpec.describe Group, feature_category: :subgroups do
         it 'accepts higher level as argument' do
           expect(group.member?(user, ::Gitlab::Access::DEVELOPER)).to be_falsey
         end
+      end
+
+      context 'with anonymous user' do
+        let(:user) { nil }
+
+        it { is_expected.to be_falsey }
       end
     end
   end
