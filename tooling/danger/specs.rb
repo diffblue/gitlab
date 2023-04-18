@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'suggestor'
+require_relative 'specs/match_with_array_suggestion'
 
 module Tooling
   module Danger
@@ -37,12 +37,6 @@ module Tooling
       for background information and alternative options.
       SUGGEST_COMMENT
 
-      MATCH_WITH_ARRAY_REGEX = /(?<to>to\(?\s*)(?<matcher>match|eq)(?<expectation>[( ]?\[(?=.*,)[^\]]+)/.freeze
-      MATCH_WITH_ARRAY_REPLACEMENT = '\k<to>match_array\k<expectation>'
-      MATCH_WITH_ARRAY_SUGGESTION = <<~SUGGEST_COMMENT
-      If order of the result is not important, please consider using `match_array` to avoid flakiness.
-      SUGGEST_COMMENT
-
       RSPEC_TOP_LEVEL_DESCRIBE_REGEX = /^\+.?RSpec\.describe(.+)/.freeze
       FEATURE_CATEGORY_SUGGESTION = <<~SUGGESTION_MARKDOWN
       Consider adding `feature_category: <feature_category_name>` for this example if it is not set already.
@@ -66,12 +60,7 @@ module Tooling
       end
 
       def add_suggestions_for_match_with_array(filename)
-        add_suggestion(
-          filename: filename,
-          regex: MATCH_WITH_ARRAY_REGEX,
-          replacement: MATCH_WITH_ARRAY_REPLACEMENT,
-          comment_text: MATCH_WITH_ARRAY_SUGGESTION
-        )
+        MatchWithArraySuggestion.new(filename, context: self).suggest
       end
 
       def add_suggestions_for_project_factory_usage(filename)
