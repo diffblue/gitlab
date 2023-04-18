@@ -151,6 +151,16 @@ module Vulnerabilities
       end
     end
 
+    def source_code?
+      source_code.present?
+    end
+
+    def vulnerable_code(lines: (start_line..end_line))
+      strong_memoize_with(:vulnerable_code, lines) do
+        source_code.lines[lines]&.join
+      end
+    end
+
     def self.related_dismissal_feedback
       Feedback.where('vulnerability_occurrences.uuid::uuid = vulnerability_feedback.finding_uuid')
               .for_dismissal
@@ -400,11 +410,35 @@ module Vulnerabilities
       finding_pipelines.last&.pipeline
     end
 
+    def ai_explainable?
+      file.present? && location["start_line"].present?
+    end
+
     protected
 
     def primary_identifier_fingerprint
       identifiers.first&.fingerprint
     end
+
+    private
+
+    def start_line
+      [location["start_line"].to_i - 1, 0].max
+    end
+
+    def end_line
+      return -1 if location["end_line"].blank?
+
+      [location["end_line"].to_i - 1, start_line].max
+    end
+
+    def source_code
+      return "" unless file.present?
+
+      blob = project.repository.blob_at(pipeline_branch, file)
+      blob.present? ? blob.data : ""
+    end
+    strong_memoize_attr :source_code
   end
 end
 

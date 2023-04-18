@@ -6,6 +6,10 @@ module Gitlab
       module Completions
         class Factory
           COMPLETIONS = {
+            explain_vulnerability: {
+              service_class: ::Gitlab::Llm::OpenAi::Completions::ExplainVulnerability,
+              prompt_class: ::Gitlab::Llm::OpenAi::Templates::ExplainVulnerability
+            },
             summarize_comments: {
               service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes,
               prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes

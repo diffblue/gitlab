@@ -1133,4 +1133,44 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
 
     it { is_expected.to contain_exactly(finding_2) }
   end
+
+  describe "#vulnerable_code" do
+    let_it_be(:source_code) do
+      <<~SOURCE
+      #include <stdio.h>
+
+      int main(int argc, char *argv[])
+      {
+        char buf[8];
+        memcpy(&buf, "123456789");
+        printf("hello, world!");
+      }
+      SOURCE
+    end
+
+    let_it_be(:project) do
+      create(:project, :custom_repo, files: {
+        'src/main.c' => source_code
+      })
+    end
+
+    let_it_be(:finding) do
+      create(:vulnerabilities_finding).tap do |finding|
+        finding.project = project
+        finding.location['file'] = 'src/main.c'
+        finding.location['start_line'] = 5
+        finding.location['end_line'] = 6
+      end
+    end
+
+    subject { finding.vulnerable_code }
+
+    it 'returns the vulnerables lines of code' do
+      vulnerable_lines = <<-LINES
+  char buf[8];
+  memcpy(&buf, "123456789");
+      LINES
+      expect(subject).to eq(vulnerable_lines)
+    end
+  end
 end
