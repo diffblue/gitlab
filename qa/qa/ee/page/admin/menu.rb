@@ -7,6 +7,8 @@ module QA
         module Menu
           extend QA::Page::PageConcern
 
+          prepend Sidebar::Settings if QA::Runtime::Env.super_sidebar_enabled?
+
           def self.prepended(base)
             super
 
