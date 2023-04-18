@@ -32,21 +32,20 @@ module Groups
 
         private
 
+        def namespace
+          @group
+        end
+
         def group_level
-          @group_level ||= ::Analytics::CycleAnalytics::GroupLevel.new(group: @group, options: options(request_params.to_data_collector_params))
+          @group_level ||= ::Analytics::CycleAnalytics::GroupLevel.new(group: namespace, options: options(request_params.to_data_collector_params))
         end
 
         def authorize_access
-          return render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
-        end
-
-        override :all_cycle_analytics_params
-        def all_cycle_analytics_params
-          super.merge({ namespace: @group })
+          return render_403 unless can?(current_user, :read_group_cycle_analytics, namespace)
         end
 
         def data_collector_for(summary_class)
-          group_stage = ::Analytics::CycleAnalytics::Stage.new(namespace: @group)
+          group_stage = ::Analytics::CycleAnalytics::Stage.new(namespace: namespace)
           all_params = request_params.to_data_collector_params
           group_stage_with_metadata = summary_class.new(stage: group_stage, current_user: current_user, options: all_params).stage
 
