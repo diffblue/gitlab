@@ -440,4 +440,42 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
       it_behaves_like "returns expected matches"
     end
   end
+
+  describe '#valid?' do
+    context 'when codeowners file is correct' do
+      it 'does not detect errors' do
+        expect(file.valid?).to eq(true)
+        expect(file.errors).to be_empty
+      end
+    end
+
+    context 'when codeowners file has errors' do
+      let(:file_content) do
+        <<~CONTENT
+        *.rb
+
+        []
+        *_spec.rb @gl-test
+
+        ^[Optional][5]
+        *.txt @user
+
+        [Invalid section
+        CONTENT
+      end
+
+      it 'detects syntax errors' do
+        expect(file.valid?).to eq(false)
+
+        expect(file.errors).to match_array(
+          [
+            Gitlab::CodeOwners::Error.new(message: :missing_entry_owner, line_number: 1, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :missing_section_name, line_number: 3, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_approval_requirement, line_number: 6, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_section_format, line_number: 9, path: 'CODEOWNERS')
+          ]
+        )
+      end
+    end
+  end
 end
