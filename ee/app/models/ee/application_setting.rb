@@ -266,6 +266,7 @@ module EE
           jitsu_project_xid: nil,
           product_analytics_data_collector_host: nil,
           product_analytics_clickhouse_connection_string: nil,
+          product_analytics_configurator_connection_string: nil,
           jitsu_administrator_email: nil,
           jitsu_administrator_password: nil,
           cube_api_base_url: nil,

@@ -17,6 +17,7 @@
       %fieldset
         .form-group
           = f.gitlab_ui_checkbox_component :product_analytics_enabled, s_('AdminSettings|Enable product analytics')
+        = render partial: 'product_analytics_configurator_settings', locals: { f: f }
         .form-group
           = f.label :jitsu_host, s_('AdminSettings|Jitsu host'), class: 'label-light'
           = f.url_field :jitsu_host, class: 'form-control gl-form-input', placeholder: 'https://jitsu.gitlab.com'
