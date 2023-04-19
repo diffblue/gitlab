@@ -117,7 +117,7 @@ export default class Shortcuts {
    * @param {Object} command A command object.
    * @param {Function} callback The callback to call when the command's key
    *     combo has been pressed.
-   * @returns {undefined}
+   * @returns {void}
    */
   // eslint-disable-next-line class-methods-use-this
   bindCommand(command, callback) {
@@ -130,7 +130,7 @@ export default class Shortcuts {
    *
    * @param {Array<[Object, Function]>} commandsAndCallbacks An array of
    *     command/callback pairs.
-   * @returns {undefined}
+   * @returns {void}
    */
   bindCommands(commandsAndCallbacks) {
     commandsAndCallbacks.map((commandAndCallback) => this.bindCommand(...commandAndCallback));

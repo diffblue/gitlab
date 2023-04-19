@@ -33,9 +33,10 @@ Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo
  *
  * To work correctly, we may need to reimplement the pause plugin here.
  *
- * @param {Function} stopCallback The additional stop callback function to
- *     add to the chain of stop callbacks.
- * @returns {undefined}
+ * @param {(e: Event, element: Element, combo: string) => boolean|undefined}
+ *     stopCallback The additional stop callback function to add to the chain
+ *     of stop callbacks.
+ * @returns {void}
  */
 export const addStopCallback = (stopCallback) => {
   // Unshift, since we want to iterate through them in reverse order, so that
