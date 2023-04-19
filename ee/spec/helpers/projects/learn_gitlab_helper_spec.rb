@@ -36,7 +36,9 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           :trial_started,
           :required_mr_approvals_enabled,
           :code_owners_enabled,
-          :security_scan_enabled,
+          :license_scanning_run,
+          :secure_dependency_scanning_run,
+          :secure_dast_run,
           :code_added
         ]
 
@@ -67,67 +69,40 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
         trial_started: a_hash_including(completed: false),
         required_mr_approvals_enabled: a_hash_including(completed: false),
         code_owners_enabled: a_hash_including(completed: false),
-        security_scan_enabled: a_hash_including(completed: false),
+        license_scanning_run: a_hash_including(completed: false),
+        secure_dependency_scanning_run: a_hash_including(completed: false),
+        secure_dast_run: a_hash_including(completed: false),
         code_added: a_hash_including(completed: false)
       }
 
       expect(onboarding_actions_data).to match(result)
     end
 
-    context 'with security_actions_continuous_onboarding experiment' do
-      let(:base_paths) do
-        {
-          trial_started: a_hash_including(url: %r{/#{project.name}/-/project_members\z}),
-          pipeline_created: a_hash_including(url: %r{/#{project.name}/-/pipelines\z}),
-          issue_created: a_hash_including(url: %r{/#{project.name}/-/issues\z}),
-          git_write: a_hash_including(url: %r{/#{project.name}\z}),
-          user_added: a_hash_including(url: %r{#\z}),
-          merge_request_created: a_hash_including(url: %r{/#{project.name}/-/merge_requests\z}),
-          code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\z}),
-          code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
-          required_mr_approvals_enabled: a_hash_including(
-            url: %r{/ci/pipelines/settings#coverage-check-approval-rule\z}
-          )
-        }
-      end
+    it 'sets correct paths' do
+      result = {
+        trial_started: a_hash_including(url: %r{/#{project.name}/-/project_members\z}),
+        pipeline_created: a_hash_including(url: %r{/#{project.name}/-/pipelines\z}),
+        issue_created: a_hash_including(url: %r{/#{project.name}/-/issues\z}),
+        git_write: a_hash_including(url: %r{/#{project.name}\z}),
+        user_added: a_hash_including(url: %r{#\z}),
+        merge_request_created: a_hash_including(url: %r{/#{project.name}/-/merge_requests\z}),
+        code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\z}),
+        code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
+        required_mr_approvals_enabled: a_hash_including(
+          url: %r{/ci/pipelines/settings#coverage-check-approval-rule\z}
+        ),
+        license_scanning_run: a_hash_including(
+          url: help_page_path(described_class::LICENSE_SCANNING_RUN_PATH)
+        ),
+        secure_dependency_scanning_run: a_hash_including(
+          url: project_security_configuration_path(project, anchor: 'dependency-scanning')
+        ),
+        secure_dast_run: a_hash_including(
+          url: project_security_configuration_path(project, anchor: 'dast')
+        )
+      }
 
-      context 'when control' do
-        before do
-          stub_experiments(security_actions_continuous_onboarding: :control)
-        end
-
-        it 'sets correct paths' do
-          result = base_paths.merge(
-            security_scan_enabled: a_hash_including(
-              url: %r{/#{project.name}/-/security/configuration\z}
-            )
-          )
-
-          expect(onboarding_actions_data).to match(result)
-        end
-      end
-
-      context 'when candidate' do
-        before do
-          stub_experiments(security_actions_continuous_onboarding: :candidate)
-        end
-
-        it 'sets correct paths' do
-          result = base_paths.merge(
-            license_scanning_run: a_hash_including(
-              url: described_class::LICENSE_SCANNING_RUN_URL
-            ),
-            secure_dependency_scanning_run: a_hash_including(
-              url: project_security_configuration_path(project, anchor: 'dependency-scanning')
-            ),
-            secure_dast_run: a_hash_including(
-              url: project_security_configuration_path(project, anchor: 'dast')
-            )
-          )
-
-          expect(onboarding_actions_data).to match(result)
-        end
-      end
+      expect(onboarding_actions_data).to match(result)
     end
 
     context 'for trial- and subscription-related actions' do

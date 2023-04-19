@@ -25852,9 +25852,6 @@ msgstr ""
 msgid "LearnGitLab|Route code reviews to the right reviewers, every time."
 msgstr ""
 
-msgid "LearnGitLab|Run a Security scan using CI/CD"
-msgstr ""
-
 msgid "LearnGitLab|Save time by automating your integration and deployment tasks."
 msgstr ""
 
@@ -25862,9 +25859,6 @@ msgid "LearnGitLab|Scan dependencies for licenses"
 msgstr ""
 
 msgid "LearnGitLab|Scan dependencies for vulnerabilities"
-msgstr ""
-
-msgid "LearnGitLab|Scan your code to uncover vulnerabilities before deploying."
 msgstr ""
 
 msgid "LearnGitLab|Set up CI/CD"

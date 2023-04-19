@@ -83,14 +83,6 @@ export const ACTION_LABELS = {
     section: 'plan',
     position: 0,
   },
-  securityScanEnabled: {
-    title: s__('LearnGitLab|Run a Security scan using CI/CD'),
-    actionLabel: s__('LearnGitLab|Run a Security scan using CI/CD'),
-    description: s__('LearnGitLab|Scan your code to uncover vulnerabilities before deploying.'),
-    trackLabel: 'run_a_security_scan_using_ci_cd',
-    section: 'deploy',
-    position: 1,
-  },
   licenseScanningRun: {
     title: s__('LearnGitLab|Scan dependencies for licenses'),
     trackLabel: 'scan_dependencies_for_licenses',

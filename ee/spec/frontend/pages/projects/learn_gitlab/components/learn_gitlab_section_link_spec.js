@@ -106,7 +106,7 @@ describe('Learn GitLab Section Link', () => {
 
   describe('links marked with openInNewTab', () => {
     beforeEach(() => {
-      createWrapper('securityScanEnabled', openInNewTabProps);
+      createWrapper('licenseScanningRun', openInNewTabProps);
     });
 
     it('renders links with blank target', () => {
@@ -122,7 +122,7 @@ describe('Learn GitLab Section Link', () => {
       findUncompletedLink().trigger('click');
 
       expect(trackingSpy).toHaveBeenCalledWith('_category_', 'click_link', {
-        label: 'run_a_security_scan_using_ci_cd',
+        label: 'scan_dependencies_for_licenses',
       });
 
       unmockTracking();

@@ -31,21 +31,21 @@ exports[`Learn GitLab renders correctly 1`] = `
       class="gl-text-gray-500 gl-mb-2"
       data-testid="completion-percentage"
     >
-      30% completed
+      25% completed
     </p>
      
     <div
       class="progress"
-      max="10"
+      max="12"
       value="3"
     >
       <div
-        aria-valuemax="10"
+        aria-valuemax="12"
         aria-valuemin="0"
         aria-valuenow="3"
         class="progress-bar"
         role="progressbar"
-        style="width: 30%;"
+        style="width: 25%;"
       />
     </div>
   </div>
@@ -378,15 +378,84 @@ exports[`Learn GitLab renders correctly 1`] = `
                   data-qa-selector="uncompleted_learn_gitlab_link"
                   data-testid="uncompleted-learn-gitlab-link"
                   data-track-action="click_link"
-                  data-track-label="run_a_security_scan_using_ci_cd"
+                  data-track-label="scan_dependencies_for_licenses"
                   href="https://docs.gitlab.com/ee/foobar/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
-                  Run a Security scan using CI/CD
+                  Scan dependencies for licenses
                 </a>
                  
-                <!---->
+                <span
+                  class="gl-font-style-italic gl-text-gray-500"
+                  data-testid="trial-only"
+                >
+                  
+  - Included in trial
+
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-mb-4"
+          >
+            <div
+              class="flex align-items-center"
+            >
+              <div>
+                <a
+                  class="gl-link"
+                  data-qa-selector="uncompleted_learn_gitlab_link"
+                  data-testid="uncompleted-learn-gitlab-link"
+                  data-track-action="click_link"
+                  data-track-label="scan_dependencies_for_vulnerabilities"
+                  href="https://docs.gitlab.com/ee/foobar/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Scan dependencies for vulnerabilities
+                </a>
+                 
+                <span
+                  class="gl-font-style-italic gl-text-gray-500"
+                  data-testid="trial-only"
+                >
+                  
+  - Included in trial
+
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="gl-mb-4"
+          >
+            <div
+              class="flex align-items-center"
+            >
+              <div>
+                <a
+                  class="gl-link"
+                  data-qa-selector="uncompleted_learn_gitlab_link"
+                  data-testid="uncompleted-learn-gitlab-link"
+                  data-track-action="click_link"
+                  data-track-label="analyze_your_application_for_vulnerabilities_with_dast"
+                  href="https://docs.gitlab.com/ee/foobar/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  Analyze your application for vulnerabilities with DAST
+                </a>
+                 
+                <span
+                  class="gl-font-style-italic gl-text-gray-500"
+                  data-testid="trial-only"
+                >
+                  
+  - Included in trial
+
+                </span>
               </div>
             </div>
           </div>

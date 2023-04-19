@@ -45,14 +45,14 @@ describe('Learn GitLab', () => {
   it('renders the progress percentage', () => {
     const text = wrapper.find('[data-testid="completion-percentage"]').text();
 
-    expect(text).toBe('30% completed');
+    expect(text).toBe('25% completed');
   });
 
   it('renders the progress bar with correct values', () => {
     const progressBar = wrapper.findComponent(GlProgressBar);
 
     expect(progressBar.attributes('value')).toBe('3');
-    expect(progressBar.attributes('max')).toBe('10');
+    expect(progressBar.attributes('max')).toBe('12');
   });
 
   describe('Invite Members Modal', () => {
@@ -106,7 +106,7 @@ describe('Learn GitLab', () => {
     });
 
     it('modifies the sidebar percentage', () => {
-      expect(sidebar.textContent.trim()).toBe('30%');
+      expect(sidebar.textContent.trim()).toBe('25%');
     });
   });
 });
