@@ -13,7 +13,9 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
   let(:options) { { from: from, to: to, current_user: user } }
   let(:stage) { Analytics::CycleAnalytics::Stage.new(namespace: group) }
 
-  subject { described_class.new(stage, options: options).data }
+  subject do
+    described_class.new(stage, options: options).data
+  end
 
   around do |example|
     freeze_time { example.run }
@@ -23,20 +25,10 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
     group.add_owner(user)
   end
 
-  describe '#identifier' do
-    it 'returns identifiers for each metric' do
-      identifiers = subject.pluck(:identifier)
-      expect(identifiers).to eq(%i[lead_time cycle_time])
-    end
-  end
-
   context 'when the use_aggregated_data_collector option is given' do
-    context 'when aggregated data is available yet' do
+    context 'when aggregated data is not available yet' do
       it 'shows no value' do
-        lead_time, cycle_time, * = subject
-
-        expect(lead_time[:value]).to eq('-')
-        expect(cycle_time[:value]).to eq('-')
+        expect_values(lead_time: '-', cycle_time: '-', time_to_merge: '-')
       end
     end
 
@@ -45,21 +37,64 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         issue = create(:closed_issue, project: project, created_at: 1.day.ago, closed_at: Time.current)
         issue.metrics.update!(first_mentioned_in_commit_at: 2.days.ago)
 
+        merge_request = create(:merge_request, :merged, created_at: 5.days.ago, project: project)
+        merge_request.metrics.update!(merged_at: 1.day.ago)
+
         options[:use_aggregated_data_collector] = true
         stub_licensed_features(cycle_analytics_for_groups: true)
-        Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
+        Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: model).execute
       end
 
-      it 'loads the lead and cycle time' do
-        lead_time, cycle_time, * = subject
+      context 'when only Issue model is specified' do
+        let(:model) { Issue }
 
-        expect(lead_time[:value]).to eq('1.0')
-        expect(cycle_time[:value]).to eq('2.0')
+        it 'loads the lead time, cycle time and time to merge' do
+          # this only loads Issue models, so Time to Merge is not filled in.
+          expect_values(lead_time: '1.0', cycle_time: '2.0', time_to_merge: '-')
+        end
       end
+
+      context 'when only MR model is specified' do
+        let(:model) { MergeRequest }
+
+        it 'shows time to merge' do
+          # this only shows MergeRequest models, so the first two are not filled in.
+          expect_values(lead_time: '-', cycle_time: '-', time_to_merge: '4.0')
+        end
+      end
+
+      context 'when some other model is specified' do
+        let(:model) { Epic }
+
+        it 'shows none of the values' do
+          expect_values(lead_time: '-', cycle_time: '-', time_to_merge: '-')
+        end
+      end
+    end
+
+    def expect_values(lead_time:, cycle_time:, time_to_merge:)
+      expect(subject.as_json).to contain_exactly(
+        a_hash_including({
+          "identifier" => 'lead_time',
+          "value" => lead_time
+        }),
+        a_hash_including({
+          "identifier" => 'cycle_time',
+          "value" => cycle_time
+        }),
+        a_hash_including({
+          "identifier" => 'time_to_merge',
+          "value" => time_to_merge
+        })
+      )
     end
   end
 
   describe '#lead_time' do
+    let(:lead_time) do
+      subject.find { |result| result[:identifier] == :lead_time }
+    end
+
     describe 'issuable filter parameters' do
       let_it_be(:label) { create(:group_label, group: group) }
 
@@ -73,7 +108,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'returns the correct lead time' do
-          expect(subject.first[:value]).to eq('1.0')
+          expect(lead_time[:value]).to eq('1.0')
         end
       end
 
@@ -83,7 +118,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'returns `-`' do
-          expect(subject.first[:value]).to eq('-')
+          expect(lead_time[:value]).to eq('-')
         end
       end
 
@@ -93,7 +128,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'returns the correct lead time' do
-          expect(subject.first[:value]).to eq('1.0')
+          expect(lead_time[:value]).to eq('1.0')
         end
       end
 
@@ -103,7 +138,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'returns `-`' do
-          expect(subject.first[:value]).to eq('-')
+          expect(lead_time[:value]).to eq('-')
         end
       end
     end
@@ -118,7 +153,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
       end
 
       it 'finds the lead time of issues created after it' do
-        expect(subject.first[:value]).to eq('2.0')
+        expect(lead_time[:value]).to eq('2.0')
       end
 
       context 'with subgroups' do
@@ -131,7 +166,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'finds the lead time of issues from them' do
-          expect(subject.first[:value]).to eq('3.0')
+          expect(lead_time[:value]).to eq('3.0')
         end
       end
 
@@ -144,7 +179,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
         it 'finds the lead time of issues from those projects' do
           # Median of 1, 2, 4, not including new issue
-          expect(subject.first[:value]).to eq('2.0')
+          expect(lead_time[:value]).to eq('2.0')
         end
       end
 
@@ -153,7 +188,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         let(:to) { Time.zone.now }
 
         it 'finds the lead time of issues from 3 days ago' do
-          expect(subject.first[:value]).to eq('1.5')
+          expect(lead_time[:value]).to eq('1.5')
         end
       end
     end
@@ -169,13 +204,18 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
       it 'does not find the lead time of issues from them' do
         # Median of  2, 3, not including first issue
-        expect(subject.first[:value]).to eq('2.5')
+        expect(lead_time[:value]).to eq('2.5')
       end
     end
   end
 
   describe '#cycle_time' do
     let(:created_at) { 6.days.ago }
+    let(:cycle_time) do
+      subject.find do |result|
+        result[:identifier] == :cycle_time
+      end
+    end
 
     context 'with `from` date' do
       let(:from) { 7.days.ago }
@@ -191,7 +231,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
       end
 
       it 'finds the cycle time of issues created after it' do
-        expect(subject.second[:value]).to eq('2.0')
+        expect(cycle_time[:value]).to eq('2.0')
       end
 
       context 'with subgroups' do
@@ -207,7 +247,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
         end
 
         it 'finds the cycle time of issues from them' do
-          expect(subject.second[:value]).to eq('3.0')
+          expect(cycle_time[:value]).to eq('3.0')
         end
       end
 
@@ -221,7 +261,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
         it 'finds the cycle time of issues from those projects' do
           # Median of 1, 2, 4, not including new issue
-          expect(subject.second[:value]).to eq('2.0')
+          expect(cycle_time[:value]).to eq('2.0')
         end
       end
 
@@ -232,7 +272,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
         it 'finds the cycle time of issues created between `from` and `to`' do
           # Median of 1, 2, 4
-          expect(subject.second[:value]).to eq('2.0')
+          expect(cycle_time[:value]).to eq('2.0')
         end
       end
     end
@@ -253,15 +293,101 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
 
       it 'does not find the cycle time of issues from them' do
         # Median of  2, 3, not including first issue
-        expect(subject.second[:value]).to eq('2.5')
+        expect(cycle_time[:value]).to eq('2.5')
+      end
+    end
+  end
+
+  describe '#time_to_merge' do
+    let(:created_at) { 6.days.ago }
+    let(:time_to_merge) do
+      subject.find { |result| result[:identifier] == :time_to_merge }
+    end
+
+    context 'with `from` date' do
+      let(:from) { 7.days.ago }
+
+      before do
+        mr1 = create(:merge_request, :merged, project: project, created_at: created_at)
+        mr2 = create(:merge_request, :merged, project: project, created_at: created_at)
+        mr3 = create(:merge_request, :merged, project: project_2, created_at: created_at)
+
+        mr1.metrics.update!(merged_at: 1.day.ago)
+        mr2.metrics.update!(merged_at: 2.days.ago)
+        mr3.metrics.update!(merged_at: 4.days.ago)
+      end
+
+      it 'finds the time to merge of MRs created after it' do
+        expect(time_to_merge).to include({ value: '4.0', title: "Time to Merge", unit: "days" })
+      end
+
+      context 'with subgroups' do
+        let_it_be(:subgroup) { create(:group, parent: group) }
+        let_it_be(:project_3) { create(:project, namespace: subgroup) }
+
+        before do
+          mr4 = create(:merge_request, :merged, created_at: created_at, project: project_3)
+          mr5 = create(:merge_request, :merged, created_at: created_at, project: project_3)
+
+          mr4.metrics.update!(merged_at: 3.days.ago)
+          mr5.metrics.update!(merged_at: 5.days.ago)
+        end
+
+        it 'finds the time to merge of MRs from them' do
+          expect(time_to_merge).to include({ value: '3.0', title: "Time to Merge", unit: "days" })
+        end
+      end
+
+      context 'with projects specified in options' do
+        before do
+          mr4 = create(:merge_request, :merged, created_at: created_at, project: create(:project, namespace: group))
+          mr4.metrics.update!(merged_at: 3.days.ago)
+        end
+
+        subject { described_class.new(stage, options: { from: from, current_user: user, projects: [project.id, project_2.id] }).data }
+
+        it 'finds the time to merge of MRs from those projects' do
+          # Median of 1, 2, 4, not including new issue
+          expect(time_to_merge).to include({ value: '4.0', title: "Time to Merge", unit: "days" })
+        end
+      end
+
+      context 'when `from` and `to` parameters are provided' do
+        let(:from) { 5.days.ago }
+        let(:to) { 2.days.ago }
+        let(:created_at) { from }
+
+        it 'finds the time to merge of MRs created between `from` and `to`' do
+          expect(time_to_merge).to include({ value: '3.0', title: "Time to Merge", unit: "days" })
+        end
+      end
+    end
+
+    context 'with other projects' do
+      let(:from) { 4.days.ago }
+      let(:created_at) { from }
+
+      before do
+        mr1 = create(:merge_request, :merged, created_at: created_at, project: create(:project, namespace: create(:group)))
+        mr2 = create(:merge_request, :merged, created_at: created_at, project: project)
+        mr3 = create(:merge_request, :merged, created_at: created_at, project: project_2)
+
+        mr1.metrics.update!(merged_at: 1.day.ago)
+        mr2.metrics.update!(merged_at: 2.days.ago)
+        mr3.metrics.update!(merged_at: 3.days.ago)
+      end
+
+      it 'does not find the time to merge of MRs from them' do
+        # Median of 2, 3, not including first MR
+        expect(time_to_merge).to include({ value: '1.5', title: "Time to Merge", unit: "days" })
       end
     end
   end
 
   describe 'dora4 metrics' do
-    let(:lead_time_for_changes) { subject[2] }
-    let(:time_to_restore_service) { subject[3] }
-    let(:change_failure_rate) { subject[4] }
+    let(:lead_time_for_changes) { subject.find { |result| result[:identifier] == :lead_time_for_changes } }
+    let(:time_to_restore_service) { subject.find { |result| result[:identifier] == :time_to_restore_service } }
+    let(:change_failure_rate) { subject.find { |result| result[:identifier] == :change_failure_rate } }
 
     before do
       stub_licensed_features(dora4_analytics: true)
@@ -284,7 +410,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::StageTimeSummary, fea
       end
 
       it 'does not return any dora4 metrics' do
-        expect(subject.size).to eq 2
+        expect(subject.size).to eq 3
       end
     end
 

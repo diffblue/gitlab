@@ -62,7 +62,7 @@ RSpec.describe Groups::Analytics::CycleAnalytics::SummaryController, feature_cat
       Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: Issue).execute
 
       # Calculating Cycle Time and Lead Time
-      expect(Gitlab::Analytics::CycleAnalytics::Aggregated::DataCollector).to receive(:new).twice.and_call_original
+      expect(Gitlab::Analytics::CycleAnalytics::Aggregated::DataCollector).to receive(:new).thrice.and_call_original
 
       subject
 

@@ -55,19 +55,19 @@ RSpec.describe Analytics::CycleAnalytics::GroupLevel, feature_category: :value_s
 
   describe '#time_summary' do
     let(:issue) { create(:issue, project: project) }
+    let(:merge_request) { create(:merge_request, :merged, created_at: 9.days.ago, project: project) }
 
     before do
-      # lead_time: 1 day, cycle_time: 2 days
-
+      # lead_time: 1 day, cycle_time: 2 days, time_to_merge: 8 days
       issue.update!(created_at: 5.days.ago)
-
       issue.metrics.update!(first_mentioned_in_commit_at: 4.days.ago)
-
       issue.update!(closed_at: 3.days.ago)
+
+      merge_request.metrics.update!(merged_at: 1.day.ago)
     end
 
-    it 'returns medians for lead time and cycle type' do
-      expect(subject.time_summary.map { |summary| summary[:value] }).to contain_exactly('1.0', '2.0')
+    it 'returns medians for lead time, cycle time and time to merge' do
+      expect(subject.time_summary.map { |summary| summary[:value] }).to contain_exactly('1.0', '2.0', '8.0')
     end
   end
 end
