@@ -2,7 +2,7 @@
 import { GlAlert, GlButton, GlLink, GlIcon, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { logError } from '~/lib/logger';
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 
@@ -83,22 +83,26 @@ export default {
       return getTimeago().format(lastUsed);
     },
   },
+  i18n: {
+    heading: s__('Workspaces|Workspaces'),
+    newWorkspaceButton: s__('Workspaces|New workspace'),
+  },
 };
 </script>
-
 <template>
   <div>
     <gl-alert v-if="error" variant="danger" @dismiss="clearError">
       {{ error }}
     </gl-alert>
 
+    <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
+      <h2>{{ $options.i18n.heading }}</h2>
+      <gl-button variant="confirm" to="create">{{ $options.i18n.newWorkspaceButton }}</gl-button>
+    </div>
+
     <workspace-empty-state v-if="isEmpty" />
 
     <template v-else>
-      <div>
-        <h1>{{ s__('Workspaces|Workspaces') }}</h1>
-      </div>
-
       <div v-if="isLoading" class="gl-p-5 gl-display-flex gl-justify-content-left">
         <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
       </div>

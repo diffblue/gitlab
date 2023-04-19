@@ -50419,16 +50419,55 @@ msgstr ""
 msgid "Workspaces"
 msgstr ""
 
+msgid "Workspaces|A devfile is a configuration file for your workspace. Without a devfile, a default workspace is created for this project. You can change that workspace at any time."
+msgstr ""
+
+msgid "Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace on its own or as part of a project."
+msgstr ""
+
+msgid "Workspaces|Cancel"
+msgstr ""
+
+msgid "Workspaces|Could not retrieve cluster agents for this project"
+msgstr ""
+
+msgid "Workspaces|Create workspace"
+msgstr ""
+
 msgid "Workspaces|Develop anywhere"
 msgstr ""
 
-msgid "Workspaces|Get started with GitLab Workspaces"
+msgid "Workspaces|Failed to create workspace"
 msgstr ""
 
 msgid "Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a comprehensive set of tools for software development teams to manage their entire development lifecycle."
 msgstr ""
 
+msgid "Workspaces|New workspace"
+msgstr ""
+
+msgid "Workspaces|Select cluster agent"
+msgstr ""
+
+msgid "Workspaces|Select default editor"
+msgstr ""
+
+msgid "Workspaces|Select project"
+msgstr ""
+
+msgid "Workspaces|This project doesn't have a devfile"
+msgstr ""
+
+msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."
+msgstr ""
+
 msgid "Workspaces|Workspaces"
+msgstr ""
+
+msgid "Workspaces|You can create a workspace for Premium projects only."
+msgstr ""
+
+msgid "Workspaces|You can't create a workspace for this project"
 msgstr ""
 
 msgid "Would you like to create a new branch?"

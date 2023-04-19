@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import WorkspacesList from '../pages/list.vue';
+import CreateWorkspace from '../pages/create.vue';
 
 Vue.use(VueRouter);
 
@@ -10,6 +11,11 @@ export default function createRouter({ base }) {
       path: '/',
       name: 'index',
       component: WorkspacesList,
+    },
+    {
+      path: '/create',
+      name: 'create',
+      component: CreateWorkspace,
     },
     {
       path: '*',
