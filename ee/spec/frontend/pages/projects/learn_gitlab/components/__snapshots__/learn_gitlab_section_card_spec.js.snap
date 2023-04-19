@@ -48,11 +48,11 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
-      action="securityScanEnabled"
+      action="pipelineCreated"
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
-      action="pipelineCreated"
+      action="licenseScanningRun"
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
@@ -60,7 +60,15 @@ exports[`Learn GitLab Section Card renders correctly 1`] = `
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub
+      action="secureDependencyScanningRun"
+      value="[object Object]"
+    />
+    <learn-gitlab-section-link-stub
       action="codeOwnersEnabled"
+      value="[object Object]"
+    />
+    <learn-gitlab-section-link-stub
+      action="secureDastRun"
       value="[object Object]"
     />
     <learn-gitlab-section-link-stub

@@ -47,7 +47,21 @@ export const testActions = {
     svg: 'http://example.com/images/illustration.svg',
     enabled: true,
   },
-  securityScanEnabled: {
+  licenseScanningRun: {
+    url: 'https://docs.gitlab.com/ee/foobar/',
+    completed: false,
+    svg: 'http://example.com/images/illustration.svg',
+    enabled: true,
+    openInNewTab: true,
+  },
+  secureDependencyScanningRun: {
+    url: 'https://docs.gitlab.com/ee/foobar/',
+    completed: false,
+    svg: 'http://example.com/images/illustration.svg',
+    enabled: true,
+    openInNewTab: true,
+  },
+  secureDastRun: {
     url: 'https://docs.gitlab.com/ee/foobar/',
     completed: false,
     svg: 'http://example.com/images/illustration.svg',
