@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlLoadingIcon } from '@gitlab/ui';
 
+import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -20,6 +21,7 @@ import {
 } from '../../mock';
 
 Vue.use(VueApollo);
+jest.mock('~/alert');
 
 describe('CiResourcesPage', () => {
   let wrapper;
@@ -85,7 +87,7 @@ describe('CiResourcesPage', () => {
 
     describe('and there are resources', () => {
       const res = generateCatalogResponse();
-      const { nodes, pageInfo } = res.data.ciCatalogResources;
+      const { nodes, pageInfo, count } = res.data.ciCatalogResources;
 
       beforeEach(async () => {
         catalogResourcesResponse.mockResolvedValue(res);
@@ -99,12 +101,12 @@ describe('CiResourcesPage', () => {
       });
 
       it('passes down props to the resources list', () => {
-        expect(findCiResourcesList().props()).toEqual(
-          expect.objectContaining({
-            resources: nodes,
-            pageInfo,
-          }),
-        );
+        expect(findCiResourcesList().props()).toMatchObject({
+          currentPage: 1,
+          resources: nodes,
+          pageInfo,
+          totalCount: count,
+        });
       });
     });
   });
@@ -149,5 +151,83 @@ describe('CiResourcesPage', () => {
         }
       },
     );
+  });
+
+  describe('pages count', () => {
+    describe('when the fetchMore call suceeds', () => {
+      beforeEach(async () => {
+        const res = generateCatalogResponse();
+        catalogResourcesResponse.mockResolvedValue(res);
+
+        await createComponent();
+      });
+
+      it('increments and drecrements the page count correctly', async () => {
+        expect(findCiResourcesList().props().currentPage).toBe(1);
+
+        findCiResourcesList().vm.$emit('onNextPage');
+        await waitForPromises();
+
+        expect(findCiResourcesList().props().currentPage).toBe(2);
+
+        await findCiResourcesList().vm.$emit('onPrevPage');
+        await waitForPromises();
+
+        expect(findCiResourcesList().props().currentPage).toBe(1);
+      });
+    });
+
+    describe('when the fetchMore call fails', () => {
+      const errorMessage = 'there was an error';
+
+      describe('for next page', () => {
+        beforeEach(async () => {
+          const res = generateCatalogResponse();
+          catalogResourcesResponse.mockResolvedValueOnce(res);
+          catalogResourcesResponse.mockRejectedValue({ message: errorMessage });
+
+          await createComponent();
+        });
+
+        it('does not increment the page and calls createAlert', async () => {
+          expect(findCiResourcesList().props().currentPage).toBe(1);
+
+          findCiResourcesList().vm.$emit('onNextPage');
+          await waitForPromises();
+
+          expect(findCiResourcesList().props().currentPage).toBe(1);
+          expect(createAlert).toHaveBeenCalledWith({ message: errorMessage, variant: 'danger' });
+        });
+      });
+
+      describe('for previous page', () => {
+        beforeEach(async () => {
+          const res = generateCatalogResponse();
+          // Initial query
+          catalogResourcesResponse.mockResolvedValueOnce(res);
+          // When clicking on next
+          catalogResourcesResponse.mockResolvedValueOnce(res);
+          // when clicking on previous
+          catalogResourcesResponse.mockRejectedValue({ message: errorMessage });
+
+          await createComponent();
+        });
+
+        it('does not increment the page and calls createAlert', async () => {
+          expect(findCiResourcesList().props().currentPage).toBe(1);
+
+          findCiResourcesList().vm.$emit('onNextPage');
+          await waitForPromises();
+
+          expect(findCiResourcesList().props().currentPage).toBe(2);
+
+          findCiResourcesList().vm.$emit('onPreviousPage');
+          await waitForPromises();
+
+          expect(findCiResourcesList().props().currentPage).toBe(2);
+          expect(createAlert).toHaveBeenCalledWith({ message: errorMessage, variant: 'danger' });
+        });
+      });
+    });
   });
 });

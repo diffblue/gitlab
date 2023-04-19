@@ -1,6 +1,4 @@
-const mergeOnlyIncomings = (_, incoming) => {
-  return incoming;
-};
+export const ciCatalogResourcesItemsCount = 20;
 
 export const cacheConfig = {
   cacheConfig: {
@@ -9,7 +7,6 @@ export const cacheConfig = {
         fields: {
           ciCatalogResources: {
             keyArgs: false,
-            merge: mergeOnlyIncomings,
           },
         },
       },
