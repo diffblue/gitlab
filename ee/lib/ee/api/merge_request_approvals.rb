@@ -9,6 +9,7 @@ module EE
         before { authenticate_non_get! }
 
         helpers do
+          # Overrides helper from CE (see https://gitlab.com/gitlab-org/gitlab/-/issues/408183)
           def present_approval(merge_request)
             present merge_request.approval_state, with: ::EE::API::Entities::ApprovalState, current_user: current_user
           end
@@ -66,6 +67,8 @@ module EE
                 documentation: { example: 2 }
             end
             post 'approvals' do
+              error!('Not found', 404) if ::Feature.enabled?(:remove_deprecated_approvals)
+
               merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_merge_request)
 
               error!('Overriding approvals is disabled', 422) if merge_request.project.disable_overriding_approvers_per_merge_request
