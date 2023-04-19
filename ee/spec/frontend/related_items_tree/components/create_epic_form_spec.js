@@ -71,7 +71,7 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('buttonLabel', () => {
-        it('returns string "Creating epic" when `isSubmitting` prop is true', async () => {
+        it('returns string "Creating epic" when `isSubmitting` prop is true', () => {
           createComponent(true);
           expect(findSubmitButton().text()).toBe('Creating epic');
         });
@@ -86,7 +86,7 @@ describe('RelatedItemsTree', () => {
           expect(findDropdown().props('text')).toBe(mockParentItem.groupName);
         });
 
-        it('returns group name when a group is selected', async () => {
+        it('returns group name when a group is selected', () => {
           findAllDropdownItems().at(0).vm.$emit('click');
           expect(findDropdown().props('text')).toBe('GitLab Org');
         });

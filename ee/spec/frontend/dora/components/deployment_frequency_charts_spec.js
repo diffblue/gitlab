@@ -332,16 +332,13 @@ describe('deployment_frequency_charts.vue', () => {
       ${'Last month'}    | ${1}           | ${mockLastMonthData}
       ${'Last 90 days'}  | ${2}           | ${mockLast90DaysData}
       ${'Last 180 days'} | ${3}           | ${mockLast180DaysData}
-    `(
-      'does not calculate a forecast for $timePeriod by default',
-      async ({ chartDataIndex, result }) => {
-        const currentTimePeriodChartData = getChartData()[chartDataIndex];
-        const dataSeries = currentTimePeriodChartData.data[0];
+    `('does not calculate a forecast for $timePeriod by default', ({ chartDataIndex, result }) => {
+      const currentTimePeriodChartData = getChartData()[chartDataIndex];
+      const dataSeries = currentTimePeriodChartData.data[0];
 
-        expect(currentTimePeriodChartData.data).toHaveLength(2);
-        expect(dataSeries.data).toEqual(result);
-      },
-    );
+      expect(currentTimePeriodChartData.data).toHaveLength(2);
+      expect(dataSeries.data).toEqual(result);
+    });
 
     describe('Show forecast toggle', () => {
       afterEach(() => {

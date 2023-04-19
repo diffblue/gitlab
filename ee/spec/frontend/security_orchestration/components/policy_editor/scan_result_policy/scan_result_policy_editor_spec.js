@@ -115,7 +115,7 @@ describe('ScanResultPolicyEditor', () => {
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
-  const changesToRuleMode = async () => {
+  const changesToRuleMode = () => {
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
   };
 
@@ -140,21 +140,21 @@ describe('ScanResultPolicyEditor', () => {
       ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY })}
     `(
       'passes the correct $prop prop to the PolicyEditorLayout component',
-      async ({ prop, compareFn, expected }) => {
+      ({ prop, compareFn, expected }) => {
         factory();
 
         expect(findPolicyEditorLayout().props(prop))[compareFn](expected);
       },
     );
 
-    it('displays the initial rule and add rule button', async () => {
+    it('displays the initial rule and add rule button', () => {
       factory();
 
       expect(findAllRuleBuilders().length).toBe(1);
       expect(findAddRuleButton().exists()).toBe(true);
     });
 
-    it('displays the initial action', async () => {
+    it('displays the initial action', () => {
       factory();
 
       expect(findAllPolicyActionBuilders()).toHaveLength(1);
@@ -164,7 +164,7 @@ describe('ScanResultPolicyEditor', () => {
     });
 
     describe('when a user is not an owner of the project', () => {
-      it('displays the empty state with the appropriate properties', async () => {
+      it('displays the empty state with the appropriate properties', () => {
         factory({ provide: { disableScanPolicyUpdate: true } });
 
         const emptyState = findEmptyState();
@@ -215,7 +215,7 @@ describe('ScanResultPolicyEditor', () => {
       ${'name'}        | ${''}    | ${'new policy name'}
       ${'description'} | ${''}    | ${'new description'}
       ${'enabled'}     | ${true}  | ${false}
-    `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
+    `('triggers a change on $component', ({ component, newValue, oldValue }) => {
       factory();
 
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
@@ -238,7 +238,7 @@ describe('ScanResultPolicyEditor', () => {
         expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
       });
 
-      it('hides add button when the limit of five rules has been reached', async () => {
+      it('hides add button when the limit of five rules has been reached', () => {
         const limit = 5;
         const rule = mockDefaultBranchesScanResultObject.rules[0];
         factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
@@ -247,7 +247,7 @@ describe('ScanResultPolicyEditor', () => {
         expect(findAddRuleButton().exists()).toBe(false);
       });
 
-      it('updates an existing rule', async () => {
+      it('updates an existing rule', () => {
         const newValue = {
           type: 'scan_finding',
           branches: [],
