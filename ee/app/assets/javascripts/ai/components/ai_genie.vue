@@ -152,7 +152,7 @@ export default {
       variant="default"
       icon="question"
       size="small"
-      class="gl-p-0! gl-display-block gl-bg-white! explain-the-code"
+      class="gl-p-0! gl-display-block gl-bg-white! explain-the-code gl-rounded-full!"
       @click="requestCodeExplanation"
     />
     <ai-genie-chat
