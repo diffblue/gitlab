@@ -1,0 +1,23 @@
+query getProjectDetails($projectFullPath: ID!, $devFilePath: String!) {
+  project(fullPath: $projectFullPath) {
+    id
+    group {
+      id
+      fullPath
+      clusterAgents {
+        nodes {
+          id
+          name
+        }
+      }
+    }
+    repository {
+      blobs(paths: [$devFilePath]) {
+        nodes {
+          id
+          path
+        }
+      }
+    }
+  }
+}
