@@ -4,7 +4,6 @@ require "spec_helper"
 
 RSpec.describe "User creates a merge request", :js, feature_category: :code_review_workflow do
   include ProjectForksHelper
-  include CookieHelper
 
   let(:approver) { create(:user) }
   let(:project) do
@@ -21,7 +20,6 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
     project.add_maintainer(user2)
     project.add_maintainer(approver)
     sign_in(user)
-    set_cookie('new-actions-popover-viewed', 'true')
 
     create(:approval_project_rule, project: project, users: [approver])
 
@@ -72,8 +70,6 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
 
     fill_in("Title", with: title)
     click_button("Create merge request")
-
-    wait_for_requests
 
     page.within(".js-issuable-actions") do
       click_link("Edit", match: :first)

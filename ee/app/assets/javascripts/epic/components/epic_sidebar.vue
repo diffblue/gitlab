@@ -61,9 +61,6 @@ export default {
     fullEpicId() {
       return convertToGraphQLId(TYPENAME_EPIC, this.epicId);
     },
-    isMrSidebarMoved() {
-      return this.glFeatures.movedMrSidebar;
-    },
   },
   mounted() {
     this.toggleSidebarFlag(epicUtils.getCollapsedGutter());
@@ -198,14 +195,13 @@ export default {
         @toggleSidebar="handleSidebarToggle"
       />
       <sidebar-subscriptions-widget
-        v-if="!isMrSidebarMoved"
         :iid="String(iid)"
         :full-path="fullPath"
         :issuable-type="issuableType"
         data-testid="subscribe"
         @expandSidebar="handleSidebarToggle"
       />
-      <div v-if="!isMrSidebarMoved" class="block with-sub-blocks">
+      <div class="block with-sub-blocks">
         <sidebar-reference-widget :issuable-type="issuableType" />
       </div>
     </div>

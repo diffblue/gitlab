@@ -17,7 +17,6 @@ feature_category: :system_access do
     stub_feature_flags(soft_email_confirmation: false)
     stub_feature_flags(identity_verification_phone_number: false)
     stub_feature_flags(identity_verification_credit_card: false)
-    stub_feature_flags(moved_mr_sidebar: false)
 
     # Identity Verification page requires the user to have an
     # `arkose_risk_band` to determine what verification methods will be
