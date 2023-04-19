@@ -9,6 +9,8 @@ module ApprovalRules
       filter_eligible_groups!
       filter_eligible_protected_branches!
 
+      return save_rule_without_audit unless current_user
+
       if with_audit_logged { rule.update(params) }
         log_audit_event(rule)
         rule.reset
@@ -20,6 +22,16 @@ module ApprovalRules
     end
 
     private
+
+    def save_rule_without_audit
+      if rule.update(params)
+        rule.reset
+
+        success
+      else
+        error(rule.errors.messages)
+      end
+    end
 
     def with_audit_logged(&block)
       name = rule.new_record? ? 'approval_rule_created' : 'update_approval_rules'
