@@ -1,0 +1,5 @@
+.form-group
+  = f.label :product_analytics_configurator_connection_string, s_('AdminSettings|Product analytics configurator connection string'), class: 'label-light'
+  = f.url_field :product_analytics_configurator_connection_string, class: 'form-control gl-form-input', placeholder: 'https://username:password@gl-configurator.gitlab.com'
+  .form-text.text-muted
+    = s_('AdminSettings|The connection string of your product analytics configurator instance for Snowplow configuration.')

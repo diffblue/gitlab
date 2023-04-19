@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectSetting do
+RSpec.describe ProjectSetting, feature_category: :projects do
   it { is_expected.to belong_to(:push_rule) }
+  it { is_expected.to validate_length_of(:product_analytics_instrumentation_key).is_at_most(255).allow_blank }
 
   describe '.has_vulnerabilities' do
     let_it_be(:setting_1) { create(:project_setting, :has_vulnerabilities) }

@@ -22,6 +22,7 @@ RSpec.describe 'Set project compliance framework', feature_category: :product_an
     context 'when product analytics is enabled' do
       before do
         stub_licensed_features(product_analytics: true)
+        stub_feature_flags(product_analytics_snowplow_support: false)
         stub_application_setting(product_analytics_enabled: true)
       end
 

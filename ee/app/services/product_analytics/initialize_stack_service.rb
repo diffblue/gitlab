@@ -17,12 +17,21 @@ module ProductAnalytics
 
       return ServiceResponse.error(message: 'Product analytics initialization is already in progress') if locked?
 
-      if container.project_setting.jitsu_key.present?
-        return ServiceResponse.error(message: 'Product analytics initialization is already complete')
+      if ::Feature.enabled?(:product_analytics_snowplow_support, container)
+        if container.project_setting.product_analytics_instrumentation_key.present?
+          return ServiceResponse.error(message: 'Product analytics initialization is already complete')
+        end
+
+        ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker.perform_async(container.id)
+      else
+        if container.project_setting.jitsu_key.present?
+          return ServiceResponse.error(message: 'Product analytics initialization is already complete')
+        end
+
+        lock!
+        ::ProductAnalytics::InitializeAnalyticsWorker.perform_async(container.id)
       end
 
-      lock!
-      ::ProductAnalytics::InitializeAnalyticsWorker.perform_async(container.id)
       ServiceResponse.success(message: 'Product analytics initialization started')
     end
 

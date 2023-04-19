@@ -3132,6 +3132,9 @@ msgstr ""
 msgid "AdminSettings|Preview payload"
 msgstr ""
 
+msgid "AdminSettings|Product analytics configurator connection string"
+msgstr ""
+
 msgid "AdminSettings|Project export"
 msgstr ""
 
@@ -3217,6 +3220,9 @@ msgid "AdminSettings|The ID of the project in Jitsu. The project contains all an
 msgstr ""
 
 msgid "AdminSettings|The URL of your Cube instance."
+msgstr ""
+
+msgid "AdminSettings|The connection string of your product analytics configurator instance for Snowplow configuration."
 msgstr ""
 
 msgid "AdminSettings|The default domain to use for Auto Review Apps and Auto Deploy stages in all projects."
