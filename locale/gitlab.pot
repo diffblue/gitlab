@@ -8830,6 +8830,9 @@ msgstr ""
 msgid "Checking branch availability..."
 msgstr ""
 
+msgid "Checking branch availability…"
+msgstr ""
+
 msgid "Checking group path availability..."
 msgstr ""
 
