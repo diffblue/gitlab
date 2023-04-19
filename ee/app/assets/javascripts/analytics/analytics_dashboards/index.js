@@ -1,11 +1,8 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
-import {
-  convertObjectPropsToCamelCase,
-  convertArrayToCamelCase,
-  parseBoolean,
-} from '~/lib/utils/common_utils';
+import { convertObjectPropsToCamelCase, convertArrayToCamelCase } from '~/lib/utils/common_utils';
+import DashboardsApp from './dashboards_app.vue';
 import createRouter from './router';
 
 const buildAnalyticsDashboardPointer = (analyticsDashboardPointerJSON = '') => {
@@ -14,8 +11,8 @@ const buildAnalyticsDashboardPointer = (analyticsDashboardPointerJSON = '') => {
     : null;
 };
 
-export default (id, App) => {
-  const el = document.getElementById(id);
+export default () => {
+  const el = document.getElementById('js-analytics-dashboards-list-app');
 
   if (!el) {
     return false;
@@ -31,7 +28,6 @@ export default (id, App) => {
     dashboardEmptyStateIllustrationPath,
     routerBase,
     features,
-    showInstrumentationDetailsButton,
   } = el.dataset;
 
   const analyticsDashboardPointer = buildAnalyticsDashboardPointer(analyticsDashboardPointerJSON);
@@ -55,10 +51,9 @@ export default (id, App) => {
       chartEmptyStateIllustrationPath,
       dashboardEmptyStateIllustrationPath,
       features: convertArrayToCamelCase(JSON.parse(features)),
-      showInstrumentationDetailsButton: parseBoolean(showInstrumentationDetailsButton),
     },
     render(h) {
-      return h(App);
+      return h(DashboardsApp);
     },
   });
 };
