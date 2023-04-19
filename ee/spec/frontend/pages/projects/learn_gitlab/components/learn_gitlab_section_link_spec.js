@@ -5,7 +5,7 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
 import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
-import { LEARN_GITLAB } from '~/invite_members/constants';
+import { LEARN_GITLAB } from 'ee/invite_members/constants';
 
 const defaultAction = 'gitWrite';
 const defaultProps = {

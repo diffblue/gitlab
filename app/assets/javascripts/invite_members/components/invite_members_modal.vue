@@ -14,18 +14,20 @@ import InviteModalBase from 'ee_else_ce/invite_members/components/invite_modal_b
 import Api from '~/api';
 import Tracking from '~/tracking';
 import { BV_SHOW_MODAL, BV_HIDE_MODAL } from '~/lib/utils/constants';
-import { getParameterValues } from '~/lib/utils/url_utility';
 import { n__, sprintf } from '~/locale';
+import {
+  memberName,
+  triggerExternalAlert,
+  qualifiesForTasksToBeDone,
+} from 'ee_else_ce/invite_members/utils/member_utils';
 import {
   USERS_FILTER_ALL,
   INVITE_MEMBERS_FOR_TASK,
   MEMBER_MODAL_LABELS,
-  LEARN_GITLAB,
   INVITE_MEMBER_MODAL_TRACKING_CATEGORY,
 } from '../constants';
 import eventHub from '../event_hub';
 import { responseFromSuccess } from '../utils/response_message_parser';
-import { memberName } from '../utils/member_utils';
 import { getInvalidFeedbackMessage } from '../utils/get_invalid_feedback_message';
 import {
   displaySuccessfulInvitationAlert,
@@ -169,11 +171,7 @@ export default {
       );
     },
     tasksToBeDoneEnabled() {
-      return (
-        (getParameterValues('open_modal')[0] === 'invite_members_for_task' ||
-          this.isOnLearnGitlab) &&
-        this.tasksToBeDoneOptions.length
-      );
+      return qualifiesForTasksToBeDone(this.source) && this.tasksToBeDoneOptions.length;
     },
     showTasksToBeDone() {
       return (
@@ -191,9 +189,6 @@ export default {
       return this.showTasksToBeDone && this.selectedTasksToBeDone.length
         ? this.selectedTaskProject.id
         : '';
-    },
-    isOnLearnGitlab() {
-      return this.source === LEARN_GITLAB;
     },
     showUserLimitNotification() {
       return !isEmpty(this.usersLimitDataset.alertVariant);
@@ -372,9 +367,7 @@ export default {
       }
     },
     showSuccessMessage() {
-      if (this.isOnLearnGitlab) {
-        eventHub.$emit('showSuccessfulInvitationsAlert');
-      } else {
+      if (!triggerExternalAlert(this.source)) {
         this.$toast.show(this.$options.labels.toastMessageSuccessful);
       }
 
