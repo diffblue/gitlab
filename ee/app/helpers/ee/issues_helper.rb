@@ -35,7 +35,7 @@ module EE
     end
 
     override :issue_header_actions_data
-    def issue_header_actions_data(project, issuable, current_user, issuable_sidebar)
+    def issue_header_actions_data(project, issuable, current_user)
       actions = super
       actions[:can_promote_to_epic] = issuable.can_be_promoted_to_epic?(current_user).to_s
       actions

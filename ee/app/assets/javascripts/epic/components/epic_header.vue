@@ -7,22 +7,16 @@ import {
   GlModalDirective,
   GlDropdown,
   GlDropdownItem,
-  GlDropdownDivider,
 } from '@gitlab/ui';
-import * as Sentry from '@sentry/browser';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import issuesEventHub from '~/issues/show/event_hub';
 
 import { __ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import toast from '~/vue_shared/plugins/global_toast';
-import { createAlert } from '~/alert';
 
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import UserAvatarLink from '~/vue_shared/components/user_avatar/user_avatar_link.vue';
 import ConfidentialityBadge from '~/vue_shared/components/confidentiality_badge.vue';
-import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 
 import {
@@ -32,7 +26,6 @@ import {
   TYPE_ISSUE,
   WORKSPACE_PROJECT,
 } from '~/issues/constants';
-import epicReferenceQuery from '~/sidebar/queries/epic_reference.query.graphql';
 import epicUtils from '../utils/epic_utils';
 
 export default {
@@ -51,11 +44,9 @@ export default {
     GlButton,
     GlDropdown,
     GlDropdownItem,
-    GlDropdownDivider,
     UserAvatarLink,
     TimeagoTooltip,
     ConfidentialityBadge,
-    SidebarSubscriptionsWidget,
     GitlabTeamMemberBadge: () =>
       import('ee_component/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue'),
   },
@@ -63,12 +54,9 @@ export default {
     deleteButtonText: __('Delete epic'),
     dropdownText: __('Epic actions'),
     newEpicText: __('New epic'),
-    copyReferenceText: __('Copy reference'),
     edit: __('Edit'),
     editTitleAndDescription: __('Edit title and description'),
   },
-  mixins: [glFeatureFlagMixin()],
-  inject: ['fullPath', 'iid'],
   computed: {
     ...mapState([
       'sidebarCollapsed',
@@ -95,9 +83,6 @@ export default {
     actionButtonText() {
       return this.isEpicOpen ? __('Close epic') : __('Reopen epic');
     },
-    isMrSidebarMoved() {
-      return this.glFeatures.movedMrSidebar;
-    },
   },
   mounted() {
     /**
@@ -116,36 +101,10 @@ export default {
       });
     });
   },
-  apollo: {
-    epicReference: {
-      query: epicReferenceQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          iid: this.iid,
-        };
-      },
-      update(data) {
-        return data.workspace?.issuable?.reference || '';
-      },
-      skip() {
-        return false;
-      },
-      error(error) {
-        Sentry.captureException(error);
-        createAlert({
-          message: __('An error occurred while fetching reference'),
-        });
-      },
-    },
-  },
   methods: {
     ...mapActions(['toggleSidebar', 'requestEpicStatusChangeSuccess', 'toggleEpicStatus']),
     editEpic() {
       issuesEventHub.$emit('open.form');
-    },
-    copyReference() {
-      toast(__('Reference copied'));
     },
   },
 };
@@ -209,15 +168,6 @@ export default {
         :text="$options.i18n.dropdownText"
         data-testid="mobile-dropdown"
       >
-        <template v-if="isMrSidebarMoved">
-          <sidebar-subscriptions-widget
-            :iid="String(iid)"
-            :full-path="fullPath"
-            :issuable-type="$options.TYPE_EPIC"
-            data-testid="notification-toggle"
-          />
-          <gl-dropdown-divider />
-        </template>
         <gl-dropdown-item v-if="canUpdate" @click="editEpic">
           {{ $options.i18n.edit }}
         </gl-dropdown-item>
@@ -227,15 +177,7 @@ export default {
         <gl-dropdown-item v-if="canUpdate" @click="toggleEpicStatus(isEpicOpen)">
           {{ actionButtonText }}
         </gl-dropdown-item>
-        <gl-dropdown-item
-          v-if="isMrSidebarMoved"
-          :data-clipboard-text="epicReference"
-          data-testid="copy-reference"
-          @click="copyReference"
-          >{{ $options.i18n.copyReferenceText }}</gl-dropdown-item
-        >
         <template v-if="canDestroy">
-          <gl-dropdown-divider />
           <gl-dropdown-item
             v-gl-modal="$options.deleteModalId"
             variant="danger"
@@ -287,30 +229,10 @@ export default {
         right
         data-testid="desktop-dropdown"
       >
-        <template v-if="isMrSidebarMoved">
-          <sidebar-subscriptions-widget
-            :iid="String(iid)"
-            :full-path="fullPath"
-            :issuable-type="$options.TYPE_EPIC"
-            data-testid="notification-toggle"
-          />
-          <gl-dropdown-divider />
-        </template>
         <gl-dropdown-item v-if="canCreate" :href="newEpicWebUrl" data-testid="new-epic-button">
           {{ $options.i18n.newEpicText }}
         </gl-dropdown-item>
-
-        <template v-if="isMrSidebarMoved"
-          ><gl-dropdown-item
-            :data-clipboard-text="epicReference"
-            data-testid="copy-reference"
-            @click="copyReference"
-            >{{ $options.i18n.copyReferenceText }}</gl-dropdown-item
-          >
-        </template>
-
         <template v-if="canDestroy">
-          <gl-dropdown-divider />
           <gl-dropdown-item
             v-gl-modal="$options.deleteModalId"
             variant="danger"
