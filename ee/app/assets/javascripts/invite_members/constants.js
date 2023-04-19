@@ -31,3 +31,4 @@ export const TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_TITLE = s__(
 export const TRIAL_ACTIVE_UNLIMITED_USERS_ALERT_BODY = s__(
   "InviteMembersModal|During your trial, you can invite as many members to %{groupName} as you like. When the trial ends, you'll have a maximum of %{dashboardLimit} members on the Free tier. To get more members, %{linkStart}upgrade to a paid plan%{linkEnd}.",
 );
+export const LEARN_GITLAB = 'learn_gitlab';

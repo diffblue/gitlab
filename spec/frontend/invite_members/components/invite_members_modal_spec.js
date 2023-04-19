@@ -17,7 +17,6 @@ import {
   MEMBERS_MODAL_CELEBRATE_TITLE,
   MEMBERS_PLACEHOLDER,
   MEMBERS_TO_PROJECT_CELEBRATE_INTRO_TEXT,
-  LEARN_GITLAB,
   EXPANDED_ERRORS,
   EMPTY_INVITES_ALERT_TEXT,
   ON_CELEBRATION_TRACK_LABEL,
@@ -39,7 +38,9 @@ import {
 import { GROUPS_INVITATIONS_PATH, invitationsApiResponse } from '../mock_data/api_responses';
 import {
   propsData,
-  inviteSource,
+  emailPostData,
+  postData,
+  singleUserPostData,
   newProjectPath,
   user1,
   user2,
@@ -210,15 +211,6 @@ describe('InviteMembersModal', () => {
         await setupComponent({}, []);
 
         expect(findTasksToBeDone().exists()).toBe(false);
-      });
-
-      describe('when opened from the Learn GitLab page', () => {
-        it('does render the tasks to be done', async () => {
-          await setupComponent({}, []);
-          await triggerOpenModal({ source: LEARN_GITLAB });
-
-          expect(findTasksToBeDone().exists()).toBe(true);
-        });
       });
     });
 
@@ -472,16 +464,6 @@ describe('InviteMembersModal', () => {
     });
 
     describe('when inviting an existing user to group by user ID', () => {
-      const postData = {
-        user_id: '1,2',
-        access_level: propsData.defaultAccessLevel,
-        expires_at: undefined,
-        invite_source: inviteSource,
-        format: 'json',
-        tasks_to_be_done: [],
-        tasks_project_id: '',
-      };
-
       describe('when reloadOnSubmit is true', () => {
         beforeEach(async () => {
           createComponent({ reloadPageOnSubmit: true });
@@ -533,20 +515,6 @@ describe('InviteMembersModal', () => {
 
           it('does not call reloadOnInvitationSuccess', () => {
             expect(reloadOnInvitationSuccess).not.toHaveBeenCalled();
-          });
-        });
-
-        describe('when opened from a Learn GitLab page', () => {
-          it('emits the `showSuccessfulInvitationsAlert` event', async () => {
-            await triggerOpenModal({ source: LEARN_GITLAB });
-
-            jest.spyOn(eventHub, '$emit').mockImplementation();
-
-            clickInviteButton();
-
-            await waitForPromises();
-
-            expect(eventHub.$emit).toHaveBeenCalledWith('showSuccessfulInvitationsAlert');
           });
         });
       });
@@ -655,16 +623,6 @@ describe('InviteMembersModal', () => {
     });
 
     describe('when inviting a new user by email address', () => {
-      const postData = {
-        access_level: propsData.defaultAccessLevel,
-        expires_at: undefined,
-        email: 'email@example.com',
-        invite_source: inviteSource,
-        tasks_to_be_done: [],
-        tasks_project_id: '',
-        format: 'json',
-      };
-
       describe('when invites are sent successfully', () => {
         beforeEach(async () => {
           createComponent();
@@ -672,7 +630,7 @@ describe('InviteMembersModal', () => {
 
           trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
           wrapper.vm.$toast = { show: jest.fn() };
-          jest.spyOn(Api, 'inviteGroupMembers').mockResolvedValue({ data: postData });
+          jest.spyOn(Api, 'inviteGroupMembers').mockResolvedValue({ data: emailPostData });
         });
 
         describe('when triggered from regular mounting', () => {
@@ -681,7 +639,7 @@ describe('InviteMembersModal', () => {
           });
 
           it('calls Api inviteGroupMembers with the correct params', () => {
-            expect(Api.inviteGroupMembers).toHaveBeenCalledWith(propsData.id, postData);
+            expect(Api.inviteGroupMembers).toHaveBeenCalledWith(propsData.id, emailPostData);
           });
 
           it('displays the successful toastMessage', () => {
@@ -872,17 +830,6 @@ describe('InviteMembersModal', () => {
     });
 
     describe('when inviting members and non-members in same click', () => {
-      const postData = {
-        access_level: propsData.defaultAccessLevel,
-        expires_at: undefined,
-        invite_source: inviteSource,
-        format: 'json',
-        tasks_to_be_done: [],
-        tasks_project_id: '',
-        user_id: '1',
-        email: 'email@example.com',
-      };
-
       describe('when invites are sent successfully', () => {
         beforeEach(async () => {
           createComponent();
@@ -890,7 +837,7 @@ describe('InviteMembersModal', () => {
 
           trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
           wrapper.vm.$toast = { show: jest.fn() };
-          jest.spyOn(Api, 'inviteGroupMembers').mockResolvedValue({ data: postData });
+          jest.spyOn(Api, 'inviteGroupMembers').mockResolvedValue({ data: singleUserPostData });
         });
 
         describe('when triggered from regular mounting', () => {
@@ -902,7 +849,7 @@ describe('InviteMembersModal', () => {
 
           it('calls Api inviteGroupMembers with the correct params and invite source', () => {
             expect(Api.inviteGroupMembers).toHaveBeenCalledWith(propsData.id, {
-              ...postData,
+              ...singleUserPostData,
               invite_source: '_invite_source_',
             });
           });
@@ -931,7 +878,7 @@ describe('InviteMembersModal', () => {
 
           clickInviteButton();
 
-          expect(Api.inviteGroupMembers).toHaveBeenCalledWith(propsData.id, postData);
+          expect(Api.inviteGroupMembers).toHaveBeenCalledWith(propsData.id, singleUserPostData);
         });
       });
     });
