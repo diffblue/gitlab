@@ -9134,9 +9134,6 @@ msgstr ""
 msgid "Choose a type..."
 msgstr ""
 
-msgid "Choose any color."
-msgstr ""
-
 msgid "Choose file…"
 msgstr ""
 
@@ -30923,9 +30920,6 @@ msgstr ""
 msgid "Options"
 msgstr ""
 
-msgid "Or you can choose one of the suggested colors below"
-msgstr ""
-
 msgid "Ordered list"
 msgstr ""
 
@@ -40554,6 +40548,9 @@ msgstr ""
 msgid "Select a color"
 msgstr ""
 
+msgid "Select a color from the color picker or from the presets below."
+msgstr ""
+
 msgid "Select a compliance framework to apply to this project. %{linkStart}How are these added?%{linkEnd}"
 msgstr ""
 
@@ -43096,9 +43093,6 @@ msgstr ""
 msgid "Suggested change"
 msgstr ""
 
-msgid "SuggestedColors|Aztec Gold"
-msgstr ""
-
 msgid "SuggestedColors|Blue"
 msgstr ""
 
@@ -43106,9 +43100,6 @@ msgid "SuggestedColors|Blue-gray"
 msgstr ""
 
 msgid "SuggestedColors|Carrot orange"
-msgstr ""
-
-msgid "SuggestedColors|Champagne"
 msgstr ""
 
 msgid "SuggestedColors|Charcoal grey"
@@ -43124,9 +43115,6 @@ msgid "SuggestedColors|Current removal color"
 msgstr ""
 
 msgid "SuggestedColors|Dark coral"
-msgstr ""
-
-msgid "SuggestedColors|Dark green"
 msgstr ""
 
 msgid "SuggestedColors|Dark sea green"
@@ -43150,9 +43138,6 @@ msgstr ""
 msgid "SuggestedColors|Green"
 msgstr ""
 
-msgid "SuggestedColors|Green screen"
-msgstr ""
-
 msgid "SuggestedColors|Green-cyan"
 msgstr ""
 
@@ -43160,9 +43145,6 @@ msgid "SuggestedColors|Lavender"
 msgstr ""
 
 msgid "SuggestedColors|Magenta-pink"
-msgstr ""
-
-msgid "SuggestedColors|Medium sea green"
 msgstr ""
 
 msgid "SuggestedColors|Orange"
