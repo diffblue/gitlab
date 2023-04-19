@@ -176,6 +176,7 @@ module GitlabSubscriptions
 
     ULTIMATE_FEATURES = %i[
       ai_features
+      ai_git_command
       ai_tanuki_bot
       api_discovery
       api_fuzzing

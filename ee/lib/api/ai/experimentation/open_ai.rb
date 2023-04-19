@@ -15,15 +15,11 @@ module API
         DESC
         before do
           authenticate!
-          check_feature_enabled
+          check_feature_enabled!
         end
 
+        helpers ::API::Helpers::AiHelper
         helpers do
-          def check_feature_enabled
-            not_found!('REST API endpoint not found') unless Feature.enabled?(:openai_experimentation) &&
-              Feature.enabled?(:ai_experimentation_api, current_user)
-          end
-
           def open_ai_post(endpoint, json_body: nil)
             url = "#{OPEN_AI_API_URL}/#{endpoint}"
 

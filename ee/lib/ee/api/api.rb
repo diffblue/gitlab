@@ -67,6 +67,7 @@ module EE
         mount ::API::Integrations::Slack::Interactions
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
+        mount ::API::Ai::Llm::GitCommand
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations

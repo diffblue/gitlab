@@ -6,33 +6,11 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   let_it_be(:current_user) { create :user }
   let(:header) { { 'Authorization' => ['Bearer test-key'], 'Content-Type' => ['application/json'] } }
   let(:body) { { 'test' => 'test' } }
-  let(:response_double) { instance_double(HTTParty::Response, code: 200, success?: true, body: body.to_json) }
 
   before do
     stub_application_setting(openai_api_key: 'test-key')
     stub_feature_flags(openai_experimentation: true)
     stub_feature_flags(ai_experimentation_api: current_user)
-  end
-
-  RSpec.shared_examples 'proxies request to ai api endpoint' do
-    it 'responds with Workhorse send-url headers' do
-      post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
-
-      expect(response.body).to eq('""')
-      expect(response).to have_gitlab_http_status(:ok)
-
-      send_url_prefix, encoded_data = response.headers['Gitlab-Workhorse-Send-Data'].split(':')
-      data = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_data))
-
-      expect(send_url_prefix).to eq('send-url')
-      expect(data).to eq({
-        'AllowRedirects' => false,
-        'Method' => 'POST',
-        'URL' => "#{described_class::OPEN_AI_API_URL}/#{endpoint}",
-        'Header' => header,
-        'Body' => params.to_json
-      })
-    end
   end
 
   describe 'when feature flag not enabled for user' do
@@ -62,34 +40,42 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   describe 'POST /ai/experimentation/openai/completions' do
-    it_behaves_like 'proxies request to ai api endpoint' do
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:input_params) { { prompt: 'test', model: 'text-davinci-003' } }
-      let(:endpoint) { 'completions' }
-      let(:params) do
-        input_params.merge({
-          temperature: 1.0,
-          stream: false,
-          echo: false,
-          presence_penalty: 0,
-          frequency_penalty: 0,
-          best_of: 1
-        })
+      let(:url) { '/ai/experimentation/openai/completions' }
+      let(:expected_params) do
+        {
+          'URL' => "#{described_class::OPEN_AI_API_URL}/completions",
+          'Header' => header,
+          'Body' => input_params.merge({
+            temperature: 1.0,
+            stream: false,
+            echo: false,
+            presence_penalty: 0,
+            frequency_penalty: 0,
+            best_of: 1
+          }).to_json
+        }
       end
     end
   end
 
   describe 'POST /ai/experimentation/openai/embeddings' do
-    it_behaves_like 'proxies request to ai api endpoint' do
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:input_params) { { input: 'test', model: 'text-davinci-003' } }
-      let(:endpoint) { 'embeddings' }
-      let(:params) do
-        input_params
+      let(:url) { '/ai/experimentation/openai/embeddings' }
+      let(:expected_params) do
+        {
+          'URL' => "#{described_class::OPEN_AI_API_URL}/embeddings",
+          'Header' => header,
+          'Body' => input_params.to_json
+        }
       end
     end
   end
 
   describe 'POST /ai/experimentation/openai/chat/completions' do
-    it_behaves_like 'proxies request to ai api endpoint' do
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:messages) do
         [
           { role: "system", content: "You are a helpful assistant." },
@@ -100,14 +86,18 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
       end
 
       let(:input_params) { { messages: messages, model: 'gpt-3.5-turbo' } }
-      let(:endpoint) { 'chat/completions' }
-      let(:params) do
-        input_params.merge({
-          temperature: 1.0,
-          stream: false,
-          presence_penalty: 0,
-          frequency_penalty: 0
-        })
+      let(:url) { '/ai/experimentation/openai/chat/completions' }
+      let(:expected_params) do
+        {
+          'URL' => "#{described_class::OPEN_AI_API_URL}/chat/completions",
+          'Header' => header,
+          'Body' => input_params.merge({
+            temperature: 1.0,
+            stream: false,
+            presence_penalty: 0,
+            frequency_penalty: 0
+          }).to_json
+        }
       end
     end
   end

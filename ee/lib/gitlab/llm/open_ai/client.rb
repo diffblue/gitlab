@@ -6,24 +6,6 @@ module Gitlab
   module Llm
     module OpenAi
       class Client
-        AI_ROLE = "assistant"
-        SYSTEM_ROLE = "system"
-        DEFAULT_ROLE = "user"
-        DEFAULT_TEMPERATURE = 0.7
-        DEFAULT_MAX_TOKENS = 16
-        GPT_ROLES = [
-          DEFAULT_ROLE,
-          SYSTEM_ROLE,
-          AI_ROLE
-        ].freeze
-        DEFAULT_MODELS = {
-          chat: "gpt-3.5-turbo",
-          completions: "text-davinci-003",
-          edits: "text-davinci-edit-001",
-          embeddings: "text-embedding-ada-002",
-          moderations: "text-moderation-latest"
-        }.freeze
-
         include ExponentialBackoff
 
         InputModerationError = Class.new(StandardError)
@@ -34,8 +16,10 @@ module Gitlab
         end
 
         def chat(content:, moderated: true, **options)
-          messages_chat(
-            **{ messages: [{ role: DEFAULT_ROLE, content: content }], moderated: moderated }.merge(options)
+          request(
+            endpoint: :chat,
+            moderated: moderated,
+            parameters: Options.new.chat(content: content, **options)
           )
         end
 
@@ -43,16 +27,10 @@ module Gitlab
         # the value of `role` should be one of GPT_ROLES
         # this needed to pass back conversation history
         def messages_chat(messages:, moderated: true, **options)
-          raise ArgumentError unless messages.all? { |m| GPT_ROLES.member? m.with_indifferent_access[:role] }
-
           request(
             endpoint: :chat,
             moderated: moderated,
-            parameters: {
-              model: DEFAULT_MODELS[:chat],
-              temperature: DEFAULT_TEMPERATURE,
-              messages: messages
-            }.merge(options)
+            parameters: Options.new.messages_chat(messages: messages, **options)
           )
         end
 
@@ -60,11 +38,7 @@ module Gitlab
           request(
             endpoint: :completions,
             moderated: moderated,
-            parameters: {
-              model: DEFAULT_MODELS[:completions],
-              prompt: prompt,
-              max_tokens: DEFAULT_MAX_TOKENS
-            }.merge(options)
+            parameters: Options.new.completions(prompt: prompt, **options)
           )
         end
 
@@ -72,11 +46,7 @@ module Gitlab
           request(
             endpoint: :edits,
             moderated: moderated,
-            parameters: {
-              model: DEFAULT_MODELS[:edits],
-              input: input,
-              instruction: instruction
-            }.merge(options)
+            parameters: Options.new.edits(input: input, instruction: instruction, **options)
           )
         end
 
@@ -84,10 +54,7 @@ module Gitlab
           request(
             endpoint: :embeddings,
             moderated: moderated,
-            parameters: {
-              model: DEFAULT_MODELS[:embeddings],
-              input: input
-            }.merge(options)
+            parameters: Options.new.embeddings(input: input, **options)
           )
         end
 
@@ -95,10 +62,7 @@ module Gitlab
           request(
             endpoint: :moderations,
             moderated: false,
-            parameters: {
-              model: DEFAULT_MODELS[:moderations],
-              input: input
-            }.merge(options)
+            parameters: Options.new.moderations(input: input, **options)
           )
         end
 
