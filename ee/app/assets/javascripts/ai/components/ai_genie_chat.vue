@@ -98,7 +98,8 @@ export default {
       primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
       :primary-button-text="__('Read more')"
     >
-      <span v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></span>
+      <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
+      <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
     </gl-alert>
     <code-block-highlighted
       :language="snippetLanguage"
