@@ -50341,9 +50341,6 @@ msgstr ""
 msgid "WorkItem|View current version"
 msgstr ""
 
-msgid "WorkItem|Work Items"
-msgstr ""
-
 msgid "WorkItem|Work item"
 msgstr ""
 
