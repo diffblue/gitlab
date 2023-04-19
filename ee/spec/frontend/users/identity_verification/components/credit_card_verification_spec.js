@@ -56,7 +56,7 @@ describe('CreditCardVerification', () => {
   });
 
   describe('when zuora emits load error', () => {
-    it('disables the submit button', async () => {
+    it('disables the submit button', () => {
       createComponent();
 
       wrapper.findComponent(Zuora).vm.$emit('load-error');

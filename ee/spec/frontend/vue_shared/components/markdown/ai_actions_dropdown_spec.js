@@ -172,7 +172,7 @@ describe('AI actions dropdown component', () => {
         );
       });
 
-      it('shows an error and logs to Sentry when the AI subscription fails', async () => {
+      it('shows an error and logs to Sentry when the AI subscription fails', () => {
         const mockError = new Error('ding');
 
         aiResponseSubscriptionHandler.error(mockError);
