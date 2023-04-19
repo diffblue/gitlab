@@ -6,11 +6,9 @@ import {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
-  I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
 } from 'ee/analytics/analytics_dashboards/constants';
 import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
 import { createAlert } from '~/alert';
 
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
@@ -34,9 +32,6 @@ describe('DashboardsList', () => {
   const findHelpLink = () => wrapper.findByTestId('help-link');
   const findVisualizationDesignerButton = () =>
     wrapper.findByTestId('visualization-designer-button');
-  const findInstrumentationDetailsDropdown = () =>
-    wrapper.findByTestId('intrumentation-details-dropdown');
-  const findKeyInputAt = (index) => wrapper.findAllComponents(AnalyticsClipboardInput).at(index);
 
   const NUMBER_OF_CUSTOM_DASHBOARDS = 1;
 
@@ -81,17 +76,6 @@ describe('DashboardsList', () => {
 
     it('should render the visualization designer button', () => {
       expect(findVisualizationDesignerButton().exists()).toBe(true);
-    });
-
-    it('should render the instrumentation details dropdown', () => {
-      expect(findInstrumentationDetailsDropdown().attributes()).toMatchObject({
-        text: I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
-        'split-to': 'setup',
-        split: 'true',
-      });
-
-      expect(findKeyInputAt(0).props('value')).toBe(TEST_COLLECTOR_HOST);
-      expect(findKeyInputAt(1).props('value')).toBe(TEST_JITSU_KEY);
     });
 
     it('should render the help link', () => {
@@ -165,16 +149,6 @@ describe('DashboardsList', () => {
           error,
         });
       });
-    });
-  });
-
-  describe('when the instrumentation details button is disabled', () => {
-    beforeEach(() => {
-      createWrapper({ showInstrumentationDetailsButton: false });
-    });
-
-    it('should not render the instrumentation details dropdown', () => {
-      expect(findInstrumentationDetailsDropdown().exists()).toBe(false);
     });
   });
 });

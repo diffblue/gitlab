@@ -13,7 +13,8 @@ module Analytics
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
         project_full_path: project.full_path,
-        features: enabled_analytics_features(project).to_json
+        features: enabled_analytics_features(project).to_json,
+        router_base: project_analytics_dashboards_path(project)
       }
     end
 

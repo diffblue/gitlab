@@ -14,6 +14,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
   before do
     allow(helper).to receive(:current_user) { user }
     allow(helper).to receive(:image_path).and_return('illustrations/chart-empty-state.svg')
+    allow(helper).to receive(:project_analytics_dashboards_path).with(project).and_return('/-/analytics/dashboards')
 
     stub_application_setting(jitsu_host: 'https://jitsu.example.com')
     stub_application_setting(jitsu_project_xid: '123')
@@ -67,7 +68,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           project_full_path: project.full_path,
-          features: (enabled ? [:product_analytics] : []).to_json
+          features: (enabled ? [:product_analytics] : []).to_json,
+          router_base: '/-/analytics/dashboards'
         })
       end
     end

@@ -150,10 +150,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           resources :oncall_schedules, only: [:index], path: 'oncall_schedules'
           resources :escalation_policies, only: [:index], path: 'escalation_policies'
         end
-
-        namespace :product_analytics do
-          get :dashboards, path: 'dashboards(/*vueroute)', format: false
-        end
       end
       # End of the /-/ scope.
 

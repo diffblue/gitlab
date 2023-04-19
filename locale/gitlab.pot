@@ -33650,9 +33650,6 @@ msgstr ""
 msgid "ProductAnalytics|Instrument your application"
 msgstr ""
 
-msgid "ProductAnalytics|Instrumentation details"
-msgstr ""
-
 msgid "ProductAnalytics|Loading instance"
 msgstr ""
 

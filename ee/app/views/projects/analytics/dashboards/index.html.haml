@@ -1,9 +1,5 @@
 - page_title s_('Analytics|Analytics dashboards')
 - breadcrumb_title s_("Analytics|Analytics dashboards")
 
-// show_instrumentation_details_button is being replaced in the shared listing by https://gitlab.com/gitlab-org/gitlab/-/issues/390109
-// This toggle allows it to only be shown on the old listing whilst we transition to the new shared listing
-#js-analytics-dashboards-list-app{
-  data: analytics_dashboards_list_app_data(@project).merge({ router_base: project_analytics_dashboards_path(@project), show_instrumentation_details_button: false.to_s })
-}
+#js-analytics-dashboards-list-app{ data: analytics_dashboards_list_app_data(@project) }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
