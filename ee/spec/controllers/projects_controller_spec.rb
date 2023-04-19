@@ -15,6 +15,17 @@ RSpec.describe ProjectsController do
     sign_in(user)
   end
 
+  shared_examples 'audit events with event type' do
+    it 'logs the audit event' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(name: audit_name)
+      ).and_call_original
+
+      expect { request }.to change { AuditEvent.count }.by(1)
+      expect(AuditEvent.last.details[:custom_message]).to eq(custom_message)
+    end
+  end
+
   describe 'GET show', feature_category: :projects do
     render_views
 
@@ -652,8 +663,9 @@ RSpec.describe ProjectsController do
     let(:request) { get :download_export, params: { namespace_id: project.namespace, id: project } }
 
     context 'when project export is enabled' do
-      it 'logs the audit event' do
-        expect { request }.to change { AuditEvent.count }.by(1)
+      it_behaves_like 'audit events with event type' do
+        let_it_be(:audit_name) { 'project_export_file_download_started' }
+        let_it_be(:custom_message) { 'Export file download started' }
       end
     end
 
@@ -680,9 +692,9 @@ RSpec.describe ProjectsController do
           group.add_owner(user)
         end
 
-        it 'logs the audit event' do
-          expect { request }.to change { AuditEvent.count }.by(1)
-          expect(AuditEvent.last.details[:custom_message]).to eq('Project archived')
+        it_behaves_like 'audit events with event type' do
+          let_it_be(:audit_name) { 'project_archived' }
+          let_it_be(:custom_message) { 'Project archived' }
         end
       end
 
@@ -705,9 +717,9 @@ RSpec.describe ProjectsController do
           group.add_owner(user)
         end
 
-        it 'logs the audit event' do
-          expect { request }.to change { AuditEvent.count }.by(1)
-          expect(AuditEvent.last.details[:custom_message]).to eq('Project unarchived')
+        it_behaves_like 'audit events with event type' do
+          let_it_be(:audit_name) { 'project_unarchived' }
+          let_it_be(:custom_message) { 'Project unarchived' }
         end
       end
 

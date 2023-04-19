@@ -30,12 +30,15 @@ module Projects
     end
 
     def log_audit_event
-      ::AuditEventService.new(
-        current_user,
-        project,
-        action: :custom,
-        custom_message: "Project restored"
-      ).for_project.security_event
+      audit_context = {
+        name: 'project_restored',
+        author: current_user,
+        scope: project,
+        target: project,
+        message: 'Project restored'
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
 
     private

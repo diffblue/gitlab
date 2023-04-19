@@ -23,6 +23,10 @@ RSpec.describe Projects::ImportService do
       end
 
       it 'does audit' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(name: 'project_imported')
+        ).and_call_original
+
         expect { subject.execute }.to change { AuditEvent.count }.by(1)
       end
     end
