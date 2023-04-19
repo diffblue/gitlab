@@ -503,7 +503,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
 
     context 'when `code_suggestions` is specified', :saas do
       let_it_be(:managed_group) { create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_owner(user) } }
-      let(:params) { { code_suggestions: '0' } }
+      let(:params) { { code_suggestions: '1' } }
       let(:submitted_group) { managed_group }
 
       subject(:put_update) do
@@ -523,10 +523,8 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         end
 
         context 'when enabling' do
-          let(:params) { { code_suggestions: '1' } }
-
           it 'allows the parameter' do
-            managed_group.update!(code_suggestions: false)
+            expect(managed_group.code_suggestions).to eq(false)
 
             put_update
 
@@ -535,8 +533,10 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         end
 
         context 'when disabling' do
+          let(:params) { { code_suggestions: '0' } }
+
           it 'allows the parameter' do
-            expect(managed_group.code_suggestions).to eq(true)
+            managed_group.update!(code_suggestions: true)
 
             put_update
 
@@ -549,11 +549,11 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           let(:submitted_group) { subgroup }
 
           it 'does not allow changes to a subgroup' do
-            expect(subgroup.code_suggestions).to eq(true)
+            expect(subgroup.code_suggestions).to eq(false)
 
             put_update
 
-            expect(subgroup.reload.code_suggestions).to eq(true)
+            expect(subgroup.reload.code_suggestions).to eq(false)
           end
         end
       end
@@ -564,7 +564,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         it 'does not allow the parameter' do
           put_update
 
-          expect(managed_group.reload.code_suggestions).to eq(true)
+          expect(managed_group.reload.code_suggestions).to eq(false)
         end
       end
     end

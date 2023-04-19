@@ -426,9 +426,9 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
           within(permissions_selector) do
             checkbox = find(code_suggestion_selector)
 
-            expect(checkbox).to be_checked
+            expect(checkbox).not_to be_checked
 
-            checkbox.set(false)
+            checkbox.set(true)
             click_button 'Save changes'
             wait_for_all_requests
           end
@@ -437,7 +437,7 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
           wait_for_all_requests
 
           within(permissions_selector) do
-            expect(find(code_suggestion_selector)).not_to be_checked
+            expect(find(code_suggestion_selector)).to be_checked
           end
         end
 
