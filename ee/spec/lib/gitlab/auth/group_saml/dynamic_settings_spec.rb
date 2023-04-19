@@ -17,7 +17,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::DynamicSettings do
   end
 
   it 'configures requests to transfrom redirect_to to RelayState' do
-    expect(subject[:idp_sso_target_url_runtime_params]).to eq(redirect_to: :RelayState)
+    expect(subject[:idp_sso_service_url_runtime_params]).to eq(redirect_to: :RelayState)
   end
 
   describe 'sets settings from saml_provider' do

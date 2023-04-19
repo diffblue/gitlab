@@ -82,7 +82,7 @@ class SamlProvider < ApplicationRecord
         assertion_consumer_service_url: assertion_consumer_service_url,
         issuer: issuer,
         name_identifier_format: name_identifier_format,
-        idp_sso_target_url_runtime_params: { redirect_to: :RelayState },
+        idp_sso_service_url_runtime_params: { redirect_to: :RelayState },
         message_max_bytesize: Gitlab.config.omniauth.saml_message_max_byte_size
       }
     end
