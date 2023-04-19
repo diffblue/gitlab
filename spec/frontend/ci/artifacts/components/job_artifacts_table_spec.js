@@ -79,6 +79,14 @@ describe('JobArtifactsTable component', () => {
   const findDeleteButton = () => wrapper.findByTestId('job-artifacts-delete-button');
   const findArtifactDeleteButton = () => wrapper.findByTestId('job-artifact-row-delete-button');
 
+  // first checkbox is the "select all" checkbox in the table header
+  const findSelectAllCheckbox = () => wrapper.findComponent(GlFormCheckbox);
+  const findSelectAllCheckboxChecked = () => findSelectAllCheckbox().find('input').element.checked;
+  const findSelectAllCheckboxIndeterminate = () =>
+    findSelectAllCheckbox().find('input').element.indeterminate;
+  const toggleSelectAllCheckbox = () =>
+    findSelectAllCheckbox().vm.$emit('change', !findSelectAllCheckboxChecked());
+
   // first checkbox is a "select all", this finder should get the first job checkbox
   const findJobCheckbox = (i = 1) => wrapper.findAllComponents(GlFormCheckbox).at(i);
   const findAnyCheckbox = () => wrapper.findComponent(GlFormCheckbox);
@@ -126,6 +134,10 @@ describe('JobArtifactsTable component', () => {
   });
 
   const maxSelectedArtifacts = new Array(SELECTED_ARTIFACTS_MAX_COUNT).fill({});
+
+  const allArtifacts = getJobArtifactsResponse.data.project.jobs.nodes
+    .map((jobNode) => jobNode.artifacts.nodes.map((artifactNode) => artifactNode.id))
+    .reduce((artifacts, jobArtifacts) => artifacts.concat(jobArtifacts));
 
   const createComponent = ({
     handlers = {
@@ -544,6 +556,113 @@ describe('JobArtifactsTable component', () => {
         await waitForPromises();
 
         expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([]);
+      });
+
+      describe('select all checkbox', () => {
+        describe('when no artifacts are selected', () => {
+          it('is not checked', () => {
+            expect(findSelectAllCheckboxChecked()).toBe(false);
+            expect(findSelectAllCheckboxIndeterminate()).toBe(false);
+          });
+
+          it('selects all artifacts when toggled', async () => {
+            toggleSelectAllCheckbox();
+
+            await nextTick();
+
+            expect(findSelectAllCheckboxChecked()).toBe(true);
+            expect(findSelectAllCheckboxIndeterminate()).toBe(false);
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual(allArtifacts);
+          });
+        });
+
+        describe('when some artifacts are selected', () => {
+          beforeEach(async () => {
+            findJobCheckbox().vm.$emit('input', true);
+
+            await nextTick();
+          });
+
+          it('is indeterminate', () => {
+            expect(findSelectAllCheckboxChecked()).toBe(true);
+            expect(findSelectAllCheckboxIndeterminate()).toBe(true);
+          });
+
+          it('deselects all artifacts when toggled', async () => {
+            toggleSelectAllCheckbox();
+
+            await nextTick();
+
+            expect(findSelectAllCheckboxChecked()).toBe(false);
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([]);
+          });
+        });
+
+        describe('when all artifacts are selected', () => {
+          beforeEach(async () => {
+            findJobCheckbox(1).vm.$emit('input', true);
+            findJobCheckbox(2).vm.$emit('input', true);
+
+            await nextTick();
+          });
+
+          it('is checked', () => {
+            expect(findSelectAllCheckboxChecked()).toBe(true);
+            expect(findSelectAllCheckboxIndeterminate()).toBe(false);
+          });
+
+          it('deselects all artifacts when toggled', async () => {
+            toggleSelectAllCheckbox();
+
+            await nextTick();
+
+            expect(findSelectAllCheckboxChecked()).toBe(false);
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([]);
+          });
+        });
+
+        describe('when an artifact is selected on another page', () => {
+          const otherPageArtifact = { id: 'gid://gitlab/Ci::JobArtifact/some/other/id' };
+
+          beforeEach(async () => {
+            // expand the first job row to access the details component
+            findCount().trigger('click');
+
+            await nextTick();
+
+            // mock the selection of an artifact on another page by emitting a select event
+            findDetailsInRow(1).vm.$emit('selectArtifact', otherPageArtifact, true);
+          });
+
+          it('is not checked even though an artifact is selected', () => {
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([
+              otherPageArtifact.id,
+            ]);
+            expect(findSelectAllCheckboxChecked()).toBe(false);
+            expect(findSelectAllCheckboxIndeterminate()).toBe(false);
+          });
+
+          it('only toggles selection of visible artifacts, leaving the other artifact selected', async () => {
+            toggleSelectAllCheckbox();
+
+            await nextTick();
+
+            expect(findSelectAllCheckboxChecked()).toBe(true);
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([
+              otherPageArtifact.id,
+              ...allArtifacts,
+            ]);
+
+            toggleSelectAllCheckbox();
+
+            await nextTick();
+
+            expect(findSelectAllCheckboxChecked()).toBe(false);
+            expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual([
+              otherPageArtifact.id,
+            ]);
+          });
+        });
       });
     });
 

@@ -164,6 +164,20 @@ export default {
     artifactsToDelete() {
       return this.isDeletingArtifactsForJob ? this.jobArtifactsToDelete : this.selectedArtifacts;
     },
+    isAnyVisibleArtifactSelected() {
+      return this.jobArtifacts.some((job) =>
+        job.artifacts.nodes.some((artifactNode) =>
+          this.selectedArtifacts.includes(artifactNode.id),
+        ),
+      );
+    },
+    areAllVisibleArtifactsSelected() {
+      return this.jobArtifacts.every((job) =>
+        job.artifacts.nodes.every((artifactNode) =>
+          this.selectedArtifacts.includes(artifactNode.id),
+        ),
+      );
+    },
   },
   methods: {
     refetchArtifacts() {
@@ -205,11 +219,11 @@ export default {
       }
     },
     selectArtifact(artifactNode, checked) {
-      if (checked) {
-        if (!this.isSelectedArtifactsLimitReached) {
-          this.selectedArtifacts.push(artifactNode.id);
-        }
-      } else {
+      const isInArray = this.selectedArtifacts.includes(artifactNode.id);
+
+      if (checked && !isInArray && !this.isSelectedArtifactsLimitReached) {
+        this.selectedArtifacts.push(artifactNode.id);
+      } else if (isInArray) {
         this.selectedArtifacts.splice(this.selectedArtifacts.indexOf(artifactNode.id), 1);
       }
     },
@@ -273,6 +287,11 @@ export default {
     handleBulkDeleteModalHidden() {
       this.isBulkDeleteModalVisible = false;
       this.jobArtifactsToDelete = [];
+    },
+    handleSelectAllChecked(checked) {
+      this.jobArtifacts.map((job) =>
+        job.artifacts.nodes.map((artifactNode) => this.selectArtifact(artifactNode, checked)),
+      );
     },
     clearSelectedArtifacts() {
       this.selectedArtifacts = [];
@@ -369,10 +388,9 @@ export default {
       </template>
       <template v-if="canBulkDestroyArtifacts" #head(checkbox)>
         <gl-form-checkbox
-          :disabled="!anyArtifactsSelected"
-          :checked="anyArtifactsSelected"
-          :indeterminate="anyArtifactsSelected"
-          @change="clearSelectedArtifacts"
+          :checked="isAnyVisibleArtifactSelected"
+          :indeterminate="isAnyVisibleArtifactSelected && !areAllVisibleArtifactsSelected"
+          @change="handleSelectAllChecked"
         />
       </template>
       <template
