@@ -49,21 +49,23 @@ RSpec.describe PushRulesHelper do
 
   with_them do
     PushRule::SETTINGS_WITH_GLOBAL_DEFAULT.each do |rule_attr|
-      before do
-        global_push_rule.update_column(rule_attr, enabled_globally)
-        push_rule.update_column(rule_attr, enabled_in_project)
+      context "when `#{rule_attr}`" do
+        before do
+          global_push_rule.update_column(rule_attr, enabled_globally)
+          push_rule.update_column(rule_attr, enabled_in_project)
 
-        allow(helper).to receive(:current_user).and_return(users[current_user])
-      end
+          allow(helper).to receive(:current_user).and_return(users[current_user])
+        end
 
-      it 'has the correct help text' do
-        rule = global_setting ? global_push_rule : push_rule
-        message = possible_help_texts["#{rule_attr}_#{help_text}".to_sym].presence || possible_help_texts[help_text]
+        it "has the correct help text" do
+          rule = global_setting ? global_push_rule : push_rule
+          message = possible_help_texts["#{rule_attr}_#{help_text}".to_sym].presence || possible_help_texts[help_text]
 
-        expect(helper.public_send("#{rule_attr}_description", rule)).to match(message)
+          expect(helper.public_send("#{rule_attr}_description", rule)).to match(message)
 
-        if invalid_text
-          expect(helper.public_send("#{rule_attr}_description", rule)).not_to match(possible_help_texts[invalid_text])
+          if invalid_text
+            expect(helper.public_send("#{rule_attr}_description", rule)).not_to match(possible_help_texts[invalid_text])
+          end
         end
       end
     end
