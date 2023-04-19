@@ -5,13 +5,14 @@ import {
   PROJECT_FILES_OPEN_SELECTION,
   PROJECT_FILES_GO_BACK,
 } from '~/behaviors/shortcuts/keybindings';
+import { addStopCallback } from '~/lib/utils/mousetrap';
 import ShortcutsNavigation from './shortcuts_navigation';
 
 export default class ShortcutsFindFile extends ShortcutsNavigation {
   constructor(projectFindFile) {
     super();
 
-    this.addStopCallback((e, element, combo) => {
+    addStopCallback((e, element, combo) => {
       if (
         element === projectFindFile.inputElement[0] &&
         (keysFor(PROJECT_FILES_MOVE_SELECTION_UP).includes(combo) ||

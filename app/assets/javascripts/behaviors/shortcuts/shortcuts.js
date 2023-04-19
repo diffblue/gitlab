@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
 import Vue from 'vue';
-import { Mousetrap, addStopCallback as addMousetrapStopCallback } from '~/lib/utils/mousetrap';
+import { Mousetrap, addStopCallback } from '~/lib/utils/mousetrap';
 import { getCookie, setCookie, parseBoolean } from '~/lib/utils/common_utils';
 
 import findAndFollowLink from '~/lib/utils/navigation_utility';
@@ -88,7 +88,7 @@ export default class Shortcuts {
       [TOGGLE_MARKDOWN_PREVIEW, Shortcuts.toggleMarkdownPreview],
     ]);
 
-    this.addStopCallback((e, element, combo) =>
+    addStopCallback((e, element, combo) =>
       keysFor(TOGGLE_MARKDOWN_PREVIEW).includes(combo) ? false : undefined,
     );
 
@@ -164,16 +164,6 @@ export default class Shortcuts {
         },
       });
     }
-  }
-
-  /**
-   * Add a stop callback to Mousetrap.
-   *
-   * @see ~/lib/utils/mousetrap.js for more details.
-   */
-  // eslint-disable-next-line class-methods-use-this
-  addStopCallback(stopCallback) {
-    addMousetrapStopCallback(stopCallback);
   }
 
   static onTogglePerfBar(e) {
