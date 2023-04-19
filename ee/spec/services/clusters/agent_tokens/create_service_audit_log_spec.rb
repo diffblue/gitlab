@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Clusters::AgentTokens::CreateService, feature_category: :kubernetes_management do
+RSpec.describe Clusters::AgentTokens::CreateService, feature_category: :deployment_management do
   describe '#execute' do
     let_it_be(:agent) { create(:cluster_agent) }
 
