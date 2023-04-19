@@ -1,8 +1,8 @@
 <script>
-import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
+import { GlIcon, GlTooltip } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
+
 import { SEVERITIES } from '~/ci/reports/codequality_report/constants';
 
 const codequalityCountThreshold = 3;
@@ -10,8 +10,6 @@ const codequalityCountThreshold = 3;
 export default {
   components: {
     GlIcon,
-    GlPopover,
-    CodequalityIssueBody,
     GlTooltip,
   },
   i18n: {
@@ -78,11 +76,7 @@ export default {
 </script>
 
 <template>
-  <div
-    v-if="glFeatures.refactorCodeQualityInlineFindings"
-    class="gl-z-index-1 gl-relative"
-    @click="$emit('showCodeQualityFindings')"
-  >
+  <div class="gl-z-index-1 gl-relative" @click="$emit('showCodeQualityFindings')">
     <div
       v-if="!codeQualityExpanded"
       class="codequality-severity-icon-container gl-display-inline-flex"
@@ -142,27 +136,5 @@ export default {
     >
       {{ tooltipTextCollapsed }}
     </gl-tooltip>
-  </div>
-  <div v-else>
-    <gl-icon
-      :id="`codequality-${filePath}:${line}`"
-      :size="12"
-      :name="severity[firstCodequalityItem.severity].name"
-      :class="severity[firstCodequalityItem.severity].class"
-      class="gl-hover-cursor-pointer codequality-severity-icon"
-    />
-    <gl-popover
-      triggers="hover focus"
-      placement="topright"
-      :css-classes="['gl-max-w-max-content', 'gl-w-half']"
-      :target="`codequality-${filePath}:${line}`"
-      :title="$options.i18n.popoverTitle"
-    >
-      <codequality-issue-body
-        v-for="(degradation, index) in degradations"
-        :key="index"
-        :issue="degradation"
-      />
-    </gl-popover>
   </div>
 </template>
