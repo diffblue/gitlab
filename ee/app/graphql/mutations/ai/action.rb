@@ -22,6 +22,7 @@ module Mutations
 
       def resolve(**attributes)
         check_feature_flag_enabled!
+        verify_rate_limit!
 
         resource_id, method, options = extract_method_params!(attributes)
         resource = authorized_find!(id: resource_id)
@@ -39,6 +40,13 @@ module Mutations
         return if Feature.enabled?(:openai_experimentation)
 
         raise Gitlab::Graphql::Errors::ResourceNotAvailable, '`openai_experimentation` feature flag is disabled.'
+      end
+
+      def verify_rate_limit!
+        return unless Gitlab::ApplicationRateLimiter.throttled?(:ai_action, scope: [current_user])
+
+        raise Gitlab::Graphql::Errors::ResourceNotAvailable,
+          'This endpoint has been requested too many times. Try again later.'
       end
 
       def methods(args)
