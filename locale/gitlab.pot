@@ -1305,15 +1305,6 @@ msgstr ""
 msgid "'%{level}' is not a valid visibility level"
 msgstr ""
 
-msgid "'%{name}' Value Stream created"
-msgstr ""
-
-msgid "'%{name}' Value Stream deleted"
-msgstr ""
-
-msgid "'%{name}' Value Stream saved"
-msgstr ""
-
 msgid "'%{source}' is not a import source"
 msgstr ""
 
@@ -9095,9 +9086,6 @@ msgstr ""
 msgid "Child issues and epics"
 msgstr ""
 
-msgid "Child removed"
-msgstr ""
-
 msgid "Chinese language support using"
 msgstr ""
 
@@ -11846,9 +11834,6 @@ msgstr ""
 msgid "ContributionAnalytics|The given date range is larger than %{number_of_days} days"
 msgstr ""
 
-msgid "ContributionAnalytics|The given date range is larger than 93 days"
-msgstr ""
-
 msgid "ContributionAnalytics|The to date is earlier than the given from date"
 msgstr ""
 
@@ -12345,9 +12330,6 @@ msgid "Create new"
 msgstr ""
 
 msgid "Create new %{name} by email"
-msgstr ""
-
-msgid "Create new Value Stream"
 msgstr ""
 
 msgid "Create new branch"
@@ -13076,9 +13058,6 @@ msgid "CycleAnalytics|Show"
 msgstr ""
 
 msgid "CycleAnalytics|Stage time: %{title}"
-msgstr ""
-
-msgid "CycleAnalytics|Tasks by type"
 msgstr ""
 
 msgid "CycleAnalytics|The average time items spent in this stage. Data limited to items completed within this date range."
@@ -15884,9 +15863,6 @@ msgid "Edit identity for %{user_name}"
 msgstr ""
 
 msgid "Edit image description"
-msgstr ""
-
-msgid "Edit image text or link"
 msgstr ""
 
 msgid "Edit in pipeline editor"
@@ -30740,9 +30716,6 @@ msgstr ""
 msgid "Only effective when remote storage is enabled. Set to 0 for no size limit."
 msgstr ""
 
-msgid "Only group members with at least the Reporter role can view or be notified about this epic"
-msgstr ""
-
 msgid "Only include features new to your current subscription tier."
 msgstr ""
 
@@ -31507,9 +31480,6 @@ msgid "PackageRegistry|There are no other versions of this package."
 msgstr ""
 
 msgid "PackageRegistry|There are no packages yet"
-msgstr ""
-
-msgid "PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled."
 msgstr ""
 
 msgid "PackageRegistry|There are security risks if packages are deleted while request forwarding is enabled. %{docLinkStart}What are the risks?%{docLinkEnd}"
@@ -33432,9 +33402,6 @@ msgid "Prev"
 msgstr ""
 
 msgid "Prevent auto-stopping"
-msgstr ""
-
-msgid "Prevent editing approval rules in projects and merge requests"
 msgstr ""
 
 msgid "Prevent environment from auto-stopping"
@@ -36564,9 +36531,6 @@ msgid "RegistrationFeatures|Enable Service Ping and register for this feature."
 msgstr ""
 
 msgid "RegistrationFeatures|Read more about the %{link_start}Registration Features Program%{link_end}."
-msgstr ""
-
-msgid "RegistrationFeatures|Registration Features Program"
 msgstr ""
 
 msgid "RegistrationFeatures|Want to %{feature_title} for free?"
@@ -41450,9 +41414,6 @@ msgid "Showing latest version"
 msgstr ""
 
 msgid "Showing version #%{versionNumber}"
-msgstr ""
-
-msgid "Shows issues for group '%{group_name}' from Nov 1, 2019 to Dec 31, 2019"
 msgstr ""
 
 msgid "Side-by-side"
@@ -46890,9 +46851,6 @@ msgstr ""
 msgid "Two-factor authentication has been disabled for your GitLab account."
 msgstr ""
 
-msgid "Two-factor authentication has been disabled successfully for %{user_email}!"
-msgstr ""
-
 msgid "Two-factor authentication has been disabled successfully for %{username}!"
 msgstr ""
 
@@ -51500,9 +51458,6 @@ msgstr ""
 msgid "Your top-level group %{namespace_name} will move to a read-only state soon"
 msgstr ""
 
-msgid "Your top-level group %{name} will move to a read-only state soon"
-msgstr ""
-
 msgid "Your top-level group is over the user and storage limits and has been placed in a read-only state."
 msgstr ""
 
@@ -51747,9 +51702,6 @@ msgid "can only be changed by a group admin."
 msgstr ""
 
 msgid "can only have one escalation policy"
-msgstr ""
-
-msgid "can't be blank"
 msgstr ""
 
 msgid "can't be enabled when delayed group deletion is disabled"
