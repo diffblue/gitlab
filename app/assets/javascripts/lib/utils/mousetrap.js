@@ -17,13 +17,17 @@ Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo
 /**
  * Add a stop callback to Mousetrap.
  *
- * The callback should have the same signature as Mousetrap#stopCallback. See
+ * This allows overriding the default behaviour of Mousetrap#stopCallback,
+ * which is to stop the bound key handler/callback from being called if the key
+ * combo is pressed inside form fields (input, select, textareas, etc). See
  * https://craig.is/killing/mice#api.stopCallback.
  *
- * The one difference is that the callback should return `undefined` if it
- * has no opinion on whether the current key combo should be stopped or not,
- * and the next stop callback should be consulted instead. If a boolean is
- * returned, no other stop callbacks are called.
+ * The stopCallback registered here has the same signature as
+ * Mousetrap#stopCallback, with the one difference being that the callback
+ * should return `undefined` if it has no opinion on whether the current key
+ * combo should be stopped or not, and the next stop callback should be
+ * consulted instead. If a boolean is returned, no other stop callbacks are
+ * called.
  *
  * Note: This approach does not always work as expected when coupled with
  * Mousetrap's pause plugin, which is used for enabling/disabling all keyboard
