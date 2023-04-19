@@ -25,6 +25,14 @@ Mousetrap.prototype.stopCallback = function customStopCallback(e, element, combo
  * and the next stop callback should be consulted instead. If a boolean is
  * returned, no other stop callbacks are called.
  *
+ * Note: This approach does not always work as expected when coupled with
+ * Mousetrap's pause plugin, which is used for enabling/disabling all keyboard
+ * shortcuts. That plugin assumes it's the first to execute and overwrite
+ * Mousetrap's `stopCallback` method, whereas to work correctly with this, it
+ * must execute last. This is not guaranteed or even attempted.
+ *
+ * To work correctly, we may need to reimplement the pause plugin here.
+ *
  * @param {Function} stopCallback The additional stop callback function to
  *     add to the chain of stop callbacks.
  * @returns {undefined}
