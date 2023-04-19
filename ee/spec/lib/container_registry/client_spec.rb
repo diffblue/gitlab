@@ -118,6 +118,15 @@ RSpec.describe ContainerRegistry::Client do
 
       expect(client.repository_raw_manifest('group/test', 'my-tag')).to eq(manifest)
     end
+
+    it 'raises error' do
+      stub_request(:get, 'http://registry/v2/group/test/manifests/my-tag')
+        .with(headers: headers_with_accept_types_with_list)
+        .to_return(status: 500, body: 'Something is wrong', headers: {})
+
+      expect { client.repository_raw_manifest('group/test', 'my-tag') }
+        .to raise_error(EE::ContainerRegistry::Client::Error, /500 - Something is wrong/)
+    end
   end
 
   describe '#pull_blob' do
@@ -145,17 +154,19 @@ RSpec.describe ContainerRegistry::Client do
 
     it 'raises error when it can not download blob' do
       stub_request(:get, "http://download-link.com/")
-        .to_return(status: 500)
+        .to_return(status: 500, body: 'Something is wrong')
 
-      expect { client.pull_blob('group/test', 'e2312abc') }.to raise_error(EE::ContainerRegistry::Client::Error)
+      expect { client.pull_blob('group/test', 'e2312abc') }
+        .to raise_error(EE::ContainerRegistry::Client::Error, /500 - Something is wrong/)
     end
 
     it 'raises error when request is not authenticated' do
       stub_request(:get, "http://registry/v2/group/test/blobs/e2312abc")
           .with(headers: base_headers)
-          .to_return(status: 401)
+          .to_return(status: 401, body: 'Something is wrong')
 
-      expect { client.pull_blob('group/test', 'e2312abc') }.to raise_error(EE::ContainerRegistry::Client::Error)
+      expect { client.pull_blob('group/test', 'e2312abc') }
+        .to raise_error(EE::ContainerRegistry::Client::Error, /401 - Something is wrong/)
     end
 
     context 'when primary_api_url is specified with trailing slash' do
