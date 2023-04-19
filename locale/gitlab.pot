@@ -49127,9 +49127,6 @@ msgstr ""
 msgid "Vulnerability|%{scannerName} (version %{scannerVersion})"
 msgstr ""
 
-msgid "Vulnerability|AI-Assisted Remediation"
-msgstr ""
-
 msgid "Vulnerability|Activity"
 msgstr ""
 
@@ -49206,6 +49203,9 @@ msgid "Vulnerability|Experiment"
 msgstr ""
 
 msgid "Vulnerability|Explain this vulnerability"
+msgstr ""
+
+msgid "Vulnerability|Explain this vulnerability and how to mitigate it with AI"
 msgstr ""
 
 msgid "Vulnerability|External Security Report"
@@ -49310,7 +49310,7 @@ msgstr ""
 msgid "Vulnerability|There was an unexpected error. %{linkStart}Please try again%{linkEnd}."
 msgstr ""
 
-msgid "Vulnerability|This is an experimental alpha feature that leverages a large language model to provide recommendations. Please use this with caution as we continue to iterate. To learn more about what we have planned, please check out %{linkStart}this issue%{linkEnd} and give us feedback."
+msgid "Vulnerability|This is an experimental feature that uses AI to explain the vulnerability and provide recommendations. Use this feature with caution as we continue to iterate. Please provide your feedback and ideas in this %{linkStart}issue%{linkEnd}."
 msgstr ""
 
 msgid "Vulnerability|Tool"
