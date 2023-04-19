@@ -283,27 +283,13 @@ export default {
       this.shouldShowEmptyInvitesAlert = true;
       this.$refs.alerts.focus();
     },
-    sendInvite({ accessLevel, expiresAt }) {
-      this.isLoading = true;
-      this.clearValidation();
-
-      if (!this.isEmptyInvites) {
-        this.showEmptyInvitesAlert();
-        return;
-      }
-
+    getInvitePayload({ accessLevel, expiresAt }) {
       const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
-
-      const apiAddByInvite = this.isProject
-        ? Api.inviteProjectMembers.bind(Api)
-        : Api.inviteGroupMembers.bind(Api);
 
       const email = usersToInviteByEmail !== '' ? { email: usersToInviteByEmail } : {};
       const userId = usersToAddById !== '' ? { user_id: usersToAddById } : {};
 
-      this.trackinviteMembersForTask();
-
-      apiAddByInvite(this.id, {
+      return {
         format: 'json',
         expires_at: expiresAt,
         access_level: accessLevel,
@@ -312,20 +298,39 @@ export default {
         tasks_project_id: this.tasksProjectForPost,
         ...email,
         ...userId,
-      })
-        .then((response) => {
-          const { error, message } = responseFromSuccess(response);
+      };
+    },
+    async sendInvite({ accessLevel, expiresAt }) {
+      this.isLoading = true;
+      this.clearValidation();
 
-          if (error) {
-            this.showMemberErrors(message);
-          } else {
-            this.onInviteSuccess();
-          }
-        })
-        .catch((e) => this.showInvalidFeedbackMessage(e))
-        .finally(() => {
-          this.isLoading = false;
-        });
+      if (!this.isEmptyInvites) {
+        this.showEmptyInvitesAlert();
+        return;
+      }
+
+      this.trackInviteMembersForTask();
+
+      const apiAddByInvite = this.isProject
+        ? Api.inviteProjectMembers.bind(Api)
+        : Api.inviteGroupMembers.bind(Api);
+
+      try {
+        const payload = this.getInvitePayload({ accessLevel, expiresAt });
+        const response = await apiAddByInvite(this.id, payload);
+
+        const { error, message } = responseFromSuccess(response);
+
+        if (error) {
+          this.showMemberErrors(message);
+        } else {
+          this.onInviteSuccess();
+        }
+      } catch (e) {
+        this.showInvalidFeedbackMessage(e);
+      } finally {
+        this.isLoading = false;
+      }
     },
     showMemberErrors(message) {
       this.invalidMembers = message;
@@ -335,7 +340,7 @@ export default {
       // initial token creation hits this and nothing is found... so safe navigation
       return this.newUsersToInvite.find((member) => memberName(member) === username)?.name;
     },
-    trackinviteMembersForTask() {
+    trackInviteMembersForTask() {
       const label = 'selected_tasks_to_be_done';
       const property = this.selectedTasksToBeDone.join(',');
       this.track(INVITE_MEMBERS_FOR_TASK.submit, { label, property });
@@ -421,7 +426,9 @@ export default {
     @access-level="onAccessLevelUpdate"
   >
     <template #intro-text-before>
-      <div v-if="isCelebration" class="gl-p-4 gl-font-size-h1"><gl-emoji data-name="tada" /></div>
+      <div v-if="isCelebration" class="gl-p-4 gl-font-size-h1">
+        <gl-emoji data-name="tada" />
+      </div>
     </template>
     <template #intro-text-after>
       <br />
