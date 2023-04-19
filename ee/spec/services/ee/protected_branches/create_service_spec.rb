@@ -126,13 +126,15 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
 
       context "when the branch is a wildcard" do
         %w(*ture *eatur* feat*).each do |wildcard|
-          before do
-            params[:name] = wildcard
-          end
+          context "with wildcard: #{wildcard}" do
+            before do
+              params[:name] = wildcard
+            end
 
-          it "calls MergeRequest::SyncCodeOwnerApprovalRules to update open MRs for #{wildcard}", :aggregate_failures do
-            expect(::MergeRequests::SyncCodeOwnerApprovalRules).to receive(:new).with(merge_request).and_call_original
-            expect { service.execute }.to change(ProtectedBranch, :count).by(1)
+            it "calls MergeRequest::SyncCodeOwnerApprovalRules to update open MRs", :aggregate_failures do
+              expect(::MergeRequests::SyncCodeOwnerApprovalRules).to receive(:new).with(merge_request).and_call_original
+              expect { service.execute }.to change(ProtectedBranch, :count).by(1)
+            end
           end
         end
       end
