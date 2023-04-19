@@ -6,6 +6,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
   include ProjectForksHelper
   include FeatureApprovalHelper
   include ListboxHelpers
+  include CookieHelper
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository) }
@@ -131,6 +132,7 @@ RSpec.describe 'Merge request > User sets approvers', :js, feature_category: :co
         project.add_developer(user)
 
         sign_in(user)
+        set_cookie('new-actions-popover-viewed', 'true')
       end
 
       it 'allows setting groups as approvers when there is possible group approvers' do
