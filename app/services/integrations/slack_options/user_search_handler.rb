@@ -2,7 +2,7 @@
 
 module Integrations
   module SlackOptions
-    class UserSearchHandler
+    class UserSearchHandler # rubocop:disable Search/NamespacedClass
       include Gitlab::Utils::StrongMemoize
 
       def initialize(current_user, search_value, view_id)
@@ -22,7 +22,7 @@ module Integrations
       private
 
       def project
-        project_id = EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+        project_id = SlackInteractions::IncidentManagement::IncidentModalOpenedService
               .cache_read(view_id)
 
         return unless project_id
@@ -36,16 +36,16 @@ module Integrations
 
         user_list = members.map do |member|
           {
-            "text": {
-              "type": "plain_text",
-              "text": "#{member.user.name} - #{member.user.username}"
+            text: {
+              type: "plain_text",
+              text: "#{member.user.name} - #{member.user.username}"
             },
-            "value": member.user.id.to_s
+            value: member.user.id.to_s
           }
         end
 
         {
-          "options": user_list
+          options: user_list
         }
       end
 

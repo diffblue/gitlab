@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Slack::BlockKit::IncidentManagement::IncidentModalOpened do
+RSpec.describe Slack::BlockKit::IncidentManagement::IncidentModalOpened, feature_category: :incident_management do
   let_it_be(:project1) { create(:project) }
   let_it_be(:project2) { create(:project) }
   let_it_be(:project_with_long_name) { create(:project, name: 'a b' * 76) }
