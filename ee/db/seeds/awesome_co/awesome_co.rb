@@ -10,6 +10,8 @@ module AwesomeCo
       case File.basename(seed_file)
       when /\.y(a)?ml(\.erb)?/
         Parsers::Yaml.new(seed_file, owner).parse
+      when /\.json(\.erb)?/
+        Parsers::Json.new(seed_file, owner).parse
       end
     end
   end
@@ -192,6 +194,17 @@ module AwesomeCo
           e.backtrace.unshift("#{@seed_file.path}:#{e.line}:#{e.column}")
           raise e, "Seed file is malformed. #{e.message}"
         end
+        @name = @definitions.delete('name')
+
+        super
+      end
+    end
+
+    class Json < Parser
+      require 'json'
+
+      def parse
+        @definitions = JSON.load_file(@seed_file)
         @name = @definitions.delete('name')
 
         super
