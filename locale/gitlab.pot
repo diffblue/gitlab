@@ -1680,6 +1680,9 @@ msgstr ""
 msgid "A %{incident_docs_start}modified issue%{incident_docs_end} to guide the resolution of incidents."
 msgstr ""
 
+msgid "A %{linkStart}merge train%{linkEnd} is a queued list of merge requests, each waiting to be merged into the target branch."
+msgstr ""
+
 msgid "A .NET Core console application template, customizable for any .NET Core project"
 msgstr ""
 
@@ -27421,6 +27424,9 @@ msgstr ""
 msgid "Merge requests can't be merged if the status checks did not succeed or are still running."
 msgstr ""
 
+msgid "Merge trains"
+msgstr ""
+
 msgid "Merge unverified changes"
 msgstr ""
 
@@ -41064,6 +41070,9 @@ msgstr ""
 msgid "Set to 0 for no size limit."
 msgstr ""
 
+msgid "Set to auto-merge"
+msgstr ""
+
 msgid "Set up"
 msgstr ""
 
@@ -49836,6 +49845,9 @@ msgid "When enabled, job logs are collected by Datadog and displayed along with 
 msgstr ""
 
 msgid "When merge requests and commits in the default branch close, any issues they reference also close."
+msgstr ""
+
+msgid "When the pipeline for this merge request succeeds, it will %{linkStart}automatically merge%{linkEnd}."
 msgstr ""
 
 msgid "When this merge request is accepted"
