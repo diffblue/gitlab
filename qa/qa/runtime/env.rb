@@ -58,6 +58,22 @@ module QA
         browser == :chrome && interception_enabled?
       end
 
+      def release
+        ENV['RELEASE']
+      end
+
+      def release_registry_url
+        ENV['RELEASE_REGISTRY_URL']
+      end
+
+      def release_registry_username
+        ENV['RELEASE_REGISTRY_USERNAME']
+      end
+
+      def release_registry_password
+        ENV['RELEASE_REGISTRY_PASSWORD']
+      end
+
       def ci_job_url
         ENV['CI_JOB_URL']
       end
