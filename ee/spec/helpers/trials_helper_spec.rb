@@ -2,13 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::TrialHelper do
+RSpec.describe TrialsHelper, feature_category: :purchase do
   using RSpec::Parameterized::TableSyntax
 
   describe '#create_lead_form_data' do
-    let(:user) do
-      double('User', first_name: '_first_name_', last_name: '_last_name_', organization: '_company_name_')
-    end
+    let(:user) { build_stubbed(:user, user_detail: build_stubbed(:user_detail, organization: '_org_')) }
 
     let(:extra_params) do
       {
