@@ -51,6 +51,18 @@ RSpec.describe Projects::MarkForDeletionService do
 
     context 'audit events' do
       it 'saves audit event' do
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(name: 'project_path_updated')
+        ).and_call_original
+
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(name: 'project_name_updated')
+        ).and_call_original
+
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          hash_including(name: 'project_deletion_marked')
+        ).and_call_original
+
         expect { described_class.new(project, user).execute }
           .to change { AuditEvent.count }.by(3)
       end
