@@ -3,7 +3,7 @@ name: cluster_agent_token_created
 description: Event triggered when a user creates a cluster agent token
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/382133
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/112036
-feature_category: kubernetes_management
+feature_category: deployment_management
 milestone: '15.10'
 saved_to_database: true
 streamed: true
