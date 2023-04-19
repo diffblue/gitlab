@@ -22364,6 +22364,9 @@ msgstr ""
 msgid "Import|Partially completed"
 msgstr ""
 
+msgid "Import|See failures"
+msgstr ""
+
 msgid "Import|The repository could not be imported."
 msgstr ""
 
