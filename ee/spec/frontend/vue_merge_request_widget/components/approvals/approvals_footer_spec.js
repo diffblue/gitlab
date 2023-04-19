@@ -6,7 +6,6 @@ import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list
 
 const testSuggestedApprovers = () => Array.from({ length: 11 }, (_, i) => i).map((id) => ({ id }));
 const testApprovalRules = () => [{ name: 'Lorem' }, { name: 'Ipsum' }];
-const testInvalidApprovalRules = () => testApprovalRules().slice(0, 1);
 
 describe('EE MRWidget approvals footer', () => {
   let wrapper;
@@ -16,7 +15,6 @@ describe('EE MRWidget approvals footer', () => {
       propsData: {
         suggestedApprovers: testSuggestedApprovers(),
         approvalRules: testApprovalRules(),
-        invalidApproversRules: testInvalidApprovalRules(),
         projectPath: 'gitlab-org/gitlab',
         iid: '1',
         ...props,

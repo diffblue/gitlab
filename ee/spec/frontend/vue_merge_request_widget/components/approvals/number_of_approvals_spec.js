@@ -1,4 +1,3 @@
-import { GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
 
@@ -6,15 +5,15 @@ describe('EE Number of approvals', () => {
   let wrapper;
 
   const rule = { approvalsRequired: 1, approvedBy: { nodes: [] }, id: 1, name: 'rule-name' };
-  const invalidApproversRules = [];
 
   const createComponent = (props = {}) => {
     wrapper = shallowMount(NumberOfApprovals, {
-      propsData: { rule, invalidApproversRules, ...props },
+      propsData: { rule, ...props },
     });
   };
 
-  const findApprovalCheckPopover = () => wrapper.findComponent(GlPopover);
+  const findAutoApprovedPopover = () => wrapper.find("[data-testid='popover-auto-approved']");
+  const findActionRequiredPopover = () => wrapper.find("[data-testid='popover-action-required']");
   const findApprovalText = () => wrapper.find("[data-testid='approvals-text']");
 
   beforeEach(() => {
@@ -24,7 +23,8 @@ describe('EE Number of approvals', () => {
   describe('default', () => {
     it('renders components', () => {
       expect(findApprovalText().exists()).toBe(true);
-      expect(findApprovalCheckPopover().exists()).toBe(false);
+      expect(findAutoApprovedPopover().exists()).toBe(false);
+      expect(findActionRequiredPopover().exists()).toBe(false);
     });
 
     it('renders total number of approvals', () => {
@@ -34,7 +34,7 @@ describe('EE Number of approvals', () => {
 
   describe('with approvals required set to zero', () => {
     beforeEach(() => {
-      createComponent({ rule: { rule, approvalsRequired: 0 } });
+      createComponent({ rule: { ...rule, approvalsRequired: 0 } });
     });
 
     it('renders optional text', () => {
@@ -42,21 +42,39 @@ describe('EE Number of approvals', () => {
     });
 
     it('does not render popover', () => {
-      expect(findApprovalCheckPopover().exists()).toBe(false);
+      expect(findAutoApprovedPopover().exists()).toBe(false);
     });
   });
 
   describe('with invalid rules', () => {
-    beforeEach(() => {
-      createComponent({ invalidApproversRules: [rule] });
+    const invalidRule = { ...rule, invalid: true };
+
+    describe('with auto-approved rule', () => {
+      beforeEach(() => {
+        createComponent({ rule: { ...invalidRule, allowMergeWhenInvalid: true } });
+      });
+
+      it('renders auto approved text', () => {
+        expect(findApprovalText().text()).toBe('Auto approved');
+      });
+
+      it('renders a correct popover', () => {
+        expect(findAutoApprovedPopover().exists()).toBe(true);
+      });
     });
 
-    it('renders invalid text', () => {
-      expect(findApprovalText().text()).toBe('Invalid');
-    });
+    describe('with rule requiring action', () => {
+      beforeEach(() => {
+        createComponent({ rule: { ...invalidRule, allowMergeWhenInvalid: false } });
+      });
 
-    it('renders popover', () => {
-      expect(findApprovalCheckPopover().exists()).toBe(true);
+      it('renders action required text', () => {
+        expect(findApprovalText().text()).toBe('Action required');
+      });
+
+      it('renders a correct popover', () => {
+        expect(findActionRequiredPopover().exists()).toBe(true);
+      });
     });
   });
 });

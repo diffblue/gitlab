@@ -45,10 +45,6 @@ export default {
       type: String,
       required: true,
     },
-    invalidApproversRules: {
-      type: Array,
-      required: true,
-    },
     securityApprovalsHelpPagePath: {
       type: String,
       required: false,
@@ -248,7 +244,7 @@ export default {
             />
           </td>
           <td class="d-md-table-cell w-0 d-none gl-white-space-nowrap js-pending">
-            <number-of-approvals :rule="rule" :invalid-approvers-rules="invalidApproversRules" />
+            <number-of-approvals :rule="rule" />
           </td>
           <td class="d-md-table-cell d-none js-commented-by">
             <user-avatar-list
