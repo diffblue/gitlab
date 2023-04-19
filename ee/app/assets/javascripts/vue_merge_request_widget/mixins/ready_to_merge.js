@@ -1,5 +1,6 @@
 import { isNumber, isString } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, s__ } from '~/locale';
 import {
   MTWPS_MERGE_STRATEGY,
@@ -18,6 +19,11 @@ export const PIPELINE_MUST_SUCCEED_CONFLICT_TEXT = __(
 export const MERGE_DISABLED_DEPENDENCIES_TEXT = __(
   'Merge blocked: all merge request dependencies must be merged.',
 );
+
+const MERGE_WHEN_PIPELINE_SUCCEEDS_HELP = helpPagePath(
+  '/user/project/merge_requests/merge_when_pipeline_succeeds.html',
+);
+const MERGE_TRAINS_HELP = helpPagePath('ci/pipelines/merge_trains.html');
 
 export default {
   computed: {
@@ -52,7 +58,7 @@ export default {
     pipelineMustSucceedConflictText() {
       return PIPELINE_MUST_SUCCEED_CONFLICT_TEXT;
     },
-    autoMergeText() {
+    autoMergeTextLegacy() {
       if (this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY) {
         if (this.stateData.mergeTrainsCount === 0) {
           return __('Start merge train when pipeline succeeds');
@@ -67,6 +73,45 @@ export default {
         return __('Add to merge train');
       }
       return __('Merge when pipeline succeeds');
+    },
+    autoMergeText() {
+      if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
+        return __('Merge');
+      }
+
+      return __('Set to auto-merge');
+    },
+    autoMergeHelperText() {
+      if (this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY) {
+        return __('Add to merge train when pipeline succeeds');
+      }
+      if (this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY) {
+        return __('Add to merge train');
+      }
+
+      return __('Merge when pipeline succeeds');
+    },
+    autoMergePopoverSettings() {
+      if (
+        this.preferredAutoMergeStrategy === MT_MERGE_STRATEGY ||
+        this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY
+      ) {
+        return {
+          helpLink: MERGE_TRAINS_HELP,
+          bodyText: __(
+            'A %{linkStart}merge train%{linkEnd} is a queued list of merge requests, each waiting to be merged into the target branch.',
+          ),
+          title: __('Merge trains'),
+        };
+      }
+
+      return {
+        helpLink: MERGE_WHEN_PIPELINE_SUCCEEDS_HELP,
+        bodyText: __(
+          'When the pipeline for this merge request succeeds, it will %{linkStart}automatically merge%{linkEnd}.',
+        ),
+        title: __('Merge when pipeline succeeds'),
+      };
     },
     pipelineId() {
       return getIdFromGraphQLId(this.pipeline.id);
