@@ -19,12 +19,7 @@ module EE
         before_action only: :show do
           push_licensed_feature(:escalation_policies, project)
           push_frontend_feature_flag(:real_time_issue_weight, project)
-
-          if project.licensed_feature_available?(:summarize_notes) && project.member?(current_user)
-            push_licensed_feature(:summarize_notes, project)
-            push_frontend_feature_flag(:summarize_comments, project.group)
-            push_frontend_feature_flag(:openai_experimentation)
-          end
+          push_force_frontend_feature_flag(:summarize_comments, can?(current_user, :summarize_notes, issue))
         end
 
         before_action :redirect_if_test_case, only: [:show]

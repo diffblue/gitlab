@@ -14,6 +14,7 @@ class Groups::EpicsController < Groups::ApplicationController
   before_action :authorize_update_issuable!, only: :update
   before_action :authorize_create_epic!, only: [:create, :new]
   before_action :verify_group_bulk_edit_enabled!, only: [:bulk_update]
+  before_action :set_summarize_notes_feature_flag, only: :show
   after_action :log_epic_show, only: :show
 
   before_action do
@@ -22,9 +23,6 @@ class Groups::EpicsController < Groups::ApplicationController
     push_frontend_feature_flag(:content_editor_on_issues, @group)
     push_frontend_feature_flag(:or_issuable_queries, @group)
     push_frontend_feature_flag(:saved_replies, current_user)
-    push_frontend_feature_flag(:summarize_comments, current_user)
-    push_licensed_feature(:summarize_notes, group) if group.licensed_feature_available?(:summarize_notes)
-    push_frontend_feature_flag(:openai_experimentation, current_user)
   end
 
   feature_category :portfolio_management
@@ -118,5 +116,9 @@ class Groups::EpicsController < Groups::ApplicationController
 
   def verify_group_bulk_edit_enabled!
     render_404 unless group.licensed_feature_available?(:group_bulk_edit)
+  end
+
+  def set_summarize_notes_feature_flag
+    push_force_frontend_feature_flag(:summarize_comments, can?(current_user, :summarize_notes, epic))
   end
 end
