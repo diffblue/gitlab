@@ -1,18 +1,21 @@
-query UserWorkspacesList {
-  userWorkspacesList @client {
-    nodes {
-      id
-      name
-      namespace
-      projectFullPath
-      desiredState
-      actualState
-      displayedState
-      url
-      editor
-      devfile
-      branch
-      lastUsed
+query userWorkspacesList($username: String) {
+  user(username: $username) {
+    id
+    workspaces @client {
+      nodes {
+        id
+        name
+        namespace
+        project {
+          id
+          nameWithNamespace
+        }
+        desiredState
+        actualState
+        url
+        devfileRef
+        devfilePath
+      }
     }
   }
 }
