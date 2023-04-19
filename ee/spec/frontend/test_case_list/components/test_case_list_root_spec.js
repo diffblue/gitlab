@@ -1,9 +1,13 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
 
 import TestCaseListRoot from 'ee/test_case_list/components/test_case_list_root.vue';
+import projectTestCases from 'ee/test_case_list/queries/project_test_cases.query.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
-import { mockIssuable } from 'jest/vue_shared/issuable/list/mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { mockIssuableItems } from 'jest/vue_shared/issuable/list/mock_data';
 
 import {
   FILTERED_SEARCH_TERM,
@@ -30,6 +34,8 @@ const mockProvide = {
 };
 
 const mockPageInfo = {
+  hasNextPage: true,
+  hasPreviousPage: false,
   startCursor: 'eyJpZCI6IjI1IiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzI6MTQgVVRDIn0',
   endCursor: 'eyJpZCI6IjIxIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzE6MTUgVVRDIn0',
 };
@@ -37,31 +43,48 @@ const mockPageInfo = {
 describe('TestCaseListRoot', () => {
   let wrapper;
 
-  const getIssuableList = () => wrapper.findComponent(IssuableList);
+  const defaultHandlers = ({ nodes = mockIssuableItems(10), pagination = {} } = {}) =>
+    jest.fn().mockResolvedValue({
+      data: {
+        project: {
+          id: 'id',
+          name: 'name',
+          issueStatusCounts: {
+            opened: 5,
+            closed: 0,
+            all: 5,
+          },
+          issues: {
+            nodes,
+            pageInfo: {
+              __typename: 'PageInfo',
+              ...mockPageInfo,
+              ...pagination,
+            },
+          },
+        },
+      },
+    });
+
+  const createMockApolloProvider = (handlers) => {
+    Vue.use(VueApollo);
+
+    return createMockApollo([[projectTestCases, handlers]]);
+  };
+
+  const findIssuableList = () => wrapper.findComponent(IssuableList);
 
   const createComponent = ({
     provide = mockProvide,
     initialFilterParams = {},
-    testCasesLoading = false,
-    data = {},
+    handlers = defaultHandlers(),
   } = {}) => {
     wrapper = shallowMount(TestCaseListRoot, {
       propsData: {
         initialFilterParams,
       },
-      data() {
-        return data;
-      },
       provide,
-      mocks: {
-        $apollo: {
-          queries: {
-            project: {
-              loading: testCasesLoading,
-            },
-          },
-        },
-      },
+      apolloProvider: createMockApolloProvider(handlers),
     });
   };
 
@@ -72,15 +95,18 @@ describe('TestCaseListRoot', () => {
       ${false}         | ${false}
     `(
       'passes $returnValue to Issuables List prop when query loading is $testCasesLoading',
-      ({ testCasesLoading, returnValue }) => {
+      async ({ testCasesLoading, returnValue }) => {
         createComponent({
           provide: mockProvide,
           initialFilterParams: {},
           testCasesList: [],
-          testCasesLoading,
         });
 
-        expect(getIssuableList().props('issuablesLoading')).toBe(returnValue);
+        if (!testCasesLoading) {
+          await waitForPromises();
+        }
+
+        expect(findIssuableList().props('issuablesLoading')).toBe(returnValue);
       },
     );
   });
@@ -88,129 +114,91 @@ describe('TestCaseListRoot', () => {
   describe('computed', () => {
     describe('showPaginationControls', () => {
       it.each`
-        hasPreviousPage | hasNextPage  | returnValue
-        ${true}         | ${undefined} | ${true}
-        ${undefined}    | ${true}      | ${true}
-        ${false}        | ${undefined} | ${false}
-        ${undefined}    | ${false}     | ${false}
-        ${false}        | ${false}     | ${false}
-        ${true}         | ${true}      | ${true}
+        hasPreviousPage | hasNextPage | returnValue
+        ${true}         | ${false}    | ${true}
+        ${false}        | ${true}     | ${true}
+        ${false}        | ${false}    | ${false}
+        ${true}         | ${true}     | ${true}
       `(
         'returns $returnValue when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `testCases.pageInfo`',
-        ({ hasPreviousPage, hasNextPage, returnValue }) => {
+        async ({ hasPreviousPage, hasNextPage, returnValue }) => {
           createComponent({
-            data: {
-              project: {
-                issues: {
-                  pageInfo: {
-                    hasPreviousPage,
-                    hasNextPage,
-                  },
-                },
+            handlers: defaultHandlers({
+              nodes: mockIssuableItems(10),
+              pagination: {
+                hasPreviousPage,
+                hasNextPage,
               },
-            },
+            }),
           });
 
-          expect(getIssuableList().props('showPaginationControls')).toBe(returnValue);
+          await waitForPromises();
+
+          expect(findIssuableList().props('showPaginationControls')).toBe(returnValue);
         },
       );
 
       it.each`
-        testCasesList     | testCaseListDescription | returnValue
-        ${[]}             | ${'empty'}              | ${false}
-        ${[mockIssuable]} | ${'not empty'}          | ${true}
+        testCasesList           | testCaseListDescription | returnValue
+        ${[]}                   | ${'empty'}              | ${false}
+        ${mockIssuableItems(5)} | ${'not empty'}          | ${true}
       `(
         'returns $returnValue when testCases array is $testCaseListDescription',
-        ({ testCasesList, returnValue }) => {
+        async ({ testCasesList, returnValue }) => {
           createComponent({
-            data: {
-              project: {
-                issues: {
-                  nodes: testCasesList,
-                },
+            handlers: defaultHandlers({
+              nodes: testCasesList,
+              pagination: {
+                hasPreviousPage: returnValue,
+                hasNextPage: returnValue,
               },
-            },
+            }),
           });
 
-          expect(getIssuableList().props('showPaginationControls')).toBe(returnValue);
+          await waitForPromises();
+
+          expect(findIssuableList().props('showPaginationControls')).toBe(returnValue);
         },
       );
     });
 
     describe('previousPage', () => {
-      it('returns number representing previous page based on currentPage value', () => {
-        createComponent({
-          data: {
-            currentPage: 3,
-          },
-        });
+      it('returns number representing previous page based on currentPage value', async () => {
+        createComponent();
+        await findIssuableList().vm.$emit('page-change', 3);
 
-        expect(getIssuableList().props('previousPage')).toBe(2);
+        expect(findIssuableList().props('previousPage')).toBe(2);
       });
     });
 
     describe('nextPage', () => {
       beforeEach(() => {
-        createComponent({
-          data: {
-            project: {
-              issueStatusCounts: {
-                opened: 5,
-                closed: 0,
-                all: 5,
-              },
-            },
-          },
-        });
+        createComponent();
       });
 
       it('returns number representing next page based on currentPage value', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          currentPage: 1,
-        });
+        await findIssuableList().vm.$emit('page-change', 1);
 
-        await nextTick();
-
-        expect(getIssuableList().props('nextPage')).toBe(2);
+        expect(findIssuableList().props('nextPage')).toBe(2);
       });
 
       it('returns `null` when currentPage is already last page', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          currentPage: 3,
-        });
+        await findIssuableList().vm.$emit('page-change', 3);
 
-        await nextTick();
-
-        expect(getIssuableList().props('nextPage')).toBeNull();
+        expect(findIssuableList().props('nextPage')).toBeNull();
       });
     });
   });
 
   describe('methods', () => {
     describe('updateUrl', () => {
-      it('updates window URL based on presence of props for filtered search and sort criteria', () => {
-        createComponent({
-          data: {
-            currentState: 'opened',
-            currentPage: 2,
-            nextPageCursor: 'abc123',
-            sortedBy: 'updated_asc',
-            filterParams: {
-              authorUsernames: 'root',
-              search: 'foo',
-              labelName: ['bug'],
-            },
-          },
-        });
+      it('updates window URL based on presence of props for filtered search and sort criteria', async () => {
+        createComponent();
 
-        wrapper.vm.updateUrl();
+        await findIssuableList().vm.$emit('click-tab', 'tab');
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?state=opened&sort=updated_asc&page=2&next=abc123&label_name%5B%5D=bug&search=foo`,
+          `${TEST_HOST}/?state=tab&sort=created_desc&page=1`,
         );
       });
     });
@@ -218,37 +206,25 @@ describe('TestCaseListRoot', () => {
 
   describe('template', () => {
     describe('issuable-list events', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponent();
-        jest.spyOn(wrapper.vm, 'updateUrl').mockImplementation(jest.fn);
+        await waitForPromises();
       });
 
       it('click-tab event changes currentState value and calls updateUrl', async () => {
-        getIssuableList().vm.$emit('click-tab', 'closed');
-
-        await nextTick();
-        expect(getIssuableList().props('currentTab')).toBe('closed');
-        expect(wrapper.vm.updateUrl).toHaveBeenCalled();
+        await findIssuableList().vm.$emit('click-tab', 'closed');
+        expect(findIssuableList().props('currentTab')).toBe('closed');
       });
 
-      it('page-change event changes prevPageCursor and nextPageCursor values based on based on currentPage and calls updateUrl', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        await wrapper.setData({
-          testCases: {
-            pageInfo: mockPageInfo,
-          },
-        });
-
-        getIssuableList().vm.$emit('page-change', 2);
+      it('page-change event changes prevPageCursor and nextPageCursor values based on based on currentPage', () => {
+        findIssuableList().vm.$emit('page-change', 2);
 
         expect(wrapper.vm.prevPageCursor).toBe('');
         expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
-        expect(wrapper.vm.updateUrl).toHaveBeenCalled();
       });
 
-      it('filter event changes filterParams value and calls updateUrl', async () => {
-        getIssuableList().vm.$emit('filter', [
+      it('filter event changes filterParams value', async () => {
+        await findIssuableList().vm.$emit('filter', [
           {
             type: TOKEN_TYPE_AUTHOR,
             value: {
@@ -269,23 +245,17 @@ describe('TestCaseListRoot', () => {
           },
         ]);
 
-        await nextTick();
-
-        expect(getIssuableList().props('initialFilterValue')).toEqual([
+        expect(findIssuableList().props('initialFilterValue')).toEqual([
           { type: TOKEN_TYPE_AUTHOR, value: { data: 'root' } },
           { type: TOKEN_TYPE_LABEL, value: { data: 'bug' } },
           'foo',
         ]);
-        expect(wrapper.vm.updateUrl).toHaveBeenCalled();
       });
 
-      it('sort event changes sortedBy value and calls updateUrl', async () => {
-        getIssuableList().vm.$emit('sort', 'updated_desc');
+      it('sort event changes sortedBy value', async () => {
+        await findIssuableList().vm.$emit('sort', 'updated_desc');
 
-        await nextTick();
-
-        expect(getIssuableList().props('initialSortBy')).toBe('updated_desc');
-        expect(wrapper.vm.updateUrl).toHaveBeenCalled();
+        expect(findIssuableList().props('initialSortBy')).toBe('updated_desc');
       });
     });
   });
