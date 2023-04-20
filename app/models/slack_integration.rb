@@ -31,13 +31,13 @@ class SlackIntegration < ApplicationRecord
     through: :slack_integrations_scopes
 
   scope :with_bot, -> { where.not(bot_user_id: nil) }
-  scope :by_team, -> (team_id) { where(team_id: team_id) }
+  scope :by_team, ->(team_id) { where(team_id: team_id) }
 
   validates :team_id, presence: true
   validates :team_name, presence: true
   validates :alias, presence: true,
-                    uniqueness: { scope: :team_id, message: 'This alias has already been taken' },
-                    length: 2..4096
+    uniqueness: { scope: :team_id, message: 'This alias has already been taken' },
+    length: 2..4096
   validates :user_id, presence: true
   validates :integration, presence: true
 
@@ -65,11 +65,11 @@ class SlackIntegration < ApplicationRecord
   end
 
   def all_features_supported?
-    ALL_FEATURES.all? { feature_available?(_1) } # rubocop: disable Gitlab/FeatureAvailableUsage
+    ALL_FEATURES.all? { |feature| feature_available?(feature) } # rubocop: disable Gitlab/FeatureAvailableUsage
   end
 
   def authorized_scope_names=(names)
-    names = Array.wrap(names).flat_map { _1.split(',') }.map(&:strip)
+    names = Array.wrap(names).flat_map { |name| name.split(',') }.map(&:strip)
 
     scopes = ::Integrations::SlackWorkspace::ApiScope.find_or_initialize_by_names(names)
     self.slack_api_scopes = scopes

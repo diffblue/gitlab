@@ -17,7 +17,7 @@ FactoryBot.define do
     end
 
     trait :all_features_supported do
-      after(:build) do |slack_integration, evaluator|
+      after(:build) do |slack_integration, _evaluator|
         slack_integration.authorized_scope_names = %w[commands chat:write chat:write.public]
       end
     end

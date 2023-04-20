@@ -17,7 +17,7 @@ module Integrations
     attribute :vulnerability_events, default: false
     attribute :wiki_page_events, default: false
 
-    has_one :slack_integration, foreign_key: :integration_id
+    has_one :slack_integration, foreign_key: :integration_id, inverse_of: :integration
     delegate :bot_access_token, :bot_user_id, to: :slack_integration, allow_nil: true
 
     def update_active_status
