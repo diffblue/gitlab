@@ -138,7 +138,12 @@ module RequirementsManagement
     end
 
     def only_requirement_type_issue
-      errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
+      return unless requirement_issue && !requirement_issue.work_item_type.requirement? && will_save_change_to_issue_id?
+
+      errors.add(
+        :requirement_issue,
+        "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.work_item_type.base_type}."
+      )
     end
 
     def same_project_of_work_item
@@ -152,7 +157,7 @@ module RequirementsManagement
     end
 
     def state
-      return unless requirement_issue&.requirement?
+      return unless requirement_issue&.work_item_type&.requirement?
 
       STATE_MAP[requirement_issue.state]
     end

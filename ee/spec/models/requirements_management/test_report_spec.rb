@@ -24,6 +24,15 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
         it_behaves_like 'a model with a requirement issue association'
       end
     end
+
+    context 'when requirement_issue is not of type requirement' do
+      subject { build(:test_report, requirement_issue: create(:issue)) }
+
+      specify do
+        expect(subject).not_to be_valid
+        expect(subject.errors.messages[:requirement_issue]).to include(/must be a `requirement`/)
+      end
+    end
   end
 
   describe 'scopes' do

@@ -96,7 +96,12 @@ module RequirementsManagement
     end
 
     def only_requirement_type_issue
-      errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Test Report with a #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
+      return unless requirement_issue && !requirement_issue.work_item_type.requirement? && will_save_change_to_issue_id?
+
+      errors.add(
+        :requirement_issue,
+        "must be a `requirement`. You cannot associate a Test Report with a #{requirement_issue.work_item_type.base_type}."
+      )
     end
   end
 end
