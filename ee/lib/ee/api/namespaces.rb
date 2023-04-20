@@ -31,7 +31,7 @@ module EE
             end
 
             namespace.update(update_attrs).tap do
-              if update_attrs[:extra_shared_runners_minutes_limit].present? || update_attrs[:shared_runners_minutes_limit].present?
+              if update_attrs[:extra_shared_runners_minutes_limit].present? || update_attrs.key?(:shared_runners_minutes_limit)
                 ::Ci::Minutes::RefreshCachedDataService.new(namespace).execute
                 ::Ci::Minutes::NamespaceMonthlyUsage.reset_current_notification_level(namespace)
               end
