@@ -180,6 +180,7 @@ RSpec.describe API::DebianProjectPackages, feature_category: :package_registry d
         let(:file_name) { 'libsample0_1.2.3~alpha2_amd64.deb' }
 
         it_behaves_like 'Debian packages write endpoint', 'upload', :created, nil
+        it_behaves_like 'Debian packages endpoint catching ObjectStorage::RemoteStoreError'
         it_behaves_like 'a Debian package tracking event', 'push_package'
 
         context 'with codename and component' do
