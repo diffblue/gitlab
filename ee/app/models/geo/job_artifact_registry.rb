@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Geo::JobArtifactRegistry < Geo::BaseRegistry
-  include Geo::Syncable
   include ::Geo::ReplicableRegistry
   include ::Geo::VerifiableRegistry
   include IgnorableColumns
