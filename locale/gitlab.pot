@@ -18729,6 +18729,9 @@ msgstr ""
 msgid "ForksDivergence|Update fork"
 msgstr ""
 
+msgid "ForksDivergence|View merge request"
+msgstr ""
+
 msgid "Format: %{dateFormat}"
 msgstr ""
 
