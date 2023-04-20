@@ -16,14 +16,17 @@ RSpec.describe MergeRequests::BuildService, feature_category: :code_review_workf
   let(:commits) { nil }
 
   let(:service) do
-    described_class.new(project: project, current_user: user,
-                        params: {
-                          description: description,
-                          source_branch: source_branch,
-                          target_branch: target_branch,
-                          source_project: source_project,
-                          target_project: target_project
-                        })
+    described_class.new(
+      project: project,
+      current_user: user,
+      params: {
+        description: description,
+        source_branch: source_branch,
+        target_branch: target_branch,
+        source_project: source_project,
+        target_project: target_project
+      }
+    )
   end
 
   before do
