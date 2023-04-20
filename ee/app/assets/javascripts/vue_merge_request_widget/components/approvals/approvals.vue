@@ -47,6 +47,9 @@ export default {
     requirePasswordToApprove() {
       return !this.isBasic && this.mr.requirePasswordToApprove;
     },
+    invalidRules() {
+      return this.approvals.approvalState?.invalidApproversRules || [];
+    },
   },
   methods: {
     toggleCollapsed() {
@@ -77,6 +80,7 @@ export default {
     <template v-if="!isBasic && !collapsed" #footer>
       <approvals-footer
         v-if="hasFooter"
+        :invalid-approvers-rules="invalidRules"
         :security-approvals-help-page-path="mr.securityApprovalsHelpPagePath"
         :eligible-approvers-docs-path="mr.eligibleApproversDocsPath"
         :project-path="mr.targetProjectFullPath"

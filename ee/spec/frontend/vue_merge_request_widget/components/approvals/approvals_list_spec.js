@@ -13,12 +13,44 @@ import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/
 
 Vue.use(VueApollo);
 
+const testApprovers = () => Array.from({ length: 11 }, (_, i) => i).map((id) => ({ id }));
+const testRuleApproved = () => ({
+  id: 1,
+  name: 'Lorem',
+  approvals_required: 2,
+  approved_by: [{ id: 1 }, { id: 2 }, { id: 3 }],
+  commented_by: [{ id: 1 }, { id: 2 }, { id: 3 }],
+  approvers: testApprovers(),
+  approved: true,
+});
+const testRuleUnapproved = () => ({
+  id: 2,
+  name: 'Ipsum',
+  approvals_required: 1,
+  approved_by: [],
+  commented_by: [],
+  approvers: testApprovers(),
+  approved: false,
+});
+const testRuleOptional = () => ({
+  id: 3,
+  name: 'Dolar',
+  approvals_required: 0,
+  approved_by: [{ id: 1 }],
+  commented_by: [{ id: 1 }],
+  approvers: testApprovers(),
+  approved: false,
+});
+const testRules = () => [testRuleApproved(), testRuleUnapproved(), testRuleOptional()];
+const testInvalidRules = () => testRules().slice(0, 1);
+
 describe('EE MRWidget approvals list', () => {
   let wrapper;
 
   const createComponent = (response = approvalRulesResponse) => {
     wrapper = shallowMount(ApprovalsList, {
       propsData: {
+        invalidApproversRules: testInvalidRules(),
         projectPath: 'gitlab-org/gitlab',
         iid: '1',
       },
@@ -110,6 +142,7 @@ describe('EE MRWidget approvals list', () => {
       const numberOfApprovals = pendingObject.findComponent(NumberOfApprovals);
 
       expect(numberOfApprovals.exists()).toBe(true);
+      expect(numberOfApprovals.props('invalidApproversRules')).toEqual(testInvalidRules());
     });
 
     it('renders approved_by user avatar list', () => {

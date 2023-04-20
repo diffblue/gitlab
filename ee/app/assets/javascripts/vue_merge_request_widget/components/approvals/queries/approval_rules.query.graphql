@@ -14,8 +14,6 @@ query approvalRules($projectPath: ID!, $iid: String!) {
           type
           approved
           approvalsRequired
-          invalid
-          allowMergeWhenInvalid
           name
           section
           approvedBy {
