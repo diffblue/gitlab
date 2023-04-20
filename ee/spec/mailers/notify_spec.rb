@@ -50,25 +50,34 @@ RSpec.describe Notify do
   let_it_be(:assignee2) { create(:user, email: 'assignee2@example.com', name: 'Jane Doe') }
 
   let_it_be(:merge_request, reload: true) do
-    create(:merge_request, source_project: project,
-                           target_project: project,
-                           author: current_user,
-                           assignees: [assignee, assignee2],
-                           description: 'Awesome description')
+    create(
+      :merge_request,
+      source_project: project,
+      target_project: project,
+      author: current_user,
+      assignees: [assignee, assignee2],
+      description: 'Awesome description'
+    )
   end
 
   let_it_be(:issue, reload: true) do
-    create(:issue, author: current_user,
-                   assignees: [assignee],
-                   project: project,
-                   description: 'My awesome description!')
+    create(
+      :issue,
+      author: current_user,
+      assignees: [assignee],
+      project: project,
+      description: 'My awesome description!'
+    )
   end
 
   let_it_be(:project2, reload: true) { create(:project, :repository) }
   let_it_be(:merge_request_without_assignee, reload: true) do
-    create(:merge_request, source_project: project2,
-                           author: current_user,
-                           description: 'Awesome description')
+    create(
+      :merge_request,
+      source_project: project2,
+      author: current_user,
+      description: 'Awesome description'
+    )
   end
 
   context 'for a project' do

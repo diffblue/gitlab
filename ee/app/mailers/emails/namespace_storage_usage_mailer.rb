@@ -34,7 +34,7 @@ module Emails
       mail_with_locale(
         bcc: recipients,
         subject: s_("NamespaceStorage|You have used %{used_storage_percentage}%% of the storage quota for %{namespace_name}" %
-                    { used_storage_percentage: @used_storage_percentage, namespace_name: namespace.name })
+          { used_storage_percentage: @used_storage_percentage, namespace_name: namespace.name })
       )
     end
   end
