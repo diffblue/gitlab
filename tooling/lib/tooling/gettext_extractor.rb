@@ -73,11 +73,17 @@ module Tooling
     end
 
     def parse_backend_file(path)
+      source = ::File.read(path)
+      # Do not bother parsing files not containing `_(`
+      # All of our translation helpers, _(, s_(), N_(), etc.
+      # contain it. So we can skip parsing files not containing it
+      return [] unless source.include?('_(')
+
       case ::File.extname(path)
       when '.rb'
-        GetText::RubyParser.new(path).parse
+        GetText::RubyParser.new(path).parse_source(source)
       when '.haml'
-        HamlParser.new(path).parse
+        HamlParser.new(path).parse_source(source)
       when '.erb'
         GetText::ErbParser.new(path).parse
       else
