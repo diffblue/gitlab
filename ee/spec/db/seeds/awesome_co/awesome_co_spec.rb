@@ -200,7 +200,7 @@ module AwesomeCo
 
         describe 'validation' do
           context 'when seed file is invalid' do
-            context 'when specifying an invalid factory' do
+            it_behaves_like 'raises an error when specifying an invalid factory' do
               let(:seed_file_content) do
                 <<~YAML
                   ---
@@ -210,13 +210,9 @@ module AwesomeCo
                     - name: Test
                 YAML
               end
-
-              it 'raises an error' do
-                expect { parser.parse }.to raise_error(RuntimeError, /invalids.*to a valid registered Factory/)
-              end
             end
 
-            context 'when specifying invalid traits to a factory' do
+            it_behaves_like 'specifying invalid traits to a factory' do
               let(:seed_file_content) do
                 <<~YAML
                   ---
@@ -227,17 +223,9 @@ module AwesomeCo
                         - invalid
                 YAML
               end
-
-              it 'raises an error', :aggregate_failures do
-                expect { parser.parse }.to raise_error do |error|
-                  expect(error).to be_a(RuntimeError)
-                  expect(error.message).to include('Trait not registered: \\"invalid\\"')
-                  expect(error.message).to include('for Factory \\"issue\\"')
-                end
-              end
             end
 
-            context 'when specifying invalid attributes to a factory' do
+            it_behaves_like 'specifying invalid attributes to a factory' do
               let(:seed_file_content) do
                 <<~YAML
                   ---
@@ -246,18 +234,10 @@ module AwesomeCo
                     - invalid: true
                 YAML
               end
-
-              it 'raises an error' do
-                expect { parser.parse }.to raise_error(RuntimeError, /is not a valid attribute/)
-              end
-
-              it 'contains possible alternatives' do
-                expect { parser.parse }.to raise_error(RuntimeError, /Did you mean/)
-              end
             end
           end
 
-          context 'when an id already exists' do
+          it_behaves_like 'an id already exists' do
             let(:seed_file_content) do
               <<~YAML
                 name: Test
@@ -268,52 +248,24 @@ module AwesomeCo
                     title: My other label
               YAML
             end
-
-            it 'raises a validation error' do
-              expect { parser.parse }.to raise_error(/id `my_label` must be unique/)
-            end
           end
         end
 
         describe '#parse' do
-          context 'when name is not specified' do
+          it_behaves_like 'name is not specified' do
             let(:seed_file_content) do
               <<~YAML
                 group_labels:
                   - title: My Label
               YAML
             end
-
-            it 'raises an error when name is not specified' do
-              expect { parser.parse }.to raise_error(/Seed file must specify a name/)
-            end
           end
         end
 
         context 'when parsed' do
-          it 'has a name' do
-            parser.parse
-
-            expect(parser.name).to eq('Test')
-          end
-
-          describe 'factory definitions' do
-            it 'has exactly two definitions' do
-              parser.parse
-
-              expect(parser.definitions.size).to eq(2)
-            end
-
-            it 'creates the group label' do
-              expect { parser.parse }.to change { GroupLabel.count }.by(1)
-            end
-
-            it 'creates the project' do
-              expect { parser.parse }.to change { Project.count }.by(1)
-            end
-          end
-
-          context 'when passing traits' do
+          it_behaves_like 'has a name'
+          it_behaves_like 'factory definitions'
+          it_behaves_like 'passes traits' do
             let(:seed_file_content) do
               <<~YAML
                 ---
@@ -323,15 +275,6 @@ module AwesomeCo
                     traits:
                       - described
               YAML
-            end
-
-            it 'passes traits' do
-              expect_next_instance_of(AwesomeCo::FactoryDefinitions::FactoryDefinition) do |instance|
-                # `described` trait will automaticaly generate a description
-                expect(instance.build(binding).description).to eq('Description of Test Label')
-              end
-
-              parser.parse
             end
           end
 
@@ -348,7 +291,8 @@ module AwesomeCo
                 YAML
               end
 
-              context 'when the id has spaces' do
+              it_behaves_like 'definition has an id'
+              it_behaves_like 'id has spaces' do
                 let(:seed_file_content) do
                   <<~YAML
                     name: Test
@@ -357,34 +301,9 @@ module AwesomeCo
                         title: With Spaces
                   YAML
                 end
-
-                it 'binds to an underscored variable', :aggregate_failures do
-                  parser.parse
-
-                  expect(group_labels).to respond_to(:id_with_spaces)
-                  expect(group_labels.id_with_spaces.title).to eq('With Spaces')
-                end
-
-                it 'renders a warning' do
-                  expect { parser.parse }.to output(%(parsing id "id with spaces" as "id_with_spaces"\n)).to_stderr
-                end
-              end
-
-              it 'binds the object', :aggregate_failures do
-                parser.parse
-
-                expect(group_labels).to be_a(OpenStruct) # rubocop:disable Style/OpenStructUse
-                expect(group_labels.my_label).to be_a(GroupLabel)
-                expect(group_labels.my_label.title).to eq('My Label')
               end
 
               context 'when id is malformed' do
-                shared_examples 'invalid id' do |message|
-                  it 'raises an error' do
-                    expect { parser.parse }.to raise_error(message)
-                  end
-                end
-
                 context 'when id contains invalid characters' do
                   it_behaves_like 'invalid id', /id `--invalid-id` is invalid/ do
                     let(:seed_file_content) do
@@ -419,7 +338,7 @@ module AwesomeCo
               end
             end
 
-            context 'when a definition does not have an id' do
+            it_behaves_like 'definition does not have an id' do
               let(:seed_file_content) do
                 <<~YAML
                   name: Test
@@ -427,11 +346,148 @@ module AwesomeCo
                     - title: Test
                 YAML
               end
+            end
+          end
+        end
+      end
 
-              it 'does not bind the object' do
-                parser.parse
+      describe Parsers::Json do
+        let(:seed_file_name) { 'seeder.json' }
+        let(:seed_file_content) do
+          {
+            name: 'Test',
+            group_labels: [
+              { name: 'Group Label', traits: %w[described] }
+            ],
+            projects: [
+              { name: 'Test Project', traits: %w[public] }
+            ]
+          }.to_json
+        end
 
-                expect(group_labels.to_h).to be_empty
+        describe 'validation' do
+          context 'when seed file is invalid' do
+            it_behaves_like 'raises an error when specifying an invalid factory' do
+              let(:seed_file_content) do
+                {
+                  name: 'Invalid seed',
+                  invalids: [
+                    { name: 'Test' }
+                  ]
+                }.to_json
+              end
+            end
+
+            it_behaves_like 'specifying invalid traits to a factory' do
+              let(:seed_file_content) do
+                {
+                  name: 'Test',
+                  issues: [
+                    { title: 'Test', traits: %w[invalid] }
+                  ]
+                }.to_json
+              end
+            end
+
+            it_behaves_like 'specifying invalid attributes to a factory' do
+              let(:seed_file_content) do
+                {
+                  name: 'Invalid Attributes',
+                  issues: [
+                    { invalid: true }
+                  ]
+                }.to_json
+              end
+            end
+          end
+
+          it_behaves_like 'an id already exists' do
+            let(:seed_file_content) do
+              {
+                name: 'Test',
+                group_labels: [
+                  { _id: 'my_label', name: 'My Label' },
+                  { _id: 'my_label', name: 'My Other Label' }
+                ]
+              }.to_json
+            end
+          end
+        end
+
+        describe '#parse' do
+          it_behaves_like 'name is not specified' do
+            let(:seed_file_content) do
+              {
+                group_labels: [
+                  { title: 'My Label' }
+                ]
+              }.to_json
+            end
+          end
+
+          context 'when parsed' do
+            it_behaves_like 'has a name'
+            it_behaves_like 'factory definitions'
+            it_behaves_like 'passes traits' do
+              let(:seed_file_content) do
+                {
+                  name: 'Test',
+                  group_labels: [
+                    { title: 'Test Label', traits: %w[described] }
+                  ]
+                }.to_json
+              end
+
+              describe '@parser_binding' do
+                let(:group_labels) { parser.instance_variable_get(:@parser_binding).local_variable_get('group_labels') }
+
+                context 'when id is malformed' do
+                  context 'when id contains invalid characters' do
+                    it_behaves_like 'invalid id', /id `--invalid-id` is invalid/ do
+                      let(:seed_file_content) do
+                        {
+                          name: 'Test',
+                          group_labels: [
+                            { _id: '--invalid-id' }
+                          ]
+                        }.to_json
+                      end
+                    end
+
+                    it_behaves_like 'invalid id', /id `invalid!id` is invalid/ do
+                      let(:seed_file_content) do
+                        {
+                          name: 'Test',
+                          group_labels: [
+                            { _id: 'invalid!id' }
+                          ]
+                        }.to_json
+                      end
+                    end
+
+                    it_behaves_like 'invalid id', /id `1_label` is invalid. id cannot start with a number/ do
+                      let(:seed_file_content) do
+                        {
+                          name: 'Test',
+                          group_labels: [
+                            { _id: '1_label' }
+                          ]
+                        }.to_json
+                      end
+                    end
+                  end
+
+                  it_behaves_like 'definition does not have an id' do
+                    let(:seed_file_content) do
+                      {
+                        name: 'Test',
+                        group_labels: [
+                          { title: 'Test' }
+                        ]
+                      }.to_json
+                    end
+                  end
+                end
               end
             end
           end
