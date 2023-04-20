@@ -43707,6 +43707,9 @@ msgstr ""
 msgid "Target branch or tag"
 msgstr ""
 
+msgid "Target branch: %{target_branch}"
+msgstr ""
+
 msgid "Target roles"
 msgstr ""
 
