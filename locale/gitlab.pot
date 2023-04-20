@@ -51244,6 +51244,9 @@ msgstr ""
 msgid "Your CSV export of %{exported_objects} from project %{project_name} (%{project_url}) has been added to this email as an attachment."
 msgstr ""
 
+msgid "Your CSV export request has succeeded. The result will be emailed to %{email}."
+msgstr ""
+
 msgid "Your CSV import for project"
 msgstr ""
 
