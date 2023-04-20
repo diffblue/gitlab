@@ -73,8 +73,8 @@ RSpec.describe API::Ml::AiAssist, :saas, feature_category: :code_suggestions do
         true  | false | nil | :ok | { "user_is_allowed" => false }
         false | true | :premium_plan | :not_found | { "message" => "404 Not Found" }
         false | false | :premium_plan | :not_found | { "message" => "404 Not Found" }
-        true  | true | :premium_plan | :ok | { "user_is_allowed" => false }
-        true  | false | :premium_plan | :ok | { "user_is_allowed" => false }
+        true  | true | :premium_plan | :ok | { "user_is_allowed" => true }
+        true  | false | :premium_plan | :ok | { "user_is_allowed" => true }
         false | true | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
         false | false | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
         true  | true | :ultimate_plan | :ok | { "user_is_allowed" => true }
