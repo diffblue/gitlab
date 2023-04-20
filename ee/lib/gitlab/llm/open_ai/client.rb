@@ -6,9 +6,16 @@ module Gitlab
   module Llm
     module OpenAi
       class Client
+        AI_ROLE = "assistant"
+        SYSTEM_ROLE = "system"
         DEFAULT_ROLE = "user"
         DEFAULT_TEMPERATURE = 0.7
         DEFAULT_MAX_TOKENS = 16
+        GPT_ROLES = [
+          DEFAULT_ROLE,
+          SYSTEM_ROLE,
+          AI_ROLE
+        ].freeze
         DEFAULT_MODELS = {
           chat: "gpt-3.5-turbo",
           completions: "text-davinci-003",
@@ -25,11 +32,24 @@ module Gitlab
         def chat(content:, **options)
           return unless enabled?
 
+          messages_chat(
+            **{ messages: [{ role: DEFAULT_ROLE, content: content }] }.merge(options)
+          )
+        end
+
+        # messages: an array with `role` and `content` a keys.
+        # the value of `role` should be one of GPT_ROLES
+        # this needed to pass back conversation history
+        def messages_chat(messages:, **options)
+          return unless enabled?
+
+          raise ArgumentError unless messages.all? { |m| GPT_ROLES.member? m[:role] }
+
           client.chat(
             parameters: {
               model: DEFAULT_MODELS[:chat],
-              messages: [{ role: DEFAULT_ROLE, content: content }],
-              temperature: DEFAULT_TEMPERATURE
+              temperature: DEFAULT_TEMPERATURE,
+              messages: messages
             }.merge(options)
           )
         end

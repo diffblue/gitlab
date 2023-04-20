@@ -76,6 +76,47 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     it_behaves_like 'forwarding the request correctly'
   end
 
+  describe '#messages_chat' do
+    stub_feature_flags(openai_experimentation: true)
+
+    subject(:messages_chat) do
+      described_class.new(user).messages_chat(
+        messages: messages,
+        **options
+      )
+    end
+
+    let(:messages) do
+      [
+        { role: described_class::SYSTEM_ROLE, content: 'you are a language model' },
+        { role: described_class::DEFAULT_ROLE, content: 'what?' }
+      ]
+    end
+
+    let(:method) { :chat }
+    let(:options) { { temperature: 0.1 } }
+    let(:expected_options) { { parameters: hash_including({ messages: messages, temperature: 0.1 }) } }
+
+    it_behaves_like 'forwarding the request correctly'
+
+    context 'without the correct role' do
+      before do
+        stub_application_setting(openai_api_key: access_token)
+      end
+
+      let(:messages) do
+        [
+          { role: 'Charles Darwin', content: 'you are a language model' },
+          { role: 'Teacher', content: 'what?' }
+        ]
+      end
+
+      it 'raises an error' do
+        expect { messages_chat }.to raise_error ArgumentError
+      end
+    end
+  end
+
   describe '#completions' do
     subject(:completions) { described_class.new(user).completions(prompt: 'anything', **options) }
 
