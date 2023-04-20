@@ -1791,9 +1791,6 @@ msgstr ""
 msgid "A non-confidential work item cannot have a confidential parent."
 msgstr ""
 
-msgid "A page with that title already exists"
-msgstr ""
-
 msgid "A parent must be provided when bulk updating issuables"
 msgstr ""
 
@@ -15733,7 +15730,7 @@ msgstr ""
 msgid "Due to inactivity, this project is scheduled to be deleted on %{deletion_date}. %{link_start}Why is this scheduled?%{link_end}"
 msgstr ""
 
-msgid "Duplicate page: %{error_message}"
+msgid "Duplicate page: A page with that title already exists"
 msgstr ""
 
 msgid "Duration"
