@@ -57,7 +57,7 @@ module Gitlab
         gon.current_user_fullname = current_user.name
         gon.current_user_avatar_url = current_user.avatar_url
         gon.time_display_relative = current_user.time_display_relative
-        gon.use_new_navigation = Feature.enabled?(:super_sidebar_nav, current_user) && current_user&.use_new_navigation
+        gon.use_new_navigation = NavHelper.show_super_sidebar?(current_user)
       end
 
       # Initialize gon.features with any flags that should be
@@ -66,6 +66,7 @@ module Gitlab
       push_frontend_feature_flag(:security_auto_fix)
       push_frontend_feature_flag(:source_editor_toolbar)
       push_frontend_feature_flag(:vscode_web_ide, current_user)
+      push_frontend_feature_flag(:super_sidebar_peek, current_user)
     end
 
     # Exposes the state of a feature flag to the frontend code.

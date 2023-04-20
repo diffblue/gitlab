@@ -13,6 +13,7 @@ module API
           component: ::Packages::Debian::COMPONENT_REGEX,
           architecture: ::Packages::Debian::ARCHITECTURE_REGEX
         }.freeze
+        LIST_PACKAGE = 'list_package'
 
         included do
           feature_category :package_registry
@@ -39,6 +40,8 @@ module API
               not_found! unless params[:package_name].start_with?(params[:letter])
 
               package_file = distribution_from!(project).package_files.with_file_name(params[:file_name]).last!
+
+              track_debian_package_event 'pull_package'
 
               present_package_file!(package_file)
             end
@@ -70,7 +73,21 @@ module API
                 no_content! # empty component files are not always persisted in DB
               end
 
+              track_debian_package_event LIST_PACKAGE
+
               present_carrierwave_file!(component_file.file)
+            end
+
+            def track_debian_package_event(action)
+              if project_or_group.is_a?(Project)
+                project = project_or_group
+                namespace = project_or_group.namespace
+              else
+                project = nil
+                namespace = project_or_group
+              end
+
+              track_package_event(action, :debian, project: project, namespace: namespace, user: current_user)
             end
           end
 
@@ -83,7 +100,7 @@ module API
           end
 
           authenticate_with do |accept|
-            accept.token_types(:personal_access_token, :deploy_token, :job_token)
+            accept.token_types(:personal_access_token_with_username, :deploy_token_with_username, :job_token_with_username)
                   .sent_through(:http_basic_auth)
           end
 
@@ -109,7 +126,6 @@ module API
               tags %w[debian_packages]
             end
 
-            route_setting :authentication, authenticate_non_public: true
             get 'Release.gpg' do
               distribution_from!(project_or_group).file_signature
             end
@@ -128,9 +144,10 @@ module API
               tags %w[debian_packages]
             end
 
-            route_setting :authentication, authenticate_non_public: true
             get 'Release' do
-              present_carrierwave_file!(distribution_from!(project_or_group).file)
+              distribution = distribution_from!(project_or_group)
+              track_debian_package_event LIST_PACKAGE
+              present_carrierwave_file!(distribution.file)
             end
 
             # GET {projects|groups}/:id/packages/debian/dists/*distribution/InRelease
@@ -147,9 +164,10 @@ module API
               tags %w[debian_packages]
             end
 
-            route_setting :authentication, authenticate_non_public: true
             get 'InRelease' do
-              present_carrierwave_file!(distribution_from!(project_or_group).signed_file)
+              distribution = distribution_from!(project_or_group)
+              track_debian_package_event LIST_PACKAGE
+              present_carrierwave_file!(distribution.signed_file)
             end
 
             params do
@@ -179,7 +197,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'Packages' do
                   present_index_file!(:di_packages)
                 end
@@ -201,7 +218,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'by-hash/SHA256/:file_sha256' do
                   present_index_file!(:di_packages)
                 end
@@ -225,7 +241,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'Sources' do
                   present_index_file!(:sources)
                 end
@@ -247,7 +262,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'by-hash/SHA256/:file_sha256' do
                   present_index_file!(:sources)
                 end
@@ -275,7 +289,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'Packages' do
                   present_index_file!(:packages)
                 end
@@ -297,7 +310,6 @@ module API
                   tags %w[debian_packages]
                 end
 
-                route_setting :authentication, authenticate_non_public: true
                 get 'by-hash/SHA256/:file_sha256' do
                   present_index_file!(:packages)
                 end

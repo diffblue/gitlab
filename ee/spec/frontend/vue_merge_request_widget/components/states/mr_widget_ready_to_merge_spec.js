@@ -297,4 +297,33 @@ describe('ReadyToMerge', () => {
       });
     });
   });
+
+  describe('Merge button text with auto_merge_labels_mr_widget feature flag turned on', () => {
+    beforeEach(() => {
+      window.gon = { features: { autoMergeLabelsMrWidget: true } };
+    });
+
+    it.each`
+      availableAutoMergeStrategies | mergeTrainsCount | expectedText
+      ${[]}                        | ${0}             | ${'Merge'}
+      ${[MWPS_MERGE_STRATEGY]}     | ${0}             | ${'Set to auto-merge'}
+      ${[MT_MERGE_STRATEGY]}       | ${0}             | ${'Merge'}
+      ${[MT_MERGE_STRATEGY]}       | ${1}             | ${'Merge'}
+      ${[MTWPS_MERGE_STRATEGY]}    | ${0}             | ${'Set to auto-merge'}
+      ${[MTWPS_MERGE_STRATEGY]}    | ${1}             | ${'Set to auto-merge'}
+    `(
+      'displays $expectedText with merge strategy $availableAutoMergeStrategies and merge train count $mergeTrainsCount',
+      ({ availableAutoMergeStrategies, mergeTrainsCount, expectedText }) => {
+        createComponent({ availableAutoMergeStrategies, mergeTrainsCount });
+
+        expect(findMergeButton().text()).toBe(expectedText);
+      },
+    );
+
+    it('displays "Merge in progress"', () => {
+      createComponent({}, shallowMountExtended, { isMergingImmediately: true });
+
+      expect(findMergeButton().text()).toBe('Merge in progress');
+    });
+  });
 });

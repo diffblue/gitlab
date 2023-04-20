@@ -2,6 +2,7 @@
 
 module AuditEvents
   class ExternalAuditEventDestination < ApplicationRecord
+    include ExternallyDestinationable
     include Limitable
 
     STREAMING_TOKEN_HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
@@ -15,22 +16,11 @@ module AuditEvents
     has_many :headers, class_name: 'AuditEvents::Streaming::Header'
     has_many :event_type_filters, class_name: 'AuditEvents::Streaming::EventTypeFilter'
 
-    validates :destination_url, public_url: true, presence: true
-    validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
-    validates :verification_token, length: { in: 16..24 }, allow_nil: true
-    validates :verification_token, presence: true, on: :update
-
-    has_secure_token :verification_token, length: 24
-
     validate :has_fewer_than_20_headers?
     validate :root_level_group?
 
     def headers_hash
       { STREAMING_TOKEN_HEADER_KEY => verification_token }.merge(headers.map(&:to_hash).inject(:merge).to_h)
-    end
-
-    def audit_details
-      destination_url
     end
 
     private

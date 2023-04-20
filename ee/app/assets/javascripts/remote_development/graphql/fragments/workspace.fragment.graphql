@@ -1,0 +1,14 @@
+fragment Workspace on Workspace {
+  id
+  name
+  namespace
+  desiredState
+  actualState
+  displayedState
+  url
+  editor
+  devfileRef
+  devfilePath
+  devfile
+  deploymentResourceVersion
+}

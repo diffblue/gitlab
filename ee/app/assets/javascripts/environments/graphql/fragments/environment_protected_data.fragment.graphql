@@ -1,0 +1,14 @@
+fragment ProtectedEnvironment on Environment {
+  id
+  protectedEnvironments {
+    nodes {
+      name
+      requiredApprovalCount
+      approvalRules {
+        nodes {
+          requiredApprovals
+        }
+      }
+    }
+  }
+}

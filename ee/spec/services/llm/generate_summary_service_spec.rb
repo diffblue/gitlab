@@ -65,22 +65,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
       end
     end
 
-    context 'for a merge request' do
-      let_it_be(:resource) { create(:merge_request, source_project: project) }
-
-      it_behaves_like "issuable without notes"
-
-      context 'with notes' do
-        before do
-          create_pair(:note_on_merge_request, project: resource.project, noteable: resource)
-        end
-
-        it_behaves_like "issuable with notes"
-        it_behaves_like "ensures feature flags and license"
-        it_behaves_like "ensures user membership"
-      end
-    end
-
     context 'for an issue' do
       let_it_be(:resource) { create(:issue, project: project) }
 

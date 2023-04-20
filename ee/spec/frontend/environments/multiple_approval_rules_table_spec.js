@@ -42,11 +42,11 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
     });
 
     it('should link user via name', () => {
-      const { name, webPath } = rules.find((rule) => rule.user).user;
+      const { name, webUrl } = rules.find((rule) => rule.user).user;
 
       const userLink = wrapper.findByRole('link', { name });
 
-      expect(userLink.attributes('href')).toBe(webPath);
+      expect(userLink.attributes('href')).toBe(webUrl);
     });
 
     it('should show access level for maintainers', () => {
@@ -79,7 +79,7 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
 
         expect(avatar.props('src')).toBe(user.avatarUrl);
         expect(avatarLink.attributes()).toMatchObject({
-          href: user.webPath,
+          href: user.webUrl,
           title: user.name,
         });
       });

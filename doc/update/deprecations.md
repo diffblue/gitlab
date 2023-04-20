@@ -87,6 +87,19 @@ Due to limited customer usage, Browser Performance Testing is deprecated and wil
 
 </div>
 
+<div class="deprecation " data-milestone="17.0">
+
+### Deprecate legacy shell escaping and quoting runner shell executor
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.11</span>
+- End of Support: GitLab <span class="milestone">17.9</span>
+</div>
+
+The runner's legacy escape sequence mechanism to handle variable expansion implements a sub-optimal implementation of Ansi-C quoting. This method means that the runner would expand arguments included in double quotes. As of 15.11, we are deprecating the legacy escaping and quoting methods in the runner shell executor.
+
+</div>
+
 <div class="deprecation breaking-change" data-milestone="17.0">
 
 ### DingTalk OmniAuth provider
@@ -438,6 +451,28 @@ During the transition to the GitLab Observability UI, we will migrate the [GitLa
 - [Observability](https://about.gitlab.com/direction/monitor/observability/data-visualization/).
 - The [Observability Backend](https://about.gitlab.com/direction/monitor/observability/data-management/).
 - [Data visualization](https://about.gitlab.com/direction/monitor/observability/data-visualization/).
+
+</div>
+</div>
+
+<div class="milestone-wrapper" data-milestone="16.1">
+
+## GitLab 16.1
+
+<div class="deprecation " data-milestone="16.1">
+
+### GitLab Runner images based on Alpine 3.12, 3.13, 3.14
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.11</span>
+- End of Support: GitLab <span class="milestone">16.1</span>
+</div>
+
+We will stop publishing runner images based on the following, end-of-life Alpine versions:
+
+- Alpine 3.12
+- Alpine 3.13
+- Alpine 3.14 (end-of-life on 2023-05-23)
 
 </div>
 </div>
@@ -1506,21 +1541,6 @@ If you are using your own Redis 5.0 instance, you should upgrade it to Redis 6.0
 The `job_age` parameter, returned from the `POST /jobs/request` API endpoint used in communication with GitLab Runner, was never used by any GitLab or Runner feature. This parameter will be removed in GitLab 16.0.
 
 This could be a breaking change for anyone that developed their own runner that relies on this parameter being returned by the endpoint. This is not a breaking change for anyone using an officially released version of GitLab Runner, including public shared runners on GitLab.com.
-
-</div>
-
-<div class="deprecation breaking-change" data-milestone="16.0">
-
-### Remove offset pagination from Jobs API
-
-<div class="deprecation-notes">
-- Announced in: GitLab <span class="milestone">15.9</span>
-- [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
-</div>
-
-A request to the API for `/api/v4/projects/:id/jobs` can return a paginated list of jobs. Projects can contain hundreds or thousands of jobs, so using an offset to paginate through them is slow. Users should instead use [`keyset-based pagination`](https://docs.gitlab.com/ee/api/rest/index.html#keyset-based-pagination) when requesting consecutive pages of results.
-
-In milestone 16.0 we will remove offset-based pagination.
 
 </div>
 

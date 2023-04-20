@@ -15,6 +15,46 @@ RSpec.describe ProjectsController do
     sign_in(user)
   end
 
+  shared_examples 'audit events with event type' do
+    it 'logs the audit event' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+        hash_including(name: audit_name)
+      ).and_call_original
+
+      expect { request }.to change { AuditEvent.count }.by(1)
+      expect(AuditEvent.last.details[:custom_message]).to eq(custom_message)
+    end
+  end
+
+  describe 'GET new' do
+    let_it_be(:params) { { namespace_id: user.namespace.id } }
+
+    context 'when user does not have `:create_projects` permissions' do
+      before do
+        allow(controller).to receive(:can?).with(user, :create_projects, user.namespace).and_return(false)
+      end
+
+      it 'returns a 404' do
+        get :new, params: params
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when user does have `:create_projects` permissions' do
+      before do
+        allow(controller).to receive(:can?).with(user, :create_projects, user.namespace).and_return(true)
+      end
+
+      it 'renders `new` template' do
+        get :new, params: params
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template(:new)
+      end
+    end
+  end
+
   describe 'GET show', feature_category: :projects do
     render_views
 
@@ -652,8 +692,9 @@ RSpec.describe ProjectsController do
     let(:request) { get :download_export, params: { namespace_id: project.namespace, id: project } }
 
     context 'when project export is enabled' do
-      it 'logs the audit event' do
-        expect { request }.to change { AuditEvent.count }.by(1)
+      it_behaves_like 'audit events with event type' do
+        let_it_be(:audit_name) { 'project_export_file_download_started' }
+        let_it_be(:custom_message) { 'Export file download started' }
       end
     end
 
@@ -680,9 +721,9 @@ RSpec.describe ProjectsController do
           group.add_owner(user)
         end
 
-        it 'logs the audit event' do
-          expect { request }.to change { AuditEvent.count }.by(1)
-          expect(AuditEvent.last.details[:custom_message]).to eq('Project archived')
+        it_behaves_like 'audit events with event type' do
+          let_it_be(:audit_name) { 'project_archived' }
+          let_it_be(:custom_message) { 'Project archived' }
         end
       end
 
@@ -705,9 +746,9 @@ RSpec.describe ProjectsController do
           group.add_owner(user)
         end
 
-        it 'logs the audit event' do
-          expect { request }.to change { AuditEvent.count }.by(1)
-          expect(AuditEvent.last.details[:custom_message]).to eq('Project unarchived')
+        it_behaves_like 'audit events with event type' do
+          let_it_be(:audit_name) { 'project_unarchived' }
+          let_it_be(:custom_message) { 'Project unarchived' }
         end
       end
 

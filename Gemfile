@@ -45,8 +45,8 @@ gem 'declarative_policy', '~> 1.1.0'
 gem 'devise', '~> 4.8.1'
 gem 'devise-pbkdf2-encryptable', '~> 0.0.0', path: 'vendor/gems/devise-pbkdf2-encryptable'
 gem 'bcrypt', '~> 3.1', '>= 3.1.14'
-gem 'doorkeeper', '~> 5.5'
-gem 'doorkeeper-openid_connect', '~> 1.8'
+gem 'doorkeeper', '~> 5.6', '>= 5.6.6'
+gem 'doorkeeper-openid_connect', '~> 1.8', '>= 1.8.5'
 gem 'rexml', '~> 3.2.5'
 gem 'ruby-saml', '~> 1.13.0'
 gem 'omniauth', '~> 2.1.0'
@@ -71,7 +71,7 @@ gem 'openid_connect', '= 1.3.0'
 gem 'omniauth-salesforce', '~> 1.0.5', path: 'vendor/gems/omniauth-salesforce' # See gem README.md
 gem 'omniauth-atlassian-oauth2', '~> 0.2.0'
 gem 'rack-oauth2', '~> 1.21.3'
-gem 'jwt', '~> 2.1.0'
+gem 'jwt', '~> 2.5'
 
 # Kerberos authentication. EE-only
 gem 'gssapi', '~> 1.3.1', group: :kerberos
@@ -176,7 +176,7 @@ gem 'elasticsearch-rails', '~> 7.2', require: 'elasticsearch/rails/instrumentati
 gem 'elasticsearch-api',   '7.13.3'
 gem 'aws-sdk-core', '~> 3.171.0'
 gem 'aws-sdk-cloudformation', '~> 1'
-gem 'aws-sdk-s3', '~> 1.120.1'
+gem 'aws-sdk-s3', '~> 1.121.0'
 gem 'faraday_middleware-aws-sigv4', '~>0.3.0'
 gem 'typhoeus', '~> 1.4.0' # Used with Elasticsearch to support http keep-alive connections
 
@@ -532,7 +532,7 @@ gem 'lograge', '~> 0.5'
 gem 'grape_logging', '~> 1.8'
 
 # DNS Lookup
-gem 'gitlab-net-dns', '~> 0.9.1'
+gem 'gitlab-net-dns', '~> 0.9.2'
 
 # Countries list
 gem 'countries', '~> 4.0.0'

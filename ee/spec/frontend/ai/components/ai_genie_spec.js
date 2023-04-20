@@ -106,7 +106,7 @@ describe('AiGenie', () => {
   };
 
   const requestExplanation = async () => {
-    findButton().vm.$emit('click');
+    await findButton().vm.$emit('click');
   };
 
   beforeEach(() => {

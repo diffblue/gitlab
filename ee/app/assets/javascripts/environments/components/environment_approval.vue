@@ -3,6 +3,7 @@ import {
   GlAvatar,
   GlButton,
   GlButtonGroup,
+  GlLoadingIcon,
   GlFormGroup,
   GlFormTextarea,
   GlLink,
@@ -12,6 +13,7 @@ import {
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import Api from 'ee/api';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { createAlert } from '~/alert';
 import { __, s__, sprintf } from '~/locale';
@@ -24,6 +26,7 @@ const DEPLOYMENT_STATUS_APPROVED = 'approved';
 
 export default {
   components: {
+    GlLoadingIcon,
     GlAvatar,
     GlButton,
     GlButtonGroup,
@@ -38,11 +41,22 @@ export default {
   directives: {
     GlTooltip,
   },
-  inject: ['projectId', 'projectPath'],
+  inject: ['projectPath'],
   props: {
+    /**
+     * {
+     *   name: String,
+     *   tier: String,
+     *   requiredApprovalCount
+     * }
+     */
     environment: {
       required: true,
       type: Object,
+    },
+    deploymentIid: {
+      required: true,
+      type: [Number, String],
     },
     showText: {
       required: false,
@@ -57,68 +71,73 @@ export default {
       loading: false,
       show: false,
       comment: '',
-      deployment: { approvalSummary: { rules: [] } },
+      project: {
+        deployment: {
+          userPermissions: { approveDeployment: false },
+          approvalSummary: { rules: [] },
+        },
+      },
     };
   },
   apollo: {
-    deployment: {
+    project: {
       query: deploymentApprovalQuery,
       skip() {
-        return !this.upcomingDeployment?.hasApprovalRules;
+        return !this.show;
       },
       variables() {
         return {
           fullPath: this.projectPath,
-          iid: this.upcomingDeployment.iid,
+          iid: this.deploymentIid,
         };
-      },
-      update(data) {
-        return data?.project?.deployment;
       },
     },
   },
   computed: {
+    isLoading() {
+      return this.$apollo.queries.project.loading;
+    },
     title() {
       return sprintf(this.$options.i18n.title, {
         deploymentIid: this.deploymentIid,
       });
     },
+    deployment() {
+      return this.project?.deployment;
+    },
+    projectId() {
+      return getIdFromGraphQLId(this.project?.id);
+    },
+    deploymentId() {
+      return getIdFromGraphQLId(this.deployment.id);
+    },
     buttonTitle() {
       return this.showText ? '' : this.$options.i18n.button;
     },
-    upcomingDeployment() {
-      return this.environment?.upcomingDeployment;
-    },
     needsApproval() {
-      if (this.totalApprovals === this.currentApprovals) {
-        return this.approvals.length;
-      }
-
       return this.totalApprovals > 0;
-    },
-    deploymentIid() {
-      return this.upcomingDeployment.iid;
     },
     totalApprovals() {
       return this.environment.requiredApprovalCount;
     },
     currentApprovals() {
-      return this.totalApprovals - this.upcomingDeployment.pendingApprovalCount;
+      return this.totalApprovals - this.deployment.pendingApprovalCount;
     },
     currentUserHasApproved() {
-      return this.upcomingDeployment?.approvals.find(
-        ({ user }) => user.username === gon.current_username,
-      );
+      return this.approvals.find(({ user }) => user.username === gon.current_username);
     },
     canApproveDeployment() {
+      const isApprovalsNeeded =
+        this.deployment.pendingApprovalCount > 0 ||
+        this.deployment.approvalSummary.totalPendingApprovalCount > 0;
       return (
-        this.upcomingDeployment.canApproveDeployment &&
+        this.deployment.userPermissions.approveDeployment &&
         !this.currentUserHasApproved &&
-        this.upcomingDeployment.pendingApprovalCount
+        isApprovalsNeeded
       );
     },
     deployableName() {
-      return this.upcomingDeployment.deployable?.name;
+      return this.deployment.job?.name;
     },
     isCommentValid() {
       return this.comment.length <= MAX_CHARACTER_COUNT;
@@ -140,7 +159,20 @@ export default {
       return MAX_CHARACTER_COUNT - this.comment.length;
     },
     approvals() {
-      return this.upcomingDeployment?.approvals ?? [];
+      if (this.deployment.approvals?.length > 0) {
+        // return unified approvals if exist (being deprecated)
+        return this.deployment.approvals;
+      }
+
+      // return multiple approval rules approvals otherwise
+      const rules = this.deployment.approvalSummary?.rules || [];
+
+      const multipleApprovalRulesApprovals = rules.flatMap((rule) => rule.approvals);
+
+      return multipleApprovalRulesApprovals;
+    },
+    hasApprovalRules() {
+      return this.deployment.approvalSummary?.rules?.length > 0;
     },
     actionPrimary() {
       return this.canApproveDeployment
@@ -174,7 +206,7 @@ export default {
       this.show = false;
       return action({
         id: this.projectId,
-        deploymentId: this.upcomingDeployment.id,
+        deploymentId: this.deploymentId,
         comment: this.comment,
       })
         .then(() => {
@@ -190,7 +222,7 @@ export default {
         });
     },
     approvalText({ status, user }) {
-      if (status === DEPLOYMENT_STATUS_APPROVED) {
+      if ((status || '').toLowerCase() === DEPLOYMENT_STATUS_APPROVED) {
         if (user.username === gon.current_username) {
           return this.$options.i18n.approvalByMe;
         }
@@ -257,95 +289,98 @@ export default {
       @primary="approve"
       @secondary="reject"
     >
-      <p>
-        <gl-sprintf :message="$options.i18n.message">
-          <template #deploymentIid>{{ deploymentIid }}</template>
-        </gl-sprintf>
-      </p>
-
-      <div>
-        <gl-sprintf :message="$options.i18n.environment">
-          <template #environment>
-            <span class="gl-font-weight-bold">{{ environment.name }}</span>
-          </template>
-        </gl-sprintf>
-      </div>
-      <div v-if="environment.tier">
-        <gl-sprintf :message="$options.i18n.tier">
-          <template #tier>
-            <span class="gl-font-weight-bold">{{ environment.tier }}</span>
-          </template>
-        </gl-sprintf>
-      </div>
-      <div>
-        <gl-sprintf v-if="deployableName" :message="$options.i18n.job">
-          <template #jobName>
-            <span class="gl-font-weight-bold">
-              {{ deployableName }}
-            </span>
-          </template>
-        </gl-sprintf>
-      </div>
-
-      <multiple-approval-rules-table
-        v-if="upcomingDeployment.hasApprovalRules"
-        :rules="deployment.approvalSummary.rules"
-        class="gl-mt-4 gl-pt-4 gl-mb-4"
-      />
-      <div v-else class="gl-my-4 gl-pt-4">
-        <gl-sprintf :message="$options.i18n.current">
-          <template #current>
-            <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
-          </template>
-        </gl-sprintf>
-      </div>
-      <template v-for="(approval, index) in approvals">
-        <div :key="`user-${index}`" class="gl-display-flex gl-align-items-center">
-          <gl-avatar :size="16" :src="approval.user.avatarUrl" class="gl-mr-2" />
-          <gl-link :href="approval.user.webUrl" class="gl-mr-2">
-            @{{ approval.user.username }}
-          </gl-link>
-        </div>
-        <p :key="`approval-${index}`" class="gl-mb-0">
-          <gl-sprintf :message="approvalText(approval)">
-            <template #user>
-              <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
-            </template>
-            <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
+      <gl-loading-icon v-if="isLoading" size="lg" class="gl-absolute gl-top-half gl-left-50p" />
+      <div v-else>
+        <p>
+          <gl-sprintf :message="$options.i18n.message">
+            <template #deploymentIid>{{ deploymentIid }}</template>
           </gl-sprintf>
         </p>
-        <blockquote
-          v-if="approval.comment"
-          :key="`comment-${index}`"
-          class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-overflow-wrap-break"
-        >
-          {{ approval.comment }}
-        </blockquote>
-      </template>
-      <div v-if="canApproveDeployment" class="gl-pt-4">
-        <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
-          <gl-form-group
-            :label="$options.i18n.commentLabel"
-            :label-for="commentId"
-            :optional-text="$options.i18n.optional"
-            class="gl-mb-0"
-            optional
+
+        <div>
+          <gl-sprintf :message="$options.i18n.environment">
+            <template #environment>
+              <span class="gl-font-weight-bold">{{ environment.name }}</span>
+            </template>
+          </gl-sprintf>
+        </div>
+        <div v-if="environment.tier">
+          <gl-sprintf :message="$options.i18n.tier">
+            <template #tier>
+              <span class="gl-font-weight-bold">{{ environment.tier }}</span>
+            </template>
+          </gl-sprintf>
+        </div>
+        <div>
+          <gl-sprintf v-if="deployableName" :message="$options.i18n.job">
+            <template #jobName>
+              <span class="gl-font-weight-bold">
+                {{ deployableName }}
+              </span>
+            </template>
+          </gl-sprintf>
+        </div>
+
+        <multiple-approval-rules-table
+          v-if="hasApprovalRules"
+          :rules="deployment.approvalSummary.rules"
+          class="gl-my-4 gl-pt-4"
+        />
+        <div v-else class="gl-my-4 gl-pt-4">
+          <gl-sprintf :message="$options.i18n.current">
+            <template #current>
+              <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>
+            </template>
+          </gl-sprintf>
+        </div>
+        <template v-for="(approval, index) in approvals">
+          <div :key="`user-${index}`" class="gl-display-flex gl-align-items-center">
+            <gl-avatar :size="16" :src="approval.user.avatarUrl" class="gl-mr-2" />
+            <gl-link :href="approval.user.webUrl" class="gl-mr-2">
+              @{{ approval.user.username }}
+            </gl-link>
+          </div>
+          <p :key="`approval-${index}`" class="gl-mb-0">
+            <gl-sprintf :message="approvalText(approval)">
+              <template #user>
+                <gl-link :href="approval.user.webUrl">@{{ approval.user.username }}</gl-link>
+              </template>
+              <template #time><time-ago-tooltip :time="approval.createdAt" /></template>
+            </gl-sprintf>
+          </p>
+          <blockquote
+            v-if="approval.comment"
+            :key="`comment-${index}`"
+            class="gl-border-l-1 gl-border-l-solid gl-border-gray-200 gl-pl-2 gl-overflow-wrap-break"
           >
-            <gl-form-textarea
-              :id="commentId"
-              v-model="comment"
-              :placeholder="$options.i18n.description"
-              :state="isCommentValid"
-            />
-          </gl-form-group>
-          <span
-            v-gl-tooltip
-            :title="characterCountTooltip"
-            :class="commentCharacterCountClasses"
-            class="gl-mt-2 gl-align-self-end"
-          >
-            {{ remainingCharacterCount }}
-          </span>
+            {{ approval.comment }}
+          </blockquote>
+        </template>
+        <div v-if="canApproveDeployment" class="gl-pt-4">
+          <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
+            <gl-form-group
+              :label="$options.i18n.commentLabel"
+              :label-for="commentId"
+              :optional-text="$options.i18n.optional"
+              class="gl-mb-0"
+              optional
+            >
+              <gl-form-textarea
+                :id="commentId"
+                v-model="comment"
+                :placeholder="$options.i18n.description"
+                :state="isCommentValid"
+              />
+            </gl-form-group>
+            <span
+              v-gl-tooltip
+              :title="characterCountTooltip"
+              :class="commentCharacterCountClasses"
+              class="gl-mt-2 gl-align-self-end"
+            >
+              {{ remainingCharacterCount }}
+            </span>
+          </div>
         </div>
       </div>
     </gl-modal>

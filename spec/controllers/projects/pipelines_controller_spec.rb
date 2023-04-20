@@ -199,22 +199,6 @@ RSpec.describe Projects::PipelinesController, feature_category: :continuous_inte
           check_pipeline_response(returned: 6, all: 6)
         end
       end
-
-      context "with lazy_load_pipeline_dropdown_actions feature flag disabled" do
-        before do
-          stub_feature_flags(lazy_load_pipeline_dropdown_actions: false)
-        end
-
-        it 'returns manual and scheduled actions' do
-          get_pipelines_index_json
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response).to match_response_schema('pipeline')
-
-          expect(json_response.dig('pipelines', 0, 'details')).to include('manual_actions')
-          expect(json_response.dig('pipelines', 0, 'details')).to include('scheduled_actions')
-        end
-      end
     end
 
     def get_pipelines_index_html(params = {})
@@ -292,23 +276,6 @@ RSpec.describe Projects::PipelinesController, feature_category: :continuous_inte
 
         expect(json_response['pipelines'].count).to eq returned
         expect(json_response['count']['all'].to_i).to eq all
-      end
-    end
-  end
-
-  describe 'GET #index' do
-    before do
-      stub_application_setting(auto_devops_enabled: false)
-    end
-
-    context 'with runners_availability_section experiment' do
-      it 'tracks the assignment', :experiment do
-        stub_experiments(runners_availability_section: true)
-
-        expect(experiment(:runners_availability_section))
-          .to track(:assignment).with_context(namespace: project.namespace).on_next_instance
-
-        get :index, params: { namespace_id: project.namespace, project_id: project }
       end
     end
   end

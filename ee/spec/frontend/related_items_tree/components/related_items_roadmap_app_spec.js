@@ -80,7 +80,9 @@ describe('RelatedItemsTree', () => {
       });
     });
 
-    describe('roadmap tab', () => {
+    // https://gitlab.com/gitlab-org/gitlab/-/issues/407474
+    // eslint-disable-next-line jest/no-disabled-tests
+    describe.skip('roadmap tab', () => {
       it('tracks loading of the component', async () => {
         const wrapper = createComponent();
         const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);

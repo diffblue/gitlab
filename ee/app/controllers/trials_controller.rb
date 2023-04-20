@@ -92,9 +92,9 @@ class TrialsController < ApplicationController
 
   def trial_success_path(namespace)
     if discover_group_security_flow?
-      group_security_dashboard_url(namespace, { trial: true })
+      group_security_dashboard_path(namespace, { trial: true })
     else
-      stored_location_or_provided_path(group_url(namespace, { trial: true }))
+      stored_location_or_provided_path(group_path(namespace, { trial: true }))
     end
   end
 

@@ -112,26 +112,70 @@ RSpec.describe Projects::DestroyService, feature_category: :projects do
   end
 
   context 'audit events' do
-    include_examples 'audit event logging' do
-      let(:operation) { subject.execute }
+    context 'when the project belongs to a user namespace' do
+      include_examples 'audit event logging' do
+        let(:operation) { subject.execute }
 
-      let(:fail_condition!) do
-        expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+        let(:fail_condition!) do
+          expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+        end
+
+        let(:event_type) { 'project_destroyed' }
+
+        let(:attributes) do
+          {
+            author_id: user.id,
+            entity_id: project.parent.id,
+            entity_type: 'Namespaces::UserNamespace',
+            details: {
+              remove: 'project',
+              author_name: user.name,
+              target_id: project.id,
+              target_type: 'Project',
+              target_details: project.full_path,
+              author_class: user.class.name,
+              custom_message: 'Project destroyed'
+            }
+          }
+        end
+      end
+    end
+
+    context 'when the project belongs to a group' do
+      let(:group) { create :group }
+      let(:project) { create :project, namespace: group }
+
+      subject { described_class.new(project, user, {}).execute }
+
+      before do
+        group.add_owner(user)
       end
 
-      let(:attributes) do
-        {
-          author_id: user.id,
-          entity_id: project.id,
-          entity_type: 'Project',
-          details: {
-            remove: 'project',
-            author_name: user.name,
-            target_id: project.id,
-            target_type: 'Project',
-            target_details: project.full_path
+      include_examples 'audit event logging' do
+        let(:operation) { subject }
+
+        let(:fail_condition!) do
+          expect(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+        end
+
+        let(:event_type) { 'project_destroyed' }
+
+        let(:attributes) do
+          {
+            author_id: user.id,
+            entity_id: group.id,
+            entity_type: 'Group',
+            details: {
+              remove: 'project',
+              author_name: user.name,
+              target_id: project.id,
+              target_type: 'Project',
+              target_details: project.full_path,
+              author_class: user.class.name,
+              custom_message: 'Project destroyed'
+            }
           }
-        }
+        end
       end
     end
   end
@@ -150,7 +194,7 @@ RSpec.describe Projects::DestroyService, feature_category: :projects do
 
     it 'sends the audit streaming event with json format' do
       expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
-        'audit_operation',
+        'project_destroyed',
         nil,
         a_string_including("root_group_entity_id\":#{group.id}"))
 

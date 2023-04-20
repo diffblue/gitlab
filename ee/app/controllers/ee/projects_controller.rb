@@ -184,25 +184,29 @@ module EE
       [compliance_framework_setting_attributes: [:framework]]
     end
 
-    def log_audit_event(message:)
-      ::AuditEvents::CustomAuditEventService.new(
-        current_user,
-        project,
-        request.remote_ip,
-        message
-      ).for_project.security_event
+    def log_audit_event(message:, event_type:)
+      audit_context = {
+        name: event_type,
+        author: current_user,
+        target: project,
+        scope: project,
+        message: message,
+        ip_address: request.remote_ip
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
 
     def log_download_export_audit_event
-      log_audit_event(message: 'Export file download started')
+      log_audit_event(message: 'Export file download started', event_type: 'project_export_file_download_started')
     end
 
     def log_archive_audit_event
-      log_audit_event(message: 'Project archived')
+      log_audit_event(message: 'Project archived', event_type: 'project_archived')
     end
 
     def log_unarchive_audit_event
-      log_audit_event(message: 'Project unarchived')
+      log_audit_event(message: 'Project unarchived', event_type: 'project_unarchived')
     end
   end
 end

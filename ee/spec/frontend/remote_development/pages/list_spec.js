@@ -1,13 +1,13 @@
 import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlLink, GlTableLite, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlTableLite, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
-import { MOCK_GROUP_WORKSPACE_DATA } from '../mock_data';
+import { USER_WORKSPACES_QUERY_RESULT } from '../mock_data';
 
 jest.mock('~/lib/logger');
 
@@ -31,6 +31,7 @@ const findTableRowsAsData = (wrapper) =>
       lastUsedText: tds.at(3).text(),
     };
   });
+const findNewWorkspaceButton = (wrapper) => wrapper.findComponent(GlButton);
 
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
@@ -63,7 +64,7 @@ describe('remote_development/pages/list.vue', () => {
 
   describe('default (with nodes)', () => {
     beforeEach(async () => {
-      createWrapper(MOCK_GROUP_WORKSPACE_DATA);
+      createWrapper(USER_WORKSPACES_QUERY_RESULT);
       await waitForPromises();
     });
 
@@ -73,7 +74,7 @@ describe('remote_development/pages/list.vue', () => {
 
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
-        MOCK_GROUP_WORKSPACE_DATA.nodes.map((x) => ({
+        USER_WORKSPACES_QUERY_RESULT.nodes.map((x) => ({
           nameText: `${x.projectFullPath}   ${x.name}`,
           statusIcon: 'status-stopped',
           branchText: x.branch,
@@ -122,5 +123,14 @@ describe('remote_development/pages/list.vue', () => {
 
       expect(findAlert(wrapper).exists()).toBe(false);
     });
+  });
+
+  it('displays a link button that navigates to the create workspace page', async () => {
+    createWrapper();
+
+    await waitForPromises();
+
+    expect(findNewWorkspaceButton(wrapper).attributes().to).toBe('create');
+    expect(findNewWorkspaceButton(wrapper).text()).toMatch(/New workspace/);
   });
 });

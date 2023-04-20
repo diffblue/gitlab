@@ -22,6 +22,19 @@ class EpicPolicy < BasePolicy
     @subject.group.licensed_feature_available?(:subepics)
   end
 
+  condition(:is_member) do
+    @user && @subject.group.member?(@user)
+  end
+
+  condition(:ai_available, scope: :subject) do
+    ::Feature.enabled?(:openai_experimentation) && @subject.send_to_ai?
+  end
+
+  condition(:summarize_notes_enabled, scope: :subject) do
+    ::Feature.enabled?(:summarize_comments, @subject.group) &&
+      @subject.group.licensed_feature_available?(:summarize_notes)
+  end
+
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
     enable :read_note
@@ -90,5 +103,9 @@ class EpicPolicy < BasePolicy
 
   rule { can?(:reporter_access) }.policy do
     enable :mark_note_as_internal
+  end
+
+  rule { ai_available & summarize_notes_enabled & is_member & ~confidential }.policy do
+    enable :summarize_notes
   end
 end

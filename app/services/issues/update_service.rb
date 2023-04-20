@@ -75,6 +75,7 @@ module Issues
       return if issue.assignees == old_assignees
 
       create_assignee_note(issue, old_assignees)
+      Gitlab::ResourceEvents::AssignmentEventRecorder.new(parent: issue, old_assignees: old_assignees).record
       notification_service.async.reassigned_issue(issue, current_user, old_assignees)
       todo_service.reassigned_assignable(issue, current_user, old_assignees)
       track_incident_action(current_user, issue, :incident_assigned)
@@ -182,7 +183,7 @@ module Issues
     end
 
     def do_handle_issue_type_change(issue)
-      SystemNoteService.change_issue_type(issue, current_user)
+      SystemNoteService.change_issue_type(issue, current_user, issue.issue_type_before_last_save)
 
       ::IncidentManagement::IssuableEscalationStatuses::CreateService.new(issue).execute if issue.supports_escalation?
     end

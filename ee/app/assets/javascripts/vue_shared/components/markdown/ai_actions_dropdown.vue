@@ -111,7 +111,7 @@ export default {
         .mutate({ mutation: aiActionMutation, variables: { input } })
         .then(({ data: { aiAction } }) => {
           if (aiAction.errors.length > 0) {
-            this.handleError();
+            this.handleError(new Error(aiAction.errors));
             return;
           }
           this.$apollo.subscriptions.aiCompletionResponse.start();
@@ -130,8 +130,12 @@ export default {
     },
     handleError(error) {
       const alertOptions = error ? { captureError: true, error } : {};
-      this.errorAlert = createAlert({ message: __('Something went wrong'), ...alertOptions });
+      this.errorAlert = createAlert({
+        message: error ? error.message : __('Something went wrong'),
+        ...alertOptions,
+      });
       this.loading = false;
+      clearTimeout(this.timeout);
     },
   },
   availableActions: [

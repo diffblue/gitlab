@@ -18,7 +18,8 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
     it 'calls openai endpoint' do
       expect(Gitlab::HTTP).to receive(:post).with("#{described_class::OPEN_AI_API_URL}/#{endpoint}",
         headers: header,
-        body: params.to_json)
+        body: params.to_json,
+        timeout: 90)
 
       post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
     end
@@ -46,12 +47,13 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
     end
 
     context 'when error is raised during the request' do
-      it 'returns status 500' do
+      it 'returns status 400' do
         expect(Gitlab::HTTP).to receive(:post).and_raise(Gitlab::HTTP::Error)
 
         post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
 
-        expect(response).to have_gitlab_http_status(:internal_server_error)
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(json_response).to include({ "message" => "Error while connecting to OpenAI: HTTParty::Error" })
       end
     end
   end

@@ -49,6 +49,16 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
         end
       end
 
+      context 'when the action is called too many times' do
+        it 'raises error' do
+          expect(Gitlab::ApplicationRateLimiter).to(
+            receive(:throttled?).with(:ai_action, scope: [user]).and_return(true)
+          )
+
+          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable, /too many times/)
+        end
+      end
+
       context 'when user cannot read resource' do
         it 'raises error' do
           allow(Ability)

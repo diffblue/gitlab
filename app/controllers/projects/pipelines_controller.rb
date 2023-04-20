@@ -22,7 +22,6 @@ class Projects::PipelinesController < Projects::ApplicationController
   before_action :authorize_update_pipeline!, only: [:retry, :cancel]
   before_action :ensure_pipeline, only: [:show, :downloadable_artifacts]
   before_action :reject_if_build_artifacts_size_refreshing!, only: [:destroy]
-  before_action :push_frontend_feature_flags, only: [:index]
 
   # Will be removed with https://gitlab.com/gitlab-org/gitlab/-/issues/225596
   before_action :redirect_for_legacy_scope_filter, only: [:index], if: -> { request.format.html? }
@@ -62,9 +61,7 @@ class Projects::PipelinesController < Projects::ApplicationController
     @pipelines_count = limited_pipelines_count(project)
 
     respond_to do |format|
-      format.html do
-        enable_runners_availability_section_experiment
-      end
+      format.html
       format.json do
         Gitlab::PollingInterval.set_header(response, interval: POLLING_INTERVAL)
 
@@ -234,7 +231,7 @@ class Projects::PipelinesController < Projects::ApplicationController
         @pipelines,
         disable_coverage: true,
         preload: true,
-        disable_manual_and_scheduled_actions: Feature.enabled?(:lazy_load_pipeline_dropdown_actions, @project)
+        disable_manual_and_scheduled_actions: true
       )
   end
 
@@ -320,17 +317,6 @@ class Projects::PipelinesController < Projects::ApplicationController
     params.permit(:scope, :username, :ref, :status, :source)
   end
 
-  def enable_runners_availability_section_experiment
-    return unless current_user
-    return unless can?(current_user, :create_pipeline, project)
-    return if @pipelines_count.to_i > 0
-    return if helpers.has_gitlab_ci?(project)
-
-    experiment(:runners_availability_section, namespace: project.root_ancestor) do |e|
-      e.candidate {}
-    end
-  end
-
   def should_track_ci_cd_pipelines?
     params[:chart].blank? || params[:chart] == 'pipelines'
   end
@@ -357,10 +343,6 @@ class Projects::PipelinesController < Projects::ApplicationController
 
   def tracking_project_source
     project
-  end
-
-  def push_frontend_feature_flags
-    push_frontend_feature_flag(:lazy_load_pipeline_dropdown_actions, @project)
   end
 end
 

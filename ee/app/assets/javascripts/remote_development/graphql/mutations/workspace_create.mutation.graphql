@@ -1,0 +1,10 @@
+#import "../fragments/workspace.fragment.graphql"
+
+mutation workspaceCreate($input: WorkspaceCreateInput!) {
+  workspaceCreate(input: $input) @client {
+    workspace {
+      ...Workspace
+    }
+    errors
+  }
+}

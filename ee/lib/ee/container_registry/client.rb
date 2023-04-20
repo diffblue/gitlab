@@ -46,13 +46,19 @@ module EE
           response = HTTP.get(response['Location'])
         end
 
-        raise Error, "Could not download the blob: #{digest}" unless response.status.success?
+        unless response.status.success?
+          raise Error, "Pull error for blob #{digest}:#{response.status.code} - #{response.body}"
+        end
 
         [response.body, response.headers['Content-Length'].to_i]
       end
 
       def repository_raw_manifest(name, reference)
-        response_body faraday_raw.get("/v2/#{name}/manifests/#{reference}")
+        response = faraday_raw.get("/v2/#{name}/manifests/#{reference}")
+
+        raise Error, "Get raw manifest error: #{response.status} - #{response.body}" unless response.success?
+
+        response.body
       end
 
       private

@@ -8,7 +8,8 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent, :saa
   let(:content_class) { '_content_class_' }
   let(:notification_free_user_cap_over?) { true }
   let(:title) do
-    format(_("Your top-level group %{name} will move to a read-only state soon"), name: namespace.name)
+    format(_("Your top-level group %{namespace_name} will move to a read-only state soon"),
+      namespace_name: namespace.name)
   end
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }

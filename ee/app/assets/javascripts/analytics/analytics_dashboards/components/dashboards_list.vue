@@ -1,8 +1,7 @@
 <script>
-import { GlDropdown, GlDropdownForm, GlLink, GlAlert, GlButton } from '@gitlab/ui';
+import { GlLink, GlAlert, GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
-import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
 import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { createAlert } from '~/alert';
@@ -12,11 +11,6 @@ import {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
-  I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
-  I18N_DASHBOARD_LIST_SDK_HOST,
-  I18N_DASHBOARD_LIST_SDK_DESCRIPTION,
-  I18N_DASHBOARD_LIST_SDK_APP_ID,
-  I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
@@ -33,18 +27,11 @@ export default {
   name: 'DashboardsList',
   components: {
     GlButton,
-    GlDropdown,
-    GlDropdownForm,
     GlLink,
     GlAlert,
-    AnalyticsClipboardInput,
     DashboardListItem,
   },
   inject: {
-    showInstrumentationDetailsButton: {
-      type: Boolean,
-      default: true,
-    },
     customDashboardsProject: {
       type: Object,
       default: null,
@@ -123,11 +110,6 @@ export default {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
-  I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS,
-  I18N_DASHBOARD_LIST_SDK_HOST,
-  I18N_DASHBOARD_LIST_SDK_DESCRIPTION,
-  I18N_DASHBOARD_LIST_SDK_APP_ID,
-  I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
@@ -156,31 +138,6 @@ export default {
         <gl-button to="visualization-designer" data-testid="visualization-designer-button">
           {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
         </gl-button>
-        <gl-dropdown
-          v-if="showInstrumentationDetailsButton"
-          class="gl-my-6"
-          data-testid="intrumentation-details-dropdown"
-          :text="$options.I18N_DASHBOARD_LIST_INSTRUMENTATION_DETAILS"
-          split-to="setup"
-          split
-          right
-        >
-          <gl-dropdown-form class="gl-px-4! gl-py-2!">
-            <analytics-clipboard-input
-              class="gl-mb-6 gl-w-full"
-              :label="$options.I18N_DASHBOARD_LIST_SDK_HOST"
-              :description="$options.I18N_DASHBOARD_LIST_SDK_DESCRIPTION"
-              :value="collectorHost"
-            />
-
-            <analytics-clipboard-input
-              class="gl-w-full"
-              :label="$options.I18N_DASHBOARD_LIST_SDK_APP_ID"
-              :description="$options.I18N_DASHBOARD_LIST_SDK_APP_ID_DESCRIPTION"
-              :value="jitsuKey"
-            />
-          </gl-dropdown-form>
-        </gl-dropdown>
       </div>
     </header>
     <gl-alert

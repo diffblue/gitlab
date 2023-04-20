@@ -132,6 +132,49 @@ RSpec.describe ApprovalRules::CreateService do
       end
     end
 
+    # Possible when policy configuration last commit user email is not present in GitLab.
+    # See: https://gitlab.com/gitlab-org/gitlab/-/issues/402173#note_1348667122
+    context 'when user is not present in GitLab' do
+      let_it_be(:non_existing_user) { nil }
+      let_it_be(:name) { 'security' }
+
+      let(:result) do
+        described_class.new(target, non_existing_user, {
+          name: name,
+          skip_authorization: true,
+          approvals_required: 1,
+          user_ids: new_approvers.map(&:id).append(user.id),
+          group_ids: new_groups.map(&:id)
+        }).execute
+      end
+
+      it 'creates approval, excluding non-eligible users and groups', :aggregate_failures do
+        expect(result[:status]).to eq(:success)
+
+        rule = result[:rule]
+
+        expect(rule.name).to eq('security')
+        expect(rule.approvals_required).to eq(1)
+        expect(rule.users).to match_array([user])
+        expect(rule.groups).to be_empty
+      end
+
+      it 'creates approval without audit' do
+        expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+        expect(result[:status]).to eq(:success)
+      end
+
+      context 'validation failure' do
+        let_it_be(:name) { nil }
+
+        it 'returns error message' do
+          expect(result[:status]).to eq(:error)
+          expect(result[:message][:name].first).to eq("can't be blank")
+        end
+      end
+    end
+
     context 'when approval rule with empty users and groups is being created' do
       subject { described_class.new(target, user, { user_ids: [], group_ids: [] }) }
 

@@ -1,8 +1,0 @@
----
-name: okr_automatic_rollups_async
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/111802
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/391668
-milestone: '15.11'
-type: development
-group: group::incubation
-default_enabled: false

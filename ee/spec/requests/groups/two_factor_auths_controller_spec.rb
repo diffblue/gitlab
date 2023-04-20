@@ -32,8 +32,8 @@ RSpec.describe Groups::TwoFactorAuthsController, feature_category: :system_acces
             expect(user.reload.two_factor_enabled?).to eq(false)
             expect(response).to redirect_to(group_group_members_path(group))
             expect(flash[:notice])
-              .to eq format(_("Two-factor authentication has been disabled successfully for %{user_email}!"),
-                            { user_email: user.username })
+              .to eq format(_("Two-factor authentication has been disabled successfully for %{username}!"),
+                            { username: user.username })
           end
 
           it 'returns not found for nil user_id' do

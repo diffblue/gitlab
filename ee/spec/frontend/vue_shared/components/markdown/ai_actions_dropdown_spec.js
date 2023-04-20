@@ -142,8 +142,14 @@ describe('AI actions dropdown component', () => {
       });
 
       it('shows an error when the AI action mutation response contains errors', async () => {
+        const errors = ['oh no', 'it didnt do the thing', 'zzzeezoo'];
+
         aiActionMutationHandler.mockResolvedValue({
-          errors: ['oh no', 'it didnt do the thing', 'zzzeezoo'],
+          data: {
+            aiAction: {
+              errors,
+            },
+          },
         });
 
         await selectSummariseComments();
@@ -151,7 +157,9 @@ describe('AI actions dropdown component', () => {
 
         expect(createAlert).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'Something went wrong',
+            message: errors.join(','),
+            captureError: true,
+            error: expect.any(Error),
           }),
         );
       });
@@ -165,21 +173,21 @@ describe('AI actions dropdown component', () => {
 
         expect(createAlert).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'Something went wrong',
+            message: 'ding',
             captureError: true,
             error: mockError,
           }),
         );
       });
 
-      it('shows an error and logs to Sentry when the AI subscription fails', async () => {
+      it('shows an error and logs to Sentry when the AI subscription fails', () => {
         const mockError = new Error('ding');
 
         aiResponseSubscriptionHandler.error(mockError);
 
         expect(createAlert).toHaveBeenCalledWith(
           expect.objectContaining({
-            message: 'Something went wrong',
+            message: 'ding',
             captureError: true,
             error: mockError,
           }),

@@ -678,15 +678,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: geo:geo_file_registry_removal
-  :worker_name: Geo::FileRegistryRemovalWorker
-  :feature_category: :geo_replication
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: geo:geo_file_removal
   :worker_name: Geo::FileRemovalWorker
   :feature_category: :geo_replication
@@ -1524,6 +1515,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: product_analytics_initialize_snowplow_product_analytics
+  :worker_name: ProductAnalytics::InitializeSnowplowProductAnalyticsWorker
+  :feature_category: :product_analytics
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: project_import_schedule
   :worker_name: ProjectImportScheduleWorker
   :feature_category: :source_code_management
@@ -1619,6 +1619,15 @@
   :feature_category: :global_search
   :has_external_dependencies: false
   :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: search_zoekt_namespace_indexer
+  :worker_name: Search::Zoekt::NamespaceIndexerWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true

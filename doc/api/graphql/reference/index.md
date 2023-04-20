@@ -6525,6 +6525,26 @@ Input type: `VulnerabilityFindingDismissInput`
 | <a id="mutationvulnerabilityfindingdismisserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationvulnerabilityfindingdismissfinding"></a>`finding` | [`PipelineSecurityReportFinding`](#pipelinesecurityreportfinding) | Finding after dismissal. |
 
+### `Mutation.vulnerabilityIssueLinkCreate`
+
+Input type: `VulnerabilityIssueLinkCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvulnerabilityissuelinkcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvulnerabilityissuelinkcreateissueid"></a>`issueId` | [`IssueID!`](#issueid) | ID of the issue to link to. |
+| <a id="mutationvulnerabilityissuelinkcreatevulnerabilityids"></a>`vulnerabilityIds` | [`[VulnerabilityID!]!`](#vulnerabilityid) | IDs of vulnerabilities to link to the given issue. Up to 100 can be provided. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationvulnerabilityissuelinkcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationvulnerabilityissuelinkcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationvulnerabilityissuelinkcreateissuelinks"></a>`issueLinks` | [`[VulnerabilityIssueLink!]`](#vulnerabilityissuelink) | Created issue links. |
+
 ### `Mutation.vulnerabilityResolve`
 
 Input type: `VulnerabilityResolveInput`
@@ -6731,6 +6751,7 @@ Input type: `WorkItemExportInput`
 | ---- | ---- | ----------- |
 | <a id="mutationworkitemexportclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationworkitemexporterrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationworkitemexportmessage"></a>`message` | [`String`](#string) | Export request result message. |
 
 ### `Mutation.workItemUpdate`
 
@@ -12442,6 +12463,15 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="commitpipelinesupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Pipelines updated before this date. |
 | <a id="commitpipelinesusername"></a>`username` | [`String`](#string) | Filter pipelines by the user that triggered the pipeline. |
 
+### `CommitParentNames`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitparentnamesnames"></a>`names` | [`[String!]`](#string) | Names of the commit parent (branch or tag). |
+| <a id="commitparentnamestotalcount"></a>`totalCount` | [`Int`](#int) | Total of parent branches or tags. |
+
 ### `ComplianceFramework`
 
 Represents a ComplianceFramework associated with a Project.
@@ -14578,7 +14608,6 @@ GPG signature for a signed commit.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="groupachievements"></a>`achievements` **{warning-solid}** | [`AchievementConnection`](#achievementconnection) | **Introduced** in 15.8. This feature is an Experiment. It can be changed or removed at any time. Achievements for the namespace. Returns `null` if the `achievements` feature flag is disabled. |
 | <a id="groupactualrepositorysizelimit"></a>`actualRepositorySizeLimit` | [`Float`](#float) | Size limit for repositories in the namespace in bytes. |
 | <a id="groupadditionalpurchasedstoragesize"></a>`additionalPurchasedStorageSize` | [`Float`](#float) | Additional storage purchased for the root namespace in bytes. |
 | <a id="groupallowstalerunnerpruning"></a>`allowStaleRunnerPruning` | [`Boolean!`](#boolean) | Indicates whether to regularly prune stale group runners. Defaults to false. |
@@ -14637,6 +14666,26 @@ GPG signature for a signed commit.
 | <a id="groupweburl"></a>`webUrl` | [`String!`](#string) | Web URL of the group. |
 
 #### Fields with arguments
+
+##### `Group.achievements`
+
+Achievements for the namespace. Returns `null` if the `achievements` feature flag is disabled.
+
+WARNING:
+**Introduced** in 15.8.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`AchievementConnection`](#achievementconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupachievementsids"></a>`ids` | [`[AchievementsAchievementID!]`](#achievementsachievementid) | Filter achievements by IDs. |
 
 ##### `Group.billableMembersCount`
 
@@ -16240,6 +16289,7 @@ Defines which user roles, users, or groups can merge into a protected branch.
 | <a id="mergerequestautomergeenabled"></a>`autoMergeEnabled` | [`Boolean!`](#boolean) | Indicates if auto merge is enabled for the merge request. |
 | <a id="mergerequestautomergestrategy"></a>`autoMergeStrategy` | [`String`](#string) | Selected auto merge strategy. |
 | <a id="mergerequestavailableautomergestrategies"></a>`availableAutoMergeStrategies` | [`[String!]`](#string) | Array of available auto merge strategies. |
+| <a id="mergerequestawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the merge request. (see [Connections](#connections)) |
 | <a id="mergerequestcommenters"></a>`commenters` | [`UserCoreConnection!`](#usercoreconnection) | All commenters on this noteable. (see [Connections](#connections)) |
 | <a id="mergerequestcommitcount"></a>`commitCount` | [`Int`](#int) | Number of commits in the merge request. |
 | <a id="mergerequestcommits"></a>`commits` | [`CommitConnection`](#commitconnection) | Merge request commits. (see [Connections](#connections)) |
@@ -17557,7 +17607,6 @@ Contains statistics about a milestone.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="namespaceachievements"></a>`achievements` **{warning-solid}** | [`AchievementConnection`](#achievementconnection) | **Introduced** in 15.8. This feature is an Experiment. It can be changed or removed at any time. Achievements for the namespace. Returns `null` if the `achievements` feature flag is disabled. |
 | <a id="namespaceactualrepositorysizelimit"></a>`actualRepositorySizeLimit` | [`Float`](#float) | Size limit for repositories in the namespace in bytes. |
 | <a id="namespaceadditionalpurchasedstoragesize"></a>`additionalPurchasedStorageSize` | [`Float`](#float) | Additional storage purchased for the root namespace in bytes. |
 | <a id="namespacecontainslockedprojects"></a>`containsLockedProjects` | [`Boolean!`](#boolean) | Includes at least one project where the repository size exceeds the limit. |
@@ -17584,6 +17633,26 @@ Contains statistics about a milestone.
 | <a id="namespacevisibility"></a>`visibility` | [`String`](#string) | Visibility of the namespace. |
 
 #### Fields with arguments
+
+##### `Namespace.achievements`
+
+Achievements for the namespace. Returns `null` if the `achievements` feature flag is disabled.
+
+WARNING:
+**Introduced** in 15.8.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`AchievementConnection`](#achievementconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespaceachievementsids"></a>`ids` | [`[AchievementsAchievementID!]`](#achievementsachievementid) | Filter achievements by IDs. |
 
 ##### `Namespace.complianceFrameworks`
 
@@ -18691,6 +18760,19 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectboardsid"></a>`id` | [`BoardID`](#boardid) | Find a board by its ID. |
 
+##### `Project.branchesTippingAtCommit`
+
+Get branch names tipping at a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectbranchestippingatcommitcommitsha"></a>`commitSha` | [`String!`](#string) | Project commit SHA identifier. For example, `287774414568010855642518513f085491644061`. |
+| <a id="projectbranchestippingatcommitlimit"></a>`limit` | [`Int`](#int) | Number of branch names to return. |
+
 ##### `Project.ciConfigVariables`
 
 CI/CD config variable.
@@ -19701,6 +19783,19 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectsnippetsids"></a>`ids` | [`[SnippetID!]`](#snippetid) | Array of global snippet IDs. For example, `gid://gitlab/ProjectSnippet/1`. |
 | <a id="projectsnippetsvisibility"></a>`visibility` | [`VisibilityScopesEnum`](#visibilityscopesenum) | Visibility of the snippet. |
+
+##### `Project.tagsTippingAtCommit`
+
+Get tag names tipping at a given commit.
+
+Returns [`CommitParentNames`](#commitparentnames).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projecttagstippingatcommitcommitsha"></a>`commitSha` | [`String!`](#string) | Project commit SHA identifier. For example, `287774414568010855642518513f085491644061`. |
+| <a id="projecttagstippingatcommitlimit"></a>`limit` | [`Int`](#int) | Number of branch names to return. |
 
 ##### `Project.terraformState`
 

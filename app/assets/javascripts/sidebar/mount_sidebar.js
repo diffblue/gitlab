@@ -645,7 +645,7 @@ function mountCopyEmailToClipboard() {
   });
 }
 
-export function mountMoveIssuesButton() {
+export async function mountMoveIssuesButton() {
   const el = document.querySelector('.js-move-issues');
 
   if (!el) {
@@ -658,7 +658,7 @@ export function mountMoveIssuesButton() {
     el,
     name: 'MoveIssuesRoot',
     apolloProvider: new VueApollo({
-      defaultClient: gqlClient,
+      defaultClient: await gqlClient(),
     }),
     render: (createElement) =>
       createElement(MoveIssuesButton, {

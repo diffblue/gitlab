@@ -11,14 +11,6 @@ module EE
       options.to_a.shuffle.append(other).map { |option| option.reverse }
     end
 
-    def credit_card_verification_data
-      {
-        completed: current_user.credit_card_validation.present?.to_s,
-        iframe_url: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL,
-        allowed_origin: ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
-      }
-    end
-
     def arkose_labs_data
       {
         api_key: Arkose::Settings.arkose_public_api_key,

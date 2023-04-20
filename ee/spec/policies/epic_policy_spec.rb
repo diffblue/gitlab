@@ -369,4 +369,79 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
       end
     end
   end
+
+  describe 'summarize_notes' do
+    let_it_be(:group) { create(:group, :private) }
+
+    before do
+      stub_licensed_features(summarize_notes: true)
+      stub_feature_flags(summarize_comments: group)
+    end
+
+    context 'when a member' do
+      before do
+        group.add_guest(user)
+      end
+
+      context 'on a public group' do
+        before do
+          group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it { is_expected.to be_allowed(:summarize_notes) }
+
+        context 'when license is not set' do
+          before do
+            stub_licensed_features(summarize_notes: false)
+          end
+
+          it { is_expected.to be_disallowed(:summarize_notes) }
+        end
+
+        context 'when feature flag is not set' do
+          before do
+            stub_feature_flags(summarize_comments: false)
+          end
+
+          it { is_expected.to be_disallowed(:summarize_notes) }
+        end
+
+        context 'on confidential epic' do
+          let_it_be(:epic) { create(:epic, :confidential, group: group) }
+
+          it { is_expected.to be_disallowed(:summarize_notes) }
+        end
+      end
+
+      context 'on a private group' do
+        before do
+          group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+
+      context 'on confidential epic' do
+        let_it_be(:epic) { create(:epic, :confidential, group: group) }
+
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+    end
+
+    context 'when not a member' do
+      let_it_be(:user) { create(:user) }
+
+      context 'on a public group' do
+        before do
+          group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+
+      context 'on a private group' do
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+    end
+  end
 end

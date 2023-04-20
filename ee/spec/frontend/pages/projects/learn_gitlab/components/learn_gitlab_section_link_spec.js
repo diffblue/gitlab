@@ -5,7 +5,7 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import eventHub from '~/invite_members/event_hub';
 import LearnGitlabSectionLink from 'ee/pages/projects/learn_gitlab/components/learn_gitlab_section_link.vue';
 import { ACTION_LABELS } from 'ee/pages/projects/learn_gitlab/constants';
-import { LEARN_GITLAB } from '~/invite_members/constants';
+import { LEARN_GITLAB } from 'ee/invite_members/constants';
 
 const defaultAction = 'gitWrite';
 const defaultProps = {
@@ -106,7 +106,7 @@ describe('Learn GitLab Section Link', () => {
 
   describe('links marked with openInNewTab', () => {
     beforeEach(() => {
-      createWrapper('securityScanEnabled', openInNewTabProps);
+      createWrapper('licenseScanningRun', openInNewTabProps);
     });
 
     it('renders links with blank target', () => {
@@ -122,7 +122,7 @@ describe('Learn GitLab Section Link', () => {
       findUncompletedLink().trigger('click');
 
       expect(trackingSpy).toHaveBeenCalledWith('_category_', 'click_link', {
-        label: 'run_a_security_scan_using_ci_cd',
+        label: 'scan_dependencies_for_licenses',
       });
 
       unmockTracking();

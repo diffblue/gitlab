@@ -71,7 +71,7 @@ export default {
       @click.prevent="expanded = !expanded"
     >
       <div class="gl-flex-shrink-0 gl-w-6 gl-mx-3">
-        <gl-icon name="thumbtack" class="gl-ml-2" />
+        <gl-icon name="thumbtack" class="gl-ml-2 item-icon" />
       </div>
 
       <span class="gl-font-weight-bold gl-font-sm gl-flex-grow-1">{{ $options.i18n.pinned }}</span>
@@ -99,6 +99,6 @@ export default {
         {{ $options.i18n.emptyHint }}
       </div>
     </gl-collapse>
-    <hr class="gl-my-2 gl-mx-4" />
+    <hr aria-hidden="true" class="gl-my-2 gl-mx-4" />
   </section>
 </template>

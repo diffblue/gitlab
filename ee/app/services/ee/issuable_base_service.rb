@@ -11,9 +11,7 @@ module EE
     def associations_before_update(issuable)
       associations = super
 
-      if issuable.escalation_policies_available? && issuable.escalation_status
-        associations[:escalation_policy] = issuable.escalation_status.policy
-      end
+      associations[:escalation_policy] = issuable.escalation_status&.policy if issuable.escalation_policies_available?
 
       associations
     end

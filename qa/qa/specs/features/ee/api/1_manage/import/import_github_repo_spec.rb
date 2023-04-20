@@ -2,7 +2,11 @@
 
 module QA
   RSpec.describe 'Manage', product_group: :import do
-    describe 'GitHub import' do
+    describe 'GitHub import',
+      quarantine: {
+        issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/407297',
+        type: :investigating
+      } do
       include_context 'with github import'
 
       context "when imported via api" do

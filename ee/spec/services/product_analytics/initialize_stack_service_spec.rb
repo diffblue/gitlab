@@ -9,6 +9,7 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
 
   before do
     project.add_maintainer(user)
+    stub_feature_flags(product_analytics_snowplow_support: false)
   end
 
   shared_examples 'no job is enqueued' do
@@ -46,6 +47,30 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
     before do
       stub_licensed_features(product_analytics: true)
       stub_ee_application_setting(product_analytics_enabled: true)
+    end
+
+    context 'when snowplow support is enabled' do
+      before do
+        stub_feature_flags(product_analytics_snowplow_support: true)
+      end
+
+      it 'enqueues a job' do
+        expect(::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker)
+          .to receive(:perform_async).with(project.id)
+
+        described_class.new(container: project, current_user: user).execute
+      end
+
+      context 'when project is already initialized for product analytics' do
+        before do
+          project.project_setting.update!(product_analytics_instrumentation_key: '123')
+        end
+
+        it 'returns an error response' do
+          expect(subject).to be_error
+          expect(subject.message).to eq('Product analytics initialization is already complete')
+        end
+      end
     end
 
     context 'when feature flag is enabled' do

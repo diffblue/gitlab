@@ -88,7 +88,7 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
 
       expect(note.note)
         .to include(
-          "(🤖 has created a summary note for revision #{merge_request.diff_head_sha})"
+          "(AI-generated summary for revision #{merge_request.diff_head_sha})"
         )
     end
   end

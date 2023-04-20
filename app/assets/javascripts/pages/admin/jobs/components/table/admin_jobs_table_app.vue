@@ -1,13 +1,21 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
+import { __ } from '~/locale';
 import { queryToObject } from '~/lib/utils/url_utility';
 import { validateQueryString } from '~/jobs/components/filtered_search/utils';
 import JobsTable from '~/jobs/components/table/jobs_table.vue';
 import JobsTableTabs from '~/jobs/components/table/jobs_table_tabs.vue';
+import JobsTableEmptyState from '~/jobs/components/table/jobs_table_empty_state.vue';
 import { DEFAULT_FIELDS_ADMIN } from '../constants';
 import GetAllJobs from './graphql/queries/get_all_jobs.query.graphql';
 
 export default {
+  i18n: {
+    jobsFetchErrorMsg: __('There was an error fetching the jobs.'),
+  },
   components: {
+    JobsTableEmptyState,
+    GlAlert,
     JobsTable,
     JobsTableTabs,
   },
@@ -37,7 +45,7 @@ export default {
         };
       },
       error() {
-        this.hasError = true;
+        this.error = this.$options.i18n.jobsFetchErrorMsg;
       },
     },
   },
@@ -46,16 +54,25 @@ export default {
       jobs: {
         list: [],
       },
-      hasError: false,
+      error: '',
       count: 0,
       scope: null,
       infiniteScrollingTriggered: false,
+      filterSearchTriggered: false,
       DEFAULT_FIELDS_ADMIN,
     };
   },
   computed: {
     loading() {
       return this.$apollo.queries.jobs.loading;
+    },
+    // Show when on All tab with no jobs
+    // Show only when not loading and filtered search has not been triggered
+    // So we don't show empty state when results are empty on a filtered search
+    showEmptyState() {
+      return (
+        this.jobs.list.length === 0 && !this.scope && !this.loading && !this.filterSearchTriggered
+      );
     },
     variables() {
       return { ...this.validatedQueryString };
@@ -83,8 +100,19 @@ export default {
 
 <template>
   <div>
+    <gl-alert v-if="error" class="gl-mt-2" variant="danger" dismissible @dismiss="error = ''">
+      {{ error }}
+    </gl-alert>
+
     <jobs-table-tabs :all-jobs-count="count" :loading="loading" />
 
-    <jobs-table :jobs="jobs.list" :table-fields="DEFAULT_FIELDS_ADMIN" />
+    <jobs-table-empty-state v-if="showEmptyState" />
+
+    <jobs-table
+      v-else
+      :jobs="jobs.list"
+      :table-fields="DEFAULT_FIELDS_ADMIN"
+      class="gl-table-no-top-border"
+    />
   </div>
 </template>

@@ -59,10 +59,6 @@ module Registrations
     def exit
       return not_found unless Feature.enabled?(:exit_registration_verification)
 
-      if current_user.requires_credit_card_verification
-        ::Users::UpdateService.new(current_user, user: current_user, requires_credit_card_verification: false).execute!
-      end
-
       finish_onboarding
       redirect_to root_url
     end

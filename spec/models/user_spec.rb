@@ -105,9 +105,6 @@ RSpec.describe User, feature_category: :user_profile do
     it { is_expected.to delegate_method(:registration_objective).to(:user_detail).allow_nil }
     it { is_expected.to delegate_method(:registration_objective=).to(:user_detail).with_arguments(:args).allow_nil }
 
-    it { is_expected.to delegate_method(:requires_credit_card_verification).to(:user_detail).allow_nil }
-    it { is_expected.to delegate_method(:requires_credit_card_verification=).to(:user_detail).with_arguments(:args).allow_nil }
-
     it { is_expected.to delegate_method(:discord).to(:user_detail).allow_nil }
     it { is_expected.to delegate_method(:discord=).to(:user_detail).with_arguments(:args).allow_nil }
 
@@ -2371,6 +2368,18 @@ RSpec.describe User, feature_category: :user_profile do
           developer_group.add_developer(user)
 
           expect(user.forkable_namespaces).to contain_exactly(user.namespace, group, subgroup, developer_group)
+        end
+
+        it 'includes groups where the user has access via group shares to create projects' do
+          shared_group = create(:group)
+          create(:group_group_link, :maintainer,
+                shared_with_group: group,
+                shared_group: shared_group
+          )
+
+          expect(user.forkable_namespaces).to contain_exactly(
+            user.namespace, group, subgroup, shared_group
+          )
         end
       end
 

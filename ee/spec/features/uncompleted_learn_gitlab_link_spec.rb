@@ -20,7 +20,7 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
         pipeline_created_at: yesterday,
         merge_request_created_at: yesterday,
         user_added_at: yesterday,
-        security_scan_enabled_at: yesterday
+        license_scanning_run_at: yesterday
       )
     end
 
@@ -33,7 +33,7 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect_completed_section("Set up your first project's CI/CD")
       expect_completed_section('Submit a merge request (MR)')
       expect_completed_section('Invite your colleagues')
-      expect_completed_section('Run a Security scan using CI/CD')
+      expect_completed_section('Scan dependencies for licenses')
     end
   end
 
@@ -55,8 +55,8 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect_correct_candidate_link(find_link('Submit a merge request (MR)'), project_merge_requests_path(project))
 
       expect_correct_candidate_link(
-        find_link('Run a Security scan using CI/CD'),
-        project_security_configuration_path(project)
+        find_link('Analyze your application for vulnerabilities with DAST'),
+        project_security_configuration_path(project, anchor: 'dast')
       )
 
       expect_correct_candidate_link(

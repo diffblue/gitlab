@@ -410,10 +410,6 @@ module Vulnerabilities
       finding_pipelines.last&.pipeline
     end
 
-    def ai_explainable?
-      file.present? && location["start_line"].present?
-    end
-
     protected
 
     def primary_identifier_fingerprint

@@ -14,21 +14,13 @@ participating-stages: []
 
 This document is a work-in-progress and represents a very early state of the Cells design. Significant aspects are not documented, though we expect to add them in the future.
 
-## Summary
+Cells is a new architecture for our Software as a Service platform. This architecture is horizontally-scalable, resilient, and provides a more consistent user experience. It may also provide additional features in the future, such as data residency control (regions) and federated features.
 
-Cells is a new architecture for our Software as a Service platform that is horizontally-scalable, resilient, and provides a more consistent user experience. It may also provide additional features in the future, such as data residency control (regions) and federated features.
+For more information about Cells, see also:
 
-## Terminology
-
-See [Cells: Glossary](glossary.md).
-
-## Goals
-
-See [Cells: Goals](goals.md).
-
-## Cross-section impact
-
-See [Cells: Cross-section impact](impact.md).
+- [Glossary](glossary.md)
+- [Goals](goals.md)
+- [Cross-section impact](impact.md)
 
 ## Iteration plan
 
@@ -77,7 +69,7 @@ This is the list of known affected features with the proposed solutions.
 
 ## Decision log
 
-- 2022-03-15: Google Cloud as the cloud service. [Reference](https://gitlab.com/gitlab-org/gitlab/-/issues/396641#note_1314932272)
+- 2022-03-15: Google Cloud as the cloud service. For details, see [issue 396641](https://gitlab.com/gitlab-org/gitlab/-/issues/396641#note_1314932272).
 
 ## Links
 

@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalRulePresenter do
+# The presenter is using finders so we must persist records.
+# rubocop:disable RSpec/FactoryBot/AvoidCreate
+RSpec.describe ApprovalRulePresenter, feature_category: :compliance_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:public_group) { create(:group) }
   let_it_be(:private_group) { create(:group, :private) }
@@ -22,11 +24,11 @@ RSpec.describe ApprovalRulePresenter do
       rule.clear_memoization(:approvers)
     end
 
-    context 'user cannot see one of the groups' do
+    context 'when user cannot see one of the groups' do
       it { is_expected.to be_empty }
     end
 
-    context 'user can see all groups' do
+    context 'when user can see all groups' do
       before do
         private_group.add_guest(user)
       end
@@ -52,13 +54,13 @@ RSpec.describe ApprovalRulePresenter do
       end
     end
 
-    context 'project rule' do
+    context 'with project rule' do
       let(:rule) { create(:approval_project_rule, groups: groups) }
 
       it_behaves_like 'filtering private group'
     end
 
-    context 'wrapped approval rule' do
+    context 'with wrapped approval rule' do
       let(:rule) do
         mr_rule = create(:approval_merge_request_rule, groups: groups)
         ApprovalWrappedRule.new(mr_rule.merge_request, mr_rule)
@@ -67,7 +69,7 @@ RSpec.describe ApprovalRulePresenter do
       it_behaves_like 'filtering private group'
     end
 
-    context 'any_approver rule' do
+    context 'with any_approver rule' do
       let(:rule) { create(:any_approver_rule) }
 
       it 'contains no groups without raising an error' do
@@ -93,13 +95,13 @@ RSpec.describe ApprovalRulePresenter do
       end
     end
 
-    context 'project rule' do
+    context 'with project rule' do
       let(:rule) { create(:approval_project_rule, groups: groups) }
 
       it_behaves_like 'detecting hidden group'
     end
 
-    context 'wrapped approval rule' do
+    context 'with wrapped approval rule' do
       let(:rule) do
         mr_rule = create(:approval_merge_request_rule, groups: groups)
         ApprovalWrappedRule.new(mr_rule.merge_request, mr_rule)
@@ -108,7 +110,7 @@ RSpec.describe ApprovalRulePresenter do
       it_behaves_like 'detecting hidden group'
     end
 
-    context 'any_approver rule' do
+    context 'with any_approver rule' do
       let(:rule) { create(:any_approver_rule) }
 
       it 'contains no groups without raising an error' do
@@ -117,3 +119,4 @@ RSpec.describe ApprovalRulePresenter do
     end
   end
 end
+# rubocop:enable RSpec/FactoryBot/AvoidCreate

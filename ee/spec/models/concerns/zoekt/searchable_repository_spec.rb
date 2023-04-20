@@ -76,22 +76,11 @@ RSpec.describe ::Zoekt::SearchableRepository, :zoekt, feature_category: :global_
     end
   end
 
-  describe '#async_update_zoekt_index', :sidekiq_inline do
+  describe '#async_update_zoekt_index' do
     it 'makes updates available via ::Zoekt::IndexerWorker' do
-      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id).and_call_original
-
-      project.repository.create_file(
-        user,
-        'anothernewsearchablefile.txt',
-        'some content',
-        message: 'added test file',
-        branch_name: project.default_branch)
-
-      expect(search_for('anothernewsearchablefile.txt')).to be_empty
+      expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id)
 
       repository.async_update_zoekt_index
-
-      expect(search_for('anothernewsearchablefile.txt')).to match_array(['anothernewsearchablefile.txt'])
     end
   end
 end

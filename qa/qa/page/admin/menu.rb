@@ -4,6 +4,13 @@ module QA
   module Page
     module Admin
       class Menu < Page::Base
+        include SubMenus::Common
+
+        if QA::Runtime::Env.super_sidebar_enabled?
+          prepend Sidebar::Overview
+          prepend Sidebar::Settings
+        end
+
         view 'lib/sidebars/admin/menus/admin_overview_menu.rb' do
           element :admin_overview_submenu_content
         end
@@ -58,6 +65,10 @@ module QA
 
         def go_to_groups_overview
           click_element :admin_overview_groups_link
+        end
+
+        def go_to_applications
+          click_element(:sidebar_menu_link, menu_item: 'Applications')
         end
 
         private

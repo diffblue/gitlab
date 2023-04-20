@@ -19,6 +19,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_c
     stub_licensed_features(merge_pipelines: true, merge_trains: true)
     project.add_maintainer(user)
     project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
+    stub_feature_flags(auto_merge_labels_mr_widget: false)
 
     merge_request.update_head_pipeline
 

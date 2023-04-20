@@ -14,8 +14,7 @@ name: AwesomeCo
 
 group_labels:
   # Priorities
-  - _id: priority_1
-    name: priority::1
+  - name: priority::1
     group_id: <%= @group.id %>
     color: "#FF0000"
   - name: priority::2
@@ -29,24 +28,25 @@ group_labels:
     color: "#BB0000"
 
   # Squads
-  - name: squad::a
+  - _id: squad_a
+    name: squad::a
     group_id: <%= @group.id %>
     color: "#CCCCCC"
   - name: squad::b
     group_id: <%= @group.id %>
-    color: "#CCCCCC"
+    color: <%= group_labels.squad_a.color %>
   - name: squad::c
     group_id: <%= @group.id %>
-    color: "#CCCCCC"
+    color: <%= group_labels.squad_a.color %>
   - name: squad::d
     group_id: <%= @group.id %>
-    color: "#CCCCCC"
+    color: <%= group_labels.squad_a.color %>
   - name: squad::e
     group_id: <%= @group.id %>
-    color: "#CCCCCC"
+    color: <%= group_labels.squad_a.color %>
   - name: squad::f
     group_id: <%= @group.id %>
-    color: "#CCCCCC"
+    color: <%= group_labels.squad_a.color %>
 
   # Types
   - name: type::0-idea

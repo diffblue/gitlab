@@ -1,6 +1,6 @@
 query getSubscriptionData($namespaceId: ID!) {
   subscription(namespaceId: $namespaceId) {
     canAddSeats
-    inRenewalPeriod
+    canRenew
   }
 }

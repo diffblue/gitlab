@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Projects::IssuesController, feature_category: :team_planning do
   let_it_be(:group) { create(:group) }
-  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { issue.author }
   let_it_be(:blocking_issue) { create(:issue, project: project) }
@@ -85,8 +85,6 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             get_show
 
             expect(response.body).to have_pushed_frontend_feature_flags(summarizeComments: true)
-            expect(response.body).to have_pushed_frontend_feature_flags(summarizeNotes: true)
-            expect(response.body).to have_pushed_frontend_feature_flags(openaiExperimentation: true)
           end
         end
 
@@ -95,8 +93,6 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             get_show
 
             expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
-            expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeNotes: true)
-            expect(response.body).not_to have_pushed_frontend_feature_flags(openaiExperimentation: true)
           end
         end
       end
@@ -110,8 +106,6 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
           get_show
 
           expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
-          expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeNotes: true)
-          expect(response.body).not_to have_pushed_frontend_feature_flags(openaiExperimentation: true)
         end
       end
     end

@@ -233,7 +233,7 @@ The following actions on projects generate project audit events:
 - Project repository was downloaded
 - Project was archived
 - Project was unarchived
-- Added, removed, or updated protected branches
+- Branch protection was added, removed, or updated
 - Release was added to a project
 - Release was updated
 - Release was deleted. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94793/) in GitLab 15.3.
@@ -389,6 +389,7 @@ Some events are not tracked in audit events. The following epics and issues prop
 - [Group settings and activity](https://gitlab.com/groups/gitlab-org/-/epics/475).
 - [Instance-level settings and activity](https://gitlab.com/groups/gitlab-org/-/epics/476).
 - [Deployment Approval activity](https://gitlab.com/gitlab-org/gitlab/-/issues/354782).
+- [Approval rules processing by a non GitLab user](https://gitlab.com/gitlab-org/gitlab/-/issues/407384).
 
 If you don't see the event you want in any of the epics, you can either:
 

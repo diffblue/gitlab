@@ -11,7 +11,10 @@ module Gitlab
 
       def initialize(blob)
         @blob = blob
+        @errors = []
       end
+
+      attr_reader :errors
 
       def parsed_data
         @parsed_data ||= get_parsed_data
@@ -52,7 +55,7 @@ module Gitlab
         entries.present? && entries.all?(&:optional?)
       end
 
-      def entry_for_path(path)
+      def entries_for_path(path)
         path = "/#{path}" unless path.start_with?('/')
 
         matches = []
@@ -68,6 +71,14 @@ module Gitlab
         matches
       end
 
+      def valid?
+        parsed_data
+
+        errors.none?
+      end
+
+      private
+
       def data
         return "" if @blob.nil? || @blob.binary?
 
@@ -80,30 +91,40 @@ module Gitlab
           current_section.name => {}
         }
 
-        data.lines.each do |line|
+        data.lines.each.with_index(1) do |line, line_number|
           line = line.strip
 
           next if skip?(line)
 
+          section_parser = SectionParser.new(line, parsed_sectional_data)
+          parsed_section = section_parser.execute
+
+          # Report errors even if the section is successfully parsed
+          unless section_parser.valid?
+            section_parser.errors.each { |error| add_error(error, line_number) }
+          end
+
           # Detect section headers and consider next lines in the file as part ot the section.
-          if (parsed_section = Section.parse(line, parsed_sectional_data))
+          if parsed_section
             current_section = parsed_section
             parsed_sectional_data[current_section.name] ||= {}
 
             next
           end
 
-          parse_entry(line, parsed_sectional_data, current_section)
+          parse_entry(line, parsed_sectional_data, current_section, line_number)
         end
 
         parsed_sectional_data
       end
 
-      def parse_entry(line, parsed, section)
+      def parse_entry(line, parsed, section, line_number)
         pattern, _separator, entry_owners = line.partition(/(?<!\\)\s+/)
         normalized_pattern = normalize_pattern(pattern)
 
         owners = entry_owners.presence || section.default_owners
+
+        add_error(Error::MISSING_ENTRY_OWNER, line_number) if owners.blank?
 
         parsed[section.name][normalized_pattern] = Entry.new(
           pattern,
@@ -138,6 +159,10 @@ module Gitlab
 
       def path_matches?(pattern, path)
         ::File.fnmatch?(pattern, path, FNMATCH_FLAGS)
+      end
+
+      def add_error(message, line_number)
+        errors << Error.new(message: message, line_number: line_number, path: path)
       end
     end
   end

@@ -48,11 +48,11 @@ export const TAGS_MODE_SELECTED_ITEMS = [
 export const DEFAULT_SCANNER = SCANNER_DAST;
 
 export const SCANNER_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan on runner that %{tags}',
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Run a %{scan} scan on runner that %{tags}',
 );
 
 export const DAST_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run %{dastProfiles} with tags %{tags}',
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Run a %{scan} scan with %{dastProfiles} with tags %{tags}',
 );
 
 export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';

@@ -25,6 +25,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js, feature_catego
     merge_request.all_pipelines.first.succeed!
     merge_request.update_head_pipeline
     stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
+    stub_feature_flags(auto_merge_labels_mr_widget: false)
 
     sign_in(user)
   end

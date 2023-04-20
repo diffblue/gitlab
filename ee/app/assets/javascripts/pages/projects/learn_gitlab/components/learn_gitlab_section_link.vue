@@ -3,7 +3,7 @@ import { uniqueId } from 'lodash';
 import { GlLink, GlIcon, GlButton, GlPopover, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import eventHub from '~/invite_members/event_hub';
 import { s__ } from '~/locale';
-import { LEARN_GITLAB } from '~/invite_members/constants';
+import { LEARN_GITLAB } from 'ee/invite_members/constants';
 import { ACTION_LABELS } from '../constants';
 import IncludedInTrialIndicator from './included_in_trial_indicator.vue';
 

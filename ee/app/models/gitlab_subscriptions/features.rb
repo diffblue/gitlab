@@ -81,6 +81,7 @@ module GitlabSubscriptions
     PREMIUM_FEATURES = %i[
       adjourned_deletion_for_projects_and_groups
       admin_audit_log
+      ai_assist
       auditor_user
       blocking_merge_requests
       board_assignee_lists
@@ -174,7 +175,6 @@ module GitlabSubscriptions
     ].freeze
 
     ULTIMATE_FEATURES = %i[
-      ai_assist
       api_discovery
       api_fuzzing
       auto_rollback

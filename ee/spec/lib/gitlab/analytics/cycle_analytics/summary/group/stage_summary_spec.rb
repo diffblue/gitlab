@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary, feature_category: :devops_reports do
+  include CycleAnalyticsHelpers
+
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, namespace: group) }
   let(:project_2) { create(:project, :repository, namespace: group) }
@@ -132,15 +134,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary, 
         expect(subject.first[:value]).to eq('2')
       end
     end
-  end
-
-  def create_deployment(args)
-    project = args[:project]
-    environment = project.environments.production.first || create(:environment, :production, project: project)
-    create(:deployment, :success, args.merge(environment: environment))
-
-    # this is needed for the DORA API so we have aggregated data
-    ::Dora::DailyMetrics::RefreshWorker.new.perform(environment.id, Time.current.to_date.to_s)
   end
 
   describe "#deploys" do

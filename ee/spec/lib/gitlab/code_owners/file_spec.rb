@@ -290,7 +290,7 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
     end
   end
 
-  describe '#entry_for_path' do
+  describe '#entries_for_path' do
     shared_examples_for "returns expected matches" do
       context 'for a path without matches' do
         let(:file_content) do
@@ -300,7 +300,7 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
         end
 
         it 'returns an empty array for an unmatched path' do
-          entry = file.entry_for_path('no_matches')
+          entry = file.entries_for_path('no_matches')
 
           expect(entry).to be_a Array
           expect(entry).to be_empty
@@ -308,73 +308,73 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
       end
 
       it 'matches random files to a pattern' do
-        entry = file.entry_for_path('app/assets/something.vue').first
+        entry = file.entries_for_path('app/assets/something.vue').first
 
         expect(entry.pattern).to eq('*')
         expect(entry.owner_line).to include('default-codeowner')
       end
 
       it 'uses the last pattern if multiple patterns match' do
-        entry = file.entry_for_path('hello.rb').first
+        entry = file.entries_for_path('hello.rb').first
 
         expect(entry.pattern).to eq('*.rb')
         expect(entry.owner_line).to eq('@ruby-owner')
       end
 
       it 'returns the usernames for a file matching a pattern with a glob' do
-        entry = file.entry_for_path('app/models/repository.rb').first
+        entry = file.entries_for_path('app/models/repository.rb').first
 
         expect(entry.owner_line).to eq('@ruby-owner')
       end
 
       it 'allows specifying multiple users' do
-        entry = file.entry_for_path('CODEOWNERS').first
+        entry = file.entries_for_path('CODEOWNERS').first
 
         expect(entry.owner_line).to include('multiple', 'owners', 'tab-separated')
       end
 
       it 'returns emails and usernames for a matched pattern' do
-        entry = file.entry_for_path('LICENSE').first
+        entry = file.entries_for_path('LICENSE').first
 
         expect(entry.owner_line).to include('legal', 'janedoe@gitlab.com')
       end
 
       it 'allows escaping the pound sign used for comments' do
-        entry = file.entry_for_path('examples/#file_with_pound.rb').first
+        entry = file.entries_for_path('examples/#file_with_pound.rb').first
 
         expect(entry.owner_line).to include('owner-file-with-pound')
       end
 
       it 'returns the usernames for a file nested in a directory' do
-        entry = file.entry_for_path('docs/projects/index.md').first
+        entry = file.entries_for_path('docs/projects/index.md').first
 
         expect(entry.owner_line).to include('all-docs')
       end
 
       it 'returns the usernames for a pattern matched with a glob in a folder' do
-        entry = file.entry_for_path('docs/index.md').first
+        entry = file.entries_for_path('docs/index.md').first
 
         expect(entry.owner_line).to include('root-docs')
       end
 
       it 'allows matching files nested anywhere in the repository', :aggregate_failures do
-        lib_entry = file.entry_for_path('lib/gitlab/git/repository.rb').first
-        other_lib_entry = file.entry_for_path('ee/lib/gitlab/git/repository.rb').first
+        lib_entry = file.entries_for_path('lib/gitlab/git/repository.rb').first
+        other_lib_entry = file.entries_for_path('ee/lib/gitlab/git/repository.rb').first
 
         expect(lib_entry.owner_line).to include('lib-owner')
         expect(other_lib_entry.owner_line).to include('lib-owner')
       end
 
       it 'allows allows limiting the matching files to the root of the repository', :aggregate_failures do
-        config_entry = file.entry_for_path('config/database.yml').first
-        other_config_entry = file.entry_for_path('other/config/database.yml').first
+        config_entry = file.entries_for_path('config/database.yml').first
+        other_config_entry = file.entries_for_path('other/config/database.yml').first
 
         expect(config_entry.owner_line).to include('config-owner')
         expect(other_config_entry.owner_line).to eq('@default-codeowner')
       end
 
       it 'correctly matches paths with spaces' do
-        entry = file.entry_for_path('path with spaces/docs.md').first
+        entry = file.entries_for_path('path with spaces/docs.md').first
 
         expect(entry.owner_line).to eq('@space-owner')
       end
@@ -385,7 +385,7 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
         end
 
         it 'parses correctly' do
-          entry = file.entry_for_path('a/weird path with/ @username / and-email@lookalikes.com /test.rb').first
+          entry = file.entries_for_path('a/weird path with/ @username / and-email@lookalikes.com /test.rb').first
 
           expect(entry.owner_line).to include('user-1', 'user-2', 'email@gitlab.org')
           expect(entry.owner_line).not_to include('username', 'and-email@lookalikes.com')
@@ -398,13 +398,13 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
         end
 
         it 'matches files in the root directory' do
-          entry = file.entry_for_path('README.md').first
+          entry = file.entries_for_path('README.md').first
 
           expect(entry.owner_line).to include('user-1', 'user-2')
         end
 
         it 'does not match nested files' do
-          entry = file.entry_for_path('nested/path/README.md').first
+          entry = file.entries_for_path('nested/path/README.md').first
 
           expect(entry).to be_nil
         end
@@ -415,14 +415,14 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
           end
 
           it 'does not match a file in a folder that looks the same' do
-            entry = file.entry_for_path('fufoo/bar').first
+            entry = file.entries_for_path('fufoo/bar').first
 
             expect(entry).to be_nil
           end
 
           it 'matches the file in any folder' do
-            expect(file.entry_for_path('baz/foo/bar').first.owner_line).to include('user-1', 'user-2')
-            expect(file.entry_for_path('/foo/bar').first.owner_line).to include('user-1', 'user-2')
+            expect(file.entries_for_path('baz/foo/bar').first.owner_line).to include('user-1', 'user-2')
+            expect(file.entries_for_path('/foo/bar').first.owner_line).to include('user-1', 'user-2')
           end
         end
       end
@@ -438,6 +438,44 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
       end
 
       it_behaves_like "returns expected matches"
+    end
+  end
+
+  describe '#valid?' do
+    context 'when codeowners file is correct' do
+      it 'does not detect errors' do
+        expect(file.valid?).to eq(true)
+        expect(file.errors).to be_empty
+      end
+    end
+
+    context 'when codeowners file has errors' do
+      let(:file_content) do
+        <<~CONTENT
+        *.rb
+
+        []
+        *_spec.rb @gl-test
+
+        ^[Optional][5]
+        *.txt @user
+
+        [Invalid section
+        CONTENT
+      end
+
+      it 'detects syntax errors' do
+        expect(file.valid?).to eq(false)
+
+        expect(file.errors).to match_array(
+          [
+            Gitlab::CodeOwners::Error.new(message: :missing_entry_owner, line_number: 1, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :missing_section_name, line_number: 3, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_approval_requirement, line_number: 6, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_section_format, line_number: 9, path: 'CODEOWNERS')
+          ]
+        )
+      end
     end
   end
 end

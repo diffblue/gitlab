@@ -259,7 +259,7 @@ RSpec.describe Issues::UpdateService, :mailer, feature_category: :team_planning 
           it 'creates system note about issue type' do
             update_issue(issue_type: 'incident')
 
-            note = find_note('changed issue type to incident')
+            note = find_note('changed type from issue to incident')
 
             expect(note).not_to eq(nil)
           end
@@ -1158,6 +1158,39 @@ RSpec.describe Issues::UpdateService, :mailer, feature_category: :team_planning 
             expect { update_issue(assignee_ids: [assignee.id]) }.not_to change { issue.assignees }
           end
         end
+      end
+
+      it 'tracks the assignment events' do
+        original_assignee = issue.assignees.first!
+
+        update_issue(assignee_ids: [user2.id])
+        update_issue(assignee_ids: [])
+        update_issue(assignee_ids: [user3.id])
+
+        expected_events = [
+          have_attributes({
+            issue_id: issue.id,
+            user_id: original_assignee.id,
+            action: 'remove'
+          }),
+          have_attributes({
+            issue_id: issue.id,
+            user_id: user2.id,
+            action: 'add'
+          }),
+          have_attributes({
+            issue_id: issue.id,
+            user_id: user2.id,
+            action: 'remove'
+          }),
+          have_attributes({
+            issue_id: issue.id,
+            user_id: user3.id,
+            action: 'add'
+          })
+        ]
+
+        expect(issue.assignment_events).to match_array(expected_events)
       end
     end
 

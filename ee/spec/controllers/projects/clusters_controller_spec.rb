@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::ClustersController, feature_category: :kubernetes_management do
+RSpec.describe Projects::ClustersController, feature_category: :deployment_management do
   let_it_be(:project) { create(:project) }
 
   it_behaves_like 'cluster metrics' do

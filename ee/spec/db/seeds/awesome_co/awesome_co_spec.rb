@@ -256,6 +256,38 @@ module AwesomeCo
               end
             end
           end
+
+          context 'when an id already exists' do
+            let(:seed_file_content) do
+              <<~YAML
+                name: Test
+                group_labels:
+                  - _id: my_label
+                    title: My Label
+                  - _id: my_label
+                    title: My other label
+              YAML
+            end
+
+            it 'raises a validation error' do
+              expect { parser.parse }.to raise_error(/id `my_label` must be unique/)
+            end
+          end
+        end
+
+        describe '#parse' do
+          context 'when name is not specified' do
+            let(:seed_file_content) do
+              <<~YAML
+                group_labels:
+                  - title: My Label
+              YAML
+            end
+
+            it 'raises an error when name is not specified' do
+              expect { parser.parse }.to raise_error(/Seed file must specify a name/)
+            end
+          end
         end
 
         context 'when parsed' do
@@ -300,6 +332,107 @@ module AwesomeCo
               end
 
               parser.parse
+            end
+          end
+
+          describe '@parser_binding' do
+            let(:group_labels) { parser.instance_variable_get(:@parser_binding).local_variable_get('group_labels') }
+
+            context 'when a definition has an id' do
+              let(:seed_file_content) do
+                <<~YAML
+                  name: Test
+                  group_labels:
+                    - _id: my_label
+                      title: My Label
+                YAML
+              end
+
+              context 'when the id has spaces' do
+                let(:seed_file_content) do
+                  <<~YAML
+                    name: Test
+                    group_labels:
+                      - _id: id with spaces
+                        title: With Spaces
+                  YAML
+                end
+
+                it 'binds to an underscored variable', :aggregate_failures do
+                  parser.parse
+
+                  expect(group_labels).to respond_to(:id_with_spaces)
+                  expect(group_labels.id_with_spaces.title).to eq('With Spaces')
+                end
+
+                it 'renders a warning' do
+                  expect { parser.parse }.to output(%(parsing id "id with spaces" as "id_with_spaces"\n)).to_stderr
+                end
+              end
+
+              it 'binds the object', :aggregate_failures do
+                parser.parse
+
+                expect(group_labels).to be_a(OpenStruct) # rubocop:disable Style/OpenStructUse
+                expect(group_labels.my_label).to be_a(GroupLabel)
+                expect(group_labels.my_label.title).to eq('My Label')
+              end
+
+              context 'when id is malformed' do
+                shared_examples 'invalid id' do |message|
+                  it 'raises an error' do
+                    expect { parser.parse }.to raise_error(message)
+                  end
+                end
+
+                context 'when id contains invalid characters' do
+                  it_behaves_like 'invalid id', /id `--invalid-id` is invalid/ do
+                    let(:seed_file_content) do
+                      <<~YAML
+                        name: Test
+                        group_labels:
+                          - _id: --invalid-id
+                      YAML
+                    end
+                  end
+
+                  it_behaves_like 'invalid id', /id `invalid!id` is invalid/ do
+                    let(:seed_file_content) do
+                      <<~YAML
+                        name: Test
+                        group_labels:
+                          - _id: invalid!id
+                      YAML
+                    end
+                  end
+
+                  it_behaves_like 'invalid id', /id `1_label` is invalid. id cannot start with a number/ do
+                    let(:seed_file_content) do
+                      <<~YAML
+                        name: Test
+                        group_labels:
+                          - _id: 1_label
+                      YAML
+                    end
+                  end
+                end
+              end
+            end
+
+            context 'when a definition does not have an id' do
+              let(:seed_file_content) do
+                <<~YAML
+                  name: Test
+                  group_labels:
+                    - title: Test
+                YAML
+              end
+
+              it 'does not bind the object' do
+                parser.parse
+
+                expect(group_labels.to_h).to be_empty
+              end
             end
           end
         end

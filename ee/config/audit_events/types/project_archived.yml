@@ -1,0 +1,9 @@
+---
+name: project_archived
+description: Event triggered when a project is archived.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374105
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117528
+feature_category: compliance_management
+milestone: '15.11'
+saved_to_database: true
+streamed: true

@@ -2,7 +2,7 @@
 
 module Llm
   class GenerateSummaryService < BaseService
-    SUPPORTED_ISSUABLE_TYPES = %w[issue work_item merge_request epic].freeze
+    SUPPORTED_ISSUABLE_TYPES = %w[issue epic].freeze
 
     private
 
@@ -14,8 +14,7 @@ module Llm
     def valid?
       super &&
         SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
-        Feature.enabled?(:summarize_comments, resource.resource_parent) &&
-        resource.resource_parent.root_ancestor.licensed_feature_available?(:summarize_notes) &&
+        Ability.allowed?(user, :summarize_notes, resource) &&
         !resource.notes.for_summarize_by_ai.empty?
     end
   end

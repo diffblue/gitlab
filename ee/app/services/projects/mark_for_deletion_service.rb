@@ -25,12 +25,15 @@ module Projects
     end
 
     def log_audit_event
-      ::AuditEventService.new(
-        current_user,
-        project,
-        action: :custom,
-        custom_message: "Project marked for deletion"
-      ).for_project.security_event
+      audit_context = {
+        name: 'project_deletion_marked',
+        author: current_user,
+        scope: project,
+        target: project,
+        message: 'Project marked for deletion'
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
     end
 
     def project_update_service_params

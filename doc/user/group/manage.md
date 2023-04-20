@@ -78,7 +78,7 @@ Specifically:
 - In [GitLab 12.8 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/33257), on [GitLab Premium](https://about.gitlab.com/pricing/premium/) or higher tiers, this action adds a background job to mark a group for deletion. By default, the job schedules the deletion 7 days in the future. You can modify this waiting period through the [instance settings](../admin_area/settings/visibility_and_access_controls.md#deletion-protection).
 
 - In [GitLab 13.6 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/39504), if the user who sets up the deletion is removed from the group before the
-deletion happens, the job is cancelled, and the group is no longer scheduled for deletion.
+  deletion happens, the job is cancelled, and the group is no longer scheduled for deletion.
 
 ## Remove a group immediately **(PREMIUM)**
 
@@ -477,6 +477,10 @@ You can export a list of members in a group or subgroup as a CSV.
 1. Select **Export as CSV**.
 1. After the CSV file has been generated, it is emailed as an attachment to the user that requested it.
 
+The output lists direct members and members inherited from the ancestor groups.
+For members with `Minimal Access` in the selected group, their `Max Role` and `Source` are derived from their membership in subgroups.
+[Issue 390358](https://gitlab.com/gitlab-org/gitlab/-/issues/390358) tracks the discussion about the group members CSV export list not matching the UI members list.
+
 ## User cap for groups
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/330027) in GitLab 14.7.
@@ -670,9 +674,10 @@ To view the merge request approval settings for a group:
 
 Support for group-level settings for merge request approval rules is tracked in this [epic](https://gitlab.com/groups/gitlab-org/-/epics/4367).
 
-## Group Code Suggestions **(ULTIMATE)**
+## Group Code Suggestions **(PREMIUM SAAS)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/405126) in GitLab 15.11.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/405126) in GitLab 15.11.
+> - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/408158) from GitLab Ultimate to GitLab Premium in 16.0.
 
 WARNING:
 This feature is in [Beta](/ee/policy/alpha-beta-support.md#beta). Code Suggestions use generative AI to suggest code while you're developing. Due to high demand, this feature will have unscheduled downtime and code suggestions in VS Code may be delayed. Code Suggestions may produce [low-quality or incomplete suggestions](../project/repository/code_suggestions.md#model-accuracy-and-quality). Beta users should read about the [known limitations](../project/repository/code_suggestions.md#known-limitations). We look forward to hearing your feedback.

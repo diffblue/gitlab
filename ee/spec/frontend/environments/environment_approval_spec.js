@@ -1,5 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { cloneDeep } from 'lodash';
 import { GlButton, GlModal } from '@gitlab/ui';
 import mockDeploymentFixture from 'test_fixtures/graphql/environments/graphql/queries/deployment.query.graphql.json';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -11,6 +12,7 @@ import MultipleApprovalRulesTable from 'ee/environments/components/multiple_appr
 import deploymentApprovalQuery from 'ee/environments/graphql/queries/deployment.query.graphql';
 import Api from 'ee/api';
 import { __, s__, sprintf } from '~/locale';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { createAlert } from '~/alert';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { environment as mockEnvironment } from './mock_data';
@@ -26,10 +28,13 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
   const environment = convertObjectPropsToCamelCase(mockEnvironment, { deep: true });
 
-  const createWrapper = ({ propsData = {} } = {}) => {
-    apollo = createMockApollo([[deploymentApprovalQuery, () => mockDeploymentFixture]]);
+  const deploymentIid = environment.upcomingDeployment.iid;
+  const mockDeployment = mockDeploymentFixture.data.project.deployment;
+
+  const createWrapper = ({ propsData = {}, deploymentFixture = mockDeploymentFixture } = {}) => {
+    apollo = createMockApollo([[deploymentApprovalQuery, () => deploymentFixture]]);
     return mountExtended(EnvironmentApproval, {
-      propsData: { environment, ...propsData },
+      propsData: { environment, deploymentIid, ...propsData },
       provide: { projectId: '5', projectPath: 'test/hello' },
       apolloProvider: apollo,
     });
@@ -64,33 +69,20 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
       expect(findButton().exists()).toBe(true);
     });
-
-    it('hides the button if no approvals were required (a deployment happened before the environment was protected)', () => {
-      wrapper = createWrapper({
-        propsData: {
-          environment: {
-            ...environment,
-            requiredApprovalCount: 3,
-            upcomingDeployment: {
-              ...environment.upcomingDeployment,
-              approvals: [],
-              pendingApprovalCount: 0,
-            },
-          },
-        },
-      });
-
-      expect(findButton().exists()).toBe(false);
-    });
   });
 
-  describe('modal', () => {
-    let modal;
+  let modal;
+  const prepareModalWithData = async (deploymentFixture) => {
+    const params = deploymentFixture ? { deploymentFixture } : undefined;
+    wrapper = createWrapper(params);
+    await findButton().trigger('click');
+    modal = findModal();
+    await waitForPromises();
+  };
 
+  describe('modal', () => {
     beforeEach(async () => {
-      wrapper = createWrapper();
-      await findButton().trigger('click');
-      modal = findModal();
+      await prepareModalWithData();
     });
 
     it('should set the modal title', () => {
@@ -122,12 +114,17 @@ describe('ee/environments/components/environment_approval.vue', () => {
         detail                | text
         ${'environment name'} | ${sprintf(s__('DeploymentApproval|Environment: %{environment}'), { environment: environment.name })}
         ${'environment tier'} | ${sprintf(s__('DeploymentApproval|Deployment tier: %{tier}'), { tier: environment.tier })}
-        ${'job name'}         | ${sprintf(s__('DeploymentApproval|Manual job: %{jobName}'), { jobName: environment.upcomingDeployment.deployable.name })}
+        ${'job name'}         | ${sprintf(s__('DeploymentApproval|Manual job: %{jobName}'), { jobName: mockDeployment.job.name })}
       `('should show information on $detail', ({ text }) => {
         expect(trimText(modal.text())).toContain(text);
       });
 
-      it('shows the number of current approvals as well as the number of total approvals needed', () => {
+      it('shows the number of current approvals as well as the number of total approvals needed', async () => {
+        const deploymentFixture = cloneDeep(mockDeploymentFixture);
+        deploymentFixture.data.project.deployment.pendingApprovalCount = 5;
+        deploymentFixture.data.project.deployment.approvalSummary.rules = [];
+        await prepareModalWithData(deploymentFixture);
+
         expect(trimText(modal.text())).toContain(
           sprintf(s__('DeploymentApproval| Current approvals: %{current}'), {
             current: '5/10',
@@ -145,6 +142,12 @@ describe('ee/environments/components/environment_approval.vue', () => {
       const over = Array(max + 1)
         .fill('a')
         .join('');
+
+      beforeEach(async () => {
+        const deploymentFixture = cloneDeep(mockDeploymentFixture);
+        deploymentFixture.data.project.deployment.userPermissions.approveDeployment = true;
+        await prepareModalWithData(deploymentFixture);
+      });
 
       it.each`
         comment        | tooltip                        | classes
@@ -187,25 +190,15 @@ describe('ee/environments/components/environment_approval.vue', () => {
       `(
         'should have buttons visible when $scenario: $visible',
         async ({ approvals, canApproveDeployment, visible }) => {
-          wrapper = createWrapper({
-            propsData: {
-              environment: {
-                ...environment,
-                upcomingDeployment: {
-                  ...environment.upcomingDeployment,
-                  approvals,
-                  canApproveDeployment,
-                },
-              },
-            },
-          });
+          const deploymentFixture = cloneDeep(mockDeploymentFixture);
+          if (approvals.length > 0) {
+            const { user } = deploymentFixture.data.project.deployment.approvals[0];
+            user.username = approvals[0].user.username;
+            user.id = `${user.id}1`; // we need to bump the id, as mock appollo client maintains the proper cache inside.
+          }
+          deploymentFixture.data.project.deployment.userPermissions.approveDeployment = canApproveDeployment;
 
-          await findButton().trigger('click');
-
-          await nextTick();
-
-          modal = findModal();
-
+          await prepareModalWithData(deploymentFixture);
           expect(modal.findByRole('button', { name: __('Approve') }).exists()).toBe(visible);
           expect(modal.findByRole('button', { name: __('Reject') }).exists()).toBe(visible);
           expect(modal.findByRole('button', { name: __('Cancel') }).exists()).toBe(!visible);
@@ -220,7 +213,10 @@ describe('ee/environments/components/environment_approval.vue', () => {
     `('$ref', ({ ref, api, text }) => {
       let button;
 
-      beforeEach(() => {
+      beforeEach(async () => {
+        const deploymentFixture = cloneDeep(mockDeploymentFixture);
+        deploymentFixture.data.project.deployment.userPermissions.approveDeployment = true;
+        await prepareModalWithData(deploymentFixture);
         button = wrapper.findByRole('button', { name: text });
       });
 
@@ -229,6 +225,9 @@ describe('ee/environments/components/environment_approval.vue', () => {
       });
 
       it(`should ${ref} the deployment when ${text} is clicked`, async () => {
+        const projectId = getIdFromGraphQLId(mockDeploymentFixture.data.project.id);
+        const deploymentId = getIdFromGraphQLId(mockDeploymentFixture.data.project.deployment.id);
+
         api.mockResolvedValue();
 
         setComment('comment');
@@ -236,8 +235,8 @@ describe('ee/environments/components/environment_approval.vue', () => {
         await button.trigger('click');
 
         expect(api).toHaveBeenCalledWith({
-          id: '5',
-          deploymentId: environment.upcomingDeployment.id,
+          id: projectId,
+          deploymentId,
           comment: 'comment',
         });
 
@@ -317,33 +316,29 @@ describe('ee/environments/components/environment_approval.vue', () => {
     { status: 'approved', text: 'Approved' },
     { status: 'rejected', text: 'Rejected' },
   ])('showing approvals that have been $status', ({ status, text }) => {
-    const approval = environment.upcomingDeployment.approvals[0];
+    let approvalData;
 
     beforeEach(async () => {
-      wrapper = createWrapper({
-        propsData: {
-          environment: {
-            ...environment,
-            upcomingDeployment: {
-              ...environment.upcomingDeployment,
-              approvals: [{ ...approval, status }],
-            },
-          },
-        },
-      });
+      const deploymentFixture = cloneDeep(mockDeploymentFixture);
+      [approvalData] = deploymentFixture.data.project.deployment.approvals;
+      approvalData.status = status.toUpperCase();
+      approvalData.createdAt = Date.now();
+
+      await prepareModalWithData(deploymentFixture);
+
       await findButton().trigger('click');
     });
 
     it(`should show the avatar for who ${status} the deployment`, () => {
       const avatar = wrapper.findByRole('img', { name: 'avatar' });
 
-      expect(avatar.attributes('src')).toBe(approval.user.avatarUrl);
+      expect(avatar.attributes('src')).toBe(approvalData.user.avatarUrl);
     });
 
     it(`should show who ${status} the deployment`, () => {
-      const link = wrapper.findByRole('link', { name: `@${approval.user.username}` });
+      const link = wrapper.findByRole('link', { name: `@${approvalData.user.username}` });
 
-      expect(link.attributes('href')).toBe(approval.user.webUrl);
+      expect(link.attributes('href')).toBe(approvalData.user.webUrl);
     });
 
     it(`should show when they ${status} the deployment`, () => {
@@ -361,7 +356,7 @@ describe('ee/environments/components/environment_approval.vue', () => {
     it('should show the comment associated with the approval', () => {
       const comment = wrapper.find('blockquote');
 
-      expect(comment.text()).toBe(approval.comment);
+      expect(comment.text()).toBe(approvalData.comment);
     });
   });
 });

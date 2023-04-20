@@ -1,7 +1,7 @@
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -115,9 +115,8 @@ describe('ScanResultPolicyEditor', () => {
   const findAllDisabledComponents = () => wrapper.findAllComponents(DimDisableContainer);
   const findAllRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
-  const changesToRuleMode = async () => {
+  const changesToRuleMode = () => {
     findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
-    await nextTick();
   };
 
   const verifiesParsingError = () => {
@@ -133,7 +132,7 @@ describe('ScanResultPolicyEditor', () => {
     mock.restore();
   });
 
-  describe('default', () => {
+  describe('rendering', () => {
     it.each`
       prop                 | compareFn          | expected
       ${'yamlEditorValue'} | ${'toBe'}          | ${DEFAULT_SCAN_RESULT_POLICY}
@@ -141,18 +140,158 @@ describe('ScanResultPolicyEditor', () => {
       ${'policy'}          | ${'toStrictEqual'} | ${fromYaml({ manifest: DEFAULT_SCAN_RESULT_POLICY })}
     `(
       'passes the correct $prop prop to the PolicyEditorLayout component',
-      async ({ prop, compareFn, expected }) => {
+      ({ prop, compareFn, expected }) => {
         factory();
 
         expect(findPolicyEditorLayout().props(prop))[compareFn](expected);
       },
     );
 
-    it('updates the policy yaml and policy object when "update-yaml" is emitted', async () => {
+    it('displays the initial rule and add rule button', () => {
       factory();
 
-      findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
-      await nextTick();
+      expect(findAllRuleBuilders()).toHaveLength(1);
+      expect(findAddRuleButton().exists()).toBe(true);
+    });
+
+    it('displays the initial action', () => {
+      factory();
+
+      expect(findAllPolicyActionBuilders()).toHaveLength(1);
+      expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
+        scanResultPolicyApprovers,
+      );
+    });
+
+    describe('when a user is not an owner of the project', () => {
+      it('displays the empty state with the appropriate properties', () => {
+        factory({ provide: { disableScanPolicyUpdate: true } });
+
+        const emptyState = findEmptyState();
+
+        expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
+        expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
+        expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
+      });
+    });
+
+    describe('scanResultRoleAction feature flag turned on', () => {
+      const existingPolicyWithUserId = {
+        actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
+      };
+      const existingUserApprover = {
+        user: [{ id: 1, username: 'the.one', state: 'active', type: USER_TYPE }],
+      };
+      const nonExistingUserApprover = {
+        user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
+      };
+
+      it.each`
+        title         | policy                      | approver                   | output
+        ${'does not'} | ${{}}                       | ${existingUserApprover}    | ${false}
+        ${'does'}     | ${{}}                       | ${nonExistingUserApprover} | ${true}
+        ${'does not'} | ${existingPolicyWithUserId} | ${existingUserApprover}    | ${false}
+        ${'does'}     | ${existingPolicyWithUserId} | ${nonExistingUserApprover} | ${true}
+      `(
+        '$title create an error when policy does not match existing approvers',
+        async ({ policy, approver, output }) => {
+          factoryWithExistingPolicy(policy, {
+            glFeatures: {
+              scanResultRoleAction: true,
+            },
+            scanResultPolicyApprovers: approver,
+          });
+
+          await changesToRuleMode();
+          expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
+        },
+      );
+    });
+  });
+
+  describe('rule mode updates', () => {
+    it.each`
+      component        | oldValue | newValue
+      ${'name'}        | ${''}    | ${'new policy name'}
+      ${'description'} | ${''}    | ${'new description'}
+      ${'enabled'}     | ${true}  | ${false}
+    `('triggers a change on $component', ({ component, newValue, oldValue }) => {
+      factory();
+
+      expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+
+      findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
+
+      expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+    });
+
+    describe('rule builder', () => {
+      it('adds a new rule', async () => {
+        const rulesCount = 1;
+        factory();
+
+        expect(findAllRuleBuilders()).toHaveLength(rulesCount);
+
+        await findAddRuleButton().vm.$emit('click');
+
+        expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
+      });
+
+      it('hides add button when the limit of five rules has been reached', () => {
+        const limit = 5;
+        const rule = mockDefaultBranchesScanResultObject.rules[0];
+        factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
+
+        expect(findAllRuleBuilders()).toHaveLength(limit);
+        expect(findAddRuleButton().exists()).toBe(false);
+      });
+
+      it('updates an existing rule', () => {
+        const newValue = {
+          type: 'scan_finding',
+          branches: [],
+          scanners: [],
+          vulnerabilities_allowed: 1,
+          severity_levels: [],
+          vulnerability_states: [],
+        };
+        factory();
+
+        findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
+
+        expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
+        expect(findPolicyEditorLayout().props('policy').rules[0].vulnerabilities_allowed).toBe(1);
+      });
+
+      it('deletes the initial rule', async () => {
+        const initialRuleCount = 1;
+        factory();
+
+        expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
+
+        await findAllRuleBuilders().at(0).vm.$emit('remove', 0);
+
+        expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
+      });
+    });
+
+    describe('action builder', () => {
+      it('updates policy action when edited', async () => {
+        factory();
+
+        const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
+        await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
+
+        expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
+      });
+    });
+  });
+
+  describe('yaml mode updates', () => {
+    beforeEach(factory);
+
+    it('updates the policy yaml and policy object when "update-yaml" is emitted', async () => {
+      await findPolicyEditorLayout().vm.$emit('update-yaml', mockDefaultBranchesScanResultManifest);
 
       expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(
         mockDefaultBranchesScanResultManifest,
@@ -162,54 +301,15 @@ describe('ScanResultPolicyEditor', () => {
       );
     });
 
-    it('displays the initial rule and add rule button', async () => {
-      factory();
-
-      expect(findAllRuleBuilders().length).toBe(1);
-      expect(findAddRuleButton().exists()).toBe(true);
-    });
-
     it('disables all rule mode related components when the yaml is invalid', async () => {
-      factory();
-
-      findPolicyEditorLayout().vm.$emit('update-yaml', unsupportedManifest);
-      await nextTick();
+      await findPolicyEditorLayout().vm.$emit('update-yaml', unsupportedManifest);
 
       expect(findAllDisabledComponents().at(0).props('disabled')).toBe(true);
       expect(findAllDisabledComponents().at(1).props('disabled')).toBe(true);
     });
+  });
 
-    it('uses name from policy rule builder', async () => {
-      const newPolicyName = 'new policy name';
-      factory();
-
-      findPolicyEditorLayout().vm.$emit('set-policy-property', 'name', newPolicyName);
-      findPolicyEditorLayout().vm.$emit('save-policy');
-      await waitForPromises();
-
-      expect(modifyPolicy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          name: newPolicyName,
-        }),
-      );
-    });
-
-    it.each`
-      component        | oldValue | newValue
-      ${'name'}        | ${''}    | ${'new policy name'}
-      ${'description'} | ${''}    | ${'new description'}
-      ${'enabled'}     | ${true}  | ${false}
-    `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
-      factory();
-
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
-
-      findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
-      await nextTick();
-
-      expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
-    });
-
+  describe('CRUD operations', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                          | currentlyAssignedPolicyProject
       ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_RESULT_POLICY}            | ${newlyCreatedPolicyProject}
@@ -239,98 +339,13 @@ describe('ScanResultPolicyEditor', () => {
         );
       },
     );
-
-    it('adds a new rule', async () => {
-      const rulesCount = 1;
-      factory();
-
-      expect(findAllRuleBuilders().length).toBe(rulesCount);
-
-      findAddRuleButton().vm.$emit('click');
-      await nextTick();
-
-      expect(findAllRuleBuilders()).toHaveLength(rulesCount + 1);
-    });
-
-    it('hides add button when the limit of five rules has been reached', async () => {
-      const limit = 5;
-      const rule = mockDefaultBranchesScanResultObject.rules[0];
-      factoryWithExistingPolicy({ rules: [rule, rule, rule, rule, rule] });
-
-      expect(findAllRuleBuilders()).toHaveLength(limit);
-      expect(findAddRuleButton().exists()).toBe(false);
-    });
-
-    it('updates an existing rule', async () => {
-      const newValue = {
-        type: 'scan_finding',
-        branches: [],
-        scanners: [],
-        vulnerabilities_allowed: 1,
-        severity_levels: [],
-        vulnerability_states: [],
-      };
-      factory();
-
-      findAllRuleBuilders().at(0).vm.$emit('changed', newValue);
-      await nextTick();
-
-      expect(wrapper.vm.policy.rules[0]).toEqual(newValue);
-      expect(findPolicyEditorLayout().props('policy').rules[0].vulnerabilities_allowed).toBe(1);
-    });
-
-    it('deletes the initial rule', async () => {
-      const initialRuleCount = 1;
-      factory();
-
-      expect(findAllRuleBuilders()).toHaveLength(initialRuleCount);
-
-      findAllRuleBuilders().at(0).vm.$emit('remove', 0);
-      await nextTick();
-
-      expect(findAllRuleBuilders()).toHaveLength(initialRuleCount - 1);
-    });
-  });
-
-  describe('when a user is not an owner of the project', () => {
-    it('displays the empty state with the appropriate properties', async () => {
-      factory({ provide: { disableScanPolicyUpdate: true } });
-
-      const emptyState = findEmptyState();
-
-      expect(emptyState.props('primaryButtonLink')).toMatch(scanPolicyDocumentationPath);
-      expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
-      expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
-    });
-  });
-
-  describe('with policy action builder', () => {
-    it('renders a single policy action builder', async () => {
-      factory();
-
-      expect(findAllPolicyActionBuilders()).toHaveLength(1);
-      expect(findPolicyActionBuilder().props('existingApprovers')).toEqual(
-        scanResultPolicyApprovers,
-      );
-    });
-
-    it('updates policy action when edited', async () => {
-      const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
-      factory();
-
-      findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
-      await nextTick();
-
-      expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
-    });
   });
 
   describe('errors', () => {
     it('creates an error for invalid yaml', async () => {
       factory();
 
-      findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
-      await nextTick();
+      await findPolicyEditorLayout().vm.$emit('update-yaml', 'invalid manifest');
 
       verifiesParsingError();
     });
@@ -357,68 +372,37 @@ describe('ScanResultPolicyEditor', () => {
     });
   });
 
-  it.each`
-    status                   | errorMessage
-    ${HTTP_STATUS_OK}        | ${''}
-    ${HTTP_STATUS_NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
-  `(
-    'triggers error event with content: "$errorMessage" when http status is $status',
-    async ({ status, errorMessage }) => {
-      const rule = { ...mockDefaultBranchesScanResultObject.rules[0], branches: ['main'] };
+  describe('protected branches selector', () => {
+    it.each`
+      status                   | errorMessage
+      ${HTTP_STATUS_OK}        | ${''}
+      ${HTTP_STATUS_NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
+    `(
+      'triggers error event with the correct content when the http status is $status',
+      async ({ status, errorMessage }) => {
+        const rule = { ...mockDefaultBranchesScanResultObject.rules[0], branches: ['main'] };
 
-      mock.onGet('/api/undefined/projects/1/protected_branches/main').replyOnce(status, {});
+        mock.onGet('/api/undefined/projects/1/protected_branches/main').replyOnce(status, {});
 
-      factoryWithExistingPolicy({ rules: [rule] });
+        factoryWithExistingPolicy({ rules: [rule] });
+
+        await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+        await waitForPromises();
+        const errors = wrapper.emitted('error');
+
+        expect(errors[errors.length - 1]).toEqual([errorMessage]);
+      },
+    );
+
+    it('does not query protected branches when namespaceType is other than project', async () => {
+      jest.spyOn(Api, 'projectProtectedBranch');
+
+      factoryWithExistingPolicy({}, { namespaceType: NAMESPACE_TYPES.GROUP });
 
       await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
       await waitForPromises();
-      const errors = wrapper.emitted('error');
 
-      expect(errors[errors.length - 1]).toEqual([errorMessage]);
-    },
-  );
-
-  it('does not query protected branches when namespaceType is other than project', async () => {
-    jest.spyOn(Api, 'projectProtectedBranch');
-
-    factoryWithExistingPolicy({}, { namespaceType: NAMESPACE_TYPES.GROUP });
-
-    await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
-    await waitForPromises();
-
-    expect(Api.projectProtectedBranch).not.toHaveBeenCalled();
-  });
-
-  describe('scanResultRoleAction feature flag turned on', () => {
-    const existingPolicyWithUserId = {
-      actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
-    };
-    const existingUserApprover = {
-      user: [{ id: 1, username: 'the.one', state: 'active', type: USER_TYPE }],
-    };
-    const nonExistingUserApprover = {
-      user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
-    };
-
-    it.each`
-      title         | policy                      | approver                   | output
-      ${'does not'} | ${{}}                       | ${existingUserApprover}    | ${false}
-      ${'does'}     | ${{}}                       | ${nonExistingUserApprover} | ${true}
-      ${'does not'} | ${existingPolicyWithUserId} | ${existingUserApprover}    | ${false}
-      ${'does'}     | ${existingPolicyWithUserId} | ${nonExistingUserApprover} | ${true}
-    `(
-      '$title create an error when policy does not match existing approvers',
-      async ({ policy, approver, output }) => {
-        factoryWithExistingPolicy(policy, {
-          glFeatures: {
-            scanResultRoleAction: true,
-          },
-          scanResultPolicyApprovers: approver,
-        });
-
-        await changesToRuleMode();
-        expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
-      },
-    );
+      expect(Api.projectProtectedBranch).not.toHaveBeenCalled();
+    });
   });
 });

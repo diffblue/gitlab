@@ -389,244 +389,152 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
 
-    context 'with sso enforcement enabled' do
+    context 'when SAML SSO is enabled for resource' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: false) }
+      let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
+      let(:root_group) { saml_provider.group }
+      let(:project) { create(:project, group: root_group) }
+      let(:member_with_identity) { identity.user }
+      let(:member_without_identity) { create(:user) }
+      let(:non_member) { create(:user) }
+      let(:not_signed_in_user) { nil }
+
       before do
         stub_licensed_features(group_saml: true)
+        root_group.add_developer(member_with_identity)
+        root_group.add_developer(member_without_identity)
       end
 
-      around do |example|
-        Gitlab::Session.with_session({}) do
-          example.run
-        end
-      end
+      subject { described_class.new(current_user, resource) }
 
-      context 'with private groups and projects' do
-        let_it_be(:current_user) { create(:user) }
-        let_it_be(:group) { create(:group, :private) }
-        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
-        let_it_be(:project) { create(:project, group: saml_provider.group) }
-        let_it_be(:identity) { create(:group_saml_identity, user: current_user, saml_provider: saml_provider) }
-
-        context 'as an admin' do
-          let_it_be(:current_user) { admin }
-
-          context 'when admin mode enabled', :enable_admin_mode do
-            it 'allows access' do
-              is_expected.to allow_action(:read_project)
-            end
-          end
-
-          context 'when admin mode disabled' do
-            it 'does not allow access' do
-              is_expected.not_to allow_action(:read_project)
-            end
-          end
-        end
-
-        context 'as an auditor' do
-          let_it_be(:current_user) { create(:user, :auditor) }
-
-          it 'allows access without a SAML session' do
-            is_expected.to allow_action(:read_project)
-          end
-        end
-
-        context 'as a group guest' do
-          before_all do
-            group.add_guest(current_user)
-          end
-
-          it 'prevents access without a SAML session' do
-            is_expected.not_to be_allowed(:read_project)
-          end
-
-          it 'allows access with a SAML session' do
-            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-            is_expected.to be_allowed(:read_project)
-          end
-        end
-
-        context 'as a group owner' do
-          before_all do
-            group.add_owner(current_user)
-          end
-
-          it 'prevents access without a SAML session' do
-            is_expected.not_to allow_action(:read_project)
-          end
-        end
-
-        context 'as a group maintainer' do
-          before_all do
-            group.add_maintainer(current_user)
-          end
-
-          it 'prevents access without a SAML session' do
-            is_expected.not_to allow_action(:read_project)
-          end
-        end
-
-        context 'in a personal namespace' do
-          let_it_be(:project) { create(:project, :public, namespace: owner.namespace) }
-
-          it 'allows access' do
-            is_expected.to be_allowed(:read_project)
-          end
+      shared_examples 'does not allow read project' do
+        it 'does not allow read project' do
+          is_expected.not_to allow_action(:read_project)
         end
       end
 
-      context 'with public groups and projects' do
-        let_it_be(:group) { create(:group, :public) }
-        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
-        let_it_be(:project) { create(:project, :public, group: group) }
-
-        context 'when user is signed in' do
-          let_it_be(:current_user) { create(:user) }
-
-          shared_examples 'enforced SSO public groups and projects access' do
-            it 'prevents access without a SAML session' do
-              is_expected.not_to be_allowed(:read_project)
-            end
-
-            context 'when the current user has a SAML identity' do
-              before_all do
-                create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
-              end
-
-              it 'prevents access without a SAML session' do
-                is_expected.not_to be_allowed(:read_project)
-              end
-
-              it 'allows access with a SAML session' do
-                Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-                is_expected.to be_allowed(:read_project)
-              end
-            end
-          end
-
-          context 'when the current user is a member of the group' do
-            before_all do
-              group.add_guest(current_user)
-            end
-
-            it_behaves_like 'enforced SSO public groups and projects access'
-          end
-
-          context 'when the current user is not a member of the group' do
-            it 'allows access without a SAML session' do
-              is_expected.to be_allowed(:read_project)
-            end
-          end
-        end
-
-        context 'when user is anonymous' do
-          let_it_be(:current_user) { nil }
-
-          it 'allows access without a SAML session' do
-            is_expected.to be_allowed(:read_project)
-          end
-        end
-      end
-    end
-
-    context 'without SSO enforcement enabled', feature_category: :system_access do
-      before do
-        stub_licensed_features(group_saml: true)
-      end
-
-      around do |example|
-        Gitlab::Session.with_session({}) do
-          example.run
+      shared_examples 'allows to read project' do
+        it 'allows read project' do
+          is_expected.to allow_action(:read_project)
         end
       end
 
-      context 'with private groups and projects' do
-        let_it_be(:current_user) { create(:user) }
-        let_it_be(:group) { create(:group, :private) }
-        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
-        let_it_be(:project) { create(:project, group: saml_provider.group) }
+      shared_examples 'does not allow to read project due to its visibility level' do
+        it 'does not allow to read project due to its visibility level', :aggregate_failures do
+          expect(resource.root_ancestor.saml_provider.enforced_sso?).to eq(false)
 
-        before_all do
-          group.add_guest(current_user)
-        end
-
-        context 'when the user does not have a Group SAML identity' do
-          it 'allows access without a SAML session' do
-            is_expected.to be_allowed(:read_project)
-          end
-        end
-
-        context 'when the user has a Group SAML identity' do
-          before_all do
-            create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
-          end
-
-          it 'prevents access without a SAML session' do
-            is_expected.not_to be_allowed(:read_project)
-          end
-
-          it 'allows access with a SAML session' do
-            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-            is_expected.to be_allowed(:read_project)
-          end
+          is_expected.not_to allow_action(:read_project)
         end
       end
 
-      context 'with public groups and projects' do
-        let_it_be(:group) { create(:group, :public) }
-        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
-        let_it_be(:project) { create(:project, :public, group: group) }
+      # See https://docs.gitlab.com/ee/user/group/saml_sso/#sso-enforcement
+      where(:resource, :resource_visibility_level, :enforced_sso?, :user, :user_is_resource_owner?, :user_with_saml_session?, :user_is_admin?, :enable_admin_mode?, :user_is_auditor?, :shared_examples) do
+        # Project/Group visibility: Private; Enforce SSO setting: Off
 
-        context 'when user is signed in' do
-          let_it_be(:current_user) { create(:user) }
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read project'
 
-          shared_examples 'transparent SSO public groups and projects access' do
-            context 'when the user does not have a Group SAML identity' do
-              it 'allows access without a SAML session' do
-                is_expected.to be_allowed(:read_project)
-              end
-            end
+        ref(:project)    | 'private' | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read project'
 
-            context 'when the current user has a SAML identity' do
-              before_all do
-                create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
-              end
+        ref(:project)    | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow to read project due to its visibility level'
+        ref(:project)    | 'private' | false | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow to read project due to its visibility level'
+        ref(:project)    | 'private' | false | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'private' | false | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read project'
+        ref(:project)    | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow to read project due to its visibility level'
 
-              it 'prevents access without a SAML session' do
-                is_expected.not_to be_allowed(:read_project)
-              end
+        # Project/Group visibility: Private; Enforce SSO setting: On
 
-              it 'allows access with a SAML session' do
-                Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read project'
 
-                is_expected.to be_allowed(:read_project)
-              end
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read project'
+
+        ref(:project)    | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:non_member)              | nil   | nil   | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'private' | true  | ref(:non_member)              | nil   | nil   | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'private' | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | true | 'allows to read project'
+        ref(:project)    | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read project'
+
+        # Project/Group visibility: Public; Enforce SSO setting: Off
+
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read project'
+
+        ref(:project)    | 'public'  | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read project'
+
+        ref(:project)    | 'public'  | false | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read project'
+
+        # Project/Group visibility: Public; Enforce SSO setting: On
+
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read project'
+
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read project'
+
+        ref(:project)    | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read project'
+      end
+
+      with_them do
+        context "when SSO for web activity is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
+          around do |example|
+            Gitlab::Session.with_session({}) do
+              example.run
             end
           end
 
-          context 'when the current user is a member of the group' do
-            before_all do
-              group.add_guest(current_user)
-            end
-
-            it_behaves_like 'transparent SSO public groups and projects access'
+          before do
+            saml_provider.update!(enforced_sso: enforced_sso?)
           end
 
-          context 'when the current user is not a member of the group' do
-            it 'allows access without a SAML session' do
-              is_expected.to be_allowed(:read_project)
+          context "when resource is #{params[:resource_visibility_level]}" do
+            before do
+              resource.update!(visibility_level: Gitlab::VisibilityLevel.string_options[resource_visibility_level])
             end
-          end
-        end
 
-        context 'when user is anonymous' do
-          let_it_be(:current_user) { nil }
+            context 'for user', enable_admin_mode: params[:enable_admin_mode?] do
+              before do
+                if user_is_resource_owner?
+                  resource.root_ancestor.member(user).update_column(:access_level, Gitlab::Access::OWNER)
+                end
 
-          it 'allows access without a SAML session' do
-            is_expected.to be_allowed(:read_project)
+                Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session if user_with_saml_session?
+
+                user.update!(admin: true) if user_is_admin?
+                user.update!(auditor: true) if user_is_auditor?
+              end
+
+              let(:current_user) { user }
+
+              include_examples params[:shared_examples]
+            end
           end
         end
       end

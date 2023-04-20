@@ -413,6 +413,8 @@
   - 3
 - - product_analytics_initialize_analytics
   - 1
+- - product_analytics_initialize_snowplow_product_analytics
+  - 1
 - - project_cache
   - 1
 - - project_destroy
@@ -502,6 +504,8 @@
 - - search_namespace_index_integrity
   - 1
 - - search_project_index_integrity
+  - 1
+- - search_zoekt_namespace_indexer
   - 1
 - - security_auto_fix
   - 1

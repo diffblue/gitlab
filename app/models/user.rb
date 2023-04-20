@@ -380,7 +380,6 @@ class User < ApplicationRecord
   delegate :pronouns, :pronouns=, to: :user_detail, allow_nil: true
   delegate :pronunciation, :pronunciation=, to: :user_detail, allow_nil: true
   delegate :registration_objective, :registration_objective=, to: :user_detail, allow_nil: true
-  delegate :requires_credit_card_verification, :requires_credit_card_verification=, to: :user_detail, allow_nil: true
   delegate :linkedin, :linkedin=, to: :user_detail, allow_nil: true
   delegate :twitter, :twitter=, to: :user_detail, allow_nil: true
   delegate :skype, :skype=, to: :user_detail, allow_nil: true
@@ -1717,10 +1716,11 @@ class User < ApplicationRecord
   def forkable_namespaces
     strong_memoize(:forkable_namespaces) do
       personal_namespace = Namespace.where(id: namespace_id)
+      groups_allowing_project_creation = Groups::AcceptingProjectCreationsFinder.new(self).execute
 
       Namespace.from_union(
         [
-          manageable_groups(include_groups_with_developer_maintainer_access: true),
+          groups_allowing_project_creation,
           personal_namespace
         ])
     end

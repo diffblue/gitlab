@@ -1,10 +1,9 @@
-import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
+import { GlIcon, GlTooltip } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
 import createDiffsStore from 'jest/diffs/create_diffs_store';
-import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/ci/reports/codequality_report/constants';
 import {
   fiveFindings,
@@ -22,71 +21,19 @@ const findFirstIcon = () => wrapper.findComponent({ ref: 'firstCodeQualityIcon' 
 let store;
 let codequalityDiff;
 
-const createComponent = (props = {}, flag = false) => {
+const createComponent = (props = {}) => {
   store = createDiffsStore();
   store.state.diffs.codequalityDiff = codequalityDiff;
 
   const payload = {
     propsData: props,
-    provide: {
-      glFeatures: {
-        refactorCodeQualityInlineFindings: flag,
-      },
-    },
     store,
   };
 
   wrapper = shallowMountExtended(CodeQualityGutterIcon, payload);
 };
 
-describe('EE CodeQualityGutterIcon with flag off', () => {
-  it.each(['info', 'minor', 'major', 'critical', 'blocker', 'unknown'])(
-    'shows icon for %s degradation',
-    (severity) => {
-      createComponent({ filePath: 'index.js', codequality: [{ severity }] });
-
-      expect(findIcon().exists()).toBe(true);
-      expect(findIcon().attributes()).toMatchObject({
-        class: expect.stringContaining(SEVERITY_CLASSES[severity]),
-        name: SEVERITY_ICONS[severity],
-        size: '12',
-      });
-    },
-  );
-
-  describe('code quality gutter icon', () => {
-    beforeEach(() => {
-      createComponent(threeFindings);
-    });
-
-    it('shows a popover on hover', () => {
-      const popoverTarget = 'codequality-index.js:2';
-
-      wrapper.findComponent(GlIcon).trigger('mouseover');
-
-      expect(wrapper.findComponent(GlPopover).props().target).toBe(popoverTarget);
-    });
-
-    it('passes the issue data into the issue components correctly', () => {
-      const issueProps = wrapper
-        .findAllComponents(CodequalityIssueBody)
-        .wrappers.map((w) => w.props());
-
-      expect(issueProps).toHaveLength(3);
-      expect(issueProps).toEqual(
-        threeFindings.codequality.map((codequality) => ({
-          issue: {
-            severity: codequality.severity,
-            name: codequality.description,
-          },
-          status: 'neutral',
-        })),
-      );
-    });
-  });
-});
-
-describe('EE CodeQualityGutterIcon with flag on', () => {
+describe('EE CodeQualityGutterIcon', () => {
   const containsATooltip = (container) => container.findComponent(GlTooltip).exists();
 
   it.each`
@@ -104,7 +51,7 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
     expect(findIcon().attributes()).toMatchObject({
       class: expect.stringContaining(SEVERITY_CLASSES[severity]),
       name: SEVERITY_ICONS[severity],
-      size: '12',
+      size: '16',
     });
   });
 

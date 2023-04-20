@@ -111,6 +111,7 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
         render
 
         expect(rendered).to have_css '#js-product-analytics-settings'
+        expect(rendered).to have_field s_('AdminSettings|Product analytics configurator connection string')
         expect(rendered).to have_field s_('AdminSettings|Jitsu host')
         expect(rendered).to have_field s_('AdminSettings|Jitsu project ID')
         expect(rendered).to have_field s_('AdminSettings|Jitsu administrator email')

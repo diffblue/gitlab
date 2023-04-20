@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ClustersController, feature_category: :kubernetes_management do
+RSpec.describe Groups::ClustersController, feature_category: :deployment_management do
   let(:group) { create(:group) }
   let(:user) { create(:user) }
 

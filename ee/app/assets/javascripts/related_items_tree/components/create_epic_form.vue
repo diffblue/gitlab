@@ -152,7 +152,12 @@ export default {
           />
 
           <template v-if="canRenderSearchResults">
-            <gl-dropdown-item v-if="canShowParentGroup" class="w-100" @click="selectedGroup = null">
+            <gl-dropdown-item
+              v-if="canShowParentGroup"
+              data-testid="parent-group-item"
+              class="w-100"
+              @click="selectedGroup = null"
+            >
               <gl-avatar
                 :entity-name="parentItem.groupName"
                 :shape="$options.AVATAR_SHAPE_OPTION_RECT"

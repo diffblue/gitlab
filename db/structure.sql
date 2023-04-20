@@ -11800,6 +11800,8 @@ CREATE TABLE application_settings (
     encrypted_openai_api_key bytea,
     encrypted_openai_api_key_iv bytea,
     database_max_running_batched_background_migrations integer DEFAULT 2 NOT NULL,
+    encrypted_product_analytics_configurator_connection_string bytea,
+    encrypted_product_analytics_configurator_connection_string_iv bytea,
     silent_mode_enabled boolean DEFAULT false NOT NULL,
     package_metadata_purl_types smallint[] DEFAULT '{}'::smallint[],
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
@@ -12174,6 +12176,25 @@ CREATE SEQUENCE audit_events_id_seq
     CACHE 1;
 
 ALTER SEQUENCE audit_events_id_seq OWNED BY audit_events.id;
+
+CREATE TABLE audit_events_instance_external_audit_event_destinations (
+    id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    destination_url text NOT NULL,
+    encrypted_verification_token bytea NOT NULL,
+    encrypted_verification_token_iv bytea NOT NULL,
+    CONSTRAINT check_4dc67167ce CHECK ((char_length(destination_url) <= 255))
+);
+
+CREATE SEQUENCE audit_events_instance_external_audit_event_destinations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE audit_events_instance_external_audit_event_destinations_id_seq OWNED BY audit_events_instance_external_audit_event_destinations.id;
 
 CREATE TABLE audit_events_streaming_event_type_filters (
     id bigint NOT NULL,
@@ -21107,11 +21128,13 @@ CREATE TABLE project_settings (
     pages_unique_domain_enabled boolean DEFAULT false NOT NULL,
     pages_unique_domain text,
     runner_registration_enabled boolean DEFAULT true,
+    product_analytics_instrumentation_key text,
     CONSTRAINT check_1a30456322 CHECK ((char_length(pages_unique_domain) <= 63)),
     CONSTRAINT check_2981f15877 CHECK ((char_length(jitsu_key) <= 100)),
     CONSTRAINT check_3a03e7557a CHECK ((char_length(previous_default_branch) <= 4096)),
     CONSTRAINT check_3ca5cbffe6 CHECK ((char_length(issue_branch_template) <= 255)),
     CONSTRAINT check_67292e4b99 CHECK ((char_length(mirror_branch_regex) <= 255)),
+    CONSTRAINT check_acb7fad2f9 CHECK ((char_length(product_analytics_instrumentation_key) <= 255)),
     CONSTRAINT check_b09644994b CHECK ((char_length(squash_commit_template) <= 500)),
     CONSTRAINT check_bde223416c CHECK ((show_default_award_emojis IS NOT NULL)),
     CONSTRAINT check_eaf7cfb6a7 CHECK ((char_length(merge_commit_template) <= 500))
@@ -24670,6 +24693,8 @@ ALTER TABLE ONLY audit_events ALTER COLUMN id SET DEFAULT nextval('audit_events_
 
 ALTER TABLE ONLY audit_events_external_audit_event_destinations ALTER COLUMN id SET DEFAULT nextval('audit_events_external_audit_event_destinations_id_seq'::regclass);
 
+ALTER TABLE ONLY audit_events_instance_external_audit_event_destinations ALTER COLUMN id SET DEFAULT nextval('audit_events_instance_external_audit_event_destinations_id_seq'::regclass);
+
 ALTER TABLE ONLY audit_events_streaming_event_type_filters ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_event_type_filters_id_seq'::regclass);
 
 ALTER TABLE ONLY audit_events_streaming_headers ALTER COLUMN id SET DEFAULT nextval('audit_events_streaming_headers_id_seq'::regclass);
@@ -26420,6 +26445,9 @@ ALTER TABLE ONLY atlassian_identities
 
 ALTER TABLE ONLY audit_events_external_audit_event_destinations
     ADD CONSTRAINT audit_events_external_audit_event_destinations_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY audit_events_instance_external_audit_event_destinations
+    ADD CONSTRAINT audit_events_instance_external_audit_event_destinations_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id, created_at);
@@ -29348,8 +29376,6 @@ CREATE INDEX idx_merge_requests_on_merged_state ON merge_requests USING btree (i
 
 CREATE INDEX idx_merge_requests_on_source_project_and_branch_state_opened ON merge_requests USING btree (source_project_id, source_branch) WHERE (state_id = 1);
 
-CREATE INDEX idx_merge_requests_on_state_id_and_merge_status ON merge_requests USING btree (state_id, merge_status) WHERE ((state_id = 1) AND ((merge_status)::text = 'can_be_merged'::text));
-
 CREATE INDEX idx_merge_requests_on_target_project_id_and_iid_opened ON merge_requests USING btree (target_project_id, iid) WHERE (state_id = 1);
 
 CREATE INDEX idx_merge_requests_on_target_project_id_and_locked_state ON merge_requests USING btree (target_project_id) WHERE (state_id = 4);
@@ -32208,6 +32234,8 @@ CREATE INDEX index_security_scans_on_length_of_warnings ON security_scans USING 
 
 CREATE INDEX index_security_scans_on_pipeline_id ON security_scans USING btree (pipeline_id);
 
+CREATE INDEX index_security_scans_on_pipeline_id_and_scan_type ON security_scans USING btree (pipeline_id, scan_type);
+
 CREATE INDEX index_security_scans_on_project_id ON security_scans USING btree (project_id);
 
 CREATE UNIQUE INDEX index_security_training_providers_on_unique_name ON security_training_providers USING btree (name);
@@ -32355,6 +32383,8 @@ CREATE UNIQUE INDEX index_suggestions_on_note_id_and_relative_order ON suggestio
 CREATE UNIQUE INDEX index_system_note_metadata_on_description_version_id ON system_note_metadata USING btree (description_version_id) WHERE (description_version_id IS NOT NULL);
 
 CREATE UNIQUE INDEX index_system_note_metadata_on_note_id ON system_note_metadata USING btree (note_id);
+
+CREATE UNIQUE INDEX index_system_note_metadata_on_note_id_convert_to_bigint ON system_note_metadata USING btree (note_id_convert_to_bigint);
 
 CREATE INDEX index_taggings_on_tag_id ON taggings USING btree (tag_id);
 
@@ -34733,9 +34763,6 @@ ALTER TABLE ONLY path_locks
 ALTER TABLE ONLY agent_user_access_group_authorizations
     ADD CONSTRAINT fk_53fd98ccbf FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY clusters_applications_prometheus
-    ADD CONSTRAINT fk_557e773639 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY terraform_states
     ADD CONSTRAINT fk_558901b030 FOREIGN KEY (locked_by_user_id) REFERENCES users(id) ON DELETE SET NULL;
 
@@ -35594,9 +35621,6 @@ ALTER TABLE ONLY security_orchestration_policy_rule_schedules
 ALTER TABLE ONLY incident_management_escalation_rules
     ADD CONSTRAINT fk_rails_17dbea07a6 FOREIGN KEY (policy_id) REFERENCES incident_management_escalation_policies(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY clusters_applications_jupyter
-    ADD CONSTRAINT fk_rails_17df21c98c FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY cluster_providers_aws
     ADD CONSTRAINT fk_rails_18983d9ea4 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
@@ -35671,9 +35695,6 @@ ALTER TABLE ONLY user_statuses
 
 ALTER TABLE ONLY users_ops_dashboard_projects
     ADD CONSTRAINT fk_rails_220a0562db FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY clusters_applications_runners
-    ADD CONSTRAINT fk_rails_22388594e9 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY service_desk_settings
     ADD CONSTRAINT fk_rails_223a296a85 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
@@ -35789,9 +35810,6 @@ ALTER TABLE ONLY zoom_meetings
 ALTER TABLE ONLY container_repositories
     ADD CONSTRAINT fk_rails_32f7bf5aad FOREIGN KEY (project_id) REFERENCES projects(id);
 
-ALTER TABLE ONLY clusters_applications_jupyter
-    ADD CONSTRAINT fk_rails_331f0aff78 FOREIGN KEY (oauth_application_id) REFERENCES oauth_applications(id) ON DELETE SET NULL;
-
 ALTER TABLE ONLY alert_management_alert_metric_images
     ADD CONSTRAINT fk_rails_338e55b408 FOREIGN KEY (alert_id) REFERENCES alert_management_alerts(id) ON DELETE CASCADE;
 
@@ -35860,9 +35878,6 @@ ALTER TABLE ONLY note_diff_files
 
 ALTER TABLE ONLY snippet_user_mentions
     ADD CONSTRAINT fk_rails_3e00189191 FOREIGN KEY (snippet_id) REFERENCES snippets(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY clusters_applications_helm
-    ADD CONSTRAINT fk_rails_3e2b1c06bc FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY epic_user_mentions
     ADD CONSTRAINT fk_rails_3eaf4d88cc FOREIGN KEY (epic_id) REFERENCES epics(id) ON DELETE CASCADE;
@@ -36017,9 +36032,6 @@ ALTER TABLE ONLY analytics_cycle_analytics_group_value_streams
 ALTER TABLE ONLY geo_node_namespace_links
     ADD CONSTRAINT fk_rails_546bf08d3e FOREIGN KEY (geo_node_id) REFERENCES geo_nodes(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY clusters_applications_knative
-    ADD CONSTRAINT fk_rails_54fc91e0a0 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY issuable_metric_images
     ADD CONSTRAINT fk_rails_56417a5a7f FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
 
@@ -36037,9 +36049,6 @@ ALTER TABLE ONLY incident_management_timeline_event_tag_links
 
 ALTER TABLE ONLY packages_debian_project_architectures
     ADD CONSTRAINT fk_rails_5808663adf FOREIGN KEY (distribution_id) REFERENCES packages_debian_project_distributions(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY clusters_applications_cilium
-    ADD CONSTRAINT fk_rails_59dc12eea6 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY analytics_cycle_analytics_group_stages
     ADD CONSTRAINT fk_rails_5a22f40223 FOREIGN KEY (start_event_label_id) REFERENCES labels(id) ON DELETE CASCADE;
@@ -36254,9 +36263,6 @@ ALTER TABLE ONLY group_crm_settings
 ALTER TABLE ONLY pm_package_version_licenses
     ADD CONSTRAINT fk_rails_7520ea026d FOREIGN KEY (pm_license_id) REFERENCES pm_licenses(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY clusters_applications_ingress
-    ADD CONSTRAINT fk_rails_753a7b41c1 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY incident_management_timeline_event_tag_links
     ADD CONSTRAINT fk_rails_753b8b6ee3 FOREIGN KEY (timeline_event_tag_id) REFERENCES incident_management_timeline_event_tags(id) ON DELETE CASCADE;
 
@@ -36349,9 +36355,6 @@ ALTER TABLE ONLY analytics_language_trend_repository_languages
 
 ALTER TABLE ONLY merge_request_diff_details
     ADD CONSTRAINT fk_rails_86f4d24ecd FOREIGN KEY (merge_request_diff_id) REFERENCES merge_request_diffs(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY clusters_applications_crossplane
-    ADD CONSTRAINT fk_rails_87186702df FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY packages_package_file_build_infos
     ADD CONSTRAINT fk_rails_871ca3ae21 FOREIGN KEY (package_file_id) REFERENCES packages_package_files(id) ON DELETE CASCADE;
@@ -36520,9 +36523,6 @@ ALTER TABLE ONLY badges
 
 ALTER TABLE ONLY vulnerability_finding_signatures
     ADD CONSTRAINT fk_rails_9e0baf9dcd FOREIGN KEY (finding_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY clusters_applications_cert_managers
-    ADD CONSTRAINT fk_rails_9e4f2cb4b2 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY timelog_categories
     ADD CONSTRAINT fk_rails_9f27b821a8 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -36748,9 +36748,6 @@ ALTER TABLE ONLY design_management_designs
 
 ALTER TABLE ONLY atlassian_identities
     ADD CONSTRAINT fk_rails_c02928bc18 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY serverless_domain_cluster
-    ADD CONSTRAINT fk_rails_c09009dee1 FOREIGN KEY (pages_domain_id) REFERENCES pages_domains(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY slack_integrations_scopes
     ADD CONSTRAINT fk_rails_c0e018a6fe FOREIGN KEY (slack_api_scope_id) REFERENCES slack_api_scopes(id) ON DELETE CASCADE;
@@ -36983,9 +36980,6 @@ ALTER TABLE ONLY vulnerability_occurrence_identifiers
 ALTER TABLE ONLY vulnerability_flags
     ADD CONSTRAINT fk_rails_e59393b48b FOREIGN KEY (vulnerability_occurrence_id) REFERENCES vulnerability_occurrences(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY serverless_domain_cluster
-    ADD CONSTRAINT fk_rails_e59e868733 FOREIGN KEY (clusters_applications_knative_id) REFERENCES clusters_applications_knative(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY incident_management_escalation_policies
     ADD CONSTRAINT fk_rails_e5b513daa7 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -37145,9 +37139,6 @@ ALTER TABLE ONLY operations_feature_flags_issues
 ALTER TABLE ONLY board_project_recent_visits
     ADD CONSTRAINT fk_rails_fb6fc419cb FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY serverless_domain_cluster
-    ADD CONSTRAINT fk_rails_fbdba67eb1 FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL;
-
 ALTER TABLE ONLY ci_job_variables
     ADD CONSTRAINT fk_rails_fbf3b34792_p FOREIGN KEY (partition_id, job_id) REFERENCES ci_builds(partition_id, id) ON UPDATE CASCADE ON DELETE CASCADE;
 
@@ -37180,6 +37171,9 @@ ALTER TABLE ONLY integrations
 
 ALTER TABLE ONLY merge_requests
     ADD CONSTRAINT fk_source_project FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY system_note_metadata
+    ADD CONSTRAINT fk_system_note_metadata_note_id_convert_to_bigint FOREIGN KEY (note_id_convert_to_bigint) REFERENCES notes(id) ON DELETE CASCADE NOT VALID;
 
 ALTER TABLE ONLY timelogs
     ADD CONSTRAINT fk_timelogs_issues_issue_id FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;

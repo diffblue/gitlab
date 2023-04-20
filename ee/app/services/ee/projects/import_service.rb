@@ -15,12 +15,16 @@ module EE
       private
 
       def log_audit_event
-        ::AuditEventService.new(
-          current_user,
-          project.group,
-          action: :custom,
-          custom_message: 'Project imported'
-        ).for_repository_import(project.full_path).security_event
+        audit_context = {
+          name: 'project_imported',
+          author: current_user,
+          scope: project.group,
+          target: project,
+          message: 'Project imported',
+          target_details: project.full_path
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
