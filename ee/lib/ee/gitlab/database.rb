@@ -5,16 +5,23 @@ module EE
     module Database
       extend ActiveSupport::Concern
 
+      EMBEDDING_DATABASE_NAME = 'embedding'
+      EMBEDDING_DATABASE_DIR  = 'ee/db/embedding'
+
       GEO_DATABASE_NAME = 'geo'
       GEO_DATABASE_DIR  = 'ee/db/geo'
-      EE_DATABASE_NAMES = [GEO_DATABASE_NAME].freeze
+
+      EE_DATABASES_NAME_TO_DIR = {
+        EMBEDDING_DATABASE_NAME => EMBEDDING_DATABASE_DIR,
+        GEO_DATABASE_NAME => GEO_DATABASE_DIR
+      }.freeze
 
       class_methods do
         extend ::Gitlab::Utils::Override
 
         override :all_database_names
         def all_database_names
-          super + EE_DATABASE_NAMES
+          super + EE_DATABASES_NAME_TO_DIR.keys
         end
 
         override :check_postgres_version_and_print_warning
@@ -27,19 +34,24 @@ module EE
         override :database_base_models
         def database_base_models
           @database_base_models_ee ||= super.merge(
+            embedding: ::Embedding::ApplicationRecord.connection_class? ? ::Embedding::ApplicationRecord : nil,
             geo: ::Geo::TrackingBase.connection_class? ? ::Geo::TrackingBase : nil
+          ).compact.with_indifferent_access.freeze
+        end
+
+        override :database_base_models_using_load_balancing
+        def database_base_models_using_load_balancing
+          @database_base_models_using_load_balancing ||= super.merge(
+            embedding: ::Embedding::ApplicationRecord.connection_class? ? ::Embedding::ApplicationRecord : nil
           ).compact.with_indifferent_access.freeze
         end
 
         override :schemas_to_base_models
         def schemas_to_base_models
           @schemas_to_base_models_ee ||= super.merge(
+            gitlab_embedding: [self.database_base_models[:embedding]].compact,
             gitlab_geo: [self.database_base_models[:geo]].compact
           ).compact.with_indifferent_access.freeze
-        end
-
-        def geo_database?(name)
-          name.to_s == GEO_DATABASE_NAME
         end
 
         def geo_db_config_with_default_pool_size

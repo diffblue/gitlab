@@ -12,7 +12,10 @@ RSpec.describe Gitlab::Database::GitlabSchema do
   describe '.views_and_tables_to_schema' do
     it 'all tables and views are unique' do
       table_names = load_schemas(described_class::DICTIONARY_PATH).keys
-      ee_table_names = load_schemas(described_class::EE_DICTIONARY_PATH).keys
+      ee_table_names = Gitlab::Database::EE_DATABASES_NAME_TO_DIR
+                         .flat_map do |_, ee_db_dir|
+                           load_schemas(ee_db_dir).keys
+                         end
       duplicated_tables = table_names & ee_table_names
 
       expect(duplicated_tables).to be_empty, \

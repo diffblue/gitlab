@@ -6,29 +6,35 @@ module EE
       module GitlabSchema
         extend ActiveSupport::Concern
 
-        EE_DICTIONARY_PATH = 'ee/db/docs'
-
         class_methods do
           extend ::Gitlab::Utils::Override
 
           override :dictionary_path_globs
           def dictionary_path_globs
-            super + [Rails.root.join(EE_DICTIONARY_PATH, '*.yml')]
+            super + Gitlab::Database::EE_DATABASES_NAME_TO_DIR.map do |_, ee_db_dir|
+                      Rails.root.join(ee_db_dir, 'docs', '*.yml')
+                    end
           end
 
           override :view_path_globs
           def view_path_globs
-            super + [Rails.root.join(EE_DICTIONARY_PATH, 'views', '*.yml')]
+            super + Gitlab::Database::EE_DATABASES_NAME_TO_DIR.map do |_, ee_db_dir|
+                      Rails.root.join(ee_db_dir, 'docs', 'views', '*.yml')
+                    end
           end
 
           override :deleted_tables_path_globs
           def deleted_tables_path_globs
-            super + [Rails.root.join(EE_DICTIONARY_PATH, 'deleted_tables', '*.yml')]
+            super + Gitlab::Database::EE_DATABASES_NAME_TO_DIR.map do |_, ee_db_dir|
+                      Rails.root.join(ee_db_dir, 'docs', 'deleted_tables', '*.yml')
+                    end
           end
 
           override :deleted_views_path_globs
           def deleted_views_path_globs
-            super + [Rails.root.join(EE_DICTIONARY_PATH, 'deleted_views', '*.yml')]
+            super + Gitlab::Database::EE_DATABASES_NAME_TO_DIR.map do |_, ee_db_dir|
+                      Rails.root.join(ee_db_dir, 'docs', 'deleted_views', '*.yml')
+                    end
           end
         end
       end

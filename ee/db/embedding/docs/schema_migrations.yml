@@ -8,6 +8,6 @@ feature_categories:
 - database
 description: An internal table used by ActiveRecord to keep track of which migrations
   have been applied to the database.
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/commit/9ba1224867665844b117fa037e1465bb706b3685
-milestone: '0.8'
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118156
+milestone: '16.0'
 gitlab_schema: gitlab_internal
