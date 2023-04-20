@@ -255,7 +255,7 @@ module EE
 
       return false unless project.root_namespace.free_plan?
 
-      return false unless project.team.member?(current_user)
+      return false unless project.member?(current_user)
 
       return false if ultimate_feature_removal_banner_dismissed?(project)
 
