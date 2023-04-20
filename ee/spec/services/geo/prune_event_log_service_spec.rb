@@ -16,10 +16,10 @@ RSpec.describe Geo::PruneEventLogService, feature_category: :geo_replication do
     stub_exclusive_lease(lease_key, timeout: lease_timeout, renew: true)
   end
 
-  it 'logs error when it cannot obtain lease' do
+  it 'logs info when it cannot obtain lease' do
     stub_exclusive_lease_taken(lease_key, timeout: lease_timeout)
 
-    expect(service).to receive(:log_error).with(/^Cannot obtain an exclusive lease/)
+    expect(Gitlab::AppJsonLogger).to receive(:info).with(a_hash_including(message: /^Cannot obtain an exclusive lease/))
 
     service.execute
   end

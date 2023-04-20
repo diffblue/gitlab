@@ -24,7 +24,6 @@ module Gitlab
           lease = exclusive_lease.try_obtain_with_ttl
 
           unless lease[:ttl] == 0 || exclusive_lease.same_uuid?
-            $stdout.puts lease_taken_message
             logger.debug(lease_taken_message)
 
             return lease
@@ -48,7 +47,8 @@ module Gitlab
         end
 
         def self.lease_taken_message
-          'Cannot obtain an exclusive lease. There must be another process already in execution.'
+          'Cannot obtain an exclusive lease. There must be another process already in execution ' \
+            'so there is no need for this one to continue.'
         end
 
         def self.logger

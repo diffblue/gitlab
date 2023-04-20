@@ -53,6 +53,18 @@ module Gitlab
 
         context_data[index + 4..]
       end
+
+      # If ExclusiveLeaseGuard is used, this overrides the log message to add
+      # "so there is no need for this one to continue", to soften it a bit.
+      def lease_taken_message
+        "Cannot obtain an exclusive lease. There must be another instance already in execution " \
+          "so there is no need for this one to continue."
+      end
+
+      # If ExclusiveLeaseGuard is used, this overrides :error level
+      def lease_taken_log_level
+        :info
+      end
     end
   end
 end
