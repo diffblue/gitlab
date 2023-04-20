@@ -25,8 +25,9 @@ RSpec.describe Ci::ProcessPipelineService, '#execute', feature_category: :contin
   describe 'cross-project pipelines' do
     before do
       create_processable(:build, name: 'build', ci_stage: build_stage, stage_idx: build_stage.position)
-      create_processable(:bridge, :variables,
-                         name: 'cross', ci_stage: test_stage, downstream: downstream, stage_idx: test_stage.position)
+      create_processable(
+        :bridge, :variables, name: 'cross', ci_stage: test_stage, downstream: downstream, stage_idx: test_stage.position
+      )
       create_processable(:build, name: 'deploy', ci_stage: deploy_stage, stage_idx: deploy_stage.position)
 
       stub_ci_pipeline_to_return_yaml_file
@@ -64,9 +65,13 @@ RSpec.describe Ci::ProcessPipelineService, '#execute', feature_category: :contin
   end
 
   def create_processable(type, *traits, **opts)
-    create("ci_#{type}", *traits, status: :created,
-                                  pipeline: pipeline,
-                                  user: user,
-                                  **opts)
+    create(
+      "ci_#{type}",
+      *traits,
+      status: :created,
+      pipeline: pipeline,
+      user: user,
+      **opts
+    )
   end
 end

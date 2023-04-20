@@ -155,11 +155,14 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
               allow(Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).and_raise('heck')
 
               expect(Gitlab::AppLogger).to receive(:error).with(
-                hash_including(pipeline: anything,
-                               'exception.class' => anything,
-                               'exception.message' => anything,
-                               'exception.backtrace' => anything,
-                               source: anything)).and_call_original
+                hash_including(
+                  pipeline: anything,
+                  'exception.class' => anything,
+                  'exception.message' => anything,
+                  'exception.backtrace' => anything,
+                  source: anything
+                )
+              ).and_call_original
             end
 
             specify { expect(subject[:status]).to be(:error) }

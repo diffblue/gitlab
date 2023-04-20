@@ -12,8 +12,7 @@ RSpec.describe Ci::RetryPipelineService, feature_category: :continuous_integrati
   before do
     project.add_developer(user)
 
-    create(:protected_branch, :developers_can_merge,
-           name: pipeline.ref, project: project)
+    create(:protected_branch, :developers_can_merge, name: pipeline.ref, project: project)
   end
 
   context 'when the namespace is out of CI minutes' do
