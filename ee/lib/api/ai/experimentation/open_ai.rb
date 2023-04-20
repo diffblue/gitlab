@@ -27,18 +27,18 @@ module API
           def open_ai_post(endpoint, json_body: nil)
             url = "#{OPEN_AI_API_URL}/#{endpoint}"
 
-            header = { 'Authorization' => "Bearer #{::Gitlab::CurrentSettings.openai_api_key}",
-                       "Content-Type" => "application/json" }
+            headers = {
+              'Authorization' => ["Bearer #{::Gitlab::CurrentSettings.openai_api_key}"],
+              "Content-Type" => ["application/json"]
+            }
 
-            response = Gitlab::HTTP.post(url, headers: header, body: Gitlab::Json.dump(json_body), timeout: 90)
-            response_body = Gitlab::Json.parse(response.body, symbolize_names: true)
+            workhorse_headers =
+              Gitlab::Workhorse.send_url(url, body: json_body.to_json, headers: headers, method: "POST")
 
-            status response.code unless response.success?
-            body response_body
-          rescue Gitlab::HTTP::Error, StandardError => error
-            Gitlab::AppLogger.info("#{self.class.name}: Error while connecting to OpenAI: #{error.message}")
+            header(*workhorse_headers)
 
-            render_api_error!("Error while connecting to OpenAI: #{error.message}", :bad_request)
+            status :ok
+            body ''
           end
         end
 

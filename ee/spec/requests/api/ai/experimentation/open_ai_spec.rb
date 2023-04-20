@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
   let_it_be(:current_user) { create :user }
-  let(:header) { { 'Authorization' => 'Bearer test-key', 'Content-Type' => 'application/json' } }
+  let(:header) { { 'Authorization' => ['Bearer test-key'], 'Content-Type' => ['application/json'] } }
   let(:body) { { 'test' => 'test' } }
   let(:response_double) { instance_double(HTTParty::Response, code: 200, success?: true, body: body.to_json) }
 
@@ -15,46 +15,23 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   RSpec.shared_examples 'proxies request to ai api endpoint' do
-    it 'calls openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).with("#{described_class::OPEN_AI_API_URL}/#{endpoint}",
-        headers: header,
-        body: params.to_json,
-        timeout: 90)
-
-      post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
-    end
-
-    it 'returns json received from openai endpoint' do
-      expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
-
+    it 'responds with Workhorse send-url headers' do
       post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
 
-      expect(json_response).to eq(body)
-      expect(response).to have_gitlab_http_status(:created)
-    end
+      expect(response.body).to eq('""')
+      expect(response).to have_gitlab_http_status(:ok)
 
-    context 'when request is not successful' do
-      let(:response_double) { instance_double(HTTParty::Response, code: 401, success?: false, body: body.to_json) }
+      send_url_prefix, encoded_data = response.headers['Gitlab-Workhorse-Send-Data'].split(':')
+      data = Gitlab::Json.parse(Base64.urlsafe_decode64(encoded_data))
 
-      it 'returns json received with status' do
-        expect(Gitlab::HTTP).to receive(:post).and_return(response_double)
-
-        post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
-
-        expect(json_response).to eq(body)
-        expect(response).to have_gitlab_http_status(:unauthorized)
-      end
-    end
-
-    context 'when error is raised during the request' do
-      it 'returns status 400' do
-        expect(Gitlab::HTTP).to receive(:post).and_raise(Gitlab::HTTP::Error)
-
-        post api("/ai/experimentation/openai/#{endpoint}", current_user), params: input_params
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response).to include({ "message" => "Error while connecting to OpenAI: HTTParty::Error" })
-      end
+      expect(send_url_prefix).to eq('send-url')
+      expect(data).to eq({
+        'AllowRedirects' => false,
+        'Method' => 'POST',
+        'URL' => "#{described_class::OPEN_AI_API_URL}/#{endpoint}",
+        'Header' => header,
+        'Body' => params.to_json
+      })
     end
   end
 
