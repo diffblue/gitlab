@@ -1,6 +1,6 @@
 ---
-key_path: redis_hll_counters.integrations.i_integrations_gitlab_for_slack_app_push_notification_monthly
-description: Calculated unique users to trigger a Slack message by performing a Git push by month
+key_path: redis_hll_counters.integrations.i_integrations_gitlab_for_slack_app_wiki_page_notification_monthly
+description: Calculated unique users to trigger a Slack message by performing an action on a wiki page by month
 product_section: dev
 product_stage: manage
 product_group: integrations
@@ -14,9 +14,11 @@ data_category: optional
 instrumentation_class: RedisHLLMetric
 options:
   events:
-    - i_integrations_gitlab_for_slack_app_push_notification
+    - i_integrations_gitlab_for_slack_app_wiki_page_notification
 distribution:
+- ce
 - ee
 tier:
+- free
 - premium
 - ultimate

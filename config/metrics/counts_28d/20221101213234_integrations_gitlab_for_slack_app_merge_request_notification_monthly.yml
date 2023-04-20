@@ -16,7 +16,9 @@ options:
   events:
     - i_integrations_gitlab_for_slack_app_merge_request_notification
 distribution:
+- ce
 - ee
 tier:
+- free
 - premium
 - ultimate
