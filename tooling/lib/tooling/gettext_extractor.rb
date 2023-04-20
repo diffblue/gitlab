@@ -3,19 +3,18 @@
 require 'parallel'
 require 'gettext/po'
 require 'gettext/po_entry'
+require 'gettext/tools/xgettext'
 require 'gettext/tools/parser/erb'
 require 'gettext/tools/parser/ruby'
-require 'gettext_i18n_rails/haml_parser'
 require 'json'
 require 'open3'
 
 module Tooling
   class GettextExtractor < GetText::Tools::XGetText
-    class HamlParser < GettextI18nRails::HamlParser
-      # If both `haml` and `hamlit` are available,
-      # the parser prefers `haml`. `hamlit` should be faster
-      def self.libraries
-        ["hamlit"]
+    class HamlParser < GetText::RubyParser
+      require 'hamlit'
+      def parse_source(source)
+        super(Hamlit::Engine.new.call(source))
       end
     end
 
@@ -78,7 +77,7 @@ module Tooling
       when '.rb'
         GetText::RubyParser.new(path).parse
       when '.haml'
-        HamlParser.parse(path).collect { |item| create_po_entry(*item) }
+        HamlParser.new(path).parse
       when '.erb'
         GetText::ErbParser.new(path).parse
       else

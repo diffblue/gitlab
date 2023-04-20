@@ -49,8 +49,10 @@ RSpec.describe Tooling::GettextExtractor, feature_category: :tooling do
   end
 
   describe '::HamlParser' do
-    it 'overwrites libraries in order to prefer hamlit' do
-      expect(described_class::HamlParser.libraries).to match_array(['hamlit'])
+    # Testing with a non-externalized string, as the functionality
+    # is properly tested later on
+    it '#parse_source' do
+      expect(described_class::HamlParser.new(files[:haml_file]).parse_source('%h1= "Test"')).to match_array([])
     end
   end
 
