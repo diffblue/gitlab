@@ -1,4 +1,5 @@
 import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { KEY_METRICS, DORA_METRICS } from '~/analytics/shared/constants';
 
 export const UNITS = {
@@ -48,17 +49,17 @@ export const TABLE_METRICS = {
   },
 };
 
-export const DASHBOARD_TITLE = __('Value Streams Dashboard (Beta)');
+export const DASHBOARD_TITLE = s__('DORA4Metrics|Value Streams Dashboard');
+export const DASHBOARD_DESCRIPTION = s__(
+  'DORA4Metrics|The Value Streams Dashboard allows all stakeholders from executives to individual contributors to identify trends, patterns, and opportunities for software development improvements.',
+);
+export const DASHBOARD_DOCS_LINK = helpPagePath('user/analytics/value_streams_dashboard');
 export const DASHBOARD_DESCRIPTION_GROUP = s__('DORA4Metrics|Metrics comparison for %{name} group');
 export const DASHBOARD_DESCRIPTION_PROJECT = s__(
   'DORA4Metrics|Metrics comparison for %{name} project',
 );
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
-export const DASHBOARD_FEEDBACK_INFORMATION = s__(
-  'DevopsMetricsDashboard|%{strongStart}Beta feature:%{strongEnd} Leave your thoughts in the %{linkStart}feedback issue%{linkEnd}.',
-);
-export const DASHBOARD_FEEDBACK_LINK = 'https://gitlab.com/gitlab-org/gitlab/-/issues/381787';
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];
 export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();
