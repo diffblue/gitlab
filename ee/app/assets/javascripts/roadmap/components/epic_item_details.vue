@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlIcon, GlLabel, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
+import { GlButton, GlIcon, GlLabel, GlTooltip } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { getIdFromGraphQLId, getNodesOrDefault } from '~/graphql_shared/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -14,7 +14,6 @@ export default {
     GlButton,
     GlIcon,
     GlLabel,
-    GlLoadingIcon,
     GlTooltip,
     IssuableBlockedIcon,
   },
@@ -148,20 +147,22 @@ export default {
     data-qa-selector="epic_details_cell"
   >
     <div
-      class="gl-display-flex align-items-start gl-p-3 gl-mb-1"
+      class="gl-display-flex align-items-start gl-pl-2 gl-pr-3 gl-pt-2 gl-mb-1"
       :class="[epic.isChildEpic ? childMarginClassname : '']"
       data-testid="epic-container"
     >
       <span ref="expandCollapseInfo">
         <gl-button
+          v-if="!childrenFetchInProgress"
           :class="{ invisible: isExpandIconHidden }"
-          variant="link"
           :aria-label="expandIconLabel"
+          category="tertiary"
+          size="small"
+          :icon="expandIconName"
+          :loading="childrenFetchInProgress"
+          data-testid="expand-icon-button"
           @click="toggleIsEpicExpanded"
-        >
-          <gl-icon v-if="!childrenFetchInProgress" :name="expandIconName" class="text-secondary" />
-          <gl-loading-icon v-if="childrenFetchInProgress" size="sm" />
-        </gl-button>
+        />
       </span>
       <gl-tooltip
         v-if="!isExpandIconHidden"
@@ -175,7 +176,7 @@ export default {
       >
         {{ expandIconLabel }}
       </gl-tooltip>
-      <div class="flex-grow-1 mx-2 gl-w-13">
+      <div class="flex-grow-1 mx-1 gl-w-13">
         <div class="gl-display-flex gl-mt-1">
           <issuable-blocked-icon
             v-if="epic.blocked"
