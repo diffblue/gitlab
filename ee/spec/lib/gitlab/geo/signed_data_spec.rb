@@ -119,7 +119,7 @@ RSpec.describe Gitlab::Geo::SignedData, feature_category: :geo_replication do
         signed_data
       end
 
-      it 'successfully decodes when clocks are off by IAT leeway' do
+      it 'successfully decodes when clocks are off' do
         travel_to(30.seconds.ago) { expect(subject).to eq(data) }
       end
 
