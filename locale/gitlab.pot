@@ -17490,9 +17490,6 @@ msgstr ""
 msgid "Existing sign in methods may be removed"
 msgstr ""
 
-msgid "Exit."
-msgstr ""
-
 msgid "Expand"
 msgstr ""
 
@@ -21860,12 +21857,6 @@ msgstr ""
 msgid "IdentityVerification|A new code has been sent."
 msgstr ""
 
-msgid "IdentityVerification|Before you create your first project, we need you to verify your identity with a valid payment method. You will not be charged during this step. If we ever need to charge you, we will let you know."
-msgstr ""
-
-msgid "IdentityVerification|Before you create your group, we need you to verify your identity with a valid payment method. You will not be charged during this step. If we ever need to charge you, we will let you know."
-msgstr ""
-
 msgid "IdentityVerification|Before you finish creating your account, we need to verify your identity. On the verification page, enter the following code."
 msgstr ""
 
@@ -21876,9 +21867,6 @@ msgid "IdentityVerification|Complete verification to sign in."
 msgstr ""
 
 msgid "IdentityVerification|Confirm your email address"
-msgstr ""
-
-msgid "IdentityVerification|Create a project"
 msgstr ""
 
 msgid "IdentityVerification|Didn't receive a code?"
@@ -22002,9 +21990,6 @@ msgid "IdentityVerification|We've sent a verification code to %{email}"
 msgstr ""
 
 msgid "IdentityVerification|We've sent a verification code to +%{phoneNumber}"
-msgstr ""
-
-msgid "IdentityVerification|You can always verify your account at a later time to create a group."
 msgstr ""
 
 msgid "IdentityVerification|You will receive a text containing a code. Standard charges may apply."

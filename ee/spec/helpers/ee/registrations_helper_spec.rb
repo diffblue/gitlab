@@ -20,22 +20,6 @@ RSpec.describe EE::RegistrationsHelper do
     end
   end
 
-  describe '#credit_card_verification_data' do
-    before do
-      allow(helper).to receive(:current_user).and_return(build(:user))
-    end
-
-    it 'returns the expected data' do
-      expect(helper.credit_card_verification_data).to eq(
-        {
-          completed: 'false',
-          iframe_url: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL,
-          allowed_origin: ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
-        }
-      )
-    end
-  end
-
   describe '#arkose_labs_data' do
     before do
       allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
