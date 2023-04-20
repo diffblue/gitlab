@@ -7,6 +7,10 @@ module EE
 
     prepended do
       belongs_to :epic
+
+      scope :aliased_for_timebox_report, -> do
+        select("'state' AS event_type", "id", "created_at", "state AS value", "NULL AS action", "issue_id")
+      end
     end
 
     class_methods do
