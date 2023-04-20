@@ -30,9 +30,7 @@ RSpec.describe Projects::TransferService do
   context 'audit events' do
     include_examples 'audit event logging' do
       let(:fail_condition!) do
-        expect_next_instance_of(Project) do |instance|
-          expect(instance).to receive(:has_container_registry_tags?).and_return(true)
-        end
+        expect(project).to receive(:has_container_registry_tags?).and_return(true)
 
         def operation
           subject.execute(group)
