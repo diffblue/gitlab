@@ -25416,6 +25416,24 @@ msgstr ""
 msgid "LDAP uid:"
 msgstr ""
 
+msgid "LDAP|Add synchronization"
+msgstr ""
+
+msgid "LDAP|LDAP access"
+msgstr ""
+
+msgid "LDAP|LDAP group cn"
+msgstr ""
+
+msgid "LDAP|LDAP server"
+msgstr ""
+
+msgid "LDAP|LDAP user filter"
+msgstr ""
+
+msgid "LDAP|Sync method"
+msgstr ""
+
 msgid "LFS"
 msgstr ""
 
