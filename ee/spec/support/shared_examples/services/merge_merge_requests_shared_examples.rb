@@ -213,3 +213,87 @@ RSpec.shared_examples 'service with multiple reviewers' do
     end
   end
 end
+
+RSpec.shared_examples 'service with approval rules' do
+  let(:opts) { super().merge(approval_attributes) }
+  let(:approval_attributes) { {} }
+
+  context 'when project approval rules are missing' do
+    context 'when approval rules attributes are missing' do
+      it 'does not create approval rules' do
+        expect(execute.approval_rules).to be_empty
+      end
+    end
+
+    context 'when approval rules attributes are provided' do
+      let(:approval_attributes) { { approval_rules_attributes: approval_rules } }
+      let(:approval_rules) do
+        [
+          {
+            name: 'Test',
+            approvals_required: 5
+          }
+        ]
+      end
+
+      it 'creates approval rules' do
+        expect(execute.approval_rules.count).to eq(1)
+        expect(execute.approval_rules.first).to have_attributes(approvals_required: 5, name: 'Test')
+      end
+    end
+  end
+
+  context 'when project has approval rules' do
+    let!(:any_approver_rule) do
+      create(:approval_project_rule, :any_approver_rule, project: project, approvals_required: 1)
+    end
+
+    let!(:regular_rule) do
+      create(:approval_project_rule, project: project, approvals_required: 2)
+    end
+
+    let!(:special_approver_rule) do
+      create(:approval_project_rule, :license_scanning, project: project, approvals_required: 3)
+    end
+
+    context 'when approval rules attributes are missing' do
+      it 'inherits only regular and any_approver rules from the project' do
+        expect(execute.approval_rules.count).to eq(2)
+
+        expect(execute.approval_rules.map(&:attributes)).to match(
+          [
+            a_hash_including('approvals_required' => 1, 'rule_type' => 'any_approver'),
+            a_hash_including('approvals_required' => 2, 'rule_type' => 'regular')
+          ]
+        )
+      end
+
+      context 'when inherit_approval_rules_on_creation is disabled' do
+        before do
+          stub_feature_flags(inherit_approval_rules_on_creation: false)
+        end
+
+        it 'does not create approval rules' do
+          expect(execute.approval_rules).to be_empty
+        end
+      end
+    end
+
+    context 'when approval rules attributes are provided' do
+      let(:approval_attributes) { { approval_rules_attributes: approval_rules } }
+      let(:approval_rules) do
+        [
+          {
+            name: 'Test',
+            approvals_required: 5
+          }
+        ]
+      end
+
+      it 'creates only requested approval rules' do
+        expect(execute.approval_rules.count).to eq(1)
+        expect(execute.approval_rules.first).to have_attributes(approvals_required: 5, name: 'Test')
+      end
+    end
+  end
+end

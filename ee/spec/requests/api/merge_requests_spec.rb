@@ -315,6 +315,32 @@ RSpec.describe API::MergeRequests, feature_category: :source_code_management do
         end
       end
     end
+
+    context 'when the project has approval rules' do
+      let(:project_approvers) { create_list(:user, 3) }
+      let!(:any_approver_rule) { create(:approval_project_rule, :any_approver_rule, project: project, approvals_required: 1) }
+      let!(:regular_rule) { create(:approval_project_rule, project: project, users: project_approvers, approvals_required: 3) }
+
+      before do
+        project_approvers.each { |u| project.add_developer(u) }
+      end
+
+      it 'inherits project-level approval rules' do
+        create_merge_request({})
+
+        expect(response).to have_gitlab_http_status(:created)
+
+        merge_request = MergeRequest.find(json_response['id'])
+
+        merge_request_approval_rules = merge_request.approval_rules.map(&:attributes)
+
+        expect(merge_request_approval_rules.count).to eq(2)
+        expect(merge_request_approval_rules).to include(a_hash_including('name' => any_approver_rule.name, 'rule_type' => 'any_approver', 'approvals_required' => 1))
+        expect(merge_request_approval_rules).to include(a_hash_including('name' => regular_rule.name, 'rule_type' => 'regular', 'approvals_required' => 3))
+
+        expect(merge_request.approval_rules.map(&:user_ids)).to match_array([[], project_approvers.map(&:id)])
+      end
+    end
   end
 
   describe "PUT /projects/:id/merge_requests/:merge_request_iid/merge" do

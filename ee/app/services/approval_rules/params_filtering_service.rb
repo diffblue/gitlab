@@ -142,14 +142,7 @@ module ApprovalRules
           # from params to prevent duplicates
           next if source_rule_ids.include?(rule.id)
 
-          params[:approval_rules_attributes] << {
-            name: rule.name,
-            approval_project_rule_id: rule.id,
-            user_ids: rule.user_ids,
-            group_ids: rule.group_ids,
-            approvals_required: rule.approvals_required,
-            rule_type: rule.rule_type
-          }
+          params[:approval_rules_attributes] << rule.to_nested_attributes
         end
     end
   end
