@@ -97,7 +97,7 @@ export default {
         : null;
     },
     renewButton() {
-      return this.subscription?.inRenewalPeriod
+      return this.subscription?.canRenew
         ? createButtonProps(s__('SubscriptionTable|Renew'), this.planRenewHref, 'renew-button')
         : null;
     },

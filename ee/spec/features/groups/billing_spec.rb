@@ -97,7 +97,7 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
 
       context 'with disabled seats and review buttons' do
         before do
-          stub_subscription_management_data(group.id, can_add_seats: false, in_renewal_period: false)
+          stub_subscription_management_data(group.id, can_add_seats: false, can_renew: false)
         end
 
         it 'hides add seats and renew buttons' do
