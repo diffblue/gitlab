@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlButton, GlIcon, GlLabel } from '@gitlab/ui';
+import { GlButton, GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { updateHistory } from '~/lib/utils/url_utility';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -52,7 +52,7 @@ describe('EpicItemDetails', () => {
   const getLabels = () => wrapper.findByTestId('epic-labels');
 
   const getExpandButtonData = () => ({
-    icon: wrapper.findComponent(GlIcon).attributes('name'),
+    icon: wrapper.findComponent(GlButton).attributes('icon'),
     iconLabel: getExpandIconButton().attributes('aria-label'),
     tooltip: getExpandIconTooltip().text(),
   });
