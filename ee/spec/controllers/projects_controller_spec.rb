@@ -26,6 +26,35 @@ RSpec.describe ProjectsController do
     end
   end
 
+  describe 'GET new' do
+    let_it_be(:params) { { namespace_id: user.namespace.id } }
+
+    context 'when user does not have `:create_projects` permissions' do
+      before do
+        allow(controller).to receive(:can?).with(user, :create_projects, user.namespace).and_return(false)
+      end
+
+      it 'returns a 404' do
+        get :new, params: params
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when user does have `:create_projects` permissions' do
+      before do
+        allow(controller).to receive(:can?).with(user, :create_projects, user.namespace).and_return(true)
+      end
+
+      it 'renders `new` template' do
+        get :new, params: params
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to render_template(:new)
+      end
+    end
+  end
+
   describe 'GET show', feature_category: :projects do
     render_views
 
