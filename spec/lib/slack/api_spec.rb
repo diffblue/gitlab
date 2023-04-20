@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Slack::API do
+RSpec.describe Slack::API, feature_category: :integrations do
   describe '#post' do
     let(:slack_installation) { build(:slack_integration) }
     let(:api_method) { 'api_method_call' }
