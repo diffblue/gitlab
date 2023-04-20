@@ -26,7 +26,7 @@ export default {
 
 <template>
   <span v-if="showWeight" v-gl-tooltip :title="__('Weight')">
-    <gl-icon name="weight" />
+    <gl-icon name="weight" :size="12" />
     {{ weight }}
   </span>
 </template>
