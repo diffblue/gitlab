@@ -577,7 +577,7 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     subject { merge_request.calculate_reactive_cache(service_class_name, current_user&.id) }
 
     context 'when given a known service class name' do
-      let(:service_class_name) { 'Ci::CompareSecurityReportsService' }
+      let(:service_class_name) { 'Ci::CompareTestReportsService' }
 
       it 'does not raises a NameError exception' do
         allow_any_instance_of(service_class_name.constantize).to receive(:execute).and_return(nil)
