@@ -351,7 +351,6 @@ Layout/ArrayAlignment:
     - 'spec/services/spam/spam_verdict_service_spec.rb'
     - 'spec/support/helpers/kubernetes_helpers.rb'
     - 'spec/support/helpers/login_helpers.rb'
-    - 'spec/support/shared_contexts/features/integrations/integrations_shared_context.rb'
     - 'spec/support/shared_examples/lib/email/email_shared_examples.rb'
     - 'spec/support/shared_examples/lib/wikis_api_examples.rb'
     - 'spec/support/shared_examples/models/label_note_shared_examples.rb'

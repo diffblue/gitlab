@@ -2965,7 +2965,6 @@ RSpec/ContextWording:
     - 'spec/support/shared_contexts/features/integrations/group_integrations_shared_context.rb'
     - 'spec/support/shared_contexts/features/integrations/instance_and_group_integrations_shared_context.rb'
     - 'spec/support/shared_contexts/features/integrations/instance_integrations_shared_context.rb'
-    - 'spec/support/shared_contexts/features/integrations/integrations_shared_context.rb'
     - 'spec/support/shared_contexts/features/integrations/project_integrations_jira_context.rb'
     - 'spec/support/shared_contexts/features/integrations/project_integrations_shared_context.rb'
     - 'spec/support/shared_contexts/finders/group_projects_finder_shared_contexts.rb'
