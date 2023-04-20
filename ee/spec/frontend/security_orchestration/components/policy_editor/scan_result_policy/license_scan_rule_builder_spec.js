@@ -4,6 +4,9 @@ import Api from 'ee/api';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
+import { STATUS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('LicenseScanRuleBuilder', () => {
@@ -49,6 +52,8 @@ describe('LicenseScanRuleBuilder', () => {
   const findLicenseStates = () => wrapper.findByTestId('license-state-select');
   const findLicenseMultiSelect = () => wrapper.findByTestId('license-multi-select');
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
+  const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
+  const findStatusFilter = () => wrapper.findComponent(StatusFilter);
 
   beforeEach(() => {
     jest
@@ -69,7 +74,8 @@ describe('LicenseScanRuleBuilder', () => {
       expect(findLicenseMultiSelect().exists()).toBe(true);
     });
 
-    it('includes select all option to all PolicyRuleMultiSelect', () => {
+    it('includes select all option to all PolicyRuleMultiSelect', async () => {
+      await findScanFilterSelector().vm.$emit('select', STATUS);
       const props = findAllPolicyRuleMultiSelect().wrappers.map((w) => w.props());
 
       expect(props).toEqual(
@@ -87,7 +93,6 @@ describe('LicenseScanRuleBuilder', () => {
       currentComponent          | newValue                           | expected                                                   | event
       ${findBranches}           | ${PROTECTED_BRANCHES_MOCK[0]}      | ${{ branches: UPDATED_RULE.branches }}                     | ${'input'}
       ${findMatchType}          | ${UPDATED_RULE.match_on_inclusion} | ${{ match_on_inclusion: UPDATED_RULE.match_on_inclusion }} | ${'select'}
-      ${findLicenseStates}      | ${UPDATED_RULE.license_states}     | ${{ license_states: UPDATED_RULE.license_states }}         | ${'input'}
       ${findLicenseMultiSelect} | ${UPDATED_RULE.license_types}      | ${{ license_types: UPDATED_RULE.license_types }}           | ${'select'}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
@@ -99,6 +104,24 @@ describe('LicenseScanRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  describe('additional filter criteria', () => {
+    beforeEach(async () => {
+      factory();
+      await findScanFilterSelector().vm.$emit('select', STATUS);
+    });
+
+    it('should select status filter', () => {
+      expect(findStatusFilter().exists()).toBe(true);
+    });
+
+    it('should select status', async () => {
+      await findLicenseStates().vm.$emit('input', 'Newly Detected');
+      expect(wrapper.emitted('changed')).toEqual([
+        [expect.objectContaining({ license_states: 'Newly Detected' })],
+      ]);
+    });
   });
 
   it('does render branches label when a branch is selected', async () => {

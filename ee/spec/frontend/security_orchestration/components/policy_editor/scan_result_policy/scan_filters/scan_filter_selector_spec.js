@@ -45,4 +45,22 @@ describe('ScanFilterSelector', () => {
       expect(wrapper.emitted('select')).toBeUndefined();
     },
   );
+
+  it('can render custom options', () => {
+    const customOption = { value: 'value', text: 'text' };
+    createComponent({ items: [customOption] });
+
+    expect(findListBox().props('items')).toEqual([customOption]);
+  });
+
+  it('can have disabled state', () => {
+    createComponent({ disabled: true });
+    expect(findListBox().props('disabled')).toBe(true);
+  });
+
+  it('can have custom tooltip text', () => {
+    const tooltipTitle = 'Custom tooltip';
+    createComponent({ tooltipTitle });
+    expect(findListBox().attributes('title')).toBe(tooltipTitle);
+  });
 });

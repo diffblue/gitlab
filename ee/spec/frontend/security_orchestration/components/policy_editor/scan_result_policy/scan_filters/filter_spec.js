@@ -27,11 +27,15 @@ describe('FilterSpec', () => {
       propsData: {
         ...props,
       },
+      stubs: {
+        BaseLayoutComponent,
+      },
     });
   };
 
   const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
   const findPolicyRuleMultiSelect = () => wrapper.findComponent(PolicyRuleMultiSelect);
+  const findRemoveButton = () => wrapper.findByTestId('remove-rule');
 
   describe.each(testCases)('new filters', ({ component, filterOptions }) => {
     beforeEach(() => {
@@ -65,6 +69,13 @@ describe('FilterSpec', () => {
         findBaseLayoutComponent().vm.$emit('remove');
 
         expect(wrapper.emitted('remove')).toHaveLength(1);
+      });
+    });
+
+    describe('remove', () => {
+      it.each([true, false])('can hide remove button', (showRemoveButton) => {
+        createComponent({ props: { showRemoveButton } });
+        expect(findRemoveButton().exists()).toBe(showRemoveButton);
       });
     });
   });
