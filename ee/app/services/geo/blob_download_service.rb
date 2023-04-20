@@ -2,13 +2,12 @@
 
 module Geo
   class BlobDownloadService
+    include ExclusiveLeaseGuard
     include Gitlab::Geo::LogHelpers
 
     # Imagine a multi-gigabyte LFS object file and an instance on the other side
     # of the earth
     LEASE_TIMEOUT = 8.hours.freeze
-
-    include ExclusiveLeaseGuard
 
     # Initialize a new blob downloader service
     #

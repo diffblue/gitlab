@@ -9,6 +9,7 @@ module Geo
         data_consistency :always
         include GeoQueue
         include ExclusiveLeaseGuard
+        include ::Gitlab::Geo::LogHelpers
 
         sidekiq_options retry: false
 

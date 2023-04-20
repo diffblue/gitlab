@@ -35,7 +35,7 @@ module Epics
 
       return if locked_ids.empty?
 
-      log_error("Following epic ids are locked, re-scheduling cache update: #{locked_ids}")
+      Gitlab::AppJsonLogger.error(message: "Following epic ids are locked, re-scheduling cache update: #{locked_ids}")
       self.class.perform_in(LEASE_TIMEOUT, locked_ids)
     end
 

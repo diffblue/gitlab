@@ -2,8 +2,8 @@
 
 module Geo
   class PruneEventLogService
-    include ::Gitlab::Geo::LogHelpers
     include ::ExclusiveLeaseGuard
+    include ::Gitlab::Geo::LogHelpers
 
     TOTAL_LIMIT = 50_000
     LEASE_TIMEOUT = 4.minutes

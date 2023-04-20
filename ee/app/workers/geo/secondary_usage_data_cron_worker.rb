@@ -9,8 +9,8 @@ module Geo
     data_consistency :always
 
     include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
-    include ::Gitlab::Geo::LogHelpers
     include ExclusiveLeaseGuard
+    include ::Gitlab::Geo::LogHelpers
 
     feature_category :geo_replication
 

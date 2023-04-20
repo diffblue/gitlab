@@ -58,7 +58,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Lease, :clean_gitlab_redis_shared_state, 
 
       expect(logger).not_to receive(:info)
       expect(logger).not_to receive(:error)
-      expect(logger).to receive(:debug).with('Cannot obtain an exclusive lease. There must be another process already in execution.')
+      expect(logger).to receive(:debug).with(/Cannot obtain an exclusive lease. There must be another process already in execution/)
 
       described_class.try_obtain_with_ttl {}
     end
