@@ -119,7 +119,12 @@ export default {
           data-testid="chat-error"
           ><span v-safe-html="error"></span
         ></gl-alert>
-        <div v-else v-safe-html="content" class="md" data-testid="chat-content"></div>
+        <div
+          v-else
+          v-safe-html="content"
+          class="md ai-genie-chat-message"
+          data-testid="chat-content"
+        ></div>
       </div>
       <gl-link
         :href="$options.feedbackLinkUrl"
