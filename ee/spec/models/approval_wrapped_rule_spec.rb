@@ -93,6 +93,14 @@ RSpec.describe ApprovalWrappedRule do
       end
     end
 
+    context 'when rule is any_approver and approvals are required' do
+      let(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+
+      it 'return false' do
+        expect(subject.invalid_rule?).to eq(false)
+      end
+    end
+
     context 'when there are unactioned approvers and approvals are required' do
       let(:approvals_required) { 1 }
 

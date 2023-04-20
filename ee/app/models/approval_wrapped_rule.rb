@@ -91,7 +91,7 @@ class ApprovalWrappedRule
   end
 
   def invalid_rule?
-    approvals_required > 0 && unactioned_approvers.size <= 0
+    !any_approver? && approvals_required > 0 && unactioned_approvers.size <= 0
   end
 
   def allow_merge_when_invalid?
