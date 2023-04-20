@@ -34554,9 +34554,6 @@ ALTER TABLE ONLY vulnerabilities
 ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_131d289c65 FOREIGN KEY (milestone_id) REFERENCES milestones(id) ON DELETE SET NULL;
 
-ALTER TABLE ONLY webauthn_registrations
-    ADD CONSTRAINT fk_13e04d719a FOREIGN KEY (u2f_registration_id) REFERENCES u2f_registrations(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_157506c0e2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
