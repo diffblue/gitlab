@@ -21,8 +21,6 @@ query approvedByEE($projectPath: ID!, $iid: String!) {
           id
           approved
           approvalsRequired
-          invalid
-          allowMergeWhenInvalid
           name
           type
         }

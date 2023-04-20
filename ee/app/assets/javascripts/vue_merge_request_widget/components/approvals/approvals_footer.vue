@@ -16,6 +16,10 @@ export default {
       required: false,
       default: '',
     },
+    invalidApproversRules: {
+      type: Array,
+      required: true,
+    },
     projectPath: {
       type: String,
       required: true,
@@ -34,6 +38,7 @@ export default {
     data-testid="approvals-footer"
   >
     <approvals-list
+      :invalid-approvers-rules="invalidApproversRules"
       :security-approvals-help-page-path="securityApprovalsHelpPagePath"
       :eligible-approvers-docs-path="eligibleApproversDocsPath"
       :project-path="projectPath"

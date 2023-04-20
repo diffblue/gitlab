@@ -24,15 +24,7 @@ jest.mock('~/alert', () => ({
   })),
 }));
 
-const INVALID_TEST_RULE = {
-  id: 1,
-  type: 'REPORT_APPROVER',
-  approved: true,
-  approvalsRequired: 1,
-  name: 'test_rule',
-  invalid: true,
-  allowMergeWhenInvalid: true,
-};
+const RULE_NAME = 'first_rule';
 const TEST_HELP_PATH = 'help/path';
 const TEST_PASSWORD = 'password';
 const testApprovedBy = () => [1, 7, 10].map((id) => ({ id }));
@@ -228,38 +220,52 @@ describe('MRWidget approvals', () => {
     });
 
     describe('when invalid rules are present', () => {
-      it.each`
-        allowMergeWhenInvalidList | expectedText
-        ${[true]}                 | ${'1 invalid rule has been approved automatically.'}
-        ${[true, true]}           | ${'2 invalid rules have been approved automatically.'}
-        ${[false]}                | ${"1 rule can't be approved."}
-        ${[false, false]}         | ${"2 rules can't be approved."}
-        ${[true, true, false]}    | ${"1 rule can't be approved, 2 invalid rules have been approved automatically."}
-        ${[true, false, false]}   | ${"2 rules can't be approved, 1 invalid rule has been approved automatically."}
-      `(
-        'renders related components ($allowMergeWhenInvalid, $expectedText)',
-        async ({ allowMergeWhenInvalidList, expectedText }) => {
-          const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
-          response.data.project.mergeRequest.approvalState.rules = allowMergeWhenInvalidList.map(
-            (allowMergeWhenInvalid, idx) => ({
-              ...INVALID_TEST_RULE,
-              id: idx,
-              allowMergeWhenInvalid,
-            }),
-          );
-          createComponent({}, response);
+      beforeEach(async () => {
+        const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+        response.data.project.mergeRequest.approvalState.invalidApproversRules = [
+          { id: 1, name: RULE_NAME },
+        ];
+        createComponent({}, response);
 
-          await waitForPromises();
+        await waitForPromises();
+      });
 
-          const invalidRules = findInvalidRules();
+      it('renders related components', () => {
+        const invalidRules = findInvalidRules();
 
-          expect(invalidRules.exists()).toBe(true);
+        expect(invalidRules.exists()).toBe(true);
 
-          const invalidRulesText = invalidRules.text();
+        const invalidRulesText = invalidRules.text();
 
-          expect(invalidRulesText).toContain(expectedText);
-        },
-      );
+        expect(invalidRulesText).toContain(
+          '1 invalid rule has been approved automatically, as no one can approve it.',
+        );
+      });
+    });
+
+    describe('when multiple invalid rules are present', () => {
+      beforeEach(async () => {
+        const response = JSON.parse(JSON.stringify(approvedByCurrentUser));
+        response.data.project.mergeRequest.approvalState.invalidApproversRules = [
+          { id: 1, name: RULE_NAME },
+          { id: 2, name: RULE_NAME },
+        ];
+        createComponent({}, response);
+
+        await waitForPromises();
+      });
+
+      it('renders related components', () => {
+        const invalidRules = findInvalidRules();
+
+        expect(invalidRules.exists()).toBe(true);
+
+        const invalidRulesText = invalidRules.text();
+
+        expect(invalidRulesText).toContain(
+          '2 invalid rules have been approved automatically, as no one can approve them.',
+        );
+      });
     });
   });
 });
