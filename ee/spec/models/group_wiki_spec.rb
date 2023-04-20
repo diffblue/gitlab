@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupWiki do
+RSpec.describe GroupWiki, feature_category: :wiki do
   it_behaves_like 'wiki model' do
     let(:wiki_container) { create(:group, :wiki_repo) }
     let(:wiki_container_without_repo) { create(:group) }
