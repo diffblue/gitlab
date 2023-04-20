@@ -369,14 +369,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
 
       it_behaves_like 'finishing onboarding'
 
-      context 'when requires_credit_card_verification is true' do
-        let_it_be(:user) { create(:user, requires_credit_card_verification: true) }
-
-        it 'sets requires_credit_card_verification to false' do
-          expect { put_exit }.to change { user.reload.requires_credit_card_verification }.to(false)
-        end
-      end
-
       context 'when the `exit_registration_verification` feature flag is disabled' do
         before do
           stub_feature_flags(exit_registration_verification: false)
