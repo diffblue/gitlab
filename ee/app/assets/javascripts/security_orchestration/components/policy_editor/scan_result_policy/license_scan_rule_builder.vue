@@ -4,16 +4,25 @@ import { sprintf, s__ } from '~/locale';
 import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
+import ScanTypeSelect from './base_layout/scan_type_select.vue';
+import StatusFilter from './scan_filters/status_filter.vue';
+import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
-import { EXCEPT, LICENSE_STATES, MATCHING } from './lib/rules';
+import { EXCEPT, getDefaultRule, LICENSE_STATES, MATCHING } from './lib/rules';
+import { FILTERS, FILTERS_STATUS_INDEX, STATUS } from './scan_filters/constants';
 
 export default {
+  FILTERS_ITEMS: [FILTERS[FILTERS_STATUS_INDEX]],
+  STATUS,
   components: {
     BaseLayoutComponent,
     GlSprintf,
     GlCollapsibleListbox,
     PolicyRuleBranchSelection,
     PolicyRuleMultiSelect,
+    ScanFilterSelector,
+    ScanTypeSelect,
+    StatusFilter,
   },
   inject: ['softwareLicenses'],
   props: {
@@ -28,11 +37,14 @@ export default {
     },
   },
   i18n: {
-    licenseStates: s__('ScanResultPolicy|license states'),
+    licenseStatuses: s__('ScanResultPolicy|license status'),
     matchTypeToggleText: s__('ScanResultPolicy|matching type'),
     licenseType: s__('ScanResultPolicy|license type'),
     licenseScanResultRuleCopy: s__(
-      'ScanResultPolicy|finds any license %{matchType} %{licenseType} and is %{licenseStates} in an open merge request targeting %{branches}',
+      'ScanResultPolicy|When %{scanType} find any license %{matchType} %{licenseType} in an open merge request targeting the %{branches} and the licences match all of the following criteria',
+    ),
+    tooltipFilterDisabledTitle: s__(
+      'ScanResultPolicy|License scanning allows only one criteria: Status',
     ),
   },
   matchTypeOptions: [
@@ -45,9 +57,12 @@ export default {
       text: EXCEPT,
     },
   ],
-  licenseStates: LICENSE_STATES,
+  licenseStatuses: LICENSE_STATES,
   data() {
-    return { searchTerm: '' };
+    return {
+      addedFilters: [],
+      searchTerm: '',
+    };
   },
   computed: {
     toggleText() {
@@ -79,7 +94,7 @@ export default {
         this.triggerChanged({ match_on_inclusion: parseBoolean(value) });
       },
     },
-    licenseStates: {
+    licenseStatuses: {
       get() {
         return this.initRule.license_states;
       },
@@ -117,58 +132,82 @@ export default {
     filterList(searchTerm) {
       this.searchTerm = searchTerm;
     },
+    setScanType(value) {
+      const rule = getDefaultRule(value);
+      this.$emit('changed', rule);
+    },
   },
 };
 </script>
 
 <template>
-  <base-layout-component
-    :type="initRule.type"
-    :rule-label="ruleLabel"
-    :show-scan-type-dropdown="true"
-    @changed="$emit('changed', $event)"
-    @remove="$emit('remove')"
-  >
-    <template #content>
-      <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
-        <template #matchType>
-          <gl-collapsible-listbox
-            id="matchType"
-            v-model="matchType"
-            class="gl-display-inline! gl-w-auto gl-vertical-align-middle"
-            :items="$options.matchTypeOptions"
-            :toggle-text="matchTypeToggleText"
-            data-testid="match-type-select"
-          />
-        </template>
+  <div>
+    <base-layout-component
+      class="gl-pb-0"
+      :type="initRule.type"
+      :show-scan-type-dropdown="false"
+      :show-remove-button="false"
+    >
+      <template #content>
+        <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
+          <template #content>
+            <gl-sprintf :message="$options.i18n.licenseScanResultRuleCopy">
+              <template #scanType>
+                <scan-type-select :scan-type="initRule.type" @select="setScanType" />
+              </template>
+              <template #matchType>
+                <gl-collapsible-listbox
+                  id="matchType"
+                  v-model="matchType"
+                  class="gl-display-inline! gl-w-auto gl-vertical-align-middle"
+                  :items="$options.matchTypeOptions"
+                  :toggle-text="matchTypeToggleText"
+                  data-testid="match-type-select"
+                />
+              </template>
 
-        <template #licenseStates>
+              <template #licenseType>
+                <gl-collapsible-listbox
+                  v-model="licenseTypes"
+                  class="gl-vertical-align-middle gl-display-inline!"
+                  :items="filteredLicenses"
+                  :toggle-text="toggleText"
+                  searchable
+                  multiple
+                  data-testid="license-multi-select"
+                  @search="filterList"
+                />
+              </template>
+
+              <template #branches>
+                <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged" />
+              </template>
+            </gl-sprintf>
+          </template>
+        </base-layout-component>
+      </template>
+    </base-layout-component>
+
+    <base-layout-component class="gl-pt-3" :show-remove-button="false">
+      <template #content>
+        <status-filter :selected="licenseTypes" :show-remove-button="false" class="gl-bg-white!">
           <policy-rule-multi-select
-            v-model="licenseStates"
+            v-model="licenseStatuses"
             class="gl-display-inline! gl-vertical-align-middle"
-            :item-type-name="$options.i18n.licenseStates"
-            :items="$options.licenseStates"
+            :item-type-name="$options.i18n.licenseStatuses"
+            :items="$options.licenseStatuses"
             data-testid="license-state-select"
           />
-        </template>
+        </status-filter>
 
-        <template #licenseType>
-          <gl-collapsible-listbox
-            v-model="licenseTypes"
-            class="gl-vertical-align-middle gl-display-inline!"
-            :items="filteredLicenses"
-            :toggle-text="toggleText"
-            searchable
-            multiple
-            data-testid="license-multi-select"
-            @search="filterList"
-          />
-        </template>
-
-        <template #branches>
-          <policy-rule-branch-selection :init-rule="initRule" @changed="triggerChanged" />
-        </template>
-      </gl-sprintf>
-    </template>
-  </base-layout-component>
+        <scan-filter-selector
+          :disabled="true"
+          :tooltip-title="$options.i18n.tooltipFilterDisabledTitle"
+          class="gl-bg-white! gl-w-full"
+          :items="$options.FILTERS_ITEMS"
+          :selected="addedFilters"
+        />
+      </template>
+    </base-layout-component>
+  </div>
 </template>

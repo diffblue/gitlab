@@ -22,6 +22,11 @@ export default {
       required: false,
       default: () => [],
     },
+    showRemoveButton: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -45,6 +50,7 @@ export default {
     class="gl-w-full"
     content-class="gl-bg-white gl-rounded-base gl-p-5"
     :show-label="false"
+    :show-remove-button="showRemoveButton"
     @remove="remove"
   >
     <template #selector>

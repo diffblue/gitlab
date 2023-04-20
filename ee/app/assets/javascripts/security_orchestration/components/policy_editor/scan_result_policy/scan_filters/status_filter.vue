@@ -23,6 +23,11 @@ export default {
       required: false,
       default: () => [],
     },
+    showRemoveButton: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   data() {
     return {
@@ -46,17 +51,20 @@ export default {
     class="gl-w-full"
     content-class="gl-bg-white gl-rounded-base gl-p-5"
     :show-label="false"
+    :show-remove-button="showRemoveButton"
     @remove="remove"
   >
     <template #selector>
       <label class="gl-mb-0 gl-mr-4" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
-      <policy-rule-multi-select
-        v-model="vulnerabilityStates"
-        :item-type-name="$options.i18n.vulnerabilityStates"
-        :items="$options.APPROVAL_VULNERABILITY_STATES"
-        data-testid="vulnerability-states-select"
-        @input="selectVulnerabilityStates"
-      />
+      <slot>
+        <policy-rule-multi-select
+          v-model="vulnerabilityStates"
+          :item-type-name="$options.i18n.vulnerabilityStates"
+          :items="$options.APPROVAL_VULNERABILITY_STATES"
+          data-testid="vulnerability-states-select"
+          @input="selectVulnerabilityStates"
+        />
+      </slot>
     </template>
   </base-layout-component>
 </template>

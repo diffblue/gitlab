@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlCollapsibleListbox, GlBadge, GlTooltipDirective } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlBadge, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { FILTERS, TOOLTIPS } from './constants';
@@ -18,15 +18,34 @@ export default {
   },
   components: {
     BaseLayoutComponent,
-    GlButton,
     GlCollapsibleListbox,
     GlBadge,
   },
   props: {
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     selected: {
       type: Array,
       required: false,
       default: () => [],
+    },
+    items: {
+      type: Array,
+      required: false,
+      default: undefined,
+    },
+    tooltipTitle: {
+      type: String,
+      required: false,
+      default: '',
+    },
+  },
+  computed: {
+    listBoxItems() {
+      return this.items || this.$options.FILTERS;
     },
   },
   methods: {
@@ -48,15 +67,17 @@ export default {
   <base-layout-component :show-label="false" :show-remove-button="false">
     <template #content>
       <gl-collapsible-listbox
+        v-gl-tooltip.right.viewport
+        :disabled="disabled"
         :header-text="$options.i18n.headerText"
-        :items="$options.FILTERS"
+        :items="listBoxItems"
+        :toggle-text="$options.i18n.buttonText"
+        :title="tooltipTitle"
+        data-testid="add-rule"
+        selected="selected"
+        variant="link"
         @select="selectFilter"
       >
-        <template #toggle>
-          <gl-button variant="link" data-testid="add-rule">
-            {{ $options.i18n.buttonText }}
-          </gl-button>
-        </template>
         <template #list-item="{ item }">
           <div class="gl-display-flex">
             <span :id="item.value" :class="{ 'gl-text-gray-500': filterSelected(item.value) }">
