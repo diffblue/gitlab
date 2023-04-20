@@ -2831,6 +2831,9 @@ msgstr ""
 msgid "Admin Notifications"
 msgstr ""
 
+msgid "Admin message"
+msgstr ""
+
 msgid "Admin mode already enabled"
 msgstr ""
 
