@@ -70,7 +70,7 @@ export default {
   <aside
     v-if="!forceHiddenCodeExplanation"
     class="markdown-code-block gl-fixed gl-top-half gl-right-0 gl-bg-white gl-w-40p gl-rounded-top-left-base gl-rounded-bottom-left-base gl-border gl-border-r-none gl-font-sm gl-max-h-full gl-overflow-y-auto"
-    style="transform: translate(0px, -50%)"
+    style="transform: translate(0px, -50%); max-width: 400px; min-width: 250px"
     role="complementary"
     data-testid="chat-component"
   >
