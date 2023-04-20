@@ -46433,6 +46433,9 @@ msgstr ""
 msgid "Toggle the Performance Bar"
 msgstr ""
 
+msgid "Toggle the navigation sidebar"
+msgstr ""
+
 msgid "Toggled :%{name}: emoji award."
 msgstr ""
 
