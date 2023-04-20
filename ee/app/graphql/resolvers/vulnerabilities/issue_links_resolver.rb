@@ -20,10 +20,16 @@ module Resolvers
       end
 
       def resolve(link_type: nil, **)
+        return lazy_resolve_issue_links(link_type) if use_lazy_loader?
+
         issue_links_by_link_type(link_type)
       end
 
       private
+
+      def lazy_resolve_issue_links(link_type)
+        Gitlab::Graphql::Loaders::Vulnerabilities::IssueLinksLoader.new(context, object, link_type: link_type)
+      end
 
       def issue_links_by_link_type(link_type)
         case link_type.to_s.downcase
@@ -43,6 +49,10 @@ module Resolvers
         else
           args[:link_type].nil?
         end
+      end
+
+      def use_lazy_loader?
+        Feature.enabled?(:use_lazy_issue_links_loader, object.project)
       end
     end
   end

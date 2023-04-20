@@ -67,6 +67,44 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
     end
   end
 
+  describe 'loading issue links in batch' do
+    before do
+      create(:vulnerability, :with_finding, project: project)
+    end
+
+    it 'does not cause N+1 query issue' do
+      query_issue_links # Calling this the first time issues more queries
+
+      # 1) Select personal access tokens
+      # 2) Savepoint
+      # 3) Insert into personal access tokens
+      # 4) Release savepoint
+      # 5) Select personal access tokens
+      # 6) Select geo nodes
+      # 7) Update personal access tokens(last used at)
+      # 8) Select user
+      # 9) Authorization check
+      # 10) Select vulnerability_reads
+      # 11) Select vulnerabilities
+      # 12) Select project
+      # 13) Select route
+      # 14) Select vulnerability occurrences
+      # 15) Select vulnerability scanners
+      # 16) Select vulnerability identifiers join table
+      # 17) Select vulnerability identifiers
+      # 18) Select issue links (This is redundant and will be removed with the `use_lazy_issue_links_loader` FF rollout)
+      # 19) Select issues (This is redundant and will be removed with the `use_lazy_issue_links_loader` FF rollout)
+      # 20) Select namespace
+      # 21) Authorization check
+      # 22) Select issue links
+      # 23) Select issues
+      # 24) Select issue project
+      # 25) Select issue user
+      # 26) Select project features
+      expect { query_issue_links }.not_to exceed_query_limit(26)
+    end
+  end
+
   def query_issue_links(link_type = nil)
     query = graphql_query_for('vulnerabilities', {}, query_graphql_field('nodes', {}, create_fields(link_type)))
     post_graphql(query, current_user: user)
