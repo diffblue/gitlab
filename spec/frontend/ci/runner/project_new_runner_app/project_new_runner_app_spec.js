@@ -5,21 +5,14 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 
-import GroupRunnerRunnerApp from '~/ci/runner/group_new_runner/group_new_runner_app.vue';
-import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
+import ProjectRunnerRunnerApp from '~/ci/runner/project_new_runner/project_new_runner_app.vue';
 import RunnerInstructionsModal from '~/vue_shared/components/runner_instructions/runner_instructions_modal.vue';
 import RunnerPlatformsRadioGroup from '~/ci/runner/components/runner_platforms_radio_group.vue';
-import {
-  PARAM_KEY_PLATFORM,
-  GROUP_TYPE,
-  DEFAULT_PLATFORM,
-  WINDOWS_PLATFORM,
-} from '~/ci/runner/constants';
+import { PROJECT_TYPE, DEFAULT_PLATFORM } from '~/ci/runner/constants';
 import RunnerCreateForm from '~/ci/runner/components/runner_create_form.vue';
-import { redirectTo } from '~/lib/utils/url_utility';
 import { runnerCreateResult, mockRegistrationToken } from '../mock_data';
 
-const mockGroupId = 'gid://gitlab/Group/72';
+const mockProjectId = 'gid://gitlab/Project/72';
 
 jest.mock('~/ci/runner/local_storage_alert/save_alert_to_local_storage');
 jest.mock('~/alert');
@@ -30,7 +23,7 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 const mockCreatedRunner = runnerCreateResult.data.runnerCreate.runner;
 
-describe('GroupRunnerRunnerApp', () => {
+describe('ProjectRunnerRunnerApp', () => {
   let wrapper;
 
   const findLegacyInstructionsLink = () => wrapper.findByTestId('legacy-instructions-link');
@@ -39,9 +32,9 @@ describe('GroupRunnerRunnerApp', () => {
   const findRunnerCreateForm = () => wrapper.findComponent(RunnerCreateForm);
 
   const createComponent = () => {
-    wrapper = shallowMountExtended(GroupRunnerRunnerApp, {
+    wrapper = shallowMountExtended(ProjectRunnerRunnerApp, {
       propsData: {
-        groupId: mockGroupId,
+        projectId: mockProjectId,
         legacyRegistrationToken: mockRegistrationToken,
       },
       directives: {
@@ -80,9 +73,9 @@ describe('GroupRunnerRunnerApp', () => {
   describe('Runner form', () => {
     it('shows the runner create form for an instance runner', () => {
       expect(findRunnerCreateForm().props()).toEqual({
-        runnerType: GROUP_TYPE,
-        groupId: mockGroupId,
-        projectId: null,
+        runnerType: PROJECT_TYPE,
+        projectId: mockProjectId,
+        groupId: null,
       });
     });
 
@@ -91,30 +84,11 @@ describe('GroupRunnerRunnerApp', () => {
         findRunnerCreateForm().vm.$emit('saved', mockCreatedRunner);
       });
 
-      it('pushes an alert to be shown after redirection', () => {
-        expect(saveAlertToLocalStorage).toHaveBeenCalledWith({
+      it('shows an alert', () => {
+        expect(createAlert).toHaveBeenCalledWith({
           message: s__('Runners|Runner created.'),
           variant: VARIANT_SUCCESS,
         });
-      });
-
-      it('redirects to the registration page', () => {
-        const url = `${mockCreatedRunner.ephemeralRegisterUrl}?${PARAM_KEY_PLATFORM}=${DEFAULT_PLATFORM}`;
-
-        expect(redirectTo).toHaveBeenCalledWith(url);
-      });
-    });
-
-    describe('When another platform is selected and a runner is saved', () => {
-      beforeEach(() => {
-        findRunnerPlatformsRadioGroup().vm.$emit('input', WINDOWS_PLATFORM);
-        findRunnerCreateForm().vm.$emit('saved', mockCreatedRunner);
-      });
-
-      it('redirects to the registration page with the platform', () => {
-        const url = `${mockCreatedRunner.ephemeralRegisterUrl}?${PARAM_KEY_PLATFORM}=${WINDOWS_PLATFORM}`;
-
-        expect(redirectTo).toHaveBeenCalledWith(url);
       });
     });
 
