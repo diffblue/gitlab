@@ -44,7 +44,7 @@ describe('SubscriptionTable component', () => {
     props = {},
     provide = {},
     state = {},
-    apolloMock = { subscription: { canAddSeats: true, inRenewalPeriod: true } },
+    apolloMock = { subscription: { canAddSeats: true, canRenew: true } },
   } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
@@ -220,14 +220,14 @@ describe('SubscriptionTable component', () => {
 
   describe('Renew button', () => {
     describe.each`
-      planCode    | inRenewalPeriod | expected | testDescription
-      ${'silver'} | ${true}         | ${true}  | ${'renders the button'}
-      ${'silver'} | ${false}        | ${false} | ${'does not render the button'}
-      ${null}     | ${true}         | ${false} | ${'does not render the button'}
-      ${'free'}   | ${true}         | ${false} | ${'does not render the button'}
+      planCode    | canRenew | expected | testDescription
+      ${'silver'} | ${true}  | ${true}  | ${'renders the button'}
+      ${'silver'} | ${false} | ${false} | ${'does not render the button'}
+      ${null}     | ${true}  | ${false} | ${'does not render the button'}
+      ${'free'}   | ${true}  | ${false} | ${'does not render the button'}
     `(
-      'given a plan with state: planCode = $planCode, inRenewalPeriod = $inRenewalPeriod',
-      ({ planCode, inRenewalPeriod, expected, testDescription }) => {
+      'given a plan with state: planCode = $planCode, canRenew = $canRenew',
+      ({ planCode, canRenew, expected, testDescription }) => {
         beforeEach(async () => {
           await createComponentWithStore({
             state: {
@@ -236,7 +236,7 @@ describe('SubscriptionTable component', () => {
                 code: planCode,
               },
             },
-            apolloMock: { subscription: { canAddSeats: true, inRenewalPeriod } },
+            apolloMock: { subscription: { canAddSeats: true, canRenew } },
           });
         });
 
@@ -266,7 +266,7 @@ describe('SubscriptionTable component', () => {
                 upgradable: true,
               },
             },
-            apolloMock: { subscription: { canAddSeats, inRenewalPeriod: true } },
+            apolloMock: { subscription: { canAddSeats, canRenew: true } },
           });
 
           await waitForPromises();
