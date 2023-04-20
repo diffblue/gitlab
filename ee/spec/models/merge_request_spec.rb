@@ -1119,6 +1119,44 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
+  describe '#use_merge_base_pipeline_for_comparison?' do
+    let(:merge_request) { create(:merge_request, :with_codequality_reports, source_project: project) }
+
+    subject { merge_request.use_merge_base_pipeline_for_comparison?(service_class) }
+
+    context 'when service class is Ci::CompareMetricsReportsService' do
+      let(:service_class) { ::Ci::CompareMetricsReportsService }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when service class is Ci::CompareCodequalityReportsService' do
+      let(:service_class) { ::Ci::CompareCodequalityReportsService }
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when service class is Ci::CompareSecurityReportsService' do
+      let(:service_class) { ::Ci::CompareSecurityReportsService }
+
+      it { is_expected.to eq(true) }
+
+      context 'when use_merge_base_for_security_widget feature flag is off' do
+        before do
+          stub_feature_flags(use_merge_base_for_security_widget: false)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when service class is different' do
+      let(:service_class) { ::Ci::GenerateCoverageReportsService }
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe '#approver_group_ids=' do
     it 'create approver_groups' do
       group = create :group
