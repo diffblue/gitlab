@@ -37,43 +37,45 @@ jest.mock('~/lib/utils/url_utility', () => ({
 
 Vue.use(Vuex);
 
-const createComponent = ({
-  presetType = PRESET_TYPES.MONTHS,
-  epicsState = STATUS_ALL,
-  sortedBy = mockSortedBy,
-  groupFullPath = 'gitlab-org',
-  groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
-  timeframe = getTimeframeForRangeType({
-    timeframeRangeType: DATE_RANGES.THREE_YEARS,
-    presetType: PRESET_TYPES.MONTHS,
-    initialDate: mockTimeframeInitialDate,
-  }),
-  filterParams = {},
-} = {}) => {
-  const store = createStore();
-
-  store.dispatch('setInitialData', {
-    presetType,
-    epicsState,
-    sortedBy,
-    filterParams,
-    timeframe,
-    isProgressTrackingActive: true,
-    progressTracking: PROGRESS_WEIGHT,
-    milestonesType: MILESTONES_ALL,
-  });
-
-  return shallowMountExtended(RoadmapFilters, {
-    store,
-    provide: {
-      groupFullPath,
-      groupMilestonesPath,
-    },
-  });
-};
-
 describe('RoadmapFilters', () => {
   let wrapper;
+  let store;
+
+  const createComponent = ({
+    presetType = PRESET_TYPES.MONTHS,
+    epicsState = STATUS_ALL,
+    sortedBy = mockSortedBy,
+    groupFullPath = 'gitlab-org',
+    groupMilestonesPath = '/groups/gitlab-org/-/milestones.json',
+    timeframe = getTimeframeForRangeType({
+      timeframeRangeType: DATE_RANGES.THREE_YEARS,
+      presetType: PRESET_TYPES.MONTHS,
+      initialDate: mockTimeframeInitialDate,
+    }),
+    filterParams = {},
+  } = {}) => {
+    store = createStore();
+
+    store.dispatch('setInitialData', {
+      presetType,
+      epicsState,
+      sortedBy,
+      filterParams,
+      timeframe,
+      isProgressTrackingActive: true,
+      progressTracking: PROGRESS_WEIGHT,
+      milestonesType: MILESTONES_ALL,
+    });
+
+    return shallowMountExtended(RoadmapFilters, {
+      store,
+      provide: {
+        groupFullPath,
+        groupMilestonesPath,
+      },
+    });
+  };
+
   const findSettingsButton = () => wrapper.findByTestId('settings-button');
 
   beforeEach(() => {
@@ -83,15 +85,15 @@ describe('RoadmapFilters', () => {
   describe('watch', () => {
     describe('urlParams', () => {
       it('updates window URL based on presence of props for state, filtered search and sort criteria', async () => {
-        wrapper.vm.$store.dispatch('setEpicsState', STATUS_CLOSED);
-        wrapper.vm.$store.dispatch('setFilterParams', {
+        store.dispatch('setEpicsState', STATUS_CLOSED);
+        store.dispatch('setFilterParams', {
           authorUsername: 'root',
           labelName: ['Bug'],
           milestoneTitle: '4.0',
           confidential: true,
         });
-        wrapper.vm.$store.dispatch('setSortedBy', 'end_date_asc');
-        wrapper.vm.$store.dispatch('setDaterange', {
+        store.dispatch('setSortedBy', 'end_date_asc');
+        store.dispatch('setDaterange', {
           timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
           presetType: PRESET_TYPES.MONTHS,
         });
@@ -196,7 +198,7 @@ describe('RoadmapFilters', () => {
       });
 
       it('has initialFilterValue prop set to array of formatted values based on `filterParams`', async () => {
-        wrapper.vm.$store.dispatch('setFilterParams', {
+        store.dispatch('setFilterParams', {
           authorUsername: 'root',
           labelName: ['Bug'],
           milestoneTitle: '4.0',
@@ -212,8 +214,7 @@ describe('RoadmapFilters', () => {
       });
 
       it('fetches filtered epics when `onFilter` event is emitted', async () => {
-        jest.spyOn(wrapper.vm, 'setFilterParams');
-        jest.spyOn(wrapper.vm, 'fetchEpics');
+        jest.spyOn(store, 'dispatch');
 
         await nextTick();
 
@@ -221,7 +222,7 @@ describe('RoadmapFilters', () => {
 
         await nextTick();
 
-        expect(wrapper.vm.setFilterParams).toHaveBeenCalledWith({
+        expect(store.dispatch).toHaveBeenCalledWith('setFilterParams', {
           authorUsername: 'root',
           labelName: ['Bug'],
           milestoneTitle: '4.0',
@@ -230,12 +231,11 @@ describe('RoadmapFilters', () => {
           'not[labelName]': ['Feature'],
           'not[myReactionEmoji]': 'thumbs_up',
         });
-        expect(wrapper.vm.fetchEpics).toHaveBeenCalled();
+        expect(store.dispatch).toHaveBeenCalledWith('fetchEpics');
       });
 
       it('fetches epics with updated sort order when `onSort` event is emitted', async () => {
-        jest.spyOn(wrapper.vm, 'setSortedBy');
-        jest.spyOn(wrapper.vm, 'fetchEpics');
+        jest.spyOn(store, 'dispatch');
 
         await nextTick();
 
@@ -243,20 +243,19 @@ describe('RoadmapFilters', () => {
 
         await nextTick();
 
-        expect(wrapper.vm.setSortedBy).toHaveBeenCalledWith('end_date_asc');
-        expect(wrapper.vm.fetchEpics).toHaveBeenCalled();
+        expect(store.dispatch).toHaveBeenCalledWith('setSortedBy', 'end_date_asc');
+        expect(store.dispatch).toHaveBeenCalledWith('fetchEpics');
       });
 
       it('does not set filters params or fetch epics when onFilter event is triggered with empty filters array and cleared param set to false', async () => {
-        jest.spyOn(wrapper.vm, 'setFilterParams');
-        jest.spyOn(wrapper.vm, 'fetchEpics');
+        jest.spyOn(store, 'dispatch');
 
         filteredSearchBar.vm.$emit('onFilter', [], false);
 
         await nextTick();
 
-        expect(wrapper.vm.setFilterParams).not.toHaveBeenCalled();
-        expect(wrapper.vm.fetchEpics).not.toHaveBeenCalled();
+        expect(store.dispatch).not.toHaveBeenCalledWith('setFilterParams');
+        expect(store.dispatch).not.toHaveBeenCalledWith('fetchEpics');
       });
 
       describe('when user is logged in', () => {
