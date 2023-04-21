@@ -30,12 +30,6 @@ module QA
           end
         end
 
-        def remove_all_projects
-          remove_project_buttons.each do |button|
-            button.click
-          end
-        end
-
         def has_project_card?
           has_element? :dashboard_project_card
         end

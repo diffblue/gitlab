@@ -44,14 +44,11 @@ module QA
       before do
         Flow::Login.sign_in
         setup_projects
-        Page::Main::Menu.perform do |menu|
-          menu.go_to_menu_dropdown_option(:operations_link)
-        end
+        Page::Main::Menu.perform(&:go_to_operations)
       end
 
       after do
         runner.remove_via_api!
-        remove_projects
       end
 
       it 'has many pipelines with appropriate statuses',
@@ -109,10 +106,6 @@ module QA
             expect(operation).to have_project_card
           end
         end
-      end
-
-      def remove_projects
-        EE::Page::OperationsDashboard.perform(&:remove_all_projects)
       end
 
       def ci_file_with_tag

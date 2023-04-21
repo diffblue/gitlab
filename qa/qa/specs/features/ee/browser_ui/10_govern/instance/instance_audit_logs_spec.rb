@@ -8,7 +8,7 @@ module QA
         sign_in
 
         Page::Main::Menu.perform(&:go_to_admin_area)
-        QA::Page::Admin::Menu.perform(&:go_to_monitoring_audit_logs)
+        QA::Page::Admin::Menu.perform(&:go_to_monitoring_audit_events)
         EE::Page::Admin::Monitoring::AuditLog.perform do |audit_log_page|
           expected_events.each do |expected_event|
             expect(audit_log_page).to have_audit_log_table_with_text(expected_event)
@@ -61,7 +61,7 @@ module QA
       end
 
       context 'for add and delete email',
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
         before do
           sign_in
 
@@ -83,7 +83,7 @@ module QA
       end
 
       context 'for change password', :skip_signup_disabled,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
         before do
           user = Resource::User.fabricate_via_api! do |user|
             user.username = "user_#{SecureRandom.hex(4)}"
@@ -107,7 +107,7 @@ module QA
       end
 
       context 'for start and stop user impersonation',
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
         let!(:user_for_impersonation) { Resource::User.fabricate_via_api! }
 
         before do
