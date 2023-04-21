@@ -73,7 +73,7 @@ export default {
         this.error = e.message || this.$options.i18n.fetchError;
       },
       async result() {
-        const { id, iid } = this.childUrlParams;
+        const { id, iid } = this.childUrlParams();
         this.activeChild = this.fetchByIid
           ? this.children.find((child) => child.iid === iid) ?? {}
           : this.children.find((child) => child.id === id) ?? {};
@@ -145,6 +145,13 @@ export default {
     fetchByIid() {
       return parseBoolean(getParameterByName('iid_path'));
     },
+  },
+  mounted() {
+    if (!isEmpty(this.childUrlParams())) {
+      this.addWorkItemQuery(this.childUrlParams());
+    }
+  },
+  methods: {
     childUrlParams() {
       const params = {};
       if (this.fetchByIid) {
@@ -160,13 +167,6 @@ export default {
       }
       return params;
     },
-  },
-  mounted() {
-    if (!isEmpty(this.childUrlParams)) {
-      this.addWorkItemQuery(this.childUrlParams);
-    }
-  },
-  methods: {
     showAddForm(formType) {
       this.$refs.wrapper.show();
       this.isShownAddForm = true;
