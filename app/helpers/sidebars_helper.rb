@@ -359,7 +359,7 @@ module SidebarsHelper
       }
     ]
 
-    if project && can?(user, :create_issue, project)
+    if project&.persisted? && can?(user, :create_issue, project)
       shortcut_links << {
         title: _('Create a new issue'),
         href: new_project_issue_path(project),
