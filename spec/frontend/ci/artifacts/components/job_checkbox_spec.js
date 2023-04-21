@@ -2,6 +2,7 @@ import { GlFormCheckbox } from '@gitlab/ui';
 import mockGetJobArtifactsResponse from 'test_fixtures/graphql/ci/artifacts/graphql/queries/get_job_artifacts.query.graphql.json';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import JobCheckbox from '~/ci/artifacts/components/job_checkbox.vue';
+import { I18N_BULK_DELETE_MAX_SELECTED } from '~/ci/artifacts/constants';
 
 describe('JobCheckbox component', () => {
   let wrapper;
@@ -76,8 +77,10 @@ describe('JobCheckbox component', () => {
       createComponent({ selectedArtifacts: [] });
     });
 
-    it('is not checked', () => {
+    it('is enabled and not checked', () => {
       expect(findCheckbox().attributes('checked')).toBeUndefined();
+      expect(findCheckbox().attributes('disabled')).toBeUndefined();
+      expect(findCheckbox().attributes('title')).toBe('');
     });
 
     it('selects the artifacts on click', () => {
@@ -90,6 +93,7 @@ describe('JobCheckbox component', () => {
       createComponent({ selectedArtifacts: [], isSelectedArtifactsLimitReached: true });
 
       expect(findCheckbox().attributes('disabled')).toBe('true');
+      expect(findCheckbox().attributes('title')).toBe(I18N_BULK_DELETE_MAX_SELECTED);
     });
   });
 });

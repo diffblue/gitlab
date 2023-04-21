@@ -4,7 +4,7 @@ import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ArtifactRow from '~/ci/artifacts/components/artifact_row.vue';
-import { BULK_DELETE_FEATURE_FLAG } from '~/ci/artifacts/constants';
+import { BULK_DELETE_FEATURE_FLAG, I18N_BULK_DELETE_MAX_SELECTED } from '~/ci/artifacts/constants';
 
 describe('ArtifactRow component', () => {
   let wrapper;
@@ -97,6 +97,7 @@ describe('ArtifactRow component', () => {
           });
 
           expect(findCheckbox().attributes('disabled')).toBeUndefined();
+          expect(findCheckbox().attributes('title')).toBe('');
         });
 
         it('is disabled if the artifact was not selected', () => {
@@ -106,6 +107,7 @@ describe('ArtifactRow component', () => {
           });
 
           expect(findCheckbox().attributes('disabled')).toBe('true');
+          expect(findCheckbox().attributes('title')).toBe(I18N_BULK_DELETE_MAX_SELECTED);
         });
       });
     });

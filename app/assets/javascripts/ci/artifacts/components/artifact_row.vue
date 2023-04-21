@@ -1,8 +1,21 @@
 <script>
-import { GlButtonGroup, GlButton, GlBadge, GlFriendlyWrap, GlFormCheckbox } from '@gitlab/ui';
+import {
+  GlButtonGroup,
+  GlButton,
+  GlBadge,
+  GlFriendlyWrap,
+  GlFormCheckbox,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { I18N_EXPIRED, I18N_DOWNLOAD, I18N_DELETE, BULK_DELETE_FEATURE_FLAG } from '../constants';
+import {
+  I18N_EXPIRED,
+  I18N_DOWNLOAD,
+  I18N_DELETE,
+  BULK_DELETE_FEATURE_FLAG,
+  I18N_BULK_DELETE_MAX_SELECTED,
+} from '../constants';
 
 export default {
   name: 'ArtifactRow',
@@ -12,6 +25,9 @@ export default {
     GlBadge,
     GlFriendlyWrap,
     GlFormCheckbox,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['canDestroyArtifacts'],
@@ -39,6 +55,12 @@ export default {
         return false;
       }
       return Date.now() > new Date(this.artifact.expireAt).getTime();
+    },
+    isCheckboxDisabled() {
+      return this.isSelectedArtifactsLimitReached && !this.isSelected;
+    },
+    checkboxTooltip() {
+      return this.isCheckboxDisabled ? I18N_BULK_DELETE_MAX_SELECTED : '';
     },
     artifactSize() {
       return numberToHumanSize(this.artifact.size);
@@ -69,8 +91,10 @@ export default {
     <div class="gl-display-inline-flex gl-align-items-center gl-w-full">
       <span v-if="canBulkDestroyArtifacts" class="gl-pl-5">
         <gl-form-checkbox
+          v-gl-tooltip.right
+          :title="checkboxTooltip"
           :checked="isSelected"
-          :disabled="isSelectedArtifactsLimitReached && !isSelected"
+          :disabled="isCheckboxDisabled"
           @input="handleInput"
         />
       </span>

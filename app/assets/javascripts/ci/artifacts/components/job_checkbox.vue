@@ -1,10 +1,14 @@
 <script>
-import { GlFormCheckbox } from '@gitlab/ui';
+import { GlFormCheckbox, GlTooltipDirective } from '@gitlab/ui';
+import { I18N_BULK_DELETE_MAX_SELECTED } from '~/ci/artifacts/constants';
 
 export default {
   name: 'JobCheckbox',
   components: {
     GlFormCheckbox,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     hasArtifacts: {
@@ -37,6 +41,11 @@ export default {
     indeterminate() {
       return this.selectedArtifacts.length > 0 && this.unselectedArtifacts.length > 0;
     },
+    tooltipText() {
+      return this.isSelectedArtifactsLimitReached && this.disabled
+        ? I18N_BULK_DELETE_MAX_SELECTED
+        : '';
+    },
   },
   methods: {
     handleInput(checked) {
@@ -51,6 +60,8 @@ export default {
 </script>
 <template>
   <gl-form-checkbox
+    v-gl-tooltip.right
+    :title="tooltipText"
     :disabled="disabled"
     :checked="checked"
     :indeterminate="indeterminate"
