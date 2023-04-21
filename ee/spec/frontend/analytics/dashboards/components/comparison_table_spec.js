@@ -9,6 +9,7 @@ describe('Comparison table', () => {
 
   const groupRequestPath = 'groups/test';
   const projectRequestPath = 'test/project';
+  const now = new Date();
 
   const createWrapper = (props = {}) => {
     wrapper = mountExtended(ComparisonTable, {
@@ -16,6 +17,7 @@ describe('Comparison table', () => {
         tableData: mockComparativeTableData,
         requestPath: groupRequestPath,
         isProject: false,
+        now,
         ...props,
       },
     });

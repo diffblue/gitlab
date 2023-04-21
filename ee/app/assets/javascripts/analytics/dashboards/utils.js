@@ -1,5 +1,14 @@
+import { s__, __ } from '~/locale';
 import { isNumeric } from '~/lib/utils/number_utils';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import {
+  formatDate,
+  getStartOfDay,
+  dateAtFirstDayOfMonth,
+  nMonthsBefore,
+  monthInWords,
+  nSecondsBefore,
+} from '~/lib/utils/datetime_utility';
+import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
@@ -202,3 +211,82 @@ export const mergeSparklineCharts = (tableData, chartData) =>
     const chart = chartData[row.metric.identifier];
     return chart ? { ...row, chart } : row;
   });
+
+/**
+ * Generate the dashboard time periods
+ * this month - last month - 2 month ago - 3 month ago
+ * @param {Date} now Current date
+ * @returns {Array} Tuple of time periods
+ */
+export const generateDateRanges = (now) => {
+  const currentMonthStart = getStartOfDay(dateAtFirstDayOfMonth(now));
+  const previousMonthStart = nMonthsBefore(currentMonthStart, 1);
+  const previousMonthEnd = nSecondsBefore(currentMonthStart, 1);
+
+  return [
+    {
+      key: 'thisMonth',
+      label: s__('DORA4Metrics|Month to date'),
+      start: getStartOfDay(dateAtFirstDayOfMonth(now)),
+      end: now,
+      thClass: thWidthPercent(20),
+    },
+    {
+      key: 'lastMonth',
+      label: monthInWords(nMonthsBefore(now, 1)),
+      start: previousMonthStart,
+      end: previousMonthEnd,
+      thClass: thWidthPercent(20),
+    },
+    {
+      key: 'twoMonthsAgo',
+      label: monthInWords(nMonthsBefore(now, 2)),
+      start: nMonthsBefore(previousMonthStart, 1),
+      end: nSecondsBefore(previousMonthStart, 1),
+      thClass: thWidthPercent(20),
+    },
+    {
+      key: 'threeMonthsAgo',
+      label: monthInWords(nMonthsBefore(now, 3)),
+      start: nMonthsBefore(previousMonthStart, 2),
+      end: nSecondsBefore(nMonthsBefore(previousMonthStart, 1), 1),
+    },
+  ];
+};
+
+/**
+ * Generate the chart time periods, starting with the oldest first:
+ * 5 months ago -> 4 months ago -> etc.
+ * @param {Date} now Current date
+ * @returns {Array} Tuple of time periods
+ */
+export const generateChartTimePeriods = (now) => {
+  return [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
+    end: monthsAgo === 0 ? now : nMonthsBefore(now, monthsAgo),
+    start: nMonthsBefore(now, monthsAgo + 1),
+  }));
+};
+
+/**
+ * Generate the dashboard table fields includes date ranges
+ * @param {Date} now Current date
+ * @returns {Array} Tuple of time periods
+ */
+export const generateDashboardTableFields = (now) => {
+  return [
+    {
+      key: 'metric',
+      label: __('Metric'),
+      thClass: thWidthPercent(25),
+    },
+    ...generateDateRanges(now).slice(0, -1),
+    {
+      key: 'chart',
+      label: s__('DORA4Metrics|Past 6 Months'),
+      start: nMonthsBefore(now, 6),
+      end: now,
+      thClass: thWidthPercent(15),
+      tdClass: 'gl-py-2! gl-pointer-events-none',
+    },
+  ];
+};

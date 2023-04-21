@@ -5,7 +5,8 @@ import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import MetricPopover from '~/analytics/shared/components/metric_popover.vue';
 import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
-import { DASHBOARD_TABLE_FIELDS, CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
+import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
+import { generateDashboardTableFields } from '../utils';
 import TrendIndicator from './trend_indicator.vue';
 
 export default {
@@ -30,8 +31,16 @@ export default {
       type: Array,
       required: true,
     },
+    now: {
+      type: Date,
+      required: true,
+    },
   },
-  fields: DASHBOARD_TABLE_FIELDS,
+  computed: {
+    dashboardTableFields() {
+      return generateDashboardTableFields(this.now);
+    },
+  },
   methods: {
     formatDate(date) {
       return formatDate(date, 'mmm d');
@@ -62,7 +71,7 @@ export default {
 };
 </script>
 <template>
-  <gl-table-lite :fields="$options.fields" :items="tableData">
+  <gl-table-lite :fields="dashboardTableFields" :items="tableData">
     <template #head()="{ field: { label, start, end } }">
       <template v-if="!start || !end">
         {{ label }}

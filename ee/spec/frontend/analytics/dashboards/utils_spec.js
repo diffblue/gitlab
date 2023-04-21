@@ -8,6 +8,9 @@ import {
   generateSparklineCharts,
   mergeSparklineCharts,
   hasTrailingDecimalZero,
+  generateDateRanges,
+  generateChartTimePeriods,
+  generateDashboardTableFields,
 } from 'ee/analytics/dashboards/utils';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -33,6 +36,9 @@ import {
   mockChartData,
   mockSubsetChartsTimePeriods,
   mockSubsetChartData,
+  MOCK_TABLE_TIME_PERIODS,
+  MOCK_CHART_TIME_PERIODS,
+  MOCK_DASHBOARD_TABLE_FIELDS,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -197,6 +203,42 @@ describe('Analytics Dashboards utils', () => {
         },
       ];
       expect(hasDoraMetricValues(timePeriods)).toBe(true);
+    });
+  });
+
+  describe('generateDateRanges', () => {
+    it('return correct value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[0].end;
+      expect(generateDateRanges(now)).toEqual(MOCK_TABLE_TIME_PERIODS);
+    });
+
+    it('return incorrect value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[2].start;
+      expect(generateDateRanges(now)).not.toEqual(MOCK_TABLE_TIME_PERIODS);
+    });
+  });
+
+  describe('generateChartTimePeriods', () => {
+    it('return correct value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[0].end;
+      expect(generateChartTimePeriods(now)).toEqual(MOCK_CHART_TIME_PERIODS);
+    });
+
+    it('return incorrect value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[2].start;
+      expect(generateChartTimePeriods(now)).not.toEqual(MOCK_CHART_TIME_PERIODS);
+    });
+  });
+
+  describe('generateDashboardTableFields', () => {
+    it('return correct value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[0].end;
+      expect(generateDashboardTableFields(now)).toEqual(MOCK_DASHBOARD_TABLE_FIELDS);
+    });
+
+    it('return incorrect value', () => {
+      const now = MOCK_TABLE_TIME_PERIODS[2].start;
+      expect(generateDashboardTableFields(now)).not.toEqual(MOCK_DASHBOARD_TABLE_FIELDS);
     });
   });
 });
