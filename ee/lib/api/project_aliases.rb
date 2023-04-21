@@ -62,13 +62,13 @@ module API
       end
       params do
         requires :project_id,
-                 type: String,
-                 desc: 'The ID or URL-encoded path of the project',
-                 documentation: { example: 'gitlab-org/gitlab' }
+          type: String,
+          desc: 'The ID or URL-encoded path of the project',
+          documentation: { example: 'gitlab-org/gitlab' }
         requires :name,
-                 type: String,
-                 desc: 'The alias of the project',
-                 documentation: { example: 'gitlab' }
+          type: String,
+          desc: 'The alias of the project',
+          documentation: { example: 'gitlab' }
       end
       post do
         project_alias = project.project_aliases.create(name: params[:name])

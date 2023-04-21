@@ -33,13 +33,13 @@ module API
           requires :entity_type, type: String
         end
         optional :created_after,
-                 type: DateTime,
-                 desc: 'Return audit events created after the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return audit events created after the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
         optional :created_before,
-                 type: DateTime,
-                 desc: 'Return audit events created before the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return audit events created before the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
 
         use :pagination
       end

@@ -13,18 +13,18 @@ module API
         optional :allow_author_approval, type: Boolean, desc: 'Allow authors to self-approve merge requests', allow_blank: false
         optional :allow_committer_approval, type: Boolean, desc: 'Allow committers to approve merge requests', allow_blank: false
         optional :allow_overrides_to_approver_list_per_merge_request,
-                 type: Boolean, desc: 'Allow overrides to approver list per merge request', allow_blank: false
+          type: Boolean, desc: 'Allow overrides to approver list per merge request', allow_blank: false
         optional :retain_approvals_on_push, type: Boolean, desc: 'Retain approval count on a new push', allow_blank: false
         optional :selective_code_owner_removals, type: Boolean, desc: 'Reset approvals from Code Owners if their files changed', allow_blank: false
         optional :require_password_to_approve,
-                 type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
+          type: Boolean, desc: 'Require approver to authenticate before approving', allow_blank: false
 
         at_least_one_of :allow_author_approval,
-                        :allow_committer_approval,
-                        :allow_overrides_to_approver_list_per_merge_request,
-                        :retain_approvals_on_push,
-                        :selective_code_owner_removals,
-                        :require_password_to_approve
+          :allow_committer_approval,
+          :allow_overrides_to_approver_list_per_merge_request,
+          :retain_approvals_on_push,
+          :selective_code_owner_removals,
+          :require_password_to_approve
       end
     end
 

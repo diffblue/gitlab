@@ -31,11 +31,11 @@ module API
 
       params do
         optional :package_manager,
-                 type: Array[String],
-                 coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: "Returns dependencies belonging to specified package managers: #{::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES.join(', ')}.",
-                 values: ::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES,
-                 documentation: { example: 'maven,yarn' }
+          type: Array[String],
+          coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+          desc: "Returns dependencies belonging to specified package managers: #{::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES.join(', ')}.",
+          values: ::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES,
+          documentation: { example: 'maven,yarn' }
         use :pagination
       end
 
