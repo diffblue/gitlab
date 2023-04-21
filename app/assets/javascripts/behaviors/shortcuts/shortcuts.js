@@ -133,7 +133,7 @@ export default class Shortcuts {
    * @returns {void}
    */
   bindCommands(commandsAndCallbacks) {
-    commandsAndCallbacks.map((commandAndCallback) => this.bindCommand(...commandAndCallback));
+    commandsAndCallbacks.forEach((commandAndCallback) => this.bindCommand(...commandAndCallback));
   }
 
   onToggleHelp(e) {
