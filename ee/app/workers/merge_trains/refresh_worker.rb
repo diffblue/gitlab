@@ -9,7 +9,7 @@ module MergeTrains
     sidekiq_options retry: 3
 
     queue_namespace :auto_merge
-    feature_category :continuous_integration
+    feature_category :merge_trains
     worker_resource_boundary :cpu
 
     # Required, since `MergeTrains::RefreshService#execute` is concurrent-unsafe
@@ -18,8 +18,8 @@ module MergeTrains
 
     def perform(target_project_id, target_branch)
       ::MergeTrains::RefreshService
-        .new(nil, nil)
-        .execute(target_project_id, target_branch)
+        .new(target_project_id, target_branch)
+        .execute
     end
   end
 end
