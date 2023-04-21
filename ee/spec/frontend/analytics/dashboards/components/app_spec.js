@@ -1,6 +1,10 @@
-import { shallowMount } from '@vue/test-utils';
-import { GlSprintf, GlLink, GlAlert } from '@gitlab/ui';
-import { DASHBOARD_TITLE } from 'ee/analytics/dashboards/constants';
+import { GlLink } from '@gitlab/ui';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import {
+  DASHBOARD_TITLE,
+  DASHBOARD_DESCRIPTION,
+  DASHBOARD_DOCS_LINK,
+} from 'ee/analytics/dashboards/constants';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import { mockChartConfig } from '../mock_data';
@@ -13,17 +17,16 @@ describe('Executive dashboard app', () => {
   let wrapper;
 
   function createComponent({ props = {} } = {}) {
-    return shallowMount(Component, {
+    return shallowMountExtended(Component, {
       propsData: {
         ...mockProps,
         ...props,
       },
-      stubs: { GlSprintf },
     });
   }
 
   const findComparisonCharts = () => wrapper.findAllComponents(ComparisonChart);
-  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findDescription = () => wrapper.findByTestId('dashboard-description');
 
   describe('data requests', () => {
     beforeEach(async () => {
@@ -32,6 +35,11 @@ describe('Executive dashboard app', () => {
 
     it('renders the page title', () => {
       expect(wrapper.text()).toContain(DASHBOARD_TITLE);
+    });
+
+    it('renders the description', () => {
+      expect(findDescription().text()).toContain(DASHBOARD_DESCRIPTION);
+      expect(findDescription().findComponent(GlLink).attributes('href')).toBe(DASHBOARD_DOCS_LINK);
     });
 
     it('renders a chart component for each config', () => {
@@ -50,15 +58,6 @@ describe('Executive dashboard app', () => {
           isProject: config.isProject,
         });
       });
-    });
-
-    it('renders the feedback issue link', () => {
-      expect(findAlert().text()).toContain(
-        'Beta feature: Leave your thoughts in the feedback issue',
-      );
-      expect(findAlert().findComponent(GlLink).attributes('href')).toBe(
-        'https://gitlab.com/gitlab-org/gitlab/-/issues/381787',
-      );
     });
   });
 });

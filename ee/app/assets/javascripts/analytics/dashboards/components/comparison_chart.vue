@@ -121,7 +121,7 @@ export default {
 </script>
 <template>
   <div>
-    <h4>{{ description }}</h4>
+    <h5>{{ description }}</h5>
     <gl-skeleton-loader v-if="loadingTable" />
     <gl-alert v-else-if="!hasData" variant="info" :dismissible="false">{{
       $options.i18n.noData
