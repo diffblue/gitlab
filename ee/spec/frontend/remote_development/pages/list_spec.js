@@ -7,7 +7,13 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
-import { USER_WORKSPACES_QUERY_RESULT } from '../mock_data';
+import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import { WORKSPACE_STATES } from 'ee/remote_development/constants';
+import {
+  CURRENT_USERNAME,
+  USER_WORKSPACES_QUERY_RESULT,
+  USER_WORKSPACES_QUERY_EMPTY_RESULT,
+} from '../mock_data';
 
 jest.mock('~/lib/logger');
 
@@ -21,38 +27,42 @@ const findTableRows = (wrapper) => findTable(wrapper).findAll('tbody tr');
 const findTableRowsAsData = (wrapper) =>
   findTableRows(wrapper).wrappers.map((x) => {
     const tds = x.findAll('td');
-
-    return {
+    const rowData = {
       nameText: tds.at(0).text(),
       statusIcon: tds.at(0).findComponent(GlIcon).props('name'),
-      branchText: tds.at(1).text(),
-      previewText: tds.at(2).text(),
-      previewHref: tds.at(2).findComponent(GlLink).attributes('href'),
-      lastUsedText: tds.at(3).text(),
     };
+
+    if (tds.at(1).findComponent(GlLink).exists()) {
+      rowData.previewText = tds.at(1).text();
+      rowData.previewHref = tds.at(1).findComponent(GlLink).attributes('href');
+    }
+
+    return rowData;
   });
 const findNewWorkspaceButton = (wrapper) => wrapper.findComponent(GlButton);
 
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
+  let userWorkspacesListQueryHandler;
 
-  const createWrapper = (mockData) => {
-    const mockApollo = createMockApollo([], {
-      Query: {
-        userWorkspacesList: () => mockData,
-      },
-    });
+  const createWrapper = (mockData = USER_WORKSPACES_QUERY_RESULT) => {
+    userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(mockData);
+
+    const mockApollo = createMockApollo([
+      [userWorkspacesListQuery, userWorkspacesListQueryHandler],
+    ]);
 
     wrapper = mount(WorkspaceList, {
       apolloProvider: mockApollo,
       provide: {
         emptyStateSvgPath: SVG_PATH,
+        currentUsername: CURRENT_USERNAME,
       },
     });
   };
 
   it('shows empty state when no workspaces are available', async () => {
-    createWrapper({ nodes: [] });
+    createWrapper(USER_WORKSPACES_QUERY_EMPTY_RESULT);
     await waitForPromises();
     expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
   });
@@ -74,14 +84,19 @@ describe('remote_development/pages/list.vue', () => {
 
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
-        USER_WORKSPACES_QUERY_RESULT.nodes.map((x) => ({
-          nameText: `${x.projectFullPath}   ${x.name}`,
-          statusIcon: 'status-stopped',
-          branchText: x.branch,
-          previewText: x.url,
-          previewHref: x.url,
-          lastUsedText: '6 months ago',
-        })),
+        USER_WORKSPACES_QUERY_RESULT.data.user.workspaces.nodes.map((x) => {
+          const workspaceData = {
+            nameText: `${x.project.nameWithNamespace}   ${x.name}`,
+            statusIcon: 'status-stopped',
+          };
+
+          if (x.actualState === WORKSPACE_STATES.running) {
+            workspaceData.previewText = x.url;
+            workspaceData.previewHref = x.url;
+          }
+
+          return workspaceData;
+        }),
       );
     });
 

@@ -3,6 +3,7 @@ import { GlAlert, GlButton, GlLink, GlIcon, GlSkeletonLoader, GlTableLite } from
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
+import { WORKSPACE_STATES } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 
@@ -16,12 +17,17 @@ export default {
     GlTableLite,
     WorkspaceEmptyState,
   },
+  inject: ['currentUsername'],
   apollo: {
     workspaces: {
       query: userWorkspacesListQuery,
+      variables() {
+        return {
+          username: this.currentUsername,
+        };
+      },
       update(data) {
-        const { userWorkspacesList: { nodes = [] } = {} } = data || {};
-        return nodes;
+        return data.user.workspaces.nodes;
       },
       error(err) {
         logError(err);
@@ -38,19 +44,9 @@ export default {
       thClass: 'gl-w-25p',
     },
     {
-      key: 'branch',
-      label: __('Branch'),
-      thClass: 'gl-w-25p',
-    },
-    {
       key: 'preview',
       label: __('Preview'),
       thClass: 'gl-w-30p',
-    },
-    {
-      key: 'lastUsed',
-      label: __('Last used'),
-      thClass: 'gl-w-20p',
     },
     {
       key: 'actions',
@@ -87,6 +83,7 @@ export default {
     heading: s__('Workspaces|Workspaces'),
     newWorkspaceButton: s__('Workspaces|New workspace'),
   },
+  WORKSPACE_STATES,
 };
 </script>
 <template>
@@ -112,22 +109,18 @@ export default {
           <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
             <gl-icon name="status-stopped" class="gl-mr-5" />
             <div class="gl-display-flex gl-flex-direction-column">
-              <span> {{ item.projectFullPath }} </span>
+              <span> {{ item.project.nameWithNamespace }} </span>
               <span> {{ item.name }} </span>
             </div>
           </div>
         </template>
-        <template #cell(branch)="{ item }">
-          <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
-            <gl-icon name="branch" class="gl-mr-3" />
-            {{ item.branch }}
-          </div>
-        </template>
         <template #cell(preview)="{ item }">
-          <gl-link :href="item.url" target="_blank">{{ item.url }}</gl-link>
-        </template>
-        <template #cell(lastUsed)="{ item }">
-          {{ formatDate(item.lastUsed) }}
+          <gl-link
+            v-if="item.actualState === $options.WORKSPACE_STATES.running"
+            :href="item.url"
+            target="_blank"
+            >{{ item.url }}</gl-link
+          >
         </template>
         <template #cell(actions)="{ item }">
           <gl-button icon="remove" @click="deleteWorkspace(item)" />

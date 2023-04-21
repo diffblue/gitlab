@@ -23,8 +23,57 @@ export const WORKSPACE_QUERY_RESULT = {
 };
 
 export const USER_WORKSPACES_QUERY_RESULT = {
-  nodes: [cloneDeep(WORKSPACE)],
+  data: {
+    user: {
+      id: 1,
+      workspaces: {
+        nodes: [
+          {
+            id: 'gid://gitlab/RemoteDevelopment::Workspace/2',
+            name: 'workspace-1-1-idmi02',
+            namespace: 'gl-rd-ns-1-1-idmi02',
+            desiredState: 'Stopped',
+            actualState: 'Creating',
+            url: 'http://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
+            devfileRef: 'main',
+            devfilePath: '.devfile.yaml',
+            project: {
+              id: 'gid://gitlab/Project/2',
+              nameWithNamespace: 'Gitlab Shell',
+            },
+          },
+          {
+            id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
+            name: 'workspace-1-1-rfu27q',
+            namespace: 'gl-rd-ns-1-1-rfu27q',
+            desiredState: 'Running',
+            actualState: 'Running',
+            url: 'http://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
+            devfileRef: 'main',
+            devfilePath: '.devfile.yaml',
+            project: {
+              id: 'gid://gitlab/Project/2',
+              nameWithNamespace: 'Gitlab Shell',
+            },
+          },
+        ],
+      },
+    },
+  },
 };
+
+export const USER_WORKSPACES_QUERY_EMPTY_RESULT = {
+  data: {
+    user: {
+      id: 1,
+      workspaces: {
+        nodes: [],
+      },
+    },
+  },
+};
+
+export const CURRENT_USERNAME = 'root';
 
 export const SEARCH_PROJECTS_QUERY_RESULT = {
   data: {

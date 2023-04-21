@@ -7,6 +7,8 @@ import WorkspacesList from 'ee/remote_development/pages/list.vue';
 import createRouter from 'ee/remote_development/router/index';
 import CreateWorkspace from 'ee/remote_development/pages/create.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import { CURRENT_USERNAME, USER_WORKSPACES_QUERY_EMPTY_RESULT } from '../mock_data';
 
 Vue.use(VueRouter);
 Vue.use(VueApollo);
@@ -31,9 +33,15 @@ describe('remote_development/router/index.js', () => {
 
     wrapper = mountExtended(App, {
       router,
-      apolloProvider: createMockApollo(),
+      apolloProvider: createMockApollo([
+        [
+          userWorkspacesListQuery,
+          jest.fn().mockResolvedValueOnce(USER_WORKSPACES_QUERY_EMPTY_RESULT),
+        ],
+      ]),
       provide: {
         emptyStateSvgPath: SVG_PATH,
+        currentUsername: CURRENT_USERNAME,
       },
       stubs: {
         SearchProjectsListbox: {
