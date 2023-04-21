@@ -11,6 +11,7 @@ module Zoekt
 
     feature_category :global_search
     urgency :throttled
+    sidekiq_options retry: 2
     idempotent!
 
     def perform(project_id)
