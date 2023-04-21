@@ -7,7 +7,10 @@ module QA
         module Menu
           extend QA::Page::PageConcern
 
-          prepend Sidebar::Settings if QA::Runtime::Env.super_sidebar_enabled?
+          if QA::Runtime::Env.super_sidebar_enabled?
+            prepend Sidebar::Settings
+            prepend Sidebar::Monitoring
+          end
 
           def self.prepended(base)
             super
@@ -33,7 +36,7 @@ module QA
             end
           end
 
-          def go_to_monitoring_audit_logs
+          def go_to_monitoring_audit_events
             hover_element(:admin_monitoring_menu_link) do
               click_element :admin_monitoring_audit_logs_link
             end
