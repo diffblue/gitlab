@@ -4,15 +4,21 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::OpenAi::ExponentialBackoff, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
   let(:success) do
-    instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: {}, too_many_requests?: false)
+    instance_double(HTTParty::Response,
+      code: 200, success?: true, parsed_response: {}, server_error?: false, too_many_requests?: false
+    )
   end
 
   let(:too_many_requests_error) do
-    instance_double(HTTParty::Response, code: 429, success?: false, parsed_response: {}, too_many_requests?: true)
+    instance_double(HTTParty::Response,
+      code: 429, success?: false, parsed_response: {}, server_error?: false, too_many_requests?: true
+    )
   end
 
   let(:auth_error) do
-    instance_double(HTTParty::Response, code: 401, success?: false, parsed_response: {}, too_many_requests?: false)
+    instance_double(HTTParty::Response,
+      code: 401, success?: false, parsed_response: {}, server_error?: false, too_many_requests?: false
+    )
   end
 
   let(:response_caller) { -> { success } }
@@ -29,6 +35,25 @@ RSpec.describe Gitlab::Llm::OpenAi::ExponentialBackoff, feature_category: :no_ca
   end
 
   subject { dummy_class.new.dummy_method(response_caller) }
+
+  it_behaves_like 'has circuit breaker' do
+    let(:service) { dummy_class.new }
+    let(:subject) { service.dummy_method(response_caller) }
+  end
+
+  context 'with feature flag disabled' do
+    before do
+      stub_feature_flags(circuit_breaker: false)
+    end
+
+    it 'runs the code block outside of the circuit breaker' do
+      service = dummy_class.new
+      subject = service.dummy_method(response_caller)
+
+      expect(service).not_to receive(:run_with_circuit)
+      subject
+    end
+  end
 
   describe '.wrap_method' do
     it 'wraps the instance method and retries with exponential backoff' do
