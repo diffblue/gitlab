@@ -57,6 +57,7 @@ const THIS_MONTH = {
   label: 'Month to date',
   start: new Date('2020-07-01T00:00:00.000Z'),
   end: new Date('2020-07-06T00:00:00.000Z'),
+  thClass: 'gl-w-20p',
 };
 
 const LAST_MONTH = {
@@ -64,6 +65,7 @@ const LAST_MONTH = {
   label: 'June',
   start: new Date('2020-06-01T00:00:00.000Z'),
   end: new Date('2020-06-30T23:59:59.000Z'),
+  thClass: 'gl-w-20p',
 };
 
 const TWO_MONTHS_AGO = {
@@ -71,6 +73,7 @@ const TWO_MONTHS_AGO = {
   label: 'May',
   start: new Date('2020-05-01T00:00:00.000Z'),
   end: new Date('2020-05-31T23:59:59.000Z'),
+  thClass: 'gl-w-20p',
 };
 
 const THREE_MONTHS_AGO = {
@@ -88,6 +91,23 @@ export const MOCK_CHART_TIME_PERIODS = [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
   end: monthsAgo === 0 ? THIS_MONTH.end : nMonthsBefore(THIS_MONTH.end, monthsAgo),
   start: nMonthsBefore(THIS_MONTH.end, monthsAgo + 1),
 }));
+
+export const MOCK_DASHBOARD_TABLE_FIELDS = [
+  {
+    key: 'metric',
+    label: 'Metric',
+    thClass: 'gl-w-25p',
+  },
+  ...MOCK_TABLE_TIME_PERIODS.slice(0, -1),
+  {
+    key: 'chart',
+    label: 'Past 6 Months',
+    start: new Date('2020-01-06T00:00:00.000Z'),
+    end: new Date('2020-07-06T00:00:00.000Z'),
+    thClass: 'gl-w-15p',
+    tdClass: 'gl-py-2! gl-pointer-events-none',
+  },
+];
 
 export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };

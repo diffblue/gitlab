@@ -8,8 +8,6 @@ import {
   DASHBOARD_DESCRIPTION_PROJECT,
   DASHBOARD_LOADING_FAILURE,
   DASHBOARD_NO_DATA,
-  DASHBOARD_TIME_PERIODS,
-  CHART_TIME_PERIODS,
   CHART_LOADING_FAILURE,
 } from '../constants';
 import {
@@ -18,8 +16,14 @@ import {
   generateDoraTimePeriodComparisonTable,
   generateSparklineCharts,
   mergeSparklineCharts,
+  generateDateRanges,
+  generateChartTimePeriods,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
+
+const now = new Date();
+const DASHBOARD_TIME_PERIODS = generateDateRanges(now);
+const CHART_TIME_PERIODS = generateChartTimePeriods(now);
 
 export default {
   name: 'ComparisonChart',
@@ -112,6 +116,7 @@ export default {
   i18n: {
     noData: DASHBOARD_NO_DATA,
   },
+  now,
 };
 </script>
 <template>
@@ -126,6 +131,7 @@ export default {
       :table-data="allData"
       :request-path="namespaceRequestPath"
       :is-project="isProject"
+      :now="$options.now"
     />
   </div>
 </template>
