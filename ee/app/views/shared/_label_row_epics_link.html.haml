@@ -1,6 +1,5 @@
 - show_label_epics_link = defined?(@group) && @group&.feature_available?(:epics)
 
 - if show_label_epics_link
-  &middot;
-  %li.inline
-    = link_to 'Epics', group_epics_path(@group, label_name: [label.name]), class: 'gl-text-blue-600! gl-mr-2'
+  %li.inline.gl-mr-3.gl-ml-4
+    = link_to _('Epics'), group_epics_path(@group, label_name: [label.name]), class: 'gl-mx-2'
