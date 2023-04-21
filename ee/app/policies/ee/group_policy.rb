@@ -429,6 +429,7 @@ module EE
       rule { security_dashboard_enabled & developer }.policy do
         enable :read_group_security_dashboard
         enable :admin_vulnerability
+        enable :read_vulnerability
       end
 
       rule { can?(:read_group_security_dashboard) }.policy do

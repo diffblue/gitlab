@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: :vulnerability_management do
-  let_it_be(:group)   { create(:group) }
-  let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
-  let_it_be(:user)    { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project, reload: true) { create(:project, :repository, :public, namespace: group) }
+  let_it_be(:user) { create(:user) }
 
   render_views
 
@@ -15,28 +15,30 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
     sign_in(user)
   end
 
-  describe 'GET #new' do
-    let(:request_new_vulnerability_page) { get :new, params: { namespace_id: project.namespace, project_id: project } }
-
+  shared_examples 'security and compliance disabled' do
     before do
-      allow(controller).to receive(:can?).and_call_original
-      allow(controller).to receive(:can?).with(controller.current_user, :create_vulnerability, project).and_return(can_create_vulnerability)
+      project.project_feature.update!(security_and_compliance_access_level: Featurable::DISABLED)
     end
 
-    include_context '"Security and Compliance" permissions' do
-      let(:valid_request) { request_new_vulnerability_page }
-      let(:can_create_vulnerability) { true }
+    it { is_expected.to have_gitlab_http_status(:not_found) }
+  end
+
+  describe 'GET #new' do
+    subject(:request_new_vulnerability_page) do
+      get :new, params: { namespace_id: project.namespace, project_id: project }
     end
+
+    it_behaves_like 'security and compliance disabled'
 
     it 'checks if the user can create a vulnerability' do
+      allow(controller).to receive(:can?).and_call_original
+
       request_new_vulnerability_page
 
-      expect(controller).to have_received(:can?).with(controller.current_user, :create_vulnerability, project)
+      expect(controller).to have_received(:can?).with(controller.current_user, :admin_vulnerability, project)
     end
 
-    context 'when user can create vulnerability' do
-      let(:can_create_vulnerability) { true }
-
+    context 'when user can admin vulnerability' do
       it 'renders the add new finding page' do
         request_new_vulnerability_page
 
@@ -44,10 +46,10 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
       end
     end
 
-    context 'when user can not create vulnerability' do
-      let(:can_create_vulnerability) { false }
-
+    context 'when user can not admin vulnerability' do
       it 'renders 404 page not found' do
+        sign_in(create(:user))
+
         request_new_vulnerability_page
 
         expect(response).to have_gitlab_http_status(:not_found)
@@ -61,9 +63,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
     subject(:show_vulnerability) { get :show, params: { namespace_id: project.namespace, project_id: project, id: vulnerability.id } }
 
-    include_context '"Security and Compliance" permissions' do
-      let(:valid_request) { show_vulnerability }
-    end
+    it_behaves_like 'security and compliance disabled'
 
     context "when there's an attached pipeline" do
       let_it_be(:finding) { create(:vulnerabilities_finding, :with_pipeline, vulnerability: vulnerability) }
@@ -102,9 +102,7 @@ RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: 
 
     subject(:show_vulnerability_discussion_list) { get :discussions, params: { namespace_id: project.namespace, project_id: project, id: vulnerability } }
 
-    include_context '"Security and Compliance" permissions' do
-      let(:valid_request) { show_vulnerability_discussion_list }
-    end
+    it_behaves_like 'security and compliance disabled'
 
     it 'renders discussions' do
       show_vulnerability_discussion_list

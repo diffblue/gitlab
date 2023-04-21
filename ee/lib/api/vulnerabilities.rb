@@ -123,7 +123,7 @@ module API
         requires :finding_id, type: Integer, desc: 'The id of confirmed vulnerability finding'
       end
       post ':id/vulnerabilities' do
-        authorize! :create_vulnerability, user_project
+        authorize! :admin_vulnerability, user_project
 
         vulnerability = ::Vulnerabilities::CreateService.new(
           user_project, current_user, finding_id: params[:finding_id]
