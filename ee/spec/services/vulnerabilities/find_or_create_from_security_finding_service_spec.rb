@@ -49,7 +49,7 @@ feature_category: :vulnerability_management do
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/find_or_create_from_security_finding_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "7593840d49d02e8ac7f95ae36004a85589e28bd8d646e301645d7c91c67339fa"
+    expected_checksum = "4b77c25eb8c5129c27f7a7f6ea4a062dea604d7ed07c34246cb6ae25de9927b3"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 

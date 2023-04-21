@@ -15,7 +15,7 @@ module Vulnerabilities
     private
 
     def authorized?
-      can?(@author, :create_vulnerability, @project)
+      can?(@author, :admin_vulnerability, @project)
     end
 
     def location_fingerprint(_location_hash)

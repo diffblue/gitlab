@@ -50,7 +50,7 @@ module Mutations
               deprecated: { reason: 'The configuration snippet is now generated client-side', milestone: '14.6' },
               description: "Location at which the project's `.gitlab-ci.yml` file can be edited in the browser."
 
-            authorize :create_vulnerability
+            authorize :admin_vulnerability
 
             def resolve(args)
               project = authorized_find!(args[:project_path])

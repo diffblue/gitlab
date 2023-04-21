@@ -22435,10 +22435,10 @@ Check permissions for the current user on a vulnerability.
 | <a id="vulnerabilitypermissionsadminvulnerability"></a>`adminVulnerability` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_vulnerability` on this resource. |
 | <a id="vulnerabilitypermissionsadminvulnerabilityexternalissuelink"></a>`adminVulnerabilityExternalIssueLink` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_vulnerability_external_issue_link` on this resource. |
 | <a id="vulnerabilitypermissionsadminvulnerabilityissuelink"></a>`adminVulnerabilityIssueLink` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_vulnerability_issue_link` on this resource. |
-| <a id="vulnerabilitypermissionscreatevulnerability"></a>`createVulnerability` | [`Boolean!`](#boolean) | Indicates the user can perform `create_vulnerability` on this resource. |
 | <a id="vulnerabilitypermissionscreatevulnerabilityexport"></a>`createVulnerabilityExport` | [`Boolean!`](#boolean) | Indicates the user can perform `create_vulnerability_export` on this resource. |
 | <a id="vulnerabilitypermissionscreatevulnerabilityfeedback"></a>`createVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `create_vulnerability_feedback` on this resource. |
 | <a id="vulnerabilitypermissionsdestroyvulnerabilityfeedback"></a>`destroyVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `destroy_vulnerability_feedback` on this resource. |
+| <a id="vulnerabilitypermissionsreadvulnerability"></a>`readVulnerability` | [`Boolean!`](#boolean) | Indicates the user can perform `read_vulnerability` on this resource. |
 | <a id="vulnerabilitypermissionsreadvulnerabilityfeedback"></a>`readVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `read_vulnerability_feedback` on this resource. |
 | <a id="vulnerabilitypermissionsupdatevulnerabilityfeedback"></a>`updateVulnerabilityFeedback` | [`Boolean!`](#boolean) | Indicates the user can perform `update_vulnerability_feedback` on this resource. |
 

@@ -3,8 +3,6 @@
 module Projects
   module Security
     class VulnerabilitiesController < Projects::ApplicationController
-      include SecurityAndCompliancePermissions
-      include SecurityDashboardsPermissions
       include IssuableActions
 
       before_action do
@@ -16,7 +14,8 @@ module Projects
       end
 
       before_action :vulnerability, except: [:index, :new]
-      before_action :authorize_create_vulnerability!, only: :new
+      before_action :authorize_admin_vulnerability!, except: [:show, :index, :discussions]
+      before_action :authorize_read_vulnerability!, except: [:new, :update, :destroy, :bulk_update]
 
       alias_method :vulnerable, :project
 

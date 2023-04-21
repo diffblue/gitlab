@@ -59,7 +59,7 @@ RSpec.describe Vulnerabilities::CreateService, feature_category: :vulnerability_
   it 'matches an expected checksum' do
     code_file_path = Rails.root.join("ee/app/services/vulnerabilities/create_service.rb")
     code_definition = File.read(code_file_path)
-    expected_checksum = "e8570f31db6ae630b67e490a25a77e8c3eeda9fd23dc670d733f09ba61f6bc33"
+    expected_checksum = "7b3ad90214e11e5bfbfd736af862162aa7cc1dbd0dba93b52d45f289bc66952a"
     expect(Digest::SHA256.hexdigest(code_definition)).to eq(expected_checksum)
   end
 

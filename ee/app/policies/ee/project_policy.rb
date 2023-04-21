@@ -320,12 +320,15 @@ module EE
 
       rule { can?(:read_security_resource) }.policy do
         enable :read_project_security_dashboard
-        enable :create_vulnerability
         enable :create_vulnerability_export
-        enable :admin_vulnerability
         enable :admin_vulnerability_issue_link
         enable :admin_vulnerability_merge_request_link
         enable :admin_vulnerability_external_issue_link
+      end
+
+      rule { can?(:read_security_resource) & ~security_and_compliance_disabled }.policy do
+        enable :admin_vulnerability
+        enable :read_vulnerability
       end
 
       rule { security_bot & auto_fix_enabled }.policy do
@@ -412,11 +415,10 @@ module EE
       end
 
       rule { auditor & ~developer }.policy do
-        prevent :create_vulnerability
-        prevent :admin_vulnerability
         prevent :admin_vulnerability_issue_link
         prevent :admin_vulnerability_external_issue_link
         prevent :admin_vulnerability_merge_request_link
+        prevent :admin_vulnerability
       end
 
       rule { auditor & ~guest }.policy do

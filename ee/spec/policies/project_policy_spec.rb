@@ -25,8 +25,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     let(:additional_developer_permissions) do
       %i[
         admin_vulnerability_feedback read_project_audit_events read_project_security_dashboard
-        read_security_resource read_vulnerability_scanner create_vulnerability create_vulnerability_export admin_vulnerability
-        admin_vulnerability_issue_link admin_vulnerability_external_issue_link read_merge_train
+        admin_vulnerability_issue_link admin_vulnerability_external_issue_link
+        read_security_resource read_vulnerability_scanner admin_vulnerability read_vulnerability
+        create_vulnerability_export read_merge_train
       ]
     end
 
@@ -758,8 +759,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
         include_context 'when security dashboard feature is not available'
 
-        it { is_expected.to be_disallowed(:create_vulnerability) }
         it { is_expected.to be_disallowed(:admin_vulnerability) }
+        it { is_expected.to be_disallowed(:read_vulnerability) }
         it { is_expected.to be_disallowed(:create_vulnerability_export) }
       end
     end
@@ -1845,8 +1846,8 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
            update_pipeline_schedule admin_pipeline_schedule create_trigger update_trigger
            admin_trigger create_pages admin_release request_access create_board update_board
            create_issue_link update_issue_link create_approvers admin_approvers
-           admin_vulnerability_feedback update_vulnerability create_feature_flags_client
-           update_feature_flags_client update_iteration]
+           admin_vulnerability_feedback create_feature_flags_client
+           update_feature_flags_client update_iteration update_vulnerability create_vulnerability]
       end
 
       it { is_expected.to(be_allowed(*(abilities - abilities_not_currently_enabled))) }
