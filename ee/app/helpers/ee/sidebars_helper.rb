@@ -32,11 +32,12 @@ module EE
     def super_sidebar_context(user, group:, project:, panel:, panel_type:)
       show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
 
-      return super unless show_buy_pipeline_minutes
+      return super.merge({ show_tanuki_bot: show_tanuki_bot_chat? }) unless show_buy_pipeline_minutes
 
       root_namespace = root_ancestor_namespace(project, group)
 
       super.merge({
+        show_tanuki_bot: show_tanuki_bot_chat?,
         pipeline_minutes: {
           show_buy_pipeline_minutes: show_buy_pipeline_minutes,
           show_notification_dot: show_pipeline_minutes_notification_dot?(project, group),

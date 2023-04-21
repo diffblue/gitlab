@@ -313,11 +313,12 @@ module EE
 
     # Returns true if the user is a Reporter or higher on any namespace
     # currently on a paid plan
-    def has_paid_namespace?
+    def has_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS)
+      paid_hosted_plans = ::Plan::PAID_HOSTED_PLANS & plans
       ::Namespace
         .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
         .include_gitlab_subscription
-        .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: ::Plan::PAID_HOSTED_PLANS) })
+        .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
         .any?
     end
 

@@ -5874,6 +5874,9 @@ msgstr ""
 msgid "Ask someone with write access to resolve it."
 msgstr ""
 
+msgid "Ask the Tanuki Bot"
+msgstr ""
+
 msgid "Ask your group owner to set up a group runner."
 msgstr ""
 
