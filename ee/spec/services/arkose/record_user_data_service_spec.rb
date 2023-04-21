@@ -21,7 +21,9 @@ RSpec.describe Arkose::RecordUserDataService do
       service.execute
 
       expect(user.custom_attributes.find_by(key: 'arkose_session').value).to eq('22612c147bb418c8.2570749403')
-      expect(user.custom_attributes.find_by(key: 'arkose_risk_band').value).to eq('Low')
+      expect(
+        user.custom_attributes.find_by(key: UserCustomAttribute::ARKOSE_RISK_BAND).value
+      ).to eq(Arkose::VerifyResponse::RISK_BAND_LOW)
       expect(user.custom_attributes.find_by(key: 'arkose_global_score').value).to eq('0')
       expect(user.custom_attributes.find_by(key: 'arkose_custom_score').value).to eq('0')
     end

@@ -8,7 +8,7 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   let_it_be_with_reload(:user) { create(:user) }
 
   def add_user_risk_band(value)
-    create(:user_custom_attribute, key: 'arkose_risk_band', value: value, user_id: user.id)
+    create(:user_custom_attribute, key: UserCustomAttribute::ARKOSE_RISK_BAND, value: value, user_id: user.id)
   end
 
   describe('#identity_verification_enabled?') do
@@ -173,7 +173,8 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
           )
 
           add_user_risk_band(risk_band)
-          create(:user_custom_attribute, key: 'arkose_risk_band', value: risk_band, user: another_user)
+          create(:user_custom_attribute, key: UserCustomAttribute::ARKOSE_RISK_BAND, value: risk_band,
+            user: another_user)
 
           stub_feature_flags(identity_verification_phone_number: user) if phone_number
           stub_feature_flags(identity_verification_credit_card: user) if credit_card

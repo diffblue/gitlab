@@ -60,10 +60,10 @@ module IdentityVerifiable
     methods = [VERIFICATION_METHODS[:EMAIL]]
 
     case arkose_risk_band
-    when 'high'
+    when Arkose::VerifyResponse::RISK_BAND_HIGH.downcase
       methods.prepend VERIFICATION_METHODS[:PHONE_NUMBER] if phone_number_verification_enabled?
       methods.prepend VERIFICATION_METHODS[:CREDIT_CARD] if credit_card_verification_enabled?
-    when 'medium'
+    when Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase
       methods.prepend VERIFICATION_METHODS[:PHONE_NUMBER] if phone_number_verification_enabled?
     end
 
@@ -75,7 +75,7 @@ module IdentityVerifiable
   end
 
   def arkose_risk_band
-    risk_band_attr = custom_attributes.by_key('arkose_risk_band').first
+    risk_band_attr = custom_attributes.by_key(UserCustomAttribute::ARKOSE_RISK_BAND).first
     return unless risk_band_attr.present?
 
     risk_band_attr.value.downcase

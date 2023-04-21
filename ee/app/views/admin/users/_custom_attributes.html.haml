@@ -1,0 +1,11 @@
+.gl-border-b.gl-pb-6.gl-mb-6
+  .row
+    .col-lg-4
+      %h4.gl-mt-0
+        = _('Custom Attributes')
+    .col-lg-8
+      = f.fields_for :custom_attributes do |ff|
+        - if ff.object.key == UserCustomAttribute::ARKOSE_RISK_BAND
+          .gl-form-group{ role: 'group' }
+            = ff.label :value, ff.object.key, class: 'gl-display-block col-form-label'
+            = ff.select :value, Arkose::VerifyResponse::ARKOSE_RISK_BANDS, { allow_blank: false }, class: 'form-control'

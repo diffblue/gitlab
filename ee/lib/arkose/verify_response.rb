@@ -7,6 +7,10 @@ module Arkose
     InvalidResponseFormatError = Class.new(StandardError)
 
     ALLOWLIST_TELLTALE = 'gitlab1-whitelist-qa-team'
+    RISK_BAND_HIGH = 'High'
+    RISK_BAND_MEDIUM = 'Medium'
+    RISK_BAND_LOW = 'Low'
+    ARKOSE_RISK_BANDS = [RISK_BAND_LOW, RISK_BAND_MEDIUM, RISK_BAND_HIGH].freeze
 
     def initialize(response)
       unless response.is_a? Hash
