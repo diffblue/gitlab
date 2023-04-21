@@ -1,8 +1,8 @@
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlButton, GlSprintf } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlFormInputGroup } from '@gitlab/ui';
 import { createAlert } from '~/alert';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
@@ -24,12 +24,14 @@ describe('StreamItem', () => {
   const destinationWithoutFilters = mockExternalDestinations[0];
   const destinationWithFilters = mockExternalDestinations[1];
   const defaultDeleteSpy = jest.fn().mockResolvedValue(destinationDeleteMutationPopulator());
+  const showModalSpy = jest.fn();
 
   const createComponent = (props = {}, deleteExternalDestinationSpy = defaultDeleteSpy) => {
     const mockApollo = createMockApollo([
       [deleteExternalDestination, deleteExternalDestinationSpy],
     ]);
-    wrapper = shallowMountExtended(StreamItem, {
+    wrapper = mountExtended(StreamItem, {
+      attachTo: document.body,
       apolloProvider: mockApollo,
       propsData: {
         item: destinationWithoutFilters,
@@ -37,14 +39,21 @@ describe('StreamItem', () => {
         ...props,
       },
       stubs: {
-        GlButton,
-        GlSprintf,
+        StreamDestinationEditor: true,
+        GlModal: {
+          template: '<div class="modal-stub"><slot></slot></div>',
+          methods: {
+            show: showModalSpy,
+          },
+        },
       },
     });
   };
 
   const findEditButton = () => wrapper.findByTestId('edit-btn');
   const findDeleteButton = () => wrapper.findByTestId('delete-btn');
+  const findViewButton = () => wrapper.findByTestId('view-btn');
+  const findActionsDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findEditor = () => wrapper.findComponent(StreamDestinationEditor);
   const findFilterBadge = () => wrapper.findByTestId('filter-badge');
 
@@ -57,35 +66,22 @@ describe('StreamItem', () => {
       createComponent();
     });
 
-    it('should render correctly', () => {
-      expect(wrapper.element).toMatchSnapshot();
-    });
-
     it('should not show the editor', () => {
       expect(findEditor().exists()).toBe(false);
-    });
-
-    it('should show the edit button', () => {
-      expect(findEditButton().exists()).toBe(true);
     });
   });
 
   describe('deleting', () => {
-    it('should emit deleted with item id', async () => {
+    it('should emit deleted on success operation', async () => {
       createComponent();
       const deleteBtn = findDeleteButton();
-      const editBtn = findEditButton();
-      deleteBtn.vm.$emit('click');
-      await nextTick();
+      await deleteBtn.trigger('click');
 
-      expect(editBtn.props('disabled')).toBe(true);
-      expect(deleteBtn.props('loading')).toBe(true);
-
+      expect(findActionsDropdown().props('loading')).toBe(true);
       await waitForPromises();
 
+      expect(findActionsDropdown().props('loading')).toBe(false);
       expect(wrapper.emitted('deleted')).toBeDefined();
-      expect(editBtn.props('disabled')).toBe(false);
-      expect(deleteBtn.props('loading')).toBe(false);
       expect(createAlert).not.toHaveBeenCalled();
     });
 
@@ -96,19 +92,14 @@ describe('StreamItem', () => {
         .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
       createComponent({}, deleteExternalDestinationErrorSpy);
       const deleteBtn = findDeleteButton();
-      const editBtn = findEditButton();
 
-      deleteBtn.vm.$emit('click');
-      await nextTick();
+      await deleteBtn.trigger('click');
 
-      expect(editBtn.props('disabled')).toBe(true);
-      expect(deleteBtn.props('loading')).toBe(true);
-
+      expect(findActionsDropdown().props('loading')).toBe(true);
       await waitForPromises();
 
+      expect(findActionsDropdown().props('loading')).toBe(false);
       expect(wrapper.emitted('deleted')).toBeUndefined();
-      expect(editBtn.props('disabled')).toBe(false);
-      expect(deleteBtn.props('loading')).toBe(false);
       expect(wrapper.emitted('error')).toBeDefined();
       expect(createAlert).toHaveBeenCalledWith({
         message: errorMsg,
@@ -120,19 +111,15 @@ describe('StreamItem', () => {
       createComponent({}, jest.fn().mockRejectedValue(error));
 
       const deleteBtn = findDeleteButton();
-      const editBtn = findEditButton();
 
-      deleteBtn.vm.$emit('click');
-      await nextTick();
+      await deleteBtn.trigger('click');
 
-      expect(editBtn.props('disabled')).toBe(true);
-      expect(deleteBtn.props('loading')).toBe(true);
-
+      expect(findActionsDropdown().props('loading')).toBe(true);
       await waitForPromises();
 
+      expect(findActionsDropdown().props('loading')).toBe(false);
+
       expect(wrapper.emitted('deleted')).toBeUndefined();
-      expect(editBtn.props('disabled')).toBe(false);
-      expect(deleteBtn.props('loading')).toBe(false);
       expect(wrapper.emitted('error')).toBeDefined();
       expect(createAlert).toHaveBeenCalledWith({
         message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
@@ -145,12 +132,7 @@ describe('StreamItem', () => {
   describe('editing', () => {
     beforeEach(async () => {
       createComponent();
-      findEditButton().vm.$emit('click');
-      await nextTick();
-    });
-
-    it('should render correctly', () => {
-      expect(wrapper.element).toMatchSnapshot();
+      await findEditButton().trigger('click');
     });
 
     it('should pass the item to the editor', () => {
@@ -179,6 +161,17 @@ describe('StreamItem', () => {
 
       expect(findEditor().exists()).toBe(false);
     });
+  });
+
+  it('should show modal when viewing token', async () => {
+    createComponent();
+
+    await findViewButton().trigger('click');
+
+    expect(showModalSpy).toHaveBeenCalled();
+    expect(
+      wrapper.findComponent('.modal-stub').findComponent(GlFormInputGroup).props('value'),
+    ).toBe(destinationWithoutFilters.verificationToken);
   });
 
   describe('when an item has event filters', () => {
