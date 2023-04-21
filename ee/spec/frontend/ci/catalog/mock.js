@@ -31,13 +31,14 @@ const generateCatalogResourcesResponse = ({
     endCursor: 'aaaasdsad23dfadassdsa',
     startCursor: 'aaaasdsad23dfadassdsa',
   },
+  totalCount = nodes.length,
 }) => {
   return {
     data: {
       ciCatalogResources: {
         __typename: 'CiCatalogResourceConnection',
         pageInfo,
-        count: nodes.length,
+        count: totalCount,
         nodes,
       },
     },
@@ -71,11 +72,11 @@ export const generateCatalogResponseWithOnlyOnePage = () => {
 
 export const generateCatalogResponse = () => {
   const nodes = generateResourcesNodes();
-  return generateCatalogResourcesResponse({ nodes });
+  return generateCatalogResourcesResponse({ nodes, totalCount: 25 });
 };
 
 export const generateCatalogResponsePage2 = () => {
-  const nodes = generateResourcesNodes(5, 20);
+  const nodes = generateResourcesNodes(20, 20);
   return generateCatalogResourcesResponse({
     nodes,
     pageInfo: {
@@ -84,6 +85,7 @@ export const generateCatalogResponsePage2 = () => {
       startCursor: 'bbbbbbbbbb',
       endCursor: 'ccccccccccc',
     },
+    totalCount: 70,
   });
 };
 
@@ -97,5 +99,6 @@ export const generateCatalogResponseLastPage = () => {
       startCursor: 'bbbbbbbbbb',
       endCursor: 'ccccccccccc',
     },
+    totalCount: 39,
   });
 };

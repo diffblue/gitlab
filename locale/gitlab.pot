@@ -9137,6 +9137,9 @@ msgstr ""
 msgid "CiCatalog|Learn more"
 msgstr ""
 
+msgid "CiCatalog|Page %{currentPage} of %{totalPage}"
+msgstr ""
+
 msgid "CiCatalog|Released %{timeAgo} by %{author}"
 msgstr ""
 
