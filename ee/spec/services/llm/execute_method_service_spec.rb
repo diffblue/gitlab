@@ -52,5 +52,81 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
 
       it { is_expected.to be_error.and have_attributes(message: eq('Unknown method')) }
     end
+
+    context 'with snowplow events' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:epic) { create(:epic, group: group) }
+      let_it_be(:user) { create(:user) }
+
+      let(:resource) { create(:issue, project: project) }
+      let(:method) { :summarize_comments }
+      let(:service_class) { Llm::GenerateSummaryService }
+      let(:success) { true }
+
+      let_it_be(:default_params) do
+        {
+          category: described_class.to_s,
+          action: 'execute_llm_method',
+          property: 'success',
+          label: 'summarize_comments',
+          user: user,
+          namespace: group,
+          project: project
+        }
+      end
+
+      before do
+        allow_next_instance_of(service_class, user, resource, {}) do |instance|
+          allow(instance)
+            .to receive(:execute)
+            .and_return(
+              instance_double(ServiceResponse, success?: success, error?: !success, payload: nil, message: nil)
+            )
+        end
+      end
+
+      shared_examples 'successful tracking' do
+        it 'tracks a snowplow event' do
+          subject
+
+          expect_snowplow_event(**expected_params)
+        end
+      end
+
+      context 'when resource is an issue' do
+        let(:expected_params) { default_params }
+
+        it_behaves_like 'successful tracking'
+      end
+
+      context 'when resource is a project' do
+        let(:resource) { project }
+        let(:expected_params) { default_params }
+
+        it_behaves_like 'successful tracking'
+      end
+
+      context 'when resource is a group' do
+        let(:resource) { group }
+        let(:expected_params) { default_params.merge(project: nil) }
+
+        it_behaves_like 'successful tracking'
+      end
+
+      context 'when resource is an epic' do
+        let(:resource) { epic }
+        let(:expected_params) { default_params.merge(project: nil) }
+
+        it_behaves_like 'successful tracking'
+      end
+
+      context 'when service responds with an error' do
+        let(:success) { false }
+        let(:expected_params) { default_params.merge(property: "error") }
+
+        it_behaves_like 'successful tracking'
+      end
+    end
   end
 end
