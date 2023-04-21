@@ -66,5 +66,25 @@ RSpec.describe ::Zoekt::IndexerWorker, feature_category: :global_search do
         subject.perform(project.id)
       end
     end
+
+    context 'when the project has no repository' do
+      let(:project) { create(:project) }
+
+      it 'does nothing' do
+        expect(project.repository).not_to receive(:update_zoekt_index!)
+
+        subject.perform(project.id)
+      end
+    end
+
+    context 'when the project has an empty repository' do
+      let(:project) { create(:project_empty_repo) }
+
+      it 'does nothing' do
+        expect(project.repository).not_to receive(:update_zoekt_index!)
+
+        subject.perform(project.id)
+      end
+    end
   end
 end

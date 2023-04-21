@@ -20,6 +20,8 @@ module Zoekt
 
       project = Project.find(project_id)
       return true unless project.use_zoekt?
+      return true unless project.repository_exists?
+      return true if project.empty_repo?
 
       in_lock("#{self.class.name}/#{project_id}", ttl: (TIMEOUT + 1.minute), retries: 0) do
         project.repository.update_zoekt_index!
