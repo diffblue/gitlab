@@ -28891,9 +28891,6 @@ msgstr ""
 msgid "Navigation|There was an error fetching search results."
 msgstr ""
 
-msgid "Navigation|Toggle edit mode"
-msgstr ""
-
 msgid "Navigation|Unpin item"
 msgstr ""
 
