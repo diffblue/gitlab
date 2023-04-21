@@ -60,7 +60,8 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         expect(find('.issuable-details .description')).to have_content('New epic description')
       end
 
-      it 'updates the epic and keep the description saved across reload' do
+      it 'updates the epic and keep the description saved across reload',
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/408227' do
         fill_in 'issue-description', with: 'New epic description'
 
         page.within('.detail-page-description') do
