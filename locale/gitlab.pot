@@ -18704,6 +18704,9 @@ msgid_plural "Free groups are limited to %{free_user_limit} members and the rema
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Free trial will expire in %{days}"
+msgstr ""
+
 msgid "FreeUserCap|Alternatively you can upgrade to GitLab Premium or GitLab Ultimate:"
 msgstr ""
 
@@ -18843,6 +18846,9 @@ msgid "Geo"
 msgstr ""
 
 msgid "Geo Replication"
+msgstr ""
+
+msgid "Geo Replication - %{node_name}"
 msgstr ""
 
 msgid "Geo Settings"
@@ -35459,6 +35465,9 @@ msgstr ""
 msgid "PrometheusService|These metrics will only be monitored after your first deployment to an environment"
 msgstr ""
 
+msgid "PrometheusService|To set up automatic monitoring, add the environment variable %{variable} to exporter's queries."
+msgstr ""
+
 msgid "PrometheusService|To use a Prometheus installed on a cluster, deactivate the manual configuration."
 msgstr ""
 
@@ -51209,6 +51218,9 @@ msgid "Your %{group} membership will now expire in %{days}."
 msgstr ""
 
 msgid "Your %{plan_name} subscription will expire on %{expires_on}"
+msgstr ""
+
+msgid "Your %{plan} plan will be applied to your group."
 msgstr ""
 
 msgid "Your %{spammable_entity_type} has been recognized as spam and has been discarded."
