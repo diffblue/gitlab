@@ -22,6 +22,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
     subject { service.execute }
 
+    context 'when actions are not provided' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: nil) }
+
+      it 'does not create approval project rules' do
+        expect { subject }.not_to change { project.approval_rules.count }
+      end
+    end
+
     context 'without any require_approval action' do
       let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'another_one' }]) }
 
@@ -188,6 +196,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
             expect(project.approval_rules.first.approvers).to include(other_user)
           end
         end
+      end
+    end
+
+    context 'when rules are not provided' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval' }], rules: nil) }
+
+      it 'does not create approval project rules' do
+        expect { subject }.not_to change { project.approval_rules.count }
       end
     end
 
