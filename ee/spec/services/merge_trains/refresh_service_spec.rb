@@ -9,7 +9,7 @@ RSpec.describe MergeTrains::RefreshService, feature_category: :merge_trains do
   let_it_be(:maintainer_1) { create(:user) }
   let_it_be(:maintainer_2) { create(:user) }
 
-  let(:service) { described_class.new(project, maintainer_1) }
+  let(:service) { described_class.new(merge_request.target_project_id, merge_request.target_branch) }
 
   before do
     project.add_maintainer(maintainer_1)
@@ -17,7 +17,7 @@ RSpec.describe MergeTrains::RefreshService, feature_category: :merge_trains do
   end
 
   describe '#execute', :clean_gitlab_redis_queues do
-    subject { service.execute(merge_request.target_project_id, merge_request.target_branch) }
+    subject { service.execute }
 
     let!(:merge_request_1) do
       create(:merge_request, :on_train,
