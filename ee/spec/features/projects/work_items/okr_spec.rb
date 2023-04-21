@@ -88,7 +88,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
   context 'for objective' do
     before do
-      visit project_work_items_path(project, work_items_path: objective.id)
+      visit project_work_items_path(project, work_items_path: objective.iid)
     end
 
     let(:work_item) { objective }
@@ -173,13 +173,6 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         end
       end
     end
-  end
-
-  context 'with fetch by iid' do
-    before do
-      visit project_work_items_path(project, objective.iid, iid_path: true)
-      wait_for_all_requests
-    end
 
     it 'creates objective' do
       create_okr('objective', 'Objective 2')
@@ -229,7 +222,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
         click_button 'Close'
       end
 
-      visit project_work_items_path(project, objective.iid, iid_path: true)
+      visit project_work_items_path(project, objective.iid)
       wait_for_all_requests
 
       page.within('[data-testid="widget-body"]') do
@@ -270,7 +263,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
 
   context 'for keyresult' do
     before do
-      visit project_work_items_path(project, work_items_path: key_result.id)
+      visit project_work_items_path(project, work_items_path: key_result.iid)
     end
 
     let(:work_item) { key_result }

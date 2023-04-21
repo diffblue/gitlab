@@ -7,7 +7,7 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { TYPENAME_ISSUE, TYPENAME_WORK_ITEM } from '~/graphql_shared/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import getIssueDetailsQuery from 'ee_else_ce/work_items/graphql/get_issue_details.query.graphql';
-import { isMetaKey, parseBoolean } from '~/lib/utils/common_utils';
+import { isMetaKey } from '~/lib/utils/common_utils';
 import { getParameterByName, setUrlParams, updateHistory } from '~/lib/utils/url_utility';
 
 import {
@@ -143,7 +143,7 @@ export default {
       return this.isLoading && this.children.length === 0 ? '...' : this.children.length;
     },
     fetchByIid() {
-      return parseBoolean(getParameterByName('iid_path'));
+      return true;
     },
   },
   mounted() {
