@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Groups::Analytics::CiCdAnalyticsController < Groups::Analytics::ApplicationController
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   layout 'group'
 
@@ -9,21 +9,21 @@ class Groups::Analytics::CiCdAnalyticsController < Groups::Analytics::Applicatio
   before_action -> { authorize_view_by_action!(:view_group_ci_cd_analytics) }
   before_action -> { push_frontend_feature_flag(:dora_charts_forecast, @group) }
 
-  track_redis_hll_event :show,
+  track_event :show,
     name: 'g_analytics_ci_cd_release_statistics',
-    if: -> { should_track_ci_cd_release_statistics? }
-  track_redis_hll_event :show,
+    conditions: -> { should_track_ci_cd_release_statistics? }
+  track_event :show,
     name: 'g_analytics_ci_cd_deployment_frequency',
-    if: -> { should_track_ci_cd_deployment_frequency? }
-  track_redis_hll_event :show,
+    conditions: -> { should_track_ci_cd_deployment_frequency? }
+  track_event :show,
     name: 'g_analytics_ci_cd_lead_time',
-    if: -> { should_track_ci_cd_lead_time? }
-  track_redis_hll_event :show,
+    conditions: -> { should_track_ci_cd_lead_time? }
+  track_event :show,
     name: 'g_analytics_ci_cd_time_to_restore_service',
-    if: -> { should_track_ci_cd_time_to_restore_service? }
-  track_redis_hll_event :show,
+    conditions: -> { should_track_ci_cd_time_to_restore_service? }
+  track_event :show,
     name: 'g_analytics_ci_cd_change_failure_rate',
-    if: -> { should_track_ci_cd_change_failure_rate? }
+    conditions: -> { should_track_ci_cd_change_failure_rate? }
 
   def show
   end
