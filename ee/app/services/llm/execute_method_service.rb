@@ -21,6 +21,7 @@ module Llm
 
       result = METHODS[method].new(user, resource, options).execute
 
+      track_snowplow_event(result)
       return success(result.payload) if result.success?
 
       error(result.message)
@@ -29,5 +30,43 @@ module Llm
     private
 
     attr_reader :method
+
+    def track_snowplow_event(result)
+      Gitlab::Tracking.event(
+        self.class.to_s,
+        "execute_llm_method",
+        label: method.to_s,
+        property: result.success? ? "success" : "error",
+        user: user,
+        namespace: namespace,
+        project: project
+      )
+    end
+
+    def namespace
+      case resource
+      when Group
+        resource
+      when Project
+        resource.group
+      else
+        case resource&.resource_parent
+        when Group
+          resource.resource_parent
+        when Project
+          resource.resource_parent.group
+        end
+      end
+    end
+
+    def project
+      if resource.is_a?(Project)
+        resource
+      elsif resource.is_a?(Group)
+        nil
+      elsif resource&.resource_parent.is_a?(Project)
+        resource.resource_parent
+      end
+    end
   end
 end
