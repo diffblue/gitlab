@@ -34,12 +34,14 @@ FactoryBot.define do
         report = Security::MergeReportsService.new(report).execute
 
         report.findings.each do |finding|
-          create(:security_finding,
-                 severity: finding.severity,
-                 confidence: finding.confidence,
-                 uuid: finding.uuid,
-                 deduplicated: true,
-                 scan: scan)
+          create(
+            :security_finding,
+            severity: finding.severity,
+            confidence: finding.confidence,
+            uuid: finding.uuid,
+            deduplicated: true,
+            scan: scan
+          )
         end
       end
       # rubocop:enable RSpec/FactoryBot/StrategyInCallback

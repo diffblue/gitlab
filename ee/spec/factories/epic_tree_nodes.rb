@@ -16,10 +16,13 @@ FactoryBot.define do
       key = object_type == :epic ? :parent : :epic
       extras = object_type == :epic ? { group: g } : {}
 
-      obj = FactoryBot.build(object_type,
-                       **extras,
-                       key => parent,
-                       relative_position: relative_position)
+      obj = FactoryBot.build(
+        object_type,
+        **extras,
+        key => parent,
+        relative_position: relative_position
+      )
+
       obj
     end
   end

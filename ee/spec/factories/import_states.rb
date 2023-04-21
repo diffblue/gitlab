@@ -10,9 +10,11 @@ FactoryBot.modify do
 
       before(:create) do |import_state, evaluator|
         project = import_state.project
-        project.update_columns(mirror: evaluator.mirror,
-                               import_url: evaluator.import_url,
-                               mirror_user_id: project.creator_id)
+        project.update_columns(
+          mirror: evaluator.mirror,
+          import_url: evaluator.import_url,
+          mirror_user_id: project.creator_id
+        )
       end
     end
 

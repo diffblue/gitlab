@@ -178,19 +178,18 @@ FactoryBot.define do
 
     trait :with_dismissal_feedback do
       after(:create) do |finding|
-        create(:vulnerability_feedback,
-               :dismissal,
-               project: finding.project,
-               finding_uuid: finding.uuid)
+        create(:vulnerability_feedback, :dismissal, project: finding.project, finding_uuid: finding.uuid)
       end
     end
 
     trait :with_issue_feedback do
       after(:create) do |finding|
-        create(:vulnerability_feedback,
-               :issue,
-               project: finding.project,
-               project_fingerprint: finding.project_fingerprint)
+        create(
+          :vulnerability_feedback,
+          :issue,
+          project: finding.project,
+          project_fingerprint: finding.project_fingerprint
+        )
       end
     end
 
