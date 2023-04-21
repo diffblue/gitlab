@@ -8,7 +8,6 @@ import JobsTable from '~/jobs/components/table/jobs_table.vue';
 import JobsTableTabs from '~/jobs/components/table/jobs_table_tabs.vue';
 import getJobsQuery from '~/pages/admin/jobs/components/table/graphql/queries/get_all_jobs.query.graphql';
 import AdminJobsTableApp from '~/pages/admin/jobs/components/table/admin_jobs_table_app.vue';
-import JobsTableTabs from '~/jobs/components/table/jobs_table_tabs.vue';
 import JobsSkeletonLoader from '~/pages/admin/jobs/components/jobs_skeleton_loader.vue';
 
 import {
@@ -29,7 +28,6 @@ describe('Job table app', () => {
   const findSkeletonLoader = () => wrapper.findComponent(JobsSkeletonLoader);
   const findLoadingSpinner = () => wrapper.findComponent(GlLoadingIcon);
   const findTable = () => wrapper.findComponent(JobsTable);
-  const findTabs = () => wrapper.findComponent(JobsTableTabs);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findTabs = () => wrapper.findComponent(JobsTableTabs);
