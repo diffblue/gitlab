@@ -18,7 +18,7 @@ import HiddenFilesWarning from '~/diffs/components/hidden_files_warning.vue';
 
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { Mousetrap } from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/mousetrap';
 import * as urlUtils from '~/lib/utils/url_utility';
 import { stubPerformanceWebAPI } from 'helpers/performance';
 import createDiffsStore from '../create_diffs_store';

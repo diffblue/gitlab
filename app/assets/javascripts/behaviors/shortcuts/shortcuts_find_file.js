@@ -5,7 +5,7 @@ import {
   PROJECT_FILES_OPEN_SELECTION,
   PROJECT_FILES_GO_BACK,
 } from '~/behaviors/shortcuts/keybindings';
-import { addStopCallback } from '~/lib/utils/mousetrap';
+import { addStopCallback } from '~/lib/mousetrap';
 import ShortcutsNavigation from './shortcuts_navigation';
 
 export default class ShortcutsFindFile extends ShortcutsNavigation {

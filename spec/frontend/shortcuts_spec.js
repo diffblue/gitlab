@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import { flatten } from 'lodash';
-import { Mousetrap } from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/mousetrap';
 import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import Shortcuts, { LOCAL_MOUSETRAP_DATA_KEY } from '~/behaviors/shortcuts/shortcuts';
 

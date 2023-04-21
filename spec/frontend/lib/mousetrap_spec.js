@@ -24,7 +24,7 @@ describe('mousetrap utils', () => {
 
     beforeEach(async () => {
       // Import async since it mutates the Mousetrap instance, by design.
-      ({ addStopCallback, clearStopCallbacksForTests } = await import('~/lib/utils/mousetrap'));
+      ({ addStopCallback, clearStopCallbacksForTests } = await import('~/lib/mousetrap'));
       clearStopCallbacksForTests();
     });
 

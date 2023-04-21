@@ -13,7 +13,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { createAlert } from '~/alert';
 import invalidUrl from '~/lib/utils/invalid_url';
 import { ESC_KEY } from '~/lib/utils/keys';
-import { Mousetrap } from '~/lib/utils/mousetrap';
+import { Mousetrap } from '~/lib/mousetrap';
 import { mergeUrlParams, updateHistory } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import { defaultTimeRange } from '~/vue_shared/constants';
