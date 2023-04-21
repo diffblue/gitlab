@@ -31,6 +31,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   end
 
   before do
+    allow(response_double).to receive(:server_error?).and_return(false)
     allow(response_double).to receive(:too_many_requests?).and_return(false)
     allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
       allow(open_ai_client).to receive(method).with(hash_including(expected_options)).and_return(response_double)

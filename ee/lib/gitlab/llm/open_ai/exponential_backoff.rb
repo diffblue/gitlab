@@ -4,9 +4,12 @@ module Gitlab
   module Llm
     module OpenAi
       module ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::CircuitBreaker
+
         INITIAL_DELAY = 1.second
         EXPONENTIAL_BASE = 2
         MAX_RETRIES = 3
+
         RateLimitError = Class.new(StandardError)
 
         def self.included(base)
@@ -18,8 +21,16 @@ module Gitlab
             original_method = instance_method(method_name)
 
             define_method(method_name) do |*args, **kwargs|
-              retry_with_exponential_backoff do
-                original_method.bind_call(self, *args, **kwargs)
+              if Feature.enabled?(:circuit_breaker, type: :ops)
+                run_with_circuit do
+                  retry_with_exponential_backoff do
+                    original_method.bind_call(self, *args, **kwargs)
+                  end
+                end
+              else
+                retry_with_exponential_backoff do
+                  original_method.bind_call(self, *args, **kwargs)
+                end
               end
             end
           end
@@ -35,6 +46,7 @@ module Gitlab
             response = yield
 
             return if response.nil?
+            raise InternalServerError if response.server_error? && Feature.enabled?(:circuit_breaker, type: :ops)
             return response unless response.too_many_requests?
 
             retries += 1
@@ -44,6 +56,10 @@ module Gitlab
             sleep delay
             next
           end
+        end
+
+        def service_name
+          'open_ai'
         end
       end
     end
