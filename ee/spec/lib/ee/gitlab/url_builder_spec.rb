@@ -18,8 +18,8 @@ RSpec.describe Gitlab::UrlBuilder do
 
       :group_wiki            | ->(wiki)          { "/groups/#{wiki.container.full_path}/-/wikis/home" }
 
-      [:issue, :objective]   | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}?iid_path=true" }
-      [:issue, :key_result]  | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}?iid_path=true" }
+      [:issue, :objective]   | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}" }
+      [:issue, :key_result]  | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}" }
     end
 
     with_them do

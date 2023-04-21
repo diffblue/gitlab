@@ -12,7 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import {
   workItemDatesSubscriptionResponse,
   workItemTitleSubscriptionResponse,
-  workItemResponseFactory,
+  workItemByIidResponseFactory as workItemResponseFactory,
   workItemWeightSubscriptionResponse,
   workItemAssigneesSubscriptionResponse,
   workItemIterationSubscriptionResponse,
@@ -20,7 +20,7 @@ import {
   workItemHealthStatusSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
-import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import workItemDatesSubscription from '~/graphql_shared/subscriptions/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
 import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
@@ -65,7 +65,7 @@ describe('WorkItemDetail component', () => {
   } = {}) => {
     wrapper = shallowMount(WorkItemDetail, {
       apolloProvider: createMockApollo([
-        [workItemQuery, handler],
+        [workItemByIidQuery, handler],
         [workItemDatesSubscription, datesSubscriptionHandler],
         [workItemTitleSubscription, titleSubscriptionHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
@@ -87,7 +87,8 @@ describe('WorkItemDetail component', () => {
         fullPath: 'group/project',
       },
       propsData: {
-        workItemId: workItemQueryResponse.data.workItem.id,
+        workItemId: workItemQueryResponse.data.workspace.workItems.nodes[0].id,
+        workItemIid: '1',
       },
     });
   };

@@ -14,7 +14,6 @@ import {
 import noAccessSvg from '@gitlab/svgs/dist/illustrations/analytics/no-access.svg';
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
-import { parseBoolean } from '~/lib/utils/common_utils';
 import { getParameterByName, updateHistory, setUrlParams } from '~/lib/utils/url_utility';
 import { isPositiveInteger } from '~/lib/utils/number_utils';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -306,7 +305,7 @@ export default {
       return this.isWidgetPresent(WIDGET_TYPE_NOTES);
     },
     fetchByIid() {
-      return parseBoolean(getParameterByName('iid_path'));
+      return true;
     },
     queryVariables() {
       return this.fetchByIid
