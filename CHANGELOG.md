@@ -817,6 +817,12 @@ entry.
 - [Update header section](gitlab-org/gitlab@cf4ab283267d84fa1c0dc90fefb1b6ddd2617b5c) ([merge request](gitlab-org/gitlab!114102)) **GitLab Enterprise Edition**
 - [Swap merge_request_user_mentions.note_id to bigint](gitlab-org/gitlab@96baed47326db4f0cc9f60b2e74215211effd814) ([merge request](gitlab-org/gitlab!113928))
 
+## 15.10.4 (2023-04-21)
+
+### Fixed (1 change)
+
+- [Patch mail gem to handle TLS settings properly](gitlab-org/gitlab@cd4cfc46e17c91dbf5ef10ab1ca0a473d6b2a4d6) ([merge request](gitlab-org/gitlab!117559))
+
 ## 15.10.3 (2023-04-14)
 
 ### Fixed (3 changes)
