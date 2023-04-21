@@ -7,7 +7,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
 
   describe '#subscription_plan_data_attributes' do
     let(:group) { build(:group) }
-    let(:customer_portal_url) { EE::SUBSCRIPTIONS_MANAGE_URL }
+    let(:customer_portal_url) { Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL }
     let(:add_seats_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats" }
     let(:plan_renew_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew" }
     let(:billable_seats_href) { helper.group_usage_quotas_path(group, anchor: 'seats-quota-tab') }

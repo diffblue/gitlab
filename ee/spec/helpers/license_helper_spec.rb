@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe LicenseHelper do
+RSpec.describe LicenseHelper, feature_category: :subscription_management do
   def stub_default_url_options(host: "localhost", protocol: "http", port: nil, script_name: '')
     url_options = { host: host, protocol: protocol, port: port, script_name: script_name }
     allow(Rails.application.routes).to receive(:default_url_options).and_return(url_options)
@@ -81,7 +81,7 @@ RSpec.describe LicenseHelper do
 
   describe '#cloud_license_view_data' do
     before do
-      stub_const('::EE::SUBSCRIPTIONS_MANAGE_URL', 'subscriptions_manage_url')
+      stub_const('::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL', 'subscriptions_manage_url')
 
       allow(helper).to receive(:new_trial_url).and_return('new_trial_url')
     end

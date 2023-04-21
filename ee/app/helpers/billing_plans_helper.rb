@@ -52,7 +52,7 @@ module BillingPlansHelper
       namespace_name: namespace.name,
       add_seats_href: add_seats_url(namespace),
       plan_renew_href: plan_renew_url(namespace),
-      customer_portal_url: EE::SUBSCRIPTIONS_MANAGE_URL,
+      customer_portal_url: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL,
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name,
       read_only: read_only.to_s,
