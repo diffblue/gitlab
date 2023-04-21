@@ -1482,6 +1482,21 @@ RSpec.describe User, feature_category: :system_access do
       end
     end
 
+    context 'when passed a plan' do
+      it 'calculates association for that plan' do
+        bronze_group.add_reporter(user)
+
+        expect(user.has_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
+        expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
+      end
+
+      it 'calculates association to multiple plans' do
+        free_group.add_owner(user)
+
+        expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
+      end
+    end
+
     describe '#owns_paid_namespace?', :saas do
       context 'when the user is an owner of at least one paid group' do
         it 'returns true' do

@@ -175,6 +175,7 @@ module GitlabSubscriptions
     ].freeze
 
     ULTIMATE_FEATURES = %i[
+      ai_tanuki_bot
       api_discovery
       api_fuzzing
       auto_rollback
