@@ -12,11 +12,16 @@ module QA
               element :add_sync_button
               element :ldap_group_field
               element :ldap_sync_group_radio
+              element :ldap_sync_user_filter_radio
               element :ldap_user_filter_field
             end
 
             def set_ldap_group_sync_method
-              choose_element(:ldap_sync_group_radio)
+              check_element(:ldap_sync_group_radio, true)
+            end
+
+            def set_ldap_user_filter_sync_method
+              check_element(:ldap_sync_user_filter_radio, true)
             end
 
             def set_group_cn(group_cn)
