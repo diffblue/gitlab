@@ -95,6 +95,15 @@ export default {
       this.count = newCount;
     },
   },
+  methods: {
+    fetchJobsByStatus(scope) {
+      this.infiniteScrollingTriggered = false;
+
+      this.scope = scope;
+
+      this.$apollo.queries.jobs.refetch({ statuses: scope });
+    },
+  },
 };
 </script>
 
@@ -104,7 +113,11 @@ export default {
       {{ error }}
     </gl-alert>
 
-    <jobs-table-tabs :all-jobs-count="count" :loading="loading" />
+    <jobs-table-tabs
+      :all-jobs-count="count"
+      :loading="loading"
+      @fetchJobsByStatus="fetchJobsByStatus"
+    />
 
     <jobs-table-empty-state v-if="showEmptyState" />
 
