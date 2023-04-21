@@ -58,7 +58,7 @@ module LicenseHelper
   def cloud_license_view_data
     {
       buy_subscription_path: Gitlab::Saas.about_pricing_url,
-      customers_portal_url: ::EE::SUBSCRIPTIONS_MANAGE_URL,
+      customers_portal_url: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL,
       free_trial_path: new_trial_url,
       has_active_license: (has_active_license? ? 'true' : 'false'),
       license_remove_path: admin_license_path,

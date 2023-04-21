@@ -16,8 +16,8 @@ module SubscriptionPortalHelpers
         headers: {
           'Accept' => 'application/json',
           'Content-Type' => 'application/json',
-          'X-Admin-Email' => EE::SUBSCRIPTION_PORTAL_ADMIN_EMAIL,
-          'X-Admin-Token' => EE::SUBSCRIPTION_PORTAL_ADMIN_TOKEN
+          'X-Admin-Email' => Gitlab::SubscriptionPortal::SUBSCRIPTION_PORTAL_ADMIN_EMAIL,
+          'X-Admin-Token' => Gitlab::SubscriptionPortal::SUBSCRIPTION_PORTAL_ADMIN_TOKEN
         }
       )
       .to_return(
