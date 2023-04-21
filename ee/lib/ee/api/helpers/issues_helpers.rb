@@ -30,9 +30,9 @@ module EE
             optional :weight, types: [Integer, String], integer_none_any: true, desc: 'The weight of the issue'
             optional :epic_id, types: [Integer, String], integer_none_any: true, desc: 'The ID of an epic associated with the issues'
             optional :health_status,
-                     type: String,
-                     values: ::IssuesFinder::Params::VALID_HEALTH_STATUS_PARAMS,
-                     desc: "The health status of the issue. Must be one of: #{::IssuesFinder::Params::VALID_HEALTH_STATUS_PARAMS.join(", ")}"
+              type: String,
+              values: ::IssuesFinder::Params::VALID_HEALTH_STATUS_PARAMS,
+              desc: "The health status of the issue. Must be one of: #{::IssuesFinder::Params::VALID_HEALTH_STATUS_PARAMS.join(", ")}"
             optional :iteration_id,
               types: [Integer, String],
               integer_or_custom_value: ::Iteration::Predefined::ALL.map { |iteration| iteration.name.downcase },

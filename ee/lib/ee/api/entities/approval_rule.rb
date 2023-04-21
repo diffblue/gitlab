@@ -10,7 +10,7 @@ module EE
         end
 
         expose :approvers, as: :eligible_approvers,
-                           using: ::API::Entities::UserBasic, documentation: { is_array: true }
+          using: ::API::Entities::UserBasic, documentation: { is_array: true }
         expose :approvals_required, documentation: { type: 'integer', example: 2 }
         expose :users, using: ::API::Entities::UserBasic, documentation: { is_array: true }
         expose :groups, using: ::API::Entities::Group, documentation: { is_array: true }

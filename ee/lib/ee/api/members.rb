@@ -130,13 +130,13 @@ module EE
             result = BilledUsersFinder.new(group, search_term: params[:search], order_by: sorting).execute
 
             present paginate(result[:users]),
-                    with: ::EE::API::Entities::BillableMember,
-                    current_user: current_user,
-                    group: group,
-                    group_member_user_ids: result[:group_member_user_ids],
-                    project_member_user_ids: result[:project_member_user_ids],
-                    shared_group_user_ids: result[:shared_group_user_ids],
-                    shared_project_user_ids: result[:shared_project_user_ids]
+              with: ::EE::API::Entities::BillableMember,
+              current_user: current_user,
+              group: group,
+              group_member_user_ids: result[:group_member_user_ids],
+              project_member_user_ids: result[:project_member_user_ids],
+              shared_group_user_ids: result[:shared_group_user_ids],
+              shared_project_user_ids: result[:shared_project_user_ids]
           end
 
           desc 'Changes the state of the memberships of a user in the group'

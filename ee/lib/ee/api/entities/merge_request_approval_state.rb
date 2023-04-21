@@ -9,7 +9,7 @@ module EE
         end
 
         expose :wrapped_approval_rules, as: :rules,
-                                        using: MergeRequestApprovalStateRule, documentation: { is_array: true }
+          using: MergeRequestApprovalStateRule, documentation: { is_array: true }
       end
     end
   end
