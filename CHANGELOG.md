@@ -1596,6 +1596,12 @@ entry.
 
 - [Update submit buttons to use Pajamas component](gitlab-org/gitlab@4ffb92755e6be3268c78f02e471f5c2a21f437be) ([merge request](gitlab-org/gitlab!114246))
 
+## 15.9.5 (2023-04-21)
+
+### Fixed (1 change)
+
+- [Fix automatically-retried jobs stuck in pending state](gitlab-org/gitlab@752fbfcd613259b71af37f62a83321e8f573219b) ([merge request](gitlab-org/gitlab!117281))
+
 ## 15.9.4 (2023-03-30)
 
 ### Security (16 changes)
