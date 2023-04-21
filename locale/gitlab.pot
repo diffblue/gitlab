@@ -35480,6 +35480,9 @@ msgstr ""
 msgid "Promote to group label"
 msgstr ""
 
+msgid "Promote to objective"
+msgstr ""
+
 msgid "PromoteMilestone|Only project milestones can be promoted."
 msgstr ""
 
@@ -50239,6 +50242,9 @@ msgstr ""
 msgid "WorkItem|Open"
 msgstr ""
 
+msgid "WorkItem|Promoted to objective."
+msgstr ""
+
 msgid "WorkItem|Remove"
 msgstr ""
 
@@ -50285,6 +50291,9 @@ msgid "WorkItem|Something went wrong when trying to create a child. Please try a
 msgstr ""
 
 msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while promoting the %{workItemType}. Please try again."
 msgstr ""
 
 msgid "WorkItem|Something went wrong while removing child."
