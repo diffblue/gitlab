@@ -291,14 +291,12 @@ RSpec.describe Spam::SpamVerdictService, feature_category: :instance_resiliency 
 
           using RSpec::Parameterized::TableSyntax
 
-          # rubocop: disable Lint/BinaryOperatorWithIdenticalOperands
           where(:verdict_value, :expected) do
             ::Spam::SpamConstants::ALLOW               | ::Spam::SpamConstants::ALLOW
             ::Spam::SpamConstants::CONDITIONAL_ALLOW   | ::Spam::SpamConstants::CONDITIONAL_ALLOW
             ::Spam::SpamConstants::DISALLOW            | ::Spam::SpamConstants::DISALLOW
             ::Spam::SpamConstants::BLOCK_USER          | ::Spam::SpamConstants::BLOCK_USER
           end
-          # rubocop: enable Lint/BinaryOperatorWithIdenticalOperands
 
           with_them do
             let(:verdict) { verdict_value }
