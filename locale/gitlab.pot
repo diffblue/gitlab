@@ -1881,9 +1881,6 @@ msgstr ""
 msgid "API Help"
 msgstr ""
 
-msgid "API Token"
-msgstr ""
-
 msgid "API key"
 msgstr ""
 
@@ -16357,9 +16354,6 @@ msgstr ""
 msgid "Enter in your Bitbucket Server URL and personal access token below"
 msgstr ""
 
-msgid "Enter in your Phabricator Server URL and personal access token below"
-msgstr ""
-
 msgid "Enter license key"
 msgstr ""
 
@@ -22230,12 +22224,6 @@ msgstr ""
 msgid "Import started by: %{importInitiator}"
 msgstr ""
 
-msgid "Import tasks"
-msgstr ""
-
-msgid "Import tasks from Phabricator into issues"
-msgstr ""
-
 msgid "Import timed out. Import took longer than %{import_jobs_expiration} seconds"
 msgstr ""
 
@@ -23759,9 +23747,6 @@ msgid "Invalid format selected"
 msgstr ""
 
 msgid "Invalid hash"
-msgstr ""
-
-msgid "Invalid import params"
 msgstr ""
 
 msgid "Invalid input, please avoid emojis"
@@ -31932,15 +31917,6 @@ msgid "PersonalProject|We have some instructions to help you create a group and 
 msgstr ""
 
 msgid "PersonalProject|Your project %{projectName} is not in a group"
-msgstr ""
-
-msgid "Phabricator Server Import"
-msgstr ""
-
-msgid "Phabricator Server URL"
-msgstr ""
-
-msgid "Phabricator tasks"
 msgstr ""
 
 msgid "Phone"
