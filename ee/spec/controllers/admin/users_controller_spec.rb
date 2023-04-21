@@ -20,6 +20,29 @@ RSpec.describe Admin::UsersController, feature_category: :user_management do
   end
 
   describe 'POST update' do
+    context 'update custom attributes' do
+      let!(:custom_attribute) { user.custom_attributes.create!(key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_MEDIUM) }
+      let(:params) do
+        {
+          id: user.to_param,
+          user: {
+            custom_attributes_attributes: {
+              id: custom_attribute.to_param,
+              value: Arkose::VerifyResponse::RISK_BAND_LOW
+            }
+          }
+        }
+      end
+
+      it 'updates the value' do
+        expect { put :update, params: params }.to change { user.arkose_risk_band }
+          .from(Arkose::VerifyResponse::RISK_BAND_MEDIUM.downcase)
+          .to(Arkose::VerifyResponse::RISK_BAND_LOW.downcase)
+
+        expect(response).to redirect_to(admin_user_path(user))
+      end
+    end
+
     context 'updating name' do
       shared_examples_for 'admin can update the name of a user' do
         it 'updates the name' do

@@ -42,7 +42,9 @@ FactoryBot.modify do
 
     trait :arkose_verified do
       after(:create) do |user|
-        create(:user_custom_attribute, key: 'arkose_risk_band', value: 'Low', user: user)
+        create(:user_custom_attribute,
+          key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_LOW, user: user
+        )
       end
     end
   end
@@ -54,7 +56,9 @@ FactoryBot.modify do
 
     trait :arkose_verified do
       after(:create) do |user|
-        create(:user_custom_attribute, key: 'arkose_risk_band', value: 'Low', user: user)
+        create(:user_custom_attribute,
+          key: UserCustomAttribute::ARKOSE_RISK_BAND, value: Arkose::VerifyResponse::RISK_BAND_LOW, user: user
+        )
       end
     end
   end

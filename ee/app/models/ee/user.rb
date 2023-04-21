@@ -129,6 +129,7 @@ module EE
       end
 
       accepts_nested_attributes_for :namespace
+      accepts_nested_attributes_for :custom_attributes
 
       enum roadmap_layout: { weeks: 1, months: 4, quarters: 12 }
 

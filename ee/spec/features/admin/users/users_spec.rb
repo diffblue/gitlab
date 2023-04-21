@@ -6,71 +6,101 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
   include Features::AdminUsersHelpers
   include Spec::Support::Helpers::ModalHelpers
 
-  describe 'password complexity', :js do
-    let!(:user) { create(:user) }
-    let!(:admin) { create(:admin) }
+  let_it_be(:admin) { create(:admin) }
+  let(:user) { create(:user) }
+
+  before do
+    sign_in(admin)
+    gitlab_enable_admin_mode_sign_in(admin)
+  end
+
+  describe 'GET /admin/users/edit' do
     let(:path_to_visit) { edit_admin_user_path(user) }
-    let(:password_input_selector) { :user_password }
     let(:submit_button_selector) { _('Save changes') }
 
-    before do
-      sign_in(admin)
-      gitlab_enable_admin_mode_sign_in(admin)
-    end
+    describe 'password complexity', :js do
+      let(:password_input_selector) { :user_password }
 
-    it 'does not render any rule' do
-      visit path_to_visit
-
-      expect(page).not_to have_selector('[data-testid="password-rule-text"]')
-    end
-
-    context 'when all password complexity rules are enabled' do
-      include_context 'with all password complexity rules enabled'
-      let(:password) { '12345aA.' }
-
-      it 'updates user password' do
+      it 'does not render any rule' do
         visit path_to_visit
 
-        expect(page).to have_selector('[data-testid="password-rule-text"]', count: 0)
-
-        fill_in :user_password, with: password
-        fill_in :user_password_confirmation, with: password
-
-        expect(page).to have_selector('[data-testid="password-rule-text"]', count: 4)
-
-        click_button submit_button_selector
-
-        expect(page).to have_content(_('User was successfully updated.'))
-        expect(page).to have_current_path(admin_user_path(user), ignore_query: true)
+        expect(page).not_to have_selector('[data-testid="password-rule-text"]')
       end
 
-      context 'without filling password' do
-        let(:new_user_name) { FFaker::Name.name }
+      context 'when all password complexity rules are enabled' do
+        include_context 'with all password complexity rules enabled'
+        let(:password) { '12345aA.' }
 
-        it 'allows admin to update user info' do
+        it 'updates user password' do
           visit path_to_visit
 
           expect(page).to have_selector('[data-testid="password-rule-text"]', count: 0)
 
-          fill_in 'user_name', with: new_user_name
+          fill_in :user_password, with: password
+          fill_in :user_password_confirmation, with: password
+
+          expect(page).to have_selector('[data-testid="password-rule-text"]', count: 4)
+
           click_button submit_button_selector
 
           expect(page).to have_content(_('User was successfully updated.'))
-          expect(page).to have_content(new_user_name)
           expect(page).to have_current_path(admin_user_path(user), ignore_query: true)
+        end
+
+        context 'without filling password' do
+          let(:new_user_name) { FFaker::Name.name }
+
+          it 'allows admin to update user info' do
+            visit path_to_visit
+
+            expect(page).to have_selector('[data-testid="password-rule-text"]', count: 0)
+
+            fill_in 'user_name', with: new_user_name
+            click_button submit_button_selector
+
+            expect(page).to have_content(_('User was successfully updated.'))
+            expect(page).to have_content(new_user_name)
+            expect(page).to have_current_path(admin_user_path(user), ignore_query: true)
+          end
+        end
+      end
+    end
+
+    describe 'editing custom attributes' do
+      let!(:custom_attribute) do
+        create(:user_custom_attribute,
+          key: attribute,
+          value: Arkose::VerifyResponse::RISK_BAND_MEDIUM,
+          user: user
+        )
+      end
+
+      context 'when user has a non-editable custom attribute' do
+        let(:attribute) { 'bread_provider' }
+
+        it 'does not allow the admin to update the custom attribute' do
+          visit path_to_visit
+
+          expect(page).to have_selector('#user_custom_attributes_attributes_0_value', count: 0)
+        end
+      end
+
+      context 'when user has an editable custom attribute' do
+        let(:attribute) { UserCustomAttribute::ARKOSE_RISK_BAND }
+
+        it 'allows the admin to update the custom attribute' do
+          visit path_to_visit
+          select(Arkose::VerifyResponse::RISK_BAND_LOW, from: UserCustomAttribute::ARKOSE_RISK_BAND)
+          click_button submit_button_selector
+
+          expect(page).to have_content(_('User was successfully updated.'))
+          expect(page).to have_content(Arkose::VerifyResponse::RISK_BAND_LOW)
         end
       end
     end
   end
 
   describe 'GET /admin/users/new', :js do
-    let_it_be(:admin) { create(:admin) }
-
-    before do
-      sign_in(admin)
-      gitlab_enable_admin_mode_sign_in(admin)
-    end
-
     def fill_in_new_user_form
       fill_in 'user_name', with: 'Big Bang'
       fill_in 'user_username', with: 'bang'
@@ -106,7 +136,7 @@ RSpec.describe 'Admin::Users', feature_category: :user_profile do
 
       context 'when the cap has been reached' do
         before do
-          create(:user)
+          user
         end
 
         it 'sends a notification email to the admin', :sidekiq_inline do
