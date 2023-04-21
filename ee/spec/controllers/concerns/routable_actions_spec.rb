@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe RoutableActions, feature_category: :system_access do
   controller(::ApplicationController) do
     include RoutableActions # rubocop:disable RSpec/DescribedClass
+    skip_before_action :authenticate_user!
 
     before_action :routable
 
@@ -27,54 +28,198 @@ RSpec.describe RoutableActions, feature_category: :system_access do
   end
 
   describe '#find_routable!' do
-    describe 'when SSO enforcement prevents access' do
-      let(:saml_provider) { create(:saml_provider, enforced_sso: true) }
+    context 'when SAML SSO is enabled for resource' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: false) }
       let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
       let(:root_group) { saml_provider.group }
-      let(:user) { identity.user }
+      let(:subgroup) { create(:group, parent: root_group) }
+      let(:project) { create(:project, group: root_group) }
+      let(:member_with_identity) { identity.user }
+      let(:member_without_identity) { create(:user) }
+      let(:non_member) { create(:user) }
+      let(:not_signed_in_user) { nil }
 
       before do
         stub_licensed_features(group_saml: true)
-        sign_in(user)
+        root_group.add_developer(member_with_identity)
+        root_group.add_developer(member_without_identity)
       end
 
-      shared_examples 'sso redirects' do
-        it 'redirects to group sign in page' do
-          get :show, params: request_params(routable)
+      shared_examples 'SSO Enforced' do
+        it 'redirects to group SSO page on GET requests', :aggregate_failures do
+          get :show, params: request_params(resource)
 
           expect(response).to have_gitlab_http_status(:found)
           expect(response.location).to match(%r{groups/.*/-/saml/sso\?redirect=.+&token=})
         end
+      end
 
-        it 'does not redirect on POST requests' do
-          post :create, params: request_params(routable)
+      shared_examples 'SSO Not enforced' do
+        it 'allows to read response of GET requests' do
+          get :show, params: request_params(resource)
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      shared_examples 'SSO Not enforced; For signed in user, no access to the resource due to its visibility level' do
+        it 'does not redirect to group SSO page on GET requests, returns not_found instead', :aggregate_failures do
+          expect(resource.root_ancestor.saml_provider.enforced_sso?).to eq(false)
+
+          get :show, params: request_params(resource)
 
           expect(response).to have_gitlab_http_status(:not_found)
         end
       end
 
-      describe 'for a group' do
-        let(:routable) { root_group }
+      shared_examples 'SSO Not enforced; For not signed in user, no access to the resource due to its visibility level' do
+        it 'does not redirect to group SSO page on GET requests, redirects to /users/sign_in page instead', :aggregate_failures do
+          expect(resource.root_ancestor.saml_provider.enforced_sso?).to eq(false)
 
-        include_examples 'sso redirects'
+          get :show, params: request_params(resource)
+
+          expect(response).to have_gitlab_http_status(:found)
+          expect(response.location).to end_with('/users/sign_in')
+        end
       end
 
-      describe 'for a nested group' do
-        let(:routable) { create(:group, :private, parent: root_group) }
+      # See https://docs.gitlab.com/ee/user/group/saml_sso/#sso-enforcement
+      where(:resource, :resource_visibility_level, :enforced_sso?, :user, :user_is_resource_owner?, :user_with_saml_session?, :shared_examples) do
+        # Project/Group visibility: Private; Enforce SSO setting: Off
 
-        include_examples 'sso redirects'
+        ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:root_group) | 'private' | false | ref(:member_with_identity)    | true  | false | 'SSO Not enforced'
+        ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:project)    | 'private' | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+
+        ref(:root_group) | 'private' | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'private' | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+        ref(:project)    | 'private' | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+
+        ref(:root_group) | 'private' | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced; For signed in user, no access to the resource due to its visibility level'
+        ref(:subgroup)   | 'private' | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced; For signed in user, no access to the resource due to its visibility level'
+        ref(:project)    | 'private' | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced; For signed in user, no access to the resource due to its visibility level'
+        ref(:root_group) | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced; For not signed in user, no access to the resource due to its visibility level'
+        ref(:subgroup)   | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced; For not signed in user, no access to the resource due to its visibility level'
+        ref(:project)    | 'private' | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced; For not signed in user, no access to the resource due to its visibility level'
+
+        # Project/Group visibility: Private; Enforce SSO setting: On
+
+        ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | true  | false | 'SSO Not enforced'
+        ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+
+        ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:root_group) | 'private' | true  | ref(:member_without_identity) | true  | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | true  | nil   | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:member_without_identity) | true  | nil   | 'SSO Enforced'
+
+        ref(:root_group) | 'private' | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        ref(:root_group) | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+        ref(:subgroup)   | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+        ref(:project)    | 'private' | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+
+        # Project/Group visibility: Public; Enforce SSO setting: Off
+
+        ref(:root_group) | 'public'  | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:root_group) | 'public'  | false | ref(:member_with_identity)    | true  | false | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+
+        ref(:root_group) | 'public'  | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+        ref(:project)    | 'public'  | false | ref(:member_without_identity) | false | nil   | 'SSO Not enforced'
+
+        ref(:root_group) | 'public'  | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
+        ref(:project)    | 'public'  | false | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
+        ref(:project)    | 'public'  | false | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
+
+        # Project/Group visibility: Public; Enforce SSO setting: On
+
+        ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | true  | false | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | false | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | true  | false | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_with_identity)    | false | true  | 'SSO Not enforced'
+
+        ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | true  | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | true  | nil   | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:member_without_identity) | true  | nil   | 'SSO Enforced'
+
+        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+        ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+        ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
+        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+        ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
+        ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
       end
 
-      describe 'for a project' do
-        let(:routable) { create(:project, :private, group: root_group) }
+      with_them do
+        context "when 'Enforce SSO-only authentication for web activity for this group' option is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
+          before do
+            saml_provider.update!(enforced_sso: enforced_sso?)
+          end
 
-        include_examples 'sso redirects'
-      end
+          context "when resource is #{params[:resource_visibility_level]}" do
+            before do
+              resource.update!(visibility_level: Gitlab::VisibilityLevel.string_options[resource_visibility_level])
+            end
 
-      describe 'for a nested project' do
-        let(:routable) { create(:project, :private, group: create(:group, :private, parent: root_group)) }
+            context 'for user' do
+              before do
+                if user_is_resource_owner?
+                  resource.root_ancestor.member(user).update_column(:access_level, Gitlab::Access::OWNER)
+                end
 
-        include_examples 'sso redirects'
+                if user_with_saml_session?
+                  Gitlab::Session.with_session(request.session) do
+                    Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+                  end
+                end
+
+                sign_in(user) if user
+              end
+
+              include_examples params[:shared_examples]
+            end
+          end
+        end
       end
     end
   end
