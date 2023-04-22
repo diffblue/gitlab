@@ -125,7 +125,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         expect(project.import_url).to eq('http://user:foo@example.com')
       end
 
-      it 'can be changed to unauthenticated' do
+      it 'can be changed to unauthenticated', quarantine: 'https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/1486' do # rubocop:disable Layout/LineLength
         project.update!(import_url: 'http://user:password@example.com')
 
         visit project_settings_repository_path(project)
@@ -179,7 +179,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     end
 
     describe 'SSH public key authentication' do
-      it 'can be set up' do
+      it 'can be set up', quarantine: 'https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/1473' do # rubocop:disable Layout/LineLength
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
