@@ -64,7 +64,7 @@ RSpec.describe ApprovalWrappedRule do
     end
 
     context 'when approvals left is not zero, but there is still unactioned approvers' do
-      let(:approvals_required) { 99 }
+      let(:approvals_required) { 2 }
 
       before do
         rule.users << approver2
@@ -77,6 +77,18 @@ RSpec.describe ApprovalWrappedRule do
 
     context 'when approvals left is not zero, but there is no unactioned approvers' do
       let(:approvals_required) { 99 }
+
+      it 'returns true' do
+        expect(subject.approved?).to eq(true)
+      end
+    end
+
+    context 'when approvals left is not zero, but there is not enough unactioned approvers' do
+      let(:approvals_required) { 99 }
+
+      before do
+        rule.users << approver2
+      end
 
       it 'returns true' do
         expect(subject.approved?).to eq(true)
@@ -101,11 +113,49 @@ RSpec.describe ApprovalWrappedRule do
       end
     end
 
+    context 'when more approvals are required than the number of approvers' do
+      let(:approvals_required) { 2 }
+
+      before do
+        rule.users << approver1
+      end
+
+      it 'returns true' do
+        expect(subject.invalid_rule?).to eq(true)
+      end
+    end
+
     context 'when there are unactioned approvers and approvals are required' do
       let(:approvals_required) { 1 }
 
       before do
         rule.users << approver1
+      end
+
+      it 'returns false' do
+        expect(subject.invalid_rule?).to eq(false)
+      end
+    end
+
+    context 'when there are no unactioned approvers because all required approvals are given' do
+      let(:approvals_required) { 1 }
+
+      before do
+        create(:approval, merge_request: merge_request, user: approver1)
+        rule.users << approver1
+      end
+
+      it 'returns false' do
+        expect(subject.invalid_rule?).to eq(false)
+      end
+    end
+
+    context 'when there are more approvers than required approvals' do
+      let(:approvals_required) { 1 }
+
+      before do
+        rule.users << approver1
+        rule.users << approver2
       end
 
       it 'returns false' do

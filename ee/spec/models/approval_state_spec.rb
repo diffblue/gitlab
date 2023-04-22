@@ -1600,8 +1600,18 @@ RSpec.describe ApprovalState do
         end
       end
 
-      context 'when invalid' do
-        let!(:rule) { invalid_rule }
+      context 'when invalid due to no approvers' do
+        let!(:rule) { invalid_no_approvers_rule }
+
+        it 'returns the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).to include(rule)
+        end
+      end
+
+      context 'when invalid due to not enough approvers' do
+        let!(:rule) { invalid_not_enough_approvers_rule }
 
         it 'returns the rule' do
           approval_rules = subject.map(&:approval_rule)
@@ -1613,7 +1623,10 @@ RSpec.describe ApprovalState do
 
     context 'when the rule is code owner' do
       let(:valid_rule) { create(:code_owner_rule, merge_request: merge_request, users: create_list(:user, 1)) }
-      let(:invalid_rule) { create(:code_owner_rule, merge_request: merge_request) }
+      let(:invalid_no_approvers_rule) { create(:code_owner_rule, merge_request: merge_request) }
+      let(:invalid_not_enough_approvers_rule) do
+        create(:code_owner_rule, merge_request: merge_request, users: create_list(:user, 1), approvals_required: 2)
+      end
 
       before do
         stub_licensed_features(code_owner_approval_required: true)
@@ -1659,7 +1672,10 @@ RSpec.describe ApprovalState do
 
     context 'when the rule is approval_merge_request_rule' do
       let(:valid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: create_list(:user, 1)) }
-      let(:invalid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1) }
+      let(:invalid_no_approvers_rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1) }
+      let(:invalid_not_enough_approvers_rule) do
+        create(:approval_merge_request_rule, merge_request: merge_request, users: create_list(:user, 1), approvals_required: 2)
+      end
 
       context 'when approvals required is 0' do
         let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
@@ -1676,7 +1692,10 @@ RSpec.describe ApprovalState do
 
     context 'when the rule is report_approver' do
       let(:valid_rule) { create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
-      let(:invalid_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 1) }
+      let(:invalid_no_approvers_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 1) }
+      let(:invalid_not_enough_approvers_rule) do
+        create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1), approvals_required: 2)
+      end
 
       context 'when approvals required is 0' do
         let!(:rule) { create(:report_approver_rule, merge_request: merge_request) }

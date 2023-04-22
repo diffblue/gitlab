@@ -18,6 +18,7 @@ module Types
       field :invalid_approvers_rules,
         [::Types::ApprovalRuleType],
         null: true,
+        calls_gitaly: true,
         description: 'List of approval rules that are associated with the merge request, but invalid.'
 
       field :suggested_approvers, Types::UserType.connection_type,
