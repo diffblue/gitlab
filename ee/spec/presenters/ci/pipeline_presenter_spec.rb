@@ -11,10 +11,10 @@ RSpec.describe Ci::PipelinePresenter do
   describe '#failure_reason' do
     context 'when pipeline has failure reason' do
       it 'represents a failure reason sentence' do
-        pipeline.failure_reason = :activity_limit_exceeded
+        pipeline.failure_reason = :job_activity_limit_exceeded
 
         expect(presenter.failure_reason)
-          .to eq 'The pipeline activity limit was exceeded.'
+          .to eq 'The pipeline job activity limit was exceeded.'
       end
     end
 
