@@ -170,6 +170,6 @@ RSpec.describe 'Project', feature_category: :projects do
 
     click_link 'Create from template'
     find(tab).click
-    find("label[for=#{template_name}]").click
+    find("label[for='#{template_name}']").click
   end
 end

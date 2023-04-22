@@ -36,7 +36,7 @@ RSpec.describe Projects::Security::ConfigurationPresenter do
       stub_licensed_features(security_on_demand_scans: true, security_configuration_in_ui: true)
     end
 
-    let(:meta_info_path) { "/#{project.namespace.path}/#{project.name}/-/on_demand_scans" }
+    let(:meta_info_path) { "/#{project.full_path}/-/on_demand_scans" }
     let(:features) { result[:features] }
 
     it 'includes feature meta information for dast scanner' do

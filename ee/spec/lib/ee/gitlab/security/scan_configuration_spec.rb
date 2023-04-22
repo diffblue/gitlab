@@ -60,7 +60,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
       end
 
       context 'with licensed scanner' do
-        let(:path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration" }
+        let(:path) { "/#{project.full_path}/-/security/configuration" }
 
         where(:type, :configuration_path) do
           :sast | lazy { "#{path}/sast" }
@@ -77,7 +77,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
 
       context 'with a scanner' do
         let(:type) { :corpus_management }
-        let(:configuration_path) { "/#{project.namespace.path}/#{project.name}/-/security/configuration/corpus_management" }
+        let(:configuration_path) { "/#{project.full_path}/-/security/configuration/corpus_management" }
 
         it { is_expected.to eq(configuration_path) }
       end
@@ -118,7 +118,7 @@ RSpec.describe ::Gitlab::Security::ScanConfiguration do
 
       context 'with a scanner with meta path' do
         let(:type) { :dast }
-        let(:meta_info_path) { "/#{project.namespace.path}/#{project.name}/-/on_demand_scans" }
+        let(:meta_info_path) { "/#{project.full_path}/-/on_demand_scans" }
 
         it { is_expected.to eq(meta_info_path) }
       end

@@ -32,13 +32,13 @@ RSpec.describe IssuePresenter do
     context 'when issue has default type' do
       let_it_be(:issue) { build_stubbed(:issue) }
 
-      it { is_expected.to eq("http://localhost/#{issue.project.namespace.path}/#{issue.project.name}/-/issues/#{issue.iid}") }
+      it { is_expected.to eq("http://localhost/#{issue.project.full_path}/-/issues/#{issue.iid}") }
     end
 
     context 'when issue has test_case type' do
       let_it_be(:issue) { build_stubbed(:quality_test_case) }
 
-      it { is_expected.to eq("http://localhost/#{issue.project.namespace.path}/#{issue.project.name}/-/quality/test_cases/#{issue.iid}") }
+      it { is_expected.to eq("http://localhost/#{issue.project.full_path}/-/quality/test_cases/#{issue.iid}") }
     end
   end
 end

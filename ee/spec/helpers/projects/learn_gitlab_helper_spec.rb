@@ -80,12 +80,12 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
 
     it 'sets correct paths' do
       result = {
-        trial_started: a_hash_including(url: %r{/#{project.name}/-/project_members\z}),
-        pipeline_created: a_hash_including(url: %r{/#{project.name}/-/pipelines\z}),
-        issue_created: a_hash_including(url: %r{/#{project.name}/-/issues\z}),
-        git_write: a_hash_including(url: %r{/#{project.name}\z}),
+        trial_started: a_hash_including(url: %r{/#{project.path}/-/project_members\z}),
+        pipeline_created: a_hash_including(url: %r{/#{project.path}/-/pipelines\z}),
+        issue_created: a_hash_including(url: %r{/#{project.path}/-/issues\z}),
+        git_write: a_hash_including(url: %r{/#{project.path}\z}),
         user_added: a_hash_including(url: %r{#\z}),
-        merge_request_created: a_hash_including(url: %r{/#{project.name}/-/merge_requests\z}),
+        merge_request_created: a_hash_including(url: %r{/#{project.path}/-/merge_requests\z}),
         code_added: a_hash_including(url: %r{/-/ide/project/#{project.full_path}/edit\z}),
         code_owners_enabled: a_hash_including(url: %r{/user/project/code_owners#set-up-code-owners\z}),
         required_mr_approvals_enabled: a_hash_including(

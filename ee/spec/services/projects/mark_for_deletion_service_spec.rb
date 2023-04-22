@@ -9,7 +9,6 @@ RSpec.describe Projects::MarkForDeletionService do
     create(:project,
       :repository,
       namespace: user.namespace,
-      name: 'test project xyz',
       marked_for_deletion_at: marked_for_deletion_at)
   end
 
@@ -33,11 +32,11 @@ RSpec.describe Projects::MarkForDeletionService do
       end
 
       it 'renames project name' do
-        expect { subject }.to change { project.name }.from('test project xyz').to("test project xyz-deleted-#{project.id}")
+        expect { subject }.to change { project.name }.from(original_project_name).to("#{original_project_name}-deleted-#{project.id}")
       end
 
       it 'renames project path' do
-        expect { subject }.to change { project.path }.from('test_project_xyz').to("test_project_xyz-deleted-#{project.id}")
+        expect { subject }.to change { project.path }.from(original_project_path).to("#{original_project_path}-deleted-#{project.id}")
       end
     end
 
@@ -107,7 +106,7 @@ RSpec.describe Projects::MarkForDeletionService do
         expect(project_update_service_params[:archived]).to eq(true)
         expect(project_update_service_params[:hidden]).to eq(true)
         expect(project_update_service_params[:deleting_user]).to eq(user)
-        expect(project_update_service_params[:name]).to eq("test project xyz-deleted-#{project.id}")
+        expect(project_update_service_params[:name]).to eq("#{original_project_name}-deleted-#{project.id}")
       end
     end
 
@@ -123,7 +122,7 @@ RSpec.describe Projects::MarkForDeletionService do
         expect(project_update_service_params[:archived]).to eq(true)
         expect(project_update_service_params.has_key?(:hidden)).to eq(false)
         expect(project_update_service_params[:deleting_user]).to eq(user)
-        expect(project_update_service_params[:name]).to eq("test project xyz-deleted-#{project.id}")
+        expect(project_update_service_params[:name]).to eq("#{original_project_name}-deleted-#{project.id}")
       end
     end
   end

@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ci::CreatePipelineService, feature_category: :pipeline_composition do
-  let_it_be(:downstream_project) { create(:project, name: 'project', namespace: create(:namespace, name: 'some')) }
+  let_it_be(:downstream_project) { create(:project, path: 'project', namespace: create(:namespace, path: 'some')) }
 
   let(:project) { create(:project, :repository) }
   let(:user) { project.first_owner }
