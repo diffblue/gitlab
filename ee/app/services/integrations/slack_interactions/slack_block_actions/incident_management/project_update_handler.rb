@@ -87,7 +87,7 @@ module Integrations
             incident_description_blocks.first[:element][:initial_value] = read_template_content
             incident_description_blocks.first[:block_id] = new_project.id.to_s
 
-            EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+            Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
               .cache_write(view[:id], new_project.id.to_s)
 
             updated_view
@@ -99,7 +99,7 @@ module Integrations
           strong_memoize_attr :new_project
 
           def old_project
-            old_project_id = EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+            old_project_id = Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
               .cache_read(view[:id])
 
             Project.find(old_project_id) if old_project_id

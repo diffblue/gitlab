@@ -30,7 +30,7 @@ RSpec.describe API::Integrations::Slack::Options, feature_category: :integration
 
     context 'when type param is unknown' do
       let(:payload) do
-        { 'action_id': 'unknown_action' }
+        { action_id: 'unknown_action' }
       end
 
       it 'generates a tracked error' do
@@ -46,7 +46,7 @@ RSpec.describe API::Integrations::Slack::Options, feature_category: :integration
     context 'when action_id param is assignee' do
       let(:payload) do
         {
-          'action_id': 'assignee'
+          action_id: 'assignee'
         }
       end
 

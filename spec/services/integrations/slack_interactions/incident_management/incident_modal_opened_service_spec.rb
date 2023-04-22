@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService,
+RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService,
   feature_category: :incident_management do
   describe '#execute' do
     let_it_be(:slack_installation) { create(:slack_integration) }

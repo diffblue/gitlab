@@ -15,7 +15,7 @@ RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
   describe '#execute' do
     before do
       allow_next_instance_of(
-        EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+        Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
       ) do |modal_service|
         allow(modal_service).to receive(:execute).and_return(
           ServiceResponse.success(message: 'Please fill the incident creation form.')

@@ -6,7 +6,7 @@ module EE
       module IncidentManagement
         module IncidentNew
           def execute(_match)
-            response = EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+            response = ::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
             .new(slack_installation, current_user, params)
             .execute
 

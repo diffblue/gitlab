@@ -2,7 +2,7 @@
 
 module Integrations
   module SlackOptions
-    class LabelSearchHandler
+    class LabelSearchHandler # rubocop:disable Search/NamespacedClass
       include Gitlab::Utils::StrongMemoize
 
       def initialize(current_user, search_value, view_id)
@@ -28,7 +28,7 @@ module Integrations
       private
 
       def project
-        project_id = EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+        project_id = Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
               .cache_read(view_id)
 
         return unless project_id
