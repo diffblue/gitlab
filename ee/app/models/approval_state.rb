@@ -198,12 +198,12 @@ class ApprovalState
     strong_memoize(:invalid_approvers_rules) do
       wrapped_approval_rules.select do |rule|
         next if rule.any_approver?
-        next unless rule.approvers.empty?
+        next if rule.approvers.any? && rule.approvers.size >= rule.approvals_required
 
         if rule.code_owner?
           rule.branch_requires_code_owner_approval?
         else
-          rule.approvals_required > 0
+          rule.approvals_required > rule.approvers.size
         end
       end
     end

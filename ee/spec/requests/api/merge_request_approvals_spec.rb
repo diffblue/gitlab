@@ -84,6 +84,7 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
       project.add_developer(approver)
       project.add_developer(create(:user))
       rule.users << approver
+      rule.users << create(:user)
       rule.groups << group
 
       get api(path, approver)
