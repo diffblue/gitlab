@@ -13,7 +13,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
       class="gl-display-flex gl-w-full"
     >
       <span
-        class="nav-icon-container svg-container"
+        class="nav-icon-container svg-container gl-mr-3"
       >
         <img
           class="svg"
@@ -23,7 +23,7 @@ exports[`TrialStatusWidget component without the optional containerId prop match
       </span>
        
       <span
-        class="nav-item-name"
+        class="nav-item-name gl-flex-grow-1"
       >
         
         Ultimate Trial
