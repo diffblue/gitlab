@@ -51,10 +51,10 @@ export default {
       @click="onWidgetClick"
     >
       <div class="gl-display-flex gl-w-full">
-        <span class="nav-icon-container svg-container">
+        <span class="nav-icon-container svg-container gl-mr-3">
           <img :src="navIconImagePath" width="16" class="svg" />
         </span>
-        <span class="nav-item-name">
+        <span class="nav-item-name gl-flex-grow-1">
           {{ widgetTitle }}
         </span>
         <span class="collapse-text gl-font-sm gl-mr-auto">

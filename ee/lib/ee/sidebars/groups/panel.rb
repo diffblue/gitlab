@@ -14,7 +14,11 @@ module EE
             context.is_super_sidebar ? ::Sidebars::Groups::Menus::SettingsMenu : ::Sidebars::Groups::Menus::GroupInformationMenu,
             ::Sidebars::Groups::Menus::EpicsMenu.new(context)
           )
-          insert_menu_before(::Sidebars::Groups::Menus::GroupInformationMenu, ::Sidebars::Groups::Menus::TrialWidgetMenu.new(context))
+
+          unless context.is_super_sidebar
+            insert_menu_before(::Sidebars::Groups::Menus::GroupInformationMenu, ::Sidebars::Groups::Menus::TrialWidgetMenu.new(context))
+          end
+
           insert_menu_after(
             context.is_super_sidebar ? ::Sidebars::Groups::Menus::CiCdMenu : ::Sidebars::Groups::Menus::MergeRequestsMenu,
             ::Sidebars::Groups::Menus::SecurityComplianceMenu.new(context)

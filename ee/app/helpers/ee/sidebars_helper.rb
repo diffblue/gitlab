@@ -4,6 +4,8 @@ module EE
   module SidebarsHelper
     extend ::Gitlab::Utils::Override
 
+    include TrialStatusWidgetHelper
+
     override :project_sidebar_context_data
     def project_sidebar_context_data(project, user, current_ref, **args)
       super.merge({
@@ -30,14 +32,16 @@ module EE
 
     override :super_sidebar_context
     def super_sidebar_context(user, group:, project:, panel:, panel_type:)
+      context = super
+      root_namespace = (project || group)&.root_ancestor
+
+      context.merge!(trial_data(root_namespace), show_tanuki_bot: show_tanuki_bot_chat?)
+
       show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
 
-      return super.merge({ show_tanuki_bot: show_tanuki_bot_chat? }) unless show_buy_pipeline_minutes
+      return context unless show_buy_pipeline_minutes && root_namespace.present?
 
-      root_namespace = root_ancestor_namespace(project, group)
-
-      super.merge({
-        show_tanuki_bot: show_tanuki_bot_chat?,
+      context.merge({
         pipeline_minutes: {
           show_buy_pipeline_minutes: show_buy_pipeline_minutes,
           show_notification_dot: show_pipeline_minutes_notification_dot?(project, group),
@@ -59,6 +63,38 @@ module EE
           }
         }
       })
+    end
+
+    private
+
+    def trial_data(root_namespace)
+      if root_namespace.present? &&
+          ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+          root_namespace.trial_active? &&
+          can?(current_user, :admin_namespace, root_namespace)
+        trial_status = trial_status(root_namespace)
+
+        return {
+          trial_status_widget_data_attrs: trial_status_widget_data_attrs(root_namespace, trial_status),
+          trial_status_popover_data_attrs: trial_status_popover_data_attrs(root_namespace, trial_status,
+            ultimate_plan_id)
+        }
+      end
+
+      {}
+    end
+
+    def trial_status(group)
+      GitlabSubscriptions::TrialStatus.new(group.trial_starts_on, group.trial_ends_on)
+    end
+
+    def ultimate_plan_id
+      # supplying plan here rejects any free plans so we won't get that data returned
+      plans = GitlabSubscriptions::FetchSubscriptionPlansService.new(plan: :free).execute
+
+      return unless plans
+
+      plans.find { |data| data['code'] == 'ultimate' }&.fetch('id', nil)
     end
   end
 end
