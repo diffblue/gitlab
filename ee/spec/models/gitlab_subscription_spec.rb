@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscription, :saas, feature_category: :subscription_management do
   using RSpec::Parameterized::TableSyntax
 
-  %i[free_plan bronze_plan premium_plan ultimate_plan].each do |plan|
+  %i[free_plan bronze_plan premium_plan ultimate_plan].each do |plan| # rubocop:disable RSpec/UselessDynamicDefinition
     let_it_be(plan) { create(plan) } # rubocop:disable Rails/SaveBang
   end
 
