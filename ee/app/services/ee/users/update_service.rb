@@ -85,8 +85,6 @@ module EE
           if group_id_for_saml.present?
             group = GroupFinder.new(current_user).execute(id: group_id_for_saml)
             group&.saml_provider&.id
-          else
-            nil
           end
         end
       end

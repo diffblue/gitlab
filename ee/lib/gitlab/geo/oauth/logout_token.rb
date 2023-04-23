@@ -39,8 +39,6 @@ module Gitlab
 
             if decoded_token&.is_utf8?
               Doorkeeper::AccessToken.by_token(decoded_token)
-            else
-              nil
             end
           end
         end
