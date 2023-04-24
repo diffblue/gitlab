@@ -25,6 +25,11 @@ In general, you might consider using a tutorial when:
   ideal to duplicate content that is available elsewhere, it's worse to force the reader to
   leave the page to find what they need.
 
+## Tutorial file name and location
+
+For tutorial Markdown files, create a subfolder under `doc/tutorials`.
+The tutorial file should be `index.md`.
+
 ## Tutorial format
 
 Tutorials should be in this format:
