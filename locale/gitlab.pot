@@ -8674,6 +8674,9 @@ msgstr ""
 msgid "Changed the title to \"%{title_param}\"."
 msgstr ""
 
+msgid "Changelog"
+msgstr ""
+
 msgid "Changes"
 msgstr ""
 
@@ -28655,6 +28658,9 @@ msgstr ""
 msgid "Namespace ID:"
 msgstr ""
 
+msgid "Namespace Limits"
+msgstr ""
+
 msgid "Namespace or group to import repository into does not exist."
 msgstr ""
 
@@ -28664,10 +28670,22 @@ msgstr ""
 msgid "Namespace:"
 msgstr ""
 
+msgid "NamespaceLimits|%{linkStart}%{username}%{linkEnd} changed the limit to %{limit} at %{date}"
+msgstr ""
+
+msgid "NamespaceLimits|Confirm limits change"
+msgstr ""
+
 msgid "NamespaceLimits|Free Tier"
 msgstr ""
 
-msgid "NamespaceLimit|Storage Phased Notification"
+msgid "NamespaceLimits|Storage Phased Notification"
+msgstr ""
+
+msgid "NamespaceLimits|This will limit the amount of notifications your namespace receives, this can be removed in the future."
+msgstr ""
+
+msgid "NamespaceLimits|Update limit"
 msgstr ""
 
 msgid "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked project"
