@@ -122,20 +122,42 @@ RSpec.shared_examples 'validate dictionary' do |all_objects, directory_path, req
   # rubocop:enable Naming/HeredocDelimiterNaming
 end
 
-RSpec.describe 'Views documentation', feature_category: :database do
-  database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'geo' }
-  views = database_base_models.flat_map { |_, m| m.connection.views }.sort.uniq
-  directory_path = File.join('ee', 'db', 'docs', 'views')
-  required_fields = %i[feature_categories view_name gitlab_schema]
+RSpec.describe 'embedding database documentation', feature_category: :database do
+  context 'for views' do
+    database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'embedding' }
+    views = database_base_models.flat_map { |_, m| m.connection.views }.sort.uniq
+    directory_path = File.join('ee', 'db', 'embedding', 'docs', 'views')
+    required_fields = %i[feature_categories view_name gitlab_schema]
 
-  include_examples 'validate dictionary', views, directory_path, required_fields
+    include_examples 'validate dictionary', views, directory_path, required_fields
+  end
+
+  context 'for tables' do
+    database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'embedding' }
+    tables = database_base_models.flat_map { |_, m| m.connection.tables }.sort.uniq
+    directory_path = File.join('ee', 'db', 'embedding', 'docs')
+    required_fields = %i[feature_categories table_name gitlab_schema]
+
+    include_examples 'validate dictionary', tables, directory_path, required_fields
+  end
 end
 
-RSpec.describe 'Tables documentation', feature_category: :database do
-  database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'geo' }
-  tables = database_base_models.flat_map { |_, m| m.connection.tables }.sort.uniq
-  directory_path = File.join('ee', 'db', 'docs')
-  required_fields = %i[feature_categories table_name gitlab_schema]
+RSpec.describe 'geo database documentation', feature_category: :database do
+  context 'for views' do
+    database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'geo' }
+    views = database_base_models.flat_map { |_, m| m.connection.views }.sort.uniq
+    directory_path = File.join('ee', 'db', 'geo', 'docs', 'views')
+    required_fields = %i[feature_categories view_name gitlab_schema]
 
-  include_examples 'validate dictionary', tables, directory_path, required_fields
+    include_examples 'validate dictionary', views, directory_path, required_fields
+  end
+
+  context 'for tables' do
+    database_base_models = Gitlab::Database.database_base_models.select { |k, _| k == 'geo' }
+    tables = database_base_models.flat_map { |_, m| m.connection.tables }.sort.uniq
+    directory_path = File.join('ee', 'db', 'geo', 'docs')
+    required_fields = %i[feature_categories table_name gitlab_schema]
+
+    include_examples 'validate dictionary', tables, directory_path, required_fields
+  end
 end

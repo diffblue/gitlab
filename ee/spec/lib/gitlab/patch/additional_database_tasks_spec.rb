@@ -2,57 +2,61 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replication do
-  describe Gitlab::Patch::GeoDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename do
+RSpec.describe Gitlab::Patch::AdditionalDatabaseTasks, feature_category: :geo_replication do
+  describe Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename do
     subject do
       Class.new do
-        prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename
+        prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordDatabaseTasksDumpFilename
 
-        def dump_filename(db_config_name, format = ApplicationRecord.schema_format)
-          'foo.sql'
+        def dump_filename(*)
+          Rails.root.join('foo.sql').to_s
         end
 
-        def cache_dump_filename(db_config_name, format = ApplicationRecord.schema_format)
-          'bar.yml'
+        def cache_dump_filename(*)
+          Rails.root.join('bar.yml').to_s
         end
       end.new
     end
 
     describe '#dump_filename' do
-      context 'with geo database config name' do
-        it 'returns the path for the structure.sql file in the Geo database dir' do
-          expect(subject.dump_filename(:geo)).to eq Rails.root.join('ee/db/geo/structure.sql').to_s
-        end
+      using RSpec::Parameterized::TableSyntax
+
+      where(:db_config_name, :structure_path) do
+        :main      | 'foo.sql'
+        :embedding | 'ee/db/embedding/structure.sql'
+        :geo       | 'ee/db/geo/structure.sql'
       end
 
-      context 'with other database config name' do
-        it 'calls super' do
-          expect(subject.dump_filename(:main)).to eq 'foo.sql'
+      with_them do
+        it 'returns the correct path for the structure.sql file' do
+          expect(subject.dump_filename(db_config_name)).to eq Rails.root.join(structure_path).to_s
         end
       end
     end
 
     describe '#cache_dump_filename' do
-      context 'with geo database config name' do
-        it 'returns the path for the schema_cache file in the Geo database dir' do
-          expect(subject.cache_dump_filename(:geo)).to eq Rails.root.join('ee/db/geo/schema_cache.yml').to_s
-        end
+      using RSpec::Parameterized::TableSyntax
+
+      where(:db_config_name, :schema_cache_path) do
+        :main      | 'bar.yml'
+        :embedding | 'ee/db/embedding/schema_cache.yml'
+        :geo       | 'ee/db/geo/schema_cache.yml'
       end
 
-      context 'with other database config name' do
-        it 'calls super' do
-          expect(subject.cache_dump_filename(:main)).to eq 'bar.yml'
+      with_them do
+        it 'returns the path for the schema_cache file in the Geo database dir' do
+          expect(subject.cache_dump_filename(db_config_name)).to eq Rails.root.join(schema_cache_path).to_s
         end
       end
     end
   end
 
-  describe Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath do
+  describe Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath do
     describe '#configured_migrate_path' do
       context 'when super returns nil' do
         subject do
           Class.new do
-            prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
+            prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
 
             def configured_migrate_path
               nil
@@ -68,7 +72,7 @@ RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replicati
       context 'when super returns only one regular migration path' do
         subject do
           Class.new do
-            prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
+            prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
 
             def configured_migrate_path
               'ee/db/geo/migrate'
@@ -84,7 +88,7 @@ RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replicati
       context 'when super returns only one post migrations path' do
         subject do
           Class.new do
-            prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
+            prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
 
             def configured_migrate_path
               'ee/db/geo/post_migrate'
@@ -100,7 +104,7 @@ RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replicati
       context 'when super does not include a post migrations path' do
         subject do
           Class.new do
-            prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
+            prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
 
             def configured_migrate_path
               'ee/db/geo/migrate'
@@ -116,7 +120,7 @@ RSpec.describe Gitlab::Patch::GeoDatabaseTasks, feature_category: :geo_replicati
       context 'when super includes a post migrations path' do
         subject do
           Class.new do
-            prepend Gitlab::Patch::GeoDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
+            prepend Gitlab::Patch::AdditionalDatabaseTasks::ActiveRecordMigrationConfiguredMigratePath
 
             def configured_migrate_path
               ['ee/db/geo/migrate', 'ee/db/geo/post_migrate']

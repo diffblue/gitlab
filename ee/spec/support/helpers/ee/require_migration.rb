@@ -4,7 +4,12 @@ module EE
   module RequireMigration
     extend ActiveSupport::Concern
 
-    MIGRATION_FOLDERS = %w[ee/db/geo/migrate ee/db/geo/post_migrate].freeze
+    MIGRATION_FOLDERS = %w[
+      ee/db/embedding/migrate
+      ee/db/embedding/post_migrate
+      ee/db/geo/migrate
+      ee/db/geo/post_migrate
+    ].freeze
 
     class_methods do
       def migration_folders

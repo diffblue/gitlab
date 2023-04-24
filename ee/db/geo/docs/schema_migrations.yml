@@ -1,0 +1,13 @@
+---
+table_name: schema_migrations
+description: An internal table used by ActiveRecord to keep track of which migrations
+  have been applied to the database.
+introduced_by_url: TODO
+milestone: TODO
+feature_categories:
+- geo_replication
+classes:
+- ActiveRecord::SchemaMigration
+- Embedding::SchemaMigration
+- Geo::TrackingBase::SchemaMigration
+gitlab_schema: gitlab_internal
