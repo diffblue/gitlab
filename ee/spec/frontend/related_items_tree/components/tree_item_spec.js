@@ -18,145 +18,126 @@ const mockItem = { ...mockEpic1, type: ChildType.Epic, pathIdSeparator: PathIdSe
 
 Vue.use(Vuex);
 
-const createComponent = (parentItem = mockParentItem, item = mockItem) => {
-  const store = createDefaultStore();
-  const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
-
-  store.dispatch('setInitialParentItem', mockParentItem);
-  store.dispatch('setItemChildren', {
-    parentItem: mockParentItem,
-    isSubItem: false,
-    children,
-  });
-  store.dispatch('setItemChildrenFlags', {
-    isSubItem: false,
-    children,
-  });
-  store.dispatch('setItemChildren', {
-    parentItem: mockItem,
-    children: [],
-    isSubItem: true,
-  });
-
-  return shallowMount(TreeItem, {
-    store,
-    stubs: {
-      'tree-root': TreeRoot,
-    },
-    propsData: {
-      parentItem,
-      item,
-    },
-  });
-};
-
 describe('RelatedItemsTree', () => {
   describe('TreeItemRemoveModal', () => {
     let wrapper;
-    let wrapperExpanded;
-    let wrapperCollapsed;
+    let store;
+
+    const createComponent = (parentItem = mockParentItem, item = mockItem) => {
+      store = createDefaultStore();
+      const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
+
+      store.dispatch('setInitialParentItem', mockParentItem);
+      store.dispatch('setItemChildren', {
+        parentItem: mockParentItem,
+        isSubItem: false,
+        children,
+      });
+      store.dispatch('setItemChildrenFlags', {
+        isSubItem: false,
+        children,
+      });
+      store.dispatch('setItemChildren', {
+        parentItem: mockItem,
+        children: [],
+        isSubItem: true,
+      });
+
+      wrapper = shallowMount(TreeItem, {
+        store,
+        stubs: {
+          'tree-root': TreeRoot,
+        },
+        propsData: {
+          parentItem,
+          item,
+        },
+      });
+    };
+
+    const findChevronButton = () => wrapper.findComponent(GlButton);
+    const findChevronIcon = () => wrapper.findComponent(GlIcon);
+    const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+    const findTreeItemBody = () => wrapper.findComponent(TreeItemBody);
 
     beforeEach(() => {
-      wrapper = createComponent();
-      wrapperExpanded = createComponent();
-      wrapperExpanded.vm.$store.dispatch('expandItem', {
-        parentItem: mockItem,
-      });
-
-      wrapperCollapsed = createComponent();
-      wrapperCollapsed.vm.$store.dispatch('collapseItem', {
-        parentItem: mockItem,
-      });
+      createComponent();
     });
 
-    describe('computed', () => {
-      describe('itemReference', () => {
-        it('returns value of `item.reference`', () => {
-          expect(wrapper.vm.itemReference).toBe(mockItem.reference);
-        });
-      });
-
-      describe('chevronType', () => {
-        it('returns string `chevron-down` when `state.childrenFlags[itemReference].itemExpanded` is true', () => {
-          expect(wrapperExpanded.vm.chevronType).toBe('chevron-down');
-        });
-
-        it('returns string `chevron-right` when `state.childrenFlags[itemReference].itemExpanded` is false', () => {
-          expect(wrapperCollapsed.vm.chevronType).toBe('chevron-right');
-        });
-      });
-
-      describe('chevronTooltip', () => {
-        it('returns string `Collapse` when `state.childrenFlags[itemReference].itemExpanded` is true', () => {
-          expect(wrapperExpanded.vm.chevronTooltip).toBe('Collapse');
-        });
-
-        it('returns string `Expand` when `state.childrenFlags[itemReference].itemExpanded` is false', () => {
-          expect(wrapperCollapsed.vm.chevronTooltip).toBe('Expand');
-        });
-      });
-    });
-
-    describe('methods', () => {
-      describe('handleChevronClick', () => {
-        it('calls `toggleItem` action with `item` as a param', () => {
-          jest.spyOn(wrapper.vm, 'toggleItem');
-
-          wrapper.vm.handleChevronClick();
-
-          expect(wrapper.vm.toggleItem).toHaveBeenCalledWith({
-            parentItem: mockItem,
-          });
-        });
-      });
-    });
-
-    describe('template', () => {
-      it('renders list item as component container element', () => {
-        expect(wrapper.vm.$el.classList.contains('tree-item')).toBe(true);
-        expect(wrapper.vm.$el.classList.contains('js-item-type-epic')).toBe(true);
-        expect(wrapperExpanded.vm.$el.classList.contains('item-expanded')).toBe(true);
-      });
-
-      it('renders expand/collapse button', () => {
-        const chevronButton = wrapper.findComponent(GlButton);
-
-        expect(chevronButton.isVisible()).toBe(true);
-        expect(chevronButton.attributes('title')).toBe('Collapse');
-      });
-
-      it('has the proper class on the expand/collapse button to avoid dragging', () => {
-        const chevronButton = wrapper.findComponent(GlButton);
-
-        expect(chevronButton.attributes('class')).toContain(treeItemChevronBtnClassName);
-      });
-
-      it('renders expand/collapse icon', () => {
-        const expandedIcon = wrapperExpanded.findComponent(GlIcon);
-        const collapsedIcon = wrapperCollapsed.findComponent(GlIcon);
-
-        expect(expandedIcon.isVisible()).toBe(true);
-        expect(expandedIcon.props('name')).toBe('chevron-down');
-        expect(collapsedIcon.isVisible()).toBe(true);
-        expect(collapsedIcon.props('name')).toBe('chevron-right');
-      });
-
+    describe('loading', () => {
       it('renders loading icon when item expand is in progress', async () => {
-        wrapper.vm.$store.dispatch('requestItems', {
+        store.dispatch('requestItems', {
           parentItem: mockItem,
           isSubItem: true,
         });
 
         await nextTick();
-        const loadingIcon = wrapper.findComponent(GlLoadingIcon);
 
-        expect(loadingIcon.isVisible()).toBe(true);
+        expect(findLoadingIcon().isVisible()).toBe(true);
+      });
+    });
+
+    describe('default', () => {
+      it('has the proper class on the expand/collapse button to avoid dragging', () => {
+        expect(findChevronButton().attributes('class')).toContain(treeItemChevronBtnClassName);
+      });
+
+      it('calls `toggleItem` action with `item` as a param when clicked', async () => {
+        jest.spyOn(store, 'dispatch');
+
+        await findChevronButton().vm.$emit('click');
+
+        expect(store.dispatch).toHaveBeenCalledWith('toggleItem', {
+          parentItem: mockItem,
+        });
       });
 
       it('renders tree item body component', () => {
-        const itemBody = wrapper.findComponent(TreeItemBody);
+        expect(findTreeItemBody().isVisible()).toBe(true);
+      });
 
-        expect(itemBody.isVisible()).toBe(true);
+      it('renders list item as component container element', () => {
+        expect(wrapper.classes()).toContain('tree-item', 'js-item-type-epic');
+      });
+    });
+
+    describe('expanded', () => {
+      it('displays the correct chevronType', () => {
+        expect(findChevronIcon().isVisible()).toBe(true);
+        expect(findChevronIcon().props('name')).toBe('chevron-down');
+        expect(findChevronButton().classes('chevron-down')).toBe(true);
+      });
+
+      it('displays the correct chevronTooltip', () => {
+        expect(findChevronButton().isVisible()).toBe(true);
+        expect(findChevronButton().attributes('title')).toBe('Collapse');
+      });
+
+      it('adds "item-expanded" class to the wrapper', () => {
+        expect(wrapper.classes()).toContain('item-expanded');
+      });
+    });
+
+    describe('collapsed', () => {
+      beforeEach(() => {
+        store.dispatch('collapseItem', {
+          parentItem: mockItem,
+        });
+      });
+
+      it('displays the correct chevronType', () => {
+        expect(findChevronIcon().isVisible()).toBe(true);
+        expect(findChevronIcon().props('name')).toBe('chevron-right');
+        expect(findChevronButton().classes('chevron-right')).toBe(true);
+      });
+
+      it('displays the correct chevronTooltip', () => {
+        expect(findChevronButton().isVisible()).toBe(true);
+        expect(findChevronButton().attributes('title')).toBe('Expand');
+      });
+
+      it('adds "item-expanded" class to the wrapper', () => {
+        expect(wrapper.classes()).not.toContain('item-expanded');
       });
     });
   });
