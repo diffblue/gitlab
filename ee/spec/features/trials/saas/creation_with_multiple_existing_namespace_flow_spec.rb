@@ -87,6 +87,42 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
     end
   end
 
+  context 'when selecting to create a new group initially and then using selected group instead' do
+    it 'fills out form, submits and lands on the group page' do
+      sign_in(user)
+
+      visit new_trial_path
+
+      fill_in_company_information
+
+      submit_company_information_form
+
+      expect_to_be_on_namespace_selection
+
+      select_from_listbox 'Create group', from: 'Please select a group'
+      wait_for_requests
+
+      # namespace invalid check
+      fill_in_trial_selection_form_for_new_group(name: '_invalid group name_')
+
+      click_button 'Start your free trial'
+
+      # We really shouldn't be showing the selector at this point.
+      # The input should also have the currently invalid group name.
+      # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405125
+      expect_to_be_on_namespace_selection
+      expect(page).to have_content('We have found the following errors')
+      expect(page).to have_content('Group URL must not start or end with a special character')
+
+      # success when choosing an existing namespace instead
+      fill_in_trial_selection_form(from: 'Create group')
+
+      submit_trial_selection_form
+
+      expect_to_be_on_group_page
+    end
+  end
+
   context 'when applying lead fails' do
     it 'fills out form, submits and sent back to information form with errors and is then resolved' do
       # setup
