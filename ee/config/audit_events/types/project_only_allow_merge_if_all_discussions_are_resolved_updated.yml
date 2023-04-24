@@ -1,0 +1,8 @@
+name: project_only_allow_merge_if_all_discussions_are_resolved_updated
+description: Event triggered on updating project setting for allowing merge only when all discussions are resolved
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369286
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106652
+milestone: '15.7'
+feature_category: projects
+saved_to_database: true
+streamed: true

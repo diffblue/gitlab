@@ -1,0 +1,8 @@
+name: project_repository_size_limit_updated
+description: Event triggered on updating repository size limit of a project
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369274
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106652
+milestone: '15.7'
+feature_category: projects
+saved_to_database: true
+streamed: true

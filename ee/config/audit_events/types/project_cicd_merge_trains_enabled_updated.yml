@@ -1,0 +1,8 @@
+name: project_cicd_merge_trains_enabled_updated
+description: Event triggered on updating project setting for enabling ci cd merge trains
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369317
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107428
+milestone: '15.8'
+feature_category: projects
+saved_to_database: true
+streamed: true
