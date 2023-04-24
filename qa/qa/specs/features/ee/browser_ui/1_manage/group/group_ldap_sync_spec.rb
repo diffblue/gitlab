@@ -156,6 +156,7 @@ module QA
           Page::Group::Menu.perform(&:go_to_ldap_sync_settings)
 
           EE::Page::Group::Settings::LDAPSync.perform do |settings|
+            settings.set_ldap_user_filter_sync_method
             settings.set_user_filter('(&(objectClass=person)(cn=HR*))')
             settings.click_add_sync_button
           end

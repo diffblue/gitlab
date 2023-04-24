@@ -17,7 +17,7 @@
               = label_tag :sync_method_group, class: 'custom-control-label' do
                 = s_("LDAP|LDAP group cn")
             .gl-form-radio.custom-control.custom-radio
-              = radio_button_tag :sync_method, :filter, false, class: 'custom-control-input'
+              = radio_button_tag :sync_method, :filter, false, class: 'custom-control-input', data: { qa_selector: 'ldap_sync_user_filter_radio' }
               = label_tag :sync_method_filter, class: 'custom-control-label' do
                 = s_("LDAP|LDAP user filter")
 
