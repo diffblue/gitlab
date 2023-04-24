@@ -29,17 +29,21 @@ RSpec.describe PackageMetadata::DataObject, feature_category: :software_composit
 
       context 'if an entry is blank' do
         ['foo,v1,""', '"",v1,MIT', 'foo,"",MIT'].each do |t|
-          let(:text) { t }
+          context "with #{t}" do
+            let(:text) { t }
 
-          it { is_expected.to eq(nil) }
+            it { is_expected.to eq(nil) }
+          end
         end
       end
 
       context 'if an entry is missing' do
         ['foo,v1,', ',v1,MIT', 'foo,,MIT'].each do |t|
-          let(:text) { t }
+          context "with #{t}" do
+            let(:text) { t }
 
-          it { is_expected.to eq(nil) }
+            it { is_expected.to eq(nil) }
+          end
         end
       end
 
