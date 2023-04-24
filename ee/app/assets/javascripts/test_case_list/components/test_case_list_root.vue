@@ -20,14 +20,14 @@ import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_t
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 
-import { TestCaseTabs, AvailableSortOptions } from '../constants';
+import { testCaseTabs, availableSortOptions } from '../constants';
 import projectTestCases from '../queries/project_test_cases.query.graphql';
 import TestCaseListEmptyState from './test_case_list_empty_state.vue';
 
 export default {
   name: 'TestCaseList',
-  TestCaseTabs,
-  AvailableSortOptions,
+  testCaseTabs,
+  availableSortOptions,
   defaultPageSize: DEFAULT_PAGE_SIZE,
   components: {
     GlButton,
@@ -325,12 +325,12 @@ export default {
 <template>
   <issuable-list
     :namespace="projectFullPath"
-    :tabs="$options.TestCaseTabs"
+    :tabs="$options.testCaseTabs"
     :tab-counts="testCasesCount"
     :current-tab="currentState"
     :search-input-placeholder="s__('TestCases|Search test cases')"
     :search-tokens="getFilteredSearchTokens()"
-    :sort-options="$options.AvailableSortOptions"
+    :sort-options="$options.availableSortOptions"
     :has-scoped-labels-feature="hasScopedLabelsFeature"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"

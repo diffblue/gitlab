@@ -2,7 +2,7 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { __ } from '~/locale';
 
-import { FilterState, FilterStateEmptyMessage } from '../constants';
+import { FilterState, filterStateEmptyMessage } from '../constants';
 
 export default {
   components: {
@@ -30,7 +30,7 @@ export default {
   computed: {
     emptyStateTitle() {
       return this.requirementsCount[FilterState.all]
-        ? FilterStateEmptyMessage[this.filterBy]
+        ? filterStateEmptyMessage[this.filterBy]
         : __('With requirements, you can set criteria to check your products against.');
     },
     emptyStateDescription() {

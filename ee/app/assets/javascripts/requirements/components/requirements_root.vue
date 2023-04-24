@@ -22,9 +22,9 @@ import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 
 import {
   FilterState,
-  AvailableSortOptions,
+  availableSortOptions,
   TestReportStatus,
-  TestReportStatusToValue,
+  testReportStatusToValue,
 } from '../constants';
 import createRequirement from '../queries/create_requirement.mutation.graphql';
 import exportRequirement from '../queries/export_requirements.mutation.graphql';
@@ -43,7 +43,7 @@ import StatusToken from './tokens/status_token.vue';
 
 export default {
   DEFAULT_PAGE_SIZE,
-  AvailableSortOptions,
+  availableSortOptions,
   components: {
     GlPagination,
     GlAlert,
@@ -162,7 +162,7 @@ export default {
         }
 
         if (this.status) {
-          queryVariables.status = TestReportStatusToValue[this.status];
+          queryVariables.status = testReportStatusToValue[this.status];
         }
 
         if (this.sortBy) {
@@ -716,7 +716,7 @@ export default {
       :namespace="projectPath"
       :search-input-placeholder="__('Search requirements')"
       :tokens="getFilteredSearchTokens()"
-      :sort-options="$options.AvailableSortOptions"
+      :sort-options="$options.availableSortOptions"
       :initial-filter-value="getFilteredSearchValue()"
       :initial-sort-by="sortBy"
       recent-searches-storage-key="requirements"
