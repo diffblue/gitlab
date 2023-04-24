@@ -37,8 +37,8 @@ module EE
             }
             params do
               optional :target_branch, type: String,
-                                       desc: 'Branch that scoped approval rules apply to',
-                                       documentation: { example: 'main' }
+                desc: 'Branch that scoped approval rules apply to',
+                documentation: { example: 'main' }
             end
             get 'approval_settings' do
               present_merge_request_approval_state(
@@ -62,8 +62,8 @@ module EE
             end
             params do
               requires :approvals_required, type: Integer,
-                                            desc: 'The amount of approvals required. Must be higher than the project approvals',
-                                            documentation: { example: 2 }
+                desc: 'The amount of approvals required. Must be higher than the project approvals',
+                documentation: { example: 2 }
             end
             post 'approvals' do
               merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_merge_request)

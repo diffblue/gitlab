@@ -12,13 +12,12 @@ module EE
 
           # EE attributes
           expose :group_saml_identity,
-                 using: ::API::Entities::Identity,
-                 if: -> (member, options) { Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
+            using: ::API::Entities::Identity,
+            if: -> (member, options) { Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
 
           expose :is_using_seat, if: -> (_, options) { options[:show_seat_info] }
 
-          expose :override,
-                 if: ->(member, _) { member.source_type == 'Namespace' && member.ldap? }
+          expose :override, if: ->(member, _) { member.source_type == 'Namespace' && member.ldap? }
 
           expose :human_state_name, as: :membership_state
           expose :member_role, with: MemberRole, expose_nil: false
