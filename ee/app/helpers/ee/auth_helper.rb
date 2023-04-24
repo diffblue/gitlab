@@ -89,9 +89,5 @@ module EE
     def group_saml_enabled?
       auth_providers.include?(:group_saml)
     end
-
-    def slack_redirect_uri(project)
-      slack_auth_project_settings_slack_url(project)
-    end
   end
 end
