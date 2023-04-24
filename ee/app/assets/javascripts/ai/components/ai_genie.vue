@@ -46,6 +46,13 @@ export default {
           };
         },
         result({ data }) {
+          const errors = data.aiCompletionResponse?.errors;
+          if (errors && errors.length) {
+            this.codeExplanationLoading = false;
+            this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
+            return;
+          }
+
           const explanation = data.aiCompletionResponse?.responseBody;
           if (explanation) {
             this.codeExplanationLoading = false;

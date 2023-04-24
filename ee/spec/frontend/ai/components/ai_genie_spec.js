@@ -252,8 +252,20 @@ describe('AiGenie', () => {
         await waitForPromises();
         expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
       });
+
       it('if the mutation fails, genie gets :error set with the error message', async () => {
         mutationHandlerMock = jest.fn().mockRejectedValue();
+        createComponent({ containerId });
+        await requestExplanation();
+        await waitForPromises();
+        expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
+      });
+
+      it('if the subscription is successful, but the subscription receives an error in GraphQL response, an error message is displayed', async () => {
+        const responseWithError = { responseBody: aiResponse, errors: ['Some error'] };
+        subscriptionHandlerMock = jest.fn().mockResolvedValue({
+          data: { aiCompletionResponse: responseWithError },
+        });
         createComponent({ containerId });
         await requestExplanation();
         await waitForPromises();
