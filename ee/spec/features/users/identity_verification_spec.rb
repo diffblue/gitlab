@@ -14,7 +14,6 @@ feature_category: :system_access do
     stub_application_setting_enum('email_confirmation_setting', 'hard')
     stub_application_setting(require_admin_approval_after_user_signup: false)
 
-    stub_feature_flags(soft_email_confirmation: false)
     stub_feature_flags(identity_verification_phone_number: false)
     stub_feature_flags(identity_verification_credit_card: false)
 
