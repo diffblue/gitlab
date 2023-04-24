@@ -25,7 +25,7 @@ module QA
         Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client }
       end
 
-      # This group can't be removed because it is linked to a subscription.
+      # This group can't be removed while it is linked to a subscription.
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "fulfillment-overage-test-group-#{hash}"
