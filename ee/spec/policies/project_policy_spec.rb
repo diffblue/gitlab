@@ -472,12 +472,12 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
         # Project/Group visibility: Public; Enforce SSO setting: Off
 
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read project'
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'does not allow read project'
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read project'
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read project'
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read project'
-        ref(:project)    | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read project'
+        ref(:project)    | 'public'  | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read project'
 
         ref(:project)    | 'public'  | false | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'allows to read project'
 

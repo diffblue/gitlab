@@ -456,7 +456,7 @@ module EE
 
       with_scope :subject
       condition(:needs_new_sso_session) do
-        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject.group, user: @user, for_project: true)
+        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject.group, user: @user, for_project: true) && (subject.private? || group_member?)
       end
 
       with_scope :subject
@@ -470,18 +470,8 @@ module EE
           .default_project_deletion_protection
       end
 
-      # For public projects, SSO enforcement only applies to group members
-      rule { public_project & needs_new_sso_session & group_member }.policy do
-        prevent :public_user_access
-        prevent :public_access
-      end
-
       rule { needs_new_sso_session }.policy do
-        prevent :guest_access
-        prevent :reporter_access
-        prevent :developer_access
-        prevent :maintainer_access
-        prevent :owner_access
+        prevent :read_project
       end
 
       rule { ip_enforcement_prevents_access & ~admin & ~auditor }.policy do
