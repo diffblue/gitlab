@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe TrialRegistrationsController, :saas, feature_category: :purchase do
   describe 'POST create' do
+    before do
+      stub_feature_flags(arkose_labs_signup_challenge: false)
+    end
+
     let(:user_params) do
       build_stubbed(:user)
         .slice(:first_name, :last_name, :email, :username, :password)
