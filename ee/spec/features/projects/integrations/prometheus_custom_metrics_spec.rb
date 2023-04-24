@@ -16,6 +16,7 @@ RSpec.describe 'Prometheus custom metrics', :js, feature_category: :integrations
   before do
     stub_request(:get, prometheus_query_with_time_url('avg(metric)', Time.now.utc))
     create(:prometheus_integration, project: project, api_url: 'http://prometheus.example.com', manual_configuration: '1', active: true)
+    stub_feature_flags(remove_monitor_metrics: false)
 
     visit_project_integration('Prometheus')
   end
