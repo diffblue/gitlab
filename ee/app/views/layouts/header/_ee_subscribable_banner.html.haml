@@ -6,7 +6,7 @@
   .js-gitlab-ee-license-banner.hidden{ class: [container_class, @content_class, 'gl-pt-5!'] }
     = render Pajamas::AlertComponent.new(variant: :danger,
       title: subject,
-      alert_options: { data: { license_expiry: subscribable.expires_at, defer_links: "true" }}) do |c|
+      alert_options: { data: { license_expiry: subscribable.expires_at, defer_links: "true", testid: 'subscribable_banner' }}) do |c|
       = c.body do
         = message
         - if subscribable.block_changes?
