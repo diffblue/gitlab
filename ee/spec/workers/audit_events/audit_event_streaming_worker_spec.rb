@@ -228,17 +228,19 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
   shared_context 'http post error' do
     context 'when any of Gitlab::HTTP::HTTP_ERRORS is raised' do
       Gitlab::HTTP::HTTP_ERRORS.each do |error_klass|
-        let(:error) { error_klass.new('error') }
+        context "with #{error_klass}" do
+          let(:error) { error_klass.new('error') }
 
-        before do
-          allow(Gitlab::HTTP).to receive(:post).and_raise(error)
-        end
+          before do
+            allow(Gitlab::HTTP).to receive(:post).and_raise(error)
+          end
 
-        it 'does not logs the error' do
-          expect(Gitlab::ErrorTracking).not_to receive(:log_exception).with(
-            an_instance_of(error_klass)
-          )
-          subject
+          it 'does not logs the error' do
+            expect(Gitlab::ErrorTracking).not_to receive(:log_exception).with(
+              an_instance_of(error_klass)
+            )
+            subject
+          end
         end
       end
     end
