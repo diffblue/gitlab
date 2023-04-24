@@ -1,0 +1,8 @@
+name: external_status_check_name_updated
+description: Event triggered on updating name of a external status check
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369333
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106095
+milestone: '15.7'
+feature_category: compliance_management
+saved_to_database: true
+streamed: true

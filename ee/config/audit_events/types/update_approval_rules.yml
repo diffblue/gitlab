@@ -1,0 +1,8 @@
+name: update_approval_rules
+description: Event triggered on updating a merge approval rule
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363092
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89939
+milestone: '15.2'
+feature_category: compliance_management
+saved_to_database: true
+streamed: true

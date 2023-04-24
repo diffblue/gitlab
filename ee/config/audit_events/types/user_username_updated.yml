@@ -1,0 +1,8 @@
+name: user_username_updated
+description: Event triggered on updating a user's username
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369329
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106086
+milestone: '15.7'
+feature_category: user_profile
+saved_to_database: true
+streamed: true
