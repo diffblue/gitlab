@@ -67,7 +67,7 @@ To do step 2:
 ```
 
 An example of a tutorial that follows this format is
-[Tutorial: Make your first Git commit](../../../tutorials/make_your_first_git_commit.md).
+[Tutorial: Make your first Git commit](../../../tutorials/make_first_git_commit/index.md).
 
 ## Tutorial page title
 
