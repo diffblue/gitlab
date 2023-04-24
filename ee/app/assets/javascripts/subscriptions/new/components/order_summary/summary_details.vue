@@ -17,7 +17,6 @@ export default {
     ...mapState(['startDate', 'taxRate', 'numberOfUsers', 'isInvoicePreviewLoading']),
     ...mapGetters([
       'selectedPlanText',
-      'selectedPlanPrice',
       'endDate',
       'totalExVat',
       'vat',
@@ -26,6 +25,7 @@ export default {
       'showAmount',
       'discount',
       'promotionalOfferText',
+      'unitPrice',
     ]),
     taxAmount() {
       return this.taxRate ? this.formatAmount(this.vat, this.showAmount) : '–';
@@ -40,7 +40,7 @@ export default {
   i18n: {
     selectedPlanText: s__('Checkout|%{selectedPlanText} plan'),
     numberOfUsers: s__('Checkout|(x%{numberOfUsers})'),
-    pricePerUserPerYear: s__('Checkout|$%{selectedPlanPrice} per user per year'),
+    pricePerUserPerYear: s__('Checkout|$%{pricePerUserPerYear} per user per year'),
     dates: s__('Checkout|%{startDate} - %{endDate}'),
     subtotal: s__('Checkout|Subtotal'),
     discount: s__('Checkout|Discount'),
@@ -70,7 +70,7 @@ export default {
     <div v-if="!isInvoicePreviewLoading" class="gl-text-gray-500" data-testid="per-user">
       {{
         sprintf($options.i18n.pricePerUserPerYear, {
-          selectedPlanPrice: selectedPlanPrice.toLocaleString(),
+          pricePerUserPerYear: unitPrice.toLocaleString(),
         })
       }}
     </div>

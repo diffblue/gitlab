@@ -116,6 +116,10 @@ export const hasValidPriceDetails = (state) => Boolean(state.invoicePreview);
 export const chargeItem = (state) =>
   state.invoicePreview?.invoiceItem?.find((item) => item.processingType === CHARGE_PROCESSING_TYPE);
 
+export const unitPrice = (state, getters) => {
+  return getters.chargeItem?.unitPrice ?? 0;
+};
+
 export const discountItem = (state) =>
   state.invoicePreview?.invoiceItem?.find(
     (item) => item.processingType === DISCOUNT_PROCESSING_TYPE,

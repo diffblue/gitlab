@@ -102,6 +102,7 @@ export const stateData = {
 export const mockChargeItem = {
   chargeAmount: 48,
   processingType: 'Charge',
+  unitPrice: 48,
 };
 
 export const mockInvoicePreviewBronze = {
@@ -118,8 +119,7 @@ export const mockInvoicePreviewBronze = {
 export const mockDiscountItem = {
   chargeAmount: -10,
   processingType: 'Discount',
-  serviceEndDate: '2020-12-05',
-  serviceStartDate: '2019-12-05',
+  unitPrice: 10,
 };
 
 export const mockInvoicePreviewUltimate = {
@@ -132,6 +132,7 @@ export const mockInvoicePreviewUltimate = {
         {
           chargeAmount: 1188,
           processingType: 'Charge',
+          unitPrice: 1188,
         },
       ],
     },
@@ -148,8 +149,7 @@ export const mockInvoicePreviewWithDiscount = {
         {
           chargeAmount: 1188,
           processingType: 'Charge',
-          serviceEndDate: '2020-12-05',
-          serviceStartDate: '2019-12-05',
+          unitPrice: 1188,
         },
         mockDiscountItem,
       ],
@@ -167,6 +167,7 @@ export const mockInvoicePreviewUltimateWithMultipleUsers = {
         {
           chargeAmount: 3564,
           processingType: 'Charge',
+          unitPrice: 1188,
         },
       ],
     },

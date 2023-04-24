@@ -8806,13 +8806,13 @@ msgstr ""
 msgid "Checkout"
 msgstr ""
 
+msgid "Checkout|$%{pricePerUserPerYear} per user per year"
+msgstr ""
+
 msgid "Checkout|$%{selectedPlanPrice} per 10 GB storage pack per year"
 msgstr ""
 
 msgid "Checkout|$%{selectedPlanPrice} per pack of 1,000 minutes"
-msgstr ""
-
-msgid "Checkout|$%{selectedPlanPrice} per user per year"
 msgstr ""
 
 msgid "Checkout|%d CI minute pack"
