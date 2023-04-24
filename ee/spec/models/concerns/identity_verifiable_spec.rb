@@ -38,16 +38,21 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
   describe('#active_for_authentication?') do
     subject { user.active_for_authentication? }
 
-    where(:identity_verification_enabled?, :identity_verified?, :result) do
-      true  | true  | true
-      true  | false | false
-      false | true  | true
-      false | false | true
+    where(:identity_verification_enabled?, :identity_verified?, :email_confirmation_setting, :result) do
+      true  | true  | 'hard' | true
+      true  | false | 'hard' | false
+      false | false | 'hard' | true
+      false | true  | 'hard' | true
+      true  | true  | 'soft' | true
+      true  | false | 'soft' | false
+      false | false | 'soft' | true
+      false | true  | 'soft' | true
     end
 
     before do
       allow(user).to receive(:identity_verification_enabled?).and_return(identity_verification_enabled?)
       allow(user).to receive(:identity_verified?).and_return(identity_verified?)
+      stub_application_setting_enum('email_confirmation_setting', email_confirmation_setting)
     end
 
     with_them do

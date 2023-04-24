@@ -112,7 +112,6 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
       context 'when licensed' do
         before do
           stub_licensed_features(admin_audit_log: true)
-          stub_feature_flags(soft_email_confirmation: false)
         end
 
         context 'when user registers for the instance' do
