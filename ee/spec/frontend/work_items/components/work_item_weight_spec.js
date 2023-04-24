@@ -10,13 +10,11 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { __ } from '~/locale';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import {
   updateWorkItemMutationResponse,
-  workItemResponseFactory,
+  workItemByIidResponseFactory,
   workItemWeightSubscriptionResponse,
-  projectWorkItemResponse,
 } from 'jest/work_items/mock_data';
 
 describe('WorkItemWeight component', () => {
@@ -26,9 +24,8 @@ describe('WorkItemWeight component', () => {
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
-  const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
+  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
-  const workItemByIidResponseHandler = jest.fn().mockResolvedValue(projectWorkItemResponse);
   const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
 
   const findForm = () => wrapper.findComponent(GlForm);
@@ -40,22 +37,19 @@ describe('WorkItemWeight component', () => {
     isEditing = false,
     weight,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
-    fetchByIid = false,
-    queryVariables = { id: workItemId },
+    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = mountExtended(WorkItemWeight, {
       apolloProvider: createMockApollo([
-        [workItemQuery, workItemQueryHandler],
+        [workItemByIidQuery, workItemQueryHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
         [updateWorkItemMutation, mutationHandler],
-        [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
       propsData: {
         canUpdate,
         weight,
         workItemId,
         workItemType,
-        fetchByIid,
         queryVariables,
       },
       provide: {
@@ -71,9 +65,7 @@ describe('WorkItemWeight component', () => {
   it('has a subscription', () => {
     createComponent();
 
-    expect(weightSubscriptionHandler).toHaveBeenCalledWith({
-      issuableId: workItemQueryResponse.data.workItem.id,
-    });
+    expect(weightSubscriptionHandler).toHaveBeenCalledWith({ issuableId: workItemId });
   });
 
   describe('`issue_weights` licensed feature', () => {
@@ -245,24 +237,15 @@ describe('WorkItemWeight component', () => {
     });
   });
 
-  it('calls the global ID work item query when `fetchByIid` prop is false', async () => {
-    createComponent({ fetchByIid: false });
+  it('fetches the work item', async () => {
+    createComponent();
     await waitForPromises();
 
     expect(workItemQueryHandler).toHaveBeenCalled();
-    expect(workItemByIidResponseHandler).not.toHaveBeenCalled();
   });
 
-  it('calls the IID work item query when when `fetchByIid` prop is true', async () => {
-    createComponent({ fetchByIid: true });
-    await waitForPromises();
-
-    expect(workItemQueryHandler).not.toHaveBeenCalled();
-    expect(workItemByIidResponseHandler).toHaveBeenCalled();
-  });
-
-  it('skips calling the handlers when missing the needed queryVariables', async () => {
-    createComponent({ queryVariables: {}, fetchByIid: false });
+  it('skips fetching the work item when missing queryVariables', async () => {
+    createComponent({ queryVariables: {} });
     await waitForPromises();
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();

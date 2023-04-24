@@ -11,7 +11,7 @@ import {
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import { getWorkItemQuery } from '~/work_items/utils';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 
 /* eslint-disable @gitlab/require-i18n-strings */
 const allowedKeys = [
@@ -71,11 +71,6 @@ export default {
       type: String,
       required: true,
     },
-    fetchByIid: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
     queryVariables: {
       type: Object,
       required: true,
@@ -88,17 +83,15 @@ export default {
   },
   apollo: {
     workItem: {
-      query() {
-        return getWorkItemQuery(this.fetchByIid);
-      },
+      query: workItemByIidQuery,
       variables() {
         return this.queryVariables;
       },
       update(data) {
-        return this.fetchByIid ? data.workspace.workItems.nodes[0] : data.workItem;
+        return data.workspace.workItems.nodes[0];
       },
       skip() {
-        return !this.queryVariables.id && !this.queryVariables.iid;
+        return !this.queryVariables.iid;
       },
       error() {
         this.$emit('error', i18n.fetchError);
