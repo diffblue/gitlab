@@ -9,7 +9,7 @@
       %h2.center= _('Create your group')
       %p
         %div= _('A group represents your organization in GitLab. Groups allow you to manage users and collaborate across multiple projects.')
-        %div= _('Your %{plan} plan will be applied to your group.' % { plan: plan_title })
+        %div= _('Your %{plan} plan will be applied to your group.') % { plan: plan_title }
 
       = render Pajamas::CardComponent.new do |c|
         - c.body do

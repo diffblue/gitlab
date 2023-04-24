@@ -2,7 +2,7 @@
 
 %header.py-2
   %h2.page-title
-    = _('Geo Replication - %{node_name}' % { node_name: @target_node.name })
+    = _('Geo Replication - %{node_name}') % { node_name: @target_node.name }
   %p
     = s_('Geo|Review replication status, and resynchronize and reverify items with the primary site.')
 = gl_tabs_nav({ class: 'border-top border-bottom border-secondary-100' }) do
