@@ -18,6 +18,10 @@ module Boards
 
       override :execute
       def execute
+        if params.has_key?(:display_colors) && Feature.disabled?(:epic_color_highlight, parent)
+          params.delete(:display_colors)
+        end
+
         super.tap do |response|
           if response.success?
             track_usage_event(:g_project_management_users_creating_epic_boards, current_user&.id)

@@ -58,6 +58,7 @@ RSpec.describe 'get list of epic boards', feature_category: :portfolio_managemen
         <<~QUERY
         hideBacklogList
         hideClosedList
+        displayColors
         QUERY
       end
 
@@ -66,6 +67,7 @@ RSpec.describe 'get list of epic boards', feature_category: :portfolio_managemen
 
         expect(graphql_data.dig('group', 'epicBoard', 'hideBacklogList')).to eq board1.hide_backlog_list
         expect(graphql_data.dig('group', 'epicBoard', 'hideClosedList')).to eq board1.hide_closed_list
+        expect(graphql_data.dig('group', 'epicBoard', 'displayColors')).to eq board1.display_colors
       end
     end
   end

@@ -12,7 +12,10 @@ RSpec.describe Mutations::Boards::EpicBoards::Update, feature_category: :portfol
   let(:name) { 'board name' }
   let(:mutation) { graphql_mutation(:epic_board_update, params) }
   let(:label) { create(:group_label, group: group) }
-  let(:params) { { id: board.to_global_id.to_s, name: 'foo', hide_backlog_list: true, labels: [label.name] } }
+
+  let(:params) do
+    { id: board.to_global_id.to_s, name: 'foo', hide_backlog_list: true, labels: [label.name], display_colors: false }
+  end
 
   subject { post_graphql_mutation(mutation, current_user: current_user) }
 
@@ -39,7 +42,21 @@ RSpec.describe Mutations::Boards::EpicBoards::Update, feature_category: :portfol
       expect(mutation_response).to have_key('epicBoard')
       expect(mutation_response['epicBoard']['name']).to eq(params[:name])
       expect(mutation_response['epicBoard']['hideBacklogList']).to eq(params[:hide_backlog_list])
+      expect(mutation_response['epicBoard']['displayColors']).to eq(params[:display_colors])
       expect(mutation_response['epicBoard']['labels']['count']).to eq(1)
+    end
+
+    context 'when epic_color_highlight flag is disabled' do
+      before do
+        stub_feature_flags(epic_color_highlight: false)
+      end
+
+      it 'ignores displayColors argument' do
+        post_graphql_mutation(mutation, current_user: current_user)
+
+        expect(mutation_response).to have_key('epicBoard')
+        expect(mutation_response['epicBoard']['displayColors']).to eq(true)
+      end
     end
 
     context 'when update fails' do
