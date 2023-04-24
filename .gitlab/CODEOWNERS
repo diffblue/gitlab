@@ -10,6 +10,9 @@
 GITALY_SERVER_VERSION @project_278964_bot6 @gitlab-org/maintainers/rails-backend @gitlab-org/delivery
 
 ## Files that are excluded from required approval
+## These rules override the * rule above, so that changes to docs and templates
+## can be merged by any user who has maintainer rights, but is not included in
+## the * rule (usually technical writers).
 /.gitlab/issue_templates/*.md
 /.gitlab/merge_request_templates/*.md
 /doc/*.md
