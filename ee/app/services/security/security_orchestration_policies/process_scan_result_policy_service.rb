@@ -20,8 +20,8 @@ module Security
       attr_reader :policy_configuration, :policy, :project, :author, :policy_index
 
       def create_new_approval_rules
-        action_info = policy[:actions].find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
-        return unless action_info
+        action_info = policy[:actions]&.find { |action| action[:type] == Security::ScanResultPolicy::REQUIRE_APPROVAL }
+        return if action_info.blank? || policy[:rules].blank?
 
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
