@@ -12947,6 +12947,9 @@ msgstr ""
 msgid "CycleAnalyticsEvent|Issue first added to a board"
 msgstr ""
 
+msgid "CycleAnalyticsEvent|Issue first assigned"
+msgstr ""
+
 msgid "CycleAnalyticsEvent|Issue first associated with a milestone"
 msgstr ""
 
@@ -12969,6 +12972,9 @@ msgid "CycleAnalyticsEvent|Merge request closed"
 msgstr ""
 
 msgid "CycleAnalyticsEvent|Merge request created"
+msgstr ""
+
+msgid "CycleAnalyticsEvent|Merge request first assigned"
 msgstr ""
 
 msgid "CycleAnalyticsEvent|Merge request first commit time"
