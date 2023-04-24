@@ -1,5 +1,4 @@
 import { nextTick } from 'vue';
-import { GlCollapse } from '@gitlab/ui';
 import Mousetrap from 'mousetrap';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SuperSidebar from '~/super_sidebar/components/super_sidebar.vue';
@@ -19,7 +18,7 @@ import { stubComponent } from 'helpers/stub_component';
 import { sidebarData } from '../mock_data';
 
 jest.mock('~/super_sidebar/super_sidebar_collapsed_state_manager');
-const focusInputMock = jest.fn();
+const closeContextSwitcherMock = jest.fn();
 
 describe('SuperSidebar component', () => {
   let wrapper;
@@ -27,6 +26,8 @@ describe('SuperSidebar component', () => {
   const findSidebar = () => wrapper.findByTestId('super-sidebar');
   const findHoverArea = () => wrapper.findByTestId('super-sidebar-hover-area');
   const findUserBar = () => wrapper.findComponent(UserBar);
+  const findContextSwitcher = () => wrapper.findComponent(ContextSwitcher);
+  const findNavContainer = () => wrapper.findByTestId('nav-container');
   const findHelpCenter = () => wrapper.findComponent(HelpCenter);
   const findSidebarPortalTarget = () => wrapper.findComponent(SidebarPortalTarget);
 
@@ -43,7 +44,7 @@ describe('SuperSidebar component', () => {
       },
       stubs: {
         ContextSwitcher: stubComponent(ContextSwitcher, {
-          methods: { focusInput: focusInputMock },
+          methods: { close: closeContextSwitcherMock },
         }),
       },
       provide,
@@ -76,10 +77,10 @@ describe('SuperSidebar component', () => {
       expect(findSidebarPortalTarget().exists()).toBe(true);
     });
 
-    it("does not call the context switcher's focusInput method initially", () => {
+    it("does not call the context switcher's close method initially", () => {
       createWrapper();
 
-      expect(focusInputMock).not.toHaveBeenCalled();
+      expect(closeContextSwitcherMock).not.toHaveBeenCalled();
     });
 
     it('renders hidden shortcut links', () => {
@@ -112,6 +113,17 @@ describe('SuperSidebar component', () => {
       wrapper.destroy();
 
       expect(Mousetrap.unbind).toHaveBeenCalledWith(['mod+\\']);
+    });
+  });
+
+  describe('on collapse', () => {
+    beforeEach(() => {
+      createWrapper();
+      wrapper.vm.isCollapsed = true;
+    });
+
+    it('closes the context switcher', () => {
+      expect(closeContextSwitcherMock).toHaveBeenCalled();
     });
   });
 
@@ -202,15 +214,20 @@ describe('SuperSidebar component', () => {
     });
   });
 
-  describe('when opening the context switcher', () => {
+  describe('nav container', () => {
     beforeEach(() => {
       createWrapper();
-      wrapper.findComponent(GlCollapse).vm.$emit('input', true);
-      wrapper.findComponent(GlCollapse).vm.$emit('shown');
     });
 
-    it("calls the context switcher's focusInput method", () => {
-      expect(focusInputMock).toHaveBeenCalledTimes(1);
+    it('allows overflow while the context switcher is closed', () => {
+      expect(findNavContainer().classes()).toContain('gl-overflow-auto');
+    });
+
+    it('hides overflow when context switcher is opened', async () => {
+      findContextSwitcher().vm.$emit('toggle', true);
+      await nextTick();
+
+      expect(findNavContainer().classes()).not.toContain('gl-overflow-auto');
     });
   });
 });
