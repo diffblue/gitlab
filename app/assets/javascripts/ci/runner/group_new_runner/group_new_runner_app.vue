@@ -3,6 +3,8 @@ import { GlSprintf, GlLink, GlModalDirective } from '@gitlab/ui';
 import { createAlert, VARIANT_SUCCESS } from '~/alert';
 import { redirectTo, setUrlParams } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
+
+import RegistrationCompatibilityAlert from '~/ci/runner/components/registration/registration_compatibility_alert.vue';
 import RunnerInstructionsModal from '~/vue_shared/components/runner_instructions/runner_instructions_modal.vue';
 import RunnerPlatformsRadioGroup from '~/ci/runner/components/runner_platforms_radio_group.vue';
 import RunnerCreateForm from '~/ci/runner/components/runner_create_form.vue';
@@ -14,6 +16,7 @@ export default {
   components: {
     GlLink,
     GlSprintf,
+    RegistrationCompatibilityAlert,
     RunnerInstructionsModal,
     RunnerPlatformsRadioGroup,
     RunnerCreateForm,
@@ -59,6 +62,9 @@ export default {
 <template>
   <div>
     <h1 class="gl-font-size-h2">{{ s__('Runners|New group runner') }}</h1>
+
+    <registration-compatibility-alert />
+
     <p>
       <gl-sprintf
         :message="
