@@ -60,7 +60,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency, feature_categor
 
       let(:build) { build_stubbed(:ee_ci_build, :success, :license_scan_v2) }
 
-      specify { expect(subject).to eql("/#{build.project.namespace.path}/#{build.project.name}/-/blob/#{build.sha}/#{lockfile}") }
+      specify { expect(subject).to eql("/#{build.project.full_path}/-/blob/#{build.sha}/#{lockfile}") }
     end
 
     context "when a path is not available" do
@@ -82,7 +82,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::Dependency, feature_categor
 
       let(:project) { build_stubbed(:project) }
 
-      specify { expect(subject).to eql("/#{project.namespace.path}/#{project.name}/-/blob/master/#{lockfile}") }
+      specify { expect(subject).to eql("/#{project.full_path}/-/blob/master/#{lockfile}") }
     end
   end
 end

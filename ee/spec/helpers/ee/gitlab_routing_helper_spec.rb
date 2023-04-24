@@ -226,7 +226,7 @@ RSpec.describe EE::GitlabRoutingHelper do
     subject { vulnerability_url(vulnerability) }
 
     it 'returns the full url of the vulnerability' do
-      expect(subject).to eq "http://localhost/#{vulnerability.project.namespace.path}/#{vulnerability.project.name}/-/security/vulnerabilities/#{vulnerability.id}"
+      expect(subject).to eq "http://localhost/#{vulnerability.project.full_path}/-/security/vulnerabilities/#{vulnerability.id}"
     end
   end
 

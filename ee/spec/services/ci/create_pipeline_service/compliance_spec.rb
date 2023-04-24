@@ -8,11 +8,11 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :continuous_integrat
 
   subject(:execute) { service.execute(:push) }
 
-  let(:project) { create(:project, :repository, name: 'website') }
-  let(:user) { project.first_owner }
-  let(:compliance_group) { create(:group, :private, name: "compliance") }
-  let(:compliance_project) { create(:project, :repository, namespace: compliance_group, name: "hippa") }
-  let(:framework) { create(:compliance_framework, namespace_id: compliance_group.id, pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@compliance/hippa") }
+  let_it_be(:project) { create(:project, :repository, path: 'website') }
+  let_it_be(:user) { project.first_owner }
+  let_it_be(:compliance_group) { create(:group, :private) }
+  let_it_be(:compliance_project) { create(:project, :repository, namespace: compliance_group) }
+  let_it_be(:framework) { create(:compliance_framework, namespace_id: compliance_group.id, pipeline_configuration_full_path: ".compliance-gitlab-ci.yml@#{compliance_project.full_path}") }
   let!(:framework_project_setting) { create(:compliance_framework_project_setting, project: project, framework_id: framework.id) }
   let!(:ref_sha) { compliance_project.commit('HEAD').sha }
   let(:compliance_config) do
@@ -69,7 +69,7 @@ RSpec.describe Ci::CreatePipelineService, feature_category: :continuous_integrat
 
   context 'when user does not have access to compliance project' do
     it 'includes access denied error' do
-      expect(execute.payload.yaml_errors).to eq "Project `compliance/hippa` not found or access denied! Make sure any includes in the pipeline configuration are correctly defined."
+      expect(execute.payload.yaml_errors).to eq "Project `#{compliance_project.full_path}` not found or access denied! Make sure any includes in the pipeline configuration are correctly defined."
     end
 
     it 'does not persist jobs' do

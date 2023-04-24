@@ -8,7 +8,8 @@ RSpec.describe Projects::RestoreService do
   let(:project) do
     create(:project,
       :repository,
-      name: 'project 1-deleted-177483',
+      path: 'project-1-deleted-177483',
+      name: 'Project1 Name-deleted-177483',
       namespace: user.namespace,
       marked_for_deletion_at: 1.day.ago,
       deleting_user: user,
@@ -33,25 +34,26 @@ RSpec.describe Projects::RestoreService do
 
     context 'when the original project path is not taken' do
       it 'renames the project back to its original path' do
-        expect { subject }.to change { project.path }.from("project_1-deleted-177483").to("project_1")
+        expect { subject }.to change { project.path }.from("project-1-deleted-177483").to("project-1")
       end
 
       it 'renames the project back to its original name' do
-        expect { subject }.to change { project.name }.from("project 1-deleted-177483").to("project 1")
+        expect { subject }.to change { project.name }.from("Project1 Name-deleted-177483").to("Project1 Name")
       end
     end
 
     context 'when the original project name has been taken' do
       before do
-        create(:project, name: 'project 1', namespace: user.namespace, deleting_user: user)
+        create(:project, path: 'project-1', name: 'Project1 Name', namespace: user.namespace, deleting_user: user)
       end
 
       it 'renames the project back to its original path with a suffix' do
-        expect { subject }.to change { project.path }.from("project_1-deleted-177483").to(/project_1-[a-zA-Z0-9]{5}/)
+        expect { subject }.to change { project.path }.from("project-1-deleted-177483").to(/project-1-[a-zA-Z0-9]{5}/)
       end
 
       it 'renames the project back to its original name with a suffix' do
-        expect { subject }.to change { project.name }.from("project 1-deleted-177483").to(/project 1-[a-zA-Z0-9]{5}/)
+        expect { subject }.to change { project.name }.from("Project1 Name-deleted-177483")
+          .to(/Project1 Name-[a-zA-Z0-9]{5}/)
       end
 
       it 'uses the same suffix for both the path and name' do
@@ -69,7 +71,6 @@ RSpec.describe Projects::RestoreService do
         create(
           :project,
           :repository,
-          name: 'a project name',
           namespace: user.namespace,
           marked_for_deletion_at: 1.day.ago,
           deleting_user: user,

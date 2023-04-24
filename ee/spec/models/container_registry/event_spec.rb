@@ -7,7 +7,7 @@ RSpec.describe ContainerRegistry::Event do
   include ::EE::GeoHelpers
 
   let_it_be(:group) { create(:group, name: 'group') }
-  let_it_be(:project) { create(:project, name: 'test', namespace: group) }
+  let_it_be(:project) { create(:project, path: 'test', namespace: group) }
 
   shared_examples 'creating a geo event' do
     it 'creates geo event' do

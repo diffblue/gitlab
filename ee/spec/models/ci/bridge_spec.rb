@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Ci::Bridge do
   let_it_be(:project) { create(:project) }
-  let_it_be(:target_project) { create(:project, name: 'project', namespace: create(:namespace, name: 'my')) }
+  let_it_be(:target_project) { create(:project, namespace: create(:namespace)) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
 
   let(:bridge) do
@@ -12,7 +12,7 @@ RSpec.describe Ci::Bridge do
   end
 
   let(:options) do
-    { trigger: { project: 'my/project', branch: 'master' } }
+    { trigger: { project: project.full_path, branch: 'master' } }
   end
 
   it_behaves_like 'has secrets', :ci_bridge
@@ -32,7 +32,7 @@ RSpec.describe Ci::Bridge do
 
     context 'when bridge points towards upstream' do
       before do
-        bridge.options = { bridge_needs: { pipeline: 'my/project' } }
+        bridge.options = { bridge_needs: { pipeline: project.full_path } }
       end
 
       it 'subscribes to the upstream project' do
