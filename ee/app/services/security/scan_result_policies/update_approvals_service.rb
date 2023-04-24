@@ -38,11 +38,11 @@ module Security
       end
 
       def scan_removed?
-        (target_pipeline.security_scan_types - pipeline.security_scan_types).any?
+        (Array.wrap(target_pipeline&.security_scan_types) - pipeline.security_scan_types).any?
       end
 
       def target_pipeline_security_findings
-        target_pipeline.security_findings
+        target_pipeline&.security_findings || Security::Finding.none
       end
       strong_memoize_attr :target_pipeline_security_findings
 
@@ -69,7 +69,7 @@ module Security
       end
 
       def preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
-        return false if include_newly_detected?(approval_rule)
+        return false if target_pipeline_uuids.empty? || include_newly_detected?(approval_rule)
 
         vulnerabilities_count = vulnerabilities_count_for_uuids(target_pipeline_uuids, approval_rule)
 
@@ -83,15 +83,15 @@ module Security
       end
 
       def include_newly_detected?(approval_rule)
-        approval_rule.vulnerability_states.include?(ApprovalProjectRule::NEWLY_DETECTED)
+        approval_rule.vulnerability_states_for_branch.include?(ApprovalProjectRule::NEWLY_DETECTED)
       end
 
       def only_newly_detected?(approval_rule)
-        approval_rule.vulnerability_states == [ApprovalProjectRule::NEWLY_DETECTED]
+        approval_rule.vulnerability_states_for_branch == [ApprovalProjectRule::NEWLY_DETECTED]
       end
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)
-        states_without_newly_detected = approval_rule.vulnerability_states
+        states_without_newly_detected = approval_rule.vulnerability_states_for_branch
           .reject { |state| ApprovalProjectRule::NEWLY_DETECTED == state }
 
         VulnerabilitiesCountService.new(

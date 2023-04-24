@@ -10,9 +10,9 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let(:vulnerability_states) { %w[detected newly_detected] }
 
     let_it_be(:uuids) { Array.new(5) { SecureRandom.uuid } }
-    let_it_be(:merge_request) { create(:merge_request) }
+    let_it_be(:merge_request) { create(:merge_request, source_branch: 'feature-branch', target_branch: 'master') }
     let_it_be(:project) { merge_request.project }
-    let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project) }
+    let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
     let_it_be(:target_pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.target_branch) }
     let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
     let_it_be(:pipeline_findings) do
@@ -69,7 +69,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     context 'when security scan is removed in current pipeline' do
-      let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project) }
+      let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
 
       it_behaves_like 'does not update approvals_required'
     end
@@ -78,6 +78,14 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       let(:vulnerabilities_allowed) { 100 }
 
       it_behaves_like 'updates approvals_required'
+    end
+
+    context 'when target pipeline is nil' do
+      let_it_be(:merge_request) do
+        create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
+      end
+
+      it_behaves_like 'does not update approvals_required'
     end
 
     context 'when the number of findings in current pipeline exceed the allowed limit' do
@@ -110,25 +118,35 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     context 'when there are preexisting findings that exceed the allowed limit' do
-      let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project) }
-      let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
+      context 'when target pipeline is not empty' do
+        let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
+        let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
 
-      let(:vulnerability_states) { %w[detected] }
+        let(:vulnerability_states) { %w[detected] }
 
-      context 'when vulnerability_states has newly_detected' do
-        let(:vulnerability_states) { %w[detected newly_detected] }
+        context 'when vulnerability_states has newly_detected' do
+          let(:vulnerability_states) { %w[detected newly_detected] }
 
-        it_behaves_like 'updates approvals_required'
+          it_behaves_like 'updates approvals_required'
+        end
+
+        context 'when vulnerabilities count exceeds the allowed limit' do
+          it_behaves_like 'does not update approvals_required'
+        end
+
+        context 'when vulnerabilities count does not exceed the allowed limit' do
+          let(:vulnerabilities_allowed) { 6 }
+
+          it_behaves_like 'updates approvals_required'
+        end
       end
 
-      context 'when vulnerabilities count exceeds the allowed limit' do
+      context 'when target pipeline is nil' do
+        let_it_be(:merge_request) do
+          create(:merge_request, source_branch: 'feature-branch', target_branch: 'target-branch')
+        end
+
         it_behaves_like 'does not update approvals_required'
-      end
-
-      context 'when vulnerabilities count does not exceed the allowed limit' do
-        let(:vulnerabilities_allowed) { 6 }
-
-        it_behaves_like 'updates approvals_required'
       end
     end
   end
