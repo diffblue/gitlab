@@ -9,7 +9,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 This tutorial shows you how to:
 
 - Create a development environment outside of GitLab.
-- Connect a remote machine to the [Web IDE](../web_ide_beta/index.md).
+- Connect a remote machine to the [Web IDE](../web_ide/index.md).
 
 To connect a remote machine to the Web IDE, you must:
 
