@@ -6,6 +6,7 @@ query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String) {
     invoiceItem {
       chargeAmount
       processingType
+      unitPrice
     }
   }
 }

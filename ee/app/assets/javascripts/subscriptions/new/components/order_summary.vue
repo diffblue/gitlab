@@ -106,6 +106,7 @@ export default {
           {
             chargeAmount: amount,
             processingType: CHARGE_PROCESSING_TYPE,
+            unitPrice: this.selectedPlanPrice,
           },
         ],
       };

@@ -179,6 +179,16 @@ describe('Subscriptions Getters', () => {
     });
   });
 
+  describe('unitPrice', () => {
+    it('returns unit price when present', () => {
+      expect(getters.unitPrice({}, { chargeItem: mockChargeItem })).toBe(48);
+    });
+
+    it(`returns zero if invoice preview data doesn't exist`, () => {
+      expect(getters.unitPrice({}, { chargeItem: undefined })).toBe(0);
+    });
+  });
+
   describe('discountItem', () => {
     it('returns discount item when present', () => {
       const invoicePreview = { invoiceItem: [mockDiscountItem] };
