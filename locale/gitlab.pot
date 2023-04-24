@@ -38126,19 +38126,19 @@ msgstr ""
 msgid "Runners|Create a group runner"
 msgstr ""
 
-msgid "Runners|Create a group runner to generate a command that registers the runner with all its configurations. %{linkStart}Prefer to use a registration token to create a runner?%{linkEnd}"
+msgid "Runners|Create a group runner to generate a command that registers the runner with all its configurations."
 msgstr ""
 
 msgid "Runners|Create a project runner"
 msgstr ""
 
-msgid "Runners|Create a project runner to generate a command that registers the runner with all its configurations. %{linkStart}Prefer to use a registration token to create a runner?%{linkEnd}"
+msgid "Runners|Create a project runner to generate a command that registers the runner with all its configurations."
 msgstr ""
 
 msgid "Runners|Create an instance runner"
 msgstr ""
 
-msgid "Runners|Create an instance runner to generate a command that registers the runner with all its configurations. %{linkStart}Prefer to use a registration token to create a runner?%{linkEnd}"
+msgid "Runners|Create an instance runner to generate a command that registers the runner with all its configurations."
 msgstr ""
 
 msgid "Runners|Created %{timeAgo}"
@@ -38593,6 +38593,9 @@ msgid "Runners|Step 3 (optional)"
 msgstr ""
 
 msgid "Runners|Stop the runner from accepting new jobs."
+msgstr ""
+
+msgid "Runners|Support for registration tokens is deprecated"
 msgstr ""
 
 msgid "Runners|Tags"
