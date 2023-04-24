@@ -49,6 +49,8 @@ To generate Let's Encrypt certificates:
      --preferred-challenges dns certonly
    ```
 
+Now that you've generated the certificates, it's time to create and connect a development environment.
+
 ## Connect a development environment to the Web IDE
 
 To connect a development environment to the Web IDE:
