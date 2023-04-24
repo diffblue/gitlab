@@ -70,7 +70,7 @@ module QA
             dashboard.go_to_project(project.name)
           end
 
-          Page::Project::Menu.perform(&:click_packages_link)
+          Page::Project::Menu.perform(&:go_to_package_registry)
 
           Page::Project::Packages::Index.perform do |index|
             index.wait_for_package_replication(package_name)
