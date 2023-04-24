@@ -45,19 +45,25 @@ RSpec.describe BackfillProjectPermissionsInBlobs, :elastic_clean, :sidekiq_inlin
       end
 
       context 'when task in progress' do
-        let(:client) { ::Gitlab::Search::Client.new }
+        let(:project_in_progress) { Project.first }
 
         before do
+          projects.each do |project|
+            project.repository.index_commits_and_blobs # ensure objects are indexed
+          end
+          ensure_elasticsearch_index!
+          projects.each { |project| remove_permissions_for_blob(project) }
           allow(migration).to receive(:completed?).and_return(false)
-          allow(migration).to receive(:client).and_return(client)
-          allow(migration).to receive(:projects_with_missing_project_permissions).and_return([])
           allow(helper).to receive(:task_status).with(task_id: 'task_1').and_return('completed' => false)
-          migration.set_migration_state(projects_in_progress: [{ task_id: 'task_1', project_id: 1 }],
-            remaining_count: 1)
+          migration.set_migration_state(
+            projects_in_progress: [{ task_id: 'task_1',
+                                     project_id: project_in_progress.id }], remaining_count: 3)
         end
 
-        it 'does nothing if task is not completed' do
-          expect(client).not_to receive(:update_by_query)
+        it 'does not send update_by_query to the project in progress' do
+          expect(migration).to receive(:update_by_query).with(Project.second).and_call_original
+          expect(migration).to receive(:update_by_query).with(Project.last).and_call_original
+          expect(migration).not_to receive(:update_by_query).with(project_in_progress)
           migration.migrate
         end
       end

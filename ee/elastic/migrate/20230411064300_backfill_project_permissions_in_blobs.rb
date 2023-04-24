@@ -174,7 +174,7 @@ class BackfillProjectPermissionsInBlobs < Elastic::Migration
       }
     }
 
-    query[:bool][:must_not] << { terms: { project_id: exclude_project_ids } } if exclude_project_ids.present?
+    query[:bool][:must_not] = [{ terms: { project_id: exclude_project_ids } }] if exclude_project_ids.present?
     query
   end
 

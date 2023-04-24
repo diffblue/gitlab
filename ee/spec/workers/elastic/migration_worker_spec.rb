@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :global_search do
   subject { described_class.new }
 
+  let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
+
   describe '#perform' do
     context 'Feature Flag `elastic_migration_worker` is disabled' do
       before do
@@ -100,6 +102,7 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :glob
             allow(migration).to receive(:retry_on_failure?).and_return(true)
             allow(migration).to receive(:max_attempts).and_return(2)
             allow(migration).to receive(:migrate).and_raise(StandardError)
+            allow(::Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger)
           end
 
           it 'increases previous_attempts on failure' do
@@ -111,6 +114,7 @@ RSpec.describe Elastic::MigrationWorker, :elastic_clean, feature_category: :glob
           it 'fails the migration if max_attempts is exceeded' do
             migration.set_migration_state(previous_attempts: 2)
 
+            expect(logger).to receive(:error).twice.and_call_original
             subject.perform
 
             expect(migration.halted?).to be_truthy
