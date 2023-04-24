@@ -56,7 +56,8 @@ describe('EpicToken', () => {
       provide: {
         portalName: 'fake target',
         alignSuggestions: function fakeAlignSuggestions() {},
-        suggestionsListClass: 'custom-class',
+        suggestionsListClass: () => 'custom-class',
+        termsAsTokens: () => false,
       },
       stubs,
     });
