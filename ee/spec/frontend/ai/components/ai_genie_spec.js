@@ -5,6 +5,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import AiGenie from 'ee/ai/components/ai_genie.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { generatePrompt } from 'ee/ai/utils';
 import { i18n } from 'ee/ai/constants';
 import { renderMarkdown } from '~/notes/utils';
@@ -55,12 +56,14 @@ describe('AiGenie', () => {
       provide: { resourceId, userId },
       stubs: {
         AiGenieChat,
+        UserFeedback,
       },
       apolloProvider,
     });
   };
   const findButton = () => wrapper.findComponent(GlButton);
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
+  const findUserFeedback = () => wrapper.findComponent(UserFeedback);
   const getRangeAtMock = (top = () => 0) => {
     return jest.fn((rangePosition) => {
       return {
@@ -271,6 +274,17 @@ describe('AiGenie', () => {
         await waitForPromises();
         expect(findGenieChat().props().error).toBe(i18n.REQUEST_ERROR);
       });
+    });
+  });
+
+  describe('UserFeedback', () => {
+    beforeEach(() => {
+      createComponent({ containerId });
+    });
+    it('passes the props correctly', async () => {
+      await simulateSelectText();
+      await requestExplanation();
+      expect(findUserFeedback().props().isLoading).toBe(true);
     });
   });
 });
