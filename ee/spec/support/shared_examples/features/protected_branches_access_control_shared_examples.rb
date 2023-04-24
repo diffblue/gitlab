@@ -186,29 +186,6 @@ RSpec.shared_examples "protected branches > access control > EE" do
         accept_gl_confirm(button_text: 'Unprotect branch') { click_on 'Unprotect' }
         expect(page).not_to have_selector('[data-testid="protected-branch"]')
       end
-
-      context 'with unprotect access levels' do
-        before do
-          protected_branch.unprotect_access_levels.create!(access_level: Gitlab::Access::NO_ACCESS)
-        end
-
-        it 'can prevent unprotect/delete' do
-          visit project_protected_branches_path(project)
-
-          expect(page).to have_link('Unprotect')
-          expect(find_link('Unprotect')[:disabled]).to eq 'true'
-        end
-
-        it 'can prevent update' do
-          visit project_protected_branches_path(project)
-
-          %w(push merge).each do |operation|
-            within ".js-protected-branch-edit-form .#{operation}_access_levels-container" do
-              expect(page).to have_css('button[disabled]')
-            end
-          end
-        end
-      end
     end
   end
 end

@@ -72,16 +72,17 @@ RSpec.describe API::ProtectedBranches, feature_category: :source_code_management
         it_behaves_like 'protected branch'
       end
 
-      context 'when unprotect_access_level is set to NO_ACCESS' do
+      context 'when unprotect_access_level is set to DEVELOPER' do
         let(:protected_branch) do
-          create(:protected_branch, :no_one_can_unprotect, project: project, name: protected_name)
+          create(:protected_branch, :developers_can_unprotect, project: project, name: protected_name)
         end
 
-        it 'unprotect_access_level is returned as NO_ACCESS' do
+        it 'unprotect_access_level is returned as DEVELOPER' do
           get api(route, user)
 
           expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response['unprotect_access_levels'].first['access_level_description']).to eq('No one')
+          expect(json_response['unprotect_access_levels'].first['access_level_description'])
+            .to eq('Developers + Maintainers')
         end
       end
     end
