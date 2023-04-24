@@ -1,18 +1,19 @@
-import { GlButton, GlSkeletonLoader, GlBadge, GlIcon } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
-import { i18n, FEEDBACK_LINK_URL } from 'ee/ai/constants';
+import { i18n } from 'ee/ai/constants';
 
 describe('AiGenieChat', () => {
   let wrapper;
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, slots = {}) => {
     wrapper = shallowMountExtended(AiGenieChat, {
       propsData: {
         ...props,
       },
+      slots,
     });
   };
 
@@ -25,8 +26,6 @@ describe('AiGenieChat', () => {
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
   const findBadge = () => wrapper.findComponent(GlBadge);
-  const findFeedbackLink = () => wrapper.findByTestId('feedback-link');
-  const findLinkIcon = () => findFeedbackLink().findComponent(GlIcon);
 
   beforeEach(() => {
     createComponent();
@@ -53,11 +52,10 @@ describe('AiGenieChat', () => {
       expect(findBadge().props('size')).toBe(badgeSize);
       expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
     });
-    it('renders link to feedabck issue', () => {
-      const iconName = 'comment';
-      expect(findFeedbackLink().attributes('href')).toBe(FEEDBACK_LINK_URL);
-      expect(findFeedbackLink().text()).toBe(i18n.FEEDBACK_LINK);
-      expect(findLinkIcon().props('name')).toBe(iconName);
+    it('renders content provided in a slot', () => {
+      const slotContent = 'Testing slot';
+      createComponent({}, { default: slotContent });
+      expect(wrapper.text()).toContain(slotContent);
     });
   });
 

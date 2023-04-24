@@ -4,6 +4,7 @@ import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { generatePrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { renderMarkdown } from '~/notes/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import explainCodeMutation from '../graphql/explain_code.mutation.graphql';
@@ -17,6 +18,7 @@ export default {
   components: {
     GlButton,
     AiGenieChat,
+    UserFeedback,
   },
   directives: {
     SafeHtml,
@@ -105,7 +107,6 @@ export default {
         throw new Error(this.$options.i18n.GENIE_NO_CONTAINER_ERROR);
       }
       this.snippetLanguage = this.container.querySelector('[lang]')?.lang;
-
       const selection = window.getSelection();
       if (this.isWithinContainer(selection)) {
         this.setPosition(selection);
@@ -155,6 +156,7 @@ export default {
       v-show="shouldShowButton"
       v-gl-tooltip
       :title="$options.i18n.GENIE_TOOLTIP"
+      :aria-label="$options.i18n.GENIE_TOOLTIP"
       category="tertiary"
       variant="default"
       icon="question"
@@ -169,6 +171,8 @@ export default {
       :selected-text="selectedText"
       :error="codeExplanationError"
       :snippet-language="snippetLanguage"
-    />
+    >
+      <user-feedback :is-loading="codeExplanationLoading" />
+    </ai-genie-chat>
   </div>
 </template>
