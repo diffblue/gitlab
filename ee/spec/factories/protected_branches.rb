@@ -36,12 +36,6 @@ FactoryBot.modify do
       end
     end
 
-    trait :no_one_can_unprotect do
-      after(:build) do |protected_branch, evaluator|
-        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::NO_ACCESS)
-      end
-    end
-
     trait :developers_can_unprotect do
       after(:build) do |protected_branch, evaluator|
         protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::DEVELOPER)

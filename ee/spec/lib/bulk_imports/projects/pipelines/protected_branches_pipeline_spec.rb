@@ -14,7 +14,7 @@ RSpec.describe BulkImports::Projects::Pipelines::ProtectedBranchesPipeline do
       'name' => 'main',
       'created_at' => '2016-06-14T15:02:47.967Z',
       'updated_at' => '2016-06-14T15:02:47.967Z',
-      'unprotect_access_levels' => [{ 'access_level' => 0 }]
+      'unprotect_access_levels' => [{ 'access_level' => Gitlab::Access::MAINTAINER }]
     }
   end
 
