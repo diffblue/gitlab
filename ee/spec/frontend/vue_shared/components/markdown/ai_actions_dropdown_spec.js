@@ -1,48 +1,56 @@
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlCollapsibleListbox, GlListboxItem, GlLoadingIcon } from '@gitlab/ui';
+import { GlDisclosureDropdown, GlLoadingIcon } from '@gitlab/ui';
 import { createMockSubscription } from 'mock-apollo-client';
 
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
-import { updateText } from '~/lib/utils/text_markdown';
 
-import AiActionsDropdown, {
-  ACTIONS,
-  MAX_REQUEST_TIMEOUT,
-} from 'ee/vue_shared/components/markdown/ai_actions_dropdown.vue';
+import AiActionsDropdown from 'ee/vue_shared/components/markdown/ai_actions_dropdown.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
-import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
+import { resetHTMLFixture, setHTMLFixture } from 'helpers/fixtures';
+import dummyMutation from './dummy_mutation.graphql';
 
 Vue.use(VueApollo);
 
 jest.mock('~/alert');
-jest.mock('~/lib/utils/text_markdown');
 
 describe('AI actions dropdown component', () => {
   let wrapper;
-  const resourceGlobalId = 'gid://gitlab/Issue/1';
-  const userId = 99;
   let aiResponseSubscriptionHandler;
   let aiActionMutationHandler;
 
-  const findSummarizeCommentsAction = () =>
-    wrapper
-      .findAllComponents(GlListboxItem)
-      .filter((item) => item.text().includes('Summarize comments'))
-      .at(0);
-  const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
+  const createActions = (handler = () => Promise.resolve("Here's the summary...")) => [
+    {
+      title: 'Summarize comments',
+      description: 'Get a short summary of all the comments',
+      handler,
+    },
+  ];
+  const createApolloActions = () => [
+    {
+      title: 'Summarize comments',
+      description: 'Get a short summary of all the comments',
+      apolloMutation() {
+        return {
+          mutation: dummyMutation,
+        };
+      },
+    },
+  ];
+
+  const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findLoadingSpinner = () => wrapper.findComponent(GlLoadingIcon);
+  const findAction = (position = 0) =>
+    wrapper.findAllByTestId('disclosure-dropdown-item').at(position);
+  const clickAction = (position) => findAction(position).find('button').trigger('click');
 
-  const createWrapper = (props) => {
-    window.gon = { current_user_id: userId };
-
+  const createWrapper = (actions) => {
     aiResponseSubscriptionHandler = createMockSubscription();
     aiActionMutationHandler = jest.fn();
-    const mockApollo = createMockApollo([[aiActionMutation, aiActionMutationHandler]]);
+    const mockApollo = createMockApollo([[dummyMutation, aiActionMutationHandler]]);
     mockApollo.defaultClient.setRequestHandler(
       aiResponseSubscription,
       () => aiResponseSubscriptionHandler,
@@ -52,147 +60,173 @@ describe('AI actions dropdown component', () => {
       attachTo: '#root',
       apolloProvider: mockApollo,
       propsData: {
-        resourceGlobalId,
-        ...props,
+        actions,
       },
     });
   };
 
   beforeEach(() => {
-    setHTMLFixture('<div class="md-area"><textarea></textarea><div id="root"></div></div>');
-    createWrapper();
+    setHTMLFixture(`<div id="root"></div>`);
   });
 
   afterEach(() => {
     resetHTMLFixture();
   });
 
-  describe('summarize comments action', () => {
-    function selectSummariseComments() {
-      findDropdown().vm.$emit('select', ACTIONS.SUMMARIZE_COMMENTS);
-      return nextTick();
-    }
+  it('shows disclosure dropdown', () => {
+    createWrapper(createActions());
+    expect(findDropdown().exists()).toBe(true);
+  });
 
-    it('shows the summarize comments action', () => {
-      expect(findSummarizeCommentsAction().exists()).toBe(true);
-    });
+  it('passes down correct actions', () => {
+    const actions = createActions();
+    createWrapper(actions);
+    const [{ items }] = findDropdown().props('items');
+    expect(items).toHaveLength(actions.length);
+    expect(items[0].text).toBe(actions[0].title);
+  });
 
-    it('submits an AI action mutation when selecting', async () => {
-      await selectSummariseComments();
+  it('shows item title and description', () => {
+    const actions = createActions();
+    createWrapper(actions);
+    const text = findAction(0).text();
+    expect(text).toContain(actions[0].title);
+    expect(text).toContain(actions[0].description);
+  });
 
-      expect(aiActionMutationHandler).toHaveBeenCalledWith({
-        input: { summarizeComments: { resourceId: 'gid://gitlab/Issue/1' } },
-      });
-    });
+  describe('abstract actions', () => {
+    const createWithAsyncHandler = () => {
+      const result = {};
+      const handler = () =>
+        new Promise((resolve, reject) => {
+          result.res = resolve;
+          result.rej = reject;
+        });
+      createWrapper(createActions(handler));
+      return result;
+    };
 
     it('shows loading state', async () => {
-      expect(findLoadingSpinner().exists()).toBe(false);
-
-      await selectSummariseComments();
-
+      const handler = createWithAsyncHandler();
+      await clickAction();
       expect(findLoadingSpinner().exists()).toBe(true);
+      handler.res();
     });
 
-    describe('success', () => {
-      beforeEach(async () => {
-        aiActionMutationHandler.mockResolvedValue({});
-
-        await selectSummariseComments();
-
-        aiResponseSubscriptionHandler.next({
-          data: {
-            aiCompletionResponse: {
-              responseBody: 'yay',
-            },
-          },
-        });
-      });
-
-      it('stops loading', () => {
-        expect(findLoadingSpinner().exists()).toBe(false);
-      });
-
-      it('sets the textarea value', () => {
-        expect(updateText).toHaveBeenCalledWith({
-          textArea: document.querySelector('textarea'),
-          tag: `yay\n***\n_This comment was generated using OpenAI_`,
-          cursorOffset: 0,
-          wrap: false,
-        });
-      });
-
-      it('does not timeout once it has received a successful response', async () => {
-        jest.advanceTimersByTime(MAX_REQUEST_TIMEOUT);
-        await nextTick();
-
-        expect(createAlert).not.toHaveBeenCalled();
-      });
+    it('hides loading state on success', async () => {
+      const handler = createWithAsyncHandler();
+      await clickAction();
+      handler.res();
+      await waitForPromises();
+      expect(findLoadingSpinner().exists()).toBe(false);
     });
 
-    describe('errors', () => {
-      it('shows an error when there is no response within the timeout period', async () => {
-        await selectSummariseComments();
+    it('emits input event on success', async () => {
+      const response = 'FooBar';
+      const handler = createWithAsyncHandler();
+      await clickAction();
+      handler.res(response);
+      await waitForPromises();
+      expect(wrapper.emitted('input')).toStrictEqual([[response]]);
+    });
 
-        jest.advanceTimersByTime(MAX_REQUEST_TIMEOUT);
-        await nextTick();
+    it('hides loading state on fail', async () => {
+      const handler = createWithAsyncHandler();
+      await clickAction();
+      handler.rej();
+      await waitForPromises();
+      expect(findLoadingSpinner().exists()).toBe(false);
+    });
 
-        expect(createAlert).toHaveBeenCalledWith({
-          message: 'Something went wrong',
-        });
-      });
+    it('shows error on fail', async () => {
+      const message = 'FooBar';
+      const handler = createWithAsyncHandler();
+      await clickAction();
+      handler.rej(new Error(message));
+      await waitForPromises();
+      expect(createAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message,
+          captureError: true,
+          error: expect.any(Error),
+        }),
+      );
+    });
+  });
 
-      it('shows an error when the AI action mutation response contains errors', async () => {
-        const errors = ['oh no', 'it didnt do the thing', 'zzzeezoo'];
+  describe('apollo actions', () => {
+    beforeEach(() => {
+      createWrapper(createApolloActions());
+    });
 
-        aiActionMutationHandler.mockResolvedValue({
-          data: {
-            aiAction: {
-              errors,
-            },
+    it('emits response from action', async () => {
+      const responseBody = 'FooBar';
+
+      aiResponseSubscriptionHandler.next({
+        data: {
+          aiCompletionResponse: {
+            responseBody,
           },
-        });
-
-        await selectSummariseComments();
-        await waitForPromises();
-
-        expect(createAlert).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: errors.join(','),
-            captureError: true,
-            error: expect.any(Error),
-          }),
-        );
+        },
       });
 
-      it('shows an error and logs to Sentry when the AI action mutation request fails', async () => {
-        const mockError = new Error('ding');
-        aiActionMutationHandler.mockRejectedValue(mockError);
+      await clickAction();
+      await waitForPromises();
 
-        await selectSummariseComments();
-        await waitForPromises();
+      expect(wrapper.emitted('input')).toStrictEqual([[responseBody]]);
+    });
 
-        expect(createAlert).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'ding',
-            captureError: true,
-            error: mockError,
-          }),
-        );
+    it('shows an error when the AI action mutation response contains errors', async () => {
+      const errors = ['oh no', 'it didnt do the thing', 'zzzeezoo'];
+
+      aiActionMutationHandler.mockResolvedValue({
+        data: {
+          aiAction: {
+            errors,
+          },
+        },
       });
 
-      it('shows an error and logs to Sentry when the AI subscription fails', () => {
-        const mockError = new Error('ding');
+      await clickAction();
+      await waitForPromises();
 
-        aiResponseSubscriptionHandler.error(mockError);
+      expect(createAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: errors.join(','),
+          captureError: true,
+          error: expect.any(Error),
+        }),
+      );
+    });
 
-        expect(createAlert).toHaveBeenCalledWith(
-          expect.objectContaining({
-            message: 'ding',
-            captureError: true,
-            error: mockError,
-          }),
-        );
-      });
+    it('shows an error and logs to Sentry when the AI action mutation request fails', async () => {
+      const mockError = new Error('ding');
+      aiActionMutationHandler.mockRejectedValue(mockError);
+
+      await clickAction();
+      await waitForPromises();
+
+      expect(createAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'ding',
+          captureError: true,
+          error: mockError,
+        }),
+      );
+    });
+
+    it('shows an error and logs to Sentry when the AI subscription fails', () => {
+      const mockError = new Error('ding');
+
+      aiResponseSubscriptionHandler.error(mockError);
+
+      expect(createAlert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'ding',
+          captureError: true,
+          error: mockError,
+        }),
+      );
     });
   });
 });
