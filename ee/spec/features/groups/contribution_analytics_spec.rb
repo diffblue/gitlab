@@ -24,25 +24,8 @@ RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_
     sign_in(user)
   end
 
-  describe 'visit Contribution Analytics page for group with contribution_analytics_graphql enabled' do
-    before do
-      visit_contribution_analytics
-    end
-
-    it 'displays Contribution Analytics' do
-      expect(page).to have_content "Contribution analytics for issues, merge requests and push"
-    end
-
-    it 'displays text indicating no pushes, merge requests and issues' do
-      expect(page).to have_content "No pushes for the selected time period."
-      expect(page).to have_content "No merge requests for the selected time period."
-      expect(page).to have_content "No issues for the selected time period."
-    end
-  end
-
   describe 'visit Contribution Analytics page for group' do
     before do
-      stub_feature_flags(contribution_analytics_graphql: false)
       visit_contribution_analytics
     end
 

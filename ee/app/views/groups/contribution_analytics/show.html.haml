@@ -12,8 +12,6 @@
   data: {
     full_path: @group.full_path,
     start_date: @start_date.to_date.iso8601,
-    end_date: Date.today.iso8601,
-
-    **@data_collector.legacy_page_data
+    end_date: Date.today.iso8601
   }
 }

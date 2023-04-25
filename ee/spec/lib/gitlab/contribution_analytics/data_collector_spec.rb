@@ -49,38 +49,11 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
     end
   end
 
-  describe '#total_commit_count' do
-    it 'computes the total number of commits' do
-      other_group = create(:group)
-      other_project = create(:project, group: other_group)
-
-      event1 = create(:event, :pushed, project: project1, target: nil)
-      event2 = create(:event, :pushed, project: project2, target: nil)
-      event3 = create(:event, :pushed, project: other_project, target: nil)
-
-      create(:push_event_payload, event: event1, commit_count: 2)
-      create(:push_event_payload, event: event2, commit_count: 3)
-      create(:push_event_payload, event: event3, commit_count: 7)
-
-      data_collector = described_class.new(group: group)
-
-      expect(data_collector.total_commit_count).to eq(5)
-    end
-  end
-
-  context 'deriving various counts from #raw_counts' do
+  describe '#push_by_author_count' do
     let(:raw_counts) do
       {
         [1, nil, Event.actions[:pushed]] => 2,
-        [2, nil, Event.actions[:pushed]] => 2,
-        [1, MergeRequest.name, Event.actions[:merged]] => 2,
-        [4, MergeRequest.name, Event.actions[:merged]] => 2,
-        [5, MergeRequest.name, Event.actions[:created]] => 0,
-        [6, MergeRequest.name, Event.actions[:created]] => 1,
-        [6, MergeRequest.name, Event.actions[:approved]] => 1,
-        [6, MergeRequest.name, Event.actions[:closed]] => 1,
-        [10, Issue.name, Event.actions[:closed]] => 10,
-        [11, Issue.name, Event.actions[:closed]] => 11
+        [2, nil, Event.actions[:pushed]] => 2
       }
     end
 
@@ -90,83 +63,14 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector, feature_category: :
       allow(data_collector).to receive(:raw_counts).and_return(raw_counts)
     end
 
-    describe 'extracts correct counts from raw_counts' do
-      it 'for #push_by_author_count' do
-        expect(data_collector.push_by_author_count).to eq({ 1 => 2, 2 => 2 })
-      end
-
-      it 'for #total_push_author_count' do
-        expect(data_collector.total_push_author_count).to eq(2)
-      end
-
-      it 'for #total_push_count' do
-        expect(data_collector.total_push_count).to eq(4)
-      end
-
-      it 'for #total_merge_requests_closed_count' do
-        expect(data_collector.total_merge_requests_closed_count).to eq(1)
-      end
-
-      it 'for #total_merge_requests_created_count' do
-        expect(data_collector.total_merge_requests_created_count).to eq(1)
-      end
-
-      it 'for #total_merge_requests_merged_count' do
-        expect(data_collector.total_merge_requests_merged_count).to eq(4)
-      end
-
-      it 'for #total_merge_requests_approved_count' do
-        expect(data_collector.total_merge_requests_approved_count).to eq(1)
-      end
-
-      it 'for #total_issues_closed_count' do
-        expect(data_collector.total_issues_closed_count).to eq(21)
-      end
-
-      it 'handles empty result' do
-        allow(data_collector).to receive(:raw_counts).and_return({})
-
-        expect(data_collector.push_by_author_count).to eq({})
-        expect(data_collector.total_push_author_count).to eq(0)
-        expect(data_collector.total_push_count).to eq(0)
-        expect(data_collector.total_merge_requests_created_count).to eq(0)
-        expect(data_collector.total_merge_requests_merged_count).to eq(0)
-        expect(data_collector.total_merge_requests_approved_count).to eq(0)
-        expect(data_collector.total_issues_closed_count).to eq(0)
-      end
-    end
-  end
-
-  describe '#legacy_page_data' do
-    subject { described_class.new(group: group).legacy_page_data }
-
-    context 'when contribution_analytics_graphql feature flag is enabled' do
-      before do
-        stub_feature_flags(contribution_analytics_graphql: true)
-      end
-
-      it { is_expected.to eq({}) }
+    it 'calculates the correct count' do
+      expect(data_collector.push_by_author_count).to eq({ 1 => 2, 2 => 2 })
     end
 
-    context 'when contribution_analytics_graphql feature flag is not enabled' do
-      before do
-        stub_feature_flags(contribution_analytics_graphql: false)
-      end
+    it 'handles empty result' do
+      allow(data_collector).to receive(:raw_counts).and_return({})
 
-      it {
-        is_expected.to include(
-          :analytics_data,
-          :total_push_count,
-          :total_commit_count,
-          :total_push_author_count,
-          :total_merge_requests_closed_count,
-          :total_merge_requests_created_count,
-          :total_merge_requests_merged_count,
-          :total_issues_created_count,
-          :total_issues_closed_count,
-          :member_contributions_path
-        )
-      }
+      expect(data_collector.push_by_author_count).to eq({})
     end
   end
 end

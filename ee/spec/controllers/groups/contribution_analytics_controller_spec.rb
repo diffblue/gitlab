@@ -131,12 +131,6 @@ RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value
 
       expect(assigns[:data_collector].users).to match_array([user, user2, user3])
       expect(assigns[:data_collector].total_events_by_author_count.values.sum).to eq(6)
-      stats = assigns[:data_collector].group_member_contributions_table_data
-
-      # NOTE: The array ordering matters! The view references them all by index
-      expect(stats[:merge_requests_created][:data]).to eq([0, 1, 1])
-      expect(stats[:issues_closed][:data]).to eq([1, 1, 0])
-      expect(stats[:push][:data]).to eq([1, 0, 1])
     end
 
     it "returns member contributions JSON when format is JSON" do
