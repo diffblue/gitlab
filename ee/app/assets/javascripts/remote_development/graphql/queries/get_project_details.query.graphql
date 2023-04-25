@@ -4,14 +4,9 @@ query getProjectDetails($projectFullPath: ID!, $devFilePath: String!) {
     group {
       id
       fullPath
-      clusterAgents {
-        nodes {
-          id
-          name
-        }
-      }
     }
     repository {
+      rootRef
       blobs(paths: [$devFilePath]) {
         nodes {
           id

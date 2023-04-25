@@ -3,7 +3,7 @@ import { GlAlert, GlButton, GlLink, GlIcon, GlSkeletonLoader, GlTableLite } from
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
-import { WORKSPACE_STATES } from '../constants';
+import { WORKSPACE_STATES, ROUTES } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 
@@ -84,6 +84,7 @@ export default {
     newWorkspaceButton: s__('Workspaces|New workspace'),
   },
   WORKSPACE_STATES,
+  ROUTES,
 };
 </script>
 <template>
@@ -94,7 +95,9 @@ export default {
 
     <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
       <h2>{{ $options.i18n.heading }}</h2>
-      <gl-button variant="confirm" to="create">{{ $options.i18n.newWorkspaceButton }}</gl-button>
+      <gl-button variant="confirm" :to="$options.ROUTES.create">{{
+        $options.i18n.newWorkspaceButton
+      }}</gl-button>
     </div>
 
     <workspace-empty-state v-if="isEmpty" />

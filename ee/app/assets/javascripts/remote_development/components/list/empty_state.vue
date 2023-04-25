@@ -1,6 +1,7 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { ROUTES } from '../../constants';
 
 export const i18n = {
   title: s__('Workspaces|Develop anywhere'),
@@ -17,6 +18,7 @@ export default {
   },
   inject: ['emptyStateSvgPath'],
   i18n,
+  ROUTES,
 };
 </script>
 
@@ -28,7 +30,7 @@ export default {
       :svg-path="emptyStateSvgPath"
     >
       <template #actions>
-        <gl-button variant="confirm" class="gl-mb-3 gl-mx-2" to="create">{{
+        <gl-button variant="confirm" class="gl-mb-3 gl-mx-2" :to="$options.ROUTES.create">{{
           $options.i18n.primaryButtonText
         }}</gl-button>
       </template>

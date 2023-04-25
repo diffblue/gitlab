@@ -1,4 +1,4 @@
-export const DEFAULT_DEVFILE_PATH = '.devfile';
+export const DEFAULT_DEVFILE_PATH = '.devfile.yaml';
 export const DEFAULT_EDITOR = 'webide';
 export const WORKSPACE_STATES = {
   // eslint-disable-next-line @gitlab/require-i18n-strings
@@ -11,4 +11,10 @@ export const WORKSPACE_STATES = {
   stopped: 'Stopped',
   // eslint-disable-next-line @gitlab/require-i18n-strings
   terminated: 'Terminated',
+};
+export const DEFAULT_DESIRED_STATE = WORKSPACE_STATES.running;
+
+export const ROUTES = {
+  index: 'index',
+  create: 'create',
 };

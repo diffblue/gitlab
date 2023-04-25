@@ -99,6 +99,7 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
     project: {
       id: 'gid://gitlab/Project/79',
       repository: {
+        rootRef: 'main',
         blobs: {
           nodes: [
             { id: '.editorconfig', path: '.editorconfig' },
@@ -109,8 +110,17 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
       group: {
         id: 'gid://gitlab/Group/80',
         fullPath: 'gitlab-org',
-        clusterAgents: { nodes: [{ name: 'default-agent', id: 'agents/1' }] },
       },
+    },
+  },
+};
+
+export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/80',
+      fullPath: 'gitlab-org',
+      clusterAgents: { nodes: [{ name: 'default-agent', id: 'agents/1' }] },
     },
   },
 };
@@ -118,7 +128,6 @@ export const GET_PROJECT_DETAILS_QUERY_RESULT = {
 export const WORKSPACE_CREATE_MUTATION_RESULT = {
   data: {
     workspaceCreate: {
-      workspace: cloneDeep(WORKSPACE),
       errors: [],
     },
   },

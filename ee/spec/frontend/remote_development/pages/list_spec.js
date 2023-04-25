@@ -8,7 +8,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
-import { WORKSPACE_STATES } from 'ee/remote_development/constants';
+import { WORKSPACE_STATES, ROUTES } from 'ee/remote_development/constants';
 import {
   CURRENT_USERNAME,
   USER_WORKSPACES_QUERY_RESULT,
@@ -145,7 +145,7 @@ describe('remote_development/pages/list.vue', () => {
 
     await waitForPromises();
 
-    expect(findNewWorkspaceButton(wrapper).attributes().to).toBe('create');
+    expect(findNewWorkspaceButton(wrapper).attributes().to).toBe(ROUTES.create);
     expect(findNewWorkspaceButton(wrapper).text()).toMatch(/New workspace/);
   });
 });

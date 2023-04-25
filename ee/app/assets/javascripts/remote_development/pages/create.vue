@@ -2,13 +2,12 @@
 import { GlAlert, GlButton, GlForm, GlFormGroup, GlFormSelect } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
-import { visitUrl } from '~/lib/utils/url_utility';
 import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import SearchProjectsListbox from '../components/create/search_projects_listbox.vue';
 import GetProjectDetailsQuery from '../components/create/get_project_details_query.vue';
 import workspaceCreateMutation from '../graphql/mutations/workspace_create.mutation.graphql';
-import { DEFAULT_EDITOR } from '../constants';
+import { DEFAULT_DESIRED_STATE, DEFAULT_DEVFILE_PATH, DEFAULT_EDITOR, ROUTES } from '../constants';
 
 export const i18n = {
   title: s__('Workspaces|New workspace'),
@@ -23,19 +22,14 @@ export const i18n = {
       devfileProjectHelp: s__('Workspaces|You can create a workspace for Premium projects only.'),
     },
   },
-  alerts: {
-    noAgents: {
-      title: s__("Workspaces|You can't create a workspace for this project"),
-      content: s__(
-        "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group.",
-      ),
-    },
-    noDevFile: {
-      title: s__("Workspaces|This project doesn't have a devfile"),
-      content: s__(
-        'Workspaces|A devfile is a configuration file for your workspace. Without a devfile, a default workspace is created for this project. You can change that workspace at any time.',
-      ),
-    },
+  invalidProjectAlert: {
+    title: s__("Workspaces|You can't create a workspace for this project"),
+    noAgentsContent: s__(
+      "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group.",
+    ),
+    noDevFileContent: s__(
+      'Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace.',
+    ),
   },
   submitButton: {
     create: s__('Workspaces|Create workspace'),
@@ -63,9 +57,10 @@ export default {
       selectedAgent: null,
       isCreatingWorkspace: false,
       clusterAgents: [],
-      hasDevFile: true,
+      hasDevFile: null,
       groupPath: null,
       projectId: null,
+      rootRef: null,
       projectDetailsLoaded: false,
     };
   },
@@ -80,7 +75,7 @@ export default {
       return this.projectDetailsLoaded && !this.displayClusterAgentsAlert && !this.hasDevFile;
     },
     saveWorkspaceEnabled() {
-      return this.selectedProject && this.selectedAgent;
+      return this.selectedProject && this.selectedAgent && this.hasDevFile;
     },
     workspacesHelpPath() {
       return helpPagePath('user/project/remote_development/index', { anchor: 'workspace' });
@@ -97,12 +92,13 @@ export default {
     },
   },
   methods: {
-    onProjectDetailsResult({ hasDevFile, clusterAgents, groupPath, id }) {
+    onProjectDetailsResult({ hasDevFile, clusterAgents, groupPath, id, rootRef }) {
       this.projectDetailsLoaded = true;
       this.hasDevFile = hasDevFile;
       this.clusterAgents = clusterAgents;
       this.groupPath = groupPath;
       this.projectId = id;
+      this.rootRef = rootRef;
     },
     onProjectDetailsError() {
       createAlert({ message: i18n.fetchProjectDetailsFailedMessage });
@@ -111,7 +107,7 @@ export default {
       try {
         this.isCreatingWorkspace = true;
 
-        const { data } = await this.$apollo.mutate({
+        const result = await this.$apollo.mutate({
           mutation: workspaceCreateMutation,
           variables: {
             input: {
@@ -119,18 +115,21 @@ export default {
               groupPath: this.groupPath,
               clusterAgentId: this.selectedAgent,
               editor: DEFAULT_EDITOR,
+              desiredState: DEFAULT_DESIRED_STATE,
+              devfilePath: DEFAULT_DEVFILE_PATH,
+              devfileRef: this.rootRef,
             },
           },
         });
 
-        const { errors, workspace } = data.workspaceCreate;
+        const { errors } = result.data.workspaceCreate;
 
         if (errors.length > 0) {
           createAlert({ message: errors[0] });
           return;
         }
 
-        visitUrl(workspace.url);
+        this.$router.push(ROUTES.index);
       } catch (error) {
         logError(error);
         createAlert({ message: i18n.createWorkspaceFailedMessage });
@@ -140,6 +139,7 @@ export default {
     },
   },
   i18n,
+  ROUTES,
 };
 </script>
 <template>
@@ -168,21 +168,21 @@ export default {
           v-if="displayClusterAgentsAlert"
           data-testid="no-agents-alert"
           class="gl-mt-3"
-          :title="$options.i18n.alerts.noAgents.title"
+          :title="$options.i18n.invalidProjectAlert.title"
           variant="danger"
           :dismissible="false"
         >
-          {{ $options.i18n.alerts.noAgents.content }}
+          {{ $options.i18n.invalidProjectAlert.noAgentsContent }}
         </gl-alert>
         <gl-alert
           v-if="displayNoDevFileAlert"
           data-testid="no-dev-file-alert"
           class="gl-mt-3"
-          :title="$options.i18n.alerts.noDevFile.title"
-          variant="info"
+          :title="$options.i18n.invalidProjectAlert.title"
+          variant="danger"
           :dismissible="false"
         >
-          {{ $options.i18n.alerts.noDevFile.content }}
+          {{ $options.i18n.invalidProjectAlert.noDevFileContent }}
         </gl-alert>
       </gl-form-group>
       <gl-form-group
@@ -212,7 +212,7 @@ export default {
         >
           {{ $options.i18n.submitButton.create }}
         </gl-button>
-        <gl-button class="gl-ml-3" data-testid="cancel-workspace" to="root">
+        <gl-button class="gl-ml-3" data-testid="cancel-workspace" :to="$options.ROUTES.index">
           {{ $options.i18n.cancelButton }}
         </gl-button>
       </div>

@@ -7,8 +7,12 @@ import GetProjectDetailsQuery from 'ee/remote_development/components/create/get_
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { stubComponent } from 'helpers/stub_component';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { DEFAULT_EDITOR } from 'ee/remote_development/constants';
-import { visitUrl } from '~/lib/utils/url_utility';
+import {
+  DEFAULT_EDITOR,
+  DEFAULT_DESIRED_STATE,
+  DEFAULT_DEVFILE_PATH,
+  ROUTES,
+} from 'ee/remote_development/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
@@ -16,7 +20,6 @@ import { GET_PROJECT_DETAILS_QUERY_RESULT, WORKSPACE_CREATE_MUTATION_RESULT } fr
 
 Vue.use(VueApollo);
 
-jest.mock('~/lib/utils/url_utility');
 jest.mock('~/lib/logger');
 jest.mock('~/alert');
 
@@ -27,17 +30,22 @@ describe('remote_development/pages/create.vue', () => {
   };
   const selectedClusterAgentIDFixture = 'agents/1';
   const clusterAgentsFixture = [{ text: 'Agent', value: 'agents/1' }];
+  const rootRefFixture = 'main';
   const GlFormSelectStub = stubComponent(GlFormSelect, {
     props: ['options'],
   });
+  const mockRouter = {
+    push: jest.fn(),
+  };
   let wrapper;
   let workspaceCreateMutationHandler;
   let mockApollo;
 
   const buildMockApollo = () => {
-    workspaceCreateMutationHandler = jest
-      .fn()
-      .mockResolvedValueOnce(WORKSPACE_CREATE_MUTATION_RESULT.data.workspaceCreate);
+    workspaceCreateMutationHandler = jest.fn();
+    workspaceCreateMutationHandler.mockResolvedValueOnce(
+      WORKSPACE_CREATE_MUTATION_RESULT.data.workspaceCreate,
+    );
     mockApollo = createMockApollo([], {
       Mutation: {
         workspaceCreate: workspaceCreateMutationHandler,
@@ -50,6 +58,9 @@ describe('remote_development/pages/create.vue', () => {
       apolloProvider: mockApollo,
       stubs: {
         GlFormSelect: GlFormSelectStub,
+      },
+      mocks: {
+        $router: mockRouter,
       },
     });
   };
@@ -67,11 +78,13 @@ describe('remote_development/pages/create.vue', () => {
     hasDevFile = false,
     groupPath = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
     id = GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+    rootRef = rootRefFixture,
   }) =>
     findGetProjectDetailsQuery().vm.$emit('result', {
       clusterAgents,
       hasDevFile,
       groupPath,
+      rootRef,
       id,
     });
   const selectProject = (project = selectedProjectFixture) =>
@@ -91,7 +104,7 @@ describe('remote_development/pages/create.vue', () => {
     });
 
     it('displays a cancel button that allows navigating to the workspaces list', () => {
-      expect(wrapper.findByTestId('cancel-workspace').attributes().to).toBe('root');
+      expect(wrapper.findByTestId('cancel-workspace').attributes().to).toBe(ROUTES.index);
     });
 
     it('disables create workspace button', () => {
@@ -108,7 +121,7 @@ describe('remote_development/pages/create.vue', () => {
     });
     it('displays danger alert indicating it', () => {
       expect(findNoAgentsGlAlert().props()).toMatchObject({
-        title: i18n.alerts.noAgents.title,
+        title: i18n.invalidProjectAlert.title,
         variant: 'danger',
         dismissible: false,
       });
@@ -177,20 +190,27 @@ describe('remote_development/pages/create.vue', () => {
         });
 
         expect(findNoDevFileGlAlert().props()).toMatchObject({
-          title: i18n.alerts.noDevFile.title,
-          variant: 'info',
+          title: i18n.invalidProjectAlert.title,
+          variant: 'danger',
           dismissible: false,
         });
+      });
+
+      it('disables the "Create Workspace" button', () => {
+        expect(findCreateWorkspaceButton().props().disabled).toBe(true);
       });
     });
   });
 
-  describe('when a project and a cluster agent are selected', () => {
+  describe('when a project and a cluster agent are selected and the project has a devfile', () => {
     beforeEach(async () => {
       createWrapper();
 
       await selectProject();
-      await emitGetProjectDetailsQueryResult({ clusterAgents: clusterAgentsFixture });
+      await emitGetProjectDetailsQueryResult({
+        clusterAgents: clusterAgentsFixture,
+        hasDevFile: true,
+      });
       await selectClusterAgent();
     });
 
@@ -220,6 +240,9 @@ describe('remote_development/pages/create.vue', () => {
               projectId: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
               groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
               editor: DEFAULT_EDITOR,
+              desiredState: DEFAULT_DESIRED_STATE,
+              devfilePath: DEFAULT_DEVFILE_PATH,
+              devfileRef: rootRefFixture,
             },
           },
           expect.any(Object),
@@ -234,13 +257,11 @@ describe('remote_development/pages/create.vue', () => {
       });
 
       describe('when the workspaceCreate mutation succeeds', () => {
-        it('redirects the user to the workspace editor', async () => {
+        it('redirects the user to the workspaces list', async () => {
           await submitCreateWorkspaceForm();
           await waitForPromises();
 
-          expect(visitUrl).toHaveBeenCalledWith(
-            WORKSPACE_CREATE_MUTATION_RESULT.data.workspaceCreate.workspace.url,
-          );
+          expect(mockRouter.push).toHaveBeenCalledWith(ROUTES.index);
         });
       });
 

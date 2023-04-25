@@ -1,0 +1,11 @@
+query getGroupClusterAgents($groupPath: ID!) {
+  group(fullPath: $groupPath) {
+    id
+    clusterAgents {
+      nodes {
+        id
+        name
+      }
+    }
+  }
+}
