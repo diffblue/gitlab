@@ -125,7 +125,7 @@ module Gitlab
           def extend_configuration?
             return false if @source.nil?
 
-            Enums::Ci::Pipeline.ci_branch_sources.key?(@source.to_sym)
+            Enums::Ci::Pipeline.ci_sources.key?(@source.to_sym)
           end
         end
       end
