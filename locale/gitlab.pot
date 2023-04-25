@@ -38385,6 +38385,9 @@ msgstr ""
 msgid "Runners|Project runners"
 msgstr ""
 
+msgid "Runners|Project › CI/CD Settings › Runners"
+msgstr ""
+
 msgid "Runners|Property Name"
 msgstr ""
 
