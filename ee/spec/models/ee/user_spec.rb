@@ -1480,6 +1480,23 @@ RSpec.describe User, feature_category: :system_access do
           expect(user.has_paid_namespace?).to eq(false)
         end
       end
+
+      context 'when passed a subset of plans' do
+        it 'returns true', :aggregate_failures do
+          bronze_group.add_reporter(user)
+
+          expect(user.has_paid_namespace?(plans: [::Plan::BRONZE])).to eq(true)
+          expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE])).to eq(false)
+        end
+      end
+
+      context 'when passed a non-paid plan' do
+        it 'returns false' do
+          free_group.add_owner(user)
+
+          expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
+        end
+      end
     end
 
     context 'when passed a plan' do

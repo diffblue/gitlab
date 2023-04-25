@@ -18,8 +18,9 @@ module Gitlab
 
         include ExponentialBackoff
 
-        def initialize(user)
+        def initialize(user, request_timeout: nil)
           @user = user
+          @request_timeout = request_timeout
         end
 
         def chat(content:, **options)
@@ -73,10 +74,10 @@ module Gitlab
 
         retry_methods_with_exponential_backoff :chat, :completions, :edits, :embeddings
 
-        attr_reader :user
+        attr_reader :user, :request_timeout
 
         def client
-          @client ||= OpenAI::Client.new(access_token: access_token)
+          @client ||= OpenAI::Client.new(access_token: access_token, request_timeout: request_timeout)
         end
 
         def enabled?
