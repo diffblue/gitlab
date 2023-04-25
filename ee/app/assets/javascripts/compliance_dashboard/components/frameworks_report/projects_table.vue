@@ -129,6 +129,7 @@ export default {
         });
       } finally {
         this.isApplyInProgress = false;
+        this.$emit('update');
       }
     },
 

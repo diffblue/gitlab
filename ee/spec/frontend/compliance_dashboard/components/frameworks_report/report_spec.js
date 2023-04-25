@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { GlAlert } from '@gitlab/ui';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -299,5 +299,25 @@ describe('ComplianceFrameworksReport component', () => {
 
       expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
     });
+  });
+
+  it('should not open update popover on filters on update from projects table when filters are not provided', async () => {
+    wrapper = createComponent(shallowMount, {}, mockGraphQlSuccess, {});
+
+    findProjectsTable().vm.$emit('update');
+
+    await nextTick();
+    expect(findFilters().props('showUpdatePopover')).toBe(false);
+  });
+
+  it('should open update popover on filters on update from projects table when filters are provided', async () => {
+    wrapper = createComponent(shallowMount, {}, mockGraphQlSuccess, {
+      framework: 'some-framework',
+    });
+
+    findProjectsTable().vm.$emit('update');
+
+    await nextTick();
+    expect(findFilters().props('showUpdatePopover')).toBe(true);
   });
 });

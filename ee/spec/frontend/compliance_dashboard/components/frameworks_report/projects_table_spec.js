@@ -205,6 +205,12 @@ describe('ProjectsTable component', () => {
         expect(toastMock.show).toHaveBeenCalled();
       });
 
+      it('emits update event', async () => {
+        await waitForPromises();
+
+        expect(wrapper.emitted('update')).toHaveLength(1);
+      });
+
       it('clicking undo in toast reverts changes', async () => {
         await waitForPromises();
 

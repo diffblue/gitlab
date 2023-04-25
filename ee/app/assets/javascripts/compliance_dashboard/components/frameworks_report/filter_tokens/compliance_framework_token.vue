@@ -66,7 +66,7 @@ export default {
       if (frameworkId === FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK.id)
         return FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK.name;
 
-      const framework = this.complianceFrameworks.find(
+      const framework = this.complianceFrameworks?.find(
         (complianceFramework) => complianceFramework.id === frameworkId,
       );
       return framework ? framework.name : frameworkId;

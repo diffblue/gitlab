@@ -2,6 +2,7 @@
 import * as Sentry from '@sentry/browser';
 import { GlAlert } from '@gitlab/ui';
 
+import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
 import {
@@ -48,11 +49,14 @@ export default {
         list: [],
         pageInfo: {},
       },
+      shouldShowUpdatePopover: false,
     };
   },
   apollo: {
     projects: {
       query: complianceFrameworksGroupProjects,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      nextFetchPolicy: fetchPolicies.CACHE_FIRST,
       variables() {
         return {
           groupPath: this.groupPath,
@@ -162,6 +166,11 @@ export default {
         this.$apollo.queries.projects.refetch();
       }
     },
+    showUpdatePopoverIfNeeded() {
+      if (this.filters.length) {
+        this.shouldShowUpdatePopover = true;
+      }
+    },
   },
   i18n: {
     queryError: s__(
@@ -177,6 +186,8 @@ export default {
       :value="filters"
       :root-ancestor-path="rootAncestorPath"
       :error="hasQueryError"
+      :show-update-popover="shouldShowUpdatePopover"
+      @update-popover-hidden="shouldShowUpdatePopover = false"
       @submit="onFiltersChanged"
     />
 
@@ -191,6 +202,7 @@ export default {
       :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+      @update="showUpdatePopoverIfNeeded"
     />
 
     <pagination

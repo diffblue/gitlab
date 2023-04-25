@@ -1,5 +1,5 @@
 <script>
-import { GlFilteredSearch } from '@gitlab/ui';
+import { GlButton, GlFilteredSearch, GlPopover } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 
@@ -9,7 +9,9 @@ import ProjectSearchToken from './filter_tokens/project_search_token.vue';
 
 export default {
   components: {
+    GlButton,
     GlFilteredSearch,
+    GlPopover,
   },
   props: {
     value: {
@@ -20,6 +22,11 @@ export default {
     rootAncestorPath: {
       type: String,
       required: true,
+    },
+    showUpdatePopover: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
@@ -47,8 +54,9 @@ export default {
     },
   },
   methods: {
-    onFilterSubmit(filters) {
-      this.$emit('submit', filters);
+    onFilterSubmit(newFilters) {
+      this.$refs.popover.$emit('close');
+      this.$emit('submit', newFilters ?? this.value);
     },
     handleFilterClear() {
       this.$emit('submit', []);
@@ -56,12 +64,45 @@ export default {
   },
   i18n: {
     placeholder: __('Search or filter results'),
+    updatePopoverTitle: s__('ComplianceReport|Update filtered results?'),
+    updatePopoverContent: s__(
+      'ComplianceReport|Do you want to refresh the filtered results to include your change?',
+    ),
+    updatePopoverAction: s__('ComplianceReport|Update result'),
   },
 };
 </script>
 
 <template>
-  <div class="row-content-block gl-mb-5">
+  <div class="row-content-block gl-mb-5 gl-relative">
+    <gl-popover
+      ref="popover"
+      :target="() => $refs.popoverTarget"
+      :show="showUpdatePopover"
+      show-close-button
+      placement="bottomright"
+      triggers="manual"
+      :title="$options.i18n.updatePopoverTitle"
+      @hidden="$emit('update-popover-hidden')"
+    >
+      {{ $options.i18n.updatePopoverContent }}
+      <div class="gl-mt-4">
+        <gl-button size="small" category="primary" variant="confirm" @click="onFilterSubmit()">
+          {{ $options.i18n.updatePopoverAction }}
+        </gl-button>
+        <gl-button
+          size="small"
+          category="secondary"
+          variant="reset"
+          @click="$refs.popover.$emit('close')"
+        >
+          {{ __('Dismiss') }}
+        </gl-button>
+      </div>
+    </gl-popover>
+    <span ref="popoverTarget" class="gl-absolute gl-h-7 gl-ml-5 gl-pointer-events-none">
+      &nbsp;
+    </span>
     <gl-filtered-search
       :value="value"
       :placeholder="$options.i18n.placeholder"

@@ -37,7 +37,7 @@ export function mapFiltersToUrlParams(filters) {
     (filter) => filter.type === FRAMEWORKS_FILTER_TYPE_FRAMEWORK,
   );
   urlParams.framework = complianceFilter?.value?.data ?? undefined;
-  urlParams.frameworkExclude = complianceFilter?.value?.operator === '!=' ? true : undefined;
+  urlParams.frameworkExclude = complianceFilter?.value?.operator === '!=' ? 'true' : undefined;
 
   return urlParams;
 }

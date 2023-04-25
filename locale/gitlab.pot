@@ -11042,6 +11042,9 @@ msgstr ""
 msgid "ComplianceReport|Create a new framework"
 msgstr ""
 
+msgid "ComplianceReport|Do you want to refresh the filtered results to include your change?"
+msgstr ""
+
 msgid "ComplianceReport|Framework successfully applied"
 msgstr ""
 
@@ -11070,6 +11073,12 @@ msgid "ComplianceReport|Unable to load the compliance framework report. Refresh 
 msgstr ""
 
 msgid "ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again."
+msgstr ""
+
+msgid "ComplianceReport|Update filtered results?"
+msgstr ""
+
+msgid "ComplianceReport|Update result"
 msgstr ""
 
 msgid "Component"
