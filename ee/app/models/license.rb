@@ -532,6 +532,7 @@ class License < MainClusterwide::ApplicationRecord
   end
 
   def check_restricted_user_count
+    return if cloud_license?
     return unless restricted_user_count && restricted_user_count_with_threshold < daily_billable_users_count
 
     add_limit_error(type: :check_restricted_user_count, user_count: daily_billable_users_count)
