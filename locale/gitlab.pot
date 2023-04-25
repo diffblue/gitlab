@@ -37199,9 +37199,6 @@ msgstr ""
 msgid "Reports|Actions"
 msgstr ""
 
-msgid "Reports|Activity"
-msgstr ""
-
 msgid "Reports|An error occurred while loading %{name} results"
 msgstr ""
 
@@ -39771,9 +39768,6 @@ msgstr ""
 msgid "SecurityOrchestration|Failed to load images."
 msgstr ""
 
-msgid "SecurityOrchestration|Failed to load vulnerability scanners."
-msgstr ""
-
 msgid "SecurityOrchestration|For large groups, there may be a significant delay in applying policy changes to pre-existing merge requests. Policy changes typically apply almost immediately for newly created merge requests."
 msgstr ""
 
@@ -40278,9 +40272,6 @@ msgstr ""
 msgid "SecurityReports|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch."
 msgstr ""
 
-msgid "SecurityReports|No activity"
-msgstr ""
-
 msgid "SecurityReports|No longer detected"
 msgstr ""
 
@@ -40288,9 +40279,6 @@ msgid "SecurityReports|No vulnerabilities found"
 msgstr ""
 
 msgid "SecurityReports|No vulnerabilities found for this pipeline"
-msgstr ""
-
-msgid "SecurityReports|Not available"
 msgstr ""
 
 msgid "SecurityReports|Oops, something doesn't seem right."
@@ -40450,9 +40438,6 @@ msgid "SecurityReports|Warning parsing security reports"
 msgstr ""
 
 msgid "SecurityReports|While it's rare to have no vulnerabilities for your pipeline, it can happen. In any event, we ask that you double check your settings to make sure all security scanning jobs have passed successfully."
-msgstr ""
-
-msgid "SecurityReports|With issues"
 msgstr ""
 
 msgid "SecurityReports|You do not have sufficient permissions to access this report"
@@ -49001,9 +48986,6 @@ msgstr ""
 msgid "VulnerabilityManagement|invalid issue link or ID"
 msgstr ""
 
-msgid "VulnerabilityStatusTypes|All statuses"
-msgstr ""
-
 msgid "VulnerabilityStatusTypes|Confirmed"
 msgstr ""
 
@@ -51891,18 +51873,6 @@ msgid "ciReport|API Fuzzing"
 msgstr ""
 
 msgid "ciReport|API fuzzing"
-msgstr ""
-
-msgid "ciReport|All clusters"
-msgstr ""
-
-msgid "ciReport|All images"
-msgstr ""
-
-msgid "ciReport|All projects"
-msgstr ""
-
-msgid "ciReport|All severities"
 msgstr ""
 
 msgid "ciReport|All tools"

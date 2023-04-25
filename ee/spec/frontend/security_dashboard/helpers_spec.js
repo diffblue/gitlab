@@ -1,9 +1,4 @@
-import {
-  getFormattedSummary,
-  preparePageInfo,
-  getFormattedScanners,
-} from 'ee/security_dashboard/helpers';
-import { REPORT_TYPES_WITH_MANUALLY_ADDED } from 'ee/security_dashboard/store/constants';
+import { getFormattedSummary } from 'ee/security_dashboard/helpers';
 
 describe('getFormattedSummary', () => {
   it('returns a properly formatted array given a valid, non-empty summary', () => {
@@ -45,67 +40,4 @@ describe('getFormattedSummary', () => {
       expect(getFormattedSummary(summary)).toEqual([]);
     },
   );
-});
-
-describe('preparePageInfo', () => {
-  describe('when pageInfo is empty', () => {
-    it('returns pageInfo object with hasNextPage set to false', () => {
-      expect(preparePageInfo(null)).toEqual({ hasNextPage: false });
-    });
-  });
-
-  describe('when pageInfo.endCursor is NULL', () => {
-    it('returns pageInfo object with hasNextPage set to false', () => {
-      expect(preparePageInfo({ endCursor: null })).toEqual({ endCursor: null, hasNextPage: false });
-    });
-  });
-
-  describe('when pageInfo.endCursor is provided', () => {
-    it('returns pageInfo object with hasNextPage set to true', () => {
-      expect(preparePageInfo({ endCursor: 'ENDCURSORVALUE' })).toEqual({
-        endCursor: 'ENDCURSORVALUE',
-        hasNextPage: true,
-      });
-    });
-  });
-});
-
-describe('getFormattedScanners', () => {
-  const vulnerabilityScanners = [
-    {
-      id: 'gid://gitlab/Vulnerabilities::Scanner/1',
-      name: 'Find Security Bugs',
-      reportType: 'SAST',
-      vendor: 'GitLab',
-    },
-    {
-      id: 'gid://gitlab/Vulnerabilities::Scanner/2',
-      name: 'ESLint',
-      reportType: 'SAST',
-      vendor: 'GitLab',
-    },
-    {
-      id: 'gid://gitlab/Vulnerabilities::Scanner/3',
-      name: 'manually-created-vulnerability',
-      reportType: 'GENERIC',
-      vendor: 'GitLab',
-    },
-  ];
-
-  it('returns all possible scanners in the correct order', () => {
-    const scanners = getFormattedScanners();
-    const reportIds = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((id) => id.toUpperCase());
-
-    expect(scanners).toHaveLength(reportIds.length);
-    expect(scanners.map(({ id }) => id)).toEqual(reportIds);
-  });
-
-  it('sets disabled attribute for not available scanners', () => {
-    const scanners = getFormattedScanners(vulnerabilityScanners);
-    const enabledScanners = ['SAST', 'GENERIC'];
-
-    scanners.forEach(({ id, disabled }) => {
-      expect(disabled).toBe(!enabledScanners.includes(id));
-    });
-  });
 });

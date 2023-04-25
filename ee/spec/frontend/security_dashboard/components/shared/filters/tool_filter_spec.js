@@ -1,204 +1,166 @@
-import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import VueRouter from 'vue-router';
-import { cloneDeep } from 'lodash';
-import { createAlert } from '~/alert';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import waitForPromises from 'helpers/wait_for_promises';
+import { GlDropdown } from '@gitlab/ui';
+import { nextTick } from 'vue';
 import ToolFilter from 'ee/security_dashboard/components/shared/filters/tool_filter.vue';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import FilterBody from 'ee/security_dashboard/components/shared/filters/filter_body.vue';
+import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
+import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
-import { simpleScannerFilter, getFormattedScanners } from 'ee/security_dashboard/helpers';
-import projectScannersQuery from 'ee/security_dashboard/graphql/queries/project_specific_scanners.query.graphql';
-import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_specific_scanners.query.graphql';
-import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
-import { TOOL_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
-import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import {
-  projectVulnerabilityScanners,
-  groupVulnerabilityScanners,
-  instanceVulnerabilityScanners,
-} from '../../mock_data';
+  REPORT_TYPES_WITH_MANUALLY_ADDED,
+  REPORT_TYPES_WITH_CLUSTER_IMAGE,
+} from 'ee/security_dashboard/store/constants';
 
-jest.mock('~/alert');
+const OPTION_IDS = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((id) => id.toUpperCase());
 
 describe('Tool Filter component', () => {
-  Vue.use(VueRouter);
-
   let wrapper;
-  let filter;
-  let router;
 
-  const fullPath = 'test/path';
-  const allOptionName = simpleScannerFilter.allOption.name;
-  const projectScannersResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
-  const groupScannersResolver = jest.fn().mockResolvedValue(groupVulnerabilityScanners);
-  const instanceScannersResolver = jest.fn().mockResolvedValue(instanceVulnerabilityScanners);
-  const defaultQuery = projectScannersQuery;
-  const defaultResolver = projectScannersResolver;
-  const defaultFormattedScanners = getFormattedScanners(
-    projectVulnerabilityScanners.data.project.vulnerabilityScanners.nodes,
-  );
-  const defaultProvide = {
-    fullPath,
-    dashboardType: DASHBOARD_TYPES.PROJECT,
-  };
-
-  const createMockApolloProvider = (query = defaultQuery, resolver = defaultResolver) => {
-    Vue.use(VueApollo);
-    return createMockApollo([[query, resolver]]);
-  };
-
-  const createWrapper = ({ query, resolver, provide } = {}) => {
-    filter = cloneDeep(simpleScannerFilter);
-
-    wrapper = shallowMountExtended(ToolFilter, {
-      propsData: { filter },
-      apolloProvider: createMockApolloProvider(query, resolver),
-      router,
-      provide: {
-        ...defaultProvide,
-        ...provide,
-      },
+  const createWrapper = ({ dashboardType = 'group' } = {}) => {
+    wrapper = mountExtended(ToolFilter, {
+      provide: { dashboardType },
+      stubs: { QuerystringSync: true },
     });
-
-    return waitForPromises();
   };
 
-  const findFilterBody = () => wrapper.findComponent(FilterBody);
-  const findFilterItems = () => wrapper.findAllComponents(FilterItem);
-  const filterItemsExcludingAll = () =>
-    findFilterItems().filter((x) => x.props('text') !== allOptionName);
-  const findFilterItemByReportType = (reportType) => {
-    const testId = `option:${reportType}`;
-    return wrapper.findByTestId(testId);
+  const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
+  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
+  const findDropdownItem = (id) => wrapper.findByTestId(id);
+
+  const clickDropdownItem = async (id) => {
+    findDropdownItem(id).vm.$emit('click');
+    await nextTick();
   };
-  const updateQuerystring = (queryValue) => {
-    const queryField = simpleScannerFilter.id;
-    router.replace({ query: { [queryField]: queryValue } });
+
+  const expectSelectedItems = (ids) => {
+    const checkedItems = findDropdownItems()
+      .wrappers.filter((item) => item.props('isChecked'))
+      .map((item) => item.attributes('data-testid'));
+
+    expect(checkedItems).toEqual(ids);
   };
 
   beforeEach(() => {
-    router = new VueRouter({});
+    createWrapper();
   });
 
-  afterEach(() => {
-    router = null;
-  });
-
-  describe('basic structure', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it('provides the correct props to the FilterBody component', () => {
-      const { name, allOption } = filter;
-
-      expect(findFilterBody().props()).toMatchObject({
-        name,
-        selectedOptions: [allOption],
+  describe('QuerystringSync component', () => {
+    it('has expected props', () => {
+      expect(findQuerystringSync().props()).toMatchObject({
+        querystringKey: 'reportType',
+        value: [],
       });
-    });
-
-    it('displays the all option item', () => {
-      expect(findFilterItems().at(0).props()).toMatchObject({
-        isChecked: true,
-        text: allOptionName,
-        disabled: false,
-        tooltip: '',
-      });
-    });
-
-    it('displays loading state', () => {
-      expect(findFilterBody().props('loading')).toBe(true);
-    });
-  });
-
-  describe('successful query request', () => {
-    it('does not display the loading state', async () => {
-      await createWrapper();
-
-      expect(findFilterBody().props('loading')).toBe(false);
     });
 
     it.each`
-      dashboardType               | query                    | resolver                    | argument
-      ${DASHBOARD_TYPES.PROJECT}  | ${projectScannersQuery}  | ${projectScannersResolver}  | ${fullPath}
-      ${DASHBOARD_TYPES.GROUP}    | ${groupScannersQuery}    | ${groupScannersResolver}    | ${fullPath}
-      ${DASHBOARD_TYPES.INSTANCE} | ${instanceScannersQuery} | ${instanceScannersResolver} | ${undefined}
-    `(
-      'makes the query request for $dashboardType',
-      async ({ dashboardType, query, resolver, argument }) => {
-        await createWrapper({ query, resolver, provide: { dashboardType } });
+      emitted                    | expected
+      ${[]}                      | ${[ALL_ID]}
+      ${[ALL_ID]}                | ${[]}
+      ${['SAST']}                | ${['SAST']}
+      ${['SAST', 'API_FUZZING']} | ${['API_FUZZING', 'SAST']}
+    `('restores selected items - $emitted', async ({ emitted, expected }) => {
+      findQuerystringSync().vm.$emit('input', emitted);
+      await nextTick();
 
-        expect(resolver).toHaveBeenCalledTimes(1);
-        expect(resolver.mock.calls[0][0]).toEqual({ fullPath: argument });
-      },
-    );
+      expectSelectedItems(expected);
+    });
+  });
 
-    it('renders the correct amount of filter options', async () => {
-      const allOptionCount = 1;
-      const totalOptionsCount = defaultFormattedScanners.length + allOptionCount;
-
-      await createWrapper();
-
-      expect(findFilterItems()).toHaveLength(totalOptionsCount);
+  describe('default view', () => {
+    it('shows the label', () => {
+      expect(wrapper.find('label').text()).toBe('Tool');
     });
 
-    it('populates the filter options from the query response', async () => {
-      await createWrapper();
-
-      defaultFormattedScanners.forEach(({ name, disabled }, index) => {
-        expect(
-          findFilterItems()
-            .at(index + 1)
-            .props(),
-        ).toMatchObject({
-          isChecked: false,
-          text: name,
-          disabled,
-          tooltip: `${disabled ? ToolFilter.i18n.disabledTooltip : ''}`,
-        });
-      });
+    it('shows the dropdown with correct header text', () => {
+      expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe('Tool');
     });
 
-    describe('querystring on pageload', () => {
-      const queryField = simpleScannerFilter.id;
-
-      it('selects the corresponding option item', async () => {
-        const queryValue = defaultFormattedScanners[0][queryField];
-
-        updateQuerystring(queryValue);
-        await createWrapper();
-
-        expect(findFilterItemByReportType(queryValue).props('isChecked')).toBe(true);
-      });
-
-      it('selects the correct amount of option items', async () => {
-        const queryValues = defaultFormattedScanners.map((x) => x[queryField]);
-
-        updateQuerystring(queryValues);
-        await createWrapper();
-
-        expect(filterItemsExcludingAll()).toHaveLength(defaultFormattedScanners.length);
+    it('shows the DropdownButtonText component with the correct props', () => {
+      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
+        items: ['All tools'],
+        name: 'Tool',
       });
     });
   });
 
-  describe('unsuccessful query request', () => {
-    it('shows an alert', async () => {
-      const errorSpy = jest.fn().mockRejectedValue();
+  describe('dropdown items', () => {
+    it.each`
+      dashboardType | reportTypes
+      ${'group'}    | ${REPORT_TYPES_WITH_MANUALLY_ADDED}
+      ${'instance'} | ${REPORT_TYPES_WITH_MANUALLY_ADDED}
+      ${'pipeline'} | ${REPORT_TYPES_WITH_CLUSTER_IMAGE}
+    `(
+      'shows all dropdown items with correct text for dashboard type $dashboardType',
+      ({ dashboardType, reportTypes }) => {
+        createWrapper({ dashboardType });
+        const dropdownOptions = Object.entries(reportTypes).map(([id, text]) => ({
+          id: id.toUpperCase(),
+          text,
+        }));
 
-      await createWrapper({ resolver: errorSpy });
+        expect(findDropdownItems()).toHaveLength(dropdownOptions.length + 1);
+        expect(findDropdownItem(ALL_ID).text()).toBe('All tools');
+        dropdownOptions.forEach(({ id, text }) => {
+          expect(findDropdownItem(id).text()).toBe(text);
+        });
+      },
+    );
 
-      expect(createAlert).toHaveBeenCalledWith({ message: TOOL_FILTER_ERROR });
+    it('allows multiple items to be selected', async () => {
+      const ids = [];
+
+      for await (const id of OPTION_IDS) {
+        await clickDropdownItem(id);
+        ids.push(id);
+
+        expectSelectedItems(ids);
+      }
     });
 
-    it('skips the query for invalid dashboard type', async () => {
-      await createWrapper({ provide: { dashboardType: 'foo' } });
+    it('toggles the item selection when clicked on', async () => {
+      for await (const id of OPTION_IDS) {
+        await clickDropdownItem(id);
 
-      expect(defaultResolver).not.toHaveBeenCalled();
+        expectSelectedItems([id]);
+
+        await clickDropdownItem(id);
+
+        expectSelectedItems([ALL_ID]);
+      }
+    });
+
+    it('selects ALL item when created', () => {
+      expectSelectedItems([ALL_ID]);
+    });
+
+    it('selects ALL item and deselects everything else when it is clicked', async () => {
+      await clickDropdownItem(ALL_ID);
+      await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
+
+      expectSelectedItems([ALL_ID]);
+    });
+
+    it('deselects the ALL item when another item is clicked', async () => {
+      await clickDropdownItem(ALL_ID);
+      await clickDropdownItem(OPTION_IDS[0]);
+
+      expectSelectedItems([OPTION_IDS[0]]);
+    });
+  });
+
+  describe('filter-changed event', () => {
+    it('emits filter-changed event when selected item is changed', async () => {
+      const ids = [];
+      await clickDropdownItem(ALL_ID);
+
+      expect(wrapper.emitted('filter-changed')[0][0].reportType).toEqual([]);
+
+      for await (const id of OPTION_IDS) {
+        await clickDropdownItem(id);
+        ids.push(id);
+
+        expect(wrapper.emitted('filter-changed')[ids.length][0].reportType).toEqual(ids);
+      }
     });
   });
 });
