@@ -506,7 +506,6 @@ Layout/ArgumentAlignment:
     - 'app/graphql/types/work_items/widgets/start_and_due_date_update_input_type.rb'
     - 'app/graphql/types/x509_certificate_type.rb'
     - 'app/graphql/types/x509_issuer_type.rb'
-    - 'app/models/application_setting.rb'
     - 'app/models/bulk_imports/configuration.rb'
     - 'app/models/bulk_imports/entity.rb'
     - 'app/models/clusters/kubernetes_namespace.rb'
