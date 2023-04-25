@@ -53,6 +53,6 @@ describe('ArtifactsBulkDelete component', () => {
   it('shows an alert when the selected artifacts limit is reached', () => {
     createComponent({ isSelectedArtifactsLimitReached: true });
 
-    expect(findAlertText()).toContain(I18N_BULK_DELETE_MAX_SELECTED);
+    expect(findAlertText()).toBe(I18N_BULK_DELETE_MAX_SELECTED);
   });
 });

@@ -7,7 +7,7 @@ import {
   GlModal,
   GlFormCheckbox,
 } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import getJobArtifactsResponse from 'test_fixtures/graphql/ci/artifacts/graphql/queries/get_job_artifacts.query.graphql.json';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
@@ -125,10 +125,7 @@ describe('JobArtifactsTable component', () => {
     },
   });
 
-  const maxSelectedArtifacts = [];
-  while (maxSelectedArtifacts.length < SELECTED_ARTIFACTS_MAX_COUNT) {
-    maxSelectedArtifacts.push({});
-  }
+  const maxSelectedArtifacts = new Array(SELECTED_ARTIFACTS_MAX_COUNT).fill({});
 
   const createComponent = ({
     handlers = {
@@ -243,12 +240,12 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsRows().length).toBe(0);
 
         findCount().trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         expect(findDetailsRows().length).toBe(1);
 
         findCount().trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         expect(findDetailsRows().length).toBe(0);
       });
@@ -259,7 +256,7 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsInRow(1).exists()).toBe(false);
 
         findCountAt(0).trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         // first job is expanded, second row has its details
         expect(findDetailsInRow(0).exists()).toBe(false);
@@ -267,7 +264,7 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsInRow(2).exists()).toBe(false);
 
         findCountAt(1).trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         // both jobs are expanded, each has details below it
         expect(findDetailsInRow(0).exists()).toBe(false);
@@ -276,7 +273,7 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsInRow(3).exists()).toBe(true);
 
         findCountAt(0).trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         // first job collapsed, second job expanded
         expect(findDetailsInRow(0).exists()).toBe(false);
@@ -292,7 +289,7 @@ describe('JobArtifactsTable component', () => {
         expect(findDetailsInRow(1).exists()).toBe(true);
 
         findArtifactDeleteButton().vm.$emit('click');
-        await waitForPromises();
+        await nextTick();
 
         expect(findDeleteModal().findComponent(GlModal).props('visible')).toBe(true);
 
@@ -517,7 +514,7 @@ describe('JobArtifactsTable component', () => {
         findJobCheckbox().vm.$emit('input', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
 
-        await waitForPromises();
+        await nextTick();
 
         expect(findBulkDeleteModal().props('visible')).toBe(true);
       });
@@ -558,7 +555,7 @@ describe('JobArtifactsTable component', () => {
           data: { selectedArtifacts: maxSelectedArtifacts },
         });
 
-        await waitForPromises();
+        await nextTick();
       });
 
       it('passes isSelectedArtifactsLimitReached to bulk delete', () => {
@@ -573,7 +570,7 @@ describe('JobArtifactsTable component', () => {
 
       it('passes isSelectedArtifactsLimitReached to table row details', async () => {
         findCount().trigger('click');
-        await waitForPromises();
+        await nextTick();
 
         expect(findDetailsInRow(1).props('isSelectedArtifactsLimitReached')).toBe(true);
       });
@@ -640,7 +637,7 @@ describe('JobArtifactsTable component', () => {
         data: { pageInfo },
       });
 
-      await waitForPromises();
+      await nextTick();
     });
 
     it('renders pagination and passes page props', () => {
