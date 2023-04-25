@@ -90,7 +90,6 @@ RSpec.describe Namespace, feature_category: :subgroups do
     context 'validating the parent of a namespace' do
       using RSpec::Parameterized::TableSyntax
 
-      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
       where(:parent_type, :child_type, :error) do
         nil                      | ref(:user_sti_name)      | nil
         nil                      | ref(:group_sti_name)     | nil
@@ -105,7 +104,6 @@ RSpec.describe Namespace, feature_category: :subgroups do
         ref(:user_sti_name)      | ref(:group_sti_name)     | 'user namespace cannot be the parent of another namespace'
         ref(:user_sti_name)      | ref(:project_sti_name)   | nil
       end
-      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
 
       with_them do
         it 'validates namespace parent' do
@@ -170,7 +168,6 @@ RSpec.describe Namespace, feature_category: :subgroups do
 
       let_it_be(:parent) { create(:namespace) }
 
-      # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
       where(:namespace_type, :path, :valid) do
         ref(:project_sti_name)   | 'j'               | true
         ref(:project_sti_name)   | 'path.'           | false
@@ -191,7 +188,6 @@ RSpec.describe Namespace, feature_category: :subgroups do
         ref(:user_sti_name)      | 'namespace__path' | false
         ref(:user_sti_name)      | 'blob'            | true
       end
-      # rubocop:enable Lint/BinaryOperatorWithIdenticalOperands
 
       with_them do
         it 'validates namespace path' do
