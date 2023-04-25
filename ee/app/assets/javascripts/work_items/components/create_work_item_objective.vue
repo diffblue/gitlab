@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlForm, GlFormInput, GlFormCheckbox, GlButton } from '@gitlab/ui';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import createWorkItemMutation from '~/work_items/graphql/create_work_item.mutation.graphql';
 import projectWorkItemTypesQuery from '~/work_items/graphql/project_work_item_types.query.graphql';
 import {
@@ -17,7 +16,6 @@ export default {
     GlFormCheckbox,
     GlButton,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['fullPath'],
   data() {
     return {
@@ -58,9 +56,6 @@ export default {
     },
     objectiveWorkItemType() {
       return this.workItemTypes[0]?.id;
-    },
-    fetchByIid() {
-      return true;
     },
   },
   methods: {
