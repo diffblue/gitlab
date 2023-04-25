@@ -1158,19 +1158,49 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       create(:vulnerabilities_finding).tap do |finding|
         finding.project = project
         finding.location['file'] = 'src/main.c'
-        finding.location['start_line'] = 5
-        finding.location['end_line'] = 6
       end
     end
 
     subject { finding.vulnerable_code }
 
-    it 'returns the vulnerables lines of code' do
-      vulnerable_lines = <<-LINES
+    context "with a start and end line number" do
+      before do
+        finding.location['start_line'] = 5
+        finding.location['end_line'] = 6
+      end
+
+      it 'returns the vulnerables lines of code' do
+        vulnerable_lines = <<-LINES
   char buf[8];
   memcpy(&buf, "123456789");
-      LINES
-      expect(subject).to eq(vulnerable_lines)
+        LINES
+        expect(subject).to eq(vulnerable_lines)
+      end
+    end
+
+    context "with a start line number but no end line number" do
+      before do
+        finding.location['start_line'] = 6
+        finding.location.delete('end_line')
+      end
+
+      it 'returns the single line of code' do
+        vulnerable_lines = <<-LINES
+  memcpy(&buf, "123456789");
+        LINES
+        expect(subject).to eq(vulnerable_lines)
+      end
+    end
+
+    context "without any line numbers" do
+      before do
+        finding.location.delete('start_line')
+        finding.location.delete('end_line')
+      end
+
+      it 'returns the entire file' do
+        expect(subject).to eq(source_code)
+      end
     end
   end
 end
