@@ -299,7 +299,6 @@ export default {
       :busy="isLoadingPolicies"
       :items="policies"
       :fields="fields"
-      sort-icon-left
       sort-by="updatedAt"
       sort-desc
       stacked="md"
