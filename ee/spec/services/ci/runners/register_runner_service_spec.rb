@@ -15,7 +15,7 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
     expect(audit_service).to receive(:track_event).once.and_return('track_event_return_value')
   end
 
-  subject(:execute) { described_class.new.execute(token, {}) }
+  subject(:execute) { described_class.new(token, {}).execute }
 
   RSpec::Matchers.define :last_ci_runner do
     match { |runner| runner == ::Ci::Runner.last }
