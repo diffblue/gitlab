@@ -1,10 +1,11 @@
 <script>
-import { GlDaterangePicker } from '@gitlab/ui';
+import { GlDaterangePicker, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import { pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { CURRENT_DATE } from 'ee/audit_events/constants';
 import getGroupProjects from '../../../graphql/violation_group_projects.query.graphql';
 import { convertProjectIdsToGraphQl } from '../../../utils';
@@ -12,6 +13,7 @@ import { convertProjectIdsToGraphQl } from '../../../utils';
 export default {
   components: {
     GlDaterangePicker,
+    GlFormInput,
     ProjectsDropdownFilter,
   },
   props: {
@@ -81,7 +83,12 @@ export default {
       this.$emit('filters-changed', this.filterQuery);
     },
   },
-  projectFilterLabel: __('Projects'),
+  i18n: {
+    projectFilterLabel: __('Projects'),
+    branchFilterLabel: s__('ComplianceReport|Search target branch'),
+    branchFilterPlaceholder: s__('ComplianceReport|Full target branch name'),
+  },
+  DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
   defaultMaxDate: CURRENT_DATE,
   projectsFilterParams: {
     first: 50,
@@ -97,7 +104,7 @@ export default {
   >
     <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-md-pr-5 gl-sm-gap-3">
       <label data-testid="dropdown-label" class="gl-line-height-normal">{{
-        $options.projectFilterLabel
+        $options.i18n.projectFilterLabel
       }}</label>
       <projects-dropdown-filter
         v-if="showProjectFilter"
@@ -113,7 +120,7 @@ export default {
     </div>
 
     <gl-daterange-picker
-      class="gl-display-flex gl-w-full gl-mb-5"
+      class="gl-display-flex gl-mb-5"
       data-testid="violations-date-range-picker"
       :default-start-date="defaultStartDate"
       :default-end-date="defaultEndDate"
@@ -124,5 +131,20 @@ export default {
       :same-day-selection="false"
       @input="dateRangeChanged"
     />
+
+    <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-md-pr-5 gl-sm-gap-3">
+      <label for="target-branch-input" class="gl-line-height-normal">
+        {{ $options.i18n.branchFilterLabel }}
+      </label>
+      <gl-form-input
+        id="target-branch-input"
+        :value="filterQuery.targetBranch"
+        data-testid="violations-target-branch-input"
+        class="gl-mb-2 gl-lg-mb-0"
+        :placeholder="$options.i18n.branchFilterPlaceholder"
+        :debounce="$options.DEFAULT_DEBOUNCE_AND_THROTTLE_MS"
+        @input="updateFilter({ targetBranch: $event })"
+      />
+    </div>
   </div>
 </template>

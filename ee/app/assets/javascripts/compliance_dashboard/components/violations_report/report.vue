@@ -135,11 +135,12 @@ export default {
       this.drawerMergeRequest = {};
       this.drawerProject = {};
     },
-    updateUrlQuery({ projectIds = [], ...rest }) {
+    updateUrlQuery({ projectIds = [], targetBranch, ...rest }) {
       this.resetPagination();
       this.urlQuery = {
         // Clear the URL param when the id array is empty
         projectIds: projectIds?.length > 0 ? projectIds : null,
+        targetBranch: targetBranch !== '' ? targetBranch : null,
         ...rest,
       };
     },

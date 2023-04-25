@@ -19,12 +19,15 @@ describe('compliance report utils', () => {
         projectIds,
         mergedAfter: '2021-12-06',
         mergedBefore: '2022-01-06',
+        someExtraParam: 'someExtraParamValue',
+        targetBranch: 'target-branch',
       };
 
       expect(utils.parseViolationsQueryFilter(query)).toStrictEqual({
         projectIds: projectGraphQlIds,
         mergedAfter: query.mergedAfter,
         mergedBefore: query.mergedBefore,
+        targetBranch: query.targetBranch,
       });
     });
 
@@ -43,12 +46,14 @@ describe('compliance report utils', () => {
           projectIds,
           mergedAfter: '2021-12-06',
           mergedBefore: '2022-01-06',
+          targetBranch: 'foo',
         };
 
         expect(utils.parseViolationsQueryFilter(query)).toStrictEqual({
           projectIds: projectGraphQlIds,
           mergedAfter: query.mergedAfter,
           mergedBefore: query.mergedBefore,
+          targetBranch: query.targetBranch,
         });
       });
     });
@@ -73,13 +78,14 @@ describe('compliance report utils', () => {
 
     it('return the expected result when the query contains dates', () => {
       const queryString =
-        'mergedAfter=2022-02-09&mergedBefore=2022-03-11&projectIds[]=20&tab=violations';
+        'mergedAfter=2022-02-09&mergedBefore=2022-03-11&projectIds[]=20&tab=violations&targetBranch=foo';
 
       expect(utils.buildDefaultViolationsFilterParams(queryString)).toStrictEqual({
         mergedAfter: '2022-02-09',
         mergedBefore: '2022-03-11',
         projectIds: ['20'],
         tab: 'violations',
+        targetBranch: 'foo',
       });
     });
   });
