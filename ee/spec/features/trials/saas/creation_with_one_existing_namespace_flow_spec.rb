@@ -16,7 +16,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
 
       fill_in_company_information
 
-      submit_company_information_form
+      submit_company_information_form(with_trial: true)
 
       expect_to_be_on_group_page
     end
@@ -29,7 +29,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
 
         fill_in_company_information
 
-        submit_company_information_form(extra_params: { glm_content: 'discover-group-security' })
+        submit_company_information_form(with_trial: true, extra_params: { glm_content: 'discover-group-security' })
 
         expect_to_be_on_group_security_dashboard
       end
@@ -51,7 +51,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
       expect_to_be_on_lead_form_with_errors
 
       # success
-      submit_company_information_form
+      submit_company_information_form(with_trial: true)
 
       expect_to_be_on_group_page
     end
@@ -67,7 +67,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
       fill_in_company_information
 
       # trial failure
-      submit_company_information_form(trial_success: false)
+      submit_company_information_form(with_trial: true, trial_success: false)
 
       expect_to_be_on_namespace_selection_with_errors
 
@@ -88,7 +88,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
       fill_in_company_information
 
       # trial failure
-      submit_company_information_form(trial_success: false)
+      submit_company_information_form(with_trial: true, trial_success: false)
 
       expect_to_be_on_namespace_selection_with_errors
 

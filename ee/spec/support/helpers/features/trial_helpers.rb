@@ -61,7 +61,8 @@ module Features
       select form_data.dig(:state, :name), from: 'state'
     end
 
-    def submit_company_information_form(lead_success: true, trial_success: true, extra_params: {})
+    def submit_company_information_form(lead_success: true, trial_success: true, with_trial: false, extra_params: {})
+      # lead
       trial_user_params = {
         company_name: form_data[:company_name],
         company_size: form_data[:company_size].delete(' '),
@@ -80,7 +81,7 @@ module Features
       }.merge(extra_params)
 
       lead_params = {
-        trial_user: ActionController::Parameters.new(trial_user_params).permit!
+        trial_user: trial_user_params
       }
 
       lead_result = if lead_success
@@ -93,15 +94,8 @@ module Features
         expect(service).to receive(:execute).with(lead_params).and_return(lead_result)
       end
 
-      trial_result = if trial_success
-                       ServiceResponse.success
-                     else
-                       ServiceResponse.error(message: '_trial_fail_')
-                     end
-
-      allow_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService) do |service|
-        allow(service).to receive(:execute).and_return(trial_result)
-      end
+      # trial
+      stub_apply_trial(namespace_id: group.id, success: trial_success, extra_params: extra_params) if with_trial
 
       click_button 'Continue'
 
@@ -109,15 +103,32 @@ module Features
     end
 
     def submit_trial_selection_form(success: true, extra_params: {})
+      stub_apply_trial(namespace_id: group.id, success: success, extra_params: extra_with_glm_source(extra_params))
+
+      click_button 'Start your free trial'
+    end
+
+    def submit_new_group_trial_selection_form(success: true, extra_params: {})
+      stub_apply_trial(success: success, extra_params: extra_with_glm_source(extra_params))
+
+      click_button 'Start your free trial'
+    end
+
+    def extra_with_glm_source(extra_params)
+      extra_params[:trial_entity] = 'company' unless extra_params[:glm_source] == 'about.gitlab.com'
+
+      extra_params
+    end
+
+    def stub_apply_trial(namespace_id: anything, success: true, extra_params: {})
       trial_user_params = {
-        namespace_id: group.id,
+        namespace_id: namespace_id,
         gitlab_com_trial: true,
-        sync_to_gl: true,
-        trial_entity: 'company'
+        sync_to_gl: true
       }.merge(extra_params)
 
       service_params = {
-        trial_user_information: ActionController::Parameters.new(trial_user_params).permit!,
+        trial_user_information: trial_user_params,
         uid: user.id
       }
 
@@ -130,22 +141,6 @@ module Features
       expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, service_params) do |instance|
         expect(instance).to receive(:execute).and_return(trial_success)
       end
-
-      click_button 'Start your free trial'
-    end
-
-    def submit_new_group_trial_selection_form(success: true)
-      trial_success = if success
-                        ServiceResponse.success
-                      else
-                        ServiceResponse.error(message: '_trial_fail_')
-                      end
-
-      expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService) do |instance|
-        expect(instance).to receive(:execute).and_return(trial_success)
-      end
-
-      click_button 'Start your free trial'
     end
   end
 end
