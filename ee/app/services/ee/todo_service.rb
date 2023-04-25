@@ -12,11 +12,11 @@ module EE
       create_approval_required_todos(merge_request, approvers, merge_request.author)
     end
 
-    override :new_issuable
-    def new_issuable(issuable, author)
-      if issuable.is_a?(MergeRequest)
-        approvers = issuable.overall_approvers(exclude_code_owners: true)
-        create_approval_required_todos(issuable, approvers, author)
+    override :new_merge_request
+    def new_merge_request(merge_request, author)
+      unless ::Feature.enabled?(:no_todo_for_approvers, merge_request.target_project)
+        approvers = merge_request.overall_approvers(exclude_code_owners: true)
+        create_approval_required_todos(merge_request, approvers, author)
       end
 
       super
