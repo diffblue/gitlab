@@ -66,7 +66,7 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
       where(:params, :expected_params, :expected_issues) do
         {}             | label_params2   | [issue_with_all_filters]
         label_params1  | label_params2   | [issue_with_all_filters]
-        label_params2  | label_params2   | [issue_with_all_filters] # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        label_params2  | label_params2   | [issue_with_all_filters]
         assignee_param | combined_params | [issue_with_all_filters]
       end
 
@@ -89,7 +89,7 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
 
       where(:params, :expected_params, :expected_issues) do
         {}                 | assignee_param  | [issue_with_assignee, issue_with_all_filters]
-        assignee_param     | assignee_param  | [issue_with_assignee, issue_with_all_filters]  # rubocop:disable Lint/BinaryOperatorWithIdenticalOperands
+        assignee_param     | assignee_param  | [issue_with_assignee, issue_with_all_filters]
         scoped_label_param | combined_params | [issue_with_all_filters]
       end
 
