@@ -32,8 +32,6 @@ module EE
 
         audit_changes(:admin, as: 'admin status',
                               event_type: 'user_admin_status_updated')
-
-        success
       end
 
       def model
