@@ -2,7 +2,7 @@
 class Groups::EpicBoardsController < Groups::ApplicationController
   include BoardsActions
   include RecordUserLastActivity
-  include RedisTracking
+  include ProductAnalyticsTracking
   include Gitlab::Utils::StrongMemoize
   extend ::Gitlab::Utils::Override
 
@@ -15,7 +15,7 @@ class Groups::EpicBoardsController < Groups::ApplicationController
     push_frontend_feature_flag(:epic_color_highlight, group)
   end
 
-  track_redis_hll_event :index, :show, name: 'g_project_management_users_viewing_epic_boards'
+  track_event :index, :show, name: 'g_project_management_users_viewing_epic_boards'
 
   feature_category :portfolio_management
   urgency :default, [:index, :show]
