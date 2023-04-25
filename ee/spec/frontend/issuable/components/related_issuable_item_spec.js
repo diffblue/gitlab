@@ -13,6 +13,9 @@ describe('RelatedIssuableItem', () => {
   function mountComponent({ mountMethod = mount, stubs = {}, props = {}, slots = {} } = {}) {
     wrapper = mountMethod(RelatedIssuableItem, {
       propsData: props,
+      provide: {
+        reportAbusePath: '/report/abuse/path',
+      },
       slots,
       stubs,
     });

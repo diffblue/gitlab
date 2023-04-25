@@ -85,6 +85,7 @@ describe('WorkItemDetail component', () => {
         hasOkrsFeature: true,
         projectNamespace: 'namespace',
         fullPath: 'group/project',
+        reportAbusePath: '/report/abuse/path',
       },
       propsData: {
         workItemId: workItemQueryResponse.data.workspace.workItems.nodes[0].id,

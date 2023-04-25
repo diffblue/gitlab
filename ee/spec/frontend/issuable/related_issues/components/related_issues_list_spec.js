@@ -25,6 +25,9 @@ describe('RelatedIssuesList', () => {
           pathIdSeparator: PathIdSeparator.Issue,
           relatedIssues: [issuable1],
         },
+        provide: {
+          reportAbusePath: '/report/abuse/path',
+        },
       });
     });
 
