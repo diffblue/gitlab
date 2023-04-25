@@ -18,6 +18,7 @@ RSpec.describe IterationNote do
       let(:event) { create(:resource_iteration_event, action: :remove, issue: noteable, iteration: iteration) }
 
       it 'creates the expected note' do
+        expect(subject.note).to eq("removed iteration #{iteration.to_reference}")
         expect(subject.note_html).to include('removed iteration')
         expect(subject.note_html).not_to include('changed iteration to')
         expect(subject.created_at).to eq(event.created_at)

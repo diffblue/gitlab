@@ -3,21 +3,21 @@
 require 'spec_helper'
 
 RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning do
-  let_it_be(:group)    { create(:group) }
-  let_it_be(:project)  { create(:project, :repository, group: group) }
-  let_it_be(:author)   { create(:user) }
-
-  let(:noteable) { create(:issue, project: project) }
-  let(:issue)    { noteable }
-  let(:epic)     { create(:epic, group: group) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :repository, group: group) }
+  let_it_be(:author) { create(:user) }
+  let_it_be(:epic) { create(:epic, group: group) }
+  let_it_be_with_reload(:noteable) { create(:issue, project: project, health_status: 'on_track') }
 
   let(:service) { described_class.new(noteable: noteable, project: project, author: author) }
 
   describe '#change_health_status_note' do
-    subject { service.change_health_status_note }
+    subject { service.change_health_status_note(noteable.health_status_before_last_save) }
 
     context 'when health_status changed' do
-      let(:noteable) { create(:issue, project: project, title: 'Lorem ipsum', health_status: 'at_risk') }
+      before do
+        noteable.update!(health_status: 'at_risk')
+      end
 
       it_behaves_like 'a system note' do
         let(:action) { 'health_status' }
@@ -29,14 +29,16 @@ RSpec.describe ::SystemNotes::IssuablesService, feature_category: :team_planning
     end
 
     context 'when health_status removed' do
-      let(:noteable) { create(:issue, project: project, title: 'Lorem ipsum', health_status: nil) }
+      before do
+        noteable.update!(health_status: nil)
+      end
 
       it_behaves_like 'a system note' do
         let(:action) { 'health_status' }
       end
 
       it 'sets the note text' do
-        expect(subject.note).to eq 'removed the health status'
+        expect(subject.note).to eq 'removed health status **on track**'
       end
     end
 

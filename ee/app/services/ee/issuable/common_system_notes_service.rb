@@ -48,7 +48,8 @@ module EE
       def handle_health_status_change
         return unless issuable.previous_changes.include?('health_status')
 
-        ::SystemNoteService.change_health_status_note(issuable, issuable.project, current_user)
+        ::SystemNoteService.change_health_status_note(issuable, issuable.project, current_user,
+          issuable.health_status_before_last_save)
       end
     end
   end

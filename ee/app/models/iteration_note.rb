@@ -16,6 +16,7 @@ class IterationNote < ::SyntheticNote
   private
 
   def note_text(html: false)
-    event.remove? ? 'removed iteration' : "changed iteration to #{iteration.to_reference(resource_parent, format: :id)}"
+    reference = iteration&.to_reference(resource_parent, format: :id)
+    event.remove? ? "removed iteration #{reference}" : "changed iteration to #{reference}"
   end
 end

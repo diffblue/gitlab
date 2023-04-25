@@ -63,7 +63,7 @@ RSpec.describe Issuable::CommonSystemNotesService, feature_category: :team_plann
 
           expect { subject }.to change { Note.count }.from(0).to(1)
 
-          expect(Note.last.note).to eq('removed the health status')
+          expect(Note.last.note).to eq("removed health status **needs attention**")
         end
       end
     end
