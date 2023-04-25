@@ -16690,10 +16690,19 @@ msgstr ""
 msgid "Environments|protected"
 msgstr ""
 
+msgid "Environment|Age"
+msgstr ""
+
 msgid "Environment|Auto stop %{time}"
 msgstr ""
 
+msgid "Environment|Cluster IP"
+msgstr ""
+
 msgid "Environment|Deployment tier"
+msgstr ""
+
+msgid "Environment|External IP"
 msgstr ""
 
 msgid "Environment|Failed"
@@ -16708,7 +16717,13 @@ msgstr ""
 msgid "Environment|Pods"
 msgstr ""
 
+msgid "Environment|Ports"
+msgstr ""
+
 msgid "Environment|Running"
+msgstr ""
+
+msgid "Environment|Services"
 msgstr ""
 
 msgid "Environment|Succeeded"
