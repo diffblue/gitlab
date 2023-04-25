@@ -56,13 +56,6 @@ module Registrations
       end
     end
 
-    def exit
-      return not_found unless Feature.enabled?(:exit_registration_verification)
-
-      finish_onboarding
-      redirect_to root_url
-    end
-
     private
 
     def authorize_create_group!
