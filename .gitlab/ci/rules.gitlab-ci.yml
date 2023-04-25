@@ -1275,6 +1275,8 @@
 ##########
 .notify:rules:create-issues-for-failing-tests:
   rules:
+    - <<: *if-not-canonical-namespace
+      when: never
     # Don't report child pipeline failures
     - if: '$CI_PIPELINE_SOURCE == "parent_pipeline"'
       when: never
