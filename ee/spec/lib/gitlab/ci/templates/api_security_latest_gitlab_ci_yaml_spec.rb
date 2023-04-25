@@ -122,17 +122,44 @@ RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml', feature_category: :continuous
           end
         end
 
-        context 'when API_FUZZING_DISABLED=1' do
+        context 'when setting API_FUZZING_DISABLED' do
           before do
-            create(:ci_variable, project: project, key: 'API_FUZZING_DISABLED', value: '1')
             create(:ci_variable, project: project, key: 'FUZZAPI_HAR', value: 'testing.har')
             create(:ci_variable, project: project, key: 'FUZZAPI_TARGET_URL', value: 'http://example.com')
           end
 
-          it 'includes no jobs' do
-            expect(build_names).to be_empty
-            expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
-              'The rules configuration prevented any jobs from being added to the pipeline.'])
+          context 'when API_FUZZING_DISABLED=1' do
+            before do
+              create(:ci_variable, project: project, key: 'API_FUZZING_DISABLED', value: '1')
+            end
+
+            it 'includes no jobs' do
+              expect(build_names).to be_empty
+              expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+                'The rules configuration prevented any jobs from being added to the pipeline.'])
+            end
+          end
+
+          context 'when API_FUZZING_DISABLED="true"' do
+            before do
+              create(:ci_variable, project: project, key: 'API_FUZZING_DISABLED', value: 'true')
+            end
+
+            it 'includes no jobs' do
+              expect(build_names).to be_empty
+              expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+                'The rules configuration prevented any jobs from being added to the pipeline.'])
+            end
+          end
+
+          context 'when API_FUZZING_DISABLED="false"' do
+            before do
+              create(:ci_variable, project: project, key: 'API_FUZZING_DISABLED', value: 'false')
+            end
+
+            it 'includes jobs' do
+              expect(build_names).not_to be_empty
+            end
           end
         end
 

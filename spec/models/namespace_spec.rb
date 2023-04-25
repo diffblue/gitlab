@@ -874,34 +874,6 @@ RSpec.describe Namespace, feature_category: :subgroups do
 
         expect(namespace.first_project_with_container_registry_tags).to eq(project)
       end
-
-      context 'when the feature flag use_sub_repositories_api is disabled' do
-        before do
-          stub_feature_flags(use_sub_repositories_api: false)
-        end
-
-        it 'returns the project' do
-          stub_container_registry_tags(repository: :any, tags: ['tag'])
-
-          expect(namespace.first_project_with_container_registry_tags).to eq(project)
-        end
-
-        it 'returns no project' do
-          stub_container_registry_tags(repository: :any, tags: nil)
-
-          expect(namespace.first_project_with_container_registry_tags).to be_nil
-        end
-
-        it 'does not cause N+1 query in fetching registries' do
-          stub_container_registry_tags(repository: :any, tags: [])
-          control_count = ActiveRecord::QueryRecorder.new { namespace.any_project_has_container_registry_tags? }.count
-
-          other_repositories = create_list(:container_repository, 2)
-          create(:project, namespace: namespace, container_repositories: other_repositories)
-
-          expect { namespace.first_project_with_container_registry_tags }.not_to exceed_query_limit(control_count + 1)
-        end
-      end
     end
   end
 

@@ -46609,7 +46609,7 @@ msgstr ""
 msgid "TransferGroup|Group contains contacts/organizations and you don't have enough permissions to move them to the new root group."
 msgstr ""
 
-msgid "TransferGroup|Group contains projects with NPM packages."
+msgid "TransferGroup|Group contains projects with NPM packages scoped to the current root level group."
 msgstr ""
 
 msgid "TransferGroup|Group is already a root group."
@@ -46645,7 +46645,7 @@ msgstr ""
 msgid "TransferProject|Project with same name or path in target namespace already exists"
 msgstr ""
 
-msgid "TransferProject|Root namespace can't be updated if project has NPM packages"
+msgid "TransferProject|Root namespace can't be updated if the project has NPM packages scoped to the current root level namespace."
 msgstr ""
 
 msgid "TransferProject|You don't have permission to transfer projects into that namespace."
