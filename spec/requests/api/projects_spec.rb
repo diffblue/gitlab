@@ -3029,6 +3029,44 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
       end
     end
 
+    context 'when authenticated as a developer' do
+      before do
+        project
+        project_member
+      end
+
+      it 'hides sensitive admin attributes' do
+        get api(path, user3)
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['id']).to eq(project.id)
+        expect(json_response['description']).to eq(project.description)
+        expect(json_response['default_branch']).to eq(project.default_branch)
+        expect(json_response['ci_config_path']).to eq(project.ci_config_path)
+        expect(json_response['forked_from_project']).to eq(project.forked_from_project)
+        expect(json_response['service_desk_address']).to eq(project.service_desk_address)
+        expect(json_response).not_to include(
+          'ci_default_git_depth',
+          'ci_forward_deployment_enabled',
+          'ci_job_token_scope_enabled',
+          'ci_separated_caches',
+          'ci_opt_in_jwt',
+          'ci_allow_fork_pipelines_to_run_in_parent_project',
+          'build_git_strategy',
+          'keep_latest_artifact',
+          'restrict_user_defined_variables',
+          'runners_token',
+          'runner_token_expiration_interval',
+          'group_runners_enabled',
+          'auto_cancel_pending_pipelines',
+          'build_timeout',
+          'auto_devops_enabled',
+          'auto_devops_deploy_strategy',
+          'import_error'
+        )
+      end
+    end
+
     it_behaves_like 'storing arguments in the application context for the API' do
       let_it_be(:user) { create(:user) }
       let_it_be(:project) { create(:project, :public) }
