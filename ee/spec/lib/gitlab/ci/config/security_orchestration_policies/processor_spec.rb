@@ -54,75 +54,81 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
   end
 
   shared_examples 'with different scan type' do
-    context 'when config already have jobs with names provided by policies' do
-      let(:config) do
-        {
-          stages: %w[build test release],
-          image: 'image:1.0.0',
-          'dast-on-demand-0': {
-            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
-            needs: [{ job: 'build-job', artifacts: true }]
-          },
-          'sast-0': {
-            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
-            needs: [{ job: 'build-job', artifacts: true }]
-          },
-          'secret-detection-1': {
-            rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
-            needs: [{ job: 'build-job', artifacts: true }]
-          }
-        }
-      end
+    %w[api pipeline merge_request_event schedule].each do |ci_source|
+      context "when #{ci_source} pipeline is created and affects CI status of the ref" do
+        let(:source) { ci_source }
 
-      it 'extends config with additional jobs without overriden values', :aggregate_failures do
-        expect(subject.keys).to include(expected_jobs)
-        expect(subject.values).to include(expected_configuration)
-        expect(subject[extended_job]).not_to include(
-          rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
-          needs: [{ job: 'build-job', artifacts: true }]
-        )
-      end
-    end
+        context 'when config already have jobs with names provided by policies' do
+          let(:config) do
+            {
+              stages: %w[build test release],
+              image: 'image:1.0.0',
+              'dast-on-demand-0': {
+                rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+                needs: [{ job: 'build-job', artifacts: true }]
+              },
+              'sast-0': {
+                rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+                needs: [{ job: 'build-job', artifacts: true }]
+              },
+              'secret-detection-1': {
+                rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+                needs: [{ job: 'build-job', artifacts: true }]
+              }
+            }
+          end
 
-    context 'when test stage is available' do
-      let(:config) { { stages: %w[build test release], image: 'image:1.0.0' } }
-
-      it 'does not include scan-policies stage' do
-        expect(subject[:stages]).to eq(%w[build test release dast])
-      end
-
-      it 'extends config with additional jobs' do
-        expect(subject.keys).to include(expected_jobs)
-        expect(subject.values).to include(expected_configuration)
-      end
-    end
-
-    context 'when test stage is not available' do
-      let(:scan_policy_stage) { 'scan-policies' }
-
-      context 'when build stage is available' do
-        let(:config) { { stages: %w[build not-test release], image: 'image:1.0.0' } }
-
-        it 'includes scan-policies stage after build stage' do
-          expect(subject[:stages]).to eq(%w[build scan-policies not-test release dast])
+          it 'extends config with additional jobs without overriden values', :aggregate_failures do
+            expect(subject.keys).to include(expected_jobs)
+            expect(subject.values).to include(expected_configuration)
+            expect(subject[extended_job]).not_to include(
+              rules: [{ if: '$CI_COMMIT_BRANCH == "develop"' }],
+              needs: [{ job: 'build-job', artifacts: true }]
+            )
+          end
         end
 
-        it 'extends config with additional jobs' do
-          expect(subject.keys).to include(expected_jobs)
-          expect(subject.values).to include(expected_configuration)
+        context 'when test stage is available' do
+          let(:config) { { stages: %w[build test release], image: 'image:1.0.0' } }
+
+          it 'does not include scan-policies stage' do
+            expect(subject[:stages]).to eq(%w[build test release dast])
+          end
+
+          it 'extends config with additional jobs' do
+            expect(subject.keys).to include(expected_jobs)
+            expect(subject.values).to include(expected_configuration)
+          end
         end
-      end
 
-      context 'when build stage is not available' do
-        let(:config) { { stages: %w[not-test release], image: 'image:1.0.0' } }
+        context 'when test stage is not available' do
+          let(:scan_policy_stage) { 'scan-policies' }
 
-        it 'includes scan-policies stage as a first stage' do
-          expect(subject[:stages]).to eq(%w[scan-policies not-test release dast])
-        end
+          context 'when build stage is available' do
+            let(:config) { { stages: %w[build not-test release], image: 'image:1.0.0' } }
 
-        it 'extends config with additional jobs' do
-          expect(subject.keys).to include(expected_jobs)
-          expect(subject.values).to include(expected_configuration)
+            it 'includes scan-policies stage after build stage' do
+              expect(subject[:stages]).to eq(%w[build scan-policies not-test release dast])
+            end
+
+            it 'extends config with additional jobs' do
+              expect(subject.keys).to include(expected_jobs)
+              expect(subject.values).to include(expected_configuration)
+            end
+          end
+
+          context 'when build stage is not available' do
+            let(:config) { { stages: %w[not-test release], image: 'image:1.0.0' } }
+
+            it 'includes scan-policies stage as a first stage' do
+              expect(subject[:stages]).to eq(%w[scan-policies not-test release dast])
+            end
+
+            it 'extends config with additional jobs' do
+              expect(subject.keys).to include(expected_jobs)
+              expect(subject.values).to include(expected_configuration)
+            end
+          end
         end
       end
     end
