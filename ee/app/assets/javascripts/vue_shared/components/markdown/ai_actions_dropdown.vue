@@ -1,29 +1,20 @@
 <script>
-import { GlButton, GlCollapsibleListbox, GlIcon, GlLoadingIcon } from '@gitlab/ui';
-import { updateText } from '~/lib/utils/text_markdown';
+import { GlButton, GlDisclosureDropdown, GlIcon, GlLoadingIcon } from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
 import { createAlert } from '~/alert';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
-import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
-import { TYPENAME_USER } from '~/graphql_shared/constants';
-
-export const MAX_REQUEST_TIMEOUT = 1000 * 15; // 15 seconds
-export const ACTIONS = {
-  SUMMARIZE_COMMENTS: 'SUMMARIZE_COMMENTS',
-};
 
 export default {
   components: {
-    GlCollapsibleListbox,
+    GlDisclosureDropdown,
     GlButton,
     GlLoadingIcon,
     GlIcon,
   },
   props: {
-    resourceGlobalId: {
-      type: String,
+    actions: {
+      type: Array,
       required: true,
     },
   },
@@ -31,21 +22,37 @@ export default {
     return {
       loading: false,
       errorAlert: null,
-      aiCompletionResponse: {},
     };
   },
   computed: {
     subscriptionVariables() {
-      return {
-        userId: convertToGraphQLId(TYPENAME_USER, gon.current_user_id),
-        resourceId: this.resourceGlobalId,
-      };
+      return this.actions.reduce((acc, action) => {
+        if (action.subscriptionVariables) {
+          Object.assign(acc, action.subscriptionVariables());
+        }
+        return acc;
+      }, {});
     },
-  },
-  destroyed() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
+    availableActions() {
+      const items = this.actions.map((item) => {
+        const action = item.apolloMutation ? this.onApolloAction : this.onAbstractAction;
+        return {
+          ...item,
+          text: item.title,
+          action,
+          extraAttrs: {
+            disabled: this.loading,
+            title: this.loading ? __('Please wait for the current action to complete') : null,
+          },
+        };
+      });
+      return [
+        {
+          name: __('AI actions'),
+          items,
+        },
+      ];
+    },
   },
   apollo: {
     $subscribe: {
@@ -59,74 +66,67 @@ export default {
         },
         error(error) {
           this.handleError(error);
+          this.afterAction();
         },
         result({ data }) {
           this.loading = false;
 
-          if (this.timeout) {
-            clearTimeout(this.timeout);
-          }
-
           if (data.error) {
             this.handleError(new Error(data.error));
+            this.afterAction();
             return;
           }
 
           if (data?.aiCompletionResponse?.responseBody) {
-            const textArea = this.$el.closest('.md-area')?.querySelector('textarea');
-            const generatedByText = `${data.aiCompletionResponse.responseBody}\n***\n_${__(
-              'This comment was generated using OpenAI',
-            )}_`;
-            if (textArea) {
-              updateText({
-                textArea,
-                tag: generatedByText,
-                cursorOffset: 0,
-                wrap: false,
-              });
-            }
+            this.insertResponse(data.aiCompletionResponse.responseBody);
           }
         },
       },
     },
   },
   methods: {
-    onSelect(action) {
+    insertResponse(response) {
+      this.$emit('input', response);
+    },
+    beforeAction() {
       if (this.loading) {
-        return;
+        return false;
       }
 
       this.errorAlert?.dismiss();
 
-      const input = this.getInputForAction(action);
-
-      if (!input) {
-        return;
-      }
-
       this.loading = true;
-      this.timeout = window.setTimeout(this.handleError, MAX_REQUEST_TIMEOUT);
-
+      return true;
+    },
+    afterAction() {
+      this.loading = false;
+    },
+    onAbstractAction(item) {
+      if (!this.beforeAction()) return;
+      item
+        .handler()
+        .then((response) => {
+          this.insertResponse(response);
+        })
+        .catch(this.handleError)
+        .finally(this.afterAction);
+    },
+    onApolloAction(item) {
+      if (!this.beforeAction()) return;
       this.$apollo
-        .mutate({ mutation: aiActionMutation, variables: { input } })
+        .mutate(item.apolloMutation())
         .then(({ data: { aiAction } }) => {
           if (aiAction.errors.length > 0) {
             this.handleError(new Error(aiAction.errors));
+            this.afterAction();
             return;
           }
           this.$apollo.subscriptions.aiCompletionResponse.start();
         })
-        .catch(this.handleError);
-    },
-    getInputForAction(action) {
-      if (action === ACTIONS.SUMMARIZE_COMMENTS) {
-        return {
-          summarizeComments: {
-            resourceId: this.resourceGlobalId,
-          },
-        };
-      }
-      return null;
+        .catch((error) => {
+          this.handleError(error);
+          this.afterAction();
+        });
     },
     handleError(error) {
       const alertOptions = error ? { captureError: true, error } : {};
@@ -134,30 +134,22 @@ export default {
         message: error ? error.message : __('Something went wrong'),
         ...alertOptions,
       });
-      this.loading = false;
-      clearTimeout(this.timeout);
     },
   },
-  availableActions: [
-    {
-      value: ACTIONS.SUMMARIZE_COMMENTS,
-      text: __('Summarize comments'),
-      description: __('Creates a summary of all comments'),
-    },
-  ],
 };
 </script>
 
 <template>
-  <gl-collapsible-listbox
-    :header-text="__('AI actions')"
-    :items="$options.availableActions"
+  <gl-disclosure-dropdown
+    ref="dropdown"
+    :items="availableActions"
     placement="right"
     class="comment-template-dropdown"
-    @select="onSelect"
+    no-caret
+    @action="$refs.dropdown.close()"
   >
     <template #toggle>
-      <gl-button category="tertiary" class="gl-px-3!" :disabled="loading">
+      <gl-button category="tertiary" class="gl-px-3!">
         <gl-loading-icon v-if="loading" />
         <gl-icon v-else name="tanuki" />
       </gl-button>
@@ -165,10 +157,10 @@ export default {
     <template #list-item="{ item }">
       <div class="gl-display-flex js-comment-template-content">
         <div class="gl-font-sm">
-          <strong>{{ item.text }}</strong>
+          <strong>{{ item.title }}</strong>
           <br /><span>{{ item.description }}</span>
         </div>
       </div>
     </template>
-  </gl-collapsible-listbox>
+  </gl-disclosure-dropdown>
 </template>

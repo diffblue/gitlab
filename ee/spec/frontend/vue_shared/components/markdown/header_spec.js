@@ -1,4 +1,4 @@
-import { GlTabs, GlCollapsibleListbox, GlListboxItem } from '@gitlab/ui';
+import { GlTabs, GlDisclosureDropdown, GlListboxItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import HeaderComponent from '~/vue_shared/components/markdown/header.vue';
 import AiActionsDropdown from 'ee_component/vue_shared/components/markdown/ai_actions_dropdown.vue';
@@ -12,7 +12,7 @@ describe('Markdown field header component', () => {
         previewMarkdown: false,
         ...props,
       },
-      stubs: { GlTabs, AiActionsDropdown, GlCollapsibleListbox, GlListboxItem },
+      stubs: { GlTabs, AiActionsDropdown, GlDisclosureDropdown, GlListboxItem },
       provide,
     });
   };
@@ -20,17 +20,12 @@ describe('Markdown field header component', () => {
   const findAiActionsButton = () => wrapper.findComponent(AiActionsDropdown);
 
   it.each([true, false])(
-    'renders/does not render "AI actions" when feature flags are "%s"',
+    'renders/does not render "AI actions" when actions are "%s"',
     (enabled) => {
       createWrapper(
         {},
         {
-          resourceGlobalId: 'gid://gitlab/Issue/1',
-          glFeatures: {
-            openaiExperimentation: enabled,
-            summarizeComments: enabled,
-            summarizeNotes: enabled,
-          },
+          editorAiActions: enabled ? [{ value: 'myAction', title: 'myAction' }] : [],
         },
       );
 
