@@ -155,7 +155,7 @@ module Vulnerabilities
       source_code.present?
     end
 
-    def vulnerable_code(lines: (start_line..end_line))
+    def vulnerable_code(lines: vulnerable_lines)
       strong_memoize_with(:vulnerable_code, lines) do
         source_code.lines[lines]&.join
       end
@@ -418,14 +418,24 @@ module Vulnerabilities
 
     private
 
+    def vulnerable_lines
+      # -1 is a magic number here meaning an explicit value
+      # for start_line or end_line was not provided.  If neither
+      # were provided we return the entire file contents.
+      return (0..-1) if (start_line < 0) && (end_line < 0)
+
+      range_start = [start_line, 0].max
+      range_end = [end_line, range_start].max
+
+      (range_start..range_end)
+    end
+
     def start_line
-      [location["start_line"].to_i - 1, 0].max
+      location["start_line"].to_i - 1
     end
 
     def end_line
-      return -1 if location["end_line"].blank?
-
-      [location["end_line"].to_i - 1, start_line].max
+      location["end_line"].to_i - 1
     end
 
     def source_code
