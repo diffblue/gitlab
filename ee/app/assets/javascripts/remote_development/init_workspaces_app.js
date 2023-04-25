@@ -4,8 +4,29 @@ import createDefaultClient from '~/lib/graphql';
 import App from './pages/app.vue';
 import createRouter from './router/index';
 import userWorkspacesListQuery from './graphql/queries/user_workspaces_list.query.graphql';
+import { WORKSPACE_STATES } from './constants';
 
 Vue.use(VueApollo);
+
+const generateDummyWorkspace = (actualState, desiredState) => {
+  const id = Math.random(0, 100000).toString(16).substring(0, 9);
+
+  return {
+    id: `gid://gitlab/RemoteDevelopment::Workspace/${id}`,
+    name: `workspace-1-1-${id}`,
+    namespace: `gl-rd-ns-1-1-${id}`,
+    url: 'http://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
+    devfileRef: 'main',
+    devfilePath: '.devfile.yaml',
+    actualState,
+    desiredState,
+    project: {
+      id: 'gid://gitlab/Project/2',
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      nameWithNamespace: 'Gitlab Shell',
+    },
+  };
+};
 
 const createApolloProvider = () => {
   const defaultClient = createDefaultClient();
@@ -17,40 +38,14 @@ const createApolloProvider = () => {
         id: 1,
         workspaces: {
           nodes: [
-            {
-              id: 'gid://gitlab/RemoteDevelopment::Workspace/2',
-              name: 'workspace-1-1-idmi02',
-              namespace: 'gl-rd-ns-1-1-idmi02',
-              // eslint-disable-next-line @gitlab/require-i18n-strings
-              desiredState: 'Stopped',
-              // eslint-disable-next-line @gitlab/require-i18n-strings
-              actualState: 'Creating',
-              url: 'http://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
-              devfileRef: 'main',
-              devfilePath: '.devfile.yaml',
-              project: {
-                id: 'gid://gitlab/Project/2',
-                // eslint-disable-next-line @gitlab/require-i18n-strings
-                nameWithNamespace: 'Gitlab Shell',
-              },
-            },
-            {
-              id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
-              name: 'workspace-1-1-rfu27q',
-              namespace: 'gl-rd-ns-1-1-rfu27q',
-              // eslint-disable-next-line @gitlab/require-i18n-strings
-              desiredState: 'Running',
-              // eslint-disable-next-line @gitlab/require-i18n-strings
-              actualState: 'Running',
-              url: 'http://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
-              devfileRef: 'main',
-              devfilePath: '.devfile.yaml',
-              project: {
-                id: 'gid://gitlab/Project/2',
-                // eslint-disable-next-line @gitlab/require-i18n-strings
-                nameWithNamespace: 'Gitlab Shell',
-              },
-            },
+            generateDummyWorkspace(WORKSPACE_STATES.running, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.creating, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.starting, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.stopped, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.stopping, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.terminated, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.failed, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.error, WORKSPACE_STATES.running),
           ],
         },
       },

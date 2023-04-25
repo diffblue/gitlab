@@ -1,21 +1,22 @@
 <script>
-import { GlAlert, GlButton, GlLink, GlIcon, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
 import { WORKSPACE_STATES, ROUTES } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
+import WorkspaceStateIndicator from '../components/list/workspace_state_indicator.vue';
 
 export default {
   components: {
     GlAlert,
     GlButton,
     GlLink,
-    GlIcon,
     GlSkeletonLoader,
     GlTableLite,
     WorkspaceEmptyState,
+    WorkspaceStateIndicator,
   },
   inject: ['currentUsername'],
   apollo: {
@@ -67,6 +68,11 @@ export default {
     isLoading() {
       return this.$apollo.loading;
     },
+    filteredWorkspaces() {
+      return this.workspaces?.filter(
+        (workspace) => workspace.actualState !== WORKSPACE_STATES.terminated,
+      );
+    },
   },
   methods: {
     clearError() {
@@ -107,10 +113,10 @@ export default {
         <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
       </div>
 
-      <gl-table-lite v-else :items="workspaces" :fields="$options.fields">
+      <gl-table-lite v-else :items="filteredWorkspaces" :fields="$options.fields">
         <template #cell(name)="{ item }">
           <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
-            <gl-icon name="status-stopped" class="gl-mr-5" />
+            <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
             <div class="gl-display-flex gl-flex-direction-column">
               <span> {{ item.project.nameWithNamespace }} </span>
               <span> {{ item.name }} </span>
