@@ -1,8 +1,17 @@
 <script>
-import { GlButton, GlSkeletonLoader, GlAlert, GlBadge } from '@gitlab/ui';
-import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import {
+  GlButton,
+  GlSkeletonLoader,
+  GlAlert,
+  GlBadge,
+  GlFormInputGroup,
+  GlFormInput,
+  GlForm,
+} from '@gitlab/ui';
+import { renderMarkdown } from '~/notes/utils';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { i18n } from '../constants';
+import { i18n, GENIE_CHAT_MODEL_ROLES } from '../constants';
 
 export default {
   name: 'AiGenieChat',
@@ -11,28 +20,21 @@ export default {
     GlAlert,
     GlBadge,
     GlSkeletonLoader,
-    CodeBlockHighlighted,
+    GlFormInputGroup,
+    GlFormInput,
+    GlForm,
   },
   directives: {
     SafeHtml,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
-    content: {
-      type: String,
+    messages: {
+      type: Array,
       required: false,
-      default: '',
+      default: () => [],
     },
     error: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    snippetLanguage: {
-      type: String,
-      required: false,
-      default: 'text',
-    },
-    selectedText: {
       type: String,
       required: false,
       default: '',
@@ -45,33 +47,54 @@ export default {
   },
   data() {
     return {
-      forceHiddenCodeExplanation: false,
+      isHidden: false,
+      prompt: '',
     };
   },
+  computed: {
+    isChatAvaiable() {
+      return this.glFeatures.explainCodeChat;
+    },
+  },
   watch: {
-    isLoading(newVal) {
-      if (newVal) {
-        this.forceHiddenCodeExplanation = false;
+    async isLoading() {
+      this.isHidden = false;
+      const rect = this.$refs.lastMessage?.at(0)?.getBoundingClientRect();
+      if (rect) {
+        await this.$nextTick();
+        this.$el.scrollTop += rect.bottom;
       }
+    },
+    messages() {
+      this.prompt = '';
     },
   },
   methods: {
-    closeCodeExplanation() {
-      this.forceHiddenCodeExplanation = true;
+    hideChat() {
+      this.isHidden = true;
     },
+    sendChatPrompt() {
+      if (this.prompt) {
+        this.$emit('send-chat-prompt', this.prompt);
+      }
+    },
+    renderMarkdown,
   },
   i18n,
+  GENIE_CHAT_MODEL_ROLES,
 };
 </script>
 <template>
   <aside
-    v-if="!forceHiddenCodeExplanation"
-    class="markdown-code-block gl-fixed gl-top-half gl-right-0 gl-bg-white gl-w-40p gl-rounded-top-left-base gl-rounded-bottom-left-base gl-border gl-border-r-none gl-font-sm gl-max-h-full gl-overflow-y-auto"
-    style="transform: translate(0px, -50%); max-width: 400px; min-width: 250px"
+    v-if="!isHidden"
+    class="markdown-code-block gl-drawer gl-drawer-default gl-h-auto gl-max-h-full gl-bottom-0 gl-z-index-200 gl-shadow-none gl-border-l gl-border-t"
     role="complementary"
     data-testid="chat-component"
+    style="scroll-behavior: smooth"
   >
-    <header class="gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center">
+    <header
+      class="gl-drawer-header gl-drawer-header-sticky gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center gl-z-index-200"
+    >
       <h3 class="gl-font-base gl-m-0">{{ $options.i18n.GENIE_CHAT_TITLE }}</h3>
       <gl-badge class="gl-mx-4" variant="info" size="md"
         >{{ $options.i18n.EXPERIMENT_BADGE }}
@@ -83,13 +106,13 @@ export default {
         size="small"
         class="gl-p-0! gl-ml-auto"
         :aria-label="$options.i18n.GENIE_CHAT_CLOSE_LABEL"
-        @click="closeCodeExplanation"
+        @click="hideChat"
       />
     </header>
     <gl-alert
       :dismissible="false"
       variant="warning"
-      class="gl-mb-5 gl-border-t gl-font-sm"
+      class="gl-font-sm gl-mb-2 gl-border-b"
       role="alert"
       data-testid="chat-legal-warning"
       primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
@@ -98,32 +121,69 @@ export default {
       <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
       <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
     </gl-alert>
-    <code-block-highlighted
-      :language="snippetLanguage"
-      :code="selectedText"
-      max-height="20rem"
-      class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0 gl-overflow-y-auto"
-    />
-    <section class="gl-bg-gray-10 gl-p-5">
-      <gl-skeleton-loader v-if="isLoading" />
-      <div v-else>
-        <gl-alert
-          v-if="error"
-          :dismissible="false"
-          variant="danger"
-          class="gl-mb-0"
-          role="alert"
-          data-testid="chat-error"
-          ><span v-safe-html="error"></span
-        ></gl-alert>
-        <div
-          v-else
-          v-safe-html="content"
-          class="md ai-genie-chat-message"
-          data-testid="chat-content"
-        ></div>
-      </div>
-      <slot></slot>
-    </section>
+    <div>
+      <slot name="hero"></slot>
+
+      <section class="gl-bg-gray-10">
+        <div v-if="isLoading && !messages.length" class="gl-p-5">
+          <gl-skeleton-loader />
+        </div>
+        <div v-else>
+          <div
+            v-for="(message, index) in messages"
+            :key="`${message.role}-${index}`"
+            :ref="index === messages.length - 1 ? 'lastMessage' : undefined"
+            class="gl-p-5 ai-genie-chat-message gl-text-gray-600"
+            :class="{
+              'gl-bg-white gl-border-t gl-border-b':
+                message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
+            }"
+          >
+            <div v-safe-html="renderMarkdown(message.content)"></div>
+            <slot
+              v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
+              name="feedback"
+            ></slot>
+          </div>
+          <div v-if="isLoading" class="gl-p-5 gl-display-flex">
+            <gl-skeleton-loader />
+          </div>
+          <gl-alert
+            v-if="error"
+            :dismissible="false"
+            variant="danger"
+            class="gl-mb-0"
+            role="alert"
+            data-testid="chat-error"
+            ><span v-safe-html="error"></span
+          ></gl-alert>
+        </div>
+      </section>
+    </div>
+    <footer
+      v-if="messages.length > 0 && isChatAvaiable"
+      class="gl-drawer-footer gl-drawer-footer-sticky gl-drawer-body-scrim-on-footer gl-p-5 gl-border-t gl-bg-white gl-mt-5"
+    >
+      <gl-form @submit.stop.prevent="sendChatPrompt">
+        <gl-form-input-group>
+          <gl-form-input
+            v-model="prompt"
+            data-testid="chat-prompt-input"
+            :placeholder="$options.i18n.GENIE_CHAT_PROMPT_PLACEHOLDER"
+            :disabled="isLoading"
+          />
+          <template #append>
+            <gl-button
+              icon="paper-airplane"
+              category="secondary"
+              variant="info"
+              class="gl-border-l-0"
+              type="submit"
+              :disabled="isLoading"
+            />
+          </template>
+        </gl-form-input-group>
+      </gl-form>
+    </footer>
   </aside>
 </template>
