@@ -11,7 +11,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
     context "for operation: #{git_operation}" do
       # Need to set a default for the `git_operation` access level that _isn't_ being tested
       let(:other_git_operation) { git_operation == 'merge' ? 'push' : 'merge' }
-      let(:roles_except_noone) { ProtectedRefAccess::HUMAN_ACCESS_LEVELS.except(0) }
+      let(:roles_except_noone) { ProtectedRef::AccessLevel.human_access_levels.except(Gitlab::Access::NO_ACCESS) }
 
       let(:users) { create_list(:user, 5) }
       let(:groups) { create_list(:group, 5) }
@@ -129,7 +129,7 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
     context 'When updating a protected branch' do
       it 'discards other roles when choosing "No one"' do
-        roles = ProtectedRefAccess::HUMAN_ACCESS_LEVELS.except(0)
+        roles = ProtectedRef::AccessLevel.human_access_levels.except(Gitlab::Access::NO_ACCESS)
         visit project_protected_branches_path(project)
         set_protected_branch_name('fix')
         set_allowed_to('merge')
@@ -156,11 +156,11 @@ RSpec.shared_examples "protected branches > access control > EE" do
 
     context 'When creating a protected branch' do
       it 'discards other roles when choosing "No one"' do
-        roles = ProtectedRefAccess::HUMAN_ACCESS_LEVELS.except(0)
+        roles = ProtectedRef::AccessLevel.human_access_levels.except(Gitlab::Access::NO_ACCESS)
         visit project_protected_branches_path(project)
         set_protected_branch_name('master')
         set_allowed_to('merge')
-        set_allowed_to('push', ProtectedRefAccess::HUMAN_ACCESS_LEVELS.values) # Last item (No one) should deselect the other ones
+        set_allowed_to('push', ProtectedRef::AccessLevel.human_access_levels.values) # Last item (No one) should deselect the other ones
         click_on "Protect"
         wait_for_requests
 
