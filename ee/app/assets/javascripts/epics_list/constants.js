@@ -1,6 +1,6 @@
 import { __ } from '~/locale';
 
-export const EpicsSortOptions = [
+export const epicsSortOptions = [
   {
     id: 1,
     title: __('Created date'),
@@ -43,7 +43,7 @@ export const EpicsSortOptions = [
   },
 ];
 
-export const FilterStateEmptyMessage = {
+export const filterStateEmptyMessage = {
   opened: __('There are no open epics'),
   closed: __('There are no closed epics'),
 };

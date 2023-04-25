@@ -4,7 +4,7 @@ import { pick } from 'lodash';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import EpicsListRoot from 'ee/epics_list/components/epics_list_root.vue';
-import { EpicsSortOptions } from 'ee/epics_list/constants';
+import { epicsSortOptions } from 'ee/epics_list/constants';
 import groupEpicsQuery from 'ee/epics_list//queries/group_epics.query.graphql';
 import { mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -14,15 +14,15 @@ import { mockAuthor, mockLabels } from 'jest/vue_shared/issuable/list/mock_data'
 
 import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
-import { IssuableListTabs } from '~/vue_shared/issuable/list/constants';
+import { issuableListTabs } from '~/vue_shared/issuable/list/constants';
 
 Vue.use(VueApollo);
 
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
-  IssuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableListTabs,
-  AvailableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
-    .AvailableSortOptions,
+  issuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').issuableListTabs,
+  availableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
+    .availableSortOptions,
 }));
 
 const mockRawEpic = {
@@ -259,7 +259,7 @@ describe('EpicsListRoot', () => {
       expect(getIssuableList().exists()).toBe(true);
       expect(getIssuableList().props()).toMatchObject({
         namespace: mockProvide.groupFullPath,
-        tabs: IssuableListTabs,
+        tabs: issuableListTabs,
         currentTab: 'opened',
         tabCounts: {
           all: 5,
@@ -267,7 +267,7 @@ describe('EpicsListRoot', () => {
           opened: 5,
         },
         searchInputPlaceholder: 'Search or filter results...',
-        sortOptions: EpicsSortOptions,
+        sortOptions: epicsSortOptions,
         initialFilterValue: ['foo'],
         initialSortBy: 'created_desc',
         urlParams: wrapper.vm.urlParams,

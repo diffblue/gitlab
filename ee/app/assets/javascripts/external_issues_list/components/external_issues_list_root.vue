@@ -5,8 +5,8 @@ import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {
-  IssuableListTabs,
-  AvailableSortOptions,
+  issuableListTabs,
+  availableSortOptions,
   DEFAULT_PAGE_SIZE,
 } from '~/vue_shared/issuable/list/constants';
 import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
@@ -23,8 +23,8 @@ import ExternalIssuesListEmptyState from './external_issues_list_empty_state.vue
 
 export default {
   name: 'ExternalIssuesList',
-  IssuableListTabs,
-  AvailableSortOptions,
+  issuableListTabs,
+  availableSortOptions,
   defaultPageSize: DEFAULT_PAGE_SIZE,
   components: {
     GlButton,
@@ -233,11 +233,11 @@ export default {
   <issuable-list
     v-else
     :namespace="projectFullPath"
-    :tabs="$options.IssuableListTabs"
+    :tabs="$options.issuableListTabs"
     :current-tab="currentState"
     :search-input-placeholder="searchInputPlaceholderText"
     :search-tokens="getFilteredSearchTokens()"
-    :sort-options="$options.AvailableSortOptions"
+    :sort-options="$options.availableSortOptions"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"
     :issuables="issues"

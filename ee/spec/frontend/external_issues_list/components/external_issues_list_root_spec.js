@@ -29,9 +29,9 @@ import {
 jest.mock('~/alert');
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
-  IssuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').IssuableListTabs,
-  AvailableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
-    .AvailableSortOptions,
+  issuableListTabs: jest.requireActual('~/vue_shared/issuable/list/constants').issuableListTabs,
+  availableSortOptions: jest.requireActual('~/vue_shared/issuable/list/constants')
+    .availableSortOptions,
 }));
 jest.mock(
   '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue',

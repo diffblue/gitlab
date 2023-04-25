@@ -8,20 +8,20 @@ import { createAlert } from '~/alert';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
-import { IssuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
+import { issuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { parsePikadayDate, dateInWords } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 
 import { transformFetchEpicFilterParams } from '../../roadmap/utils/epic_utils';
-import { EpicsSortOptions } from '../constants';
+import { epicsSortOptions } from '../constants';
 import groupEpics from '../queries/group_epics.query.graphql';
 
 import EpicsListEmptyState from './epics_list_empty_state.vue';
 import EpicsListBulkEditSidebar from './epics_list_bulk_edit_sidebar.vue';
 
 export default {
-  IssuableListTabs,
-  EpicsSortOptions,
+  issuableListTabs,
+  epicsSortOptions,
   defaultPageSize: DEFAULT_PAGE_SIZE,
   epicSymbol: '&',
   components: {
@@ -255,7 +255,7 @@ export default {
 <template>
   <issuable-list
     :namespace="groupFullPath"
-    :tabs="$options.IssuableListTabs"
+    :tabs="$options.issuableListTabs"
     :current-tab="currentState"
     :tab-counts="epicsCount"
     :search-input-placeholder="__('Search or filter results...')"
@@ -265,7 +265,7 @@ export default {
         supportsEpic: false,
       }) /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */
     "
-    :sort-options="$options.EpicsSortOptions"
+    :sort-options="$options.epicsSortOptions"
     :has-scoped-labels-feature="hasScopedLabelsFeature"
     :initial-filter-value="getFilteredSearchValue()"
     :initial-sort-by="sortedBy"

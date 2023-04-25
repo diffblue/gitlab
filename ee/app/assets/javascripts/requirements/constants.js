@@ -6,12 +6,12 @@ export const FilterState = {
   all: 'ALL',
 };
 
-export const FilterStateEmptyMessage = {
+export const filterStateEmptyMessage = {
   OPENED: __('There are no open requirements'),
   ARCHIVED: __('There are no archived requirements'),
 };
 
-export const AvailableSortOptions = [
+export const availableSortOptions = [
   {
     id: 1,
     title: __('Created date'),
@@ -35,7 +35,7 @@ export const TestReportStatus = {
   Failed: 'FAILED',
 };
 
-export const TestReportStatusToValue = {
+export const testReportStatusToValue = {
   satisfied: 'PASSED',
   failed: 'FAILED',
   missing: 'MISSING',

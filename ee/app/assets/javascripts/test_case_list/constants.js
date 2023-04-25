@@ -1,7 +1,7 @@
 import { STATUS_ALL, STATUS_CLOSED, STATUS_OPEN } from '~/issues/constants';
 import { __ } from '~/locale';
 
-export const TestCaseTabs = [
+export const testCaseTabs = [
   {
     id: 'state-opened',
     name: STATUS_OPEN,
@@ -22,7 +22,7 @@ export const TestCaseTabs = [
   },
 ];
 
-export const AvailableSortOptions = [
+export const availableSortOptions = [
   {
     id: 1,
     title: __('Created date'),
@@ -41,7 +41,7 @@ export const AvailableSortOptions = [
   },
 ];
 
-export const FilterStateEmptyMessage = {
+export const filterStateEmptyMessage = {
   opened: __('There are no open test cases'),
   closed: __('There are no archived test cases'),
 };
