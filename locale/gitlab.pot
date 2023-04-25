@@ -28813,7 +28813,7 @@ msgstr ""
 msgid "NavigationTheme|Red"
 msgstr ""
 
-msgid "Navigation|Admin"
+msgid "Navigation|Admin Area"
 msgstr ""
 
 msgid "Navigation|Analyze"
