@@ -8,18 +8,18 @@ module EE
         include ::Audit::Changes
 
         override :execute
-        def execute(registration_token, attributes)
-          result = super(registration_token, attributes)
+        def execute
+          result = super
           runner = result.payload[:runner] if result.success?
 
-          audit_event(runner, registration_token) if result.success?
+          audit_event(runner) if result.success?
 
           result
         end
 
         private
 
-        def audit_event(runner, registration_token)
+        def audit_event(runner)
           ::AuditEvents::RegisterRunnerAuditEventService.new(runner, registration_token, token_scope)
             .track_event
         end
