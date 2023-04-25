@@ -3,7 +3,9 @@
 .form-group
   = f.label :new_user_signups_cap, _('User cap'), class: 'gl-font-weight-bold'
   .form-text.text-muted= saas_user_caps_help_text(group)
-  = f.number_field :new_user_signups_cap, min: 1, class: 'form-control form-control-sm gl-form-input gl-w-full gl-mt-3', disabled: group.shared_externally?
+  = f.number_field :new_user_signups_cap, min: 1,
+    class: 'form-control form-control-sm gl-form-input gl-w-full gl-mt-3',
+    disabled: group.shared_externally?, data: { qa_selector: 'user_cap_limit_field' }
   - if group.shared_externally?
     .form-text.text-muted= _("User cap cannot be enabled. The group or one of its subgroups or projects is shared externally.")
 

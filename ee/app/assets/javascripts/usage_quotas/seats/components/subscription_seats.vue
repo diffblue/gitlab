@@ -247,6 +247,7 @@ export default {
       :primary-button-text="$options.i18n.pendingMembersAlertButtonText"
       class="gl-my-3"
       data-testid="pending-members-alert"
+      data-qa-selector="pending_members_alert"
       @primaryAction="navigateToPendingMembersPage"
     >
       {{ pendingMembersAlertMessage }}

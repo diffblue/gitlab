@@ -40,6 +40,10 @@ module QA
                   element :file_template_repositories_container
                   element :save_changes_button
                 end
+
+                view 'ee/app/views/groups/_user_caps_setting.html.haml' do
+                  element :user_cap_limit_field
+                end
               end
             end
 
@@ -104,6 +108,22 @@ module QA
 
             def set_repository_size_limit(limit)
               find_element(:repository_size_limit_field).set limit
+            end
+
+            # @param limit [Integer, String] integer >=1, empty string removes the limit
+            def set_saas_user_cap_limit(limit)
+              retry_on_exception(max_attempts: 10, reload: true, sleep_interval: 3) do
+                expand_content(:permission_lfs_2fa_content)
+                find_element(:user_cap_limit_field, wait: 3)
+              end
+
+              retry_on_exception(reload: true, sleep_interval: 3) do
+                find_element(:user_cap_limit_field).set limit
+                click_element(:save_permissions_changes_button)
+                wait_for_requests
+
+                find_element(:user_cap_limit_field).value == limit.to_s
+              end
             end
 
             def current_file_template_repository
