@@ -30780,6 +30780,8 @@ CREATE UNIQUE INDEX index_group_deploy_tokens_on_group_and_deploy_token_ids ON g
 
 CREATE UNIQUE INDEX index_group_group_links_on_shared_group_and_shared_with_group ON group_group_links USING btree (shared_group_id, shared_with_group_id);
 
+CREATE INDEX index_group_group_links_on_shared_with_group_and_group_access ON group_group_links USING btree (shared_with_group_id, group_access);
+
 CREATE INDEX index_group_group_links_on_shared_with_group_and_shared_group ON group_group_links USING btree (shared_with_group_id, shared_group_id);
 
 CREATE INDEX index_group_import_states_on_group_id ON group_import_states USING btree (group_id);
