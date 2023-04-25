@@ -133,8 +133,11 @@ export default {
     />
 
     <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-md-pr-5 gl-sm-gap-3">
-      <label class="gl-line-height-normal">{{ $options.i18n.branchFilterLabel }}</label>
+      <label for="target-branch-input" class="gl-line-height-normal">
+        {{ $options.i18n.branchFilterLabel }}
+      </label>
       <gl-form-input
+        id="target-branch-input"
         :value="filterQuery.targetBranch"
         data-testid="violations-target-branch-input"
         class="gl-mb-2 gl-lg-mb-0"
