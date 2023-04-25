@@ -55,6 +55,7 @@ Consult these topics for information on contributing to specific GitLab features
 
 - [Pry debugging](pry_debugging.md)
 - [Sidekiq debugging](../administration/sidekiq/sidekiq_troubleshooting.md)
+- [VS Code debugging](vs_code_debugging.md)
 
 ### Git specifics
 
