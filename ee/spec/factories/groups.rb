@@ -35,9 +35,9 @@ FactoryBot.define do
       after(:create) do |group, evaluator|
         group.ldap_group_links << create(
           :ldap_group_link,
-            cn: evaluator.cn,
-            group_access: evaluator.group_access,
-            provider: evaluator.provider
+          cn: evaluator.cn,
+          group_access: evaluator.group_access,
+          provider: evaluator.provider
         )
       end
     end
@@ -46,10 +46,10 @@ FactoryBot.define do
       after(:create) do |group, evaluator|
         group.ldap_group_links << create(
           :ldap_group_link,
-            filter: '(a=b)',
-            cn: nil,
-            group_access: evaluator.group_access,
-            provider: evaluator.provider
+          filter: '(a=b)',
+          cn: nil,
+          group_access: evaluator.group_access,
+          provider: evaluator.provider
         )
       end
     end
@@ -86,11 +86,13 @@ FactoryBot.define do
 
     after(:create) do |group, evaluator|
       if evaluator.plan
-        create(:gitlab_subscription,
-               namespace: group,
-               hosted_plan: create(evaluator.plan),
-               trial: evaluator.trial_ends_on.present?,
-               trial_ends_on: evaluator.trial_ends_on)
+        create(
+          :gitlab_subscription,
+          namespace: group,
+          hosted_plan: create(evaluator.plan),
+          trial: evaluator.trial_ends_on.present?,
+          trial_ends_on: evaluator.trial_ends_on
+        )
       end
     end
   end

@@ -59,11 +59,13 @@ FactoryBot.define do
       if evaluator.plan
         create(:namespace_settings, namespace: namespace)
 
-        create(:gitlab_subscription,
-               namespace: namespace,
-               hosted_plan: create(evaluator.plan),
-               trial: evaluator.trial_ends_on.present?,
-               trial_ends_on: evaluator.trial_ends_on)
+        create(
+          :gitlab_subscription,
+          namespace: namespace,
+          hosted_plan: create(evaluator.plan),
+          trial: evaluator.trial_ends_on.present?,
+          trial_ends_on: evaluator.trial_ends_on
+        )
       end
     end
   end

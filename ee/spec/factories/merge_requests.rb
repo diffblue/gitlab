@@ -25,10 +25,12 @@ FactoryBot.modify do
       merge_user { train_creator }
 
       after :create do |merge_request, evaluator|
-        merge_request.create_merge_train_car(status: evaluator.status,
-                                         user: evaluator.train_creator,
-                                         target_project: merge_request.target_project,
-                                         target_branch: merge_request.target_branch)
+        merge_request.create_merge_train_car(
+          status: evaluator.status,
+          user: evaluator.train_creator,
+          target_project: merge_request.target_project,
+          target_branch: merge_request.target_branch
+        )
       end
     end
 
