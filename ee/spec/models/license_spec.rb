@@ -263,6 +263,14 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
             expect(license.valid?).to be_truthy
           end
+
+          context 'when the license is cloud-enabled' do
+            before do
+              gl_license.cloud_licensing_enabled = true
+            end
+
+            it { is_expected.to be_valid }
+          end
         end
       end
 
@@ -280,6 +288,14 @@ RSpec.describe License, feature_category: :sm_provisioning do
             expect(license.errors.full_messages.to_sentence).to include(
               'During the year before this license started'
             )
+          end
+
+          context 'when the license is cloud-enabled' do
+            before do
+              gl_license.cloud_licensing_enabled = true
+            end
+
+            it { is_expected.to be_valid }
           end
         end
       end
