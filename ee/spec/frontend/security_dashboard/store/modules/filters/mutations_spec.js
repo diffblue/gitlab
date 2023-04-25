@@ -1,4 +1,3 @@
-import { severityFilter } from 'ee/security_dashboard/helpers';
 import { DISMISSAL_STATES } from 'ee/security_dashboard/store/modules/filters/constants';
 import {
   SET_FILTER,
@@ -6,9 +5,6 @@ import {
 } from 'ee/security_dashboard/store/modules/filters/mutation_types';
 import mutations from 'ee/security_dashboard/store/modules/filters/mutations';
 import createState from 'ee/security_dashboard/store/modules/filters/state';
-
-const criticalOption = severityFilter.options.find((x) => x.id === 'CRITICAL');
-const highOption = severityFilter.options.find((x) => x.id === 'HIGH');
 
 const existingFilters = {
   filter1: ['some', 'value'],
@@ -26,12 +22,12 @@ describe('filters module mutations', () => {
     it.each`
       options
       ${[]}
-      ${[criticalOption.id]}
-      ${[criticalOption.id, highOption.id]}
+      ${['CRITICAL']}
+      ${['CRITICAL', 'HIGH']}
     `('sets the filter to $options', ({ options }) => {
-      mutations[SET_FILTER](state, { [severityFilter.id]: options });
+      mutations[SET_FILTER](state, { severity: options });
 
-      expect(state.filters[severityFilter.id]).toEqual(options);
+      expect(state.filters.severity).toEqual(options);
     });
 
     it('adds new filter to existing filters', () => {

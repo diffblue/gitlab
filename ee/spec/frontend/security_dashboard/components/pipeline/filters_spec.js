@@ -2,13 +2,14 @@ import { GlToggle } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import VueRouter from 'vue-router';
 import Filters from 'ee/security_dashboard/components/pipeline/filters.vue';
-import { simpleScannerFilter } from 'ee/security_dashboard/helpers';
 import { setupStore } from 'ee/security_dashboard/store';
 import state from 'ee/security_dashboard/store/modules/filters/state';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 Vue.use(Vuex);
+Vue.use(VueRouter);
 
 describe('Filter component', () => {
   let wrapper;
@@ -18,6 +19,8 @@ describe('Filter component', () => {
     wrapper = extendedWrapper(
       mountFn(Filters, {
         store,
+        router: new VueRouter(),
+        provide: { dashboardType: 'pipeline' },
         slots: {
           buttons: '<div class="button-slot"></div>',
         },
@@ -51,7 +54,7 @@ describe('Filter component', () => {
     });
   });
 
-  describe('scanner filter', () => {
+  describe('tool filter', () => {
     it('should call the setFilter action with the correct data when the scanner filter is changed', async () => {
       const mock = jest.fn();
       store = new Vuex.Store({
@@ -70,9 +73,9 @@ describe('Filter component', () => {
       // scanner filter item.
       mock.mockClear();
 
-      const filterId = simpleScannerFilter.id;
-      const optionId = simpleScannerFilter.options[2].id;
-      const option = wrapper.findByTestId(`${filterId}:${optionId}`);
+      const filterId = 'severity';
+      const optionId = 'MEDIUM';
+      const option = wrapper.findByTestId(optionId);
       option.vm.$emit('click');
       await nextTick();
 

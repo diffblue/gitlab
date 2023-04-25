@@ -5,11 +5,6 @@ module Groups
     class VulnerabilitiesController < Groups::ApplicationController
       layout 'group'
 
-      before_action do
-        push_frontend_feature_flag(:refactor_vulnerability_tool_filter, @group)
-        push_frontend_feature_flag(:refactor_vulnerability_filters, current_user)
-      end
-
       feature_category :vulnerability_management
       urgency :low
 
