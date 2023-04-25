@@ -5,8 +5,8 @@ import Vue from 'vue';
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import { DropdownVariant } from '~/sidebar/components/labels/labels_select_vue/constants';
 import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
+import { VARIANT_STANDALONE } from '~/sidebar/components/labels/labels_select_widget/constants';
 import { GroupBy } from '../constants';
 import IterationReportIssues from './iteration_report_issues.vue';
 
@@ -25,7 +25,7 @@ export default {
       text: __('Label'),
     },
   ],
-  variant: DropdownVariant.Standalone,
+  VARIANT_STANDALONE,
   components: {
     GlAlert,
     GlBadge,
@@ -165,7 +165,7 @@ export default {
             allow-multiple-scoped-labels
             :labels-fetch-path="labelsFetchPath"
             :selected-labels="selectedLabels"
-            :variant="$options.variant"
+            :variant="$options.VARIANT_STANDALONE"
             @updateSelectedLabels="handleUpdateSelectedLabels"
           />
         </div>

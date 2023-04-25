@@ -2,13 +2,13 @@
 import { GlForm, GlFormGroup } from '@gitlab/ui';
 import { intersectionBy, xorBy, unionBy } from 'lodash';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
-import { DropdownVariant } from '~/sidebar/components/labels/labels_select_vue/constants';
+import { VARIANT_EMBEDDED } from '~/sidebar/components/labels/labels_select_widget/constants';
 import csrf from '~/lib/utils/csrf';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 
 export default {
   csrf,
-  DropdownVariant,
+  VARIANT_EMBEDDED,
   getIdFromGraphQLId,
   components: {
     GlForm,
@@ -122,7 +122,7 @@ export default {
         :selected-labels="existingSelectedLabels"
         :labels-fetch-path="labelsFetchPath"
         :labels-manage-path="labelsManagePath"
-        :variant="$options.DropdownVariant.Embedded"
+        :variant="$options.VARIANT_EMBEDDED"
         @onDropdownClose="handleSelectedLabels"
       />
     </gl-form-group>
