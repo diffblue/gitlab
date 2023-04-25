@@ -813,14 +813,10 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
 
-          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-          ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
-          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-          ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
-          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-          ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
-          # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-          ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'allows to read group'
         end
 
         with_them do
