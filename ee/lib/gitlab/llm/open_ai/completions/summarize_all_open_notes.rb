@@ -23,7 +23,6 @@ module Gitlab
           # which is a wrapper on OpenAI's token counting lib in python.
           # see https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
           INPUT_CONTENT_LIMIT = INPUT_TOKEN_LIMIT * 4
-          OUTPUT_TOKEN_LIMIT = (TOTAL_MODEL_TOKEN_LIMIT * 0.25).to_i.freeze
 
           def initialize(ai_prompt_class)
             @ai_prompt_class = ai_prompt_class
@@ -38,16 +37,17 @@ module Gitlab
 
             # todo: this is not great, loads all notes into memory, but we know this and we'll fix this
             # todo: see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117176 for a follow-up
-            content = notes.first(100).pluck(:note) # rubocop: disable CodeReuse/ActiveRecord
+            notes_content = notes.first(100).pluck(:note).join("\n") # rubocop: disable CodeReuse/ActiveRecord
 
-            ai_prompt = ai_prompt_class.get_prompt(content[0..INPUT_CONTENT_LIMIT])
-            ai_prompt[:options][:max_tokens] = OUTPUT_TOKEN_LIMIT
+            options = ai_prompt_class.get_options(notes_content[0..INPUT_CONTENT_LIMIT])
 
-            ai_response = Gitlab::Llm::OpenAi::Client.new(user).completions(
-              prompt: ai_prompt[:prompt], **ai_prompt[:options]
+            ai_response = Gitlab::Llm::OpenAi::Client.new(user).chat(
+              content: nil,
+              **options
             )
 
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: {}).execute
+            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: {})
+              .execute(Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new)
           end
 
           private
