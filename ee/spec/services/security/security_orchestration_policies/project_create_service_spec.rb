@@ -16,6 +16,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProjectCreateService, fe
 
     subject(:service) { described_class.new(container: container, current_user: current_user) }
 
+    before do
+      stub_licensed_features(security_orchestration_policies: true)
+    end
+
     context 'when security_orchestration_policies_configuration does not exist for project' do
       before do
         project.add_maintainer(maintainer)
