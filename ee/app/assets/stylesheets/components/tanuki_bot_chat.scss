@@ -1,0 +1,15 @@
+.tanuki-bot-chat-drawer {
+  $height-offset: calc(#{$header-height} + #{$calc-application-bars-height});
+
+  height: calc(100% - #{$height-offset});
+  top: $height-offset !important; // overrides drawerStyles from GlDrawer
+  bottom: 0;
+  box-shadow: 0 4px 16px $t-gray-a-24;
+  overflow-y: hidden;
+  max-width: $wide-drawer;
+  width: 100%;
+}
+
+.tanuki-bot-backdrop {
+  z-index: 999;
+}
