@@ -1,16 +1,11 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
-import { n__, s__, __ } from '~/locale';
+import { n__, s__ } from '~/locale';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 import { slugifyToArray } from '../utils';
-
-const SPECIFIC_BRANCHES = {
-  id: 'SPECIFIC_BRANCHES',
-  text: __('Specific branches'),
-  value: 'SPECIFIC_BRANCHES',
-};
+import { SPECIFIC_BRANCHES } from '../constants';
 
 const GROUP_LEVEL_BRANCHES_OPTIONS = [
   { ...ALL_PROTECTED_BRANCHES, text: ALL_PROTECTED_BRANCHES.name },
@@ -36,7 +31,9 @@ export default {
   },
   data() {
     return {
-      selected: ALL_PROTECTED_BRANCHES.value,
+      selected: !this.initRule.branches?.join()
+        ? ALL_PROTECTED_BRANCHES.value
+        : SPECIFIC_BRANCHES.value,
     };
   },
   computed: {
@@ -45,7 +42,7 @@ export default {
     },
     enteredBranches: {
       get() {
-        return this.initRule.branches.join();
+        return this.initRule.branches?.join() || '';
       },
       set(value) {
         const branches = slugifyToArray(value).filter((branch) => branch !== '*');
@@ -53,11 +50,11 @@ export default {
       },
     },
     showBranchesLabel() {
-      return Boolean(this.initRule.branches.length) || this.showInput;
+      return Boolean(this.initRule.branches?.length) || this.showInput;
     },
     branchesToAdd: {
       get() {
-        return this.initRule.branches;
+        return this.initRule.branches || [];
       },
       set(value) {
         const branches = value.id === ALL_PROTECTED_BRANCHES.id ? [] : [value.name];

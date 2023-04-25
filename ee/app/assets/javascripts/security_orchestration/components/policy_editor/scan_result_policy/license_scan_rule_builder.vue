@@ -30,11 +30,6 @@ export default {
       type: Object,
       required: true,
     },
-    ruleLabel: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
   i18n: {
     licenseStatuses: s__('ScanResultPolicy|license status'),
