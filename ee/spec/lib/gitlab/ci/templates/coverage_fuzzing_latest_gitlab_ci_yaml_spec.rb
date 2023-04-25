@@ -67,6 +67,28 @@ RSpec.describe 'Coverage-Fuzzing.latest.gitlab-ci.yml', feature_category: :conti
             'The rules configuration prevented any jobs from being added to the pipeline.'])
         end
       end
+
+      context 'when COVFUZZ_DISABLED="true"' do
+        before do
+          create(:ci_variable, project: project, key: 'COVFUZZ_DISABLED', value: 'true')
+        end
+
+        it 'includes no jobs' do
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+            'The rules configuration prevented any jobs from being added to the pipeline.'])
+        end
+      end
+
+      context 'when COVFUZZ_DISABLED="false"' do
+        before do
+          create(:ci_variable, project: project, key: 'COVFUZZ_DISABLED', value: 'false')
+        end
+
+        it 'include jobs' do
+          expect(build_names).not_to be_empty
+        end
+      end
     end
   end
 end

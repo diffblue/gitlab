@@ -85,17 +85,44 @@ RSpec.describe 'DAST-API.latest.gitlab-ci.yml', feature_category: :continuous_in
 
         it_behaves_like 'acts as MR pipeline', %w[dast_api], { 'CHANGELOG.md' => '' }
 
-        context 'when DAST_API_DISABLED=1' do
+        context 'when setting DAST_API_DISABLED' do
           before do
-            create(:ci_variable, project: project, key: 'DAST_API_DISABLED', value: '1')
             create(:ci_variable, project: project, key: 'DAST_API_HAR', value: 'testing.har')
             create(:ci_variable, project: project, key: 'DAST_API_TARGET_URL', value: 'http://example.com')
           end
 
-          it 'includes no jobs' do
-            expect(build_names).to be_empty
-            expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
-              'The rules configuration prevented any jobs from being added to the pipeline.'])
+          context 'when DAST_API_DISABLED=1' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_API_DISABLED', value: '1')
+            end
+
+            it 'includes no jobs' do
+              expect(build_names).to be_empty
+              expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+                'The rules configuration prevented any jobs from being added to the pipeline.'])
+            end
+          end
+
+          context 'when DAST_API_DISABLED="true"' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_API_DISABLED', value: 'true')
+            end
+
+            it 'includes no jobs' do
+              expect(build_names).to be_empty
+              expect(pipeline.errors.full_messages).to match_array(['Pipeline will not run for the selected trigger. ' \
+                'The rules configuration prevented any jobs from being added to the pipeline.'])
+            end
+          end
+
+          context 'when DAST_API_DISABLED="false"' do
+            before do
+              create(:ci_variable, project: project, key: 'DAST_API_DISABLED', value: 'false')
+            end
+
+            it 'includes jobs' do
+              expect(build_names).not_to be_empty
+            end
           end
         end
 
