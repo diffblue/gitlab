@@ -2,13 +2,14 @@
 import { debounce } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
-import { generatePrompt } from 'ee/ai/utils';
+import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { renderMarkdown } from '~/notes/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import { i18n, AI_GENIE_DEBOUNCE, GENIE_CHAT_MODEL_ROLES } from '../constants';
 import explainCodeMutation from '../graphql/explain_code.mutation.graphql';
-import { i18n, AI_GENIE_DEBOUNCE } from '../constants';
 
 const linesWithDigitsOnly = /^\d+$\n/gm;
 
@@ -18,6 +19,7 @@ export default {
   components: {
     GlButton,
     AiGenieChat,
+    CodeBlockHighlighted,
     UserFeedback,
   },
   directives: {
@@ -57,38 +59,42 @@ export default {
 
           const explanation = data.aiCompletionResponse?.responseBody;
           if (explanation) {
-            this.codeExplanationLoading = false;
-            this.codeExplanation = renderMarkdown(explanation);
+            this.isLoading = false;
+            this.messages.push({
+              role: GENIE_CHAT_MODEL_ROLES.assistant,
+              content: renderMarkdown(explanation),
+            });
           }
         },
         error() {
           this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
-        },
-        skip() {
-          return !this.codeExplanationLoading;
+          this.isLoading = false;
         },
       },
     },
   },
   data() {
     return {
-      codeExplanation: '',
-      codeExplanationLoading: false,
+      isLoading: false,
       codeExplanationError: '',
       selectedText: '',
-      snippetLanguage: undefined,
+      snippetLanguage: 'plaintext',
       shouldShowButton: false,
       container: null,
       top: null,
+      messages: [],
     };
   },
   computed: {
     shouldShowChat() {
-      return this.codeExplanation || this.codeExplanationLoading || this.codeExplanationError;
+      return this.isLoading || this.messages.length || this.codeExplanationError;
     },
     rootStyle() {
       if (!this.top) return null;
       return { top: `${this.top}px` };
+    },
+    filteredMessages() {
+      return this.messages.slice(2); // drop the `system` and the first `user` prompts
     },
   },
   created() {
@@ -99,6 +105,7 @@ export default {
   },
   beforeDestroy() {
     document.removeEventListener('selectionchange', this.debouncedSelectionChangeHandler);
+    this.messages = [];
   },
   methods: {
     handleSelectionChange() {
@@ -131,21 +138,35 @@ export default {
 
       this.top = Math.min(startSelectionTop, finishSelectionTop) - containerTop;
     },
-    async requestCodeExplanation() {
-      this.codeExplanationLoading = true;
+    requestCodeExplanation() {
+      this.messages = [];
+      this.codeExplanationError = '';
       this.selectedText = window.getSelection().toString().replace(linesWithDigitsOnly, '').trim();
-      this.$apollo
-        .mutate({
-          mutation: explainCodeMutation,
-          variables: {
-            messages: generatePrompt(this.selectedText, this.filePath),
-            resourceId: this.resourceId,
-          },
-        })
-        .catch(() => {
-          this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
-          this.codeExplanationLoading = false;
-        });
+      const prompt = generateExplainCodePrompt(this.selectedText, this.filePath);
+      this.chat(prompt);
+    },
+    chat(prompt) {
+      this.isLoading = true;
+      const handleError = (err) => {
+        this.codeExplanationError = err?.message || this.$options.i18n.REQUEST_ERROR;
+        this.isLoading = false;
+      };
+      try {
+        this.messages = generateChatPrompt(prompt, this.messages);
+        this.$apollo
+          .mutate({
+            mutation: explainCodeMutation,
+            variables: {
+              messages: this.messages,
+              resourceId: this.resourceId,
+            },
+          })
+          .catch((err) => {
+            handleError(err);
+          });
+      } catch (err) {
+        handleError(err);
+      }
     },
   },
 };
@@ -166,13 +187,22 @@ export default {
     />
     <ai-genie-chat
       v-if="shouldShowChat"
-      :is-loading="codeExplanationLoading"
-      :content="codeExplanation"
-      :selected-text="selectedText"
+      :is-loading="isLoading"
+      :messages="filteredMessages"
       :error="codeExplanationError"
-      :snippet-language="snippetLanguage"
+      @send-chat-prompt="chat"
     >
-      <user-feedback :is-loading="codeExplanationLoading" />
+      <template #hero>
+        <code-block-highlighted
+          :language="snippetLanguage"
+          :code="selectedText"
+          max-height="20rem"
+          class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0 gl-overflow-y-auto"
+        />
+      </template>
+      <template #feedback>
+        <user-feedback />
+      </template>
     </ai-genie-chat>
   </div>
 </template>
