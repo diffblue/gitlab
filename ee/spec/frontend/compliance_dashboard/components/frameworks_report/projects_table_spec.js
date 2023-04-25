@@ -1,19 +1,34 @@
-import { GlFormCheckbox, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlFormCheckbox, GlLabel, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard/mock_data';
+import {
+  createComplianceFrameworksResponse,
+  createProjectSetComplianceFrameworkResponse,
+} from 'ee_jest/compliance_dashboard/mock_data';
 import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
 import SelectionOperations from 'ee/compliance_dashboard/components/frameworks_report/selection_operations.vue';
 import { mapProjects } from 'ee/compliance_dashboard/graphql/mappers';
 
+import setComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/set_compliance_framework.mutation.graphql';
+
+Vue.use(VueApollo);
+
 describe('ProjectsTable component', () => {
   let wrapper;
+  let apolloProvider;
+  let projectSetComplianceFrameworkMutation;
+  let toastMock;
 
   const groupPath = 'group-path';
   const rootAncestorPath = 'root-ancestor-path';
   const newGroupComplianceFrameworkPath = 'new-framework-path';
 
+  const COMPLIANCE_FRAMEWORK_COLUMN_IDX = 3;
   const findTable = () => wrapper.findComponent(GlTable);
   const findTableHeaders = () => findTable().findAll('th div');
   const findTableRowData = (idx) => findTable().findAll('tbody > tr').at(idx).findAll('td');
@@ -28,12 +43,31 @@ describe('ProjectsTable component', () => {
   const selectRow = (index) => findTableRowData(index).at(0).trigger('click');
 
   const createComponent = (props = {}) => {
+    projectSetComplianceFrameworkMutation = jest
+      .fn()
+      .mockResolvedValue(createProjectSetComplianceFrameworkResponse());
+
+    apolloProvider = createMockApollo([
+      [setComplianceFrameworkMutation, projectSetComplianceFrameworkMutation],
+    ]);
+
+    toastMock = { show: jest.fn() };
     return mountExtended(ProjectsTable, {
+      apolloProvider,
       propsData: {
         groupPath,
         rootAncestorPath,
         newGroupComplianceFrameworkPath,
         ...props,
+      },
+      stubs: {
+        FrameworkSelectionBox: {
+          name: 'FrameworkSelectionBox',
+          template: '<div>add-framework-stub</div>',
+        },
+      },
+      mocks: {
+        $toast: toastMock,
       },
       attachTo: document.body,
     });
@@ -71,6 +105,8 @@ describe('ProjectsTable component', () => {
 
   describe('when there are projects', () => {
     const projectsResponse = createComplianceFrameworksResponse({ count: 2 });
+    projectsResponse.data.group.projects.nodes[1].complianceFrameworks.nodes = [];
+
     const projects = mapProjects(projectsResponse.data.group.projects.nodes);
 
     beforeEach(() => {
@@ -147,7 +183,122 @@ describe('ProjectsTable component', () => {
 
       expect(projectName).toBe('Gitlab Shell');
       expect(projectPath).toBe('gitlab-org/gitlab-shell');
-      expect(framework).toContain('some framework');
+      const expectedFrameworkName =
+        projects[idx].complianceFrameworks[0]?.name ?? 'add-framework-stub';
+      expect(framework).toContain(expectedFrameworkName);
+    });
+
+    function itCallsSetFrameworkMutation(operations) {
+      it('calls mutation', () => {
+        expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(operations.length);
+        operations.forEach((operation) => {
+          expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith({
+            projectId: operation.projectId,
+            frameworkId: operation.frameworkId,
+          });
+        });
+      });
+
+      it('displays toast', async () => {
+        await waitForPromises();
+
+        expect(toastMock.show).toHaveBeenCalled();
+      });
+
+      it('clicking undo in toast reverts changes', async () => {
+        await waitForPromises();
+
+        const undoFn = toastMock.show.mock.calls[0][1].action.onClick;
+
+        undoFn();
+
+        expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(operations.length * 2);
+        operations.forEach((operation) => {
+          expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith(
+            expect.objectContaining({
+              frameworkId: operation.previousFrameworkId,
+              projectId: operation.projectId,
+            }),
+          );
+        });
+      });
+    }
+
+    describe('when selection operations component emits change event', () => {
+      const operations = [
+        {
+          projectId: 'someId',
+          frameworkId: 'framework-id',
+          previousFrameworkId: 'previous-framework-id',
+        },
+        {
+          projectId: 'someId-2',
+          frameworkId: 'framework-id-2',
+          previousFrameworkId: 'previous-framework-id-2',
+        },
+      ];
+
+      beforeEach(() => {
+        wrapper.findComponent(SelectionOperations).vm.$emit('change', operations);
+      });
+
+      itCallsSetFrameworkMutation(operations);
+    });
+
+    describe('when clicking close sign of framework badge', () => {
+      const ROW_WITH_FRAMEWORK_IDX = 0;
+
+      beforeEach(() => {
+        findTableRowData(0)
+          .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+          .findComponent(GlLabel)
+          .vm.$emit('close');
+      });
+
+      itCallsSetFrameworkMutation([
+        {
+          projectId: projects[ROW_WITH_FRAMEWORK_IDX].id,
+          frameworkId: null,
+          previousFrameworkId: projects[ROW_WITH_FRAMEWORK_IDX].complianceFrameworks[0].id,
+        },
+      ]);
+
+      it('renders loading indicator while loading', () => {
+        expect(
+          findTableRowData(ROW_WITH_FRAMEWORK_IDX)
+            .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+            .findComponent(GlLoadingIcon)
+            .exists(),
+        ).toBe(true);
+      });
+    });
+
+    describe('when add framework selection is made', () => {
+      const NEW_FRAMEWORK_ID = 'new-framework-id';
+      const ROW_WITHOUT_FRAMEWORK_IDX = 1;
+      beforeEach(() => {
+        findTableRowData(ROW_WITHOUT_FRAMEWORK_IDX)
+          .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+          .findComponent({ name: 'FrameworkSelectionBox' })
+          .vm.$emit('select', NEW_FRAMEWORK_ID);
+      });
+
+      itCallsSetFrameworkMutation([
+        {
+          projectId: projects[ROW_WITHOUT_FRAMEWORK_IDX].id,
+          frameworkId: NEW_FRAMEWORK_ID,
+          previousFrameworkId: null,
+        },
+      ]);
+
+      it('renders loading indicator while loading', () => {
+        expect(
+          findTableRowData(ROW_WITHOUT_FRAMEWORK_IDX)
+            .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+            .findComponent(GlLoadingIcon)
+            .exists(),
+        ).toBe(true);
+      });
     });
   });
 });

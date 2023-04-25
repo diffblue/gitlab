@@ -26,6 +26,11 @@ export default {
       required: false,
       default: true,
     },
+    closeable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     showDefaultBadge() {
@@ -45,6 +50,8 @@ export default {
       :description="framework.description"
       :title="framework.name"
       :size="size"
+      :show-close-button="closeable"
+      @close="$emit('close')"
     />
     <gl-badge v-if="showDefaultBadge" :size="size" variant="info" data-qa-selector="framework_badge"
       >{{ $options.i18n.default }}

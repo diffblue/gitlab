@@ -51,5 +51,11 @@ describe('FrameworkBadge component', () => {
 
       expect(findDefaultBadge().exists()).toBe(false);
     });
+
+    it('renders closeable label when closeable is true', () => {
+      wrapper = createComponent({ framework: complianceFramework, closeable: true });
+
+      expect(findLabel().props('showCloseButton')).toBe(true);
+    });
   });
 });

@@ -1,26 +1,14 @@
 import { GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { mount, ErrorWrapper } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
-import VueApollo from 'vue-apollo';
-import waitForPromises from 'helpers/wait_for_promises';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import {
-  createComplianceFrameworksResponse,
-  createProjectSetComplianceFrameworkResponse,
-} from 'ee_jest/compliance_dashboard/mock_data';
+import { nextTick } from 'vue';
+import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard/mock_data';
 
 import { validFetchResponse as getComplianceFrameworksResponse } from 'ee_jest/groups/settings/compliance_frameworks/mock_data';
 import SelectionOperations from 'ee/compliance_dashboard/components/frameworks_report/selection_operations.vue';
+import FrameworkSelectionBox from 'ee/compliance_dashboard/components/frameworks_report/framework_selection_box.vue';
 
-import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
-import setComplianceFrameworkMutation from 'ee/compliance_dashboard/graphql/set_compliance_framework.mutation.graphql';
-
-Vue.use(VueApollo);
 describe('SelectionOperations component', () => {
   let wrapper;
-  let apolloProvider;
-  let projectSetComplianceFrameworkMutation;
-  let toastMock;
 
   const findByText = (Component, text) =>
     wrapper.findAllComponents(Component).wrappers.find((w) => w.text().match(text)) ??
@@ -28,8 +16,7 @@ describe('SelectionOperations component', () => {
 
   const findOperationDropdown = () =>
     findByText(GlCollapsibleListbox, SelectionOperations.i18n.dropdownActionPlaceholder);
-  const findFrameworkSelectionDropdown = () =>
-    findByText(GlCollapsibleListbox, SelectionOperations.i18n.frameworksDropdownPlaceholder);
+  const findFrameworkSelectionDropdown = () => wrapper.findComponent(FrameworkSelectionBox);
 
   const findApplyButton = () => findByText(GlButton, /^Apply$/);
   const findRemoveButton = () => findByText(GlButton, /^Remove$/);
@@ -39,41 +26,22 @@ describe('SelectionOperations component', () => {
     return nextTick();
   };
 
-  const createComponent = ({ props }) => {
-    projectSetComplianceFrameworkMutation = jest
-      .fn()
-      .mockResolvedValue(createProjectSetComplianceFrameworkResponse());
-
-    apolloProvider = createMockApollo(
-      [
-        [setComplianceFrameworkMutation, projectSetComplianceFrameworkMutation],
-        [getComplianceFrameworkQuery, () => getComplianceFrameworksResponse],
-      ],
-      {
-        Query: {},
-        Mutation: {
-          projectSetComplianceFramework: projectSetComplianceFrameworkMutation,
-        },
-      },
-    );
-
-    toastMock = { show: jest.fn() };
+  const createComponent = (props) => {
     wrapper = mount(SelectionOperations, {
-      apolloProvider,
       propsData: {
         rootAncestorPath: 'group-path',
         newGroupComplianceFrameworkPath: 'new-framework-path',
         ...props,
       },
-      mocks: {
-        $toast: toastMock,
+      stubs: {
+        FrameworkSelectionBox: true,
       },
     });
   };
 
   describe('when selection is empty', () => {
     beforeEach(() => {
-      createComponent({ props: { selection: [] } });
+      createComponent({ selection: [] });
     });
 
     it('operation dropdown is disabled', () => {
@@ -95,7 +63,7 @@ describe('SelectionOperations component', () => {
     const projects = complianceFrameworkResponse.data.group.projects.nodes;
 
     beforeEach(() => {
-      createComponent({ props: { selection: projects } });
+      createComponent({ selection: projects });
     });
 
     it('operation dropdown is enabled', () => {
@@ -115,17 +83,16 @@ describe('SelectionOperations component', () => {
         expect(findFrameworkSelectionDropdown().exists()).toBe(false);
       });
 
-      it('clicking remove button calls mutation', async () => {
+      it('clicking remove button emits change event', async () => {
         await findRemoveButton().vm.$emit('click');
-        expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(COUNT);
-        projects.forEach((p) => {
-          expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith(
-            expect.objectContaining({
-              frameworkId: null,
-              projectId: p.id,
-            }),
-          );
-        });
+
+        expect(wrapper.emitted('change').at(-1)).toStrictEqual([
+          projects.map((p) => ({
+            projectId: p.id,
+            frameworkId: null,
+            previousFrameworkId: p.complianceFrameworks?.nodes?.[0]?.id,
+          })),
+        ]);
       });
     });
 
@@ -167,41 +134,19 @@ describe('SelectionOperations component', () => {
           expect(findApplyButton().props('disabled')).toBe(true);
         });
 
-        describe('when clicking apply button calls mutation', () => {
+        describe('when clicking apply button', () => {
           beforeEach(() => findApplyButton().vm.$emit('click'));
 
-          it('calls mutation', () => {
-            expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(COUNT);
-            projects.forEach((p) => {
-              expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith(
-                expect.objectContaining({
-                  frameworkId: SELECTED_FRAMEWORK,
-                  projectId: p.id,
-                }),
-              );
-            });
-          });
+          it('emits change event', async () => {
+            await nextTick();
 
-          it('displays toast', async () => {
-            await waitForPromises();
-            expect(toastMock.show).toHaveBeenCalled();
-          });
-
-          it('clicking undo in toast reverts changes', async () => {
-            await waitForPromises();
-            const undoFn = toastMock.show.mock.calls[0][1].action.onClick;
-
-            undoFn();
-
-            expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(COUNT * 2);
-            projects.forEach((p) => {
-              expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith(
-                expect.objectContaining({
-                  frameworkId: p.complianceFrameworks.nodes[0].id,
-                  projectId: p.id,
-                }),
-              );
-            });
+            expect(wrapper.emitted('change').at(-1)).toStrictEqual([
+              projects.map((p) => ({
+                projectId: p.id,
+                frameworkId: SELECTED_FRAMEWORK,
+                previousFrameworkId: p.complianceFrameworks?.nodes?.[0]?.id,
+              })),
+            ]);
           });
         });
       });

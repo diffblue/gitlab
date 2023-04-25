@@ -11030,6 +11030,9 @@ msgstr ""
 msgid "ComplianceFramework|No pipeline configuration found"
 msgstr ""
 
+msgid "ComplianceReport|Add framework"
+msgstr ""
+
 msgid "ComplianceReport|Apply framework to selected projects"
 msgstr ""
 
@@ -11058,9 +11061,6 @@ msgid "ComplianceReport|Framework successfully removed"
 msgstr ""
 
 msgid "ComplianceReport|Less than 2 approvers"
-msgstr ""
-
-msgid "ComplianceReport|No framework"
 msgstr ""
 
 msgid "ComplianceReport|No projects found"

@@ -1,17 +1,25 @@
 <script>
-import { GlFormCheckbox, GlLink, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import Vue from 'vue';
+import { GlFormCheckbox, GlButton, GlLink, GlLoadingIcon, GlTable, GlToast } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
+import { createAlert } from '~/alert';
 
 import FrameworkBadge from '../shared/framework_badge.vue';
+import setComplianceFrameworkMutation from '../../graphql/set_compliance_framework.mutation.graphql';
 import SelectionOperations from './selection_operations.vue';
+import FrameworkSelectionBox from './framework_selection_box.vue';
+
+Vue.use(GlToast);
 
 export default {
   name: 'ProjectsTable',
   components: {
     FrameworkBadge,
+    FrameworkSelectionBox,
     SelectionOperations,
 
+    GlButton,
     GlFormCheckbox,
     GlLink,
     GlLoadingIcon,
@@ -26,6 +34,7 @@ export default {
       type: Boolean,
       required: true,
     },
+
     groupPath: {
       type: String,
       required: true,
@@ -42,6 +51,8 @@ export default {
   data() {
     return {
       selectedRows: [],
+      projectsPendindSingleOperation: [],
+      isApplyInProgress: false,
     };
   },
   computed: {
@@ -71,6 +82,69 @@ export default {
       }
 
       return {};
+    },
+
+    async applyOperations(operations) {
+      const successMessage = operations.some((entry) => Boolean(entry.frameworkId))
+        ? this.$options.i18n.successApplyToastMessage
+        : this.$options.i18n.successRemoveToastMessage;
+
+      try {
+        this.isApplyInProgress = true;
+        const results = await Promise.all(
+          operations.map((entry) =>
+            this.$apollo.mutate({
+              mutation: setComplianceFrameworkMutation,
+              variables: {
+                projectId: entry.projectId,
+                frameworkId: entry.frameworkId,
+              },
+            }),
+          ),
+        );
+
+        const firstError = results.find(
+          (response) => response.data.projectSetComplianceFramework.errors.length,
+        );
+        if (firstError) {
+          throw firstError;
+        }
+        this.$toast.show(successMessage, {
+          action: {
+            text: __('Undo'),
+            onClick: () => {
+              this.applyOperations(
+                operations.map((entry) => ({
+                  projectId: entry.projectId,
+                  previousFrameworkId: entry.frameworkId,
+                  frameworkId: entry.previousFrameworkId,
+                })),
+              );
+            },
+          },
+        });
+      } catch (e) {
+        createAlert({
+          message: __('Something went wrong on our end.'),
+        });
+      } finally {
+        this.isApplyInProgress = false;
+      }
+    },
+
+    async applySingleItemOperation(operation) {
+      try {
+        this.projectsPendindSingleOperation.push(operation.projectId);
+        await this.applyOperations([operation]);
+      } finally {
+        this.projectsPendindSingleOperation = this.projectsPendindSingleOperation.filter(
+          (projectId) => projectId !== operation.projectId,
+        );
+      }
+    },
+
+    hasPendingSingleOperation(projectId) {
+      return this.projectsPendindSingleOperation.indexOf(projectId) > -1;
     },
   },
   fields: [
@@ -105,7 +179,10 @@ export default {
   ],
   i18n: {
     noProjectsFound: s__('ComplianceReport|No projects found'),
-    noFrameworkMessage: s__('ComplianceReport|No framework'),
+    addFrameworkMessage: s__('ComplianceReport|Add framework'),
+
+    successApplyToastMessage: s__('ComplianceReport|Framework successfully applied'),
+    successRemoveToastMessage: s__('ComplianceReport|Framework successfully removed'),
   },
 };
 </script>
@@ -115,6 +192,8 @@ export default {
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+      :is-apply-in-progress="isApplyInProgress"
+      @change="applyOperations"
     />
     <gl-table
       :fields="$options.fields"
@@ -153,15 +232,40 @@ export default {
       <template #cell(projectPath)="{ item: { fullPath } }">
         {{ fullPath }}
       </template>
-      <template #cell(complianceFramework)="{ item: { complianceFrameworks } }">
+      <template #cell(complianceFramework)="{ item: { id, complianceFrameworks } }">
+        <gl-loading-icon v-if="hasPendingSingleOperation(id)" size="sm" inline />
+        <framework-selection-box
+          v-else-if="!complianceFrameworks.length"
+          :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+          :root-ancestor-path="rootAncestorPath"
+          @select="
+            applySingleItemOperation({
+              projectId: id,
+              frameworkId: $event,
+              previousFrameworkId: null,
+            })
+          "
+        >
+          <template #toggle>
+            <gl-button icon="plus" category="tertiary" variant="info">
+              {{ $options.i18n.addFrameworkMessage }}
+            </gl-button>
+          </template>
+        </framework-selection-box>
         <framework-badge
           v-for="framework in complianceFrameworks"
+          v-else
           :key="framework.id"
+          closeable
           :framework="framework"
+          @close="
+            applySingleItemOperation({
+              projectId: id,
+              frameworkId: null,
+              previousFrameworkId: framework.id,
+            })
+          "
         />
-        <template v-if="!complianceFrameworks.length">{{
-          $options.i18n.noFrameworkMessage
-        }}</template>
       </template>
       <template #table-busy>
         <gl-loading-icon size="lg" color="dark" class="gl-my-5" />
