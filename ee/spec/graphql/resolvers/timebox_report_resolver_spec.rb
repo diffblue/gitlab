@@ -37,8 +37,6 @@ RSpec.describe Resolvers::TimeboxReportResolver do
   end
 
   RSpec.shared_examples 'timebox time series' do
-    using RSpec::Parameterized::TableSyntax
-
     subject(:result) { resolve(described_class, obj: timebox, ctx: { current_user: current_user }) }
 
     context 'when authorized to view "project"' do
@@ -68,22 +66,30 @@ RSpec.describe Resolvers::TimeboxReportResolver do
             }
           ])
       end
+    end
+  end
 
-      context 'when the service returns an error' do
-        before do
-          stub_const("#{event_aggregation_service_class.name}::EVENT_COUNT_LIMIT", 1)
-        end
+  RSpec.shared_examples 'fetching excessive number of events causes an error' do
+    subject(:result) { resolve(described_class, obj: timebox, ctx: { current_user: group_member }) }
 
-        let(:error_message) { 'Burnup chart could not be generated due to too many events' }
-        let(:code) { :too_many_events }
+    context 'when the service returns an error' do
+      before do
+        stub_const("#{event_aggregation_service_class.name}::EVENT_COUNT_LIMIT", 1)
+      end
 
-        it 'returns error information' do
-          expect(result).to eq(error: { message: error_message, code: code })
-        end
+      let(:error_message) { 'Burnup chart could not be generated due to too many events' }
+      let(:code) { :too_many_events }
+
+      it 'returns error information' do
+        expect(result).to eq(error: { message: error_message, code: code })
       end
     end
+  end
 
+  RSpec.shared_examples 'checking authorization for timebox report' do
     context 'when fullPath is provided' do
+      using RSpec::Parameterized::TableSyntax
+
       subject { resolve(described_class, obj: timebox, args: { full_path: full_path }, ctx: { current_user: current_user }) }
 
       context "when no group or project matches the provided fullPath" do
@@ -161,6 +167,14 @@ RSpec.describe Resolvers::TimeboxReportResolver do
     end
 
     it_behaves_like 'timebox time series'
+    it_behaves_like 'checking authorization for timebox report'
+    it_behaves_like 'fetching excessive number of events causes an error'
+
+    it 'uses TimeboxReportService' do
+      expect(TimeboxReportService).to receive(:new).and_call_original
+
+      resolve(described_class, obj: timebox, ctx: { current_user: group_member })
+    end
   end
 
   context 'when timebox is an iteration' do
@@ -172,10 +186,8 @@ RSpec.describe Resolvers::TimeboxReportResolver do
     end
 
     it_behaves_like 'timebox time series'
-  end
-
-  context 'when "rollup_timebox_chart" feature flag is disabled' do
-    let(:timebox) { create(:milestone, group: group) }
+    it_behaves_like 'checking authorization for timebox report'
+    it_behaves_like 'fetching excessive number of events causes an error'
 
     it 'uses TimeboxReportService' do
       expect(TimeboxReportService).to receive(:new).and_call_original
@@ -207,7 +219,39 @@ RSpec.describe Resolvers::TimeboxReportResolver do
           create(:resource_iteration_event, issue: issues[1], iteration: timebox, action: :add, created_at: start_date + 9.days)
         end
 
-        it_behaves_like 'timebox time series'
+        it_behaves_like 'checking authorization for timebox report'
+        it_behaves_like 'fetching excessive number of events causes an error'
+
+        context 'when authorized to view "project"' do
+          subject(:result) { resolve(described_class, obj: timebox, ctx: { current_user: current_user }) }
+
+          let(:current_user) { group_member }
+
+          it 'returns burnup chart data' do
+            expect(result).to eq(
+              stats: {
+                complete: { count: 0, weight: 0 },
+                incomplete: { count: 2, weight: 0 },
+                total: { count: 2, weight: 0 }
+              },
+              burnup_time_series: [
+                {
+                  date: start_date + 4.days,
+                  scope_count: 1,
+                  scope_weight: 0,
+                  completed_count: 0,
+                  completed_weight: 0
+                },
+                {
+                  date: start_date + 9.days,
+                  scope_count: 2,
+                  scope_weight: 0,
+                  completed_count: 0,
+                  completed_weight: 0
+                }
+              ])
+          end
+        end
       end
     end
 
@@ -230,7 +274,39 @@ RSpec.describe Resolvers::TimeboxReportResolver do
           create(:resource_milestone_event, issue: issues[1], milestone: timebox, action: :add, created_at: start_date + 9.days)
         end
 
-        it_behaves_like 'timebox time series'
+        it_behaves_like 'checking authorization for timebox report'
+        it_behaves_like 'fetching excessive number of events causes an error'
+
+        context 'when authorized to view "project"' do
+          subject(:result) { resolve(described_class, obj: timebox, ctx: { current_user: current_user }) }
+
+          let(:current_user) { group_member }
+
+          it 'returns burnup chart data' do
+            expect(result).to eq(
+              stats: {
+                complete: { count: 0, weight: 0 },
+                incomplete: { count: 2, weight: 0 },
+                total: { count: 2, weight: 0 }
+              },
+              burnup_time_series: [
+                {
+                  date: start_date + 4.days,
+                  scope_count: 1,
+                  scope_weight: 0,
+                  completed_count: 0,
+                  completed_weight: 0
+                },
+                {
+                  date: start_date + 9.days,
+                  scope_count: 2,
+                  scope_weight: 0,
+                  completed_count: 0,
+                  completed_weight: 0
+                }
+              ])
+          end
+        end
       end
     end
   end
