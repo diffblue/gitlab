@@ -50308,7 +50308,16 @@ msgstr ""
 msgid "Workspaces|Create workspace"
 msgstr ""
 
+msgid "Workspaces|Creating"
+msgstr ""
+
 msgid "Workspaces|Develop anywhere"
+msgstr ""
+
+msgid "Workspaces|Error"
+msgstr ""
+
+msgid "Workspaces|Failed"
 msgstr ""
 
 msgid "Workspaces|Failed to create workspace"
@@ -50320,6 +50329,9 @@ msgstr ""
 msgid "Workspaces|New workspace"
 msgstr ""
 
+msgid "Workspaces|Running"
+msgstr ""
+
 msgid "Workspaces|Select cluster agent"
 msgstr ""
 
@@ -50329,10 +50341,22 @@ msgstr ""
 msgid "Workspaces|Select project"
 msgstr ""
 
+msgid "Workspaces|Starting"
+msgstr ""
+
+msgid "Workspaces|Stopped"
+msgstr ""
+
+msgid "Workspaces|Stopping"
+msgstr ""
+
 msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."
 msgstr ""
 
 msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."
+msgstr ""
+
+msgid "Workspaces|Unknown state"
 msgstr ""
 
 msgid "Workspaces|Workspaces"

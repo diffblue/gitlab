@@ -1,12 +1,14 @@
 import { mount } from '@vue/test-utils';
+import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlButton, GlLink, GlTableLite, GlIcon, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLink, GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
+import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import { WORKSPACE_STATES, ROUTES } from 'ee/remote_development/constants';
 import {
@@ -29,7 +31,7 @@ const findTableRowsAsData = (wrapper) =>
     const tds = x.findAll('td');
     const rowData = {
       nameText: tds.at(0).text(),
-      statusIcon: tds.at(0).findComponent(GlIcon).props('name'),
+      workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
     };
 
     if (tds.at(1).findComponent(GlLink).exists()) {
@@ -87,7 +89,7 @@ describe('remote_development/pages/list.vue', () => {
         USER_WORKSPACES_QUERY_RESULT.data.user.workspaces.nodes.map((x) => {
           const workspaceData = {
             nameText: `${x.project.nameWithNamespace}   ${x.name}`,
-            statusIcon: 'status-stopped',
+            workspaceState: x.actualState,
           };
 
           if (x.actualState === WORKSPACE_STATES.running) {
@@ -106,6 +108,27 @@ describe('remote_development/pages/list.vue', () => {
 
     it('does not show alert', () => {
       expect(findAlert(wrapper).exists()).toBe(false);
+    });
+
+    describe('when the query returns terminated workspaces', () => {
+      beforeEach(async () => {
+        const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT);
+        const workspace = cloneDeep(customData.data.user.workspaces.nodes[0]);
+
+        customData.data.user.workspaces.nodes.push({
+          ...workspace,
+          actualState: WORKSPACE_STATES.terminated,
+        });
+
+        createWrapper(customData);
+        await waitForPromises();
+      });
+
+      it('does not display terminated workspaces', () => {
+        expect(findTableRowsAsData(wrapper)).toHaveLength(
+          USER_WORKSPACES_QUERY_RESULT.data.user.workspaces.nodes.length,
+        );
+      });
     });
   });
 
