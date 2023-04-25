@@ -35,20 +35,12 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
     subject { described_class.new(user, moving_object_id, params).execute }
 
     shared_examples 'error for the tree update' do |expected_error|
-      it 'does not change relative_positions' do
+      it 'does not change anything', :aggregate_failures do
         expect { subject }.not_to change { tree_object_1.reload.relative_position }
         expect { subject }.not_to change { tree_object_2.reload.relative_position }
-      end
-
-      it 'does not change parent' do
         expect { subject }.not_to change { tree_object_2.reload.parent }
-      end
 
-      it 'returns error status' do
         expect(subject[:status]).to eq(:error)
-      end
-
-      it 'returns correct error' do
         expect(subject[:message]).to eq(expected_error)
       end
     end
@@ -279,11 +271,8 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
             context 'when there is some other error with the new parent' do
               shared_examples 'new parent not in an ancestor group' do
-                it 'returns success status' do
+                it 'returns success status without errors', :aggregate_failures do
                   expect(subject[:status]).to eq(:success)
-                end
-
-                it 'does not return errors' do
                   expect(subject[:message]).to be_nil
                 end
               end
