@@ -5519,9 +5519,6 @@ msgstr ""
 msgid "Approved"
 msgstr ""
 
-msgid "Approved MRs"
-msgstr ""
-
 msgid "Approved members will use an additional seat in your subscription, which may override your user cap."
 msgid_plural "Approved members will use an additional %d seats in your subscription, which may override your user cap."
 msgstr[0] ""
@@ -5863,9 +5860,6 @@ msgid "AsanaService|Comma-separated list of branches to be automatically inspect
 msgstr ""
 
 msgid "AsanaService|User Personal Access Token. User must have access to the task. All comments are attributed to this user."
-msgstr ""
-
-msgid "Ascending"
 msgstr ""
 
 msgid "Ask again later"
@@ -9526,9 +9520,6 @@ msgstr ""
 msgid "Closed (moved)"
 msgstr ""
 
-msgid "Closed MRs"
-msgstr ""
-
 msgid "Closed date"
 msgstr ""
 
@@ -11744,16 +11735,7 @@ msgstr ""
 msgid "ContributionAnalytics|%{createdCount} created, %{mergedCount} merged, %{closedCount} closed."
 msgstr ""
 
-msgid "ContributionAnalytics|%{created} created, %{closed} closed."
-msgstr ""
-
-msgid "ContributionAnalytics|%{created} created, %{merged} merged, %{closed} closed."
-msgstr ""
-
 msgid "ContributionAnalytics|%{pushCount} by %{authorCount}."
-msgstr ""
-
-msgid "ContributionAnalytics|%{pushes}, more than %{commits} by %{contributors}."
 msgstr ""
 
 msgid "ContributionAnalytics|Approved MRs"
@@ -11829,9 +11811,6 @@ msgid "ContributionAnalytics|Total Contributions"
 msgstr ""
 
 msgid "Contributions for %{calendar_date}"
-msgstr ""
-
-msgid "Contributions per group member"
 msgstr ""
 
 msgid "Contributor"
@@ -14824,9 +14803,6 @@ msgid "Deprecations|The metrics feature was deprecated in GitLab 14.7."
 msgstr ""
 
 msgid "Deprioritize label"
-msgstr ""
-
-msgid "Descending"
 msgstr ""
 
 msgid "Describe the goal of the changes and what reviewers should be aware of."
@@ -26307,9 +26283,6 @@ msgstr ""
 msgid "Loading %{name}"
 msgstr ""
 
-msgid "Loading contribution stats for group members"
-msgstr ""
-
 msgid "Loading files, directories, and submodules in the path %{path} for commit reference %{ref}"
 msgstr ""
 
@@ -27611,9 +27584,6 @@ msgid "MergeTopics|This action cannot be undone."
 msgstr ""
 
 msgid "Merged"
-msgstr ""
-
-msgid "Merged MRs"
 msgstr ""
 
 msgid "Merged branches are being deleted. This can take some time depending on the number of branches. Please refresh the page to see changes."
@@ -30813,12 +30783,6 @@ msgid "OpenSearch's region."
 msgstr ""
 
 msgid "Opened"
-msgstr ""
-
-msgid "Opened MRs"
-msgstr ""
-
-msgid "Opened issues"
 msgstr ""
 
 msgid "OpenedNDaysAgo|Created"
@@ -36208,9 +36172,6 @@ msgid "PushRule|Reject inconsistent user name"
 msgstr ""
 
 msgid "PushRule|Reject unverified users"
-msgstr ""
-
-msgid "Pushed"
 msgstr ""
 
 msgid "Pushes"
@@ -41944,9 +41905,6 @@ msgstr ""
 msgid "Something went wrong while fetching details"
 msgstr ""
 
-msgid "Something went wrong while fetching group member contributions"
-msgstr ""
-
 msgid "Something went wrong while fetching latest comments."
 msgstr ""
 
@@ -46538,9 +46496,6 @@ msgid "Topics could not be merged!"
 msgstr ""
 
 msgid "Total"
-msgstr ""
-
-msgid "Total Contributions"
 msgstr ""
 
 msgid "Total Score"

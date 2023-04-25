@@ -64,42 +64,6 @@ module Gitlab
         end
       end
 
-      def total_push_author_count
-        all_counts.count { |event, _| event.pushed_action? }
-      end
-
-      def total_push_count
-        all_counts.sum { |event, count| event.pushed_action? ? count : 0 }
-      end
-
-      def total_commit_count
-        PushEventPayload.commit_count_for(base_query.pushed_action)
-      end
-
-      def total_merge_requests_closed_count
-        all_counts.sum { |event, count| event.merge_request? && event.closed_action? ? count : 0 }
-      end
-
-      def total_merge_requests_created_count
-        all_counts.sum { |event, count| event.merge_request? && event.created_action? ? count : 0 }
-      end
-
-      def total_merge_requests_merged_count
-        all_counts.sum { |event, count| event.merge_request? && event.merged_action? ? count : 0 }
-      end
-
-      def total_merge_requests_approved_count
-        all_counts.sum { |event, count| event.merge_request? && event.approved_action? ? count : 0 }
-      end
-
-      def total_issues_created_count
-        all_counts.sum { |event, count| event.issue? && event.created_action? ? count : 0 }
-      end
-
-      def total_issues_closed_count
-        all_counts.sum { |event, count| event.issue? && event.closed_action? ? count : 0 }
-      end
-
       def users
         @users ||= User
           .select(:id, :name, :username)
@@ -107,15 +71,6 @@ module Gitlab
           .reorder(:id)
       end
       # rubocop: enable CodeReuse/ActiveRecord
-
-      def group_member_contributions_table_data
-        {
-          labels: users.map(&:name),
-          push: { data: count_by_user(push_by_author_count) },
-          issues_closed: { data: count_by_user(issues_closed_by_author_count) },
-          merge_requests_created: { data: count_by_user(merge_requests_created_by_author_count) }
-        }
-      end
 
       def totals
         @totals ||= {
@@ -127,23 +82,6 @@ module Gitlab
           merge_requests_merged: merge_requests_merged_by_author_count,
           merge_requests_approved: merge_requests_approved_by_author_count,
           total_events: total_events_by_author_count
-        }
-      end
-
-      def legacy_page_data
-        return {} if Feature.enabled?(:contribution_analytics_graphql, group)
-
-        {
-          analytics_data: group_member_contributions_table_data.to_json.html_safe,
-          total_push_count: total_push_count,
-          total_commit_count: total_commit_count,
-          total_push_author_count: total_push_author_count,
-          total_merge_requests_closed_count: total_merge_requests_closed_count,
-          total_merge_requests_created_count: total_merge_requests_created_count,
-          total_merge_requests_merged_count: total_merge_requests_merged_count,
-          total_issues_created_count: total_issues_created_count,
-          total_issues_closed_count: total_issues_closed_count,
-          member_contributions_path: ::Gitlab::Routing.url_helpers.group_contribution_analytics_path(group, { start_date: from, format: :json })
         }
       end
 
@@ -190,10 +128,6 @@ module Gitlab
         Rails.cache.fetch(cache_key, expires_in: 1.minute) do
           base_query.totals_by_author_target_type_action
         end
-      end
-
-      def count_by_user(data)
-        users.map { |user| data.fetch(user.id, 0) }
       end
 
       def cache_key
