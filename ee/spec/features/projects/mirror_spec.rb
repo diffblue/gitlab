@@ -9,6 +9,11 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
   let(:import_state) { create(:import_state, :mirror, :finished, project: project) }
   let(:user) { create(:user) }
 
+  def fill_and_wait_for_mirror_url_javascript(url)
+    fill_in 'Git repository URL', with: url
+    expect(page).to have_css(".js-mirror-url-hidden[value=\"#{url}\"]", visible: :hidden)
+  end
+
   describe 'On a project' do
     before do
       project.add_maintainer(user)
@@ -107,11 +112,12 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     end
 
     describe 'password authentication' do
-      it 'can be set up', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/329304' do
+      it 'can be set up' do
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'http://user@example.com'
+          fill_and_wait_for_mirror_url_javascript('http://user@example.com')
+
           select 'Pull', from: 'Mirror direction'
           fill_in 'Password', with: 'foo'
           click_without_sidekiq 'Mirror repository'
@@ -131,7 +137,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'http://2.example.com'
+          fill_and_wait_for_mirror_url_javascript('http://2.example.com')
+
           select('Pull', from: 'Mirror direction')
           fill_in 'Password', with: ''
           click_without_sidekiq 'Mirror repository'
@@ -148,7 +155,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://user@example.com'
+          fill_and_wait_for_mirror_url_javascript('ssh://user@example.com')
+
           select('Pull', from: 'Mirror direction')
           select 'SSH public key', from: 'Authentication method'
 
@@ -163,7 +171,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         find('.js-delete-pull-mirror').click
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'http://git@example.com'
+          fill_and_wait_for_mirror_url_javascript('http://git@example.com')
+
           select('Pull', from: 'Mirror direction')
           fill_in 'Password', with: 'test_password'
           click_without_sidekiq 'Mirror repository'
@@ -179,11 +188,14 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     end
 
     describe 'SSH public key authentication' do
-      it 'can be set up', quarantine: 'https://gitlab.com/gitlab-org/quality/engineering-productivity/master-broken-incidents/-/issues/1473' do # rubocop:disable Layout/LineLength
+      let(:ssh_url) { 'ssh://user@example.com' }
+
+      it 'can be set up' do
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://user@example.com'
+          fill_and_wait_for_mirror_url_javascript(ssh_url)
+
           select('Pull', from: 'Mirror direction')
           select 'SSH public key', from: 'Authentication method'
 
@@ -204,6 +216,7 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
     describe 'host key management', :use_clean_rails_memory_store_caching do
       let(:key) { Gitlab::SSHPublicKey.new(SSHData::PrivateKey::RSA.generate(3072).public_key.openssh) }
       let(:cache) { SshHostKey.new(project: project, url: "ssh://example.com:22") }
+      let(:ssh_url) { 'ssh://example.com' }
 
       it 'fills fingerprints and host keys when detecting' do
         stub_reactive_cache(cache, known_hosts: key.key_text)
@@ -211,7 +224,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://example.com'
+          fill_and_wait_for_mirror_url_javascript(ssh_url)
+
           select('Pull', from: 'Mirror direction')
           click_on 'Detect host keys'
 
@@ -231,7 +245,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://example.com'
+          fill_and_wait_for_mirror_url_javascript(ssh_url)
+
           select('Pull', from: 'Mirror direction')
           click_on 'Detect host keys'
 
@@ -246,14 +261,16 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://example.com'
+          fill_and_wait_for_mirror_url_javascript(ssh_url)
+
           select('Pull', from: 'Mirror direction')
           click_on 'Input host keys manually'
           fill_in 'SSH host keys', with: "example.com #{key.key_text}"
           click_without_sidekiq 'Mirror repository'
 
           find('.js-delete-mirror').click
-          fill_in 'Git repository URL', with: 'ssh://example.com'
+          fill_and_wait_for_mirror_url_javascript('ssh://example.com')
+
           select('Pull', from: 'Mirror direction')
 
           expect(page).to have_content(key.fingerprint_sha256)
@@ -267,7 +284,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'ssh://example.com'
+          fill_and_wait_for_mirror_url_javascript('ssh://example.com')
+
           select('Pull', from: 'Mirror direction')
 
           execute_script 'document.querySelector("html").scrollTop = 1000;'
@@ -291,7 +309,8 @@ RSpec.describe 'Project mirror', :js, feature_category: :source_code_management 
         visit project_settings_repository_path(project)
 
         page.within('.project-mirror-settings') do
-          fill_in 'Git repository URL', with: 'https://example.com'
+          fill_and_wait_for_mirror_url_javascript('https://example.com')
+
           select('Pull', from: 'Mirror direction')
 
           # HTTPS can't use public key authentication and doesn't need host keys
