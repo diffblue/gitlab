@@ -6,6 +6,8 @@ module Users
     include ActionView::Helpers::DateHelper
     include Arkose::ContentSecurityPolicy
 
+    EVENT_CATEGORIES = %i[email phone credit_card error].freeze
+
     skip_before_action :authenticate_user!
     before_action :require_verification_user!
     before_action :require_unverified_user!, except: :success
@@ -25,7 +27,7 @@ module Users
 
         render json: { status: :success }
       else
-        log_identity_verification('Email', :failed_attempt, result[:reason])
+        log_event(:email, :failed_attempt, result[:reason])
 
         render json: result
       end
@@ -45,11 +47,11 @@ module Users
       result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
 
       unless result.success?
-        log_identity_verification('Phone', :failed_attempt, result.reason)
+        log_event(:phone, :failed_attempt, result.reason)
         return render status: :bad_request, json: { message: result.message, reason: result.reason }
       end
 
-      log_identity_verification('Phone', :sent_phone_verification_code)
+      log_event(:phone, :sent_phone_verification_code)
       render json: { status: :success }
     end
 
@@ -57,11 +59,11 @@ module Users
       result = ::PhoneVerification::Users::VerifyCodeService.new(@user, verify_phone_verification_code_params).execute
 
       unless result.success?
-        log_identity_verification('Phone', :failed_attempt, result.reason)
+        log_event(:phone, :failed_attempt, result.reason)
         return render status: :bad_request, json: { message: result.message, reason: result.reason }
       end
 
-      log_identity_verification('Phone', :success)
+      log_event(:phone, :success)
       render json: { status: :success }
     end
 
@@ -89,12 +91,20 @@ module Users
     def verify_credit_card
       return render_404 unless json_request? && @user.credit_card_validation.present?
 
-      if check_for_reuse_rate_limited? || @user.credit_card_validation.used_by_banned_user?
+      reused = @user.credit_card_validation.used_by_banned_user?
+      rate_limited = check_for_reuse_rate_limited?
+
+      if reused || rate_limited
+        reason = reused ? :related_to_banned_user : :rate_limited
+        log_event(:credit_card, :failed_attempt, reason)
+
         return render status: :bad_request, json: {
           message: _('There was a problem with the credit card details you entered. Use a different credit card and ' \
                      'try again.')
         }
       end
+
+      log_event(:credit_card, :success)
 
       render json: {}
     end
@@ -125,10 +135,10 @@ module Users
       redirect_to action: :arkose_labs_challenge
     end
 
-    def log_identity_verification(method, event, reason = nil)
-      return unless %w[Email Phone Error].include?(method)
+    def log_event(category, event, reason = nil)
+      return unless category.in?(EVENT_CATEGORIES)
 
-      category = "IdentityVerification::#{method}"
+      category = "IdentityVerification::#{category.to_s.classify}"
       user = @user || current_user
 
       Gitlab::AppLogger.info(
@@ -152,7 +162,7 @@ module Users
         reason << "verified: #{current_user.identity_verified?}"
       end
 
-      log_identity_verification('Error', :verification_user_not_found, reason.join(', '))
+      log_event(:error, :verification_user_not_found, reason.join(', '))
     end
 
     def verify_token
@@ -166,7 +176,7 @@ module Users
     def confirm_user
       @user.confirm
       accept_pending_invitations(user: @user)
-      log_identity_verification('Email', :success)
+      log_event(:email, :success)
     end
 
     def reset_confirmation_token
@@ -174,7 +184,7 @@ module Users
       token, encrypted_token = service.execute
       @user.update!(confirmation_token: encrypted_token, confirmation_sent_at: Time.current)
       Notify.confirmation_instructions_email(@user.email, token: token).deliver_later
-      log_identity_verification('Email', :sent_instructions)
+      log_event(:email, :sent_instructions)
     end
 
     def send_rate_limited?
