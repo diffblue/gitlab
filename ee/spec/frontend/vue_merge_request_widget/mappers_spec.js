@@ -36,14 +36,14 @@ describe('EE MR Widget mappers', () => {
 
       it('approvalRuleNamesLeft includes report approvers', () => {
         data.approval_rules_left.push({
-          name: 'License-Check',
+          name: 'Coverage-Check',
           rule_type: RULE_TYPE_REPORT_APPROVER,
         });
 
         const result = mapApprovalsResponse(data);
 
         expect(result).toMatchObject({
-          approvalRuleNamesLeft: ['Lorem', 'Ipsum', 'License-Check'],
+          approvalRuleNamesLeft: ['Lorem', 'Ipsum', 'Coverage-Check'],
         });
       });
 

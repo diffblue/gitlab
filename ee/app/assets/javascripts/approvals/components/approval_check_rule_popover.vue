@@ -1,5 +1,5 @@
 <script>
-import { LICENSE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../constants';
+import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from '../constants';
 import ApprovalCheckPopover from './approval_check_popover.vue';
 
 export default {
@@ -12,18 +12,15 @@ export default {
       type: Object,
       required: true,
     },
-    securityApprovalsHelpPagePath: {
+    codeCoverageCheckHelpPagePath: {
       type: String,
       required: false,
       default: '',
     },
   },
   computed: {
-    showLicenseCheckPopover() {
-      return this.rule.name === LICENSE_CHECK_NAME;
-    },
-    showApprovalCheckPopover() {
-      return this.showLicenseCheckPopover;
+    showCoverageCheckPopover() {
+      return this.rule.name === COVERAGE_CHECK_NAME;
     },
     approvalRuleConfig() {
       return APPROVAL_RULE_CONFIGS[this.rule.name];
@@ -33,8 +30,8 @@ export default {
        * The docs for these two rules have the same url & anchor
        * We get the path from a rails view helper
        */
-      if (this.showLicenseCheckPopover || this.showApprovalCheckPopover) {
-        return this.securityApprovalsHelpPagePath;
+      if (this.showCoverageCheckPopover) {
+        return this.codeCoverageCheckHelpPagePath;
       }
       return '';
     },
@@ -47,7 +44,7 @@ export default {
 
 <template>
   <approval-check-popover
-    v-if="showApprovalCheckPopover"
+    v-if="showCoverageCheckPopover"
     :popover-id="popoverTriggerId"
     :title="approvalRuleConfig.title"
     :text="approvalRuleConfig.popoverText"

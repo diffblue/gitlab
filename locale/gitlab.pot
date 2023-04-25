@@ -853,9 +853,6 @@ msgstr ""
 msgid "%{level_name} is not allowed since the fork source project has lower visibility."
 msgstr ""
 
-msgid "%{license_check_docs_link_start}License-Check%{link_end} is enabled for this project. This feature has been %{deprecation_docs_link_url}deprecated%{link_end} in GitLab 15.9 and is planned for %{removal_docs_link_url}removal%{link_end} in 16.0. You can create a %{scan_result_policy_link_start}scan result policy%{link_end} to continue enforcing your license approval requirements."
-msgstr ""
-
 msgid "%{linkStart} Learn more%{linkEnd}."
 msgstr ""
 
@@ -25945,9 +25942,6 @@ msgstr ""
 msgid "License overview"
 msgstr ""
 
-msgid "License-Check has been %{deprecation_docs_link_url}deprecated%{link_end} in GitLab 15.9 and is planned for %{removal_docs_link_url}removal%{link_end} in 16.0. You can create a %{scan_result_policy_link_start}scan result policy%{link_end} to continue enforcing your license approval requirements."
-msgstr ""
-
 msgid "LicenseCompliance|%{docLinkStart}License Approvals%{docLinkEnd} are active"
 msgstr ""
 
@@ -39477,22 +39471,10 @@ msgstr ""
 msgid "SecurityApprovals|A merge request approval is required when test coverage declines."
 msgstr ""
 
-msgid "SecurityApprovals|A merge request approval is required when the license compliance report contains a denied license."
-msgstr ""
-
 msgid "SecurityApprovals|Coverage-Check"
 msgstr ""
 
 msgid "SecurityApprovals|Learn more about Coverage-Check"
-msgstr ""
-
-msgid "SecurityApprovals|Learn more about License-Check"
-msgstr ""
-
-msgid "SecurityApprovals|License-Check"
-msgstr ""
-
-msgid "SecurityApprovals|Requires approval for Denied licenses. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
 msgid "SecurityApprovals|Requires approval for decreases in test coverage. %{linkStart}Learn more.%{linkEnd}"
@@ -39826,9 +39808,6 @@ msgid "SecurityOrchestration|License Scan"
 msgstr ""
 
 msgid "SecurityOrchestration|License scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}."
-msgstr ""
-
-msgid "SecurityOrchestration|License-Check has been deprecated"
 msgstr ""
 
 msgid "SecurityOrchestration|New policy"

@@ -122,7 +122,7 @@ describe('Approvals ModalRuleCreate', () => {
 
   describe('with approval suggestions', () => {
     beforeEach(() => {
-      createModalState.data = { ...TEST_RULE, defaultRuleName: 'License-Check' };
+      createModalState.data = { ...TEST_RULE, defaultRuleName: 'Coverage-Check' };
 
       factory();
       modal = findModal();
@@ -140,7 +140,7 @@ describe('Approvals ModalRuleCreate', () => {
     });
 
     it('renders form with defaultRuleName', () => {
-      expect(form.props('defaultRuleName')).toBe('License-Check');
+      expect(form.props('defaultRuleName')).toBe('Coverage-Check');
       expect(form.exists()).toBe(true);
     });
 

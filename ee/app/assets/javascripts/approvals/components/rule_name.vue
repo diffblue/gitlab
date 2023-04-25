@@ -1,10 +1,6 @@
 <script>
 import { GlLink, GlPopover, GlIcon } from '@gitlab/ui';
-import {
-  LICENSE_CHECK_NAME,
-  COVERAGE_CHECK_NAME,
-  APPROVAL_RULE_CONFIGS,
-} from 'ee/approvals/constants';
+import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from 'ee/approvals/constants';
 
 export default {
   components: {
@@ -13,9 +9,6 @@ export default {
     GlIcon,
   },
   inject: {
-    licenseCheckHelpPagePath: {
-      default: '',
-    },
     coverageCheckHelpPagePath: {
       default: '',
     },
@@ -29,10 +22,6 @@ export default {
   computed: {
     rulesWithTooltips() {
       return {
-        [LICENSE_CHECK_NAME]: {
-          description: APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].popoverText,
-          linkPath: this.licenseCheckHelpPagePath,
-        },
         [COVERAGE_CHECK_NAME]: {
           description: APPROVAL_RULE_CONFIGS[COVERAGE_CHECK_NAME].popoverText,
           linkPath: this.coverageCheckHelpPagePath,

@@ -103,37 +103,10 @@ describe('Approvals ProjectRules', () => {
     });
   });
 
-  describe('when the License-Check group is used', () => {
-    let rows;
-
-    beforeEach(() => {
-      const rules = createProjectRules();
-      rules[0].name = 'License-Check';
-      store.modules.approvals.state.rules = rules;
-      store.state.settings.allowMultiRule = true;
-    });
-
-    beforeEach(() => {
-      factory();
-      rows = wrapper.findComponent(Rules).findAll('tbody tr');
-    });
-
-    it('should not render the popover for a standard approval group', () => {
-      const secondRow = rows.at(1);
-      const nameCell = findCell(secondRow, 'name');
-
-      expect(nameCell.find('.js-help').exists()).toBe(false);
-    });
-
-    it('should render the unconfigured-security-rules component', () => {
-      expect(wrapper.findComponent(UnconfiguredSecurityRules).exists()).toBe(true);
-    });
-  });
-
   describe('approval suggestions', () => {
     beforeEach(() => {
       const rules = createProjectRules();
-      rules[0].name = 'License-Check';
+      rules[0].name = 'Coverage-Check';
       store.modules.approvals.state.rules = rules;
       store.state.settings.allowMultiRule = true;
 

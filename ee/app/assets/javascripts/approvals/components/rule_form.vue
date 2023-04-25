@@ -12,7 +12,6 @@ import {
   TYPE_USER,
   TYPE_GROUP,
   TYPE_HIDDEN_GROUPS,
-  LICENSE_CHECK_NAME,
   COVERAGE_CHECK_NAME,
   APPROVAL_DIALOG_I18N,
 } from '../constants';
@@ -21,7 +20,7 @@ import ApproversSelect from './approvers_select.vue';
 
 const DEFAULT_NAME = 'Default';
 
-export const READONLY_NAMES = [LICENSE_CHECK_NAME, COVERAGE_CHECK_NAME];
+export const READONLY_NAMES = [COVERAGE_CHECK_NAME];
 
 function mapServerResponseToValidationErrors(messages) {
   return Object.entries(messages).flatMap(([key, msgs]) => msgs.map((msg) => `${key} ${msg}`));

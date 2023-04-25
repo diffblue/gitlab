@@ -1,87 +1,69 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import component from 'ee/approvals/components/approval_check_rule_popover.vue';
-import { LICENSE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from 'ee/approvals/constants';
+import ApprovalCheckRulePopover from 'ee/approvals/components/approval_check_rule_popover.vue';
+import ApprovalCheckPopover from 'ee/approvals/components/approval_check_popover.vue';
+import { COVERAGE_CHECK_NAME, APPROVAL_RULE_CONFIGS } from 'ee/approvals/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 
 describe('Approval Check Popover', () => {
   let wrapper;
+  const codeCoverageCheckHelpPagePath = `${TEST_HOST}/documentation`;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(component, {
-      propsData: { rule: {}, ...props },
+    wrapper = shallowMount(ApprovalCheckRulePopover, {
+      propsData: { rule: {}, codeCoverageCheckHelpPagePath, ...props },
     });
   };
 
-  beforeEach(() => {
-    createComponent();
-  });
+  const findApprovalCheckPopover = () => wrapper.findComponent(ApprovalCheckPopover);
 
   describe('computed props', () => {
-    const securityApprovalsHelpPagePath = `${TEST_HOST}/documentation`;
-
-    beforeEach(async () => {
-      createComponent({ securityApprovalsHelpPagePath });
-      await nextTick();
-    });
-
-    describe('showLicenseCheckPopover', () => {
-      it('return true if the rule type is "License-Check"', async () => {
-        wrapper.setProps({ rule: { name: LICENSE_CHECK_NAME } });
+    describe('showCoverageCheckPopover', () => {
+      it('return true if the rule type is "Coverage-Check"', async () => {
+        createComponent({ rule: { name: COVERAGE_CHECK_NAME } });
         await nextTick();
-        expect(wrapper.vm.showLicenseCheckPopover).toBe(true);
+        expect(findApprovalCheckPopover().exists()).toBe(true);
       });
-      it('return false if the rule type is "License-Check"', async () => {
-        wrapper.setProps({ rule: { name: 'FooRule' } });
+
+      it('return false if the rule type is "Coverage-Check"', async () => {
+        createComponent({ rule: { name: 'FooRule' } });
         await nextTick();
-        expect(wrapper.vm.showLicenseCheckPopover).toBe(false);
+        expect(findApprovalCheckPopover().exists()).toBe(false);
       });
     });
 
     describe('approvalConfig', () => {
-      it('returns "License-Check" config', async () => {
-        wrapper.setProps({ rule: { name: LICENSE_CHECK_NAME } });
+      it('returns "Coverage-Check" config', async () => {
+        createComponent({ rule: { name: COVERAGE_CHECK_NAME } });
         await nextTick();
-        expect(wrapper.vm.approvalRuleConfig.title).toBe(
-          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].title,
+        expect(findApprovalCheckPopover().props('title')).toBe(
+          APPROVAL_RULE_CONFIGS[COVERAGE_CHECK_NAME].title,
         );
-        expect(wrapper.vm.approvalRuleConfig.popoverText).toBe(
-          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].popoverText,
+        expect(findApprovalCheckPopover().props('text')).toBe(
+          APPROVAL_RULE_CONFIGS[COVERAGE_CHECK_NAME].popoverText,
         );
-        expect(wrapper.vm.approvalRuleConfig.documentationText).toBe(
-          APPROVAL_RULE_CONFIGS[LICENSE_CHECK_NAME].documentationText,
+        expect(findApprovalCheckPopover().props('documentationText')).toBe(
+          APPROVAL_RULE_CONFIGS[COVERAGE_CHECK_NAME].documentationText,
         );
-      });
-      it('returns an undefined config', async () => {
-        wrapper.setProps({ rule: { name: 'FooRule' } });
-        await nextTick();
-        expect(wrapper.vm.approvalConfig).toBe(undefined);
       });
     });
 
     describe('documentationLink', () => {
-      it('returns documentation link for "License-Check"', async () => {
-        wrapper.setProps({ rule: { name: 'License-Check' } });
+      it('returns documentation link for "Coverage-Check"', async () => {
+        createComponent({ rule: { name: COVERAGE_CHECK_NAME } });
         await nextTick();
-        expect(wrapper.vm.documentationLink).toBe(securityApprovalsHelpPagePath);
-      });
-      it('returns empty text', async () => {
-        const text = '';
-        wrapper.setProps({ rule: { name: 'FooRule' } });
-        await nextTick();
-        expect(wrapper.vm.documentationLink).toBe(text);
+        expect(findApprovalCheckPopover().props('documentationLink')).toBe(
+          codeCoverageCheckHelpPagePath,
+        );
       });
     });
 
     describe('popoverTriggerId', () => {
-      beforeEach(() => {
-        createComponent({ rule: { name: 'rule-title' } });
-      });
-
-      it('returns popover id', () => {
-        const expectedPopoverTriggerId = 'reportInfo-rule-title';
-
-        expect(wrapper.vm.popoverTriggerId).toBe(expectedPopoverTriggerId);
+      it('returns popover id', async () => {
+        createComponent({ rule: { name: COVERAGE_CHECK_NAME } });
+        await nextTick();
+        const expectedPopoverTriggerId = 'reportInfo-Coverage-Check';
+        expect(findApprovalCheckPopover().props('popoverId')).toBe(expectedPopoverTriggerId);
       });
     });
   });

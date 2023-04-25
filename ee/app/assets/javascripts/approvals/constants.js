@@ -18,14 +18,6 @@ export const REPORT_TYPE_LICENSE_SCANNING = 'license_scanning';
 export const REPORT_TYPE_CODE_COVERAGE = 'code_coverage';
 
 export const APPROVAL_RULE_CONFIGS = {
-  [LICENSE_CHECK_NAME]: {
-    title: s__('SecurityApprovals|License-Check'),
-    popoverText: s__(
-      'SecurityApprovals|A merge request approval is required when the license compliance report contains a denied license.',
-    ),
-    documentationText: s__('SecurityApprovals|Learn more about License-Check'),
-    reportType: REPORT_TYPE_LICENSE_SCANNING,
-  },
   [COVERAGE_CHECK_NAME]: {
     title: s__('SecurityApprovals|Coverage-Check'),
     popoverText: s__(

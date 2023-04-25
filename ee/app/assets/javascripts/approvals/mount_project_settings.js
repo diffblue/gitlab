@@ -13,12 +13,7 @@ export default function mountProjectSettingsApprovals(el) {
     return null;
   }
 
-  const {
-    licenseCheckHelpPagePath,
-    coverageCheckHelpPagePath,
-    fullPath,
-    newPolicyPath,
-  } = el.dataset;
+  const { coverageCheckHelpPagePath, fullPath, newPolicyPath } = el.dataset;
 
   const modules = {
     approvals: projectSettingsModule(),
@@ -44,7 +39,6 @@ export default function mountProjectSettingsApprovals(el) {
     el,
     store,
     provide: {
-      licenseCheckHelpPagePath,
       coverageCheckHelpPagePath,
       fullPath,
       newPolicyPath,

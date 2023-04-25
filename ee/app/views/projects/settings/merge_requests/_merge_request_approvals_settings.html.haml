@@ -10,7 +10,5 @@
       = s_('MergeRequestApprovals|Define approval rules and settings to ensure %{link_start}separation of duties%{link_end} for new merge requests.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
       = link_to _("Learn more."), help_page_path("user/project/merge_requests/approvals/index.md"), target: '_blank', rel: 'noopener noreferrer'
 
-    = render 'deprecate_license_check_alert', project: @project
-
   .settings-content
     = render 'projects/merge_request_approvals_settings_form'
