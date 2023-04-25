@@ -67,7 +67,7 @@ module Elastic
         enqueue_next_batch(migration)
       end
     rescue StandardError => e
-      logger.error(structured_payload(message: "#{self.class.name}: #{e.class} #{e.message}"))
+      logger.error(structured_payload(message: "#{self.class.name}: #{e.class} #{e.message}", backtrace: e.backtrace.join("\n")))
     end
 
     private
@@ -107,7 +107,7 @@ module Elastic
     def retry_migration(migration, exception)
       if migration.current_attempt >= migration.max_attempts
         message = "MigrationWorker: migration has failed with #{exception.class}:#{exception.message}, no retries left"
-        logger.error(structured_payload(message: message))
+        logger.error(structured_payload(message: message, backtrace: exception.backtrace.join("\n")))
 
         migration.fail(message: message)
       else
