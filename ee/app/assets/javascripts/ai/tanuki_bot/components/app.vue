@@ -9,7 +9,7 @@ import TanukiBotChatInput from './tanuki_bot_chat_input.vue';
 export default {
   name: 'TanukiBotChatApp',
   i18n: {
-    tanukiBot: s__('TanukiBot|Tanuki Bot'),
+    gitlabChat: s__('TanukiBot|GitLab Chat'),
     experiment: __('Experiment'),
   },
   components: {
@@ -45,7 +45,7 @@ export default {
       <template #title>
         <span class="gl-display-flex gl-align-items-center">
           <gl-icon name="tanuki" class="gl-text-orange-500" />
-          <h3 class="gl-my-0 gl-mx-3">{{ $options.i18n.tanukiBot }}</h3>
+          <h3 class="gl-my-0 gl-mx-3">{{ $options.i18n.gitlabChat }}</h3>
           <gl-badge variant="muted">{{ $options.i18n.experiment }}</gl-badge>
         </span>
       </template>
