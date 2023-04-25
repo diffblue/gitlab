@@ -33013,6 +33013,8 @@ CREATE INDEX tmp_index_on_vulnerabilities_non_dismissed ON vulnerabilities USING
 
 CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statistics USING btree (project_id) WHERE (container_registry_size = 0);
 
+CREATE INDEX tmp_index_vulnerability_dismissal_info ON vulnerabilities USING btree (id) WHERE ((state = 2) AND ((dismissed_at IS NULL) OR (dismissed_by_id IS NULL)));
+
 CREATE INDEX tmp_index_vulnerability_overlong_title_html ON vulnerabilities USING btree (id) WHERE (length(title_html) > 800);
 
 CREATE UNIQUE INDEX uniq_pkgs_deb_grp_architectures_on_distribution_id_and_name ON packages_debian_group_architectures USING btree (distribution_id, name);
