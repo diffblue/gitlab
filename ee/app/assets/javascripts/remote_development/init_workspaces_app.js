@@ -8,41 +8,7 @@ import userWorkspacesListQuery from './graphql/queries/user_workspaces_list.quer
 Vue.use(VueApollo);
 
 const createApolloProvider = () => {
-  /*
-   * This is dummy data used to support frontend development
-   * while the backend APIs are in development.
-   */
-  const resolvers = {
-    Mutation: {
-      workspaceCreate: () => {
-        return {
-          workspace: {
-            id: 1,
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            name: 'Workspace 1',
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            namespace: 'Namespace',
-            projectFullPath: 'GitLab.org / GitLab',
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            desiredState: 'Running',
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            actualState: 'Started',
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            displayedState: 'Started',
-            url: 'https://gdk.test:3443',
-            // eslint-disable-next-line @gitlab/require-i18n-strings
-            editor: 'VSCode',
-            devfile: 'devfile',
-            branch: 'master',
-            lastUsed: '2020-01-01T00:00:00.000Z',
-          },
-          errors: [],
-        };
-      },
-    },
-  };
-
-  const defaultClient = createDefaultClient(resolvers);
+  const defaultClient = createDefaultClient();
   // what: Dummy data to support development
   defaultClient.cache.writeQuery({
     query: userWorkspacesListQuery,

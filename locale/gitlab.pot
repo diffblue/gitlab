@@ -50371,9 +50371,6 @@ msgstr ""
 msgid "Workspaces"
 msgstr ""
 
-msgid "Workspaces|A devfile is a configuration file for your workspace. Without a devfile, a default workspace is created for this project. You can change that workspace at any time."
-msgstr ""
-
 msgid "Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace on its own or as part of a project."
 msgstr ""
 
@@ -50407,10 +50404,10 @@ msgstr ""
 msgid "Workspaces|Select project"
 msgstr ""
 
-msgid "Workspaces|This project doesn't have a devfile"
+msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."
 msgstr ""
 
-msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."
+msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."
 msgstr ""
 
 msgid "Workspaces|Workspaces"

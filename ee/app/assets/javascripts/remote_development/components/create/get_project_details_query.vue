@@ -1,6 +1,7 @@
 <script>
 import { logError } from '~/lib/logger';
-import getProjectDetails from '../../graphql/queries/get_project_details.query.graphql';
+import getProjectDetailsQuery from '../../graphql/queries/get_project_details.query.graphql';
+import getGroupClusterAgentsQuery from '../../graphql/queries/get_group_cluster_agents.query.graphql';
 import { DEFAULT_DEVFILE_PATH } from '../../constants';
 
 export default {
@@ -13,7 +14,7 @@ export default {
   },
   apollo: {
     projectDetails: {
-      query: getProjectDetails,
+      query: getProjectDetailsQuery,
       variables() {
         return {
           projectFullPath: this.projectFullPath,
@@ -29,7 +30,7 @@ export default {
       error(error) {
         logError(error);
       },
-      result(result) {
+      async result(result) {
         if (result.error) {
           this.$emit('error');
           return;
@@ -37,22 +38,57 @@ export default {
 
         const { repository, group, id } = result.data.project;
 
-        const hasDevFile =
-          repository.blobs.nodes.some(({ path }) => path === DEFAULT_DEVFILE_PATH) || false;
-        const clusterAgents =
-          group?.clusterAgents.nodes.map((agent) => ({
-            value: agent.id,
-            text: agent.name,
-          })) || [];
-        const groupPath = group?.fullPath;
+        const hasDevFile = repository
+          ? repository.blobs.nodes.some(({ path }) => path === DEFAULT_DEVFILE_PATH)
+          : false;
+        const rootRef = repository ? repository.rootRef : null;
+        const groupPath = group?.fullPath.split('/').shift() || null;
+        const clusterAgentsResponse = await this.fetchClusterAgents(groupPath);
+
+        if (clusterAgentsResponse.error) {
+          logError(clusterAgentsResponse.error);
+          this.$emit('error');
+          return;
+        }
 
         this.$emit('result', {
-          hasDevFile,
-          clusterAgents,
-          groupPath,
           id,
+          clusterAgents: clusterAgentsResponse.result,
+          groupPath,
+          hasDevFile,
+          rootRef,
         });
       },
+    },
+  },
+  methods: {
+    async fetchClusterAgents(groupPath) {
+      if (!groupPath) {
+        return {
+          error: null,
+          result: [],
+        };
+      }
+
+      try {
+        const { data, error } = await this.$apollo.query({
+          query: getGroupClusterAgentsQuery,
+          variables: { groupPath },
+        });
+
+        if (error) {
+          return { error };
+        }
+
+        return {
+          result: data.group.clusterAgents.nodes.map((agent) => ({
+            value: agent.id,
+            text: agent.name,
+          })),
+        };
+      } catch (error) {
+        return { error };
+      }
     },
   },
   render() {

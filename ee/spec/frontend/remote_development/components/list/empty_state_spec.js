@@ -1,6 +1,7 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import EmptyState, { i18n } from 'ee/remote_development/components/list/empty_state.vue';
+import { ROUTES } from 'ee/remote_development/constants';
 
 const SVG_PATH = '/assets/illustrations/empty_states/empty_workspaces.svg';
 
@@ -40,7 +41,7 @@ describe('remote_development/components/list/empty_state.vue', () => {
         variant: 'confirm',
       });
       expect(button.attributes()).toMatchObject({
-        to: 'create',
+        to: ROUTES.create,
       });
     });
   });

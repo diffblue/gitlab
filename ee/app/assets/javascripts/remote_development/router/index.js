@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import WorkspacesList from '../pages/list.vue';
 import CreateWorkspace from '../pages/create.vue';
+import { ROUTES } from '../constants';
 
 Vue.use(VueRouter);
 
@@ -9,12 +10,12 @@ export default function createRouter({ base }) {
   const routes = [
     {
       path: '/',
-      name: 'index',
+      name: ROUTES.index,
       component: WorkspacesList,
     },
     {
       path: '/create',
-      name: 'create',
+      name: ROUTES.create,
       component: CreateWorkspace,
     },
     {
