@@ -586,7 +586,6 @@ describe('EE Approvals RuleForm', () => {
     describe('with approval suggestions', () => {
       describe.each`
         defaultRuleName     | expectedDisabledAttribute
-        ${'License-Check'}  | ${true}
         ${'Coverage-Check'} | ${true}
         ${'Foo Bar Baz'}    | ${false}
       `(

@@ -15,15 +15,15 @@ describe('RuleName component', () => {
         ...props,
       },
       provide: {
-        licenseCheckHelpPagePath: '/liceene-check-docs',
+        coverageCheckHelpPagePath: '/path/to/coverage-check-docs',
       },
     });
   };
 
   describe.each`
-    name               | hasTooltip | hasLink
-    ${'Foo'}           | ${false}   | ${false}
-    ${'License-Check'} | ${true}    | ${true}
+    name                | hasTooltip | hasLink
+    ${'Foo'}            | ${false}   | ${false}
+    ${'Coverage-Check'} | ${true}    | ${true}
   `('with job name set to $name', ({ name, hasTooltip, hasLink }) => {
     beforeEach(() => {
       createWrapper({ name });

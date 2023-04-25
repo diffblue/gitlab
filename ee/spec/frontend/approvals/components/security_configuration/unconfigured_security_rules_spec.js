@@ -21,9 +21,6 @@ describe('UnconfiguredSecurityRules component', () => {
       propsData: {
         ...props,
       },
-      provide: {
-        licenseCheckHelpPagePath: '',
-      },
     });
   };
 
@@ -40,7 +37,7 @@ describe('UnconfiguredSecurityRules component', () => {
     });
 
     it('should render a unconfigured-security-rule component for every security rule', () => {
-      expect(wrapper.findAllComponents(UnconfiguredSecurityRule).length).toBe(2);
+      expect(wrapper.findAllComponents(UnconfiguredSecurityRule).length).toBe(1);
     });
   });
 

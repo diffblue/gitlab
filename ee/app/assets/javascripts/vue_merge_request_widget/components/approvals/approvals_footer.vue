@@ -6,7 +6,7 @@ export default {
     ApprovalsList,
   },
   props: {
-    securityApprovalsHelpPagePath: {
+    codeCoverageCheckHelpPagePath: {
       type: String,
       required: false,
       default: '',
@@ -34,7 +34,7 @@ export default {
     data-testid="approvals-footer"
   >
     <approvals-list
-      :security-approvals-help-page-path="securityApprovalsHelpPagePath"
+      :code-coverage-check-help-page-path="codeCoverageCheckHelpPagePath"
       :eligible-approvers-docs-path="eligibleApproversDocsPath"
       :project-path="projectPath"
       :iid="iid"

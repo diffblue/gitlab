@@ -1,7 +1,5 @@
 import {
-  LICENSE_CHECK_NAME,
   COVERAGE_CHECK_NAME,
-  REPORT_TYPE_LICENSE_SCANNING,
   REPORT_TYPE_CODE_COVERAGE,
   RULE_TYPE_REPORT_APPROVER,
 } from 'ee/approvals/constants';
@@ -36,10 +34,9 @@ describe('approvals mappers', () => {
 
   describe('mapApprovalRuleRequest', () => {
     describe.each`
-      ruleName               | expectedReportType              | expectedRuleType
-      ${LICENSE_CHECK_NAME}  | ${REPORT_TYPE_LICENSE_SCANNING} | ${RULE_TYPE_REPORT_APPROVER}
-      ${COVERAGE_CHECK_NAME} | ${REPORT_TYPE_CODE_COVERAGE}    | ${RULE_TYPE_REPORT_APPROVER}
-      ${'Test Name'}         | ${undefined}                    | ${undefined}
+      ruleName               | expectedReportType           | expectedRuleType
+      ${COVERAGE_CHECK_NAME} | ${REPORT_TYPE_CODE_COVERAGE} | ${RULE_TYPE_REPORT_APPROVER}
+      ${'Test Name'}         | ${undefined}                 | ${undefined}
     `('with rule name set to $ruleName', ({ ruleName, expectedRuleType, expectedReportType }) => {
       it(`it returns ${expectedRuleType} rule_type for ${ruleName}`, () => {
         expect(mapApprovalRuleRequest({ name: ruleName }).rule_type).toBe(expectedRuleType);

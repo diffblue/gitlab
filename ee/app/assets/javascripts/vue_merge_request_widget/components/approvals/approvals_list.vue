@@ -45,7 +45,7 @@ export default {
       type: String,
       required: true,
     },
-    securityApprovalsHelpPagePath: {
+    codeCoverageCheckHelpPagePath: {
       type: String,
       required: false,
       default: '',
@@ -194,7 +194,7 @@ export default {
               </span>
               <approval-check-rule-popover
                 :rule="rule"
-                :security-approvals-help-page-path="securityApprovalsHelpPagePath"
+                :code-coverage-check-help-page-path="codeCoverageCheckHelpPagePath"
               />
             </div>
             <div class="d-md-none d-flex flex-column js-summary">

@@ -1,68 +1,6 @@
 # frozen_string_literal: true
 
 module EE::SecurityOrchestrationHelper
-  LICENSE_CHECK_DEPRECATION_ALERT = 'license_check_deprecation_alert'
-
-  def show_license_check_alert?(project)
-    return false if current_path?('projects/settings/merge_requests#show')
-    return false if current_path?('projects/settings/merge_requests#update')
-
-    show_license_check_settings_alert?(project)
-  end
-
-  def show_license_check_settings_alert?(project)
-    return false if user_dismissed?(LICENSE_CHECK_DEPRECATION_ALERT, object: project)
-
-    project
-      .approval_rules
-      .report_approver
-      .exists?(name: ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT) # rubocop:disable CodeReuse/ActiveRecord
-  end
-
-  def deprecate_license_alert_message(project)
-    link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe
-
-    format(
-      _(
-        '%{license_check_docs_link_start}License-Check%{link_end} is enabled for this project. ' \
-        'This feature has been %{deprecation_docs_link_url}deprecated%{link_end} in GitLab 15.9 ' \
-        'and is planned for %{removal_docs_link_url}removal%{link_end} in 16.0. ' \
-        'You can create a %{scan_result_policy_link_start}scan result policy%{link_end} to ' \
-        'continue enforcing your license approval requirements.'
-      ),
-      license_check_docs_link_start: format(link_start, url: project_settings_merge_requests_path(project)),
-      deprecation_docs_link_url: format(link_start, url: help_page_path('update/deprecations')),
-      removal_docs_link_url: format(link_start, url: help_page_path('update/removals')),
-      scan_result_policy_link_start: format(link_start, url: scan_result_policy_path(project)),
-      link_end: '</a>'.html_safe
-    ).html_safe
-  end
-
-  def deprecate_license_alert_settings_message(project)
-    link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe
-
-    format(
-      _(
-        'License-Check has been %{deprecation_docs_link_url}deprecated%{link_end} in GitLab 15.9 ' \
-        'and is planned for %{removal_docs_link_url}removal%{link_end} in 16.0. You can create a ' \
-        '%{scan_result_policy_link_start}scan result policy%{link_end} to continue enforcing your ' \
-        'license approval requirements.'
-      ),
-      deprecation_docs_link_url: format(link_start, url: help_page_path('update/deprecations')),
-      removal_docs_link_url: format(link_start, url: help_page_path('update/removals')),
-      scan_result_policy_link_start: format(link_start, url: scan_result_policy_path(project)),
-      link_end: '</a>'.html_safe
-    ).html_safe
-  end
-
-  def scan_result_policy_path(project)
-    path = project_security_policies_path(project)
-
-    return path unless can_modify_security_policy?(project)
-
-    new_project_security_policy_path(project, type: 'scan_result_policy')
-  end
-
   def can_update_security_orchestration_policy_project?(container)
     can?(current_user, :update_security_orchestration_policy_project, container)
   end

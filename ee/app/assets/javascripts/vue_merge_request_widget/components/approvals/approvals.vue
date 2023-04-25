@@ -77,7 +77,7 @@ export default {
     <template v-if="!isBasic && !collapsed" #footer>
       <approvals-footer
         v-if="hasFooter"
-        :security-approvals-help-page-path="mr.securityApprovalsHelpPagePath"
+        :code-coverage-check-help-page-path="mr.codeCoverageCheckHelpPagePath"
         :eligible-approvers-docs-path="mr.eligibleApproversDocsPath"
         :project-path="mr.targetProjectFullPath"
         :iid="`${mr.iid}`"

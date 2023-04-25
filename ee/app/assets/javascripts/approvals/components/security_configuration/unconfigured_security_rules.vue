@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
-import { LICENSE_CHECK_NAME, COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
+import { COVERAGE_CHECK_NAME } from 'ee/approvals/constants';
 import { s__ } from '~/locale';
 import UnconfiguredSecurityRule from './unconfigured_security_rule.vue';
 
@@ -11,9 +11,6 @@ export default {
     GlSkeletonLoader,
   },
   inject: {
-    licenseCheckHelpPagePath: {
-      default: '',
-    },
     coverageCheckHelpPagePath: {
       default: '',
     },
@@ -28,13 +25,6 @@ export default {
     },
     securityRules() {
       return [
-        {
-          name: LICENSE_CHECK_NAME,
-          description: s__(
-            'SecurityApprovals|Requires approval for Denied licenses. %{linkStart}Learn more.%{linkEnd}',
-          ),
-          docsPath: this.licenseCheckHelpPagePath,
-        },
         {
           name: COVERAGE_CHECK_NAME,
           description: s__(
