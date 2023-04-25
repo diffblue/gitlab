@@ -7,35 +7,46 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
   let_it_be(:project) { create(:project, :public) }
 
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes }
-  let(:ai_template) { { method: :completions, prompt: 'something', options: { temperature: 0.7 } } }
+  let(:ai_options) do
+    {
+      messages: [
+        { role: "system", content: "You are a helpful assistant that summarizes comments in markdown format." },
+        { role: "user", content: "Some content" }
+      ],
+      temperature: 0.2
+    }
+  end
+
   let(:ai_response) do
     {
       choices: [
         {
-          text: "some ai response text"
+          message: {
+            content: "some ai response text"
+          }
         }
       ]
     }.to_json
   end
 
   RSpec.shared_examples 'performs completion' do
-    it 'does things' do
+    it 'gets the right template options and calls the openai client' do
       expect_next_instance_of(::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes) do |completion_service|
         expect(completion_service).to receive(:execute).with(user, issuable).and_call_original
       end
 
-      expect(Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes).to receive(:get_prompt).and_return(ai_template)
+      expect(Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes).to receive(:get_options)
+        .with(notes.pluck(:note).join("\n")).and_return(ai_options)
 
-      allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |instance|
-        params = { prompt: 'something', max_tokens: 1000, temperature: 0.7 }
-        allow(instance).to receive(:completions).with(params).and_return(ai_response)
+      expect_next_instance_of(Gitlab::Llm::OpenAi::Client) do |instance|
+        expect(instance).to receive(:chat).with(content: nil, **ai_options).and_return(ai_response)
       end
 
       params = [user, issuable, ai_response, { options: {} }]
       response_service = double
 
       expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).with(*params).and_return(response_service)
-      expect(response_service).to receive(:execute)
+      expect(response_service).to receive(:execute).with(an_instance_of(Gitlab::Llm::OpenAi::ResponseModifiers::Chat))
 
       summarize_comments
     end

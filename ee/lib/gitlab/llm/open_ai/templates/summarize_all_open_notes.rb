@@ -5,20 +5,21 @@ module Gitlab
     module OpenAi
       module Templates
         class SummarizeAllOpenNotes
-          def self.get_prompt(content)
-            prompt = <<-TEMPLATE
-              Create a markdown header with main text idea followed by a summary of the following text, in at most 10 bullet points:
-              """
-              #{content}
+          def self.get_options(notes_content)
+            system_content = <<-TEMPLATE
+              You are an assistant that summarizes issue comments in maximum 10 bullet points.
+              Desired markdown format:
+              ## <summary_title>
+              <bullet_points>
               """
             TEMPLATE
 
             {
-              method: :completions,
-              prompt: prompt,
-              options: {
-                temperature: 0.2
-              }
+              messages: [
+                { role: "system", content: system_content },
+                { role: "user", content: notes_content }
+              ],
+              temperature: 0.2
             }
           end
         end
