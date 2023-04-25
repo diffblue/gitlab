@@ -12,7 +12,6 @@ import SummaryDetails from 'jh_else_ee/subscriptions/new/components/order_summar
 import invoicePreviewQuery from 'ee/subscriptions/graphql/queries/new_subscription_invoice_preview.customer.query.graphql';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';
 import {
-  CHARGE_PROCESSING_TYPE,
   VALIDATION_ERROR_CODE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
@@ -58,11 +57,7 @@ export default {
         this.updateInvoicePreviewLoading(isLoading);
       },
       skip() {
-        return (
-          !this.usersPresent ||
-          !this.selectedPlan ||
-          !this.glFeatures.useInvoicePreviewApiInSaasPurchase
-        );
+        return !this.usersPresent || !this.selectedPlan;
       },
     },
   },
@@ -76,7 +71,6 @@ export default {
   computed: {
     ...mapState(['numberOfUsers', 'selectedPlan', 'promoCode', 'selectedGroup']),
     ...mapGetters([
-      'selectedPlanPrice',
       'name',
       'usersPresent',
       'isGroupSelected',
@@ -92,31 +86,8 @@ export default {
     isLoading() {
       return this.$apollo.queries?.invoicePreview?.loading;
     },
-    legacyInvoicePreview() {
-      if (this.glFeatures.useInvoicePreviewApiInSaasPurchase || !this.isGroupSelected) {
-        return null;
-      }
-
-      const amount = this.numberOfUsers * this.selectedPlanPrice;
-
-      return {
-        invoice: {
-          amountWithoutTax: amount,
-        },
-        invoiceItem: [
-          {
-            chargeAmount: amount,
-            processingType: CHARGE_PROCESSING_TYPE,
-            unitPrice: this.selectedPlanPrice,
-          },
-        ],
-      };
-    },
     sendPromoCodeToPreviewInvoice() {
       return this.isEligibleToUsePromoCode && !isEmpty(this.promoCode) && this.isPromoCodeValid;
-    },
-    showPromoCode() {
-      return this.isEligibleToUsePromoCode && this.glFeatures.useInvoicePreviewApiInSaasPurchase;
     },
     isApplyingPromoCode() {
       return this.sendPromoCodeToPreviewInvoice && this.isLoading && !this.hasDiscount;
@@ -137,17 +108,6 @@ export default {
       if (usersPresent && this.promoCodeErrorMessage === PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE) {
         this.resetPromoCodeErrorMessage();
       }
-    },
-    legacyInvoicePreview: {
-      handler(val) {
-        // val is only truthy if FF is off and we're using legacy calculation
-        if (!val) {
-          return;
-        }
-
-        this.updateInvoicePreview(val);
-      },
-      immediate: true,
     },
     invoicePreview(val) {
       if (val) {
@@ -247,7 +207,7 @@ export default {
         <span v-else class="gl-ml-3">{{ formatAmount(totalAmount, showAmount) }}</span>
       </h4>
       <summary-details class="gl-mt-6">
-        <template v-if="showPromoCode" #promo-code>
+        <template v-if="isEligibleToUsePromoCode" #promo-code>
           <promo-code-input
             :show-success-alert="showSuccessAlert"
             :is-parent-form-loading="isLoading"
@@ -262,7 +222,7 @@ export default {
     <div class="gl-display-none gl-lg-display-block" data-qa-selector="order_summary">
       <h4 class="gl-my-0 gl-font-lg" data-qa-selector="title">{{ titleWithName }}</h4>
       <summary-details class="gl-mt-6">
-        <template v-if="showPromoCode" #promo-code>
+        <template v-if="isEligibleToUsePromoCode" #promo-code>
           <promo-code-input
             :show-success-alert="showSuccessAlert"
             :is-parent-form-loading="isLoading"
