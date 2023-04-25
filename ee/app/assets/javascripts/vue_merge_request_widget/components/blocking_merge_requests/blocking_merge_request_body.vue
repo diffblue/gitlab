@@ -58,6 +58,6 @@ export default {
     path-id-separator="!"
     :class="{ 'mr-merged': isMerged }"
     :grey-link-when-merged="true"
-    class="w-100 p-xl-3"
+    class="gl-mx-1!"
   />
 </template>
