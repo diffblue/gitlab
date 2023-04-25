@@ -30,6 +30,7 @@ describe('IterationToken', () => {
         portalName: 'fake target',
         alignSuggestions: function fakeAlignSuggestions() {},
         suggestionsListClass: () => 'custom-class',
+        termsAsTokens: () => false,
         ...provide,
       },
       stubs,

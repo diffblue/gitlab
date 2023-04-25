@@ -26,6 +26,7 @@ describe('HealthToken', () => {
         portalName: 'fake target',
         alignSuggestions: function fakeAlignSuggestions() {},
         suggestionsListClass: () => 'custom-class',
+        termsAsTokens: () => false,
       },
       stubs: {
         Portal: true,
