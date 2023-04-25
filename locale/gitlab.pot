@@ -25912,6 +25912,9 @@ msgstr ""
 msgid "Leave zen mode"
 msgstr ""
 
+msgid "Legacy Web IDE"
+msgstr ""
+
 msgid "Legacy burndown chart"
 msgstr ""
 
@@ -48637,9 +48640,6 @@ msgid "View labels"
 msgstr ""
 
 msgid "View log"
-msgstr ""
-
-msgid "View logs"
 msgstr ""
 
 msgid "View milestones"
