@@ -159,6 +159,7 @@ export default {
           :key="item.id"
           class="gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between"
           data-testid="pending-members-row"
+          data-qa-selector="pending_members"
         >
           <gl-avatar-link target="blank" :href="item.web_url" :alt="item.name">
             <gl-avatar-labeled
@@ -177,12 +178,14 @@ export default {
             v-gl-modal-directive="`approve-confirmation-modal-${item.id}`"
             :loading="item.loading"
             :disabled="item.approved"
+            data-qa-selector="approve_member"
           >
             {{ $options.LABEL_APPROVE }}
           </gl-button>
           <gl-modal
             :modal-id="`approve-confirmation-modal-${item.id}`"
             :title="$options.LABEL_CONFIRM"
+            data-qa-selector="approve_member_confirmation_modal"
             no-fade
             @primary="approveMember(item.id)"
           >

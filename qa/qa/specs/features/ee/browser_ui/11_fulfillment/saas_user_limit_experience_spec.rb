@@ -60,7 +60,7 @@ module QA
           before do
             # Since we have logic for 'reached' the limit, we need to go over the notification_limit by going to 4
             # and still be under the dashboard_limit of 5 to see the notification message.
-            # We also want to keep a matching scenario of production in staging, we we don't want to have this
+            # We also want to keep a matching scenario of production in staging, we don't want to have this
             # setting be permanent.
             Runtime::ApplicationSettings.set_application_settings(dashboard_notification_limit: 3)
           end
@@ -73,7 +73,7 @@ module QA
             'preview notification displayed for private group when over limit',
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387825'
           ) do
-            add_members(private_group, user_2, user_3, user_4)
+            private_group.add_members(user_2, user_3, user_4)
             page.refresh
 
             expect { page.text.squish }
@@ -148,9 +148,9 @@ module QA
           'enforcement limit counts includes invited group and project members',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387829'
         ) do
-          add_members(project, user_2)
-          add_members(private_group, user_3)
-          add_members(invitee_group, user_4, user_5, user_6)
+          project.add_member(user_2)
+          private_group.add_member(user_3)
+          invitee_group.add_members(user_4, user_5, user_6)
 
           private_group.invite_group(invitee_group)
           private_group.visit!
@@ -167,23 +167,13 @@ module QA
 
       private
 
-      # Adds members to group or project
-      #
-      # @param [Resource::Group|Resource::Project] group_or_project
-      # @param [Array<Resource::User] members
-      def add_members(group_or_project, *members)
-        members.each do |member|
-          group_or_project.add_member(member)
-        end
-      end
-
       # group_owner is also counted, free user member limit for a new private group is 5
       def create_private_group_with_members
-        add_members(private_group, user_2, user_3, user_4, user_5)
+        private_group.add_members(user_2, user_3, user_4, user_5)
       end
 
       def send_private_group_over_limit
-        add_members(invitee_group, user_6)
+        invitee_group.add_member(user_6)
         private_group.invite_group(invitee_group)
       end
 

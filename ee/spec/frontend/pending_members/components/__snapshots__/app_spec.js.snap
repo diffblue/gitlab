@@ -2,25 +2,25 @@
 
 exports[`PendingMembersApp renders pending members 1`] = `
 Array [
-  "<div data-testid=\\"pending-members-row\\" class=\\"gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between\\">
+  "<div data-testid=\\"pending-members-row\\" data-qa-selector=\\"pending_members\\" class=\\"gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between\\">
   <gl-avatar-link-stub target=\\"blank\\" href=\\"http://127.0.0.1:3000/334050-1\\" alt=\\"334050-1 334050-1\\">
     <gl-avatar-labeled-stub label=\\"334050-1 334050-1\\" sublabel=\\"\\" labellink=\\"\\" sublabellink=\\"\\" src=\\"https://www.gravatar.com/avatar/9987bae8f71451bb2d422d0596367b25?s=80&amp;d=identicon\\" size=\\"32\\"></gl-avatar-labeled-stub>
   </gl-avatar-link-stub>
-  <gl-button-stub category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" icon=\\"\\" buttontextclasses=\\"\\" role=\\"button\\" tabindex=\\"0\\">
+  <gl-button-stub category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" icon=\\"\\" buttontextclasses=\\"\\" data-qa-selector=\\"approve_member\\" role=\\"button\\" tabindex=\\"0\\">
     Approve
   </gl-button-stub>
-  <gl-modal-stub modalid=\\"approve-confirmation-modal-177\\" titletag=\\"h4\\" title=\\"Confirm approval\\" modalclass=\\"\\" size=\\"md\\" dismisslabel=\\"Close\\" arialabel=\\"\\" no-fade=\\"\\">
+  <gl-modal-stub modalid=\\"approve-confirmation-modal-177\\" titletag=\\"h4\\" title=\\"Confirm approval\\" modalclass=\\"\\" size=\\"md\\" dismisslabel=\\"Close\\" arialabel=\\"\\" data-qa-selector=\\"approve_member_confirmation_modal\\" no-fade=\\"\\">
     <p>Are you sure you want to approve 334050-1 334050-1?</p>
   </gl-modal-stub>
 </div>",
-  "<div data-testid=\\"pending-members-row\\" class=\\"gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between\\">
+  "<div data-testid=\\"pending-members-row\\" data-qa-selector=\\"pending_members\\" class=\\"gl-p-5 gl-border-0 gl-border-b-1! gl-border-gray-100 gl-border-solid gl-display-flex gl-justify-content-space-between\\">
   <gl-avatar-link-stub target=\\"blank\\">
     <gl-avatar-labeled-stub label=\\"first-invite@gitlab.com\\" sublabel=\\"\\" labellink=\\"\\" sublabellink=\\"\\" src=\\"https://www.gravatar.com/avatar/8bad6be3d5070e7f7865d91a50f44f1f?s=80&amp;d=identicon\\" size=\\"32\\"></gl-avatar-labeled-stub>
   </gl-avatar-link-stub>
-  <gl-button-stub category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" icon=\\"\\" buttontextclasses=\\"\\" role=\\"button\\" tabindex=\\"0\\">
+  <gl-button-stub category=\\"primary\\" variant=\\"default\\" size=\\"medium\\" icon=\\"\\" buttontextclasses=\\"\\" data-qa-selector=\\"approve_member\\" role=\\"button\\" tabindex=\\"0\\">
     Approve
   </gl-button-stub>
-  <gl-modal-stub modalid=\\"approve-confirmation-modal-178\\" titletag=\\"h4\\" title=\\"Confirm approval\\" modalclass=\\"\\" size=\\"md\\" dismisslabel=\\"Close\\" arialabel=\\"\\" no-fade=\\"\\">
+  <gl-modal-stub modalid=\\"approve-confirmation-modal-178\\" titletag=\\"h4\\" title=\\"Confirm approval\\" modalclass=\\"\\" size=\\"md\\" dismisslabel=\\"Close\\" arialabel=\\"\\" data-qa-selector=\\"approve_member_confirmation_modal\\" no-fade=\\"\\">
     <p>Are you sure you want to approve first-invite@gitlab.com?</p>
   </gl-modal-stub>
 </div>",
