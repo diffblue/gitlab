@@ -122,6 +122,7 @@ RSpec.describe Ci::BuildRunnerPresenter do
               'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
               'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
             }
+            ci_build.runner = build_stubbed(:ci_runner)
           end
 
           it 'adds the first ID token to the Vault server payload' do
