@@ -4,6 +4,8 @@ module Security
   module Orchestration
     class AssignService < ::BaseContainerService
       def execute
+        validate_access!
+
         res = create_or_update_security_policy_configuration
 
         return success if res
@@ -15,6 +17,12 @@ module Security
       end
 
       private
+
+      def validate_access!
+        return if current_user.can?(:modify_security_policy, container)
+
+        raise Gitlab::Access::AccessDeniedError
+      end
 
       def create_or_update_security_policy_configuration
         return unassign_policy_project if policy_project_id.blank? && has_existing_policy?
