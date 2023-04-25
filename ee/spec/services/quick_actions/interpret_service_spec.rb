@@ -454,7 +454,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       let(:content) { "/summarize_diff" }
 
       before do
-        stub_licensed_features(summarize_diff_quick_action: true)
+        stub_licensed_features(summarize_mr_changes: true)
       end
 
       context "when :openai_experimentation feature flag is disabled" do
@@ -486,9 +486,9 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           stub_feature_flags(openai_experimentation: true)
         end
 
-        context "when summarize_diff_quick_action is disabled" do
+        context "when summarize_mr_changes is disabled" do
           before do
-            stub_licensed_features(summarize_diff_quick_action: false)
+            stub_licensed_features(summarize_mr_changes: false)
           end
 
           it "doesn't apply /summarize_diff" do

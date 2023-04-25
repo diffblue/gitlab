@@ -29,7 +29,7 @@ module EE
           condition do
             ::Feature.enabled?(:openai_experimentation, current_user) &&
               ::Feature.enabled?(:summarize_diff_quick_action, current_user) &&
-              ::License.feature_available?(:summarize_diff_quick_action)
+              ::License.feature_available?(:summarize_mr_changes)
           end
           command :summarize_diff do
             ::MergeRequests::Llm::SummarizeMergeRequestWorker.new.perform(
