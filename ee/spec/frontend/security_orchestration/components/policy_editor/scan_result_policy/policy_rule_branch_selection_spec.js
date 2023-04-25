@@ -5,6 +5,7 @@ import PolicyRuleBranchSelection from 'ee/security_orchestration/components/poli
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ALL_PROTECTED_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
+import { SPECIFIC_BRANCHES } from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('PolicyRuleBranchSelection', () => {
   let wrapper;
@@ -101,6 +102,28 @@ describe('PolicyRuleBranchSelection', () => {
       `('$title render the $component', ({ findFn, output }) => {
         expect(findFn().exists()).toBe(output);
       });
+    });
+
+    describe('specific branches default state', () => {
+      it.each`
+        initRule        | expectedResult
+        ${DEFAULT_RULE} | ${ALL_PROTECTED_BRANCHES.value}
+        ${UPDATED_RULE} | ${SPECIFIC_BRANCHES.value}
+      `(
+        'should select branch selector based on selected branches for a group',
+        ({ initRule, expectedResult }) => {
+          factory(
+            {
+              initRule,
+            },
+            {
+              namespaceType: NAMESPACE_TYPES.GROUP,
+            },
+          );
+
+          expect(findGroupLevelProtectedBranchesSelector().props('selected')).toBe(expectedResult);
+        },
+      );
     });
 
     describe('specific branches input', () => {

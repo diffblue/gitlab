@@ -1,5 +1,6 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
+import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
 import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
@@ -48,12 +49,14 @@ describe('PolicyRuleBuilder', () => {
         ...provide,
       },
       stubs: {
+        DefaultRuleBuilder,
         BaseLayoutComponent,
       },
     });
   };
 
   const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
+  const findEmptyScanRuleBuilder = () => wrapper.findComponent(DefaultRuleBuilder);
   const findSecurityScanRule = () => wrapper.findComponent(SecurityScanRuleBuilder);
   const findLicenseScanRule = () => wrapper.findComponent(LicenseScanRuleBuilder);
 
@@ -69,6 +72,7 @@ describe('PolicyRuleBuilder', () => {
     });
 
     it('does not render the license scan or security scan rule', () => {
+      expect(findEmptyScanRuleBuilder().exists()).toBe(true);
       expect(findLicenseScanRule().exists()).toBe(false);
       expect(findSecurityScanRule().exists()).toBe(false);
     });

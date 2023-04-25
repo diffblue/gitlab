@@ -39062,6 +39062,9 @@ msgstr ""
 msgid "ScanResultPolicy|Pre-existing"
 msgstr ""
 
+msgid "ScanResultPolicy|Select a scan type before adding criteria"
+msgstr ""
+
 msgid "ScanResultPolicy|Severity is:"
 msgstr ""
 
@@ -39069,6 +39072,9 @@ msgid "ScanResultPolicy|Status is:"
 msgstr ""
 
 msgid "ScanResultPolicy|When %{scanType} find any license %{matchType} %{licenseType} in an open merge request targeting the %{branches} and the licences match all of the following criteria"
+msgstr ""
+
+msgid "ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} and match %{boldDescription} of the following criteria"
 msgstr ""
 
 msgid "ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) more than %{vulnerabilitiesAllowed} %{boldDescription} of the following criteria:"
@@ -51692,6 +51698,9 @@ msgid "ago"
 msgstr ""
 
 msgid "alert"
+msgstr ""
+
+msgid "all"
 msgstr ""
 
 msgid "allowed to fail"

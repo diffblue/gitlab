@@ -1,13 +1,12 @@
 <script>
-import { __ } from '~/locale';
 import { SCAN_FINDING, LICENSE_FINDING } from './lib';
-import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import SecurityScanRuleBuilder from './security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from './license_scan_rule_builder.vue';
+import DefaultRuleBuilder from './default_rule_builder.vue';
 
 export default {
   components: {
-    BaseLayoutComponent,
+    DefaultRuleBuilder,
     SecurityScanRuleBuilder,
     LicenseScanRuleBuilder,
   },
@@ -36,19 +35,13 @@ export default {
       this.$emit('changed', value);
     },
   },
-  i18n: {
-    scanResultIfLabel: __('if'),
-  },
 };
 </script>
 
 <template>
-  <base-layout-component
+  <default-rule-builder
     v-if="isEmptyRule"
-    :rule-label="$options.i18n.scanResultIfLabel"
-    :show-label="false"
-    :show-scan-type-dropdown="true"
-    :type="initRule.type"
+    :init-rule="initRule"
     @changed="updateRule"
     @remove="removeRule"
   />
@@ -56,7 +49,6 @@ export default {
   <security-scan-rule-builder
     v-else-if="isSecurityRule"
     :init-rule="initRule"
-    :rule-label="$options.i18n.scanResultIfLabel"
     @changed="updateRule"
     @remove="removeRule"
   />
@@ -64,7 +56,6 @@ export default {
   <license-scan-rule-builder
     v-else-if="isLicenseRule"
     :init-rule="initRule"
-    :rule-label="$options.i18n.scanResultIfLabel"
     @changed="updateRule"
     @remove="removeRule"
   />

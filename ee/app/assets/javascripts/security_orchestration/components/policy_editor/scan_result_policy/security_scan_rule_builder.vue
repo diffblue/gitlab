@@ -32,11 +32,6 @@ export default {
       type: Object,
       required: true,
     },
-    ruleLabel: {
-      type: String,
-      required: false,
-      default: '',
-    },
   },
   data() {
     const {
