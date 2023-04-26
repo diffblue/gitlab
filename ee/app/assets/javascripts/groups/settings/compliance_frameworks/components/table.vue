@@ -59,6 +59,7 @@ export default {
   },
   data() {
     return {
+      markedForEdit: {},
       markedForDeletion: {},
       deletingFrameworksIds: [],
       complianceFrameworks: [],
@@ -164,6 +165,11 @@ export default {
       this.message = null;
     },
     markForAdd() {
+      this.markedForEdit = {};
+      this.$refs.formModal.show();
+    },
+    markForEdit(framework) {
+      this.markedForEdit = framework;
       this.$refs.formModal.show();
     },
     markForDeletion(framework) {
@@ -290,6 +296,7 @@ export default {
           :framework="framework"
           :loading="isDeleting(framework.id)"
           @delete="markForDeletion"
+          @edit="markForEdit"
           @setDefault="setDefaultFramework"
           @removeDefault="setDefaultFramework"
         />
@@ -312,6 +319,7 @@ export default {
     <form-modal
       v-if="glFeatures.manageComplianceFrameworksModalsRefactor"
       ref="formModal"
+      :framework="markedForEdit"
       @change="onChange"
     />
     <delete-modal

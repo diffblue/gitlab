@@ -12,6 +12,7 @@ import updateComplianceFrameworkMutation from 'ee/groups/settings/compliance_fra
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { visitUrl } from '~/lib/utils/url_utility';
+import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
 
 import {
   validFetchOneResponse,
@@ -20,6 +21,11 @@ import {
   validUpdateResponse,
   errorUpdateResponse,
 } from '../mock_data';
+
+jest.mock('ee/groups/settings/compliance_frameworks/utils', () => ({
+  ...jest.requireActual('ee/groups/settings/compliance_frameworks/utils'),
+  isModalsRefactorEnabled: jest.fn(),
+}));
 
 Vue.use(VueApollo);
 
@@ -191,6 +197,44 @@ describe('EditForm', () => {
       expect(update).toHaveBeenCalledWith(updateProps);
       expect(findFormStatus().props('loading')).toBe(true);
       expect(visitUrl).toHaveBeenCalledWith(provideData.groupEditPath);
+    });
+
+    it('emits success event instead of redirecting when "manageComplianceFrameworksModalsRefactor" feature flag is enabled', async () => {
+      wrapper = createComponent([
+        [getComplianceFrameworkQuery, fetchOne],
+        [updateComplianceFrameworkMutation, update],
+      ]);
+      isModalsRefactorEnabled.mockReturnValue(true);
+
+      await submitForm(name, description, pipelineConfigurationFullPath, color);
+
+      expect(wrapper.emitted('success')).toHaveLength(1);
+      expect(visitUrl).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('onCancel', () => {
+    beforeEach(async () => {
+      wrapper = createComponent([
+        [getComplianceFrameworkQuery, fetchOne],
+        [updateComplianceFrameworkMutation, update],
+      ]);
+      await waitForPromises();
+    });
+
+    it('should emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
+      isModalsRefactorEnabled.mockReturnValue(true);
+
+      findForm().vm.$emit('cancel');
+
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
+    });
+
+    it('should not emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is disabled', () => {
+      isModalsRefactorEnabled.mockReturnValue(false);
+      findForm().vm.$emit('cancel');
+
+      expect(wrapper.emitted('cancel')).toBeUndefined();
     });
   });
 });

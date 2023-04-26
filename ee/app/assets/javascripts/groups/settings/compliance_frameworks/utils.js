@@ -64,5 +64,7 @@ export function isModalsRefactorEnabled() {
     return false;
   }
 
-  return document.body.dataset.page !== 'groups:compliance_frameworks:new';
+  return !['groups:compliance_frameworks:edit', 'groups:compliance_frameworks:new'].includes(
+    document.body.dataset.page,
+  );
 }

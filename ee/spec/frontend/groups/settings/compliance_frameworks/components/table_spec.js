@@ -9,6 +9,7 @@ import EmptyState from 'ee/groups/settings/compliance_frameworks/components/tabl
 import TableActions from 'ee/groups/settings/compliance_frameworks/components/table_actions.vue';
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
+import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import FormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 import { PIPELINE_CONFIGURATION_PATH_FORMAT } from 'ee/groups/settings/compliance_frameworks/constants';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
@@ -78,6 +79,7 @@ describe('Table', () => {
         },
         stubs: {
           CreateForm: stubComponent(CreateForm),
+          EditForm: stubComponent(EditForm),
           GlLoadingIcon,
           GlModal: stubComponent(GlModal, {
             methods: {
@@ -386,6 +388,40 @@ describe('Table', () => {
 
       it('shows modal when clicking add framework button', () => {
         findAddBtn().vm.$emit('click', new MouseEvent('click'));
+
+        expect(mockModalShow).toHaveBeenCalled();
+      });
+
+      it('hides modal when successful', () => {
+        const successMessage = 'woo!';
+        findFormModal().vm.$emit('change', successMessage);
+
+        expect(mockModalHide).toHaveBeenCalled();
+      });
+
+      it('shows a toast when successful', () => {
+        const successMessage = 'woo!';
+        findFormModal().vm.$emit('change', successMessage);
+
+        expect(mockToastShow).toHaveBeenCalledWith(successMessage);
+      });
+    });
+  });
+
+  describe('edit framework', () => {
+    describe('with "manageComplianceFrameworksModalsRefactor" feature flag enabled', () => {
+      beforeEach(async () => {
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount, {
+          manageComplianceFrameworksModalsRefactor: true,
+        });
+        await waitForPromises();
+      });
+
+      it('shows modal when clicking edit framework button', () => {
+        const tableAction = findAllTableActions().at(0);
+        const framework = tableAction.props('framework');
+
+        tableAction.vm.$emit('edit', framework);
 
         expect(mockModalShow).toHaveBeenCalled();
       });
