@@ -16,7 +16,7 @@ import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import { getIterationPeriod } from '../utils';
-import { iterationSortDesc } from '../constants';
+import { CADENCE_AND_DUE_DATE_DESC } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
 import projectQuery from '../queries/project_iterations_in_cadence.query.graphql';
 import TimeboxStatusBadge from './timebox_status_badge.vue';
@@ -172,7 +172,7 @@ export default {
       return this.automatic && this.durationInWeeks;
     },
     iterationSortOrder() {
-      return this.iterationState === STATUS_CLOSED ? iterationSortDesc : null;
+      return this.iterationState === STATUS_CLOSED ? CADENCE_AND_DUE_DATE_DESC : null;
     },
   },
   created() {

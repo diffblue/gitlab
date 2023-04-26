@@ -1,13 +1,4 @@
-export const GroupBy = {
-  None: 'none',
-  Label: 'label',
-};
+export const CADENCE_AND_DUE_DATE_DESC = 'CADENCE_AND_DUE_DATE_DESC';
 
-export const iterationStates = {
-  closed: 'closed',
-  upcoming: 'upcoming',
-  expired: 'expired',
-  all: 'all',
-};
-
-export const iterationSortDesc = 'CADENCE_AND_DUE_DATE_DESC';
+export const GROUP_BY_LABEL = 'label';
+export const GROUP_BY_NONE = 'none';

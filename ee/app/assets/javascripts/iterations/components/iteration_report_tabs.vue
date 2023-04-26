@@ -7,7 +7,7 @@ import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 import { VARIANT_STANDALONE } from '~/sidebar/components/labels/labels_select_widget/constants';
-import { GroupBy } from '../constants';
+import { GROUP_BY_LABEL, GROUP_BY_NONE } from '../constants';
 import IterationReportIssues from './iteration_report_issues.vue';
 
 export default {
@@ -17,11 +17,11 @@ export default {
   },
   selectOptions: [
     {
-      value: GroupBy.None,
+      value: GROUP_BY_NONE,
       text: __('None'),
     },
     {
-      value: GroupBy.Label,
+      value: GROUP_BY_LABEL,
       text: __('Label'),
     },
   ],
@@ -71,13 +71,13 @@ export default {
   data() {
     return {
       issueCount: undefined,
-      groupBySelection: GroupBy.None,
+      groupBySelection: GROUP_BY_NONE,
       selectedLabels: [],
     };
   },
   computed: {
     shouldShowFilterByLabel() {
-      return this.groupBySelection === GroupBy.Label;
+      return this.groupBySelection === GROUP_BY_LABEL;
     },
     showEmptyState() {
       return this.selectedLabels.length && !this.labelsWithIssues.length;
@@ -109,7 +109,7 @@ export default {
       this.selectedLabels.splice(index, 1);
     },
     handleSelectChange() {
-      if (this.groupBySelection === GroupBy.None) {
+      if (this.groupBySelection === GROUP_BY_NONE) {
         this.selectedLabels = [];
       }
     },

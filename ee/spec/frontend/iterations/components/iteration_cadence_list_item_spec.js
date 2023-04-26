@@ -5,7 +5,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
-import { iterationSortDesc } from 'ee/iterations/constants';
+import { CADENCE_AND_DUE_DATE_DESC } from 'ee/iterations/constants';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
@@ -180,9 +180,7 @@ describe('Iteration cadence list item', () => {
     await waitForPromises();
 
     expect(iterationsQueryHandler).toHaveBeenCalledWith(
-      expect.objectContaining({
-        sort: iterationSortDesc,
-      }),
+      expect.objectContaining({ sort: CADENCE_AND_DUE_DATE_DESC }),
     );
   });
 

@@ -12,13 +12,13 @@ import {
 } from '@gitlab/ui';
 import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
+import { STATUS_ALL } from '~/issues/constants';
 import { s__, __, sprintf } from '~/locale';
 import { getDayName } from '~/lib/utils/datetime_utility';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
 import readCadence from '../queries/iteration_cadence.query.graphql';
 import iterationsInCadence from '../queries/group_iterations_in_cadence.query.graphql';
-import { iterationStates } from '../constants';
 
 const i18n = Object.freeze({
   automatedScheduling: {
@@ -237,7 +237,7 @@ export default {
           fullPath: this.fullPath,
           iterationCadenceId: convertToGraphQLId(TYPENAME_ITERATIONS_CADENCE, this.cadenceId),
           firstPageSize: 1,
-          state: iterationStates.all,
+          state: STATUS_ALL,
         };
       },
       update({ workspace } = {}) {
