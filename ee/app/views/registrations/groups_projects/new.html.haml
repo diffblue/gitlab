@@ -28,43 +28,13 @@
             = form_tag users_sign_up_groups_projects_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4 js-groups-projects-form' do
               = form_errors(@group, type: "Group")
               = form_errors(@project, type: "Project")
+              = render 'layouts/flash'
 
-              = fields_for :group do |gf|
-                .row
-                  .form-group.group-name-holder.col-sm-12
-                    = gf.label :name, class: 'gl-font-weight-bold' do
-                      = _('Group name')
-
-                    - if @group.persisted?
-                      = gf.text_field :name, class: 'form-control js-group-path-source',
-                        disabled: true
-                      = gf.hidden_field :id
-                    - else
-                      = gf.text_field :name, class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-tooltip js-group-name-field',
-                        required: true,
-                        autofocus: true,
-                        data: { title: _('Projects are organized into groups'), placement: 'right', show: true, qa_selector: 'group_name_field'}
-                      = gf.hidden_field :path, class: 'form-control js-autofill-group-path js-group-path-source'
-                      = gf.hidden_field :parent_id, id: 'group_parent_id'
-
-              = fields_for :project do |pf|
-                #blank-project-name.row
-                  .form-group.project-name.col-sm-12
-                    = pf.label :name, class: 'gl-font-weight-bold' do
-                      %span= _('Project name')
-                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source',
-                     required: true, data: { track_label: 'blank_project', track_action: 'activate_form_input', track_property: 'project_name', track_value: '', qa_selector: 'project_name_field' }
-              %p.form-text.gl-text-center
-                = _('Your project will be created at:')
-
-              %p.form-text.gl-text-center.monospace.gl-overflow-wrap-break
-                = root_url
-                %span.js-group-path-display>= _('{group}')
-                %span>= _('/')
-                %span.js-project-path-display>= _('{project}')
-
-              %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
-                = _('You can always change your URL later')
+              .js-create-import-group-project-fields{ data: { group_persisted: @group.persisted?.to_s,
+                group_id: @group.id,
+                group_name: @group.name,
+                project_name: @project.name,
+                root_url: root_url } }
 
               .form-group
                 .form-check.gl-mb-3
@@ -81,31 +51,14 @@
                 = form_errors(@group, type: "Group")
                 = render 'layouts/flash'
 
-                = fields_for :group do |gf|
-                  .row
-                    .form-group.group-name-holder.col-sm-12
-                      = gf.label :name, class: 'gl-font-weight-bold' do
-                        = _('Group name')
-
-                      = gf.text_field :name, id: 'import_group_name', class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-field has-tooltip',
-                        required: true,
-                        data: { title: _('Projects are organized into groups'), placement: 'right', qa_selector: 'import_group_name_field' }
-                      = gf.hidden_field :path, id: 'import_group_path', class: 'form-control js-autofill-group-path js-import-group-path-source'
+                .js-create-import-group-project-fields{ data: { import_group: 'true',
+                  group_persisted: @group.persisted?.to_s,
+                  group_id: @group.id,
+                  group_name: @group.name,
+                  root_url: root_url } }
 
                 = hidden_field_tag :import_url, nil, class: 'js-import-url'
                 = submit_tag nil, class: 'gl-display-none'
-
-                %p.form-text.gl-text-center
-                  = _('Your project will be created at:')
-
-                %p.form-text.gl-text-center.monospace.gl-overflow-wrap-break
-                  = root_url
-                  %span.js-import-group-path-display>= _('{group}')
-                  %span>= _('/')
-                  %span>= _('{project}')
-
-                %p.form-text.text-muted.gl-text-center{ class: 'gl-mb-5!' }
-                  = _('You can always change your URL later')
 
               .js-import-project-buttons
                 = render 'projects/import_project_pane', destination_namespace_id: @namespace&.id
