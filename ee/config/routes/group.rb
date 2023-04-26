@@ -11,7 +11,13 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     namespace :settings do
       resource :reporting, only: [:show], controller: 'reporting'
-      resources :domain_verification, only: [:index], controller: 'domain_verification'
+      resources :domain_verification, only: [:index, :new, :create, :show, :update, :destroy], constraints: { id: %r{[^/]+} } do
+        member do
+          post :verify
+          post :retry_auto_ssl
+          delete :clean_certificate
+        end
+      end
       resource :merge_requests, only: [:update]
     end
 
