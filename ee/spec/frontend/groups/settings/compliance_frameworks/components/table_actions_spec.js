@@ -22,7 +22,7 @@ describe('TableActions', () => {
   const findRemoveDefaultButton = () =>
     wrapper.findByTestId('compliance-framework-remove-default-button');
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, glFeatures = {}) => {
     wrapper = extendedWrapper(
       shallowMount(TableActions, {
         propsData: {
@@ -32,6 +32,9 @@ describe('TableActions', () => {
         },
         directives: {
           GlTooltip: createMockDirective('gl-tooltip'),
+        },
+        provide: {
+          glFeatures,
         },
       }),
     );
@@ -60,6 +63,17 @@ describe('TableActions', () => {
 
     displaysTheButton(button, 'pencil', EDIT_BUTTON_LABEL);
     expect(button.attributes('href')).toBe('group/framework/1/edit');
+  });
+
+  it('emits an "edit" event when clicked and the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
+    createComponent({}, { manageComplianceFrameworksModalsRefactor: true });
+
+    const button = findEditButton();
+
+    button.vm.$emit('click', new MouseEvent('click'));
+
+    expect(wrapper.emitted('edit')).toHaveLength(1);
+    expect(wrapper.emitted('edit')[0][0]).toMatchObject(framework);
   });
 
   it('displays a dropdown Button', () => {

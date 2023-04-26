@@ -1,5 +1,8 @@
 <script>
 import { GlButton, GlDropdown, GlDropdownItem, GlTooltipDirective } from '@gitlab/ui';
+
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+
 import {
   OPTIONS_BUTTON_LABEL,
   DELETE_BUTTON_LABEL,
@@ -17,6 +20,7 @@ export default {
     GlDropdown,
     GlDropdownItem,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     framework: {
       type: Object,
@@ -39,6 +43,16 @@ export default {
       return Boolean(this.framework.default);
     },
   },
+  methods: {
+    onEdit(event) {
+      if (!this.glFeatures.manageComplianceFrameworksModalsRefactor) {
+        return;
+      }
+
+      event.preventDefault();
+      this.$emit('edit', this.framework);
+    },
+  },
 };
 </script>
 <template>
@@ -52,6 +66,7 @@ export default {
         data-testid="compliance-framework-edit-button"
         icon="pencil"
         category="tertiary"
+        @click="onEdit"
       />
       <gl-dropdown
         v-gl-tooltip.hover.focus="$options.i18n.optionsFramework"
