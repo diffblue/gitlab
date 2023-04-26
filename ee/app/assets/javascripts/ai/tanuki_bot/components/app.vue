@@ -1,7 +1,10 @@
 <script>
 import { GlDrawer, GlIcon, GlBadge } from '@gitlab/ui';
+import { mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 import { helpCenterState } from '~/super_sidebar/constants';
+import TanukiBotChat from './tanuki_bot_chat.vue';
+import TanukiBotChatInput from './tanuki_bot_chat_input.vue';
 
 export default {
   name: 'TanukiBotChatApp',
@@ -13,6 +16,8 @@ export default {
     GlIcon,
     GlDrawer,
     GlBadge,
+    TanukiBotChat,
+    TanukiBotChatInput,
   },
   data() {
     return {
@@ -20,6 +25,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['sendMessage']),
     closeDrawer() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },
@@ -42,6 +48,12 @@ export default {
           <h3 class="gl-my-0 gl-mx-3">{{ $options.i18n.tanukiBot }}</h3>
           <gl-badge variant="muted">{{ $options.i18n.experiment }}</gl-badge>
         </span>
+      </template>
+
+      <tanuki-bot-chat />
+
+      <template #footer>
+        <tanuki-bot-chat-input @submit="sendMessage" />
       </template>
     </gl-drawer>
     <div

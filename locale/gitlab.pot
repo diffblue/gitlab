@@ -43701,7 +43701,25 @@ msgstr ""
 msgid "Take a look at the documentation to discover all of GitLab’s capabilities."
 msgstr ""
 
+msgid "TanukiBot|Ask a question about GitLab"
+msgstr ""
+
+msgid "TanukiBot|For example, %{linkStart}what is a fork?%{linkEnd}"
+msgstr ""
+
+msgid "TanukiBot|Give feedback"
+msgstr ""
+
+msgid "TanukiBot|Sources"
+msgstr ""
+
 msgid "TanukiBot|Tanuki Bot"
+msgstr ""
+
+msgid "TanukiBot|There was an error communicating with Tanuki Bot. Please reach out to GitLab support for more assistance or try again later."
+msgstr ""
+
+msgid "TanukiBot|What is a fork?"
 msgstr ""
 
 msgid "Target"
