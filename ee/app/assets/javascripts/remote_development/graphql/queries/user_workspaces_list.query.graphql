@@ -1,5 +1,5 @@
-query userWorkspacesList($username: String) {
-  user(username: $username) {
+query userWorkspacesList {
+  currentUser {
     id
     workspaces @client {
       nodes {
