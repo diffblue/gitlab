@@ -50,7 +50,7 @@ module EE
 
           def security_and_compliance_menu_item
             unless ::License.feature_available?(:license_scanning)
-              return ::Sidebars::NilMenuItem.new(item_id: :admin_templates)
+              return ::Sidebars::NilMenuItem.new(item_id: :admin_security_and_compliance)
             end
 
             ::Sidebars::MenuItem.new(
