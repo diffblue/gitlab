@@ -14,7 +14,7 @@ Prerequisites:
 
 - Your GitLab installation must not use a [relative URL](https://docs.gitlab.com/omnibus/settings/configuration.html#configure-a-relative-url-for-gitlab).
 - **For Jira Server**, you must have a Jira username and password.
-- **For Jira Cloud**, you must have an [API token](#create-a-jira-cloud-api-token) and
+- **For Jira Cloud**, you must have a [Jira Cloud API token](#create-a-jira-cloud-api-token) and
   the email address you used to create the token.
 
 You can enable the Jira issue integration by configuring your project settings in GitLab.
@@ -88,7 +88,7 @@ To migrate from Jira Server to Jira Cloud in GitLab and maintain your Jira integ
 1. Select **Jira**.
 1. In **Web URL**, enter the new Jira site URL (for example, `https://myjirasite.atlassian.net`).
 1. In **Username or Email**, enter the username or email registered on your Jira profile.
-1. [Create an API token](#create-a-jira-cloud-api-token), and copy that value.
+1. [Create a Jira Cloud API token](#create-a-jira-cloud-api-token), and copy the token value.
 1. In **Password or API token**, paste the API token value.
 1. Optional. Select **Test settings** to check if the connection is working.
 1. Select **Save changes**.

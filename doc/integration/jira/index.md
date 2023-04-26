@@ -31,7 +31,7 @@ including related branches, commits, and merge requests. To configure the Jira d
 - **For Jira Cloud**, use the [GitLab for Jira Cloud app](connect-app.md) developed by GitLab.
 - **For Jira Data Center or Jira Server**, use the [Jira DVCS connector](dvcs/index.md) developed by Atlassian.
 
-### Integration capabilities
+## Jira integration capabilities
 
 | Capability | Jira issue integration | Jira development panel |
 |-|-|-|
