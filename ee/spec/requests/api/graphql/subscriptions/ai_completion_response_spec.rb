@@ -12,7 +12,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
 
   let(:current_user) { nil }
   let(:subscribe) { get_subscription(resource, current_user) }
-  let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :aiCompletionResponse) }
+  let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
 
   before do
     stub_const('GitlabSchema', Graphql::Subscriptions::ActionCable::MockGitlabSchema)

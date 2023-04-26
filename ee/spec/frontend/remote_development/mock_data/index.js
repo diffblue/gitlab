@@ -24,7 +24,7 @@ export const WORKSPACE_QUERY_RESULT = {
 
 export const USER_WORKSPACES_QUERY_RESULT = {
   data: {
-    user: {
+    currentUser: {
       id: 1,
       workspaces: {
         nodes: [
@@ -64,7 +64,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
 
 export const USER_WORKSPACES_QUERY_EMPTY_RESULT = {
   data: {
-    user: {
+    currentUser: {
       id: 1,
       workspaces: {
         nodes: [],

@@ -1,0 +1,23 @@
+---
+version: 1
+title: Sessions over Time
+type: LineChart
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowSessions.count
+    timeDimensions:
+      - dimension: SnowplowSessions.startAt
+        granularity: day
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+options:
+  xAxis:
+    name: Time
+    type: time
+  yAxis:
+    name: Counts
+    type: time

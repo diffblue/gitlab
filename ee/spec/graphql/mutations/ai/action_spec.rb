@@ -10,7 +10,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
   describe '#ready?' do
-    let(:arguments) { { summarize_comments: { resource_id: resource_id } } }
+    let(:arguments) { { summarize_comments: { resource_id: resource_id }, markup_format: :markdown } }
 
     it { is_expected.to be_ready(**arguments) }
 

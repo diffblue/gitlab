@@ -1,12 +1,25 @@
 <script>
 import { GlAlert, GlButton, GlLink, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
-import { getTimeago } from '~/lib/utils/datetime_utility';
 import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
-import { WORKSPACE_STATES, ROUTES } from '../constants';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
+import { WORKSPACE_STATES, ROUTES, WORKSPACE_DESIRED_STATES } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
+import workspaceUpdateMutation from '../graphql/mutations/workspace_update.mutation.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 import WorkspaceStateIndicator from '../components/list/workspace_state_indicator.vue';
+import TerminateWorkspaceButton from '../components/list/terminate_workspace_button.vue';
+
+export const i18n = {
+  updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
+  tableColumnHeaders: {
+    name: __('Name'),
+    preview: __('Preview'),
+  },
+  heading: s__('Workspaces|Workspaces'),
+  newWorkspaceButton: s__('Workspaces|New workspace'),
+};
 
 export default {
   components: {
@@ -17,18 +30,13 @@ export default {
     GlTableLite,
     WorkspaceEmptyState,
     WorkspaceStateIndicator,
+    TerminateWorkspaceButton,
   },
-  inject: ['currentUsername'],
   apollo: {
     workspaces: {
       query: userWorkspacesListQuery,
-      variables() {
-        return {
-          username: this.currentUsername,
-        };
-      },
       update(data) {
-        return data.user.workspaces.nodes;
+        return data.currentUser.workspaces.nodes;
       },
       error(err) {
         logError(err);
@@ -41,12 +49,12 @@ export default {
   fields: [
     {
       key: 'name',
-      label: __('Name'),
+      label: i18n.tableColumnHeaders.name,
       thClass: 'gl-w-25p',
     },
     {
       key: 'preview',
-      label: __('Preview'),
+      label: i18n.tableColumnHeaders.preview,
       thClass: 'gl-w-30p',
     },
     {
@@ -78,17 +86,36 @@ export default {
     clearError() {
       this.error = '';
     },
-    deleteWorkspace: () => {
-      // TDOD: implement deleteWorkspace
+    terminateWorkspace(workspace) {
+      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.terminated });
     },
-    formatDate(lastUsed) {
-      return getTimeago().format(lastUsed);
+    updateWorkspace({ id, desiredState }) {
+      return this.$apollo
+        .mutate({
+          mutation: workspaceUpdateMutation,
+          variables: {
+            input: {
+              id: convertToGraphQLId(TYPE_WORKSPACE, id),
+              desiredState,
+            },
+          },
+        })
+        .then(({ data }) => {
+          const {
+            errors: [error],
+          } = data.workspaceUpdate;
+
+          if (error) {
+            this.error = error;
+          }
+        })
+        .catch((e) => {
+          logError(e);
+          this.error = i18n.updateWorkspaceFailedMessage;
+        });
     },
   },
-  i18n: {
-    heading: s__('Workspaces|Workspaces'),
-    newWorkspaceButton: s__('Workspaces|New workspace'),
-  },
+  i18n,
   WORKSPACE_STATES,
   ROUTES,
 };
@@ -132,7 +159,11 @@ export default {
           >
         </template>
         <template #cell(actions)="{ item }">
-          <gl-button icon="remove" @click="deleteWorkspace(item)" />
+          <terminate-workspace-button
+            :actual-state="item.actualState"
+            :desired-state="item.desiredState"
+            @click="terminateWorkspace(item)"
+          />
         </template>
       </gl-table-lite>
     </template>

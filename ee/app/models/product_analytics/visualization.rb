@@ -9,9 +9,11 @@ module ProductAnalytics
         project.repository.root_ref_sha,
         visualization_config_path(data)
       )
-      return unless config
 
-      new(config: config)
+      return new(config: config) if config
+
+      file = Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations', "#{data}.yaml")
+      new(config: File.read(file))
     end
 
     def initialize(config:)

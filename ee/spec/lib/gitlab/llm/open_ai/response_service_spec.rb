@@ -6,6 +6,8 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
+  let(:response_body) { 'Some response' }
+  let(:options) { {} }
 
   let(:ai_response_json) do
     '{
@@ -29,7 +31,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
     }'
   end
 
-  RSpec.shared_examples 'triggers ai completion subscription' do
+  shared_examples 'triggers ai completion subscription' do
     it 'triggers subscription' do
       uuid = 'u-u-i-d'
       allow(SecureRandom).to receive(:uuid).and_return(uuid)
@@ -37,7 +39,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
       data = {
         id: uuid,
         model_name: resource.class.name,
-        response_body: 'Some response',
+        response_body: response_body,
         errors: []
 
       }
@@ -47,12 +49,20 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
     end
   end
 
+  shared_examples 'with a markup format option' do
+    let(:options) { { markup_format: :html } }
+
+    it_behaves_like 'triggers ai completion subscription' do
+      let(:response_body) { '<p data-sourcepos="1:1-1:13" dir="auto">Some response</p>' }
+    end
+  end
+
   describe '#execute' do
-    subject { described_class.new(user, resource, ai_response_json, options: {}).execute }
+    subject { described_class.new(user, resource, ai_response_json, options: options).execute }
+
+    let_it_be(:resource) { create(:merge_request, source_project: project) }
 
     context 'without user' do
-      let_it_be(:resource) { create(:merge_request, source_project: project) }
-
       let(:user) { nil }
 
       it 'does not broadcast subscription' do
@@ -63,21 +73,29 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
     end
 
     context 'for a merge request' do
-      let_it_be(:resource) { create(:merge_request, source_project: project) }
+      it_behaves_like 'triggers ai completion subscription'
+      it_behaves_like 'with a markup format option'
+    end
+
+    context 'for a work item' do
+      let_it_be(:resource) { create(:work_item, project: project) }
 
       it_behaves_like 'triggers ai completion subscription'
+      it_behaves_like 'with a markup format option'
     end
 
     context 'for an issue' do
       let_it_be(:resource) { create(:issue, project: project) }
 
       it_behaves_like 'triggers ai completion subscription'
+      it_behaves_like 'with a markup format option'
     end
 
     context 'for an epic' do
       let_it_be(:resource) { create(:epic, group: group) }
 
       it_behaves_like 'triggers ai completion subscription'
+      it_behaves_like 'with a markup format option'
     end
   end
 end

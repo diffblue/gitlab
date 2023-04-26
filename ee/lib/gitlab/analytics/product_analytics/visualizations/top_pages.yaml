@@ -1,0 +1,16 @@
+---
+version: 1
+title: Top pages
+type: DataTable
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.pageViewsCount
+    dimensions:
+      - SnowplowTrackedEvents.pageUrlpath
+    limit: 100
+    timezone: UTC
+    filters: []
+    timeDimensions: []
+options: {}
