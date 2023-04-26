@@ -85,4 +85,69 @@ RSpec.describe IssuePolicy do
       end
     end
   end
+
+  describe 'generate_description' do
+    before do
+      stub_licensed_features(generate_description: true)
+      stub_feature_flags(generate_description_ai: project)
+    end
+
+    context 'when a member' do
+      context 'on a public project' do
+        before do
+          project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it { is_expected.to be_allowed(:generate_description) }
+
+        context 'when license is not set' do
+          before do
+            stub_licensed_features(generate_description: false)
+          end
+
+          it { is_expected.to be_disallowed(:generate_description) }
+        end
+
+        context 'when feature flag is not set' do
+          before do
+            stub_feature_flags(generate_description_ai: false)
+          end
+
+          it { is_expected.to be_disallowed(:generate_description) }
+        end
+
+        context 'on confidential issue' do
+          let_it_be(:issue) { create(:issue, :confidential, project: project) }
+
+          it { is_expected.to be_disallowed(:generate_description) }
+        end
+      end
+
+      context 'on a private project' do
+        let_it_be(:project) { create(:project, :private) }
+
+        it { is_expected.to be_disallowed(:generate_description) }
+      end
+
+      context 'on confidential issue' do
+        let_it_be(:issue) { create(:issue, :confidential, project: project) }
+
+        it { is_expected.to be_disallowed(:generate_description) }
+      end
+    end
+
+    context 'when not a member' do
+      let_it_be(:user) { create(:user) }
+
+      context 'on a public project' do
+        let_it_be(:project) { create(:project, :public) }
+
+        it { is_expected.to be_disallowed(:generate_description) }
+      end
+
+      context 'on a private project' do
+        it { is_expected.to be_disallowed(:generate_description) }
+      end
+    end
+  end
 end
