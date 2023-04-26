@@ -12,7 +12,7 @@
     %p.gl-text-gray-700.gl-font-lg
       = trial_selection_intro_text
 
-    .js-error-alert{ data: { errors: trial_errors(@namespace, @result) } }
+    .js-error-alert{ data: { errors: @create_errors } }
 
     = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group' do
       - if show_trial_namespace_select?

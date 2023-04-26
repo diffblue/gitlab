@@ -68,12 +68,6 @@ module TrialsHelper
     options
   end
 
-  def trial_errors(namespace, service_result)
-    # when select action is hit directly(not via render),
-    # service_result/namespace will be nil due to @result being nil
-    namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.errors&.presence
-  end
-
   def only_trialable_group_namespace
     trialable_group_namespaces.first if trialable_group_namespaces.count == 1
   end
