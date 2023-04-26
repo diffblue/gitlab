@@ -54,7 +54,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group
 
-        submit_new_group_trial_selection_form
+        submit_new_group_trial_selection_form(extra_params: { glm_content: 'discover-group-security' })
 
         expect_to_be_on_group_security_dashboard(group_for_path: Group.last)
       end
@@ -76,7 +76,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group(glm_source: glm_source)
 
-        submit_new_group_trial_selection_form
+        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source })
 
         expect_to_be_on_group_page
       end
@@ -98,7 +98,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group(glm_source: glm_source)
 
-        submit_new_group_trial_selection_form
+        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source })
 
         expect_to_be_on_group_page
       end

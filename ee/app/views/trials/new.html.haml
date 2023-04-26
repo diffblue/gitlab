@@ -12,7 +12,7 @@
     %p.gl-text-gray-700.gl-font-lg
       = s_('Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial.')
 
-    .js-error-alert{ data: { errors: trial_errors(@namespace, @result) } }
+    .js-error-alert{ data: { errors: @create_errors } }
 
     #js-trial-create-lead-form{ data: create_lead_form_data }
 

@@ -25,29 +25,33 @@ class TrialsController < ApplicationController
   def select; end
 
   def create_lead
-    @result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
+    lead_result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
 
-    if @result.success?
-      @namespace = helpers.only_trialable_group_namespace
-      if @namespace.present? # only 1 possible namespace to apply trial, so we'll just automatically apply it
-        params[:namespace_id] = @namespace.id
+    if lead_result.success?
+      namespace = helpers.only_trialable_group_namespace
+      if namespace.present? # only 1 possible namespace to apply trial, so we'll just automatically apply it
+        params[:namespace_id] = namespace.id
 
-        @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
+        trial_result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
 
-        if @result.success?
-          Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
+        if trial_result.success?
+          Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
 
-          redirect_to trial_success_path(@namespace)
+          redirect_to trial_success_path(namespace)
         else
           # We couldn't apply the trial, so we'll bounce the user to the select form with errors
           # and give them option to create a group or try to re-apply the trial on the 1 namespace
           # in the select dropdown.
+          @create_errors = trial_result.errors
+
           render :select
         end
       else # more than 1 possible namespace for trial, so we'll ask user and then apply trial
         redirect_to select_trials_path(glm_tracking_params)
       end
     else
+      @create_errors = lead_result.errors
+
       render :new
     end
   end
@@ -55,7 +59,7 @@ class TrialsController < ApplicationController
   def apply
     # We only get to this action after the `create_lead` action has at least been tried, so the lead is captured
     # already.
-    @namespace =
+    namespace =
       if find_namespace?
         current_user.namespaces.find_by_id(params[:namespace_id])
       elsif can_create_group?
@@ -64,26 +68,31 @@ class TrialsController < ApplicationController
         Groups::CreateService.new(current_user, name: name, path: path).execute
       end
 
-    return render_404 unless @namespace
+    return render_404 unless namespace.present?
 
-    if @namespace.persisted? # we possibly create a new namespace when we apply the trial due to `select` template form
+    if namespace.persisted? # we possibly create a new namespace when we apply the trial due to `select` template form
       # namespace_id already set if namespace is found, resetting will not hurt and will lend to predictably always
       # setting as an integer instead of string sometimes and integer other times.
-      params[:namespace_id] = @namespace.id
-      @result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
+      params[:namespace_id] = namespace.id
+      # test the indifferent access here...
+      result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
 
-      if @result.success?
-        Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
+      if result.success?
+        Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
 
-        redirect_to trial_success_path(@namespace)
+        redirect_to trial_success_path(namespace)
       else
         # We couldn't apply the trial, so we'll bounce the user to the select form with errors
         # and give them the option to create a group or try to re-apply the trial on a namespace.
         # This assumes that the lead was already captured on initial try of `create_lead`.
+        @create_errors = result.errors
+
         render :select
       end
     else
       # We didn't successfully create the group, so we get dumped here with form errors.
+      @create_errors = namespace.errors.full_messages.to_sentence
+
       render :select
     end
   end
@@ -113,10 +122,14 @@ class TrialsController < ApplicationController
   end
 
   def company_params
+    lead_params.merge(extra_params)
+  end
+
+  def lead_params
     params.permit(
       :company_name, :company_size, :first_name, :last_name, :phone_number,
       :country, :state, :website_url, :glm_content, :glm_source
-    ).merge(extra_params)
+    ).to_h
   end
 
   def extra_params
@@ -132,12 +145,15 @@ class TrialsController < ApplicationController
     attrs
   end
 
+  def trial_params
+    params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).to_h
+  end
+
   def apply_trial_params
     gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
 
     {
-      trial_user_information: params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content)
-                                    .merge(gl_com_params),
+      trial_user_information: trial_params.merge(gl_com_params),
       uid: current_user.id
     }
   end
