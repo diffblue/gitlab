@@ -1,4 +1,4 @@
-import { GlTab, GlBadge, GlButton, GlTabs } from '@gitlab/ui';
+import { GlTab, GlBadge, GlButton, GlTabs, GlDisclosureDropdown } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -67,7 +67,7 @@ describe('RequirementsTabs', () => {
       });
 
       await nextTick();
-      const buttonEl = wrapper.findAllComponents(GlButton).at(2);
+      const buttonEl = wrapper.findAllComponents(GlButton).at(0);
 
       expect(buttonEl.exists()).toBe(true);
       expect(buttonEl.text()).toBe('New requirement');
@@ -103,10 +103,10 @@ describe('RequirementsTabs', () => {
 
       await nextTick();
       const buttonEl = wrapper.findAllComponents(GlButton);
+      const dropdownEl = wrapper.findAllComponents(GlDisclosureDropdown);
 
       expect(buttonEl.at(0).props('disabled')).toBe(true);
-      expect(buttonEl.at(1).props('disabled')).toBe(true);
-      expect(buttonEl.at(2).props('disabled')).toBe(true);
+      expect(dropdownEl.at(0).props('disabled')).toBe(true);
     });
   });
 });

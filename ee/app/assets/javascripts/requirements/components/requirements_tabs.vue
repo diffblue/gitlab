@@ -1,5 +1,12 @@
 <script>
-import { GlBadge, GlButton, GlButtonGroup, GlTabs, GlTab, GlTooltipDirective } from '@gitlab/ui';
+import {
+  GlBadge,
+  GlButton,
+  GlDisclosureDropdown,
+  GlTabs,
+  GlTab,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { __ } from '~/locale';
 import { FilterState } from '../constants';
 
@@ -7,6 +14,7 @@ export default {
   i18n: {
     exportAsCsvLabel: __('Export as CSV'),
     importRequirementsLabel: __('Import requirements'),
+    actionsLabel: __('Actions'),
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -15,9 +23,9 @@ export default {
   components: {
     GlBadge,
     GlButton,
+    GlDisclosureDropdown,
     GlTabs,
     GlTab,
-    GlButtonGroup,
   },
   props: {
     filterBy: {
@@ -46,6 +54,25 @@ export default {
     },
     isAllTab() {
       return this.filterBy === FilterState.all;
+    },
+    actionsDropdownItems() {
+      return [
+        {
+          text: this.$options.i18n.exportAsCsvLabel,
+          action: () => {
+            this.$emit('click-export-requirements');
+          },
+        },
+        {
+          text: this.$options.i18n.importRequirementsLabel,
+          action: () => {
+            this.$emit('click-import-requirements');
+          },
+          extraAttrs: {
+            class: 'js-import-requirements',
+          },
+        },
+      ];
     },
   },
 };
@@ -94,28 +121,6 @@ export default {
       </gl-tab>
     </gl-tabs>
     <div v-if="isOpenTab && canCreateRequirement" class="nav-controls">
-      <gl-button-group>
-        <gl-button
-          v-gl-tooltip
-          :title="$options.i18n.exportAsCsvLabel"
-          :aria-label="$options.i18n.exportAsCsvLabel"
-          category="secondary"
-          :disabled="showCreateForm"
-          icon="export"
-          @click="$emit('click-export-requirements')"
-        />
-        <gl-button
-          v-gl-tooltip
-          :title="$options.i18n.importRequirementsLabel"
-          :aria-label="$options.i18n.importRequirementsLabel"
-          category="secondary"
-          class="js-import-requirements"
-          :disabled="showCreateForm"
-          icon="import"
-          @click="$emit('click-import-requirements')"
-        />
-      </gl-button-group>
-
       <gl-button
         category="primary"
         variant="confirm"
@@ -124,6 +129,17 @@ export default {
         @click="$emit('click-new-requirement')"
         >{{ __('New requirement') }}</gl-button
       >
+      <gl-disclosure-dropdown
+        v-gl-tooltip="$options.i18n.actionsLabel"
+        category="tertiary"
+        icon="ellipsis_v"
+        :items="actionsDropdownItems"
+        :disabled="showCreateForm"
+        no-caret
+        text-sr-only
+        class="gl-ml-2"
+        :toggle-text="$options.i18n.actionsLabel"
+      />
     </div>
   </div>
 </template>
