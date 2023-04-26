@@ -72,6 +72,7 @@ export default {
   methods: {
     hideChat() {
       this.isHidden = true;
+      this.$emit('chat-hidden');
     },
     sendChatPrompt() {
       if (this.prompt) {
@@ -95,7 +96,9 @@ export default {
     <header
       class="gl-drawer-header gl-drawer-header-sticky gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center gl-z-index-200"
     >
-      <h3 class="gl-font-base gl-m-0">{{ $options.i18n.GENIE_CHAT_TITLE }}</h3>
+      <h3 class="gl-font-base gl-m-0">
+        <slot name="title"></slot>
+      </h3>
       <gl-badge class="gl-mx-4" variant="info" size="md"
         >{{ $options.i18n.EXPERIMENT_BADGE }}
       </gl-badge>
@@ -105,6 +108,7 @@ export default {
         icon="close"
         size="small"
         class="gl-p-0! gl-ml-auto"
+        data-testid="chat-close-button"
         :aria-label="$options.i18n.GENIE_CHAT_CLOSE_LABEL"
         @click="hideChat"
       />
