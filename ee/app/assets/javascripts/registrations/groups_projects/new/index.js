@@ -1,8 +1,10 @@
-import { GlBreakpointInstance as bp } from '@gitlab/ui/dist/utils';
 import $ from 'jquery';
+import Vue from 'vue';
+import GlFieldErrors from '~/gl_field_errors';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import { bindHowToImport } from '~/projects/project_new';
-import { displayGroupPath, displayProjectPath } from './path_display';
-import showTooltip from './show_tooltip';
+import GroupProjectFields from './components/group_project_fields.vue';
+import createStore from './store';
 
 const importButtonsSubmit = () => {
   const buttons = document.querySelectorAll('.js-import-project-buttons a');
@@ -31,14 +33,45 @@ const setAutofocus = () => {
   $('.js-group-project-tabs').on('shown.bs.tab', setInputfocus);
 };
 
-const mobileTooltipOpts = () => (bp.getBreakpointSize() === 'xs' ? { placement: 'bottom' } : {});
+const mountGroupProjectFields = (el, store) => {
+  if (!el) {
+    return null;
+  }
+
+  const { importGroup, groupPersisted, groupId, groupName, projectName, rootUrl } = el.dataset;
+
+  return new Vue({
+    el,
+    store,
+    render(createElement) {
+      return createElement(GroupProjectFields, {
+        props: {
+          importGroup: parseBoolean(importGroup),
+          groupPersisted: parseBoolean(groupPersisted),
+          groupId: groupId || '',
+          groupName: groupName || '',
+          projectName: projectName || '',
+          rootUrl,
+        },
+      });
+    },
+  });
+};
+
+const mountCreateImportGroupProjectFields = () => {
+  const store = createStore();
+
+  [...document.querySelectorAll('.js-create-import-group-project-fields')].map((el) =>
+    mountGroupProjectFields(el, store),
+  );
+
+  // Since we replaced form inputs, we need to re-initialize the field errors handler
+  return new GlFieldErrors(document.querySelectorAll('.gl-show-field-errors'));
+};
 
 export default () => {
-  displayGroupPath('.js-group-path-source', '.js-group-path-display');
-  displayGroupPath('.js-import-group-path-source', '.js-import-group-path-display');
-  displayProjectPath('.js-project-path-source', '.js-project-path-display');
-  showTooltip('.js-group-name-tooltip', mobileTooltipOpts());
   importButtonsSubmit();
   bindHowToImport();
   setAutofocus();
+  mountCreateImportGroupProjectFields();
 };
