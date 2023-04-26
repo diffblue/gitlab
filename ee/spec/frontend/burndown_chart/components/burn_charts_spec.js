@@ -2,6 +2,7 @@ import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import timezoneMock from 'timezone-mock';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
@@ -292,6 +293,18 @@ describe('burndown_chart', () => {
         scopeCount: day2.scopeCount,
         date: day4.date,
       });
+    });
+
+    it('does not add the second last day twice if no data for it and timezone is behind UTC', async () => {
+      timezoneMock.register('US/Pacific');
+
+      await createComponentForBurnupData([day1, day2, day4]);
+
+      const burnupData = getBurnupData();
+
+      expect(burnupData).toHaveLength(4);
+
+      timezoneMock.unregister();
     });
 
     describe('when dueDate is in the future', () => {

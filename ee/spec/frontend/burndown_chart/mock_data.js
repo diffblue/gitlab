@@ -1,6 +1,6 @@
 export const day1 = {
   __typename: 'BurnupChartDailyTotals',
-  date: '2020-08-08',
+  date: '2020-04-08',
   completedCount: 0,
   completedWeight: 0,
   scopeCount: 10,
@@ -9,7 +9,7 @@ export const day1 = {
 
 export const day2 = {
   __typename: 'BurnupChartDailyTotals',
-  date: '2020-08-09',
+  date: '2020-04-09',
   completedCount: 1,
   completedWeight: 1,
   scopeCount: 11,
@@ -18,7 +18,7 @@ export const day2 = {
 
 export const day3 = {
   __typename: 'BurnupChartDailyTotals',
-  date: '2020-08-10',
+  date: '2020-04-10',
   completedCount: 2,
   completedWeight: 4,
   scopeCount: 11,
@@ -27,7 +27,7 @@ export const day3 = {
 
 export const day4 = {
   __typename: 'BurnupChartDailyTotals',
-  date: '2020-08-11',
+  date: '2020-04-11',
   completedCount: 3,
   completedWeight: 5,
   scopeCount: 11,
