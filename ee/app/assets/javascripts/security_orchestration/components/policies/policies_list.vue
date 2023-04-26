@@ -3,9 +3,10 @@ import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { createAlert } from '~/alert';
-import { getTimeago } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import { DATE_ONLY_FORMAT } from '~/lib/utils/datetime_utility';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
@@ -61,6 +62,7 @@ export default {
     PolicySourceFilter,
     PolicyTypeFilter,
     PolicyDrawer,
+    TimeAgoTooltip,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -236,10 +238,6 @@ export default {
     policyListUrlArgs(source) {
       return { namespacePath: source.namespace.fullPath };
     },
-    getTimeAgoString(updatedAt) {
-      if (!updatedAt) return '';
-      return getTimeago().format(updatedAt);
-    },
     getPolicyListUrl,
     isPolicyInherited,
     presentPolicyDrawer(rows) {
@@ -264,6 +262,7 @@ export default {
       bTable.clearSelected();
     },
   },
+  dateTimeFormat: DATE_ONLY_FORMAT,
   i18n: {
     inheritedLabel: s__('SecurityOrchestration|Inherited from %{namespace}'),
     statusEnabled: __('Enabled'),
@@ -332,7 +331,11 @@ export default {
       </template>
 
       <template #cell(updatedAt)="{ value: updatedAt }">
-        {{ getTimeAgoString(updatedAt) }}
+        <time-ago-tooltip
+          v-if="updatedAt"
+          :time="updatedAt"
+          :date-time-format="$options.dateTimeFormat"
+        />
       </template>
 
       <template #table-busy>

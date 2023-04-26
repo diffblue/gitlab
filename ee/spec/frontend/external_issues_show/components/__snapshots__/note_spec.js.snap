@@ -15,7 +15,7 @@ exports[`JiraIssuesNote template renders note 1`] = `
         </gl-link-stub>
         <!----> <span class=\\"gl-text-gray-500 gl-mr-2\\">·</span>
         <gl-link-stub href=\\"#\\" data-testid=\\"time-ago-link\\" class=\\"gl-text-gray-500\\">
-          <time-ago-tooltip-stub time=\\"&quot;2021-02-01T04:04:40.833Z&quot;\\" tooltipplacement=\\"bottom\\" cssclass=\\"\\"></time-ago-tooltip-stub>
+          <time-ago-tooltip-stub time=\\"&quot;2021-02-01T04:04:40.833Z&quot;\\" tooltipplacement=\\"bottom\\" cssclass=\\"\\" datetimeformat=\\"DATE_WITH_TIME_FORMAT\\"></time-ago-tooltip-stub>
         </gl-link-stub>
       </div>
       <div data-testid=\\"badges-container\\"></div>

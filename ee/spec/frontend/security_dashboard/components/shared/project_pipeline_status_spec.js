@@ -6,6 +6,7 @@ import ProjectPipelineStatus from 'ee/security_dashboard/components/shared/proje
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { s__ } from '~/locale';
+import { DEFAULT_DATE_TIME_FORMAT } from '~/lib/utils/datetime/constants';
 
 const defaultPipeline = {
   createdAt: '2020-10-06T20:08:07Z',
@@ -57,6 +58,7 @@ describe('Project Pipeline Status Component', () => {
       expect(TimeComponent.props()).toStrictEqual({
         time: defaultPipeline.createdAt,
         cssClass: '',
+        dateTimeFormat: DEFAULT_DATE_TIME_FORMAT,
         tooltipPlacement: 'top',
       });
     });
