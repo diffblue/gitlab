@@ -31,7 +31,8 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
           Telesign::RestClient::Response,
           json: {
             'reference_id' => telesign_reference_xid,
-            'verify' => { 'code_state' => 'VALID' }
+            'verify' => { 'code_state' => 'VALID' },
+            'status' => { 'description' => 'Transaction completed successfully' }
           },
           status_code: '200'
         )
@@ -49,10 +50,12 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         expect(::Gitlab::AppJsonLogger)
           .to receive(:info)
           .with(
-            message: 'Verified a phone verification code with Telesign',
-            telesign_response: telesign_response.json,
+            class: described_class.name,
+            message: 'IdentityVerification::Phone',
+            event: 'Verified a phone verification code with Telesign',
+            telesign_response: telesign_response.json['status']['description'],
             telesign_status_code: telesign_response.status_code,
-            user_id: user.id
+            username: user.username
           )
           .and_call_original
 
@@ -126,11 +129,15 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
       end
     end
 
-    context 'when there is a server error' do
+    context 'when there is an error with TeleSign' do
       let(:telesign_response) do
         instance_double(
           Telesign::RestClient::Response,
-          json: {},
+          json: {
+            'errors' => [
+              { 'code' => -40008, 'description' => 'Transaction not attempted' }
+            ]
+          },
           status_code: '500'
         )
       end
@@ -142,6 +149,19 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
         expect(response).to be_error
         expect(response.message).to eq('Something went wrong. Please try again.')
         expect(response.reason).to eq(:internal_server_error)
+      end
+
+      it 'logs the error message' do
+        expect(::Gitlab::AppJsonLogger)
+          .to receive(:info)
+          .with(
+            hash_including(
+              telesign_response: "error_message: Transaction not attempted, error_code: -40008"
+            )
+          )
+          .and_call_original
+
+        service.execute
       end
     end
 

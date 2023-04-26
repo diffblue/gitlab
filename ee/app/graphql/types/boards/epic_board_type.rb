@@ -27,6 +27,10 @@ module Types
         type: GraphQL::Types::Boolean,
         null: true, description: 'Whether or not closed list is hidden.'
 
+      field :display_colors,
+        type: GraphQL::Types::Boolean,
+        null: true, description: 'Whether or not display epic colors.'
+
       field :labels, ::Types::LabelType.connection_type,
         null: true, description: 'Labels of the board.'
 

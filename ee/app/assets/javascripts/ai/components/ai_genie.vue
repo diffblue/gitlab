@@ -52,7 +52,7 @@ export default {
         result({ data }) {
           const errors = data.aiCompletionResponse?.errors;
           if (errors && errors.length) {
-            this.codeExplanationLoading = false;
+            this.isLoading = false;
             this.codeExplanationError = this.$options.i18n.REQUEST_ERROR;
             return;
           }
@@ -192,6 +192,9 @@ export default {
       :error="codeExplanationError"
       @send-chat-prompt="chat"
     >
+      <template #title>
+        {{ $options.i18n.GENIE_CHAT_TITLE }}
+      </template>
       <template #hero>
         <code-block-highlighted
           :language="snippetLanguage"
