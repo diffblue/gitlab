@@ -16,6 +16,10 @@ import {
   SEVERITY,
   STATUS,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
+import {
+  ANY_OPERATOR,
+  MORE_THAN_OPERATOR,
+} from 'ee/security_orchestration/components/policy_editor/constants';
 
 describe('SecurityScanRuleBuilder', () => {
   let wrapper;
@@ -51,6 +55,7 @@ describe('SecurityScanRuleBuilder', () => {
   const findScanners = () => wrapper.findByTestId('scanners-select');
   const findSeverities = () => wrapper.findByTestId('severities-select');
   const findVulnStates = () => wrapper.findByTestId('vulnerability-states-select');
+  const findVulnAllowedOperator = () => wrapper.findByTestId('vulnerabilities-allowed-operator');
   const findVulnAllowed = () => wrapper.findByTestId('vulnerabilities-allowed-input');
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
@@ -74,7 +79,8 @@ describe('SecurityScanRuleBuilder', () => {
       expect(findScanners().exists()).toBe(true);
       expect(findSeverities().exists()).toBe(false);
       expect(findVulnStates().exists()).toBe(false);
-      expect(findVulnAllowed().exists()).toBe(true);
+      expect(findVulnAllowedOperator().exists()).toBe(true);
+      expect(findVulnAllowed().exists()).toBe(false);
     });
 
     it('includes select all option to all PolicyRuleMultiSelect', () => {
@@ -92,11 +98,9 @@ describe('SecurityScanRuleBuilder', () => {
 
   describe('when editing any attribute of the rule', () => {
     it.each`
-      currentComponent   | newValue                                | expected
-      ${findBranches}    | ${PROTECTED_BRANCHES_MOCK[0]}           | ${{ branches: UPDATED_RULE.branches }}
-      ${findScanners}    | ${UPDATED_RULE.scanners}                | ${{ scanners: UPDATED_RULE.scanners }}
-      ${findVulnAllowed} | ${UPDATED_RULE.vulnerabilities_allowed} | ${{ vulnerabilities_allowed: UPDATED_RULE.vulnerabilities_allowed }}
-      ${findVulnAllowed} | ${''}                                   | ${{ vulnerabilities_allowed: 0 }}
+      currentComponent | newValue                      | expected
+      ${findBranches}  | ${PROTECTED_BRANCHES_MOCK[0]} | ${{ branches: UPDATED_RULE.branches }}
+      ${findScanners}  | ${UPDATED_RULE.scanners}      | ${{ scanners: UPDATED_RULE.scanners }}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
       async ({ currentComponent, newValue, expected }) => {
@@ -108,6 +112,52 @@ describe('SecurityScanRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  describe('vulnerabilities allowed', () => {
+    it('renders MORE_THAN_OPERATOR when initial vulnerabilities_allowed are not zero', async () => {
+      factory({ initRule: { ...UPDATED_RULE, vulnerabilities_allowed: 1 } });
+      await nextTick();
+      expect(findVulnAllowed().exists()).toBe(true);
+      expect(findVulnAllowedOperator().props('selected')).toEqual(MORE_THAN_OPERATOR);
+    });
+
+    describe('when editing vulnerabilities allowed', () => {
+      beforeEach(async () => {
+        factory();
+        await nextTick();
+      });
+
+      it.each`
+        currentComponent   | newValue                                | expected
+        ${findVulnAllowed} | ${UPDATED_RULE.vulnerabilities_allowed} | ${{ vulnerabilities_allowed: UPDATED_RULE.vulnerabilities_allowed }}
+        ${findVulnAllowed} | ${''}                                   | ${{ vulnerabilities_allowed: 0 }}
+      `(
+        'triggers a changed event (by $currentComponent) with the updated rule',
+        async ({ currentComponent, newValue, expected }) => {
+          findVulnAllowedOperator().vm.$emit('select', MORE_THAN_OPERATOR);
+          await nextTick();
+          currentComponent().vm.$emit('input', newValue);
+          await nextTick();
+
+          expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
+        },
+      );
+
+      it('resets vulnerabilities_allowed to 0 after changing to ANY_OPERATOR', async () => {
+        findVulnAllowedOperator().vm.$emit('select', MORE_THAN_OPERATOR);
+        await nextTick();
+        findVulnAllowed().vm.$emit('input', 1);
+        await nextTick();
+        findVulnAllowedOperator().vm.$emit('select', ANY_OPERATOR);
+        await nextTick();
+
+        expect(wrapper.emitted().changed).toEqual([
+          [expect.objectContaining({ vulnerabilities_allowed: 1 })],
+          [expect.objectContaining({ vulnerabilities_allowed: 0 })],
+        ]);
+      });
+    });
   });
 
   it.each`

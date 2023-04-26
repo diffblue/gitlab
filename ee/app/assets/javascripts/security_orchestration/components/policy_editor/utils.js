@@ -205,3 +205,5 @@ export const hasInvalidCron = (policy) => {
 
   return (policy.rules || []).some((rule) => hasInvalidCronString(rule?.cadence));
 };
+
+export const enforceIntValue = (value) => parseInt(value || '0', 10);
