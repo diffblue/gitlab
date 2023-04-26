@@ -44990,6 +44990,9 @@ msgstr ""
 msgid "There was an error fetching the %{replicableType}"
 msgstr ""
 
+msgid "There was an error fetching the cancelable jobs."
+msgstr ""
+
 msgid "There was an error fetching the deploy freezes."
 msgstr ""
 
