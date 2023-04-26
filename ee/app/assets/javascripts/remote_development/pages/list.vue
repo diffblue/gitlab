@@ -4,12 +4,20 @@ import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
-import { WORKSPACE_STATES, ROUTES, WORKSPACE_DESIRED_STATES } from '../constants';
+import {
+  WORKSPACE_STATES,
+  ROUTES,
+  WORKSPACE_DESIRED_STATES,
+  WORKSPACES_LIST_POLL_INTERVAL,
+} from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import workspaceUpdateMutation from '../graphql/mutations/workspace_update.mutation.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 import WorkspaceStateIndicator from '../components/list/workspace_state_indicator.vue';
 import TerminateWorkspaceButton from '../components/list/terminate_workspace_button.vue';
+import StartWorkspaceButton from '../components/list/start_workspace_button.vue';
+import StopWorkspaceButton from '../components/list/stop_workspace_button.vue';
+import RestartWorkspaceButton from '../components/list/restart_workspace_button.vue';
 
 export const i18n = {
   updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
@@ -31,10 +39,14 @@ export default {
     WorkspaceEmptyState,
     WorkspaceStateIndicator,
     TerminateWorkspaceButton,
+    StartWorkspaceButton,
+    StopWorkspaceButton,
+    RestartWorkspaceButton,
   },
   apollo: {
     workspaces: {
       query: userWorkspacesListQuery,
+      pollInterval: WORKSPACES_LIST_POLL_INTERVAL,
       update(data) {
         return data.currentUser.workspaces.nodes;
       },
@@ -60,7 +72,7 @@ export default {
     {
       key: 'actions',
       label: '',
-      thClass: 'gl-w-10p',
+      thClass: 'gl-w-20p',
     },
   ],
   data() {
@@ -88,6 +100,15 @@ export default {
     },
     terminateWorkspace(workspace) {
       this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.terminated });
+    },
+    startWorkspace(workspace) {
+      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.running });
+    },
+    stopWorkspace(workspace) {
+      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.stopped });
+    },
+    restartWorkspace(workspace) {
+      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.restarting });
     },
     updateWorkspace({ id, desiredState }) {
       return this.$apollo
@@ -159,11 +180,31 @@ export default {
           >
         </template>
         <template #cell(actions)="{ item }">
-          <terminate-workspace-button
-            :actual-state="item.actualState"
-            :desired-state="item.desiredState"
-            @click="terminateWorkspace(item)"
-          />
+          <span class="gl-display-flex gl-justify-content-end">
+            <restart-workspace-button
+              class="gl-mr-2"
+              :actual-state="item.actualState"
+              :desired-state="item.desiredState"
+              @click="restartWorkspace(item)"
+            />
+            <start-workspace-button
+              class="gl-mr-2"
+              :actual-state="item.actualState"
+              :desired-state="item.desiredState"
+              @click="startWorkspace(item)"
+            />
+            <stop-workspace-button
+              class="gl-mr-2"
+              :actual-state="item.actualState"
+              :desired-state="item.desiredState"
+              @click="stopWorkspace(item)"
+            />
+            <terminate-workspace-button
+              :actual-state="item.actualState"
+              :desired-state="item.desiredState"
+              @click="terminateWorkspace(item)"
+            />
+          </span>
         </template>
       </gl-table-lite>
     </template>

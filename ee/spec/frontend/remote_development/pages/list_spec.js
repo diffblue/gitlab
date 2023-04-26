@@ -12,6 +12,9 @@ import WorkspaceList, { i18n } from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
 import TerminateWorkspaceButton from 'ee/remote_development/components/list/terminate_workspace_button.vue';
+import StopWorkspaceButton from 'ee/remote_development/components/list/stop_workspace_button.vue';
+import StartWorkspaceButton from 'ee/remote_development/components/list/start_workspace_button.vue';
+import RestartWorkspaceButton from 'ee/remote_development/components/list/restart_workspace_button.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 
 import {
@@ -158,7 +161,13 @@ describe('remote_development/pages/list.vue', () => {
     });
   });
 
-  describe('when a "terminate workspace" button is clicked', () => {
+  describe.each`
+    buttonName     | buttonComponent             | desiredState
+    ${'terminate'} | ${TerminateWorkspaceButton} | ${WORKSPACE_DESIRED_STATES.terminated}
+    ${'stop'}      | ${StopWorkspaceButton}      | ${WORKSPACE_DESIRED_STATES.stopped}
+    ${'start'}     | ${StartWorkspaceButton}     | ${WORKSPACE_DESIRED_STATES.running}
+    ${'restart'}   | ${RestartWorkspaceButton}   | ${WORKSPACE_DESIRED_STATES.restarting}
+  `('when a "$buttonName" button is clicked', ({ buttonComponent, desiredState }) => {
     let workspace;
     let terminateButton;
 
@@ -169,10 +178,10 @@ describe('remote_development/pages/list.vue', () => {
 
       // eslint-disable-next-line prefer-destructuring
       workspace = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[0];
-      terminateButton = wrapper.findAllComponents(TerminateWorkspaceButton).at(0);
+      terminateButton = wrapper.findAllComponents(buttonComponent).at(0);
     });
 
-    it('sets workspace desiredState as "terminated" using the workspaceUpdate mutation', async () => {
+    it(`sets workspace desiredState as "${desiredState}" using the workspaceUpdate mutation`, async () => {
       terminateButton.vm.$emit('click');
 
       await waitForPromises();
@@ -181,7 +190,7 @@ describe('remote_development/pages/list.vue', () => {
         expect.any(Object),
         {
           input: {
-            desiredState: WORKSPACE_DESIRED_STATES.terminated,
+            desiredState,
             id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
           },
         },

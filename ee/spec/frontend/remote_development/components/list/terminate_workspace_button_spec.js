@@ -46,7 +46,7 @@ describe('TerminateWorkspaceButton', () => {
 
   it.each`
     desiredState                           | buttonProps                                                                                   | buttonStateDesc
-    ${WORKSPACE_DESIRED_STATES.terminated} | ${{ loading: true, disabled: true, title: i18n.terminatingWorkspaceTooltip, icon: '' }}       | ${'disabled and loading'}
+    ${WORKSPACE_DESIRED_STATES.terminated} | ${{ loading: true, disabled: true, title: i18n.terminatingWorkspaceTooltip, icon: 'remove' }} | ${'disabled and loading'}
     ${WORKSPACE_DESIRED_STATES.running}    | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
     ${WORKSPACE_DESIRED_STATES.stopped}    | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
     ${WORKSPACE_DESIRED_STATES.restarting} | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}

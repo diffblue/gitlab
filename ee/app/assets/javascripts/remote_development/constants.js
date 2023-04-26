@@ -22,7 +22,7 @@ export const WORKSPACE_DESIRED_STATES = {
 /* eslint-enable @gitlab/require-i18n-strings */
 
 export const DEFAULT_DESIRED_STATE = WORKSPACE_STATES.running;
-
+export const WORKSPACES_LIST_POLL_INTERVAL = 3000;
 export const ROUTES = {
   index: 'index',
   create: 'create',
