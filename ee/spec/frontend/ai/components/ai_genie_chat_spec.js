@@ -32,6 +32,7 @@ describe('AiGenieChat', () => {
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
   const findChatInputForm = () => wrapper.findComponent(GlForm);
+  const findCloseChatButton = () => wrapper.findByTestId('chat-close-button');
 
   beforeEach(() => {
     createComponent();
@@ -132,6 +133,14 @@ describe('AiGenieChat', () => {
     it('renders messages when messages are passed', () => {
       createComponent({ propsData: { messages } });
       expect(findChatMessages().at(0).text()).toBe(promptStr);
+    });
+
+    it('hides the chat on button click and emits an event', () => {
+      createComponent({ propsData: { messages } });
+      expect(wrapper.vm.$data.isHidden).toBe(false);
+      findCloseChatButton().vm.$emit('click');
+      expect(wrapper.vm.$data.isHidden).toBe(true);
+      expect(wrapper.emitted('chat-hidden')).toBeDefined();
     });
 
     describe('chat', () => {
