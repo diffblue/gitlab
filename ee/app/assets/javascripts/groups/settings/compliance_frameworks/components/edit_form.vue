@@ -2,12 +2,12 @@
 import * as Sentry from '@sentry/browser';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { __ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { FETCH_ERROR, SAVE_ERROR } from '../constants';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
-import { getSubmissionParams, initialiseFormData } from '../utils';
+import { getSubmissionParams, initialiseFormData, isModalsRefactorEnabled } from '../utils';
 import FormStatus from './form_status.vue';
 import SharedForm from './shared_form.vue';
 
@@ -101,6 +101,11 @@ export default {
       this.saveErrorMessage = userFriendlyText;
       Sentry.captureException(error);
     },
+    onCancel() {
+      if (isModalsRefactorEnabled()) {
+        this.$emit('cancel');
+      }
+    },
     async onSubmit() {
       this.saving = true;
       this.saveErrorMessage = '';
@@ -118,6 +123,19 @@ export default {
               params,
             },
           },
+          ...(isModalsRefactorEnabled()
+            ? {
+                awaitRefetchQueries: true,
+                refetchQueries: [
+                  {
+                    query: getComplianceFrameworkQuery,
+                    variables: {
+                      fullPath: this.groupPath,
+                    },
+                  },
+                ],
+              }
+            : {}),
         });
 
         const [error] = data?.updateComplianceFramework?.errors || [];
@@ -125,7 +143,12 @@ export default {
         if (error) {
           this.setSavingError(new Error(error), error);
         } else {
-          visitUrl(this.groupEditPath);
+          if (!isModalsRefactorEnabled()) {
+            visitUrl(this.groupEditPath);
+            return;
+          }
+
+          this.$emit('success', this.$options.i18n.successMessageText);
         }
       } catch (e) {
         this.setSavingError(e, SAVE_ERROR);
@@ -134,6 +157,7 @@ export default {
   },
   i18n: {
     submitButtonText: __('Save changes'),
+    successMessageText: s__('ComplianceFrameworks|Saved changes to compliance framework'),
   },
 };
 </script>
@@ -141,13 +165,12 @@ export default {
   <form-status :loading="isLoading" :error="errorMessage">
     <shared-form
       v-if="showForm"
-      :group-edit-path="groupEditPath"
-      :pipeline-configuration-full-path-enabled="pipelineConfigurationFullPathEnabled"
       :name.sync="formData.name"
       :description.sync="formData.description"
       :pipeline-configuration-full-path.sync="formData.pipelineConfigurationFullPath"
       :color.sync="formData.color"
       :submit-button-text="$options.i18n.submitButtonText"
+      @cancel="onCancel"
       @submit="onSubmit"
     />
   </form-status>

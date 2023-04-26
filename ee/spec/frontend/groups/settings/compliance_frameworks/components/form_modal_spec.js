@@ -3,6 +3,9 @@ import { GlModal } from '@gitlab/ui';
 
 import FormModal from 'ee/groups/settings/compliance_frameworks/components/form_modal.vue';
 import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
+import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
+
+import { frameworkFoundResponse } from '../mock_data';
 
 jest.mock('~/lib/utils/url_utility');
 
@@ -11,6 +14,7 @@ describe('FormModal', () => {
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findCreateForm = () => wrapper.findComponent(CreateForm);
+  const findEditForm = () => wrapper.findComponent(EditForm);
 
   function createComponent(props = {}, mountFn = shallowMount) {
     return mountFn(FormModal, {
@@ -20,19 +24,38 @@ describe('FormModal', () => {
     });
   }
 
-  describe('initialized', () => {
-    it('sets the modal title when adding', () => {
+  describe('create', () => {
+    beforeEach(() => {
       wrapper = createComponent();
+    });
 
+    it('sets the modal title', () => {
       expect(findModal().props('title')).toBe('New compliance framework');
     });
 
     it('emits the change event on success', async () => {
-      wrapper = createComponent();
-
       expect(wrapper.emitted('change')).toBe(undefined);
 
       await findCreateForm().vm.$emit('success');
+
+      expect(wrapper.emitted('change')).toHaveLength(1);
+    });
+  });
+
+  describe('edit', () => {
+    beforeEach(() => {
+      wrapper = createComponent({
+        framework: frameworkFoundResponse,
+      });
+    });
+    it('sets the modal title', () => {
+      expect(findModal().props('title')).toBe('Edit compliance framework');
+    });
+
+    it('emits the change event on success', async () => {
+      expect(wrapper.emitted('change')).toBe(undefined);
+
+      await findEditForm().vm.$emit('success');
 
       expect(wrapper.emitted('change')).toHaveLength(1);
     });

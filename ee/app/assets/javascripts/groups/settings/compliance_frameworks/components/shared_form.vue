@@ -103,6 +103,9 @@ export default {
         anchor: 'example-configuration',
       });
     },
+    isModalsRefactor() {
+      return isModalsRefactorEnabled();
+    },
   },
   async created() {
     if (this.pipelineConfigurationFullPath) {
@@ -217,8 +220,15 @@ export default {
     />
 
     <div
-      class="gl-display-flex gl-justify-content-space-between gl-pt-5 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      class="gl-display-flex gl-pt-5 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      :class="{
+        'gl-justify-content-end gl-gap-3': isModalsRefactor,
+        'gl-justify-content-space-between gl-flex-direction-row-reverse': !isModalsRefactor,
+      }"
     >
+      <gl-button :href="groupEditPath" data-testid="cancel-btn" @click="onCancel">{{
+        $options.i18n.cancelBtnText
+      }}</gl-button>
       <gl-button
         type="submit"
         variant="confirm"
@@ -227,9 +237,6 @@ export default {
         :disabled="disableSubmitBtn"
         >{{ submitButtonText }}</gl-button
       >
-      <gl-button :href="groupEditPath" data-testid="cancel-btn" @click="onCancel">{{
-        $options.i18n.cancelBtnText
-      }}</gl-button>
     </div>
   </gl-form>
 </template>
