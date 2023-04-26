@@ -40,6 +40,7 @@ export default {
         return {
           planId: this.selectedPlan,
           quantity: this.numberOfUsers,
+          namespaceId: this.selectedGroup,
           ...(this.sendPromoCodeToPreviewInvoice && { promoCode: this.promoCode }),
         };
       },
@@ -73,7 +74,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['numberOfUsers', 'selectedPlan', 'promoCode']),
+    ...mapState(['numberOfUsers', 'selectedPlan', 'promoCode', 'selectedGroup']),
     ...mapGetters([
       'selectedPlanPrice',
       'name',

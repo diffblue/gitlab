@@ -194,6 +194,7 @@ describe('Order Summary', () => {
 
       it('calls invoice preview API with appropriate params', () => {
         expect(invoicePreviewQuerySpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'thirdPlanId',
           quantity: 1,
         });
@@ -224,6 +225,7 @@ describe('Order Summary', () => {
 
       it('calls invoice preview API with appropriate params', () => {
         expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'firstPlanId',
           quantity: 1,
         });
@@ -254,6 +256,7 @@ describe('Order Summary', () => {
 
       it('calls invoice preview API with appropriate params', () => {
         expect(invoicePreviewQuerySpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'thirdPlanId',
           quantity: 1,
         });
@@ -289,8 +292,39 @@ describe('Order Summary', () => {
 
       it('calls invoice preview API with appropriate params', () => {
         expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'thirdPlanId',
           quantity: 3,
+        });
+      });
+    });
+
+    describe('with selected group', () => {
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewUltimate);
+
+      beforeEach(async () => {
+        await createComponent(invoicePreviewSpy);
+        await store.commit(types.UPDATE_SELECTED_GROUP, 132);
+        await waitForPromises();
+      });
+
+      it('displays the correct formatted amount price per user', () => {
+        expect(perUserPriceInfo()).toBe('$1,188 per user per year');
+      });
+
+      it('displays the correct multiplied formatted amount of the chosen plan', () => {
+        expect(totalOriginalPrice()).toBe('$1,188');
+      });
+
+      it('displays the correct formatted total amount', () => {
+        expect(totalPriceToBeCharged()).toBe('$1,188');
+      });
+
+      it('calls invoice preview API with appropriate params', () => {
+        expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          namespaceId: 132,
+          planId: 'thirdPlanId',
+          quantity: 1,
         });
       });
     });
@@ -535,6 +569,7 @@ describe('Order Summary', () => {
 
       it('calls invoice preview API with appropriate params', () => {
         expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'secondPlanId',
           quantity: 3,
           promoCode: 'promoCode',
@@ -595,7 +630,11 @@ describe('Order Summary', () => {
       });
 
       it('requests invoice preview without promo code after an invalid promo code', () => {
-        expect(invoicePreviewSpy).toHaveBeenLastCalledWith({ planId: 'secondPlanId', quantity: 1 });
+        expect(invoicePreviewSpy).toHaveBeenLastCalledWith({
+          planId: 'secondPlanId',
+          quantity: 1,
+          namespaceId: null,
+        });
       });
 
       it('when plan is changed, invoice preview spy is not called with promo code', async () => {
@@ -607,7 +646,11 @@ describe('Order Summary', () => {
         await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
         await waitForPromises();
 
-        expect(invoicePreviewSpy).toHaveBeenCalledWith({ planId: 'secondPlanId', quantity: 1 });
+        expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          planId: 'secondPlanId',
+          quantity: 1,
+          namespaceId: null,
+        });
         expect(invoicePreviewSpy).toHaveBeenCalledTimes(1);
       });
 
@@ -648,14 +691,17 @@ describe('Order Summary', () => {
       it('calls invoice preview API appropriately', () => {
         expect(invoicePreviewSpy).toHaveBeenCalledTimes(3);
         expect(invoicePreviewSpy).toHaveBeenNthCalledWith(1, {
+          namespaceId: null,
           planId: 'thirdPlanId',
           quantity: 1,
         });
         expect(invoicePreviewSpy).toHaveBeenNthCalledWith(2, {
+          namespaceId: null,
           planId: 'secondPlanId',
           quantity: 1,
         });
         expect(invoicePreviewSpy).toHaveBeenNthCalledWith(3, {
+          namespaceId: null,
           planId: 'secondPlanId',
           quantity: 1,
           promoCode: 'promoCode',
@@ -685,6 +731,7 @@ describe('Order Summary', () => {
         promoCodeInput.vm.$emit('promo-code-updated');
 
         expect(invoicePreviewSpy).toHaveBeenCalledWith({
+          namespaceId: null,
           planId: 'secondPlanId',
           quantity: 1,
         });
