@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Tanuki Bot Chat', :js, feature_category: :global_search do
+RSpec.describe 'GitLab Chat', :js, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   describe 'Feature enabled and available' do
@@ -15,16 +15,16 @@ RSpec.describe 'Tanuki Bot Chat', :js, feature_category: :global_search do
       visit root_path
     end
 
-    it 'opens a chat drawer to chat with Tanuki Bot' do
+    it 'opens a chat drawer to chat with GitLab Chat' do
       page.within '[data-testid="super-sidebar"]' do
         click_button('Help')
-        click_button('Ask the Tanuki Bot')
+        click_button('Ask the GitLab Chat')
       end
 
       wait_for_requests
 
       page.within '[data-testid="tanuki-bot-chat-drawer"]' do
-        expect(page).to have_text('Tanuki Bot')
+        expect(page).to have_text('GitLab Chat')
       end
     end
   end
