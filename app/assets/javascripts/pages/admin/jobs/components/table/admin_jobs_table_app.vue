@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
-import { __ } from '~/locale';
 import { setUrlParams, updateHistory, queryToObject } from '~/lib/utils/url_utility';
 import { validateQueryString } from '~/jobs/components/filtered_search/utils';
 import JobsTable from '~/jobs/components/table/jobs_table.vue';
@@ -13,6 +12,9 @@ import {
   DEFAULT_FIELDS_ADMIN,
   RAW_TEXT_WARNING_ADMIN,
   JOBS_COUNT_ERROR_MESSAGE,
+  JOBS_FETCH_ERROR_MSG,
+  LOADING_ARIA_LABEL,
+  CANCELABLE_JOBS_ERROR_MSG,
 } from '../constants';
 import GetAllJobs from './graphql/queries/get_all_jobs.query.graphql';
 import GetAllJobsCount from './graphql/queries/get_all_jobs_count.query.graphql';
@@ -20,9 +22,10 @@ import CancelableJobs from './graphql/queries/get_cancelable_jobs_count.query.gr
 
 export default {
   i18n: {
-    jobsFetchErrorMsg: __('There was an error fetching the jobs.'),
-    loadingAriaLabel: __('Loading'),
     jobsCountErrorMsg: JOBS_COUNT_ERROR_MESSAGE,
+    jobsFetchErrorMsg: JOBS_FETCH_ERROR_MSG,
+    loadingAriaLabel: LOADING_ARIA_LABEL,
+    cancelableJobsErrorMsg: CANCELABLE_JOBS_ERROR_MSG,
   },
   filterSearchBoxStyles:
     'gl-my-0 gl-p-5 gl-bg-gray-10 gl-text-gray-900 gl-border-b gl-border-gray-100',
@@ -83,6 +86,9 @@ export default {
       query: CancelableJobs,
       update(data) {
         this.isCancelable = data.cancelable.count !== 0;
+      },
+      error() {
+        this.error = this.$options.i18n.cancelableJobsErrorMsg;
       },
     },
   },
