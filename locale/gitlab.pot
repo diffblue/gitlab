@@ -50359,6 +50359,9 @@ msgstr ""
 msgid "Workspaces|Failed to create workspace"
 msgstr ""
 
+msgid "Workspaces|Failed to update workspace"
+msgstr ""
+
 msgid "Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a comprehensive set of tools for software development teams to manage their entire development lifecycle."
 msgstr ""
 
@@ -50384,6 +50387,12 @@ msgid "Workspaces|Stopped"
 msgstr ""
 
 msgid "Workspaces|Stopping"
+msgstr ""
+
+msgid "Workspaces|Terminate"
+msgstr ""
+
+msgid "Workspaces|Terminating"
 msgstr ""
 
 msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."

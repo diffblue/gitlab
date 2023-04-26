@@ -4,7 +4,7 @@ import createDefaultClient from '~/lib/graphql';
 import App from './pages/app.vue';
 import createRouter from './router/index';
 import userWorkspacesListQuery from './graphql/queries/user_workspaces_list.query.graphql';
-import { WORKSPACE_STATES } from './constants';
+import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from './constants';
 
 Vue.use(VueApollo);
 
@@ -34,18 +34,18 @@ const createApolloProvider = () => {
   defaultClient.cache.writeQuery({
     query: userWorkspacesListQuery,
     data: {
-      user: {
+      currentUser: {
         id: 1,
         workspaces: {
           nodes: [
-            generateDummyWorkspace(WORKSPACE_STATES.running, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.creating, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.starting, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.stopped, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.stopping, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.terminated, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.failed, WORKSPACE_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.error, WORKSPACE_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.running, WORKSPACE_DESIRED_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.creating, WORKSPACE_DESIRED_STATES.restarting),
+            generateDummyWorkspace(WORKSPACE_STATES.starting, WORKSPACE_DESIRED_STATES.stopped),
+            generateDummyWorkspace(WORKSPACE_STATES.stopped, WORKSPACE_DESIRED_STATES.terminated),
+            generateDummyWorkspace(WORKSPACE_STATES.stopping, WORKSPACE_DESIRED_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.terminated, WORKSPACE_DESIRED_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.failed, WORKSPACE_DESIRED_STATES.running),
+            generateDummyWorkspace(WORKSPACE_STATES.error, WORKSPACE_DESIRED_STATES.running),
           ],
         },
       },
@@ -75,7 +75,6 @@ const initWorkspacesApp = () => {
     provide: {
       workspacesListPath,
       emptyStateSvgPath,
-      currentUsername: window.gon.current_usernanme,
     },
     render: (createElement) => createElement(App),
   });

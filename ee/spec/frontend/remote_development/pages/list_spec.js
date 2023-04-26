@@ -4,13 +4,21 @@ import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { GlAlert, GlButton, GlLink, GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import WorkspaceList from 'ee/remote_development/pages/list.vue';
+import WorkspaceList, { i18n } from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
+import TerminateWorkspaceButton from 'ee/remote_development/components/list/terminate_workspace_button.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
-import { WORKSPACE_STATES, ROUTES } from 'ee/remote_development/constants';
+
+import {
+  WORKSPACE_STATES,
+  WORKSPACE_DESIRED_STATES,
+  ROUTES,
+} from 'ee/remote_development/constants';
 import {
   CURRENT_USERNAME,
   USER_WORKSPACES_QUERY_RESULT,
@@ -46,13 +54,20 @@ const findNewWorkspaceButton = (wrapper) => wrapper.findComponent(GlButton);
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
   let userWorkspacesListQueryHandler;
+  let workspaceUpdateMutationHandler;
 
   const createWrapper = (mockData = USER_WORKSPACES_QUERY_RESULT) => {
     userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(mockData);
+    workspaceUpdateMutationHandler = jest.fn();
 
-    const mockApollo = createMockApollo([
-      [userWorkspacesListQuery, userWorkspacesListQueryHandler],
-    ]);
+    const mockApollo = createMockApollo(
+      [[userWorkspacesListQuery, userWorkspacesListQueryHandler]],
+      {
+        Mutation: {
+          workspaceUpdate: workspaceUpdateMutationHandler,
+        },
+      },
+    );
 
     wrapper = mount(WorkspaceList, {
       apolloProvider: mockApollo,
@@ -86,7 +101,7 @@ describe('remote_development/pages/list.vue', () => {
 
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
-        USER_WORKSPACES_QUERY_RESULT.data.user.workspaces.nodes.map((x) => {
+        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.map((x) => {
           const workspaceData = {
             nameText: `${x.project.nameWithNamespace}   ${x.name}`,
             workspaceState: x.actualState,
@@ -102,6 +117,17 @@ describe('remote_development/pages/list.vue', () => {
       );
     });
 
+    it('displays the TerminateWorkspaceButton for every workspace', () => {
+      USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.forEach((workspace, index) => {
+        const button = wrapper.findAllComponents(TerminateWorkspaceButton).at(index);
+
+        expect(button.props()).toEqual({
+          actualState: workspace.actualState,
+          desiredState: workspace.desiredState,
+        });
+      });
+    });
+
     it('does not call log error', () => {
       expect(logError).not.toHaveBeenCalled();
     });
@@ -113,9 +139,9 @@ describe('remote_development/pages/list.vue', () => {
     describe('when the query returns terminated workspaces', () => {
       beforeEach(async () => {
         const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT);
-        const workspace = cloneDeep(customData.data.user.workspaces.nodes[0]);
+        const workspace = cloneDeep(customData.data.currentUser.workspaces.nodes[0]);
 
-        customData.data.user.workspaces.nodes.push({
+        customData.data.currentUser.workspaces.nodes.push({
           ...workspace,
           actualState: WORKSPACE_STATES.terminated,
         });
@@ -126,8 +152,82 @@ describe('remote_development/pages/list.vue', () => {
 
       it('does not display terminated workspaces', () => {
         expect(findTableRowsAsData(wrapper)).toHaveLength(
-          USER_WORKSPACES_QUERY_RESULT.data.user.workspaces.nodes.length,
+          USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.length,
         );
+      });
+    });
+  });
+
+  describe('when a "terminate workspace" button is clicked', () => {
+    let workspace;
+    let terminateButton;
+
+    beforeEach(async () => {
+      createWrapper(USER_WORKSPACES_QUERY_RESULT);
+
+      await waitForPromises();
+
+      // eslint-disable-next-line prefer-destructuring
+      workspace = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[0];
+      terminateButton = wrapper.findAllComponents(TerminateWorkspaceButton).at(0);
+    });
+
+    it('sets workspace desiredState as "terminated" using the workspaceUpdate mutation', async () => {
+      terminateButton.vm.$emit('click');
+
+      await waitForPromises();
+
+      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith(
+        expect.any(Object),
+        {
+          input: {
+            desiredState: WORKSPACE_DESIRED_STATES.terminated,
+            id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
+          },
+        },
+        expect.any(Object),
+        expect.any(Object),
+      );
+    });
+
+    describe('when the workspaceUpdate mutation returns an error message response', () => {
+      const error = 'error message';
+
+      beforeEach(() => {
+        workspaceUpdateMutationHandler.mockReset();
+        workspaceUpdateMutationHandler.mockResolvedValueOnce({
+          workspace: null,
+          errors: [error],
+        });
+      });
+
+      it('shows the error message in a danger alert', async () => {
+        terminateButton.vm.$emit('click');
+
+        await waitForPromises();
+
+        expect(findAlert(wrapper).text()).toContain(error);
+      });
+    });
+
+    describe('when the workspaceUpdate mutation fails', () => {
+      const error = new Error();
+
+      beforeEach(async () => {
+        workspaceUpdateMutationHandler.mockReset();
+        workspaceUpdateMutationHandler.mockRejectedValueOnce(error);
+
+        terminateButton.vm.$emit('click');
+
+        await waitForPromises();
+      });
+
+      it('shows an alert indicating that the update operation failed', () => {
+        expect(findAlert(wrapper).text()).toContain(i18n.updateWorkspaceFailedMessage);
+      });
+
+      it('logs the error', () => {
+        expect(logError).toHaveBeenCalledWith(error);
       });
     });
   });
