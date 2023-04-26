@@ -1,0 +1,17 @@
+---
+version: 1
+title: Sessions per Browser
+type: DataTable
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowSessions.count
+    dimensions:
+      - SnowplowSessions.brFamily
+      - SnowplowSessions.brVersion
+    limit: 100
+    timezone: UTC
+    filters: []
+    timeDimensions: []
+options: {}

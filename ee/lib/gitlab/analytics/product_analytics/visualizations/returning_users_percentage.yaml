@@ -1,0 +1,16 @@
+---
+version: 1
+title: Returning Users Percentage
+type: SingleStat
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowSessions.repeatPercent
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+    timeDimensions: []
+options:
+  decimalPlaces: 1

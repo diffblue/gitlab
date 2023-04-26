@@ -90,7 +90,7 @@ FactoryBot.modify do
       after(:create) do |project|
         project.repository.create_file(
           project.creator,
-          '.gitlab/product_analytics/dashboards/dashboard_example_1/dashboard_example_1.yaml',
+          '.gitlab/analytics/dashboards/dashboard_example_1/dashboard_example_1.yaml',
           File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_1.yaml')).read,
           message: 'test',
           branch_name: 'master'
@@ -98,7 +98,7 @@ FactoryBot.modify do
 
         project.repository.create_file(
           project.creator,
-          '.gitlab/product_analytics/dashboards/visualizations/cube_line_chart.yaml',
+          '.gitlab/analytics/dashboards/visualizations/cube_line_chart.yaml',
           File.open(Rails.root.join('ee/spec/fixtures/product_analytics/cube_line_chart.yaml')).read,
           message: 'test',
           branch_name: 'master'
@@ -112,7 +112,7 @@ FactoryBot.modify do
       after(:create) do |project|
         project.repository.create_file(
           project.creator,
-          '.gitlab/product_analytics/funnels/funnel_example_1.yaml',
+          '.gitlab/analytics/funnels/funnel_example_1.yaml',
           File.open(Rails.root.join('ee/spec/fixtures/product_analytics/funnel_example_1.yaml')).read,
           message: 'Add funnel definition',
           branch_name: 'master'

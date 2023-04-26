@@ -1,0 +1,27 @@
+---
+version: 1
+title: Page views over time
+type: LineChart
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.pageViewsCount
+    timeDimensions:
+      - dimension: SnowplowTrackedEvents.derivedTstamp
+        granularity: day
+    filters:
+      - operator: equals
+        values:
+          - pageview
+        member: SnowplowTrackedEvents.event
+    limit: 100
+    timezone: UTC
+    dimensions: []
+options:
+  xAxis:
+    name: Time
+    type: time
+  yAxis:
+    name: Counts
+    type: time
