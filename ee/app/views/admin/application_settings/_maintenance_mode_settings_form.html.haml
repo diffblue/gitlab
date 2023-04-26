@@ -1,4 +1,4 @@
-- return unless ::Gitlab::Geo.license_allows?
+- return unless RegistrationFeatures::MaintenanceMode.feature_available?
 
 %section.settings.no-animate#js-maintenance-mode-toggle{ class: ('expanded' if expanded_by_default?) }
   .settings-header

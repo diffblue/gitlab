@@ -126,7 +126,7 @@ module EE
           ]
         end
 
-        if ::Gitlab::Geo.license_allows?
+        if RegistrationFeatures::MaintenanceMode.feature_available?
           attrs << :maintenance_mode
           attrs << :maintenance_mode_message
         end
