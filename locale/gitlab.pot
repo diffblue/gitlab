@@ -44921,6 +44921,9 @@ msgstr ""
 msgid "There was an error fetching the number of jobs for your project."
 msgstr ""
 
+msgid "There was an error fetching the number of jobs."
+msgstr ""
+
 msgid "There was an error fetching the top labels for the selected group"
 msgstr ""
 
