@@ -81,7 +81,7 @@ However, you have no permissions on Google Cloud (_authorization_).
 
 To grant your GitLab CI/CD job permissions on Google Cloud, you must:
 
-1. [Create a Google Cloud Service Account](https://www.google.com/search?q=google+cloud+create+service+account).
+1. [Create a Google Cloud Service Account](https://cloud.google.com/iam/docs/service-accounts-create).
    You can use whatever name and ID you prefer.
 1. [Grant IAM permissions](https://cloud.google.com/iam/docs/granting-changing-revoking-access) to your
    service account on Google Cloud resources. These permissions vary significantly based on
