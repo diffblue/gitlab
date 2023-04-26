@@ -18,7 +18,7 @@ module Gitlab
             id: SecureRandom.uuid,
             model_name: resource.class.name,
             # todo: do we need to sanitize/refine this response in any ways?
-            response_body: response_modifier.execute(ai_response).to_s.strip,
+            response_body: generate_response_body(response_modifier.execute(ai_response).to_s.strip),
             errors: [ai_response&.dig(:error)].compact
           }
 
@@ -28,6 +28,21 @@ module Gitlab
         private
 
         attr_reader :user, :resource, :ai_response, :options
+
+        def generate_response_body(response_body)
+          return response_body if options[:markup_format].nil? || options[:markup_format] == :raw
+
+          banzai_options = { only_path: false, pipeline: :full, current_user: user }
+
+          if resource.try(:project)
+            banzai_options[:project] = resource.project
+          elsif resource.try(:group)
+            banzai_options[:group] = resource.group
+            banzai_options[:skip_project_check] = true
+          end
+
+          Banzai.render_and_post_process(response_body, banzai_options)
+        end
       end
     end
   end

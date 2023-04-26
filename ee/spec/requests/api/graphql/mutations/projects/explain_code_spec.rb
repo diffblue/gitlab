@@ -37,7 +37,7 @@ RSpec.describe 'AiAction for Explain Code', feature_category: :source_code_manag
 
   it 'successfully performs an explain code request' do
     expect(Llm::CompletionWorker).to receive(:perform_async).with(
-      current_user.id, project.id, "Project", :explain_code, { messages: messages }
+      current_user.id, project.id, "Project", :explain_code, { markup_format: :raw, messages: messages }
     )
 
     post_graphql_mutation(mutation, current_user: current_user)
