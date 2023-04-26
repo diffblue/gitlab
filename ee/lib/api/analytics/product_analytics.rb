@@ -27,10 +27,9 @@ module API
         def cube_data_query(load_data)
           params = declared_params(include_missing: false).merge(path: load_data ? 'load' : 'dry-run')
 
-          response = ::ProductAnalytics::CubeDataQueryService
-                       .new(container: project,
-                            current_user: current_user,
-                            params: params).execute
+          response = ::ProductAnalytics::CubeDataQueryService.new(
+            container: project, current_user: current_user, params: params
+          ).execute
 
           render_response(response)
         end
@@ -48,16 +47,16 @@ module API
         params :cube_query_params do
           requires :project_id, type: Integer, desc: 'ID of the project to query'
           requires :query,
-                   type: Hash,
-                   desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
+            type: Hash,
+            desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
           optional :queryType,
-                   type: String,
-                   default: 'multi',
-                   desc: 'The query type. Currently only "multi" is supported.'
+            type: String,
+            default: 'multi',
+            desc: 'The query type. Currently only "multi" is supported.'
           optional :include_token,
-                   type: Boolean,
-                   default: false,
-                   desc: 'Whether to include the access token in the response. (Only required for funnel generation.)'
+            type: Boolean,
+            default: false,
+            desc: 'Whether to include the access token in the response. (Only required for funnel generation.)'
         end
       end
 
@@ -84,18 +83,17 @@ module API
         post ':project_id/product_analytics/request/meta' do
           params = declared_params(include_missing: false).merge(path: 'meta')
 
-          response = ::ProductAnalytics::CubeDataQueryService.new(container: project,
-                                                                  current_user: current_user,
-                                                                  params: params).execute
+          response = ::ProductAnalytics::CubeDataQueryService.new(
+            container: project, current_user: current_user, params: params
+          ).execute
           render_response(response)
         end
 
         desc 'Get a list of defined funnels for a project'
         get ':project_id/product_analytics/funnels' do
-          response = ::ProductAnalytics::CubeDataQueryService.new(container: project,
-                                                                  current_user: current_user,
-                                                                  params: { path: 'funnels' })
-                                                             .cannot_query_data?
+          response = ::ProductAnalytics::CubeDataQueryService.new(
+            container: project, current_user: current_user, params: { path: 'funnels' }
+          ).cannot_query_data?
 
           if response
             render_response(response)

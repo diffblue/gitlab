@@ -42,15 +42,15 @@ module API
           optional :file_name_regex, type: String, desc: 'All committed filenames must not match this', documentation: { example: '(jar|exe)$' }
           optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: '1024' }
           optional :commit_committer_check,
-                   type: Boolean,
-                   desc: 'Users can only push commits to this repository if the committer email is one of their own verified emails.',
-                   documentation: { example: true }
+            type: Boolean,
+            desc: 'Users can only push commits to this repository if the committer email is one of their own verified emails.',
+            documentation: { example: true }
           optional :reject_unsigned_commits, type: Boolean, desc: 'Reject commit when it’s not signed through GPG.', documentation: { example: true }
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
-                          :commit_message_regex, :commit_message_negative_regex, :branch_name_regex, :author_email_regex,
-                          :file_name_regex, :max_file_size,
-                          :commit_committer_check,
-                          :reject_unsigned_commits
+            :commit_message_regex, :commit_message_negative_regex, :branch_name_regex, :author_email_regex,
+            :file_name_regex, :max_file_size,
+            :commit_committer_check,
+            :reject_unsigned_commits
         end
       end
 

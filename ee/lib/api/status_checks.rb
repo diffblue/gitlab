@@ -25,13 +25,13 @@ module API
         params do
           requires :name, type: String, desc: 'Display name of external status check', documentation: { example: 'QA' }
           requires :external_url,
-                   type: String,
-                   desc: 'URL of external status check resource',
-                   documentation: { example: 'https://www.example.com' }
+            type: String,
+            desc: 'URL of external status check resource',
+            documentation: { example: 'https://www.example.com' }
           optional :protected_branch_ids,
-                   type: Array[Integer],
-                   coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
-                   desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
+            type: Array[Integer],
+            coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
+            desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
         end
         post do
           service = ::ExternalStatusChecks::CreateService.new(
@@ -65,18 +65,18 @@ module API
           end
           params do
             requires :check_id,
-                     type: Integer,
-                     desc: 'ID of an external status check',
-                     documentation: { example: 1 }
+              type: Integer,
+              desc: 'ID of an external status check',
+              documentation: { example: 1 }
             optional :name, type: String, desc: 'Display name of external status check', documentation: { example: 'QA' }
             optional :external_url,
-                     type: String,
-                     desc: 'URL of external status check resource',
-                     documentation: { example: 'https://www.example.com' }
+              type: String,
+              desc: 'URL of external status check resource',
+              documentation: { example: 'https://www.example.com' }
             optional :protected_branch_ids,
-                     type: Array[Integer],
-                     coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
-                     desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
+              type: Array[Integer],
+              coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
+              desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
           end
           put do
             service = ::ExternalStatusChecks::UpdateService.new(
@@ -118,22 +118,22 @@ module API
         params do
           requires :id, type: String, desc: 'ID of a project', documentation: { example: '1' }
           requires :merge_request_iid,
-                   type: Integer,
-                   desc: 'IID of a merge request',
-                   documentation: { example: 1 }
+            type: Integer,
+            desc: 'IID of a merge request',
+            documentation: { example: 1 }
           requires :external_status_check_id,
-                   type: Integer,
-                   desc: 'ID of an external status check',
-                   documentation: { example: 1 }
+            type: Integer,
+            desc: 'ID of an external status check',
+            documentation: { example: 1 }
           requires :sha,
-                   type: String,
-                   desc: 'SHA at HEAD of the source branch',
-                   documentation: { example: '5957a570eee0ac4580ec027fb874ad7514d1e576' }
+            type: String,
+            desc: 'SHA at HEAD of the source branch',
+            documentation: { example: '5957a570eee0ac4580ec027fb874ad7514d1e576' }
           requires :status,
-                   type: String,
-                   desc: 'Set to passed to pass the check or failed to fail it',
-                   values: %w(passed failed),
-                   documentation: { example: 'passed' }
+            type: String,
+            desc: 'Set to passed to pass the check or failed to fail it',
+            values: %w(passed failed),
+            documentation: { example: 'passed' }
         end
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
@@ -167,9 +167,9 @@ module API
           params do
             requires :id, type: String, desc: 'ID of a project', documentation: { example: '1' }
             requires :merge_request_iid,
-                     type: Integer,
-                     desc: 'IID of a merge request',
-                     documentation: { example: 1 }
+              type: Integer,
+              desc: 'IID of a merge request',
+              documentation: { example: 1 }
             requires :external_status_check_id, type: Integer, desc: 'ID of a failed external status check'
           end
           post ':external_status_check_id/retry' do

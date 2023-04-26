@@ -47,11 +47,11 @@ module API
           optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
           optional :reject_unsigned_commits, type: Boolean, desc: 'Only GPG signed commits can be pushed to this repository'
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
-                          :commit_message_regex, :commit_message_negative_regex, :branch_name_regex,
-                          :author_email_regex,
-                          :file_name_regex, :max_file_size,
-                          :commit_committer_check,
-                          :reject_unsigned_commits
+            :commit_message_regex, :commit_message_negative_regex, :branch_name_regex,
+            :author_email_regex,
+            :file_name_regex, :max_file_size,
+            :commit_committer_check,
+            :reject_unsigned_commits
         end
       end
 

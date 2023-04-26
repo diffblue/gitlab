@@ -28,14 +28,14 @@ module API
 
         params :negatable_params do
           optional :label_name,
-                   type: Array[String],
-                   coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
-                   desc: 'Array of label names to filter by',
-                   documentation: { example: %w[feature bug] }
+            type: Array[String],
+            coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
+            desc: 'Array of label names to filter by',
+            documentation: { example: %w[feature bug] }
           optional :milestone_title,
-                   type: String,
-                   desc: 'Milestone title to filter by',
-                   documentation: { example: %w[1.6 1.7] }
+            type: String,
+            desc: 'Milestone title to filter by',
+            documentation: { example: %w[1.6 1.7] }
         end
       end
 
@@ -57,9 +57,9 @@ module API
           merge_requests = paginate(finder.execute.with_code_review_api_entity_associations)
 
           present merge_requests,
-                  with: EE::API::Entities::Analytics::CodeReview::MergeRequest,
-                  current_user: current_user,
-                  issuable_metadata: Gitlab::IssuableMetadata.new(current_user, merge_requests).data
+            with: EE::API::Entities::Analytics::CodeReview::MergeRequest,
+            current_user: current_user,
+            issuable_metadata: Gitlab::IssuableMetadata.new(current_user, merge_requests).data
         end
       end
     end

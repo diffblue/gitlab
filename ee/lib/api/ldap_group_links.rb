@@ -46,7 +46,7 @@ module API
         optional 'cn', type: String, desc: 'The CN of a LDAP group'
         optional 'filter', type: String, desc: 'The LDAP filter for the group'
         requires 'group_access', type: Integer, values: Gitlab::Access.all_values,
-                                 desc: 'Access level for members of the LDAP group'
+          desc: 'Access level for members of the LDAP group'
         requires 'provider', type: String, desc: 'LDAP provider for the LDAP group link'
         exactly_one_of :cn, :filter
       end
