@@ -15,6 +15,8 @@ module Elastic
     end
 
     def perform(shard_number = nil)
+      return false unless Gitlab::CurrentSettings.elasticsearch_indexing?
+
       if Elastic::IndexingControl.non_cached_pause_indexing?
         logger.info(message: "elasticsearch_pause_indexing setting is enabled. #{self.class} execution is skipped.")
         return false

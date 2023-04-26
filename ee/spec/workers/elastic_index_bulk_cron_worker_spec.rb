@@ -13,6 +13,7 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
 
     before do
       stub_const("Elastic::ProcessBookkeepingService::SHARDS", shards)
+      stub_ee_application_setting(elasticsearch_indexing: true)
     end
 
     context 'indexing is not paused' do
@@ -66,6 +67,19 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
         expect(::Elastic::ProcessBookkeepingService).not_to receive(:new)
 
         expect(worker.perform).to eq(false)
+      end
+    end
+
+    context 'when indexing is disabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: false)
+      end
+
+      it 'does nothing if indexing is disabled' do
+        expect(::Elastic::ProcessBookkeepingService).not_to receive(:new)
+
+        expect(worker.perform).to eq(false)
+        expect(described_class).not_to receive(:perform_async)
       end
     end
 
