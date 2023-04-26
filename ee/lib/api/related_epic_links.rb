@@ -38,21 +38,21 @@ module API
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       params do
         optional :updated_before,
-                 type: DateTime,
-                 desc: 'Return related epic links updated before the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return related epic links updated before the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
         optional :updated_after,
-                 type: DateTime,
-                 desc: 'Return related epic links updated after the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return related epic links updated after the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
         optional :created_before,
-                 type: DateTime,
-                 desc: 'Return related epic links created before the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return related epic links created before the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
         optional :created_after,
-                 type: DateTime,
-                 desc: 'Return related epic links created after the specified time',
-                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+          type: DateTime,
+          desc: 'Return related epic links created after the specified time',
+          documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
         use :pagination
       end
       desc 'Get related epics within the group and hierarchy' do
@@ -139,9 +139,11 @@ module API
       end
       post ':id/epics/:epic_iid/related_epics' do
         source_epic = find_permissioned_epic!(params[:epic_iid])
-        target_epic = find_permissioned_epic!(declared_params[:target_epic_iid],
-                                              group_id: declared_params[:target_group_id],
-                                              permission: :admin_epic_relation)
+        target_epic = find_permissioned_epic!(
+          declared_params[:target_epic_iid],
+          group_id: declared_params[:target_group_id],
+          permission: :admin_epic_relation
+        )
 
         create_params = { target_issuable: target_epic, link_type: declared_params[:link_type] }
 

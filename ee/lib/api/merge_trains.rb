@@ -13,7 +13,7 @@ module API
 
     params do
       requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project',
-                    documentation: { example: 11 }
+        documentation: { example: 11 }
     end
     resource 'projects/:id', requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       resource :merge_trains do
@@ -31,7 +31,7 @@ module API
         end
         params do
           optional :scope, type: String, desc: 'The scope of merge trains', values: %w[active complete],
-                           documentation: { example: 'active' }
+            documentation: { example: 'active' }
           optional :sort,
             type: String, desc: 'Sort by asc (ascending) or desc (descending)', values: %w[asc desc], default: 'desc'
           use :pagination
@@ -58,9 +58,9 @@ module API
           end
           params do
             requires :target_branch, type: String, desc: 'The target branch of the merge request',
-                                     documentation: { example: 'main' }
+              documentation: { example: 'main' }
             optional :scope, type: String, desc: 'The scope of merge trains', values: %w[active complete],
-                             documentation: { example: 'active' }
+              documentation: { example: 'active' }
             optional :sort,
               type: String, desc: 'Sort by asc (ascending) or desc (descending)', values: %w[asc desc], default: 'desc'
             use :pagination
@@ -109,13 +109,12 @@ module API
           ]
         end
         params do
-          optional :sha, type: String, desc: 'If present, then the SHA must match the HEAD of the source `\
-                                       `branch, otherwise the merge fails.'
+          optional :sha, type: String,
+            desc: 'If present, then the SHA must match the HEAD of the source branch, otherwise the merge fails.'
           optional :squash, type: Grape::API::Boolean,
-                            desc: 'When true, the commits will be squashed into a single commit on merge'
+            desc: 'When true, the commits will be squashed into a single commit on merge'
           optional :when_pipeline_succeeds, type: Grape::API::Boolean,
-                                                  desc: 'When true, this merge request will be merged when `\
-                                                  `the pipeline succeeds'
+            desc: 'When true, this merge request will be merged when the pipeline succeeds'
         end
         post 'merge_requests/:merge_request_iid', requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           merge_request = find_project_merge_request(params[:merge_request_iid])

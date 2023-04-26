@@ -18,18 +18,18 @@ module API
     helpers do
       params :negatable_epic_filter_params do
         optional :labels,
-                 type: Array[String],
-                 coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: 'Comma-separated list of label names',
-                 documentation: { example: 'bug,reproduced' }
+          type: Array[String],
+          coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
+          desc: 'Comma-separated list of label names',
+          documentation: { example: 'bug,reproduced' }
         optional :author_id,
-                 type: Integer,
-                 desc: 'Return epics which are not authored by the user with the given ID',
-                 documentation: { example: 7 }
+          type: Integer,
+          desc: 'Return epics which are not authored by the user with the given ID',
+          documentation: { example: 7 }
         optional :author_username,
-                 type: String,
-                 desc: 'Return epics which are not authored by the given username',
-                 documentation: { example: 'root' }
+          type: String,
+          desc: 'Return epics which are not authored by the given username',
+          documentation: { example: 'root' }
         mutually_exclusive :author_id, :author_username
       end
     end
@@ -53,67 +53,67 @@ module API
         end
         params do
           optional :order_by,
-                   type: String,
-                   values: %w[created_at updated_at title],
-                   default: 'created_at',
-                   desc: 'Return epics ordered by `created_at`, `updated_at` or `title` fields.'
+            type: String,
+            values: %w[created_at updated_at title],
+            default: 'created_at',
+            desc: 'Return epics ordered by `created_at`, `updated_at` or `title` fields.'
           optional :sort,
-                   type: String,
-                   values: %w[asc desc],
-                   default: 'desc',
-                   desc: 'Return epics sorted in `asc` or `desc` order.'
+            type: String,
+            values: %w[asc desc],
+            default: 'desc',
+            desc: 'Return epics sorted in `asc` or `desc` order.'
           optional :search,
-                   type: String,
-                   desc: 'Search epics for text present in the title or description',
-                   documentation: { example: 'title search term' }
+            type: String,
+            desc: 'Search epics for text present in the title or description',
+            documentation: { example: 'title search term' }
           optional :state,
-                   type: String,
-                   values: %w[opened closed all],
-                   default: 'all',
-                   desc: 'Return opened, closed, or all epics'
+            type: String,
+            values: %w[opened closed all],
+            default: 'all',
+            desc: 'Return opened, closed, or all epics'
           optional :author_id,
-                   type: Integer,
-                   desc: 'Return epics which are authored by the user with the given ID',
-                   documentation: { example: 7 }
+            type: Integer,
+            desc: 'Return epics which are authored by the user with the given ID',
+            documentation: { example: 7 }
           optional :author_username,
-                   type: String,
-                   desc: 'Return epics which are authored by the given username',
-                   documentation: { example: 'root' }
+            type: String,
+            desc: 'Return epics which are authored by the given username',
+            documentation: { example: 'root' }
           mutually_exclusive :author_id, :author_username
           optional :labels,
-                   type: Array[String],
-                   coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                   desc: 'Comma-separated list of label names',
-                   documentation: { example: 'bug,reproduced' }
+            type: Array[String],
+            coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+            desc: 'Comma-separated list of label names',
+            documentation: { example: 'bug,reproduced' }
           optional :with_labels_details,
-                   type: Boolean,
-                   desc: 'Return titles of labels and other details',
-                   default: false
+            type: Boolean,
+            desc: 'Return titles of labels and other details',
+            default: false
           optional :created_after,
-                   type: DateTime,
-                   desc: 'Return epics created after the specified time',
-                   documentation: { example: '2019-03-15T08:00:00Z' }
+            type: DateTime,
+            desc: 'Return epics created after the specified time',
+            documentation: { example: '2019-03-15T08:00:00Z' }
           optional :created_before,
-                   type: DateTime,
-                   desc: 'Return epics created before the specified time',
-                   documentation: { example: '2019-03-15T08:00:00Z' }
+            type: DateTime,
+            desc: 'Return epics created before the specified time',
+            documentation: { example: '2019-03-15T08:00:00Z' }
           optional :updated_after,
-                   type: DateTime,
-                   desc: 'Return epics updated after the specified time',
-                   documentation: { example: '2019-03-15T08:00:00Z' }
+            type: DateTime,
+            desc: 'Return epics updated after the specified time',
+            documentation: { example: '2019-03-15T08:00:00Z' }
           optional :updated_before,
-                   type: DateTime,
-                   desc: 'Return epics updated before the specified time',
-                   documentation: { example: '2019-03-15T08:00:00Z' }
+            type: DateTime,
+            desc: 'Return epics updated before the specified time',
+            documentation: { example: '2019-03-15T08:00:00Z' }
           optional :include_ancestor_groups, type: Boolean, default: false, desc: 'Include epics from ancestor groups'
           optional :include_descendant_groups,
-                   type: Boolean,
-                   default: true,
-                   desc: 'Include epics from descendant groups'
+            type: Boolean,
+            default: true,
+            desc: 'Include epics from descendant groups'
           optional :my_reaction_emoji,
-                   type: String,
-                   desc: 'Return epics reacted by the authenticated user by the given emoji',
-                   documentation: { example: 'slight_frown' }
+            type: String,
+            desc: 'Return epics reacted by the authenticated user by the given emoji',
+            documentation: { example: 'slight_frown' }
           optional :confidential, type: Boolean, desc: 'Return epics with given confidentiality'
           use :pagination
 
@@ -167,48 +167,48 @@ module API
       end
       params do
         requires :title,
-                 type: String,
-                 desc: 'The title of an epic',
-                 documentation: { example: 'My Epic' }
+          type: String,
+          desc: 'The title of an epic',
+          documentation: { example: 'My Epic' }
         optional :description,
-                 type: String,
-                 desc: 'The description of an epic',
-                 documentation: { example: 'Epic description' }
+          type: String,
+          desc: 'The description of an epic',
+          documentation: { example: 'Epic description' }
         optional :color,
-                 type: ::Gitlab::Color,
-                 desc: 'The color of an epic',
-                 coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? },
-                 documentation: { example: '#1068bf' }
+          type: ::Gitlab::Color,
+          desc: 'The color of an epic',
+          coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? },
+          documentation: { example: '#1068bf' }
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :created_at,
-                 type: DateTime,
-                 desc: 'Date time when the epic was created. Available only for admins and project owners',
-                 documentation: { example: '2016-03-11T03:45:40Z' }
+          type: DateTime,
+          desc: 'Date time when the epic was created. Available only for admins and project owners',
+          documentation: { example: '2016-03-11T03:45:40Z' }
         optional :start_date,
-                 as: :start_date_fixed,
-                 type: String,
-                 desc: 'The start date of an epic',
-                 documentation: { example: '2018-07-31' }
+          as: :start_date_fixed,
+          type: String,
+          desc: 'The start date of an epic',
+          documentation: { example: '2018-07-31' }
         optional :start_date_is_fixed,
-                 type: Boolean,
-                 desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
+          type: Boolean,
+          desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
         optional :end_date,
-                 as: :due_date_fixed,
-                 type: String,
-                 desc: 'The due date of an epic',
-                 documentation: { example: '2019-08-11' }
+          as: :due_date_fixed,
+          type: String,
+          desc: 'The due date of an epic',
+          documentation: { example: '2019-08-11' }
         optional :due_date_is_fixed,
-                 type: Boolean,
-                 desc: 'Indicates due date should be sourced from due_date_fixed field not the issue milestones'
+          type: Boolean,
+          desc: 'Indicates due date should be sourced from due_date_fixed field not the issue milestones'
         optional :labels,
-                 type: Array[String],
-                 coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: 'Comma-separated list of label names',
-                 documentation: { example: 'bug,reproduced' }
+          type: Array[String],
+          coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+          desc: 'Comma-separated list of label names',
+          documentation: { example: 'bug,reproduced' }
         optional :parent_id,
-                 type: Integer,
-                 desc: 'The ID of a parent epic',
-                 documentation: { example: 12 }
+          type: Integer,
+          desc: 'The ID of a parent epic',
+          documentation: { example: 12 }
       end
       post ':id/(-/)epics' do
         authorize_can_create!
@@ -242,57 +242,57 @@ module API
       end
       params do
         requires :epic_iid,
-                 type: Integer, desc: 'The internal ID of an epic', documentation: { example: 5 }
+          type: Integer, desc: 'The internal ID of an epic', documentation: { example: 5 }
         optional :title,
-                 type: String, desc: 'The title of an epic', documentation: { example: 'My Epic' }
+          type: String, desc: 'The title of an epic', documentation: { example: 'My Epic' }
         optional :color,
-                 type: ::Gitlab::Color, desc: 'The color of an epic',
-                 coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? },
-                 documentation: { example: '#1068bf' }
+          type: ::Gitlab::Color, desc: 'The color of an epic',
+          coerce_with: ->(value) { ::Gitlab::Color.of(value) unless value.nil? },
+          documentation: { example: '#1068bf' }
         optional :description,
-                 type: String,
-                 desc: 'The description of an epic',
-                 documentation: { example: 'Epic description' }
+          type: String,
+          desc: 'The description of an epic',
+          documentation: { example: 'Epic description' }
         optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential'
         optional :updated_at,
-                 type: DateTime,
-                 desc: 'Date time when the epic was updated. Available only for admins and project owners',
-                 documentation: { example: '2016-03-11T03:45:40Z' }
+          type: DateTime,
+          desc: 'Date time when the epic was updated. Available only for admins and project owners',
+          documentation: { example: '2016-03-11T03:45:40Z' }
         optional :start_date,
-                 as: :start_date_fixed,
-                 type: String,
-                 desc: 'The start date of an epic',
-                 documentation: { example: '2018-07-31' }
+          as: :start_date_fixed,
+          type: String,
+          desc: 'The start date of an epic',
+          documentation: { example: '2018-07-31' }
         optional :start_date_is_fixed,
-                 type: Boolean,
-                 desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
+          type: Boolean,
+          desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
         optional :end_date,
-                 as: :due_date_fixed,
-                 type: String,
-                 desc: 'The due date of an epic',
-                 documentation: { example: '2019-08-11' }
+          as: :due_date_fixed,
+          type: String,
+          desc: 'The due date of an epic',
+          documentation: { example: '2019-08-11' }
         optional :due_date_is_fixed,
-                 type: Boolean,
-                 desc: 'Indicates due date should be sourced from due_date_fixed field not the issue milestones'
+          type: Boolean,
+          desc: 'Indicates due date should be sourced from due_date_fixed field not the issue milestones'
         optional :labels,
-                 type: Array[String],
-                 coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: 'Comma-separated label names for an issue',
-                 documentation: { example: 'bug,reproduced' }
+          type: Array[String],
+          coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+          desc: 'Comma-separated label names for an issue',
+          documentation: { example: 'bug,reproduced' }
         optional :add_labels,
-                 type: Array[String],
-                 coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: 'Comma-separated label names to add to an issue',
-                 documentation: { example: 'critical,documentation' }
+          type: Array[String],
+          coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+          desc: 'Comma-separated label names to add to an issue',
+          documentation: { example: 'critical,documentation' }
         optional :remove_labels,
-                 type: Array[String],
-                 coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
-                 desc: 'Comma-separated label names to remove from an issue',
-                 documentation: { example: 'documentation,enhancement' }
+          type: Array[String],
+          coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
+          desc: 'Comma-separated label names to remove from an issue',
+          documentation: { example: 'documentation,enhancement' }
         optional :state_event, type: String, values: %w[reopen close], desc: 'State event for an epic'
         optional :parent_id, type: Integer, desc: 'The ID of a parent epic', documentation: { example: 12 }
         at_least_one_of :add_labels, :color, :confidential, :description, :due_date_fixed, :due_date_is_fixed, :labels,
-                        :parent_id, :remove_labels, :start_date_fixed, :start_date_is_fixed, :state_event, :title
+          :parent_id, :remove_labels, :start_date_fixed, :start_date_is_fixed, :state_event, :title
       end
       put ':id/(-/)epics/:epic_iid' do
         authorize_can_admin_epic!

@@ -17,17 +17,17 @@ module API
         optional :report_type, type: String, desc: 'The type of the report required when rule type equals to report_approver'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
         optional :scanners,
-                 type: Array[String],
-                 desc: 'The security scanners to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
+          type: Array[String],
+          desc: 'The security scanners to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
         optional :severity_levels,
-                 type: Array[String],
-                 desc: 'The security levels to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
+          type: Array[String],
+          desc: 'The security levels to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
         optional :vulnerability_states,
-                 type: Array[String],
-                 desc: 'The vulnerability states to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
+          type: Array[String],
+          desc: 'The vulnerability states to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
       end
 
       params :update_project_approval_rule do
@@ -42,17 +42,17 @@ module API
         optional :remove_hidden_groups, type: Boolean, desc: 'Whether hidden groups should be removed'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
         optional :scanners,
-                 type: Array[String],
-                 desc: 'The security scanners to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
+          type: Array[String],
+          desc: 'The security scanners to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
         optional :severity_levels,
-                 type: Array[String],
-                 desc: 'The security levels to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
+          type: Array[String],
+          desc: 'The security levels to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
         optional :vulnerability_states,
-                 type: Array[String],
-                 desc: 'The vulnerability states to be considered by the approval rule',
-                 documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
+          type: Array[String],
+          desc: 'The vulnerability states to be considered by the approval rule',
+          documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
       end
 
       params :delete_project_approval_rule do
