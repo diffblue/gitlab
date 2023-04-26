@@ -12,7 +12,6 @@ import { TYPE_ISSUE } from '~/issues/constants';
 import { createAlert } from '~/alert';
 import { __, sprintf } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { Tracking } from '~/sidebar/constants';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 import { weightQueries, MAX_DISPLAY_WEIGHT } from '../../constants';
@@ -36,7 +35,6 @@ export default {
     autofocusonshow,
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: ['canUpdate'],
   props: {
     iid: {
@@ -130,12 +128,7 @@ export default {
       return this.issuable.id;
     },
     skipIssueWeightSubscription() {
-      return (
-        this.issuableType !== TYPE_ISSUE ||
-        !this.issuableId ||
-        this.isLoading ||
-        !this.glFeatures?.realTimeIssueWeight
-      );
+      return this.issuableType !== TYPE_ISSUE || !this.issuableId || this.isLoading;
     },
   },
   watch: {

@@ -27,12 +27,16 @@ describe('utils', () => {
 
       expect(result).toEqual([
         {
-          count: 47,
-          user: 'Mr Krabs',
+          count: 1,
+          user: 'Aaron',
         },
         {
-          count: 12,
-          user: 'Patrick',
+          count: 2,
+          user: 'Bob',
+        },
+        {
+          count: 3,
+          user: 'Carl',
         },
       ]);
     });
@@ -44,16 +48,22 @@ describe('utils', () => {
 
       expect(result).toEqual([
         {
-          closed: 99,
-          created: 0,
-          merged: 15,
-          user: 'Mr Krabs',
+          closed: 1,
+          created: 1,
+          merged: 1,
+          user: 'Aaron',
         },
         {
-          closed: 75,
-          created: 234,
-          merged: 35,
-          user: 'Spongebob',
+          closed: 2,
+          created: 2,
+          merged: 2,
+          user: 'Bob',
+        },
+        {
+          closed: 3,
+          created: 3,
+          merged: 3,
+          user: 'Carl',
         },
       ]);
     });
@@ -65,14 +75,19 @@ describe('utils', () => {
 
       expect(result).toEqual([
         {
-          closed: 57,
-          created: 55,
-          user: 'Patrick',
+          closed: 1,
+          created: 1,
+          user: 'Aaron',
         },
         {
-          closed: 34,
-          created: 75,
-          user: 'Spongebob',
+          closed: 2,
+          created: 2,
+          user: 'Bob',
+        },
+        {
+          closed: 3,
+          created: 3,
+          user: 'Carl',
         },
       ]);
     });
@@ -116,14 +131,14 @@ describe('utils', () => {
 
       expect(mergeContributions(MOCK_CONTRIBUTIONS, [match])).toEqual([
         {
-          repoPushed: 147,
-          mergeRequestsCreated: 100,
-          mergeRequestsMerged: 115,
-          mergeRequestsClosed: 199,
-          mergeRequestsApproved: 225,
-          issuesCreated: 100,
-          issuesClosed: 100,
-          totalEvents: 1101,
+          repoPushed: 101,
+          mergeRequestsCreated: 101,
+          mergeRequestsMerged: 101,
+          mergeRequestsClosed: 101,
+          mergeRequestsApproved: 101,
+          issuesCreated: 101,
+          issuesClosed: 101,
+          totalEvents: 107,
           user: match.user,
         },
         ...MOCK_CONTRIBUTIONS.slice(1),

@@ -40,7 +40,6 @@ describe('Sidebar Weight Widget', () => {
     weightQueryHandler = jest.fn().mockResolvedValue(issueNoWeightResponse()),
     weightMutationHandler = jest.fn().mockResolvedValue(setWeightResponse()),
     weightSubscriptionHandler = jest.fn().mockResolvedValue(issueWeightSubscriptionResponse()),
-    realTimeIssueWeight = true,
   } = {}) => {
     fakeApollo = createMockApollo([
       [issueWeightQuery, weightQueryHandler],
@@ -53,9 +52,6 @@ describe('Sidebar Weight Widget', () => {
         apolloProvider: fakeApollo,
         provide: {
           canUpdate: true,
-          glFeatures: {
-            realTimeIssueWeight,
-          },
         },
         propsData: {
           fullPath: 'group/project',
@@ -142,29 +138,15 @@ describe('Sidebar Weight Widget', () => {
     expect(createAlert).toHaveBeenCalled();
   });
 
-  describe('real time issue weight feature flag', () => {
-    describe('when :real_time_issue_weight feature flag is enabled', () => {
-      it('should call the subscription', async () => {
-        const weightSubscriptionHandler = jest
-          .fn()
-          .mockResolvedValue(issueWeightSubscriptionResponse());
-        createComponent({ realTimeIssueWeight: true, weightSubscriptionHandler });
-        await waitForPromises();
+  describe('real time issue weight', () => {
+    it('should call the subscription', async () => {
+      const weightSubscriptionHandler = jest
+        .fn()
+        .mockResolvedValue(issueWeightSubscriptionResponse());
+      createComponent({ weightSubscriptionHandler });
+      await waitForPromises();
 
-        expect(weightSubscriptionHandler).toHaveBeenCalled();
-      });
-    });
-
-    describe('when :real_time_issue_weight feature flag is disabled', () => {
-      it('should call the subscription', async () => {
-        const weightSubscriptionHandler = jest
-          .fn()
-          .mockResolvedValue(issueWeightSubscriptionResponse());
-        createComponent({ realTimeIssueWeight: false, weightSubscriptionHandler });
-        await waitForPromises();
-
-        expect(weightSubscriptionHandler).not.toHaveBeenCalled();
-      });
+      expect(weightSubscriptionHandler).toHaveBeenCalled();
     });
   });
 });
