@@ -31,7 +31,7 @@ To complete this tutorial:
 
 ## Create the Google Cloud Workload Identity Pool
 
-[Create a new Google Cloud Workload Identity Pool](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#oidc) with the following options:
+[Create a new Google Cloud Workload Identity Pool](https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#create_the_workload_identity_pool_and_provider) with the following options:
 
 - **Name**: Human-friendly name for the Workload Identity Pool, such as `GitLab`.
 - **Pool ID**: Unique ID in the Google Cloud project for the Workload Identity Pool,
