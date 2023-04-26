@@ -15,11 +15,6 @@ module Groups
           @group
         end
 
-        override :all_cycle_analytics_params
-        def all_cycle_analytics_params
-          super.merge({ namespace: @group })
-        end
-
         override :authorize_stage
         def authorize_stage
           return render_403 unless can?(current_user, :read_group_stage, @group)
