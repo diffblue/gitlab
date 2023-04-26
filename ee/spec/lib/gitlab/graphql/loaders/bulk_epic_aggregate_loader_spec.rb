@@ -148,10 +148,12 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
 
   context 'when no epic ids are provided' do
     [nil, [], ""].each do |empty_arg|
-      let(:target_ids) { empty_arg }
+      context "with #{empty_arg}" do
+        let(:target_ids) { empty_arg }
 
-      it 'returns an empty set' do
-        expect(subject.execute).to eq({})
+        it 'returns an empty set' do
+          expect(subject.execute).to eq({})
+        end
       end
     end
   end
