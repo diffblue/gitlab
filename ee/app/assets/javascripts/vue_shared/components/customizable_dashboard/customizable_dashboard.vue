@@ -13,6 +13,7 @@ import {
   GRIDSTACK_CSS_HANDLE,
   GRIDSTACK_CELL_HEIGHT,
   GRIDSTACK_MIN_ROW,
+  CURSOR_GRABBING_CLASS,
 } from './constants';
 import { filtersToQueryParams } from './utils';
 
@@ -135,8 +136,15 @@ export default {
           handle: GRIDSTACK_CSS_HANDLE,
           cellHeight: GRIDSTACK_CELL_HEIGHT,
           minRow: GRIDSTACK_MIN_ROW,
+          alwaysShowResizeHandle: true,
         });
 
+        this.grid.on('dragstart', () => {
+          this.$el.classList.add(CURSOR_GRABBING_CLASS);
+        });
+        this.grid.on('dragstop', () => {
+          this.$el.classList.remove(CURSOR_GRABBING_CLASS);
+        });
         this.grid.on('change', (event, items) => {
           items.forEach((item) => {
             this.updatePanelWithGridStackItem(item);
@@ -320,6 +328,7 @@ export default {
               :gs-max-h="getGridAttribute(panel, 'maxHeight')"
               :gs-max-w="getGridAttribute(panel, 'maxWidth')"
               class="grid-stack-item"
+              :class="{ 'gl-cursor-grab': editing }"
               data-testid="grid-stack-panel"
             >
               <panels-base
