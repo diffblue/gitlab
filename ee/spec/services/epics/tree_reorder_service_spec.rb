@@ -35,20 +35,12 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
     subject { described_class.new(user, moving_object_id, params).execute }
 
     shared_examples 'error for the tree update' do |expected_error|
-      it 'does not change relative_positions' do
+      it 'does not change anything', :aggregate_failures do
         expect { subject }.not_to change { tree_object_1.reload.relative_position }
         expect { subject }.not_to change { tree_object_2.reload.relative_position }
-      end
-
-      it 'does not change parent' do
         expect { subject }.not_to change { tree_object_2.reload.parent }
-      end
 
-      it 'returns error status' do
         expect(subject[:status]).to eq(:error)
-      end
-
-      it 'returns correct error' do
         expect(subject[:message]).to eq(expected_error)
       end
     end
@@ -117,7 +109,8 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
             end
 
             context 'when the new_parent_id has not been provided' do
-              it_behaves_like 'error for the tree update', "The sibling object's parent must match the current parent epic."
+              it_behaves_like 'error for the tree update',
+                "The sibling object's parent must match the current parent epic."
             end
 
             context 'when the new_parent_id does not match the parent of the relative positioning object' do
@@ -279,11 +272,8 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
 
             context 'when there is some other error with the new parent' do
               shared_examples 'new parent not in an ancestor group' do
-                it 'returns success status' do
+                it 'returns success status without errors', :aggregate_failures do
                   expect(subject[:status]).to eq(:success)
-                end
-
-                it 'does not return errors' do
                   expect(subject[:message]).to be_nil
                 end
               end
@@ -303,7 +293,7 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
               end
 
               context 'when the new parent is in a descendant group' do
-                let_it_be(:descendant_group) { create(:group, parent: group ) }
+                let_it_be(:descendant_group) { create(:group, parent: group) }
 
                 let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
 
@@ -357,7 +347,7 @@ RSpec.describe Epics::TreeReorderService, feature_category: :portfolio_managemen
                 end
               end
 
-              context 'when object being moved is from another epic and new_parent_id matches parent of adjacent object' do
+              context 'when moved object is from another epic and new_parent_id matches parent of adjacent object' do
                 let(:other_epic) { create(:epic, group: group) }
                 let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
                 let(:epic3) { create(:epic, parent: other_epic, group: group) }
