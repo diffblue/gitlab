@@ -44,6 +44,9 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
         before do
           container.add_owner(current_user)
           another_container.add_owner(current_user)
+
+          # Create or update to policy project requires minimum commit access to policy project.
+          policy_project.add_developer(current_user)
         end
 
         context 'when policy project is assigned' do

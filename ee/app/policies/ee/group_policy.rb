@@ -415,6 +415,9 @@ module EE
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
         enable :update_security_orchestration_policy_project
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:owner_access) & ~security_policy_project_available }.policy do
         enable :modify_security_policy
       end
 

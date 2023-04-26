@@ -18,6 +18,7 @@ RSpec.shared_examples 'as an orchestration policy' do
     context 'when feature is not licensed' do
       before do
         stub_licensed_features(security_orchestration_policies: false)
+        project.add_developer(user)
       end
 
       it 'returns empty collection' do
@@ -30,13 +31,17 @@ RSpec.shared_examples 'as an orchestration policy' do
         stub_licensed_features(security_orchestration_policies: true)
       end
 
-      it 'returns scan execution policies' do
-        expect(resolve_scan_policies).to eq(expected_resolved)
+      context 'when user is authorized' do
+        before do
+          project.add_developer(user)
+        end
+
+        it 'returns scan execution policies' do
+          expect(resolve_scan_policies).to eq(expected_resolved)
+        end
       end
 
       context 'when user is unauthorized' do
-        let(:user) { create(:user) }
-
         it 'returns empty collection' do
           expect(resolve_scan_policies).to be_empty
         end

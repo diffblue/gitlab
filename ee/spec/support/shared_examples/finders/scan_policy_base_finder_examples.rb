@@ -23,6 +23,7 @@ RSpec.shared_examples 'scan policies finder' do
     context 'when feature is not licensed' do
       before do
         stub_licensed_features(security_orchestration_policies: false)
+        object.add_developer(actor)
       end
 
       it 'returns empty collection' do
@@ -36,6 +37,13 @@ RSpec.shared_examples 'scan policies finder' do
       end
 
       context 'when configuration is associated to project' do
+        # Project not belonging to group
+        let_it_be(:object) { create(:project) }
+
+        before do
+          object.add_developer(actor)
+        end
+
         it 'returns policies with project' do
           is_expected.to match_array([policy.merge(
             {
@@ -48,6 +56,8 @@ RSpec.shared_examples 'scan policies finder' do
       end
 
       context 'when configuration is associated to namespace' do
+        # Project belonging to group
+        let_it_be(:object) { create(:project, group: group) }
         let!(:policy_configuration) { nil }
 
         let!(:group_policy_configuration) do
@@ -57,6 +67,10 @@ RSpec.shared_examples 'scan policies finder' do
             security_policy_management_project: policy_management_project,
             namespace: group
           )
+        end
+
+        before do
+          group.add_developer(actor)
         end
 
         context 'when relationship argument is not provided' do
@@ -88,6 +102,11 @@ RSpec.shared_examples 'scan policies finder' do
             security_policy_management_project: policy_management_project,
             namespace: group
           )
+        end
+
+        before do
+          object.add_developer(actor)
+          group.add_developer(actor)
         end
 
         context 'when relationship argument is not provided' do
@@ -142,8 +161,6 @@ RSpec.shared_examples 'scan policies finder' do
       end
 
       context 'when user is unauthorized' do
-        let(:actor) { create(:user) }
-
         it 'returns empty collection' do
           is_expected.to be_empty
         end

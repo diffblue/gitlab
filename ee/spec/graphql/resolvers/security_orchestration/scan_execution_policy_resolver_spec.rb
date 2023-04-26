@@ -26,7 +26,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       })
   end
 
-  let(:user) { policy_management_project.first_owner }
+  let_it_be(:user) { create(:user) }
 
   let(:args) { {} }
   let(:expected_resolved) do
@@ -68,12 +68,21 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       end
 
       context 'when policies are available for project only' do
+        # project not belonging to a group.
+        let_it_be(:project) { create(:project) }
+
+        before do
+          project.add_developer(user)
+        end
+
         it 'returns scan execution policies' do
           expect(resolve_scan_policies).to eq(expected_resolved)
         end
       end
 
       context 'when policies are available for namespace only' do
+        let_it_be(:project) { create(:project, group: group) }
+
         let!(:policy_configuration) { nil }
 
         let!(:group_policy_configuration) do
@@ -83,6 +92,10 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
             security_policy_management_project: policy_management_project,
             namespace: group
           )
+        end
+
+        before do
+          group.add_developer(user)
         end
 
         context 'when relationship argument is not provided' do
@@ -123,6 +136,8 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       end
 
       context 'when policies are available for project and namespace' do
+        let_it_be(:project) { create(:project, group: group) }
+
         let!(:group_policy_configuration) do
           create(
             :security_orchestration_policy_configuration,
@@ -130,6 +145,11 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
             security_policy_management_project: policy_management_project,
             namespace: group
           )
+        end
+
+        before do
+          project.add_developer(user)
+          group.add_developer(user)
         end
 
         context 'when relationship argument is not provided' do
@@ -182,8 +202,6 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
       end
 
       context 'when user is unauthorized' do
-        let(:user) { create(:user) }
-
         it 'returns empty collection' do
           expect(resolve_scan_policies).to be_empty
         end
@@ -194,6 +212,7 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
   context 'when action_scan_types is given' do
     before do
       stub_licensed_features(security_orchestration_policies: true)
+      project.add_developer(user)
     end
 
     context 'when there are multiple policies' do

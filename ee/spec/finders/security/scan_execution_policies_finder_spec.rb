@@ -66,6 +66,7 @@ RSpec.describe Security::ScanExecutionPoliciesFinder, feature_category: :securit
   context 'when action_scan_types is given' do
     before do
       stub_licensed_features(security_orchestration_policies: true)
+      object.add_developer(actor)
     end
 
     context 'when there are multiple policies' do
