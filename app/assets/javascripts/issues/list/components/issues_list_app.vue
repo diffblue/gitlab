@@ -243,11 +243,11 @@ export default {
         iid: isIidSearch ? this.searchQuery.slice(1) : undefined,
         isProject: this.isProject,
         isSignedIn: this.isSignedIn,
-        search: isIidSearch ? undefined : this.searchQuery,
         sort: this.sortKey,
         state: this.state,
         ...this.pageParams,
         ...this.apiFilterParams,
+        search: isIidSearch ? undefined : this.searchQuery,
         types: this.apiFilterParams.types || this.defaultWorkItemTypes,
       };
     },
@@ -474,7 +474,6 @@ export default {
     },
     urlParams() {
       return {
-        search: this.searchQuery,
         sort: urlSortParams[this.sortKey],
         state: this.state,
         ...this.urlFilterParams,
