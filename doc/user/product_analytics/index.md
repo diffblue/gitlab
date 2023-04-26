@@ -152,6 +152,31 @@ and one visualization (line chart) that applies to all dashboards, the file stru
 │  └── example_line_chart.yaml
 ```
 
+### Define a chart visualization
+
+You can define different charts, and add visualization options to some of them:
+
+- Line chart, with the options listed in the [ECharts documentation](https://echarts.apache.org/en/option.html).
+- Column chart, with the options listed in the [ECharts documentation](https://echarts.apache.org/en/option.html).
+- Data table, without options.
+- Single stat, with the only option to set `decimalPlaces` (number, default value is 0).
+
+To define a chart for your dashboards:
+
+1. In the `.gitlab/product_analytics/dashboards/visualizations/` directory, create a `.yaml` file.
+The filename should be descriptive of the visualization it defines.
+1. In the `.yaml` file, define the visualization options, according to the schema in
+`ee/app/validators/json_schemas/analytics_visualization.json`.
+
+For [example](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/app/assets/javascripts/analytics/analytics_dashboards/gl_dashboards/product_analytics/visualizations/events_over_time.json), to create a line chart that illustrates event count over time, in the `visualizations` folder
+create a `line_chart.yaml` file with the following required fields:
+
+- version
+- title
+- type
+- data
+- options
+
 ## Funnel analysis
 
 Use funnel analysis to understand the flow of users through your application, and where
