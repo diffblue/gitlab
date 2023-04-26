@@ -1,0 +1,15 @@
+---
+version: 1
+title: Total Unique Users
+type: SingleStat
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.uniqueUsersCount
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+    timeDimensions: []
+options: {}

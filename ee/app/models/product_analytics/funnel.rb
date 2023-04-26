@@ -6,7 +6,7 @@ module ProductAnalytics
 
     attr_accessor :name, :project, :seconds_to_convert
 
-    FUNNELS_ROOT_LOCATION = '.gitlab/product_analytics/funnels'
+    FUNNELS_ROOT_LOCATION = '.gitlab/analytics/funnels'
 
     validates :name, presence: true
     validates :seconds_to_convert, numericality: { only_integer: true, greater_than: 0 }

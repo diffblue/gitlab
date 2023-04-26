@@ -1,0 +1,19 @@
+---
+version: 1
+title: Total pageviews
+type: SingleStat
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.pageViewsCount
+    filters:
+      - operator: equals
+        values:
+          - pageview
+        member: SnowplowTrackedEvents.eventType
+    limit: 100
+    timezone: UTC
+    dimensions: []
+    timeDimensions: []
+options: {}

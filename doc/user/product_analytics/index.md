@@ -100,7 +100,7 @@ On GitLab.com, this feature is not available.
 This feature is not ready for production use.
 
 Each project can have an unlimited number of dashboards.
-These dashboards are defined using the GitLab YAML schema, and stored in the `.gitlab/product_analytics/dashboards/` directory of a project repository.
+These dashboards are defined using the GitLab YAML schema, and stored in the `.gitlab/analytics/dashboards/` directory of a project repository.
 The name of the file is the name of the dashboard.
 Each dashboard can contain one or more visualizations (charts), which are shared across dashboards.
 
@@ -126,13 +126,13 @@ To view a list of product analytics dashboards for a project:
 
 To define a dashboard:
 
-1. In `.gitlab/product_analytics/dashboards/`, create a directory named like the dashboard.
+1. In `.gitlab/analytics/dashboards/`, create a directory named like the dashboard.
 
     Each dashboard should have its own directory.
 1. In the new directory, create a `.yaml` file with the same name as the directory.
 
     This file contains the dashboard definition. It must conform to the JSON schema defined in `ee/app/validators/json_schemas/product_analytics_dashboard.json`.
-1. In the `.gitlab/product_analytics/dashboards/visualizations/` directory, create a `.yaml` file.
+1. In the `.gitlab/analytics/dashboards/visualizations/` directory, create a `.yaml` file.
 
     This file defines the visualization type for the dashboard. It must conform to the schema in
  `ee/app/validators/json_schemas/product_analytics_visualization.json`.
@@ -141,7 +141,7 @@ For example, if you want to create three dashboards (Conversion funnels, Demogra
 and one visualization (line chart) that applies to all dashboards, the file structure would be:
 
 ```plaintext
-.gitlab/product_analytics/dashboards
+.gitlab/analytics/dashboards
 ├── conversion_funnels
 │  └── conversion_funnels.yaml
 ├── demographic_breakdown
@@ -158,7 +158,7 @@ Use funnel analysis to understand the flow of users through your application, an
 users drop out of a predefined flow (for example, a checkout process or ticket purchase).
 
 Each product can also define an unlimited number of funnels.
-Like dashboards, funnels are defined using the GitLab YAML schema, and stored in the `.gitlab/product_analytics/funnels/` directory of a project repository.
+Like dashboards, funnels are defined using the GitLab YAML schema, and stored in the `.gitlab/analytics/funnels/` directory of a project repository.
 
 Funnel definitions must include the keys `name` and `seconds_to_convert`, and an array of `steps`.
 

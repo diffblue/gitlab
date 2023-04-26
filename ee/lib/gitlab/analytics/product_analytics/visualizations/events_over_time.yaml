@@ -1,0 +1,23 @@
+---
+version: 1
+title: Events over time
+type: LineChart
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowTrackedEvents.pageViewsCount
+    timeDimensions:
+      - dimension: SnowplowTrackedEvents.derivedTstamp
+        granularity: day
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+options:
+  xAxis:
+    name: Time
+    type: time
+  yAxis:
+    name: Counts
+    type: time

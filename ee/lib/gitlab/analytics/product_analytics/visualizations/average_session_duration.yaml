@@ -1,0 +1,16 @@
+---
+version: 1
+title: Average Session duration
+type: SingleStat
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowSessions.averageDurationMinutes
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+    timeDimensions: []
+options:
+  decimalPlaces: 1

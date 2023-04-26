@@ -1,0 +1,87 @@
+---
+title: Audience
+panels:
+  - id: 1
+    visualization: daily_active_users
+    title: Daily Active Users
+    gridAttributes:
+      yPos: 1
+      xPos: 0
+      width: 6
+      height: 5
+    options: {}
+  - id: 2
+    visualization: sessions_over_time
+    title: Sessions over Time
+    gridAttributes:
+      yPos: 1
+      xPos: 6
+      width: 6
+      height: 5
+    options: {}
+  - id: 3
+    visualization: total_unique_users
+    title: Total Unique Users
+    gridAttributes:
+      yPos: 0
+      xPos: 0
+      width: 2
+      height: 1
+    options: {}
+  - id: 4
+    visualization: returning_users_percentage
+    title: Returning Users Percentage
+    gridAttributes:
+      yPos: 0
+      xPos: 2
+      width: 2
+      height: 1
+    options:
+      decimalPlaces: 1
+  - id: 5
+    visualization: average_session_duration
+    title: Average Session duration
+    gridAttributes:
+      yPos: 0
+      xPos: 6
+      width: 3
+      height: 1
+    options:
+      decimalPlaces: 2
+  - id: 6
+    visualization: total_sessions
+    title: Total sessions
+    gridAttributes:
+      yPos: 0
+      xPos: 4
+      width: 2
+      height: 1
+    options: {}
+  - id: 7
+    visualization: average_sessions_per_user
+    title: Average Sessions per User
+    gridAttributes:
+      yPos: 0
+      xPos: 9
+      width: 3
+      height: 1
+    options:
+      decimalPlaces: 2
+  - id: 8
+    visualization: browsers_per_users
+    title: Browsers per Users
+    gridAttributes:
+      yPos: 6
+      xPos: 0
+      width: 6
+      height: 5
+    options: {}
+  - id: 9
+    visualization: sessions_per_browser
+    title: Sessions per Browser
+    gridAttributes:
+      yPos: 6
+      xPos: 6
+      width: 6
+      height: 5
+    options: {}

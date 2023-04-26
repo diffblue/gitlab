@@ -1,0 +1,48 @@
+---
+title: Behavior
+panels:
+  - id: 1
+    visualization: page_views_over_time
+    title: Page views over time
+    gridAttributes:
+      yPos: 1
+      xPos: 0
+      width: 6
+      height: 5
+    options: {}
+  - id: 2
+    visualization: total_pageviews
+    title: Total pageviews
+    gridAttributes:
+      yPos: 0
+      xPos: 0
+      width: 6
+      height: 1
+    options: {}
+  - id: 3
+    visualization: total_events
+    title: Total events
+    gridAttributes:
+      yPos: 0
+      xPos: 6
+      width: 6
+      height: 1
+    options: {}
+  - id: 4
+    visualization: events_over_time
+    title: Events over time
+    gridAttributes:
+      yPos: 1
+      xPos: 6
+      width: 6
+      height: 5
+    options: {}
+  - id: 5
+    visualization: top_pages
+    title: Top pages
+    gridAttributes:
+      yPos: 6
+      xPos: 0
+      width: 12
+      height: 4
+    options: {}

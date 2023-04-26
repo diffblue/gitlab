@@ -1,0 +1,15 @@
+---
+version: 1
+title: Total sessions
+type: SingleStat
+data:
+  type: cube_analytics
+  query:
+    measures:
+      - SnowplowSessions.count
+    limit: 100
+    timezone: UTC
+    filters: []
+    dimensions: []
+    timeDimensions: []
+options: {}
