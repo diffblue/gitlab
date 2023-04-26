@@ -8,6 +8,48 @@
   overflow-y: hidden;
   max-width: $wide-drawer;
   width: 100%;
+
+  .tanuki-bot-chat-input-field {
+    max-height: 200px;
+    height: 2rem;
+  }
+
+  .gl-drawer-body-scrim-on-footer {
+    &::before {
+      background: none;
+    }
+  }
+
+  .gl-drawer-body {
+    overflow-y: auto;
+  }
+
+  .tanuki-bot-chat-chat-messages {
+    min-height: 100%;
+  }
+
+  .tanuki-bot-message {
+    background-color: $gray-50; // Overridden to $gray-100 in dark_mode_overrides.scss
+  }
+
+  .messages-move {
+    transition: all 400ms ease;
+  }
+
+  .messages-enter-active,
+  .messages-leave-active {
+    animation: 400ms ease 0s 1 slide-in;
+  }
+
+  @keyframes slide-in {
+    0% {
+      transform: translateY(200%);
+    }
+
+    100% {
+      transform: translateY(0);
+    }
+  }
 }
 
 .tanuki-bot-backdrop {
