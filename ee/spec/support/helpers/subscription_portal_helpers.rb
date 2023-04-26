@@ -83,13 +83,17 @@ module SubscriptionPortalHelpers
   def stub_invoice_preview
     stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
       .with(
-        body: "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String) {\\n  invoicePreview(planId: $planId, quantity: $quantity, promoCode: $promoCode) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      unitPrice\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
+        body: invoice_preview_request_body
       )
       .to_return(
         status: 200,
         headers: { 'Content-Type' => 'application/json' },
         body: stubbed_invoice_preview_response_body
       )
+  end
+
+  def invoice_preview_request_body
+    "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1,\"namespaceId\":null},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String, $namespaceId: ID) {\\n  invoicePreview(\\n    planId: $planId\\n    quantity: $quantity\\n    promoCode: $promoCode\\n    namespaceId: $namespaceId\\n  ) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      unitPrice\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
   end
 
   def stubbed_invoice_preview_response_body
