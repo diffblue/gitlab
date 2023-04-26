@@ -23,7 +23,6 @@ RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigatio
   before do
     # Give the user access to everything and enable every feature
     allow(Ability).to receive(:allowed?).and_return(true)
-    allow(License).to receive(:feature_available?).and_return(true)
     allow(group).to receive(:licensed_feature_available?).and_return(true)
     # Needed to show Container Registry items
     allow(::Gitlab.config.registry).to receive(:enabled).and_return(true)

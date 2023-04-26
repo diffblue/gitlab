@@ -8,7 +8,12 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
   let(:context) { Sidebars::Context.new(current_user: user, container: nil) }
 
   before do
-    allow(License).to receive(:feature_available?).and_return(true)
+    stub_licensed_features(
+      admin_audit_log: true,
+      custom_file_templates: true,
+      elastic_search: true,
+      license_scanning: true
+    )
   end
 
   subject { described_class.new(context) }
