@@ -29,7 +29,7 @@ module Mutations
                description: 'Changes the operation mode.'
 
       argument :name, GraphQL::Types::String,
-               required: false,
+               required: true,
                description: 'Name of the policy. If the name is null, the `name` field from `policy_yaml` is used.'
 
       field :branch,

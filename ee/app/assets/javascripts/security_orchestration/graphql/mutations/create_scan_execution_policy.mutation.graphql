@@ -1,7 +1,7 @@
 mutation updatePolicy(
   $fullPath: String!
   $mode: MutationOperationMode = APPEND
-  $name: String
+  $name: String!
   $policyYaml: String!
 ) {
   scanExecutionPolicyCommit(
