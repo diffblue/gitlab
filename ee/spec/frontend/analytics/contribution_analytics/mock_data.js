@@ -1,3 +1,7 @@
+import contributionAnalyticsFixture from 'test_fixtures/graphql/analytics/contribution_analytics/graphql/contributions.query.graphql.json';
+
+export { contributionAnalyticsFixture };
+
 export const MOCK_ANALYTICS = {
   labels: ['Administrator'],
 
@@ -69,53 +73,7 @@ export const MOCK_SORT_ORDERS = {
   totalEvents: 1,
 };
 
-export const MOCK_CONTRIBUTIONS = [
-  {
-    repoPushed: 47,
-    mergeRequestsCreated: 0,
-    mergeRequestsMerged: 15,
-    mergeRequestsClosed: 99,
-    mergeRequestsApproved: 125,
-    issuesCreated: 0,
-    issuesClosed: 0,
-    totalEvents: 1001,
-    user: {
-      id: 'krabs',
-      name: 'Mr Krabs',
-      webUrl: 'http://bikini.bottom/krabs',
-    },
-  },
-  {
-    repoPushed: 12,
-    mergeRequestsCreated: 0,
-    mergeRequestsMerged: 0,
-    mergeRequestsClosed: 0,
-    mergeRequestsApproved: 0,
-    issuesCreated: 55,
-    issuesClosed: 57,
-    totalEvents: 37,
-    user: {
-      id: 'patrick',
-      name: 'Patrick',
-      webUrl: 'http://bikini.bottom/patrick',
-    },
-  },
-  {
-    repoPushed: 0,
-    mergeRequestsCreated: 234,
-    mergeRequestsMerged: 35,
-    mergeRequestsClosed: 75,
-    mergeRequestsApproved: 15,
-    issuesCreated: 75,
-    issuesClosed: 34,
-    totalEvents: 112,
-    user: {
-      id: 'spongebob',
-      name: 'Spongebob',
-      webUrl: 'http://bikini.bottom/spongebob',
-    },
-  },
-];
+export const MOCK_CONTRIBUTIONS = contributionAnalyticsFixture.data.group.contributions.nodes;
 
 export const MOCK_PUSHES = [
   { count: 15, user: 'luffy' },

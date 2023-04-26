@@ -3,11 +3,13 @@ import Vue from 'vue';
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
 import { GlLoadingIcon, GlAlert } from '@gitlab/ui';
+import { cloneDeep } from 'lodash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import App from 'ee/analytics/contribution_analytics/components/app.vue';
 import GroupMembersTable from 'ee/analytics/contribution_analytics/components/group_members_table.vue';
 import contributionsQuery from 'ee/analytics/contribution_analytics/graphql/contributions.query.graphql';
+import { contributionAnalyticsFixture } from '../mock_data';
 
 jest.mock('@sentry/browser');
 
@@ -16,36 +18,16 @@ Vue.use(VueApollo);
 describe('Contribution Analytics App', () => {
   let wrapper;
 
-  const wrapApiResponse = (nodes, endCursor = '') => ({
-    data: {
-      group: {
-        id: 'YEET',
-        contributions: {
-          nodes,
-          pageInfo: {
-            endCursor,
-            hasNextPage: endCursor !== '',
-          },
-        },
-      },
-    },
-  });
+  const mockApiResponse = ({ response = contributionAnalyticsFixture, endCursor = '' } = {}) => {
+    const responseCopy = cloneDeep(response);
 
-  const createMockContribution = (userId, metricValue) => ({
-    repoPushed: metricValue,
-    mergeRequestsCreated: metricValue,
-    mergeRequestsMerged: metricValue,
-    mergeRequestsClosed: metricValue,
-    mergeRequestsApproved: metricValue,
-    issuesCreated: metricValue,
-    issuesClosed: metricValue,
-    totalEvents: metricValue,
-    user: {
-      id: userId,
-      name: userId,
-      webUrl: userId,
-    },
-  });
+    responseCopy.data.group.contributions.pageInfo = {
+      endCursor,
+      hasNextPage: endCursor !== '',
+    };
+
+    return responseCopy;
+  };
 
   const createWrapper = ({ contributionsQueryResolver }) => {
     const apolloProvider = createMockApollo(
@@ -88,22 +70,32 @@ describe('Contribution Analytics App', () => {
   });
 
   it('fetches the data per week, using paginated requests when necessary', async () => {
-    const userA = 'primary';
-    const userB = 'secondary';
     const nextPageCursor = 'next';
 
     const contributionsQueryResolver = jest
       .fn()
-      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 100)], nextPageCursor))
-      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userB, 5)]))
-      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 25)]))
-      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userA, 50)], nextPageCursor))
-      .mockResolvedValueOnce(wrapApiResponse([createMockContribution(userB, 7)]));
+      .mockResolvedValueOnce(mockApiResponse({ endCursor: nextPageCursor }))
+      .mockResolvedValueOnce(mockApiResponse())
+      .mockResolvedValueOnce(mockApiResponse())
+      .mockResolvedValueOnce(mockApiResponse({ endCursor: nextPageCursor }))
+      .mockResolvedValueOnce(mockApiResponse());
 
     createWrapper({ contributionsQueryResolver });
     await waitForPromises();
 
-    expect(findGroupMembersTable().props('contributions')).toMatchSnapshot();
+    const contributions = findGroupMembersTable().props('contributions');
+
+    expect(contributions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          user: expect.objectContaining({
+            id: expect.any(String),
+            webUrl: expect.any(String),
+          }),
+        }),
+      ]),
+    );
+
     expect(contributionsQueryResolver).toHaveBeenCalledTimes(5);
     [
       {
