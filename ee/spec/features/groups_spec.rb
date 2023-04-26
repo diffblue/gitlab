@@ -65,20 +65,10 @@ RSpec.describe 'Group', feature_category: :subgroups do
       sign_in(user)
     end
 
-    context 'with storage_enforcement_date set' do
-      let_it_be(:storage_enforcement_date) { Date.today + 30 }
-
+    context 'when the group is over the notification_limit' do
       it 'displays the banner in the group page' do
         visit group_path(group)
         expect(page).to have_text storage_banner_text
-      end
-
-      it 'does not display the banner in a paid group page' do
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:paid?).and_return(true)
-        end
-        visit group_path(group)
-        expect(page).not_to have_text storage_banner_text
       end
 
       it 'does not display the dismissed banner if the group is still over notification_limit' do
@@ -101,36 +91,6 @@ RSpec.describe 'Group', feature_category: :subgroups do
           visit group_path(group)
           expect(page).not_to have_text storage_banner_text
         end
-      end
-
-      context 'when changing the storage_enforcement_date callout threshold' do
-        let(:storage_enforcement_date) { Date.today + 13 }
-
-        before do
-          allow_next_found_instance_of(Group) do |group|
-            allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-          end
-        end
-
-        it 'displays the banner' do
-          visit group_path(group)
-
-          expect(page).to have_text storage_banner_text
-        end
-      end
-    end
-
-    context 'with storage_enforcement_date not set' do
-      before do
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:storage_enforcement_date).and_return(nil)
-        end
-      end
-
-      it 'does not display the banner in the group page' do
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
-        visit group_path(group)
-        expect(page).not_to have_text storage_banner_text
       end
     end
   end
