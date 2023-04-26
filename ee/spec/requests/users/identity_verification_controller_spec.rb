@@ -239,10 +239,10 @@ feature_category: :system_access do
 
     context 'when successful' do
       let_it_be(:new_token) { '123456' }
-      let_it_be(:encrypted_token) { Devise.token_generator.digest(User, :confirmation_token, new_token) }
+      let_it_be(:encrypted_token) { Devise.token_generator.digest(User, unconfirmed_user.email, new_token) }
 
       before do
-        allow_next_instance_of(::Users::EmailVerification::GenerateTokenService, attr: :confirmation_token) do |service|
+        allow_next_instance_of(::Users::EmailVerification::GenerateTokenService) do |service|
           allow(service).to receive(:generate_token).and_return(new_token)
         end
         stub_session(verification_user_id: unconfirmed_user.id)

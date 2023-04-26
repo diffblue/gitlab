@@ -157,7 +157,8 @@ module Users
     end
 
     def reset_confirmation_token
-      token, encrypted_token = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token).execute
+      service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token, user: @user)
+      token, encrypted_token = service.execute
       @user.update!(confirmation_token: encrypted_token, confirmation_sent_at: Time.current)
       Notify.confirmation_instructions_email(@user.email, token: token).deliver_later
       log_identity_verification('Email', :sent_instructions)
