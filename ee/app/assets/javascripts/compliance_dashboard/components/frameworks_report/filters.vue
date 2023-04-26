@@ -55,7 +55,6 @@ export default {
   },
   methods: {
     onFilterSubmit(newFilters) {
-      this.$refs.popover.$emit('close');
       this.$emit('submit', newFilters ?? this.value);
     },
     handleFilterClear() {

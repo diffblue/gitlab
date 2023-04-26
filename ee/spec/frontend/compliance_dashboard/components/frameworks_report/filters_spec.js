@@ -6,13 +6,12 @@ describe('ComplianceFrameworksFilters', () => {
   let wrapper;
 
   const findFilteredSearch = () => wrapper.findComponent(GlFilteredSearch);
-
-  const value = [];
+  const findPopover = () => wrapper.findComponent(GlPopover);
 
   const createComponent = (props) => {
     wrapper = mount(ComplianceFrameworksFilters, {
       propsData: {
-        value,
+        value: [],
         rootAncestorPath: 'my-group-path',
         ...props,
       },
@@ -40,16 +39,18 @@ describe('ComplianceFrameworksFilters', () => {
     });
 
     it('does not show update popover by default', () => {
-      expect(wrapper.findComponent(GlPopover).props('show')).toBe(false);
+      expect(findPopover().props('show')).toBe(false);
     });
   });
 
   describe('when showUpdatePopover is true', () => {
+    const currentValue = [];
+
     beforeEach(() => {
-      createComponent({ showUpdatePopover: true });
+      createComponent({ showUpdatePopover: true, value: currentValue });
     });
     it('shows update popover when showUpdatePopover is true', () => {
-      expect(wrapper.findComponent(GlPopover).props('show')).toBe(true);
+      expect(findPopover().props('show')).toBe(true);
     });
 
     it('emits submit on primary popover action', () => {
@@ -59,7 +60,7 @@ describe('ComplianceFrameworksFilters', () => {
         .wrappers.find((w) => w.props('category') === 'primary');
 
       primaryButton.vm.$emit('click');
-      expect(wrapper.emitted('submit').at(-1)).toStrictEqual([value]);
+      expect(wrapper.emitted('submit').at(-1)).toStrictEqual([currentValue]);
     });
   });
 });

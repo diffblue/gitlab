@@ -56,6 +56,8 @@ export default {
     projects: {
       query: complianceFrameworksGroupProjects,
       fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      // See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118580#note_1366339919 for explanation
+      // why we need nextFetchPolicy
       nextFetchPolicy: fetchPolicies.CACHE_FIRST,
       variables() {
         return {
@@ -152,6 +154,7 @@ export default {
       });
     },
     onFiltersChanged(filters) {
+      this.shouldShowUpdatePopover = false;
       const newFilters = mapFiltersToUrlParams(filters);
       if (checkFilterForChange({ currentFilters: this.$route.query, newFilters })) {
         this.$router.push({
@@ -202,7 +205,7 @@ export default {
       :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
-      @update="showUpdatePopoverIfNeeded"
+      @updated="showUpdatePopoverIfNeeded"
     />
 
     <pagination
