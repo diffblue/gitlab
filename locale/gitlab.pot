@@ -15523,10 +15523,28 @@ msgstr ""
 msgid "Domain Verification"
 msgstr ""
 
+msgid "DomainVerification|Add Domain"
+msgstr ""
+
+msgid "DomainVerification|Domain was added"
+msgstr ""
+
+msgid "DomainVerification|Domain was removed"
+msgstr ""
+
+msgid "DomainVerification|Domain was updated"
+msgstr ""
+
+msgid "DomainVerification|Failed to verify domain ownership"
+msgstr ""
+
 msgid "DomainVerification|How do I configure a domain?"
 msgstr ""
 
 msgid "DomainVerification|No domains configured. Create a domain in a project in this group hierarchy."
+msgstr ""
+
+msgid "DomainVerification|Successfully verified domain ownership"
 msgstr ""
 
 msgid "DomainVerification|The following domains are configured for projects in this group. Users with email addresses that match a verified domain do not need to confirm their account."
@@ -53209,6 +53227,9 @@ msgid "must be less than the limit of %{tag_limit} tags"
 msgstr ""
 
 msgid "must be set for a project namespace"
+msgstr ""
+
+msgid "must be specified"
 msgstr ""
 
 msgid "must be unique by status and elapsed time within a policy"
