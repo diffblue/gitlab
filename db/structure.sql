@@ -12596,6 +12596,7 @@ CREATE TABLE boards_epic_boards (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     name text DEFAULT 'Development'::text NOT NULL,
+    display_colors boolean DEFAULT true NOT NULL,
     CONSTRAINT check_bcbbffe601 CHECK ((char_length(name) <= 255))
 );
 

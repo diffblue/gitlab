@@ -3,14 +3,12 @@
 module Mutations
   module Boards
     module EpicBoards
-      class Create < ::Mutations::BaseMutation
+      class Create < Base
         graphql_name 'EpicBoardCreate'
 
         include Mutations::ResolvesGroup
         include Mutations::Boards::CommonMutationArguments
         prepend Mutations::Boards::ScopedBoardMutation
-
-        authorize :admin_epic_board
 
         argument :group_path, GraphQL::Types::ID,
                  required: false,
