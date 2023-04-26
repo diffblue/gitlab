@@ -8,3 +8,5 @@ export const GRIDSTACK_MIN_ROW = 1;
 export const I18N_PANEL_EMPTY_STATE_MESSAGE = s__(
   'Analytics|No results match your query or filter',
 );
+
+export const CURSOR_GRABBING_CLASS = 'gl-cursor-grabbing!';

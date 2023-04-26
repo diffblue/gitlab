@@ -120,6 +120,7 @@ describe('CustomizableDashboard', () => {
 
     it('sets up GridStack', () => {
       expect(GridStack.init).toHaveBeenCalledWith({
+        alwaysShowResizeHandle: true,
         staticGrid: true,
         margin: GRIDSTACK_MARGIN,
         handle: GRIDSTACK_CSS_HANDLE,
