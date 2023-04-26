@@ -82,6 +82,8 @@ RSpec.describe 'Project', :js, feature_category: :projects do
   end
 
   describe 'storage_enforcement_banner', :js do
+    include NamespaceStorageHelpers
+
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
     let_it_be_with_refind(:user) { create(:user) }
     let_it_be(:project) { create(:project, group: group) }
@@ -90,6 +92,7 @@ RSpec.describe 'Project', :js, feature_category: :projects do
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
+      set_notification_limit(group, megabytes: 1000)
 
       group.root_storage_statistics.update!(
         storage_size: 5.gigabytes
@@ -98,18 +101,11 @@ RSpec.describe 'Project', :js, feature_category: :projects do
       sign_in(user)
     end
 
-    context 'with storage_enforcement_date set' do
-      let_it_be(:storage_enforcement_date) { Date.today + 30 }
-
-      before do
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-        end
-      end
-
+    context 'when storage is over the notification limit' do
       it 'displays the banner in the project page' do
         visit project_path(project)
-        have_text storage_banner_text
+
+        expect(page).to have_text storage_banner_text
       end
 
       context 'when in a subgroup project page' do
@@ -118,7 +114,8 @@ RSpec.describe 'Project', :js, feature_category: :projects do
 
         it 'displays the banner' do
           visit project_path(project)
-          have_text storage_banner_text
+
+          expect(page).to have_text storage_banner_text
         end
       end
 
@@ -131,15 +128,12 @@ RSpec.describe 'Project', :js, feature_category: :projects do
             namespace: user.namespace,
             storage_size: 5.gigabytes
           )
-
-          allow_next_found_instance_of(Namespaces::UserNamespace) do |user_namespace|
-            allow(user_namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-          end
         end
 
         it 'displays the banner' do
           visit project_path(project)
-          have_text storage_banner_text
+
+          expect(page).to have_text storage_banner_text
         end
       end
 
@@ -147,37 +141,21 @@ RSpec.describe 'Project', :js, feature_category: :projects do
         allow_next_found_instance_of(Group) do |group|
           allow(group).to receive(:paid?).and_return(true)
         end
-        visit project_path(project)
-        expect(page).not_to have_text storage_banner_text
-      end
 
-      it 'does not display the banner if user has previously closed unless threshold has changed', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390917' do
         visit project_path(project)
-        have_text storage_banner_text
-        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
-        wait_for_requests
-        page.refresh
-        expect(page).not_to have_text storage_banner_text
 
-        storage_enforcement_date = Date.today + 13
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-        end
-        page.refresh
-        have_text storage_banner_text
+        expect(page).not_to have_text storage_banner_text
       end
     end
 
-    context 'with storage_enforcement_date not set' do
+    context 'when storage is under the notification limit ' do
       before do
-        allow_next_found_instance_of(Group) do |group|
-          allow(group).to receive(:storage_enforcement_date).and_return(nil)
-        end
+        set_notification_limit(group, megabytes: 10_000)
       end
 
       it 'does not display the banner in the group page' do
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
         visit project_path(project)
+
         expect(page).not_to have_text storage_banner_text
       end
     end

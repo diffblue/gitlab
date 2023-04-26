@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component,
@@ -6,10 +7,9 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
   using RSpec::Parameterized::TableSyntax
   include NamespaceStorageHelpers
 
-  let(:storage_enforcement_date) { Date.today + 31 }
   let(:over_storage_limit) { false }
 
-  context 'with a free group' do
+  context 'with a group over the notification_limit' do
     let_it_be(:group) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
     let_it_be_with_refind(:user) { create(:user) }
 
@@ -22,7 +22,6 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         storage_size: 5.gigabytes
       )
       set_notification_limit(group, megabytes: 500)
-      allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
       allow_next_instance_of(::Namespaces::Storage::RootSize) do |group|
         allow(group).to receive(:above_size_limit?).and_return(over_storage_limit)
       end
@@ -91,59 +90,28 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       it 'renders the correct callout data' do
         render_inline(component)
 
-        expect(page).to have_css("[data-feature-id='storage_enforcement_banner_first_enforcement_threshold']")
+        expect(page).to have_css("[data-feature-id='namespace_storage_pre_enforcement_banner']")
         expect(page).to have_css("[data-dismiss-endpoint='#{group_callouts_path}']")
         expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
         expect(page).not_to have_css(".gl-alert-not-dismissible")
       end
+    end
 
-      context 'with different callout feature ids' do
-        where(:callout_feature_id, :storage_enforcement_date_threshold) do
-          :storage_enforcement_banner_first_enforcement_threshold | 31
-          :storage_enforcement_banner_second_enforcement_threshold | 25
-          :storage_enforcement_banner_third_enforcement_threshold | 12
-          :storage_enforcement_banner_fourth_enforcement_threshold | 5
-        end
-
-        with_them do
-          let(:storage_enforcement_date) { Date.today + storage_enforcement_date_threshold }
-
-          it 'renders the correct callout data' do
-            render_inline(component)
-
-            expect(page).to have_css("[data-feature-id='#{callout_feature_id}']")
-          end
-        end
+    context 'when namespace is below the notification limit' do
+      before do
+        create(
+          :group_callout,
+          user: user,
+          group: group,
+          feature_name: 'namespace_storage_pre_enforcement_banner'
+        )
+        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?).and_return(false)
       end
 
-      context 'when namespace is below the notification limit' do
-        before do
-          create(
-            :group_callout,
-            user: user,
-            group: group,
-            feature_name: 'storage_enforcement_banner_first_enforcement_threshold'
-          )
-          allow(::EE::Gitlab::Namespaces::Storage::Enforcement)
-          .to receive(:show_pre_enforcement_alert?).and_return(false)
-        end
+      it 'does not render' do
+        render_inline(component)
 
-        it 'does not render' do
-          render_inline(component)
-
-          expect(page).not_to have_css('.js-storage-enforcement-banner')
-        end
-      end
-
-      context 'when namespace is over storage limit' do
-        let(:over_storage_limit) { true }
-
-        it 'renders the banner' do
-          render_inline(component)
-
-          expect(page).to have_css(".gl-alert-not-dismissible")
-          expect(page).to have_css('.js-storage-enforcement-banner')
-        end
+        expect(page).not_to have_css('.js-storage-enforcement-banner')
       end
     end
 
@@ -158,7 +126,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         render_inline(component)
 
         expect(page).to have_css(".gl-alert-not-dismissible")
-        expect(page).to have_css("[data-feature-id='storage_enforcement_banner_first_enforcement_threshold']")
+        expect(page).to have_css("[data-feature-id='namespace_storage_pre_enforcement_banner']")
         expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
       end
     end

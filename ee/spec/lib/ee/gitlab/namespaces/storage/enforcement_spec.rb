@@ -236,27 +236,6 @@ RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
         allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
       end
 
-      context 'with a paid namespace' do
-        let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-        it 'returns false' do
-          expect(show_pre_enforcement_alert?).to eq(false)
-        end
-      end
-
-      context 'with a storage_enforcement_date in past' do
-        let(:storage_enforcement_date) { Date.today - 1 }
-
-        before do
-          allow(described_class).to receive(:reached_pre_enforcement_notification_limit?).and_return(true)
-          allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
-        end
-
-        it 'returns false' do
-          expect(show_pre_enforcement_alert?).to eq(false)
-        end
-      end
-
       context 'when the namespace reaches the notification limit' do
         before do
           allow(described_class).to receive(:reached_pre_enforcement_notification_limit?).and_return(true)

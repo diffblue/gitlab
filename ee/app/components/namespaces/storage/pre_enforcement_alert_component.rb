@@ -114,17 +114,8 @@ module Namespaces
         Ability.allowed?(user, :maintainer_access, context)
       end
 
-      def callout_threshold
-        days_to_enforcement_date = (root_namespace.storage_enforcement_date - Date.today)
-
-        return :first if days_to_enforcement_date > 30
-        return :second if days_to_enforcement_date > 15 && days_to_enforcement_date <= 30
-        return :third if days_to_enforcement_date > 7 && days_to_enforcement_date <= 15
-        return :fourth if days_to_enforcement_date >= 0 && days_to_enforcement_date <= 7
-      end
-
       def callout_feature_name
-        "storage_enforcement_banner_#{callout_threshold}_enforcement_threshold"
+        "namespace_storage_pre_enforcement_banner"
       end
 
       def callout_data

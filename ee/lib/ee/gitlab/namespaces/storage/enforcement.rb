@@ -23,9 +23,7 @@ module EE
 
             if ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
                 !root_namespace.paid? &&
-                reached_pre_enforcement_notification_limit?(root_namespace) &&
-                root_namespace.storage_enforcement_date.present? &&
-                root_namespace.storage_enforcement_date >= Date.today
+                reached_pre_enforcement_notification_limit?(root_namespace)
 
               return ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
             end
