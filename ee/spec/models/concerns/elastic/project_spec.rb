@@ -251,21 +251,5 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
 
       expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
-
-    context 'when add_schema_version_to_main_index_mapping migration is not finished' do
-      it 'does not include schema_version' do
-        set_elasticsearch_migration_to :add_schema_version_to_main_index_mapping, including: false
-
-        expect(project.__elasticsearch__.as_indexed_json).not_to include(:schema_version)
-      end
-    end
-
-    context 'when backfill_traversal_ids_for_projects migration is not finished' do
-      it 'does not include traversal_ids' do
-        set_elasticsearch_migration_to :backfill_traversal_ids_for_projects, including: false
-
-        expect(project.__elasticsearch__.as_indexed_json).not_to include(:traversal_ids)
-      end
-    end
   end
 end
