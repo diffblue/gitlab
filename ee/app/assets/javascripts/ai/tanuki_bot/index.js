@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import TanukiBotChatApp from './components/app.vue';
+import store from './store';
 
 export const initTanukiBotChatDrawer = () => {
   const el = document.getElementById('js-tanuki-bot-chat-app');
@@ -10,6 +11,7 @@ export const initTanukiBotChatDrawer = () => {
 
   return new Vue({
     el,
+    store,
     render(createElement) {
       return createElement(TanukiBotChatApp);
     },

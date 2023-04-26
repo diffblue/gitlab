@@ -484,5 +484,18 @@ describe('Api', () => {
         });
       });
     });
+
+    describe('requestTanukiBotResponse', () => {
+      it('sends a POST request to the tanuki bot endpoint', () => {
+        const expectedUrl = Api.buildUrl(Api.tanukiBotAskPath);
+        const expectedResponse = { msg };
+        mock.onPost(expectedUrl).reply(HTTP_STATUS_OK, expectedResponse);
+
+        return Api.requestTanukiBotResponse(msg).then((res) => {
+          expect(res.data).toEqual(expectedResponse);
+          expect(res.config.url).toEqual(expectedUrl);
+        });
+      });
+    });
   });
 });

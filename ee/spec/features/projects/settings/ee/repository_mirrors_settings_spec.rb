@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Project settings > [EE] repository', feature_category: :source_code_management do
+  include Features::MirroringHelpers
+
   let(:user) { create(:user) }
   let(:project) { create(:project_empty_repo) }
 
@@ -116,8 +118,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       end
 
       it 'that mirrors all branches', :js do
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
         select_direction
@@ -139,8 +140,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
         select_direction
         find('#mirror_branch_setting_protected').click
 
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
 
@@ -155,8 +155,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       end
 
       it 'that mirrors branches match regex', :js do
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
         select_direction
@@ -184,8 +183,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       end
 
       it 'that mirrors all branches', :js do
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
         select_direction('pull')
@@ -207,8 +205,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
         select_direction('pull')
         find('#mirror_branch_setting_protected').click
 
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
 
@@ -223,8 +220,7 @@ RSpec.describe 'Project settings > [EE] repository', feature_category: :source_c
       end
 
       it 'that mirrors branches match regex', :js do
-        fill_in 'url', with: ssh_url
-        expect(page).to have_css(".js-mirror-url-hidden[value=\"#{ssh_url}\"]", visible: false)
+        fill_and_wait_for_mirror_url_javascript('url', ssh_url)
 
         select 'SSH public key', from: 'Authentication method'
         select_direction('pull')

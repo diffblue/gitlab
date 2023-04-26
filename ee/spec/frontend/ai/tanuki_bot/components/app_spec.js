@@ -1,25 +1,39 @@
 import { GlDrawer } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import Vuex from 'vuex';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
+import TanukiBotChat from 'ee/ai/tanuki_bot/components/tanuki_bot_chat.vue';
+import TanukiBotChatInput from 'ee/ai/tanuki_bot/components/tanuki_bot_chat_input.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
+import { MOCK_USER_MESSAGE } from '../mock_data';
+
+Vue.use(Vuex);
 
 describe('TanukiBotChatApp', () => {
   let wrapper;
 
+  const actionSpies = {
+    sendMessage: jest.fn(),
+  };
+
   const createComponent = () => {
+    const store = new Vuex.Store({
+      actions: actionSpies,
+    });
+
     wrapper = shallowMountExtended(TanukiBotChatApp, {
+      store,
       stubs: {
         GlDrawer,
-        Portal: {
-          template: '<div><slot></slot></div>',
-        },
       },
     });
   };
 
   const findGlDrawer = () => wrapper.findComponent(GlDrawer);
   const findGlDrawerBackdrop = () => wrapper.findByTestId('tanuki-bot-chat-drawer-backdrop');
+  const findTanukiBotChat = () => wrapper.findComponent(TanukiBotChat);
+  const findTanukiBotChatInput = () => wrapper.findComponent(TanukiBotChatInput);
 
   describe('GlDrawer interactions', () => {
     beforeEach(() => {
@@ -62,6 +76,26 @@ describe('TanukiBotChatApp', () => {
 
         expect(findGlDrawer().props('open')).toBe(false);
       });
+    });
+  });
+
+  describe('Tanuki Chat', () => {
+    beforeEach(() => {
+      createComponent();
+      helpCenterState.showTanukiBotChatDrawer = true;
+    });
+
+    it('renders TanukiBotChat', () => {
+      expect(findTanukiBotChat().exists()).toBe(true);
+    });
+
+    it('calls sendMessage when input is submitted', () => {
+      findTanukiBotChatInput().vm.$emit('submit', MOCK_USER_MESSAGE.msg);
+
+      expect(actionSpies.sendMessage).toHaveBeenCalledWith(
+        expect.any(Object),
+        MOCK_USER_MESSAGE.msg,
+      );
     });
   });
 });
