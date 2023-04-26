@@ -3075,6 +3075,9 @@ msgstr ""
 msgid "AdminSettings|Maximum duration of a session for Git operations when 2FA is enabled."
 msgstr ""
 
+msgid "AdminSettings|Maximum includes"
+msgstr ""
+
 msgid "AdminSettings|Maximum number of DAG dependencies that a job can have"
 msgstr ""
 
@@ -3226,6 +3229,9 @@ msgid "AdminSettings|The host of your data collector instance."
 msgstr ""
 
 msgid "AdminSettings|The latest artifacts for all jobs in the most recent successful pipelines in each project are stored and do not expire."
+msgstr ""
+
+msgid "AdminSettings|The maximum number of included files per pipeline."
 msgstr ""
 
 msgid "AdminSettings|The template for the required pipeline configuration can be one of the GitLab-provided templates, or a custom template added to an instance template repository. %{link_start}How do I create an instance template repository?%{link_end}"
