@@ -27,7 +27,8 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
           json: {
             'reference_id' => telesign_reference_xid,
             'phone_type' => { 'description' => 'MOBILE' },
-            'risk' => { 'score' => risk_score }
+            'risk' => { 'score' => risk_score },
+            'status' => { 'description' => 'Transaction completed successfully' }
           },
           status_code: '200'
         )
@@ -45,10 +46,12 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
         expect(::Gitlab::AppJsonLogger)
           .to receive(:info)
           .with(
-            message: 'Received a risk score for a phone number from Telesign',
-            telesign_response: telesign_response.json,
+            class: described_class.name,
+            message: 'IdentityVerification::Phone',
+            event: 'Received a risk score for a phone number from Telesign',
+            telesign_response: telesign_response.json['status']['description'],
             telesign_status_code: telesign_response.status_code,
-            user_id: user.id
+            username: user.username
           )
           .and_call_original
 
@@ -127,6 +130,19 @@ RSpec.describe PhoneVerification::TelesignClient::RiskScoreService, feature_cate
           'Enter a valid phone number.'
         )
         expect(response.reason).to eq(:invalid_phone_number)
+      end
+
+      it 'logs the error message' do
+        expect(::Gitlab::AppJsonLogger)
+          .to receive(:info)
+          .with(
+            hash_including(
+              telesign_response: "error_message: Invalid Request: PhoneNumber Parameter, error_code: -10001"
+            )
+          )
+          .and_call_original
+
+        service.execute
       end
     end
 
