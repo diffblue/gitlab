@@ -233,7 +233,9 @@ export default {
       const lastDate = dateFormat(
         Math.min(Date.parse(this.dueDate), Date.parse(new Date())),
         'yyyy-mm-dd',
+        true, // use UTC
       );
+
       // similar to the startDate padding, if we don't have a value for the
       // last item in the array, we should add one. If no events occur on
       // a day then we don't get any data for that day in the response

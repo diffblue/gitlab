@@ -105,7 +105,7 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
     start: new Date('2020-01-06T00:00:00.000Z'),
     end: new Date('2020-07-06T00:00:00.000Z'),
     thClass: 'gl-w-15p',
-    tdClass: 'gl-py-2! gl-pointer-events-none',
+    tdClass: 'gl-py-2!',
   },
 ];
 
@@ -127,7 +127,7 @@ export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
 export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i) => ({
   ...timePeriod,
-  ...mockMetrics(['-', 0, 100 - i, i, i + 1, i * 2, 100 - i * 2, i * i]),
+  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i]),
 }));
 
 export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
@@ -355,12 +355,12 @@ export const mockChartData = {
   lead_time_for_changes: {
     tooltipLabel: 'days',
     data: [
-      [expect.anything(), '-'],
-      [expect.anything(), '-'],
-      [expect.anything(), '-'],
-      [expect.anything(), '-'],
-      [expect.anything(), '-'],
-      [expect.anything(), '-'],
+      [expect.anything(), null],
+      [expect.anything(), null],
+      [expect.anything(), null],
+      [expect.anything(), null],
+      [expect.anything(), null],
+      [expect.anything(), null],
     ],
   },
   time_to_restore_service: {
@@ -377,12 +377,12 @@ export const mockChartData = {
   change_failure_rate: {
     tooltipLabel: '%',
     data: [
-      [expect.anything(), 100],
-      [expect.anything(), 99],
-      [expect.anything(), 98],
-      [expect.anything(), 97],
-      [expect.anything(), 96],
-      [expect.anything(), 95],
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+      [expect.anything(), 0],
     ],
   },
   deployment_frequency: {

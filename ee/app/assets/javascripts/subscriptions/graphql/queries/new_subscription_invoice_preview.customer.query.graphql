@@ -1,5 +1,10 @@
-query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String) {
-  invoicePreview(planId: $planId, quantity: $quantity, promoCode: $promoCode) {
+query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String, $namespaceId: ID) {
+  invoicePreview(
+    planId: $planId
+    quantity: $quantity
+    promoCode: $promoCode
+    namespaceId: $namespaceId
+  ) {
     invoice {
       amountWithoutTax
     }

@@ -177,6 +177,20 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
 };
 
 /**
+ * @param {Number|'-'|null|undefined} value
+ * @returns {Number|null}
+ */
+const sanitizeSparklineData = (value) => {
+  if (!value) return 0;
+
+  // The API returns '-' when it's unable to calculate the metric.
+  // By converting the result to null, we prevent the sparkline from
+  // rendering a tooltip with the missing data.
+  if (value === '-') return null;
+  return value;
+};
+
+/**
  * Takes N time periods of DORA metrics and sorts the data into an
  * object of timeseries arrays, per metric.
  *
@@ -191,7 +205,7 @@ export const generateSparklineCharts = (timePeriods) =>
           tooltipLabel: CHART_TOOLTIP_UNITS[units],
           data: timePeriods.map((timePeriod) => [
             `${formatDate(timePeriod.start, 'mmm d')} - ${formatDate(timePeriod.end, 'mmm d')}`,
-            timePeriod[identifier]?.value || 0,
+            sanitizeSparklineData(timePeriod[identifier]?.value),
           ]),
         },
       }),
@@ -286,7 +300,7 @@ export const generateDashboardTableFields = (now) => {
       start: nMonthsBefore(now, 6),
       end: now,
       thClass: thWidthPercent(15),
-      tdClass: 'gl-py-2! gl-pointer-events-none',
+      tdClass: 'gl-py-2!',
     },
   ];
 };
