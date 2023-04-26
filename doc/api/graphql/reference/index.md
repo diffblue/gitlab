@@ -973,6 +973,7 @@ Input type: `AiActionInput`
 | <a id="mutationaiactionclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationaiactionexplaincode"></a>`explainCode` | [`AiExplainCodeInput`](#aiexplaincodeinput) | Input for explain_code AI action. |
 | <a id="mutationaiactionexplainvulnerability"></a>`explainVulnerability` | [`AiExplainVulnerabilityInput`](#aiexplainvulnerabilityinput) | Input for explain_vulnerability AI action. |
+| <a id="mutationaiactionmarkupformat"></a>`markupFormat` | [`MarkupFormat`](#markupformat) | Indicates the response format. |
 | <a id="mutationaiactionsummarizecomments"></a>`summarizeComments` | [`AiSummarizeCommentsInput`](#aisummarizecommentsinput) | Input for summarize_comments AI action. |
 
 #### Fields
@@ -24150,6 +24151,16 @@ List limit metric setting.
 | <a id="listlimitmetricall_metrics"></a>`all_metrics` | Limit list by number and total weight of issues. |
 | <a id="listlimitmetricissue_count"></a>`issue_count` | Limit list by number of issues. |
 | <a id="listlimitmetricissue_weights"></a>`issue_weights` | Limit list by total weight of issues. |
+
+### `MarkupFormat`
+
+List markup formats.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="markupformathtml"></a>`HTML` | HTML format. |
+| <a id="markupformatmarkdown"></a>`MARKDOWN` | Markdown format. |
+| <a id="markupformatraw"></a>`RAW` | Raw format. |
 
 ### `MeasurementIdentifier`
 

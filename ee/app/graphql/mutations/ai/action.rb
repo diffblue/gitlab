@@ -14,6 +14,11 @@ module Mutations
           description: "Input for #{method} AI action."
       end
 
+      argument :markup_format, EE::Types::MarkupFormatEnum,
+        required: false,
+        description: 'Indicates the response format.',
+        default_value: :raw
+
       def ready?(**args)
         raise Gitlab::Graphql::Errors::ArgumentError, MUTUALLY_EXCLUSIVE_ARGUMENTS_ERROR if methods(args).size != 1
 
@@ -65,12 +70,13 @@ module Mutations
       end
 
       def extract_method_params!(attributes)
+        options = attributes.extract!(:markup_format)
         methods = methods(attributes.transform_values(&:to_h))
 
         # At this point, we only have one method since we filtered it in `#ready?`
         # so we can safely get the first.
         method = methods.each_key.first
-        method_arguments = methods[method]
+        method_arguments = options.merge(methods[method])
 
         [method_arguments.delete(:resource_id), method, method_arguments]
       end
