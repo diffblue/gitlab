@@ -39,7 +39,7 @@ describe('AnalyticsDashboardsApp', () => {
         ${'/'}                             | ${DashboardsList}
         ${'/visualization-designer'}       | ${AnalyticsVisualizationDesigner}
         ${'/product-analytics-onboarding'} | ${ProductAnalyticsOnboardingView}
-        ${'/setup'}                        | ${ProductAnalyticsOnboardingSetup}
+        ${'/product-analytics-setup'}      | ${ProductAnalyticsOnboardingSetup}
         ${'/test-dashboard-1'}             | ${AnalyticsDashboard}
         ${'/test-dashboard-2'}             | ${AnalyticsDashboard}
       `('sets component as $component.name for path "$path"', async ({ path, component }) => {
