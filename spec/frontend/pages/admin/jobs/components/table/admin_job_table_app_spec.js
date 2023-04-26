@@ -3,7 +3,6 @@ import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { s__ } from '~/locale';
 import waitForPromises from 'helpers/wait_for_promises';
 import JobsTableTabs from '~/jobs/components/table/jobs_table_tabs.vue';
 import JobsSkeletonLoader from '~/pages/admin/jobs/components/jobs_skeleton_loader.vue';
@@ -15,9 +14,15 @@ import CancelJobs from '~/pages/admin/jobs/components/cancel_jobs.vue';
 import JobsTable from '~/jobs/components/table/jobs_table.vue';
 import { createAlert } from '~/alert';
 import { TEST_HOST } from 'spec/test_constants';
-import { JOBS_COUNT_ERROR_MESSAGE } from '~/pages/admin/jobs/components/constants';
 import JobsFilteredSearch from '~/jobs/components/filtered_search/jobs_filtered_search.vue';
 import * as urlUtils from '~/lib/utils/url_utility';
+import {
+  JOBS_FETCH_ERROR_MSG,
+  CANCELABLE_JOBS_ERROR_MSG,
+  LOADING_ARIA_LABEL,
+  RAW_TEXT_WARNING_ADMIN,
+  JOBS_COUNT_ERROR_MESSAGE,
+} from '~/pages/admin/jobs/components/constants';
 import {
   mockAllJobsResponsePaginated,
   mockCancelableJobsCountResponse,
@@ -139,6 +144,7 @@ describe('Job table app', () => {
         const pageSize = 50;
 
         expect(findLoadingSpinner().exists()).toBe(true);
+        expect(findLoadingSpinner().attributes('aria-label')).toBe(LOADING_ARIA_LABEL);
 
         await waitForPromises();
 
@@ -178,7 +184,7 @@ describe('Job table app', () => {
 
       await waitForPromises();
 
-      expect(findAlert().text()).toBe('There was an error fetching the jobs.');
+      expect(findAlert().text()).toBe(JOBS_FETCH_ERROR_MSG);
       expect(findTable().exists()).toBe(false);
     });
 
@@ -190,8 +196,24 @@ describe('Job table app', () => {
       expect(findAlert().text()).toBe(JOBS_COUNT_ERROR_MESSAGE);
     });
 
+    it('should show an alert if there is an error fetching the cancelable jobs data', async () => {
+      createComponent({ handler: successHandler, cancelableHandler: failedHandler });
+
+      await waitForPromises();
+
+      expect(findAlert().text()).toBe(CANCELABLE_JOBS_ERROR_MSG);
+    });
+
     it('jobs table should still load if count query fails', async () => {
       createComponent({ handler: successHandler, countHandler: failedHandler });
+
+      await waitForPromises();
+
+      expect(findTable().exists()).toBe(true);
+    });
+
+    it('jobs table should still load if cancel query fails', async () => {
+      createComponent({ handler: successHandler, cancelableHandler: failedHandler });
 
       await waitForPromises();
 
@@ -204,6 +226,14 @@ describe('Job table app', () => {
       await waitForPromises();
 
       expect(findTabs().props('allJobsCount')).toBe(0);
+    });
+
+    it('cancel button should be hidden if query fails', async () => {
+      createComponent({ handler: successHandler, cancelableHandler: failedHandler });
+
+      await waitForPromises();
+
+      expect(findCancelJobsButton().exists()).toBe(false);
     });
   });
 
@@ -277,9 +307,7 @@ describe('Job table app', () => {
 
     it('shows raw text warning when user inputs raw text', async () => {
       const expectedWarning = {
-        message: s__(
-          'Jobs|Raw text search is not currently supported for the jobs filtered search feature. Please use the available search tokens.',
-        ),
+        message: RAW_TEXT_WARNING_ADMIN,
         type: 'warning',
       };
 
