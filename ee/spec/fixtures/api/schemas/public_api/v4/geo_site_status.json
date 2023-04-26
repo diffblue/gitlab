@@ -1,0 +1,1585 @@
+{
+  "type": "object",
+  "required": [
+    "geo_node_id",
+    "healthy",
+    "health",
+    "health_status",
+    "missing_oauth_application",
+    "lfs_objects_count",
+    "lfs_objects_failed_count",
+    "lfs_objects_synced_count",
+    "lfs_objects_checksum_total_count",
+    "lfs_objects_checksummed_count",
+    "lfs_objects_checksum_failed_count",
+    "lfs_objects_registry_count",
+    "lfs_objects_verification_total_count",
+    "lfs_objects_verified_count",
+    "lfs_objects_verified_in_percentage",
+    "lfs_objects_verification_failed_count",
+    "job_artifacts_count",
+    "job_artifacts_failed_count",
+    "job_artifacts_synced_count",
+    "job_artifacts_synced_missing_on_primary_count",
+    "job_artifacts_checksum_total_count",
+    "job_artifacts_checksummed_count",
+    "job_artifacts_checksum_failed_count",
+    "job_artifacts_registry_count",
+    "job_artifacts_verification_total_count",
+    "job_artifacts_verified_count",
+    "job_artifacts_verification_failed_count",
+    "job_artifacts_verified_in_percentage",
+    "ci_secure_files_count",
+    "ci_secure_files_checksum_total_count",
+    "ci_secure_files_checksummed_count",
+    "ci_secure_files_checksum_failed_count",
+    "ci_secure_files_synced_count",
+    "ci_secure_files_failed_count",
+    "ci_secure_files_registry_count",
+    "ci_secure_files_verification_total_count",
+    "ci_secure_files_verified_count",
+    "ci_secure_files_verification_failed_count",
+    "ci_secure_files_synced_in_percentage",
+    "ci_secure_files_verified_in_percentage",
+    "db_replication_lag_seconds",
+    "container_repositories_replication_enabled",
+    "container_repositories_count",
+    "container_repositories_synced_count",
+    "container_repositories_failed_count",
+    "container_repositories_registry_count",
+    "container_repositories_synced_in_percentage",
+    "container_repositories_checksummed_count",
+    "container_repositories_checksum_failed_count",
+    "container_repositories_checksum_total_count",
+    "container_repositories_verification_failed_count",
+    "container_repositories_verification_total_count",
+    "container_repositories_verified_count",
+    "container_repositories_verified_in_percentage",
+    "design_repositories_replication_enabled",
+    "design_repositories_count",
+    "design_repositories_failed_count",
+    "design_repositories_synced_count",
+    "dependency_proxy_manifests_count",
+    "dependency_proxy_manifests_checksum_failed_count",
+    "dependency_proxy_manifests_checksum_total_count",
+    "dependency_proxy_manifests_checksummed_count",
+    "dependency_proxy_manifests_registry_count",
+    "dependency_proxy_manifests_failed_count",
+    "dependency_proxy_manifests_synced_count",
+    "dependency_proxy_manifests_synced_in_percentage",
+    "dependency_proxy_manifests_verification_failed_count",
+    "dependency_proxy_manifests_verification_total_count",
+    "dependency_proxy_manifests_verified_count",
+    "dependency_proxy_manifests_verified_in_percentage",
+    "repositories_replication_enabled",
+    "projects_count",
+    "project_wiki_repositories_count",
+    "project_wiki_repositories_checksum_total_count",
+    "project_wiki_repositories_checksummed_count",
+    "project_wiki_repositories_checksum_failed_count",
+    "project_wiki_repositories_synced_count",
+    "project_wiki_repositories_failed_count",
+    "project_wiki_repositories_registry_count",
+    "project_wiki_repositories_verification_total_count",
+    "project_wiki_repositories_verified_count",
+    "project_wiki_repositories_verification_failed_count",
+    "project_wiki_repositories_synced_in_percentage",
+    "project_wiki_repositories_verified_in_percentage",
+    "repositories_count",
+    "repositories_failed_count",
+    "repositories_synced_count",
+    "wikis_count",
+    "wikis_failed_count",
+    "wikis_synced_count",
+    "repository_verification_enabled",
+    "repositories_checksummed_count",
+    "repositories_checksum_failed_count",
+    "repositories_checksum_total_count",
+    "repositories_checksummed_in_percentage",
+    "wikis_checksummed_count",
+    "wikis_checksum_failed_count",
+    "wikis_checksum_total_count",
+    "wikis_checksummed_in_percentage",
+    "merge_request_diffs_count",
+    "merge_request_diffs_checksum_failed_count",
+    "merge_request_diffs_checksum_total_count",
+    "merge_request_diffs_checksummed_count",
+    "merge_request_diffs_registry_count",
+    "merge_request_diffs_failed_count",
+    "merge_request_diffs_synced_count",
+    "merge_request_diffs_synced_in_percentage",
+    "merge_request_diffs_verification_failed_count",
+    "merge_request_diffs_verification_total_count",
+    "merge_request_diffs_verified_count",
+    "merge_request_diffs_verified_in_percentage",
+    "package_files_count",
+    "package_files_checksum_failed_count",
+    "package_files_checksum_total_count",
+    "package_files_checksummed_count",
+    "package_files_registry_count",
+    "package_files_failed_count",
+    "package_files_synced_count",
+    "package_files_synced_in_percentage",
+    "package_files_verification_failed_count",
+    "package_files_verification_total_count",
+    "package_files_verified_count",
+    "package_files_verified_in_percentage",
+    "pages_deployments_count",
+    "pages_deployments_checksum_failed_count",
+    "pages_deployments_checksum_total_count",
+    "pages_deployments_checksummed_count",
+    "pages_deployments_registry_count",
+    "pages_deployments_failed_count",
+    "pages_deployments_synced_count",
+    "pages_deployments_synced_in_percentage",
+    "pages_deployments_verification_failed_count",
+    "pages_deployments_verification_total_count",
+    "pages_deployments_verified_count",
+    "pages_deployments_verified_in_percentage",
+    "terraform_state_versions_count",
+    "terraform_state_versions_checksum_failed_count",
+    "terraform_state_versions_checksum_total_count",
+    "terraform_state_versions_checksummed_count",
+    "terraform_state_versions_registry_count",
+    "terraform_state_versions_failed_count",
+    "terraform_state_versions_synced_count",
+    "terraform_state_versions_synced_in_percentage",
+    "terraform_state_versions_verification_failed_count",
+    "terraform_state_versions_verification_total_count",
+    "terraform_state_versions_verified_count",
+    "terraform_state_versions_verified_in_percentage",
+    "snippet_repositories_count",
+    "snippet_repositories_checksum_failed_count",
+    "snippet_repositories_checksum_total_count",
+    "snippet_repositories_checksummed_count",
+    "snippet_repositories_registry_count",
+    "snippet_repositories_failed_count",
+    "snippet_repositories_synced_count",
+    "snippet_repositories_synced_in_percentage",
+    "snippet_repositories_verification_failed_count",
+    "snippet_repositories_verification_total_count",
+    "snippet_repositories_verified_count",
+    "snippet_repositories_verified_in_percentage",
+    "group_wiki_repositories_count",
+    "group_wiki_repositories_checksum_total_count",
+    "group_wiki_repositories_checksummed_count",
+    "group_wiki_repositories_checksum_failed_count",
+    "group_wiki_repositories_synced_count",
+    "group_wiki_repositories_failed_count",
+    "group_wiki_repositories_registry_count",
+    "group_wiki_repositories_verification_total_count",
+    "group_wiki_repositories_verified_count",
+    "group_wiki_repositories_verification_failed_count",
+    "group_wiki_repositories_synced_in_percentage",
+    "group_wiki_repositories_verified_in_percentage",
+    "repositories_verified_count",
+    "repositories_verification_failed_count",
+    "repositories_verification_total_count",
+    "repositories_verified_in_percentage",
+    "repositories_checksum_mismatch_count",
+    "wikis_verified_count",
+    "wikis_verification_failed_count",
+    "wikis_verification_total_count",
+    "wikis_verified_in_percentage",
+    "wikis_checksum_mismatch_count",
+    "repositories_retrying_verification_count",
+    "wikis_retrying_verification_count",
+    "pipeline_artifacts_count",
+    "pipeline_artifacts_checksum_total_count",
+    "pipeline_artifacts_checksummed_count",
+    "pipeline_artifacts_checksum_failed_count",
+    "pipeline_artifacts_synced_count",
+    "pipeline_artifacts_failed_count",
+    "pipeline_artifacts_registry_count",
+    "pipeline_artifacts_verification_total_count",
+    "pipeline_artifacts_verified_count",
+    "pipeline_artifacts_verification_failed_count",
+    "pipeline_artifacts_synced_in_percentage",
+    "pipeline_artifacts_verified_in_percentage",
+    "dependency_proxy_blobs_count",
+    "dependency_proxy_blobs_checksum_total_count",
+    "dependency_proxy_blobs_checksummed_count",
+    "dependency_proxy_blobs_checksum_failed_count",
+    "dependency_proxy_blobs_synced_count",
+    "dependency_proxy_blobs_failed_count",
+    "dependency_proxy_blobs_registry_count",
+    "dependency_proxy_blobs_verification_total_count",
+    "dependency_proxy_blobs_verified_count",
+    "dependency_proxy_blobs_verification_failed_count",
+    "dependency_proxy_blobs_synced_in_percentage",
+    "dependency_proxy_blobs_verified_in_percentage",
+    "repositories_checked_count",
+    "repositories_checked_failed_count",
+    "repositories_checked_in_percentage",
+    "replication_slots_count",
+    "replication_slots_used_count",
+    "replication_slots_used_in_percentage",
+    "replication_slots_max_retained_wal_bytes",
+    "uploads_count",
+    "uploads_checksum_total_count",
+    "uploads_checksummed_count",
+    "uploads_checksum_failed_count",
+    "uploads_synced_count",
+    "uploads_failed_count",
+    "uploads_registry_count",
+    "uploads_verification_total_count",
+    "uploads_verified_count",
+    "uploads_verification_failed_count",
+    "uploads_synced_in_percentage",
+    "uploads_verified_in_percentage",
+    "git_fetch_event_count_weekly",
+    "git_push_event_count_weekly",
+    "proxy_remote_requests_event_count_weekly",
+    "proxy_local_requests_event_count_weekly",
+    "last_event_id",
+    "last_event_timestamp",
+    "cursor_last_event_id",
+    "cursor_last_event_timestamp",
+    "selective_sync_type",
+    "namespaces",
+    "version",
+    "revision",
+    "_links",
+    "updated_at"
+  ],
+  "properties": {
+    "geo_node_id": {
+      "type": "integer"
+    },
+    "healthy": {
+      "type": "boolean"
+    },
+    "health": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "health_status": {
+      "type": "string"
+    },
+    "missing_oauth_application": {
+      "type": "boolean"
+    },
+    "db_replication_lag_seconds": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_count": {
+      "type": "integer"
+    },
+    "lfs_objects_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_synced_missing_on_primary_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_synced_in_percentage": {
+      "type": "string"
+    },
+    "lfs_objects_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "lfs_objects_verified_in_percentage": {
+      "type": "string"
+    },
+    "lfs_objects_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_count": {
+      "type": "integer"
+    },
+    "job_artifacts_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_synced_missing_on_primary_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_synced_in_percentage": {
+      "type": "string"
+    },
+    "job_artifacts_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "job_artifacts_verified_in_percentage": {
+      "type": "string"
+    },
+    "ci_secure_files_count": {
+      "type": "integer"
+    },
+    "ci_secure_files_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_synced_in_percentage": {
+      "type": "string"
+    },
+    "ci_secure_files_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ci_secure_files_verified_in_percentage": {
+      "type": "string"
+    },
+    "container_repositories_replication_enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "container_repositories_count": {
+      "type": "integer"
+    },
+    "container_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "container_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "container_repositories_verified_in_percentage": {
+      "type": "string"
+    },
+    "dependency_proxy_blobs_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_blobs_synced_in_percentage": {
+      "type": "string"
+    },
+    "dependency_proxy_blobs_verified_in_percentage": {
+      "type": "string"
+    },
+    "design_repositories_replication_enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "design_repositories_count": {
+      "type": "integer"
+    },
+    "design_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "dependency_proxy_manifests_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_synced_in_percentage": {
+      "type": "string"
+    },
+    "dependency_proxy_manifests_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dependency_proxy_manifests_verified_in_percentage": {
+      "type": "string"
+    },
+    "repositories_replication_enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "projects_count": {
+      "type": "integer"
+    },
+    "repositories_count": {
+      "type": "integer"
+    },
+    "repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repository_verification_enabled": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "wikis_count": {
+      "type": "integer"
+    },
+    "wikis_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_synced_in_percentage": {
+      "type": "string"
+    },
+    "repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checksummed_in_percentage": {
+      "type": "string"
+    },
+    "wikis_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_checksummed_in_percentage": {
+      "type": "string"
+    },
+    "merge_request_diffs_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_synced_in_percentage": {
+      "type": "string"
+    },
+    "merge_request_diffs_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "merge_request_diffs_verified_in_percentage": {
+      "type": "string"
+    },
+    "package_files_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_synced_in_percentage": {
+      "type": "string"
+    },
+    "package_files_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "package_files_verified_in_percentage": {
+      "type": "string"
+    },
+    "pages_deployments_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_synced_in_percentage": {
+      "type": "string"
+    },
+    "pages_deployments_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pages_deployments_verified_in_percentage": {
+      "type": "string"
+    },
+    "terraform_state_versions_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_synced_in_percentage": {
+      "type": "string"
+    },
+    "terraform_state_versions_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "terraform_state_versions_verified_in_percentage": {
+      "type": "string"
+    },
+    "snippet_repositories_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "snippet_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "snippet_repositories_verified_in_percentage": {
+      "type": "string"
+    },
+    "project_wiki_repositories_count": {
+      "type": "integer"
+    },
+    "project_wiki_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "project_wiki_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "project_wiki_repositories_verified_in_percentage": {
+      "type": "string"
+    },
+    "group_wiki_repositories_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "group_wiki_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_wiki_repositories_verified_in_percentage": {
+      "type": "string"
+    },
+    "pipeline_artifacts_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_synced_in_percentage": {
+      "type": "string"
+    },
+    "pipeline_artifacts_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pipeline_artifacts_verified_in_percentage": {
+      "type": "string"
+    },
+    "repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_verified_in_percentage": {
+      "type": "string"
+    },
+    "repositories_checksum_mismatch_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "uploads_synced_in_percentage": {
+      "type": "string"
+    },
+    "uploads_verified_in_percentage": {
+      "type": "string"
+    },
+    "wikis_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_verified_in_percentage": {
+      "type": "string"
+    },
+    "wikis_checksum_mismatch_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_retrying_verification_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "wikis_retrying_verification_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checked_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checked_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "repositories_checked_in_percentage": {
+      "type": "string"
+    },
+    "replication_slots_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "replication_slots_used_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "replication_slots_used_in_percentage": {
+      "type": "string"
+    },
+    "replication_slots_max_retained_wal_bytes": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "git_fetch_event_count_weekly": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "git_push_event_count_weekly": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "proxy_remote_requests_event_count_weekly": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "proxy_local_requests_event_count_weekly": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_event_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_event_timestamp": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "cursor_last_event_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "cursor_last_event_timestamp": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "last_successful_status_check_timestamp": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "selective_sync_type": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "namespaces": {
+      "type": "array"
+    },
+    "storage_shards": {
+      "type": "array"
+    },
+    "storage_shards_match": {
+      "type": "boolean"
+    },
+    "version": {
+      "type": [
+        "string"
+      ]
+    },
+    "revision": {
+      "type": [
+        "string"
+      ]
+    },
+    "_links": {
+      "type": "object",
+      "required": [
+        "self",
+        "site"
+      ],
+      "properties": {
+        "self": {
+          "type": "string"
+        },
+        "site": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "updated_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": false
+}
