@@ -4,10 +4,10 @@ FactoryBot.define do
   factory :tanuki_bot_mvc, class: 'Embedding::TanukiBotMvc' do
     url { 'http://example.com/path/to/a/doc' }
 
-    metadata do
+    sequence(:metadata) do |n|
       {
-        info: 'A description',
-        source: 'path/to/a/doc.md',
+        info: "Description for #{n}",
+        source: "path/to/a/doc_#{n}.md",
         source_type: 'doc'
       }
     end
