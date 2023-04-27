@@ -456,6 +456,39 @@ CREATE SEQUENCE project_registry_id_seq
 
 ALTER SEQUENCE project_registry_id_seq OWNED BY project_registry.id;
 
+CREATE TABLE project_repository_registry (
+    id bigint NOT NULL,
+    project_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    last_synced_at timestamp with time zone,
+    retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    retry_count smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    force_to_redownload boolean DEFAULT false NOT NULL,
+    missing_on_primary boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    last_sync_failure text,
+    CONSTRAINT check_45b82eebee CHECK ((char_length(last_sync_failure) <= 255)),
+    CONSTRAINT check_58aa799387 CHECK ((char_length(verification_failure) <= 255))
+);
+
+CREATE SEQUENCE project_repository_registry_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE project_repository_registry_id_seq OWNED BY project_repository_registry.id;
+
 CREATE TABLE project_wiki_repository_registry (
     id bigint NOT NULL,
     project_id bigint,
@@ -600,6 +633,8 @@ ALTER TABLE ONLY pipeline_artifact_registry ALTER COLUMN id SET DEFAULT nextval(
 
 ALTER TABLE ONLY project_registry ALTER COLUMN id SET DEFAULT nextval('project_registry_id_seq'::regclass);
 
+ALTER TABLE ONLY project_repository_registry ALTER COLUMN id SET DEFAULT nextval('project_repository_registry_id_seq'::regclass);
+
 ALTER TABLE ONLY project_wiki_repository_registry ALTER COLUMN id SET DEFAULT nextval('project_wiki_repository_registry_id_seq'::regclass);
 
 ALTER TABLE ONLY secondary_usage_data ALTER COLUMN id SET DEFAULT nextval('secondary_usage_data_id_seq'::regclass);
@@ -658,6 +693,9 @@ ALTER TABLE ONLY pipeline_artifact_registry
 
 ALTER TABLE ONLY project_registry
     ADD CONSTRAINT project_registry_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY project_repository_registry
+    ADD CONSTRAINT project_repository_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY project_wiki_repository_registry
     ADD CONSTRAINT project_wiki_repository_registry_pkey PRIMARY KEY (id);
@@ -814,6 +852,12 @@ CREATE INDEX index_project_registry_on_resync_wiki ON project_registry USING btr
 
 CREATE INDEX index_project_registry_on_wiki_retry_at ON project_registry USING btree (wiki_retry_at);
 
+CREATE UNIQUE INDEX index_project_repository_registry_on_project_id ON project_repository_registry USING btree (project_id);
+
+CREATE INDEX index_project_repository_registry_on_retry_at ON project_repository_registry USING btree (retry_at);
+
+CREATE INDEX index_project_repository_registry_on_state ON project_repository_registry USING btree (state);
+
 CREATE UNIQUE INDEX index_project_wiki_repository_registry_on_project_id ON project_wiki_repository_registry USING btree (project_id);
 
 CREATE INDEX index_project_wiki_repository_registry_on_retry_at ON project_wiki_repository_registry USING btree (retry_at);
@@ -871,6 +915,12 @@ CREATE INDEX pipeline_artifact_registry_failed_verification ON pipeline_artifact
 CREATE INDEX pipeline_artifact_registry_needs_verification ON pipeline_artifact_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
 
 CREATE INDEX pipeline_artifact_registry_pending_verification ON pipeline_artifact_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
+CREATE INDEX project_repository_registry_failed_verification ON project_repository_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX project_repository_registry_needs_verification ON project_repository_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX project_repository_registry_pending_verification ON project_repository_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
 CREATE INDEX project_wiki_repository_registry_failed_verification ON project_wiki_repository_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
