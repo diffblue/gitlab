@@ -20,18 +20,44 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :sof
     }
   end
 
+  let(:data_types) do
+    {
+      advisories: 1,
+      licenses: 2
+    }
+  end
+
+  let(:version_formats) do
+    {
+      v1: 1,
+      v2: 2
+    }
+  end
+
   describe 'enums' do
     it { is_expected.to define_enum_for(:purl_type).with_values(purl_types) }
+    it { is_expected.to define_enum_for(:data_type).with_values(data_types) }
+    it { is_expected.to define_enum_for(:version_format).with_values(version_formats) }
   end
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:purl_type) }
+    it { is_expected.to validate_presence_of(:data_type) }
+    it { is_expected.to validate_presence_of(:version_format) }
 
     it { is_expected.to validate_presence_of(:sequence) }
     it { is_expected.to validate_numericality_of(:sequence).only_integer }
 
     it { is_expected.to validate_presence_of(:chunk) }
     it { is_expected.to validate_numericality_of(:chunk).only_integer }
+
+    it do
+      create(:pm_checkpoint)
+
+      is_expected.to validate_uniqueness_of(
+        :purl_type
+      ).scoped_to([:data_type, :version_format]).ignoring_case_sensitivity
+    end
   end
 
   describe '.with_purl_type' do
