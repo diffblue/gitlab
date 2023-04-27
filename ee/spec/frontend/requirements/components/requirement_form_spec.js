@@ -7,7 +7,7 @@ import { nextTick } from 'vue';
 import RequirementForm from 'ee/requirements/components/requirement_form.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 
-import { TestReportStatus } from 'ee/requirements/constants';
+import { STATE_FAILED, STATE_PASSED } from 'ee/requirements/constants';
 
 import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
 import IssuableEditForm from '~/vue_shared/issuable/show/components/issuable_edit_form.vue';
@@ -214,10 +214,10 @@ describe('RequirementForm', () => {
 
   describe('methods', () => {
     describe.each`
-      lastTestReportState        | requirement                | newLastTestReportState
-      ${TestReportStatus.Passed} | ${mockRequirementsOpen[0]} | ${TestReportStatus.Failed}
-      ${TestReportStatus.Failed} | ${mockRequirementsOpen[1]} | ${TestReportStatus.Passed}
-      ${'null'}                  | ${mockRequirementsOpen[2]} | ${TestReportStatus.Passed}
+      lastTestReportState | requirement                | newLastTestReportState
+      ${STATE_PASSED}     | ${mockRequirementsOpen[0]} | ${STATE_FAILED}
+      ${STATE_FAILED}     | ${mockRequirementsOpen[1]} | ${STATE_PASSED}
+      ${'null'}           | ${mockRequirementsOpen[2]} | ${STATE_PASSED}
     `('newLastTestReportState', ({ lastTestReportState, requirement, newLastTestReportState }) => {
       describe(`when \`lastTestReportState\` is ${lastTestReportState}`, () => {
         beforeEach(() => {

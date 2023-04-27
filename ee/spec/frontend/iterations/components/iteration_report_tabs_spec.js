@@ -4,7 +4,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import IterationReportIssues from 'ee/iterations/components/iteration_report_issues.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
-import { GroupBy } from 'ee/iterations/constants';
+import { GROUP_BY_LABEL } from 'ee/iterations/constants';
 import { WORKSPACE_GROUP } from '~/issues/constants';
 import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 
@@ -99,7 +99,7 @@ describe('Iterations report tabs', () => {
 
       describe('when group by `Label` option is selected', () => {
         beforeEach(() => {
-          mountComponent({ data: { groupBySelection: GroupBy.Label } });
+          mountComponent({ data: { groupBySelection: GROUP_BY_LABEL } });
         });
 
         it('is shown', () => {
@@ -131,7 +131,7 @@ describe('Iterations report tabs', () => {
     ];
 
     beforeEach(() => {
-      mountComponent({ data: { groupBySelection: GroupBy.Label } });
+      mountComponent({ data: { groupBySelection: GROUP_BY_LABEL } });
     });
 
     describe('when labels with issues are selected', () => {

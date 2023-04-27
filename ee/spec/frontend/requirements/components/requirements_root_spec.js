@@ -11,7 +11,7 @@ import RequirementsLoading from 'ee/requirements/components/requirements_loading
 import RequirementsRoot from 'ee/requirements/components/requirements_root.vue';
 import RequirementsTabs from 'ee/requirements/components/requirements_tabs.vue';
 
-import { TestReportStatus } from 'ee/requirements/constants';
+import { STATE_FAILED } from 'ee/requirements/constants';
 import createRequirement from 'ee/requirements/queries/create_requirement.mutation.graphql';
 import exportRequirement from 'ee/requirements/queries/export_requirements.mutation.graphql';
 
@@ -1080,7 +1080,7 @@ describe('RequirementsRoot', () => {
             description: mockProjectRequirementPassed.description,
             iid: mockProjectRequirementPassed.iid,
             title: mockProjectRequirementPassed.title,
-            lastTestReportState: TestReportStatus.Failed,
+            lastTestReportState: STATE_FAILED,
           });
         };
 
@@ -1099,7 +1099,7 @@ describe('RequirementsRoot', () => {
             updateRequirementInput: {
               projectPath: 'gitlab-org/gitlab-shell',
               iid: mockProjectRequirementPassed.iid,
-              lastTestReportState: TestReportStatus.Failed,
+              lastTestReportState: STATE_FAILED,
               title: mockProjectRequirementPassed.title,
             },
           });
