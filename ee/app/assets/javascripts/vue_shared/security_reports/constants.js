@@ -55,34 +55,32 @@ export const securityReportTypeEnumToReportType = invert(reportTypeToSecurityRep
  */
 export const sastPopover = {
   title: s__(
-    'ciReport|Static Application Security Testing (SAST) detects known vulnerabilities in your source code.',
+    'ciReport|Static Application Security Testing (SAST) detects potential vulnerabilities in your source code.',
   ),
   copy: s__('ciReport|%{linkStartTag}Learn more about SAST %{linkEndTag}'),
 };
 
 export const containerScanningPopover = {
-  title: s__('ciReport|Container scanning detects known vulnerabilities in your docker images.'),
+  title: s__('ciReport|Container Scanning detects known vulnerabilities in your container images.'),
   copy: s__('ciReport|%{linkStartTag}Learn more about Container Scanning %{linkEndTag}'),
 };
 
 export const dastPopover = {
   title: s__(
-    'ciReport|Dynamic Application Security Testing (DAST) detects known vulnerabilities in your web application.',
+    'ciReport|Dynamic Application Security Testing (DAST) detects vulnerabilities in your web application.',
   ),
   copy: s__('ciReport|%{linkStartTag}Learn more about DAST %{linkEndTag}'),
 };
 
 export const dependencyScanningPopover = {
   title: s__(
-    "ciReport|Dependency Scanning detects known vulnerabilities in your source code's dependencies.",
+    "ciReport|Dependency Scanning detects known vulnerabilities in your project's dependencies.",
   ),
   copy: s__('ciReport|%{linkStartTag}Learn more about Dependency Scanning %{linkEndTag}'),
 };
 
 export const secretDetectionPopover = {
-  title: s__(
-    'ciReport|Secret Detection detects secrets and credentials vulnerabilities in your source code.',
-  ),
+  title: s__('ciReport|Secret Detection detects leaked credentials in your source code.'),
   copy: s__('ciReport|%{linkStartTag}Learn more about Secret Detection %{linkEndTag}'),
 };
 
