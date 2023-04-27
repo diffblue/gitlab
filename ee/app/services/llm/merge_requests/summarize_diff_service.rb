@@ -5,13 +5,16 @@ module Llm
     class SummarizeDiffService
       GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+,\d+ )@@/
 
-      def initialize(merge_request:, user:)
-        @merge_request = merge_request
+      def initialize(title:, user:, diff:)
+        @title = title
         @user = user
+        @diff = diff
       end
 
       def execute
-        return unless enabled? && @user.can?(:read_merge_request, @merge_request) && llm_client
+        return unless self.class.enabled?(user: user,
+          group: diff.merge_request.project.root_ancestor) && user.can?(:generate_diff_summary,
+            diff.merge_request) && llm_client
 
         response = llm_client.chat(content: summary_message, moderated: true)
 
@@ -21,16 +24,19 @@ module Llm
         response.parsed_response["choices"].first.dig("message", "content")
       end
 
-      def enabled?
-        Feature.enabled?(:openai_experimentation, @user) &&
-          Gitlab::Llm::StageCheck.available?(@merge_request.project.root_ancestor, :summarize_diff)
+      def self.enabled?(user:, group:)
+        Feature.enabled?(:openai_experimentation, user) &&
+          Gitlab::Llm::StageCheck.available?(group, :summarize_diff) &&
+          ::License.feature_available?(:summarize_mr_changes)
       end
 
       private
 
+      attr_reader :title, :user, :diff
+
       def prompt
         "The above is the code diff of a merge request. The merge request's " \
-          "title is: '#{@merge_request.title}'\n\n" \
+          "title is: '#{title}'\n\n" \
           "Write a summary the way an expert engineer would summarize the " \
           "changes using simple - generally non-technical - terms."
       end
@@ -45,7 +51,7 @@ module Llm
       def extracted_diff
         # Extract only the diff strings and discard everything else
         #
-        diffs = @merge_request.raw_diffs.to_a.collect(&:diff)
+        diffs = diff.raw_diffs.to_a.collect(&:diff)
 
         # Each diff string starts with information about the lines changed,
         #   bracketed by @@. Removing this saves us tokens.
@@ -56,7 +62,7 @@ module Llm
       end
 
       def llm_client
-        @_llm_client ||= Gitlab::Llm::OpenAi::Client.new(@user)
+        @_llm_client ||= Gitlab::Llm::OpenAi::Client.new(user)
       end
     end
   end

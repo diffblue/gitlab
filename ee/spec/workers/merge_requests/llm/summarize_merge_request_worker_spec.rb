@@ -4,97 +4,134 @@ require 'spec_helper'
 
 RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let(:project)       { create(:project, :with_namespace_settings, :repository, :public) }
-  let(:merge_request) { create(:merge_request, source_project: project) }
-  let(:example_llm_response) do
-    {
-      "id" => "chatcmpl-72mX77BBH9Hgj196u7BDhKyCTiXxL",
-      "object" => "chat.completion",
-      "created" => 1680897573,
-      "model" => "gpt-3.5-turbo-0301",
-      "usage" => { "prompt_tokens" => 3447, "completion_tokens" => 57, "total_tokens" => 3504 },
-      "choices" =>
-        [{
-          "message" => { "role" => "assistant", "content" => "An answer from an LLM" },
-          "finish_reason" => "stop",
-          "index" => 0
-        }]
-    }
-  end
-
-  let(:response_double) { instance_double(HTTParty::Response, parsed_response: example_llm_response) }
+  let_it_be(:merge_request) { create(:merge_request) }
+  let_it_be(:project) { merge_request.project }
+  let_it_be(:message) { 'this is a message from the llm' }
 
   subject(:worker) { described_class.new }
 
   before do
-    merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
-    merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
-  end
-
-  context "when provided an invalid merge_request_id" do
-    it "returns nil" do
-      expect(worker.perform(non_existing_record_id, user.id)).to be_nil
-    end
-
-    it "does not create a new note" do
-      expect { worker.perform(non_existing_record_id, user.id) }.not_to change { Note.count }
+    allow_next_instance_of(::Llm::MergeRequests::SummarizeDiffService,
+      title: merge_request.title,
+      user: user,
+      diff: merge_request.merge_request_diff) do |service|
+      allow(service).to receive(:execute).and_return(message)
     end
   end
 
   context "when provided an invalid user_id" do
+    let(:params) { [non_existing_record_id, { merge_request_id: merge_request.id }] }
+
     it "returns nil" do
-      expect(worker.perform(merge_request.id, non_existing_record_id)).to be_nil
+      expect(worker.perform(*params)).to be_nil
     end
 
     it "does not create a new note" do
-      expect { worker.perform(merge_request.id, non_existing_record_id) }.not_to change { Note.count }
+      expect { worker.perform(*params) }.not_to change { Note.count }
     end
   end
 
-  context "when user is not able to create new notes" do
-    it "returns nil" do
-      expect(worker.perform(merge_request.id, user.id)).to be_nil
+  context 'when type is summarize_quick_action' do
+    let(:params) do
+      [user.id,
+        { merge_request_id: merge_request.id,
+          type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::SUMMARIZE_QUICK_ACTION }]
     end
 
-    it "does not create a new note" do
-      expect { worker.perform(merge_request.id, user.id) }.not_to change { Note.count }
-    end
-  end
+    context "when provided an invalid merge_request_id" do
+      let(:params) do
+        [user.id,
+          { merge_request_id: non_existing_record_id,
+            type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::SUMMARIZE_QUICK_ACTION }]
+      end
 
-  context "when user can create new notes" do
-    before do
-      project.add_developer(user)
+      it "returns nil" do
+        expect(worker.perform(*params)).to be_nil
+      end
 
-      allow_next_instance_of(Gitlab::Llm::OpenAi::Client) do |llm_client|
-        allow(llm_client).to receive(:chat).and_return(response_double)
+      it "does not create a new note" do
+        expect { worker.perform(*params) }.not_to change { Note.count }
       end
     end
 
-    it "creates a new note" do
-      expect { worker.perform(merge_request.id, user.id) }
-        .to change { Note.count }.by(1)
+    context "when user is not able to create new notes" do
+      it "returns nil" do
+        expect(worker.perform(*params)).to be_nil
+      end
+
+      it "does not create a new note" do
+        expect { worker.perform(*params) }.not_to change { Note.count }
+      end
     end
 
-    it "creates a new note by the llm_bot" do
-      note = worker.perform(merge_request.id, user.id)
+    context "when user can create new notes" do
+      before do
+        project.add_developer(user)
+      end
 
-      expect(note.author_id).to eq(User.llm_bot.id)
+      it "creates a note with the returned content" do
+        note = worker.perform(*params)
+
+        expect(note.note)
+          .to include(message)
+      end
+
+      it "creates a new note" do
+        expect { worker.perform(*params) }
+          .to change { Note.count }.by(1)
+      end
+
+      it "creates a new note by the llm_bot" do
+        note = worker.perform(*params)
+
+        expect(note.author_id).to eq(User.llm_bot.id)
+      end
+
+      it "creates a new note associated with the provided MR" do
+        note = worker.perform(*params)
+
+        expect(note.noteable_type).to eq("MergeRequest")
+        expect(note.noteable_id).to eq(merge_request.id)
+      end
+
+      it "creates a new note with the LLM attribution trailer" do
+        note = worker.perform(*params)
+
+        expect(note.note)
+          .to include(
+            "(AI-generated summary for revision #{merge_request.diff_head_sha})"
+          )
+      end
+    end
+  end
+
+  context 'when type is prepare_diff_summary' do
+    let(:params) do
+      [user.id,
+        { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY,
+          diff_id: merge_request.merge_request_diff.id }]
     end
 
-    it "creates a new note associated with the provided MR" do
-      note = worker.perform(merge_request.id, user.id)
+    it 'creates a diff llm summary' do
+      expect { worker.perform(*params) }.to change { ::MergeRequest::DiffLlmSummary.count }.by(1)
 
-      expect(note.noteable_type).to eq("MergeRequest")
-      expect(note.noteable_id).to eq(merge_request.id)
+      expect(::MergeRequest::DiffLlmSummary.last)
+        .to have_attributes(
+          merge_request_diff: merge_request.merge_request_diff,
+          content: message,
+          provider: 'open_ai')
     end
 
-    it "creates a new note with the LLM attribution trailer" do
-      note = worker.perform(merge_request.id, user.id)
+    context 'when the diff does not exist' do
+      let(:params) do
+        [user.id,
+          { type: ::MergeRequests::Llm::SummarizeMergeRequestWorker::PREPARE_DIFF_SUMMARY,
+            diff_id: non_existing_record_id }]
+      end
 
-      expect(note.note)
-        .to include(
-          "(AI-generated summary for revision #{merge_request.diff_head_sha})"
-        )
+      it 'does not create a diff llm summary' do
+        expect { worker.perform(*params) }.not_to change { ::MergeRequest::DiffLlmSummary.count }
+      end
     end
   end
 end

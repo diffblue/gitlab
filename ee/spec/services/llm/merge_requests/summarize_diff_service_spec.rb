@@ -30,11 +30,15 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
   let(:response_double) { instance_double(HTTParty::Response, parsed_response: example_response) }
   let(:errored_response_double) { instance_double(HTTParty::Response, parsed_response: { error: "true" }) }
 
-  subject(:service) { described_class.new(merge_request: merge_request, user: user) }
+  subject(:service) do
+    described_class.new(title: merge_request.title, user: user, diff:
+                                          merge_request.merge_request_diff)
+  end
 
   describe "#execute" do
     before do
       project.add_developer(user)
+      stub_licensed_features(summarize_mr_changes: true)
 
       merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
       merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
@@ -42,7 +46,8 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
 
     context "when the user does not have read access to the MR" do
       it "returns without attempting to summarize" do
-        secondary_service = described_class.new(merge_request: merge_request_2, user: user)
+        secondary_service = described_class.new(title: merge_request_2.title, user: user, diff:
+                                          merge_request_2.merge_request_diff)
 
         expect(secondary_service).not_to receive(:llm_client)
         expect(secondary_service.execute).to be_nil
@@ -53,6 +58,18 @@ RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code
       context 'when the openai_experimentation flag is false' do
         before do
           stub_feature_flags(openai_experimentation: false)
+        end
+
+        it "returns without attempting to summarize" do
+          expect(service).not_to receive(:llm_client)
+
+          service.execute
+        end
+      end
+
+      context 'when summarize_mr_change feature not avaliable' do
+        before do
+          stub_licensed_features(summarize_mr_changes: false)
         end
 
         it "returns without attempting to summarize" do

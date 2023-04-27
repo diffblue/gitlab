@@ -118,7 +118,8 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateApproverToApprovalRules do
 
     context 'merge request' do
       let(:target) do
-        merge_request = build(:merge_request, approvals_before_merge: 2)
+        merge_request = build(:merge_request, approvals_before_merge: 2,
+          skip_ensure_merge_request_diff: true)
 
         allow(merge_request).to receive(:update_any_approver_rule)
 
@@ -204,7 +205,7 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateApproverToApprovalRules do
         end
 
         context 'when merge request is merged' do
-          let(:target) { create(:merged_merge_request) }
+          let(:target) { create(:merged_merge_request, :skip_diff_creation) }
 
           it 'does nothing' do
             expect do
@@ -282,7 +283,7 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateApproverToApprovalRules do
 
   context 'when project has no repository' do
     let(:project_without_repository) { create(:project) }
-    let(:target) { create(:merge_request, target_project: project_without_repository, source_project: project_without_repository) }
+    let(:target) { create(:merge_request, :skip_diff_creation, target_project: project_without_repository, source_project: project_without_repository) }
     let(:target_type) { 'MergeRequest' }
 
     it "does not err" do

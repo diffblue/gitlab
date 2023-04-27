@@ -1,0 +1,8 @@
+---
+name: summarize_diff_automatically
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118812
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/409135
+milestone: '16.1'
+type: development
+group: group::code review
+default_enabled: false
