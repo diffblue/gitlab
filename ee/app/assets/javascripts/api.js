@@ -41,7 +41,7 @@ export default {
   aiCompletionsPath: '/api/:version/ai/experimentation/openai/completions',
   aiEmbeddingsPath: '/api/:version/ai/experimentation/openai/embeddings',
   aiChatPath: '/api/:version/ai/experimentation/openai/chat/completions',
-  tanukiBotAskPath: '-/llm/tanuki_bot/ask',
+  tanukiBotAskPath: '/-/llm/tanuki_bot/ask',
 
   userSubscription(namespaceId) {
     const url = Api.buildUrl(this.subscriptionPath).replace(':id', encodeURIComponent(namespaceId));
