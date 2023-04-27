@@ -149,7 +149,7 @@ RSpec.describe Projects::MergeRequestsController, '(JavaScript fixtures in EE co
           users: [create(:user)])
         create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 0, name: 'Dolar',
           users: [create(:user)])
-        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 3, users: [user1],
+        create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 3,
           rule_type: :any_approver)
 
         create(:approval, merge_request: merge_request, user: user1)

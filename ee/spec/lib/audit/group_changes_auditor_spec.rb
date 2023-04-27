@@ -73,6 +73,17 @@ RSpec.describe Audit::GroupChangesAuditor do
         end
       end
 
+      it 'does not create event when there is no change in attribute value' do
+        columns = described_class::EVENT_NAME_PER_COLUMN.keys
+
+        columns.each do |column|
+          group.update_attribute(column, group.attributes[column.to_s])
+
+          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+          expect { foo_instance.execute }.not_to change(AuditEvent, :count)
+        end
+      end
+
       context 'when namespace setting is updated' do
         context 'when code_suggestions is changed' do
           before do
@@ -83,6 +94,12 @@ RSpec.describe Audit::GroupChangesAuditor do
             group.namespace_settings.update!(code_suggestions: false)
 
             expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          end
+
+          it 'does not create audit event if the value is unchanged' do
+            group.namespace_settings.update!(code_suggestions: true)
+
+            expect { foo_instance.execute }.not_to change(AuditEvent, :count)
           end
         end
       end

@@ -83,39 +83,63 @@ RSpec.describe MergeRequestsFinder, feature_category: :code_review_workflow do
         approval_rule_with_1_required.users << approver1
       end
 
-      context 'when licensed' do
+      context 'when flag `mr_approved_filter` is enabled' do
         before do
-          stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
+          stub_feature_flags(mr_approved_filter: true)
         end
 
-        it 'for approved' do
-          merge_requests = described_class.new(user, approved: true, source_project_id: project.id).execute
+        context 'when licensed' do
+          before do
+            stub_licensed_features(merge_request_approvers: true, multiple_approval_rules: true)
+          end
 
-          expect(merge_requests).to contain_exactly(fully_approved_mr)
+          it 'for approved' do
+            merge_requests = described_class.new(user, approved: true, source_project_id: project.id).execute
+
+            expect(merge_requests).to contain_exactly(fully_approved_mr)
+          end
+
+          it 'for not approved' do
+            merge_requests = described_class.new(user, approved: false, source_project_id: project.id).execute
+
+            expect(merge_requests).to contain_exactly(partial_approved_mr, not_approved_mr)
+          end
         end
 
-        it 'for not approved' do
-          merge_requests = described_class.new(user, approved: false, source_project_id: project.id).execute
+        context 'when unlicensed' do
+          before do
+            stub_licensed_features(merge_request_approvers: false)
+          end
 
-          expect(merge_requests).to contain_exactly(partial_approved_mr, not_approved_mr)
+          it 'for approved' do
+            merge_requests = described_class.new(user, approved: true, source_project_id: project.id).execute
+
+            expect(merge_requests).to contain_exactly(fully_approved_mr, partial_approved_mr)
+          end
+
+          it 'for not approved' do
+            merge_requests = described_class.new(user, approved: false, source_project_id: project.id).execute
+
+            expect(merge_requests).to contain_exactly(not_approved_mr)
+          end
         end
       end
 
-      context 'when unlicensed' do
+      context 'when flag `mr_approved_filter` is disabled' do
         before do
-          stub_licensed_features(merge_request_approvers: false)
+          stub_feature_flags(mr_approved_filter: false)
         end
 
         it 'for approved' do
           merge_requests = described_class.new(user, approved: true, source_project_id: project.id).execute
 
-          expect(merge_requests).to contain_exactly(fully_approved_mr, partial_approved_mr)
+          expect(merge_requests).to contain_exactly(fully_approved_mr, partial_approved_mr, not_approved_mr)
         end
 
         it 'for not approved' do
           merge_requests = described_class.new(user, approved: false, source_project_id: project.id).execute
 
-          expect(merge_requests).to contain_exactly(not_approved_mr)
+          expect(merge_requests).to contain_exactly(fully_approved_mr, partial_approved_mr, not_approved_mr)
         end
       end
     end
