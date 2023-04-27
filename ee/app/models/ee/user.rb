@@ -16,12 +16,14 @@ module EE
     DEFAULT_GROUP_VIEW = 'details'
     ELASTICSEARCH_TRACKED_FIELDS = %w[id username email public_email name admin state organization
                                       timezone external otp_required_for_login].freeze
+    AI_SUPPORTED_PLANS = [::Plan::ULTIMATE].freeze
 
     prepended do
       include UsageStatistics
       include PasswordComplexity
       include IdentityVerifiable
       include Elastic::ApplicationVersionedSearch
+      include Ai::Model
 
       EMAIL_OPT_IN_SOURCE_ID_GITLAB_COM = 1
 
@@ -253,6 +255,12 @@ module EE
       CustomProjectTemplatesFinder
         .new(current_user: self, search: search, subgroup_id: subgroup_id, project_id: project_id)
         .execute
+    end
+
+    def send_to_ai?
+      return true unless ::Gitlab.com?
+
+      has_paid_namespace?(plans: AI_SUPPORTED_PLANS)
     end
 
     def use_elasticsearch?

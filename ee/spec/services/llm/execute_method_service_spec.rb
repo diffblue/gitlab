@@ -121,6 +121,13 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
         it_behaves_like 'successful tracking'
       end
 
+      context 'when resource is a user' do
+        let(:resource) { user }
+        let(:expected_params) { default_params.merge(namespace: nil, project: nil) }
+
+        it_behaves_like 'successful tracking'
+      end
+
       context 'when service responds with an error' do
         let(:success) { false }
         let(:expected_params) { default_params.merge(property: "error") }

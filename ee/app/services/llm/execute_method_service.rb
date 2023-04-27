@@ -7,7 +7,8 @@ module Llm
     METHODS = {
       explain_vulnerability: ::Llm::ExplainVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
-      explain_code: Llm::ExplainCodeService
+      explain_code: Llm::ExplainCodeService,
+      tanuki_bot: Llm::TanukiBotService
     }.freeze
 
     def initialize(user, resource, method, options = {})
@@ -49,6 +50,8 @@ module Llm
         resource
       when Project
         resource.group
+      when User
+        nil
       else
         case resource&.resource_parent
         when Group
@@ -62,7 +65,7 @@ module Llm
     def project
       if resource.is_a?(Project)
         resource
-      elsif resource.is_a?(Group)
+      elsif resource.is_a?(Group) || resource.is_a?(User)
         nil
       elsif resource&.resource_parent.is_a?(Project)
         resource.resource_parent

@@ -17,7 +17,9 @@ module Llm
     end
 
     def valid?
-      resource.resource_parent.member?(user) && ai_integration_enabled? && resource.send_to_ai?
+      return false if resource.respond_to?(:resource_parent) && !resource.resource_parent.member?(user)
+
+      ai_integration_enabled? && resource.send_to_ai?
     end
 
     private
