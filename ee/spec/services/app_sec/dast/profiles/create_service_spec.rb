@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::Profiles::CreateService, :dynamic_analysis,
-               feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:developer) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }

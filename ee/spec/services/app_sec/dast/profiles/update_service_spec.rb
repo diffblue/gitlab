@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::Profiles::UpdateService, :dynamic_analysis,
-                                                      feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
   let_it_be(:old_tags) { [ActsAsTaggableOn::Tag.create!(name: 'ruby'), ActsAsTaggableOn::Tag.create!(name: 'postgres')] }
