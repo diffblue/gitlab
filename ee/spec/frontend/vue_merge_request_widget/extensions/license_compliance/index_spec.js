@@ -43,7 +43,6 @@ describe('License Compliance extension', () => {
   const findAllExtensionListItems = () => wrapper.findAllByTestId('extension-list-item');
   const findActionButtons = () => wrapper.findComponent(ActionButtons);
   const findByHrefAttribute = (href) => wrapper.find(`[href="${href}"]`);
-  const findManageLicenseLink = () => findByHrefAttribute(settingsPath);
   const findFullReportLink = () => findByHrefAttribute(fullReportPath);
   const findSummary = () => wrapper.findByTestId('widget-extension-top-level-summary');
 
@@ -126,9 +125,6 @@ describe('License Compliance extension', () => {
 
       await waitForPromises();
 
-      expect(findManageLicenseLink().exists()).toBe(true);
-      expect(findManageLicenseLink().text()).toBe('Manage Licenses');
-
       expect(findFullReportLink().exists()).toBe(true);
       expect(findFullReportLink().text()).toBe('Full report');
 
@@ -146,8 +142,6 @@ describe('License Compliance extension', () => {
       });
 
       await waitForPromises();
-
-      expect(findManageLicenseLink().exists()).toBe(false);
 
       expect(findFullReportLink().exists()).toBe(true);
       expect(findFullReportLink().text()).toBe('Full report');

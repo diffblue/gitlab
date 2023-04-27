@@ -34,7 +34,7 @@ describe('The Pipeline Tabs', () => {
     isFullCodequalityReportAvailable: true,
     licenseManagementApiUrl: '/path/to/license_management_api_url',
     licensesApiPath: '/path/to/licenses_api',
-    licenseManagementSettingsPath: '/path/to/license_management_settings',
+    securityPoliciesPath: '/path/to/-/security/policies',
     licenseScanCount: 11,
     pipelineIid: '100',
     totalJobCount: 10,
@@ -182,7 +182,7 @@ describe('The Pipeline Tabs', () => {
       expect(findLicensesRouterView().attributes()).toMatchObject({
         'api-url': defaultProvide.licenseManagementApiUrl,
         'licenses-api-path': defaultProvide.licensesApiPath,
-        'license-management-settings-path': defaultProvide.licenseManagementSettingsPath,
+        'security-policies-path': defaultProvide.securityPoliciesPath,
         'can-manage-licenses': defaultProvide.canManageLicenses.toString(),
         'always-open': 'true',
       });

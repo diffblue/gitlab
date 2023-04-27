@@ -10,7 +10,6 @@ module QA
 
             view 'ee/app/assets/javascripts/license_compliance/components/app.vue' do
               element :license_compliance_empty_state_description_content
-              element :policies_tab
             end
 
             view 'ee/app/assets/javascripts/vue_shared/license_compliance/license_management.vue' do
@@ -66,10 +65,6 @@ module QA
               within_element(:admin_license_compliance_container, text: name) do
                 has_element?(:status_failed_icon)
               end
-            end
-
-            def open_tab
-              click_element(:policies_tab)
             end
           end
         end

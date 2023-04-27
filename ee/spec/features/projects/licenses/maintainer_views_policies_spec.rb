@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feature_category: :projects do
+RSpec.describe 'EE > Projects > Licenses > Maintainer views licenses', :js, feature_category: :projects do
   let!(:package_version_licenses) do
     [
       create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT"),
@@ -92,22 +92,6 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views policies', :js, feat
           expect(row).to have_content(policy&.name)
           expect(row).to have_content(sbom_packages_for(license['id']).join(' and '))
         end
-      end
-    end
-
-    context "when viewing the configured policies" do
-      before do
-        click_link('Policies')
-        wait_for_requests
-      end
-
-      it 'displays the classification' do
-        selector = "div[data-testid='admin-license-compliance-row']"
-        expect(page).to have_selector(selector)
-
-        row = page.find(selector)
-        expect(row).to have_content(mit_license.name)
-        expect(row).to have_content(mit_policy.classification.titlecase)
       end
     end
   end

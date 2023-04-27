@@ -28,7 +28,6 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
         is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
         license_management_api_url: license_management_api_url(project),
-        license_management_settings_path: helper.license_management_path(user, project),
         licenses_api_path: helper.licenses_api_path(project, pipeline),
         failed_jobs_count: pipeline.failed_builds.count,
         failed_jobs_summary: prepare_failed_jobs_summary_data(pipeline.failed_builds),
@@ -38,6 +37,7 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
         pipeline_iid: pipeline.iid,
         pipeline_path: pipeline_path(pipeline),
         pipeline_project_path: project.full_path,
+        security_policies_path: kind_of(String),
         total_job_count: pipeline.total_size
       })
       expect(Gitlab::Json.parse(pipeline_tabs_data[:vulnerability_report_data])).to include({
@@ -166,32 +166,6 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
           is_expected.not_to be(nil)
           is_expected.to eq(pipeline.downloadable_path_for_report_type(:codequality))
         end
-      end
-    end
-  end
-
-  describe 'license_management_path' do
-    subject(:license_management_path) { helper.license_management_path(user, project) }
-
-    describe 'when user is not a maintainer' do
-      before do
-        project.add_developer(user)
-        stub_licensed_features(license_scanning: true)
-      end
-
-      it 'returns nil' do
-        is_expected.to be(nil)
-      end
-    end
-
-    describe 'when user is a maintainer' do
-      before do
-        project.add_maintainer(user)
-        stub_licensed_features(license_scanning: true)
-      end
-
-      it 'returns the license management path' do
-        is_expected.to eq(license_management_settings_path(project))
       end
     end
   end
