@@ -1,11 +1,10 @@
 <script>
-import { GlDaterangePicker, GlFormInput } from '@gitlab/ui';
+import { GlDaterangePicker, GlSearchBoxByClick } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import ProjectsDropdownFilter from '~/analytics/shared/components/projects_dropdown_filter.vue';
 import { pikadayToString, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
-import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { CURRENT_DATE } from 'ee/audit_events/constants';
 import getGroupProjects from '../../../graphql/violation_group_projects.query.graphql';
 import { convertProjectIdsToGraphQl } from '../../../utils';
@@ -13,7 +12,7 @@ import { convertProjectIdsToGraphQl } from '../../../utils';
 export default {
   components: {
     GlDaterangePicker,
-    GlFormInput,
+    GlSearchBoxByClick,
     ProjectsDropdownFilter,
   },
   props: {
@@ -88,7 +87,6 @@ export default {
     branchFilterLabel: s__('ComplianceReport|Search target branch'),
     branchFilterPlaceholder: s__('ComplianceReport|Full target branch name'),
   },
-  DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
   defaultMaxDate: CURRENT_DATE,
   projectsFilterParams: {
     first: 50,
@@ -136,14 +134,14 @@ export default {
       <label for="target-branch-input" class="gl-line-height-normal">
         {{ $options.i18n.branchFilterLabel }}
       </label>
-      <gl-form-input
+      <gl-search-box-by-click
         id="target-branch-input"
         :value="filterQuery.targetBranch"
         data-testid="violations-target-branch-input"
         class="gl-mb-2 gl-lg-mb-0"
         :placeholder="$options.i18n.branchFilterPlaceholder"
-        :debounce="$options.DEFAULT_DEBOUNCE_AND_THROTTLE_MS"
-        @input="updateFilter({ targetBranch: $event })"
+        @submit="updateFilter({ targetBranch: $event })"
+        @clear="updateFilter({ targetBranch: '' })"
       />
     </div>
   </div>
