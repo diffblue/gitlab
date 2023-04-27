@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import ProjectDelayedDeleteButton from 'ee/projects/components/project_delayed_delete_button.vue';
 import SharedDeleteButton from '~/projects/components/shared/delete_button.vue';
 
@@ -22,6 +22,8 @@ describe('Project delayed delete modal', () => {
     starsCount: 4,
   };
 
+  const findLearnMoreLink = () => wrapper.findComponent(GlLink);
+
   const createComponent = (props = {}) => {
     wrapper = shallowMount(ProjectDelayedDeleteButton, {
       propsData: {
@@ -40,8 +42,15 @@ describe('Project delayed delete modal', () => {
       createComponent();
     });
 
-    it('matches the snapshot', () => {
-      expect(wrapper.element).toMatchSnapshot();
+    it('Shows the learn more link', () => {
+      expect(findLearnMoreLink().text()).toContain('Learn More');
+      expect(findLearnMoreLink().attributes('href')).toBe(defaultProps.restoreHelpPath);
+    });
+
+    it('shows the restore message with date', () => {
+      expect(wrapper.text()).toContain(
+        `This project can be restored until ${defaultProps.delayedDeletionDate}`,
+      );
     });
 
     it('passes confirmPhrase and formPath props to the shared delete button', () => {

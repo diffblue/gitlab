@@ -16,8 +16,10 @@ module Gitlab
             output = text.split("#{CONTENT_ID_FIELD}:")
             msg = output[0].strip
             ids = output[1].scan(CONTENT_ID_REGEX).flatten.map(&:to_i)
-            documents = ::Embedding::TanukiBotMvc.where(id: ids)
-            sources = documents.pluck(:metadata).uniq
+            documents = ::Embedding::TanukiBotMvc.id_in(ids).select(:url, :metadata)
+            sources = documents.map do |doc|
+              { source_url: doc.url }.merge(doc.metadata)
+            end.uniq
 
             {
               msg: msg,
