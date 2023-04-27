@@ -92,16 +92,14 @@ RSpec.describe 'Query.vulnerabilities.issueLinks', feature_category: :vulnerabil
       # 15) Select vulnerability scanners
       # 16) Select vulnerability identifiers join table
       # 17) Select vulnerability identifiers
-      # 18) Select issue links (This is redundant and will be removed with the `use_lazy_issue_links_loader` FF rollout)
-      # 19) Select issues (This is redundant and will be removed with the `use_lazy_issue_links_loader` FF rollout)
-      # 20) Select namespace
-      # 21) Authorization check
-      # 22) Select issue links
-      # 23) Select issues
-      # 24) Select issue project
-      # 25) Select issue user
-      # 26) Select project features
-      expect { query_issue_links }.not_to exceed_query_limit(26)
+      # 18) Select namespace
+      # 19) Authorization check
+      # 20) Select issue links
+      # 21) Select issues
+      # 22) Select issue project
+      # 23) Select issue user
+      # 24) Select project features
+      expect { query_issue_links }.not_to exceed_query_limit(24)
     end
   end
 
