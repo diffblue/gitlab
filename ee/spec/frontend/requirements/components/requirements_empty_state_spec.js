@@ -3,12 +3,12 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import RequirementsEmptyState from 'ee/requirements/components/requirements_empty_state.vue';
-import { FilterState } from 'ee/requirements/constants';
+import { filterState } from 'ee/requirements/constants';
 
 const createComponent = (props = {}) =>
   shallowMount(RequirementsEmptyState, {
     propsData: {
-      filterBy: FilterState.opened,
+      filterBy: filterState.opened,
       emptyStatePath: '/assets/illustrations/empty-state/requirements.svg',
       requirementsCount: {
         OPENED: 0,
@@ -45,7 +45,7 @@ describe('RequirementsEmptyState', () => {
 
       it('returns string "There are no archived requirements" when value of `filterBy` prop is "ARCHIVED" and project has some requirements', async () => {
         wrapper.setProps({
-          filterBy: FilterState.archived,
+          filterBy: filterState.archived,
           requirementsCount: {
             OPENED: 2,
             ARCHIVED: 0,

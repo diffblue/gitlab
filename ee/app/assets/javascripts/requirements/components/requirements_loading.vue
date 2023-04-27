@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader, GlLoadingIcon } from '@gitlab/ui';
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
-import { FilterState } from '../constants';
+import { filterState } from '../constants';
 
 export default {
   components: {
@@ -27,7 +27,7 @@ export default {
       return this.requirementsCount[this.filterBy];
     },
     totalRequirements() {
-      return this.requirementsCount[FilterState.all];
+      return this.requirementsCount[filterState.all];
     },
     lastPage() {
       return Math.ceil(this.currentTabCount / DEFAULT_PAGE_SIZE);

@@ -7,7 +7,7 @@ import { parseBoolean } from '~/lib/utils/common_utils';
 
 import RequirementsRoot from './components/requirements_root.vue';
 
-import { FilterState } from './constants';
+import { filterState } from './constants';
 
 Vue.use(VueApollo);
 Vue.use(GlToast);
@@ -62,7 +62,7 @@ export default () => {
         requirementsImportCsvPath: importCsvPath,
         currentUserEmail,
       } = el.dataset;
-      const stateFilterBy = filterBy ? FilterState[filterBy] : FilterState.opened;
+      const stateFilterBy = filterBy ? filterState[filterBy] : filterState.opened;
 
       const OPENED = parseInt(opened, 10);
       const ARCHIVED = parseInt(archived, 10);

@@ -5,7 +5,7 @@ import Note from 'ee/external_issues_show/components/note.vue';
 import ExternalIssueAlert from 'ee/external_issues_show/components/external_issue_alert.vue';
 import { fetchIssue } from 'ee/integrations/zentao/issues_show/api';
 import ZentaoIssueSidebar from 'ee/integrations/zentao/issues_show/components/sidebar/zentao_issues_sidebar_root.vue';
-import { IssuableStatusText, STATUS_OPEN } from '~/issues/constants';
+import { issuableStatusText, STATUS_OPEN } from '~/issues/constants';
 
 import IssuableShow from '~/vue_shared/issuable/show/components/issuable_show_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
@@ -42,7 +42,7 @@ export default {
       return this.issue.state === STATUS_OPEN;
     },
     statusBadgeText() {
-      return IssuableStatusText[this.issue?.state];
+      return issuableStatusText[this.issue?.state];
     },
     statusIcon() {
       return this.isIssueOpen ? 'issue-open-m' : 'mobile-issue-close';

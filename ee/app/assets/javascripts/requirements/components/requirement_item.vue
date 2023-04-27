@@ -3,7 +3,7 @@ import { GlPopover, GlLink, GlAvatar, GlButton, GlTooltipDirective, GlSprintf } 
 import { __ } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 
-import { FilterState, I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_POPOVER } from '../constants';
+import { filterState, I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_POPOVER } from '../constants';
 import RequirementMeta from '../mixins/requirement_meta';
 import RequirementStatusBadge from './requirement_status_badge.vue';
 
@@ -76,13 +76,13 @@ export default {
     handleArchiveClick() {
       this.$emit('archiveClick', {
         iid: this.requirement.iid,
-        state: FilterState.archived,
+        state: filterState.archived,
       });
     },
     handleReopenClick() {
       this.$emit('reopenClick', {
         iid: this.requirement.iid,
-        state: FilterState.opened,
+        state: filterState.opened,
       });
     },
   },

@@ -141,12 +141,6 @@ export const mockRequirementsCount = {
   ALL: 4,
 };
 
-export const FilterState = {
-  opened: 'OPENED',
-  archived: 'ARCHIVED',
-  all: 'ALL',
-};
-
 export const mockPageInfo = {
   startCursor: 'eyJpZCI6IjI1IiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzI6MTQgVVRDIn0',
   endCursor: 'eyJpZCI6IjIxIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzE6MTUgVVRDIn0',

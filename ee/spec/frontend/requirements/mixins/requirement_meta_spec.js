@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
-import { FilterState } from 'ee/requirements/constants';
+import { filterState } from 'ee/requirements/constants';
 import { mockAuthor, mockTestReport, requirement1 as mockRequirement } from '../mock_data';
 
 const createComponent = (requirement = mockRequirement) =>
@@ -37,7 +37,7 @@ describe('RequirementMeta Mixin', () => {
         wrapper.setProps({
           requirement: {
             ...mockRequirement,
-            state: FilterState.archived,
+            state: filterState.archived,
           },
         });
 
