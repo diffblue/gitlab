@@ -17,8 +17,8 @@ import {
   I18N_WORK_ITEM_ERROR_UPDATING,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
-import { getWorkItemQuery } from '~/work_items/utils';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import Tracking from '~/tracking';
 
 export default {
@@ -53,11 +53,6 @@ export default {
     workItemType: {
       type: String,
       required: true,
-    },
-    fetchByIid: {
-      type: Boolean,
-      required: false,
-      default: false,
     },
     queryVariables: {
       type: Object,
@@ -102,17 +97,15 @@ export default {
   },
   apollo: {
     workItem: {
-      query() {
-        return getWorkItemQuery(this.fetchByIid);
-      },
+      query: workItemByIidQuery,
       variables() {
         return this.queryVariables;
       },
       update(data) {
-        return this.fetchByIid ? data.workspace.workItems.nodes[0] : data.workItem;
+        return data.workspace.workItems.nodes[0];
       },
       skip() {
-        return !this.queryVariables.id && !this.queryVariables.iid;
+        return !this.queryVariables.iid;
       },
       error() {
         this.$emit('error', i18n.fetchError);

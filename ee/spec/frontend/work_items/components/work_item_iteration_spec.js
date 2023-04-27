@@ -24,12 +24,10 @@ import {
   groupIterationsResponseWithNoIterations,
   mockIterationWidgetResponse,
   updateWorkItemMutationResponse,
-  workItemResponseFactory,
+  workItemByIidResponseFactory,
   workItemIterationSubscriptionResponse,
   updateWorkItemMutationErrorResponse,
-  projectWorkItemResponse,
 } from 'jest/work_items/mock_data';
-import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 
 describe('WorkItemIteration component', () => {
   Vue.use(VueApollo);
@@ -51,9 +49,8 @@ describe('WorkItemIteration component', () => {
   const findDropdownTextAtIndex = (index) => findDropdownTexts().at(index);
   const findInputGroup = () => wrapper.findComponent(GlFormGroup);
 
-  const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
+  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
-  const workItemByIidResponseHandler = jest.fn().mockResolvedValue(projectWorkItemResponse);
 
   const networkResolvedValue = new Error();
 
@@ -82,18 +79,14 @@ describe('WorkItemIteration component', () => {
     iteration = mockIterationWidgetResponse,
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
-    fetchByIid = false,
-    queryVariables = {
-      id: workItemId,
-    },
+    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = shallowMountExtended(WorkItemIteration, {
       apolloProvider: createMockApollo([
-        [workItemQuery, workItemQueryHandler],
+        [workItemByIidQuery, workItemQueryHandler],
         [workItemIterationSubscription, iterationSubscriptionHandler],
         [projectIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
-        [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
       propsData: {
         canUpdate,
@@ -101,7 +94,6 @@ describe('WorkItemIteration component', () => {
         workItemId,
         workItemType,
         queryVariables,
-        fetchByIid,
         fullPath: 'test-project-path',
       },
       provide: {
@@ -261,24 +253,15 @@ describe('WorkItemIteration component', () => {
     });
   });
 
-  it('calls the global ID work item query when `fetchByIid` prop is false', async () => {
-    createComponent({ fetchByIid: false });
+  it('calls the work item query', async () => {
+    createComponent();
     await waitForPromises();
 
     expect(workItemQueryHandler).toHaveBeenCalled();
-    expect(workItemByIidResponseHandler).not.toHaveBeenCalled();
   });
 
-  it('calls the IID work item query when when `fetchByIid` prop is true', async () => {
-    createComponent({ fetchByIid: true });
-    await waitForPromises();
-
-    expect(workItemQueryHandler).not.toHaveBeenCalled();
-    expect(workItemByIidResponseHandler).toHaveBeenCalled();
-  });
-
-  it('skips calling the handlers when missing the needed queryVariables', async () => {
-    createComponent({ queryVariables: {}, fetchByIid: false });
+  it('skips calling the work item query when missing queryVariables', async () => {
+    createComponent({ queryVariables: {} });
     await waitForPromises();
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();
