@@ -12,4 +12,4 @@
       - if issuable.weight
         = form.hidden_field :weight
 
-      = form.text_field :weight, class: "form-control", data: { testid: "issuable-weight-input" }, placeholder: _('Enter a number'), autocomplete: "off", type: "text"
+      = form.number_field :weight, class: "form-control", data: { testid: "issuable-weight-input" }, placeholder: _('Enter a number'), autocomplete: "off", min: 0
