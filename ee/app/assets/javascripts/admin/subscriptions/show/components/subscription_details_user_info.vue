@@ -59,7 +59,7 @@ export default {
     usersOverSubscription() {
       return this.subscription.usersOverLicenseCount;
     },
-    isUsersInSubscripionVisible() {
+    isUsersInSubscriptionVisible() {
       return this.subscription.plan === 'ultimate';
     },
     usersInSubscriptionTitle() {
@@ -86,7 +86,7 @@ export default {
           <h2 data-qa-selector="users_in_subscription">{{ usersInSubscription }}</h2>
           <h5 class="gl-font-weight-normal text-uppercase">{{ usersInSubscriptionTitle }}</h5>
         </header>
-        <p v-if="isUsersInSubscripionVisible" data-testid="users-in-subscription-desc">
+        <p v-if="isUsersInSubscriptionVisible" data-testid="users-in-subscription-desc">
           {{ $options.i18n.usersInSubscriptionText }}
         </p>
       </gl-card>
