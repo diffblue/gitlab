@@ -3,7 +3,10 @@
 module QA
   RSpec.describe 'Fulfillment', :requires_admin,
     product_group: :utilization, feature_flag: { name: 'saas_user_caps', scope: :group },
-    only: { pipeline: %i[staging staging-canary] } do
+    only: { pipeline: %i[staging staging-canary] }, quarantine: {
+      type: :investigating,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/408958'
+    } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: group_owner) }
