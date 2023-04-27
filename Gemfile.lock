@@ -924,7 +924,7 @@ GEM
     loofah (2.20.0)
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
-    lookbook (1.5.3)
+    lookbook (1.5.5)
       actioncable
       activemodel
       css_parser
@@ -1819,7 +1819,7 @@ DEPENDENCIES
   lockbox (~> 1.1.1)
   lograge (~> 0.5)
   loofah (~> 2.20.0)
-  lookbook (~> 1.5, >= 1.5.3)
+  lookbook (~> 1.5, >= 1.5.5)
   lru_redux
   mail (= 2.8.1)
   mail-smtp_pool (~> 0.1.0)!
