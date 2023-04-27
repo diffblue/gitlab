@@ -38,8 +38,6 @@ module EE
             # Project events should be sent to the root ancestor's streaming destinations
             # Projects without a group root ancestor should be ignored.
             entity.group&.root_ancestor
-          else
-            nil
           end
 
         self.root_group_entity_id = root_group_entity&.id

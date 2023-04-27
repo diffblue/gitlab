@@ -125,8 +125,6 @@ module EE
         case group_view
         when 'security_dashboard'
           helpers.group_security_dashboard_path(group)
-        else
-          nil
         end
       end
     end

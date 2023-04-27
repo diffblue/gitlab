@@ -32,8 +32,6 @@ class Admin::AuditLogsController < Admin::ApplicationController
                 Project.find_by_id(audit_events_params[:entity_id])
               when 'Group'
                 Namespace.find_by_id(audit_events_params[:entity_id])
-              else
-                nil
               end
 
     Gitlab::Tracking.event(self.class.name, 'search_audit_event', user: current_user)
