@@ -5,7 +5,7 @@ import { createAlert } from '~/alert';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
+import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';

@@ -5,6 +5,7 @@ export { toYaml } from './to_yaml';
 export {
   securityScanBuildRule,
   emptyBuildRule,
+  getInvalidBranches,
   getDefaultRule,
   invalidScanners,
   SCAN_FINDING,

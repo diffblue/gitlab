@@ -1,6 +1,5 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -27,6 +26,7 @@ import {
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
   DEFAULT_SCAN_RESULT_POLICY_V4,
+  getInvalidBranches,
   fromYaml,
   toYaml,
   emptyBuildRule,
@@ -103,6 +103,7 @@ export default {
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
     return {
+      invalidBranches: [],
       isCreatingMR: false,
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
@@ -118,7 +119,6 @@ export default {
     };
   },
   computed: {
-    ...mapState('scanResultPolicies', ['invalidBranches']),
     originalName() {
       return this.existingPolicy?.name;
     },
@@ -147,7 +147,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions('scanResultPolicies', ['fetchBranches']),
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
       this.updateYamlEditorValue(this.policy);
@@ -231,13 +230,16 @@ export default {
     updateYamlEditorValue(policy) {
       this.yamlEditorValue = toYaml(policy);
     },
-    changeEditorMode(mode) {
+    async changeEditorMode(mode) {
       this.mode = mode;
       if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
         if (this.invalidForRuleMode()) {
           this.hasParsingError = true;
         } else if (!this.hasEmptyRules && this.namespaceType === NAMESPACE_TYPES.PROJECT) {
-          this.fetchBranches({ branches: this.allBranches(), projectId: this.namespaceId });
+          this.invalidBranches = await getInvalidBranches({
+            branches: this.allBranches(),
+            projectId: this.namespaceId,
+          });
         }
       }
     },

@@ -17,13 +17,13 @@ import {
   mountExtended,
   extendedWrapper,
 } from 'helpers/vue_test_utils_helper';
-import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/create_external_destination.mutation.graphql';
-import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/create_external_destination_header.mutation.graphql';
-import externalAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/update_external_destination_header.mutation.graphql';
-import externalAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/delete_external_destination_header.mutation.graphql';
-import deleteExternalDestination from 'ee/audit_events/graphql/delete_external_destination.mutation.graphql';
-import deleteExternalDestinationFilters from 'ee/audit_events/graphql/delete_external_destination_filters.mutation.graphql';
-import updateExternalDestinationFilters from 'ee/audit_events/graphql/update_external_destination_filters.mutation.graphql';
+import externalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_external_destination.mutation.graphql';
+import externalAuditEventDestinationHeaderCreate from 'ee/audit_events/graphql/mutations/create_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/mutations/update_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_external_destination_header.mutation.graphql';
+import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_external_destination.mutation.graphql';
+import deleteExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_external_destination_filters.mutation.graphql';
+import updateExternalDestinationFilters from 'ee/audit_events/graphql/mutations/update_external_destination_filters.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
 import { AUDIT_STREAMS_NETWORK_ERRORS, ADD_STREAM_EDITOR_I18N } from 'ee/audit_events/constants';

@@ -1,4 +1,5 @@
 import { s__ } from '~/locale';
+import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
@@ -70,4 +71,26 @@ export const getDefaultRule = (scanType) => {
     default:
       return emptyBuildRule();
   }
+};
+
+const doesBranchExist = async ({ branch, projectId }) => {
+  try {
+    await Api.projectProtectedBranch(projectId, branch);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+export const getInvalidBranches = async ({ branches, projectId }) => {
+  const uniqueBranches = [...new Set(branches)];
+  const invalidBranches = [];
+
+  for await (const branch of uniqueBranches) {
+    if (!(await doesBranchExist({ branch, projectId }))) {
+      invalidBranches.push(branch);
+    }
+  }
+
+  return invalidBranches;
 };

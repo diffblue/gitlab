@@ -41,23 +41,33 @@ export const mockExternalDestinationHeader = () => ({
   key: uniqueId('header-key-'),
   value: uniqueId('header-value-'),
 });
+
+const makeHeader = () => ({
+  __typename: 'AuditEventStreamingHeader',
+  id: `header-id-${uniqueId()}`,
+  key: `header-key-${uniqueId()}`,
+  value: 'header-value',
+});
+
 export const mockExternalDestinations = [
   {
+    __typename: 'ExternalAuditEventDestination',
     id: 'test_id1',
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: 'id5hzCbERzSkQ82tAs16tH5Y',
-    eventTypeFilters: [],
     headers: {
       nodes: [],
     },
+    eventTypeFilters: [],
   },
   {
+    __typename: 'ExternalAuditEventDestination',
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
     eventTypeFilters: ['repository_download_operation', 'update_merge_approval_rule'],
     headers: {
-      nodes: [],
+      nodes: [makeHeader(), makeHeader()],
     },
   },
 ];
@@ -76,6 +86,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
   const correctData = {
     errors,
     externalAuditEventDestination: {
+      __typename: 'ExternalAuditEventDestination',
       id: 'test-create-id',
       destinationUrl: mockExternalDestinationUrl,
       verificationToken: 'Cr28SHnrJtgpSXUEGfictGMS',
@@ -83,20 +94,16 @@ export const destinationCreateMutationPopulator = (errors = []) => {
         name: groupPath,
         id: testGroupId,
       },
+      eventTypeFilters: null,
+      headers: {
+        nodes: [],
+      },
     },
   };
 
   const errorData = {
     errors,
-    externalAuditEventDestination: {
-      id: null,
-      destinationUrl: null,
-      verificationToken: null,
-      group: {
-        name: null,
-        id: testGroupId,
-      },
-    },
+    externalAuditEventDestination: null,
   };
 
   return {
@@ -119,6 +126,7 @@ export const destinationHeaderCreateMutationPopulator = (errors = []) => ({
     auditEventsStreamingHeadersCreate: {
       errors,
       clientMutationId: uniqueId(),
+      header: makeHeader(),
     },
   },
 });
@@ -128,6 +136,7 @@ export const destinationHeaderUpdateMutationPopulator = (errors = []) => ({
     auditEventsStreamingHeadersUpdate: {
       errors,
       clientMutationId: uniqueId(),
+      header: makeHeader(),
     },
   },
 });

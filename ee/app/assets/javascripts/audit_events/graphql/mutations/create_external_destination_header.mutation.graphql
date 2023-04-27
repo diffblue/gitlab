@@ -1,3 +1,5 @@
+#import "../fragments/audit_event_streaming_header.fragment.graphql"
+
 mutation createExternalDestinationHeader(
   $destinationId: AuditEventsExternalAuditEventDestinationID!
   $key: String!
@@ -8,5 +10,8 @@ mutation createExternalDestinationHeader(
   ) {
     errors
     clientMutationId
+    header {
+      ...AuditEventStreamingHeaderFragment
+    }
   }
 }
