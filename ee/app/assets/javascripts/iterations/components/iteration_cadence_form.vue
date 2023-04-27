@@ -369,7 +369,6 @@ export default {
       <gl-form-group
         class="gl-pt-3"
         :label="i18n.description.label"
-        :content-cols-md="2"
         :optional-text="i18n.optional"
         label-for="cadence-description"
         optional
