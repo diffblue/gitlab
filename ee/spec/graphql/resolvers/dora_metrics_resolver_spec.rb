@@ -217,18 +217,6 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
             ])
         end
       end
-
-      context 'backwards compatibility for environment_tier' do
-        let(:args) { { environment_tier: 'staging' } }
-
-        it 'returns metrics for the staging environment' do
-          expect(resolve_metrics).to eq(
-            [
-              metric_row('date' => '2021-04-01', 'deployment_frequency' => 10),
-              metric_row('date' => '2021-04-02', 'deployment_frequency' => nil)
-            ])
-        end
-      end
     end
   end
 

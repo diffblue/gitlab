@@ -80,17 +80,6 @@ RSpec.describe API::Dora::Metrics, feature_category: :dora_metrics do
       end
     end
 
-    context 'backwards compatibility for environment_tier' do
-      let(:params) { { metric: 'deployment_frequency', environment_tier: 'staging' } }
-
-      it 'returns combined data' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response).to match_array([{ 'date' => '2021-01-02', 'value' => 100 }])
-      end
-    end
-
     context 'when user is guest' do
       let(:user) { guest }
       let(:params) { { metric: :deployment_frequency } }
