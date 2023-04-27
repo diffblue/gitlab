@@ -9,6 +9,7 @@ import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ApprovedIcon from './approved_icon.vue';
 import NumberOfApprovals from './number_of_approvals.vue';
+import ApprovalsUsersList from './approvals_users_list.vue';
 import approvalRulesQuery from './queries/approval_rules.query.graphql';
 
 const INCLUDE_APPROVERS = 1;
@@ -34,6 +35,7 @@ export default {
     ApprovalCheckRulePopover,
     EmptyRuleName,
     NumberOfApprovals,
+    ApprovalsUsersList,
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
@@ -113,6 +115,10 @@ export default {
         : INCLUDE_APPROVERS;
     },
   },
+  i18n: {
+    commentedBy: s__('MRApprovals|Commented by'),
+    approvedBy: s__('MRApprovals|Approved by'),
+  },
   ruleTypeAnyApprover: RULE_TYPE_ANY_APPROVER,
 };
 </script>
@@ -171,7 +177,7 @@ export default {
             <strong>{{ title }}</strong>
           </td>
         </tr>
-        <tr v-for="rule in rules" :key="rule.id">
+        <tr v-for="rule in rules" :key="rule.id" data-testid="approval-rules-row">
           <td class="w-0 gl-pr-4!">
             <approved-icon class="gl-pl-2" :is-approved="rule.approved" />
           </td>
@@ -204,32 +210,24 @@ export default {
               />
               <span v-else>{{ summaryText(rule) }}</span>
               <user-avatar-list
-                v-if="!rule.fallback"
-                class="mt-2"
+                v-if="!rule.fallback && rule.eligibleApprovers.length"
+                class="gl-my-3"
                 :items="rule.eligibleApprovers"
                 :img-size="24"
                 empty-text=""
               />
-              <div v-if="rule.commentedBy.nodes.length > 0" class="gl-display-flex">
-                <span class="gl-display-inline-flex gl-font-sm gl-text-gray-500">{{
-                  s__('MRApprovals|Commented by')
-                }}</span>
-                <user-avatar-list
-                  class="gl-display-inline-flex gl-align-items-center gl-ml-2"
-                  :items="rule.commentedBy.nodes"
-                  :img-size="16"
-                />
-              </div>
-              <div v-if="rule.approvedBy.nodes.length" class="gl-display-flex">
-                <span class="gl-display-inline-flex gl-font-sm gl-text-gray-500">{{
-                  s__('MRApprovals|Approved by')
-                }}</span>
-                <user-avatar-list
-                  class="gl-display-inline-flex gl-align-items-center gl-ml-2"
-                  :items="rule.approvedBy.nodes"
-                  :img-size="16"
-                />
-              </div>
+              <approvals-users-list
+                v-if="rule.commentedBy.nodes.length > 0"
+                :label="$options.i18n.commentedBy"
+                :users="rule.commentedBy.nodes"
+                class="gl-mb-3"
+              />
+              <approvals-users-list
+                v-if="rule.approvedBy.nodes.length > 0"
+                :label="$options.i18n.approvedBy"
+                :users="rule.approvedBy.nodes"
+                class="gl-mb-3"
+              />
             </div>
           </td>
           <td
