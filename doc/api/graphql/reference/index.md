@@ -975,6 +975,7 @@ Input type: `AiActionInput`
 | <a id="mutationaiactionexplainvulnerability"></a>`explainVulnerability` | [`AiExplainVulnerabilityInput`](#aiexplainvulnerabilityinput) | Input for explain_vulnerability AI action. |
 | <a id="mutationaiactionmarkupformat"></a>`markupFormat` | [`MarkupFormat`](#markupformat) | Indicates the response format. |
 | <a id="mutationaiactionsummarizecomments"></a>`summarizeComments` | [`AiSummarizeCommentsInput`](#aisummarizecommentsinput) | Input for summarize_comments AI action. |
+| <a id="mutationaiactiontanukibot"></a>`tanukiBot` | [`AiTanukiBotInput`](#aitanukibotinput) | Input for tanuki_bot AI action. |
 
 #### Fields
 
@@ -26683,7 +26684,7 @@ see the associated mutation type above.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="aiexplaincodeinputmessages"></a>`messages` | [`[AiExplainCodeMessageInput!]!`](#aiexplaincodemessageinput) | Code messages that is passed to be explained by AI. |
-| <a id="aiexplaincodeinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | GID of the resource to mutate. |
+| <a id="aiexplaincodeinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
 
 ### `AiExplainCodeMessageInput`
 
@@ -26700,7 +26701,7 @@ see the associated mutation type above.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="aiexplainvulnerabilityinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | GID of the resource to mutate. |
+| <a id="aiexplainvulnerabilityinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
 
 ### `AiSummarizeCommentsInput`
 
@@ -26708,7 +26709,16 @@ see the associated mutation type above.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="aisummarizecommentsinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | GID of the resource to mutate. |
+| <a id="aisummarizecommentsinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
+
+### `AiTanukiBotInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="aitanukibotinputquestion"></a>`question` | [`String!`](#string) | GitLab documentation question for AI to answer. |
+| <a id="aitanukibotinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
 
 ### `AlertManagementPayloadAlertFieldInput`
 

@@ -42,6 +42,14 @@ RSpec.describe Llm::BaseService, feature_category: :no_category do # rubocop: di
       it_behaves_like 'returns an error'
     end
 
+    context 'when resource does not have a resource parent' do
+      let_it_be(:resource) { user }
+
+      it 'raises a NotImplementedError' do
+        expect { subject.execute }.to raise_error(NotImplementedError)
+      end
+    end
+
     it 'raises a NotImplementedError' do
       expect { subject.execute }.to raise_error(NotImplementedError)
     end

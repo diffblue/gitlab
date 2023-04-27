@@ -2418,6 +2418,10 @@ RSpec.describe User, feature_category: :system_access do
     expect(described_class).to include_module(Elastic::ApplicationVersionedSearch)
   end
 
+  it 'includes Ai::Model' do
+    expect(described_class).to include_module(Ai::Model)
+  end
+
   describe 'Elastic::ApplicationVersionedSearch', :elastic, feature_category: :global_search do
     let_it_be_with_reload(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
@@ -2502,6 +2506,28 @@ RSpec.describe User, feature_category: :system_access do
 
   it 'overrides .use_separate_indices? to true', feature_category: :global_search do
     expect(described_class.use_separate_indices?).to eq(true)
+  end
+
+  describe '#send_to_ai?' do
+    subject(:user) { create(:user) }
+
+    it 'returns true' do
+      expect(subject.send_to_ai?).to be_truthy
+    end
+
+    context 'for Gitlab.com', :saas do
+      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+
+      it 'returns false if the user does not have an ultimate plan' do
+        expect(subject.send_to_ai?).to be_falsey
+      end
+
+      it 'returns true if the user has an ultimate plan' do
+        ultimate_group.add_developer(subject)
+
+        expect(subject.send_to_ai?).to be_truthy
+      end
+    end
   end
 
   describe '#use_elasticsearch?', feature_category: :global_search do

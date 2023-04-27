@@ -148,16 +148,26 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
               it 'queries the embedding database for nearest neighbors' do
                 allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
 
-                result = execute
+                expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for).and_call_original.once
 
-                expect(result[:msg]).to eq(answer)
-                expect(result[:sources].count).to eq(2)
+                execute
+              end
 
-                expected_sources = ::Embedding::TanukiBotMvc.pluck(:metadata).pluck('source')
-                expected_source_urls = ::Embedding::TanukiBotMvc.pluck(:url)
+              context 'when an error is returned' do
+                let(:final_completion_response) { { error: { message: 'something went wrong' } } }
 
-                expect(result[:sources].pluck('source')).to match_array(expected_sources)
-                expect(result[:sources].pluck('source_url')).to match_array(expected_source_urls)
+                before do
+                  allow(openai_client).to receive(:completions).with(hash_including(prompt: /create a final answer/))
+                    .and_return(final_completion_response)
+                  allow(final_completion_response).to receive(:code).and_return(500)
+                  allow(final_completion_response).to receive(:success?).and_return(false)
+                end
+
+                it 'raises an error when an error is returned' do
+                  allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
+
+                  expect { execute }.to raise_error(RuntimeError, /something went wrong/)
+                end
               end
             end
 

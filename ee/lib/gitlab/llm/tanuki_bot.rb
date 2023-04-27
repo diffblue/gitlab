@@ -42,9 +42,7 @@ module Gitlab
         search_documents = query_search_documents
         return empty_response if search_documents.empty?
 
-        result = get_completions(search_documents)
-
-        build_response(result, search_documents)
+        get_completions(search_documents)
       end
 
       private
@@ -57,15 +55,9 @@ module Gitlab
 
       def build_initial_prompts(search_documents)
         search_documents.to_h do |doc|
-          prompt = <<~PROMPT.strip
-            Use the following portion of a long document to see if any of the text is relevant to answer the question.
-            Return any relevant text verbatim.
-            #{doc[:content]}
-            Question: #{question}
-            Relevant text, if any:
-          PROMPT
+          prompt = Gitlab::Llm::OpenAi::Templates::TanukiBot.initial_prompt(question: question, content: doc[:content])
 
-          [doc, prompt]
+          [doc, prompt[:prompt]]
         end
       end
 
@@ -74,9 +66,9 @@ module Gitlab
 
         info(
           document_id: doc[:id],
-          openai_completions_response: prompt,
+          prompt: prompt,
           status_code: result.code,
-          result: result.parsed_response,
+          openai_completions_response: result.parsed_response,
           message: 'Initial prompt request'
         )
 
@@ -112,32 +104,22 @@ module Gitlab
                       sequential_competion(search_documents)
                     end
 
-        content = build_content(documents)
-        final_prompt = <<~PROMPT.strip
-          Given the following extracted parts of a long document and a question,
-          create a final answer with references "#{CONTENT_ID_FIELD}".
-          If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-          At the end of your answer ALWAYS return a "#{CONTENT_ID_FIELD}" part and
-          ALWAYS name it #{CONTENT_ID_FIELD}.
+        final_prompt = Gitlab::Llm::OpenAi::Templates::TanukiBot.final_prompt(question: question, documents: documents)
 
-          QUESTION: #{question}
-          =========
-          #{content}
-          =========
-          FINAL ANSWER:
-        PROMPT
+        final_prompt_result = client.completions(prompt: final_prompt[:prompt], **final_prompt[:options])
 
-        result = client.completions(prompt: final_prompt, **DEFAULT_OPTIONS)
+        unless final_prompt_result.success?
+          raise final_prompt_result.dig('error', 'message') || "Final prompt failed with '#{final_prompt_result}'"
+        end
+
         info(
-          openai_completions_response: result,
-          status_code: result.code,
-          result: result.parsed_response,
+          prompt: final_prompt,
+          status_code: final_prompt_result.code,
+          openai_completions_response: final_prompt_result.parsed_response,
           message: 'Final prompt request'
         )
 
-        raise result.dig('error', 'message') || "Final prompt request failed with '#{result}'" unless result.success?
-
-        result
+        final_prompt_result
       end
 
       def query_search_documents
@@ -154,31 +136,6 @@ module Gitlab
             metadata: item.metadata
           }
         end
-      end
-
-      def build_content(search_documents)
-        search_documents.map do |document|
-          <<~PROMPT.strip
-            CONTENT: #{document[:extracted_text]}
-            #{CONTENT_ID_FIELD}: CNT-IDX-#{document[:id]}
-          PROMPT
-        end.join("\n\n")
-      end
-
-      def build_response(result, search_documents)
-        output = result['choices'][0]['text'].split("#{CONTENT_ID_FIELD}:")
-
-        raise 'Failed to parse the response' if output.length != 2
-
-        msg = output[0].strip
-        content_idx = output[1].scan(CONTENT_ID_REGEX).flatten.map(&:to_i)
-        documents = search_documents.filter { |doc| content_idx.include?(doc[:id]) }
-        sources = documents.pluck(:metadata).uniq # rubocop:disable CodeReuse/ActiveRecord
-
-        {
-          msg: msg,
-          sources: sources
-        }
       end
 
       def empty_response
