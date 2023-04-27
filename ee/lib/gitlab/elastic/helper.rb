@@ -19,7 +19,8 @@ module Gitlab
         Note,
         MergeRequest,
         Commit,
-        User
+        User,
+        Wiki
       ].freeze
 
       INDEXED_CLASSES = (ES_SEPARATE_CLASSES + [Repository]).freeze

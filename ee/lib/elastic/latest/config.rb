@@ -209,6 +209,13 @@ module Elastic
           indexes :message, type: :text, index_options: 'positions'
         end
       end
+
+      def self.separate_index_specific_settings(idx_name)
+        {
+          number_of_shards: Elastic::AsJSON.new { Elastic::IndexSetting[idx_name].number_of_shards },
+          number_of_replicas: Elastic::AsJSON.new { Elastic::IndexSetting[idx_name].number_of_replicas }
+        }
+      end
     end
   end
 end

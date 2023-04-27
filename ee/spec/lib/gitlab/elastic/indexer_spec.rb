@@ -140,12 +140,12 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--project-id=#{project.id}",
               "--timeout=#{described_class.timeout}s",
+              "--visibility-level=#{project.visibility_level}",
+              "--project-id=#{project.id}",
               "--from-sha=#{expected_from_sha}",
               "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
-              "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
               "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
               "--traversal-ids=#{project.namespace_ancestry}",
@@ -174,24 +174,23 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             storage: project.repository_storage,
             limit_file_size: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes
           }.merge(Gitlab::GitalyClient.connection_data(project.repository_storage))
-
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--project-id=#{project.id}",
               "--timeout=#{described_class.timeout}s",
+              "--visibility-level=#{project.visibility_level}",
+              "--project-id=#{project.id}",
               '--search-curation',
               "--from-sha=#{expected_from_sha}",
               "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
-              "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
               "#{project.repository.disk_path}.git"
             ],
             nil,
             hash_including(
               'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
-              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
+              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.except(:index_name_wikis).to_json,
               'RAILS_ENV' => Rails.env,
               'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
             )
@@ -215,13 +214,13 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--project-id=#{project.id}",
               "--timeout=#{described_class.timeout}s",
+              "--visibility-level=#{project.visibility_level}",
+              "--project-id=#{project.id}",
               '--search-curation',
               "--from-sha=#{expected_from_sha}",
               "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
-              "--visibility-level=#{project.visibility_level}",
               "--repository-access-level=#{project.repository_access_level}",
               "--traversal-ids=#{project.namespace_ancestry}",
               "#{project.repository.disk_path}.git"
@@ -229,7 +228,7 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
             nil,
             hash_including(
               'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
-              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
+              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.except(:index_name_wikis).to_json,
               'RAILS_ENV' => Rails.env,
               'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
             )
@@ -248,13 +247,13 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
-            "--project-id=#{project.id}",
             "--timeout=#{described_class.timeout}s",
+            "--visibility-level=#{project.visibility_level}",
+            "--project-id=#{project.id}",
             '--search-curation',
             "--from-sha=#{expected_from_sha}",
             "--to-sha=#{to_sha}",
             "--full-path=#{project.full_path}",
-            "--visibility-level=#{project.visibility_level}",
             "--repository-access-level=#{project.repository_access_level}",
             "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}",
             "--traversal-ids=#{project.namespace_ancestry}",
@@ -381,12 +380,12 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           expect_popen.with(
             [
               TestEnv.indexer_bin_path,
-              "--project-id=#{project.id}",
               "--timeout=#{described_class.timeout}s",
+              "--visibility-level=#{project.visibility_level}",
+              "--project-id=#{project.id}",
               "--from-sha=#{expected_from_sha}",
               "--to-sha=#{to_sha}",
               "--full-path=#{project.full_path}",
-              "--visibility-level=#{project.visibility_level}",
               '--blob-type=wiki_blob',
               '--skip-commits',
               "--wiki-access-level=#{project.wiki_access_level}",
@@ -408,13 +407,13 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         expect_popen.with(
           [
             TestEnv.indexer_bin_path,
-            "--project-id=#{project.id}",
             "--timeout=#{described_class.timeout}s",
+            "--visibility-level=#{project.visibility_level}",
+            "--project-id=#{project.id}",
             '--search-curation',
             "--from-sha=#{expected_from_sha}",
             "--to-sha=#{to_sha}",
             "--full-path=#{project.full_path}",
-            "--visibility-level=#{project.visibility_level}",
             '--blob-type=wiki_blob',
             '--skip-commits',
             "--wiki-access-level=#{project.wiki_access_level}",
@@ -442,14 +441,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         end
 
         def indexed_wiki_paths_for(term)
-          blobs = ProjectWiki.elastic_search(
-            term,
-            type: 'wiki_blob'
-          )[:wiki_blobs][:results].response
-
-          blobs.map do |blob|
-            blob['_source']['blob']['path']
-          end
+          blobs = ProjectWiki.elastic_search(term, type: 'wiki_blob')[:wiki_blobs][:results].response
+          blobs.map { |blob| blob['_source']['path'] }
         end
 
         it 'reindexes from scratch' do
@@ -609,7 +602,8 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
           'class' => 'Gitlab::Elastic::Indexer',
           'message' => 'Index status not updated. The project does not exist.',
           'project_id' => project.id,
-          'index_wiki' => false
+          'index_wiki' => false,
+          'group_id' => project.group
         }
       )
       expect(IndexStatus).not_to receive(:safe_find_or_create_by!).with(project_id: project.id)
@@ -632,13 +626,30 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         {
           'class' => 'Gitlab::Elastic::Indexer',
           'message' => 'Index status not created, project not found',
-          'project_id' => project.id
+          'project_id' => project.id,
+          'group_id' => project.group
         }
       )
 
       allow(IndexStatus).to receive(:safe_find_or_create_by!).and_raise(ActiveRecord::InvalidForeignKey)
 
       expect { indexer.run }.not_to raise_error
+    end
+  end
+
+  context 'when purge_unreachable_commits_from_index? is true', :elastic do
+    context 'when deleting index raise BadRequest' do
+      before do
+        allow(indexer).to receive(:purge_unreachable_commits_from_index?).and_return(true)
+        allow_next_instance_of(Elastic::Latest::RepositoryInstanceProxy) do |instance|
+          allow(instance).to receive(:delete_index_for_commits_and_blobs).and_raise Elasticsearch::Transport::Transport::Errors::BadRequest
+        end
+      end
+
+      it 'calls track_exception on Gitlab::ErrorTracking' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(Elasticsearch::Transport::Transport::Errors::BadRequest, group_id: project.group, project_id: project.id)
+        indexer.run
+      end
     end
   end
 
@@ -657,17 +668,15 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   def elasticsearch_config
     Gitlab::CurrentSettings.elasticsearch_config.merge(
       index_name: 'gitlab-test',
-      index_name_commits: 'gitlab-test-commits'
+      index_name_commits: 'gitlab-test-commits',
+      index_name_wikis: 'gitlab-test-wikis'
     ).tap do |config|
       config[:url] = config[:url].map { |u| ::Gitlab::Elastic::Helper.url_string(u) }
     end
   end
 
   def envvars
-    indexer.send(:build_envvars,
-                 Gitlab::Git::BLANK_SHA,
-                 Gitlab::Git::BLANK_SHA,
-                 project.repository.__elasticsearch__.elastic_writing_targets.first)
+    indexer.send(:build_envvars, project.repository.__elasticsearch__.elastic_writing_targets.first)
   end
 
   def indexed_file_paths_for(term)

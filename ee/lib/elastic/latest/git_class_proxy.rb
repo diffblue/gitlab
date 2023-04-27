@@ -286,10 +286,21 @@ module Elastic
           query_hash[:sort] = [:_score]
         end
 
+        if options[:features].eql? 'wiki'
+          options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
+        end
+
+        if use_separate_wiki_index? options[:features]
+          fields = %w[content file_name path]
+          options[:index_name] = Elastic::Latest::WikiConfig.index_name
+        else
+          fields = %w[blob.content blob.file_name blob.path]
+        end
+
         bool_expr = apply_simple_query_string(
           name: context.name(:blob, :match, :search_terms),
           query: query.term,
-          fields: %w[blob.content blob.file_name blob.path],
+          fields: fields,
           bool_expr: bool_expr,
           count_only: options[:count_only]
         )
@@ -318,9 +329,9 @@ module Elastic
         bool_expr[:must_not] += query_filter_context[:must_not] if query_filter_context[:must_not].any?
 
         # add filters extracted from the `options`
+        options[:project_id_field] = use_separate_wiki_index?(options[:features]) ? 'rid' : 'blob.rid'
         options_filter_context = options_filter_context(:blob, options)
         bool_expr[:filter] += options_filter_context[:filter] if options_filter_context[:filter].any?
-
         options[:order] = :default if options[:order].blank? && !aggregation
 
         if options[:highlight] && !count_or_aggregation_query
@@ -355,6 +366,10 @@ module Elastic
       # rubocop:enable Metrics/AbcSize
       # rubocop:enable Metrics/PerceivedComplexity
       # rubocop:enable Metrics/CyclomaticComplexity
+
+      def use_separate_wiki_index?(feature)
+        feature.eql?('wiki') && Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+      end
     end
   end
 end
