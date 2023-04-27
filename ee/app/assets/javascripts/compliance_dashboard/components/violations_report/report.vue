@@ -104,6 +104,11 @@ export default {
     showDrawer() {
       return this.drawerId !== null;
     },
+    emptyText() {
+      return this.urlQuery.targetBranch
+        ? this.$options.i18n.noViolationsFoundWithBranchFilter
+        : this.$options.i18n.noViolationsFound;
+    },
   },
   methods: {
     getMergedAtFormattedDate(mergedAt) {
@@ -205,6 +210,9 @@ export default {
       'ComplianceReport|Unable to load the compliance violations report. Refresh the page and try again.',
     ),
     noViolationsFound: s__('ComplianceReport|No violations found'),
+    noViolationsFoundWithBranchFilter: s__(
+      'ComplianceReport|No violations found. Change search options and try again',
+    ),
     prev: __('Prev'),
     next: __('Next'),
     viewDetailsBtn: __('View details'),
@@ -228,7 +236,7 @@ export default {
       :fields="$options.fields"
       :items="violations.list"
       :busy="isLoading"
-      :empty-text="$options.i18n.noViolationsFound"
+      :empty-text="emptyText"
       :selectable="true"
       :sort-by="sortBy"
       :sort-desc="sortDesc"

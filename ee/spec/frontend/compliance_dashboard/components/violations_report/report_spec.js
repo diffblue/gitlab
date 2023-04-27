@@ -78,6 +78,12 @@ describe('ComplianceViolationsReport component', () => {
     await nextTick();
   };
 
+  const defaultQuery = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
+  const changeFilters = async (query = defaultQuery) => {
+    findViolationFilter().vm.$emit('filters-changed', query);
+    await nextTick();
+  };
+
   const createMockApolloProvider = (resolverMock) => {
     return createMockApollo([[getComplianceViolationsQuery, resolverMock]]);
   };
@@ -296,17 +302,10 @@ describe('ComplianceViolationsReport component', () => {
     });
 
     describe('when the filters changed', () => {
-      const query = { mergedAfter, mergedBefore, projectIds: [1, 2, 3] };
-
-      const changeFilters = async () => {
-        findViolationFilter().vm.$emit('filters-changed', query);
-        await nextTick();
-      };
-
       it('updates the URL query', async () => {
         await changeFilters();
 
-        expect(findUrlSync().props('query')).toMatchObject(query);
+        expect(findUrlSync().props('query')).toMatchObject(defaultQuery);
       });
 
       it('shows the table loading icon', async () => {
@@ -324,10 +323,10 @@ describe('ComplianceViolationsReport component', () => {
       it('clears the project URL query param if the project array is empty', async () => {
         await changeFilters();
 
-        findViolationFilter().vm.$emit('filters-changed', { ...query, projectIds: [] });
+        findViolationFilter().vm.$emit('filters-changed', { ...defaultQuery, projectIds: [] });
         await nextTick();
 
-        expect(findUrlSync().props('query')).toMatchObject({ ...query, projectIds: null });
+        expect(findUrlSync().props('query')).toMatchObject({ ...defaultQuery, projectIds: null });
       });
 
       it('fetches the filtered violations', async () => {
@@ -336,7 +335,7 @@ describe('ComplianceViolationsReport component', () => {
         expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
         expect(mockGraphQlSuccess).toHaveBeenNthCalledWith(2, {
           fullPath: groupPath,
-          filters: parseViolationsQueryFilter(query),
+          filters: parseViolationsQueryFilter(defaultQuery),
           sort: DEFAULT_SORT,
           ...DEFAULT_PAGINATION_CURSORS,
         });
@@ -470,7 +469,18 @@ describe('ComplianceViolationsReport component', () => {
     });
 
     it('renders the empty table message', () => {
-      expect(findViolationsTable().text()).toContain('No violations found');
+      expect(findViolationsTable().text()).toContain(
+        ComplianceViolationsReport.i18n.noViolationsFound,
+      );
+    });
+
+    it('renders detailed error message when filter on target branch is applied', async () => {
+      await changeFilters({ targetBranch: 'master' });
+      await waitForPromises();
+
+      expect(findViolationsTable().text()).toContain(
+        ComplianceViolationsReport.i18n.noViolationsFoundWithBranchFilter,
+      );
     });
   });
 });
