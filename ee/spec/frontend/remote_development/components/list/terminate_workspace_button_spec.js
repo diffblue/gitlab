@@ -22,16 +22,16 @@ describe('TerminateWorkspaceButton', () => {
   const findButton = () => wrapper.findComponent(GlButton);
 
   it.each`
-    actualState                    | buttonVisibility | visibilityLabel
-    ${WORKSPACE_STATES.creating}   | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.starting}   | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.running}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.stopping}   | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.stopped}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.error}      | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.failed}     | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.unknown}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.terminated} | ${false}         | ${'hidden'}
+    actualState                           | buttonVisibility | visibilityLabel
+    ${WORKSPACE_STATES.creationRequested} | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.starting}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.running}           | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.stopping}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.stopped}           | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.error}             | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.failed}            | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.unknown}           | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.terminated}        | ${false}         | ${'hidden'}
   `(
     'button is $visibilityLabel when workspace actualState is $actualState',
     ({ buttonVisibility, actualState }) => {
@@ -45,11 +45,11 @@ describe('TerminateWorkspaceButton', () => {
   );
 
   it.each`
-    desiredState                           | buttonProps                                                                                   | buttonStateDesc
-    ${WORKSPACE_DESIRED_STATES.terminated} | ${{ loading: true, disabled: true, title: i18n.terminatingWorkspaceTooltip, icon: 'remove' }} | ${'disabled and loading'}
-    ${WORKSPACE_DESIRED_STATES.running}    | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
-    ${WORKSPACE_DESIRED_STATES.stopped}    | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
-    ${WORKSPACE_DESIRED_STATES.restarting} | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
+    desiredState                                 | buttonProps                                                                                   | buttonStateDesc
+    ${WORKSPACE_DESIRED_STATES.terminated}       | ${{ loading: true, disabled: true, title: i18n.terminatingWorkspaceTooltip, icon: 'remove' }} | ${'disabled and loading'}
+    ${WORKSPACE_DESIRED_STATES.running}          | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
+    ${WORKSPACE_DESIRED_STATES.stopped}          | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
+    ${WORKSPACE_DESIRED_STATES.restartRequested} | ${{ loading: false, disabled: false, title: i18n.terminateWorkspaceTooltip, icon: 'remove' }} | ${'enabled and not loading'}
   `(
     'sets button as $buttonStateDesc when workspace desiredState is $desiredState',
     ({ desiredState, buttonProps }) => {

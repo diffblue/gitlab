@@ -108,7 +108,10 @@ export default {
       this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.stopped });
     },
     restartWorkspace(workspace) {
-      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.restarting });
+      this.updateWorkspace({
+        id: workspace.id,
+        desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
+      });
     },
     updateWorkspace({ id, desiredState }) {
       return this.$apollo

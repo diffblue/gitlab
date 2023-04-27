@@ -10,15 +10,15 @@ export const i18n = {
 
 const ACTUAL_STATE_TO_DESIRED_STATE_VISIBILITY_MAP = {
   [WORKSPACE_STATES.running]: [
-    WORKSPACE_DESIRED_STATES.restarting,
+    WORKSPACE_DESIRED_STATES.restartRequested,
     WORKSPACE_DESIRED_STATES.running,
   ],
   [WORKSPACE_STATES.stopped]: [
-    WORKSPACE_DESIRED_STATES.restarting,
+    WORKSPACE_DESIRED_STATES.restartRequested,
     WORKSPACE_DESIRED_STATES.stopped,
   ],
   [WORKSPACE_STATES.failed]: [
-    WORKSPACE_DESIRED_STATES.restarting,
+    WORKSPACE_DESIRED_STATES.restartRequested,
     WORKSPACE_DESIRED_STATES.running,
   ],
 };
@@ -48,11 +48,11 @@ export default {
         ) || false
       );
     },
-    isRestartingDesiredState() {
-      return this.desiredState === WORKSPACE_DESIRED_STATES.restarting;
+    isRestartRequestedDesiredState() {
+      return this.desiredState === WORKSPACE_DESIRED_STATES.restartRequested;
     },
     tooltip() {
-      return this.isRestartingDesiredState
+      return this.isRestartRequestedDesiredState
         ? i18n.restartingWorkspaceTooltip
         : i18n.restartWorkspaceTooltip;
     },
@@ -62,8 +62,8 @@ export default {
 <template>
   <span v-if="isVisible" v-gl-tooltip :title="tooltip">
     <gl-button
-      :disabled="isRestartingDesiredState"
-      :loading="isRestartingDesiredState"
+      :disabled="isRestartRequestedDesiredState"
+      :loading="isRestartRequestedDesiredState"
       :aria-label="tooltip"
       icon="retry"
       @click="$emit('click')"

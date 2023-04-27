@@ -23,25 +23,25 @@ describe('RestartWorkspaceButton', () => {
 
   // The * represents a universal quantifier. The button is hidden for every desired state
   it.each`
-    actualState                    | desiredState                           | buttonVisibility | visibilityLabel
-    ${WORKSPACE_STATES.running}    | ${WORKSPACE_DESIRED_STATES.restarting} | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.running}    | ${WORKSPACE_DESIRED_STATES.running}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.running}    | ${WORKSPACE_DESIRED_STATES.stopped}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.running}    | ${WORKSPACE_DESIRED_STATES.terminated} | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.stopped}    | ${WORKSPACE_DESIRED_STATES.restarting} | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.stopped}    | ${WORKSPACE_DESIRED_STATES.stopped}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.stopped}    | ${WORKSPACE_DESIRED_STATES.running}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.stopped}    | ${WORKSPACE_DESIRED_STATES.terminated} | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.failed}     | ${WORKSPACE_DESIRED_STATES.restarting} | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.failed}     | ${WORKSPACE_DESIRED_STATES.running}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.failed}     | ${WORKSPACE_DESIRED_STATES.stopped}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.failed}     | ${WORKSPACE_DESIRED_STATES.terminated} | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.starting}   | ${'*'}                                 | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.creating}   | ${'*'}                                 | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.stopping}   | ${'*'}                                 | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.terminated} | ${'*'}                                 | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.error}      | ${'*'}                                 | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.unknown}    | ${'*'}                                 | ${false}         | ${'hidden'}
+    actualState                           | desiredState                                 | buttonVisibility | visibilityLabel
+    ${WORKSPACE_STATES.running}           | ${WORKSPACE_DESIRED_STATES.restartRequested} | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.running}           | ${WORKSPACE_DESIRED_STATES.running}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.running}           | ${WORKSPACE_DESIRED_STATES.stopped}          | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.running}           | ${WORKSPACE_DESIRED_STATES.terminated}       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.stopped}           | ${WORKSPACE_DESIRED_STATES.restartRequested} | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.stopped}           | ${WORKSPACE_DESIRED_STATES.stopped}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.stopped}           | ${WORKSPACE_DESIRED_STATES.running}          | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.stopped}           | ${WORKSPACE_DESIRED_STATES.terminated}       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.failed}            | ${WORKSPACE_DESIRED_STATES.restartRequested} | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.failed}            | ${WORKSPACE_DESIRED_STATES.running}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.failed}            | ${WORKSPACE_DESIRED_STATES.stopped}          | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.failed}            | ${WORKSPACE_DESIRED_STATES.terminated}       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.starting}          | ${'*'}                                       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.creationRequested} | ${'*'}                                       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.stopping}          | ${'*'}                                       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.terminated}        | ${'*'}                                       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.error}             | ${'*'}                                       | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.unknown}           | ${'*'}                                       | ${false}         | ${'hidden'}
   `(
     'button is $visibilityLabel when workspace actualState is $actualState and desiredState is $desiredState',
     ({ buttonVisibility, actualState, desiredState }) => {
@@ -54,9 +54,9 @@ describe('RestartWorkspaceButton', () => {
     },
   );
 
-  it('sets button as loading and disabled when workspace desiredState is restarting', () => {
+  it('sets button as loading and disabled when workspace desiredState is restartRequested', () => {
     createWrapper({
-      desiredState: WORKSPACE_DESIRED_STATES.restarting,
+      desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
     });
 
     expect(findButton().props().loading).toBe(true);

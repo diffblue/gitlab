@@ -166,7 +166,7 @@ describe('remote_development/pages/list.vue', () => {
     ${'terminate'} | ${TerminateWorkspaceButton} | ${WORKSPACE_DESIRED_STATES.terminated}
     ${'stop'}      | ${StopWorkspaceButton}      | ${WORKSPACE_DESIRED_STATES.stopped}
     ${'start'}     | ${StartWorkspaceButton}     | ${WORKSPACE_DESIRED_STATES.running}
-    ${'restart'}   | ${RestartWorkspaceButton}   | ${WORKSPACE_DESIRED_STATES.restarting}
+    ${'restart'}   | ${RestartWorkspaceButton}   | ${WORKSPACE_DESIRED_STATES.restartRequested}
   `('when a "$buttonName" button is clicked', ({ buttonComponent, desiredState }) => {
     let workspace;
     let terminateButton;

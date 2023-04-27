@@ -22,16 +22,16 @@ describe('StopWorkspaceButton', () => {
   const findButton = () => wrapper.findComponent(GlButton);
 
   it.each`
-    actualState                    | buttonVisibility | visibilityLabel
-    ${WORKSPACE_STATES.running}    | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.stopping}   | ${true}          | ${'visible'}
-    ${WORKSPACE_STATES.failed}     | ${true}          | ${'hidden'}
-    ${WORKSPACE_STATES.creating}   | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.starting}   | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.stopped}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.error}      | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.unknown}    | ${false}         | ${'hidden'}
-    ${WORKSPACE_STATES.terminated} | ${false}         | ${'hidden'}
+    actualState                           | buttonVisibility | visibilityLabel
+    ${WORKSPACE_STATES.running}           | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.stopping}          | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.failed}            | ${true}          | ${'hidden'}
+    ${WORKSPACE_STATES.creationRequested} | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.starting}          | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.stopped}           | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.error}             | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.unknown}           | ${false}         | ${'hidden'}
+    ${WORKSPACE_STATES.terminated}        | ${false}         | ${'hidden'}
   `(
     'button is $visibilityLabel when workspace actualState is $actualState',
     ({ buttonVisibility, actualState }) => {
@@ -45,11 +45,11 @@ describe('StopWorkspaceButton', () => {
   );
 
   it.each`
-    desiredState                           | buttonVisibility | visibilityLabel
-    ${WORKSPACE_DESIRED_STATES.stopped}    | ${true}          | ${'visible'}
-    ${WORKSPACE_DESIRED_STATES.running}    | ${true}          | ${'visible'}
-    ${WORKSPACE_DESIRED_STATES.terminated} | ${false}         | ${'hidden'}
-    ${WORKSPACE_DESIRED_STATES.restarting} | ${false}         | ${'hidden'}
+    desiredState                                 | buttonVisibility | visibilityLabel
+    ${WORKSPACE_DESIRED_STATES.stopped}          | ${true}          | ${'visible'}
+    ${WORKSPACE_DESIRED_STATES.running}          | ${true}          | ${'visible'}
+    ${WORKSPACE_DESIRED_STATES.terminated}       | ${false}         | ${'hidden'}
+    ${WORKSPACE_DESIRED_STATES.restartRequested} | ${false}         | ${'hidden'}
   `(
     'button is $visibilityLabel when workspace desiredState is $desiredState',
     ({ buttonVisibility, desiredState }) => {
