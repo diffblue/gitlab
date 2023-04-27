@@ -70,14 +70,26 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
         end
       end
 
-      context 'when user is allowed to read resource but is not a member' do
-        it 'raises error' do
+      context 'when user is allowed to read resource' do
+        before do
           allow(Ability)
-            .to receive(:allowed?)
-            .with(user, "read_#{resource.to_ability_name}", resource)
-            .and_return(true)
+              .to receive(:allowed?)
+              .with(user, "read_#{resource.to_ability_name}", resource)
+              .and_return(true)
+        end
 
-          expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+        context 'when the user is not a member' do
+          it 'raises error' do
+            expect { subject }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+          end
+        end
+
+        context 'when the resource does not have a parent' do
+          let(:resource) { user }
+
+          it 'does not raise an error' do
+            expect { subject }.not_to raise_error
+          end
         end
       end
 

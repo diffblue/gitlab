@@ -23,7 +23,9 @@ module Llm
     end
 
     def generate_response
-      ::Gitlab::Llm::TanukiBot.execute(current_user: current_user, question: params.require(:q))
+      response = ::Gitlab::Llm::TanukiBot.execute(current_user: current_user, question: params.require(:q))
+
+      Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot.new.execute(response.with_indifferent_access)
     end
   end
 end

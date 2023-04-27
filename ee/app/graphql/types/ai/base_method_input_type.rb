@@ -6,7 +6,7 @@ module Types
       argument :resource_id,
         ::Types::GlobalIDType[::Ai::Model],
         required: true,
-        description: "GID of the resource to mutate."
+        description: "Global ID of the resource to mutate."
     end
   end
 end

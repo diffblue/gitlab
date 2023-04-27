@@ -17,6 +17,10 @@ module Gitlab
             explain_code: {
               service_class: ::Gitlab::Llm::OpenAi::Completions::ExplainCode,
               prompt_class: ::Gitlab::Llm::OpenAi::Templates::ExplainCode
+            },
+            tanuki_bot: {
+              service_class: ::Gitlab::Llm::OpenAi::Completions::TanukiBot,
+              prompt_class: ::Gitlab::Llm::OpenAi::Templates::TanukiBot
             }
           }.freeze
 
