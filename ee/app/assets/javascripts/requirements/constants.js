@@ -3,7 +3,7 @@ import { __, s__ } from '~/locale';
 export const STATE_FAILED = 'FAILED';
 export const STATE_PASSED = 'PASSED';
 
-export const FilterState = {
+export const filterState = {
   opened: 'OPENED',
   archived: 'ARCHIVED',
   all: 'ALL',

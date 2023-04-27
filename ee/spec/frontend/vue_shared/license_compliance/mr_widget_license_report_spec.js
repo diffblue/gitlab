@@ -52,7 +52,7 @@ describe('License Report MR Widget', () => {
     licensesApiPath: `${TEST_HOST}/parsed_license_report.json`,
     approvalsApiPath: `${TEST_HOST}/path/to/approvals`,
     canManageLicenses: true,
-    licenseManagementSettingsPath: `${TEST_HOST}/lm_settings`,
+    securityPoliciesPath: `${TEST_HOST}/-/security/policies`,
     fullReportPath: `${TEST_HOST}/path/to/the/full/report`,
     apiUrl,
     licenseComplianceDocsPath,
@@ -182,17 +182,17 @@ describe('License Report MR Widget', () => {
     });
 
     describe('showActionButtons', () => {
-      const { fullReportPath, licenseManagementSettingsPath, ...otherProps } = defaultProps;
+      const { fullReportPath, securityPoliciesPath, ...otherProps } = defaultProps;
 
-      it('should be true if fullReportPath AND licenseManagementSettingsPath prop are provided', () => {
-        const props = { ...otherProps, fullReportPath, licenseManagementSettingsPath };
+      it('should be true if fullReportPath AND securityPoliciesPath prop are provided', () => {
+        const props = { ...otherProps, fullReportPath, securityPoliciesPath };
         mountComponent({ props });
 
         expect(wrapper.vm.showActionButtons).toBe(true);
       });
 
-      it('should be true if only licenseManagementSettingsPath is provided', () => {
-        const props = { ...otherProps, fullReportPath: null, licenseManagementSettingsPath };
+      it('should be true if only securityPoliciesPath is provided', () => {
+        const props = { ...otherProps, fullReportPath: null, securityPoliciesPath };
         mountComponent({ props });
 
         expect(wrapper.vm.showActionButtons).toBe(true);
@@ -202,18 +202,18 @@ describe('License Report MR Widget', () => {
         const props = {
           ...otherProps,
           fullReportPath,
-          licenseManagementSettingsPath: null,
+          securityPoliciesPath: null,
         };
         mountComponent({ props });
 
         expect(wrapper.vm.showActionButtons).toBe(true);
       });
 
-      it('should be false if fullReportPath and licenseManagementSettingsPath prop are not provided', () => {
+      it('should be false if fullReportPath and securityPoliciesPath prop are not provided', () => {
         const props = {
           ...otherProps,
           fullReportPath: null,
-          licenseManagementSettingsPath: null,
+          securityPoliciesPath: null,
         };
         mountComponent({ props });
 
@@ -334,18 +334,18 @@ describe('License Report MR Widget', () => {
   describe('`Manage licenses` button', () => {
     const selector = '[data-testid="manage-licenses-button"]';
 
-    it('should be rendered when licenseManagementSettingsPath prop is provided', () => {
+    it('should be rendered when securityPoliciesPath prop is provided', () => {
       mountComponent();
 
       const linkEl = wrapper.find(selector);
 
       expect(linkEl.exists()).toBe(true);
-      expect(linkEl.attributes('href')).toEqual(defaultProps.licenseManagementSettingsPath);
+      expect(linkEl.attributes('href')).toEqual(defaultProps.securityPoliciesPath);
       expect(linkEl.text()).toBe('Manage licenses');
     });
 
-    it('should not be rendered when licenseManagementSettingsPath prop is not provided', () => {
-      const props = { ...defaultProps, licenseManagementSettingsPath: null };
+    it('should not be rendered when securityPoliciesPath prop is not provided', () => {
+      const props = { ...defaultProps, securityPoliciesPath: null };
       mountComponent({ props });
 
       expect(wrapper.find(selector).exists()).toBe(false);

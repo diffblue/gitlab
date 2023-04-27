@@ -11,7 +11,7 @@ import RequirementsLoading from 'ee/requirements/components/requirements_loading
 import RequirementsRoot from 'ee/requirements/components/requirements_root.vue';
 import RequirementsTabs from 'ee/requirements/components/requirements_tabs.vue';
 
-import { STATE_FAILED } from 'ee/requirements/constants';
+import { filterState, STATE_FAILED } from 'ee/requirements/constants';
 import createRequirement from 'ee/requirements/queries/create_requirement.mutation.graphql';
 import exportRequirement from 'ee/requirements/queries/export_requirements.mutation.graphql';
 
@@ -34,7 +34,6 @@ import {
 import FilteredSearchBarRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 import {
-  FilterState,
   mockRequirementsOpen,
   mockRequirementsCount,
   mockPageInfo,
@@ -62,7 +61,7 @@ const localVue = createLocalVue();
 
 const defaultProps = {
   projectPath: 'gitlab-org/gitlab-shell',
-  initialFilterBy: FilterState.opened,
+  initialFilterBy: filterState.opened,
   initialRequirementsCount: mockRequirementsCount,
   showCreateRequirement: false,
   emptyStatePath: '/assets/illustrations/empty-state/requirements.svg',
@@ -182,7 +181,7 @@ describe('RequirementsRoot', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
-          filterBy: FilterState.opened,
+          filterBy: filterState.opened,
           requirementsCount: {
             OPENED: 0,
           },
@@ -198,7 +197,7 @@ describe('RequirementsRoot', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
-          filterBy: FilterState.opened,
+          filterBy: filterState.opened,
           requirementsCount: {
             OPENED: mockRequirementsCount.OPENED,
           },
@@ -356,7 +355,7 @@ describe('RequirementsRoot', () => {
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
-          filterBy: FilterState.all,
+          filterBy: filterState.all,
           currentPage: 2,
           nextPageCursor: mockPageInfo.endCursor,
           authorUsernames: ['root', 'john.doe'],
@@ -479,7 +478,7 @@ describe('RequirementsRoot', () => {
 
         wrapper.vm.updateRequirement({
           iid: '1',
-          state: FilterState.opened,
+          state: filterState.opened,
         });
 
         expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
@@ -489,7 +488,7 @@ describe('RequirementsRoot', () => {
               updateRequirementInput: {
                 projectPath: 'gitlab-org/gitlab-shell',
                 iid: '1',
-                state: FilterState.opened,
+                state: filterState.opened,
               },
             },
           }),
@@ -754,13 +753,13 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.opened,
+            state: filterState.opened,
           })
           .then(() => {
             expect(wrapper.vm.updateRequirement).toHaveBeenCalledWith(
               expect.objectContaining({
                 iid: '1',
-                state: FilterState.opened,
+                state: filterState.opened,
               }),
               expect.objectContaining({
                 errorFlashMessage: 'Something went wrong while reopening a requirement.',
@@ -773,13 +772,13 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.archived,
+            state: filterState.archived,
           })
           .then(() => {
             expect(wrapper.vm.updateRequirement).toHaveBeenCalledWith(
               expect.objectContaining({
                 iid: '1',
-                state: FilterState.archived,
+                state: filterState.archived,
               }),
               expect.objectContaining({
                 errorFlashMessage: 'Something went wrong while archiving a requirement.',
@@ -792,7 +791,7 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.opened,
+            state: filterState.opened,
           })
           .then(() => {
             expect(wrapper.vm.stateChangeRequestActiveFor).toBe(0);
@@ -807,7 +806,7 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.opened,
+            state: filterState.opened,
           })
           .then(() => {
             expect(wrapper.vm.$apollo.queries.requirementsCount.refetch).toHaveBeenCalled();
@@ -818,7 +817,7 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.opened,
+            state: filterState.opened,
           })
           .then(() => {
             expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(
@@ -831,7 +830,7 @@ describe('RequirementsRoot', () => {
         return wrapper.vm
           .handleRequirementStateChange({
             iid: '1',
-            state: FilterState.archived,
+            state: filterState.archived,
           })
           .then(() => {
             expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(

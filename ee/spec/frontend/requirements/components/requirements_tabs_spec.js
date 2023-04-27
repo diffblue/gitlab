@@ -3,12 +3,12 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import RequirementsTabs from 'ee/requirements/components/requirements_tabs.vue';
-import { FilterState } from 'ee/requirements/constants';
+import { filterState } from 'ee/requirements/constants';
 
 import { mockRequirementsCount } from '../mock_data';
 
 const createComponent = ({
-  filterBy = FilterState.opened,
+  filterBy = filterState.opened,
   requirementsCount = mockRequirementsCount,
   showCreateForm = false,
   canCreateRequirement = true,
@@ -63,7 +63,7 @@ describe('RequirementsTabs', () => {
 
     it('renders "New requirement" button when current tab is "Open" tab', async () => {
       wrapper.setProps({
-        filterBy: FilterState.opened,
+        filterBy: filterState.opened,
       });
 
       await nextTick();
@@ -75,7 +75,7 @@ describe('RequirementsTabs', () => {
 
     it('does not render "New requirement" button when current tab is not "Open" tab', async () => {
       wrapper.setProps({
-        filterBy: FilterState.archived,
+        filterBy: filterState.archived,
       });
 
       await nextTick();
@@ -86,7 +86,7 @@ describe('RequirementsTabs', () => {
 
     it('does not render "New requirement" button when `canCreateRequirement` prop is false', async () => {
       wrapper.setProps({
-        filterBy: FilterState.opened,
+        filterBy: filterState.opened,
         canCreateRequirement: false,
       });
 

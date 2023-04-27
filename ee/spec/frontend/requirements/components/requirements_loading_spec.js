@@ -3,15 +3,16 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import RequirementsLoading from 'ee/requirements/components/requirements_loading.vue';
+import { filterState } from 'ee/requirements/constants';
 
-import { FilterState, mockRequirementsCount } from '../mock_data';
+import { mockRequirementsCount } from '../mock_data';
 
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
 }));
 
 const createComponent = ({
-  filterBy = FilterState.opened,
+  filterBy = filterState.opened,
   requirementsCount = mockRequirementsCount,
   currentPage = 1,
 } = {}) =>

@@ -33,8 +33,8 @@ export default {
     'licensesApiPath',
     'licenseManagementApiUrl',
     'licenseScanCount',
-    'licenseManagementSettingsPath',
     'pipelineIid',
+    'securityPoliciesPath',
   ],
   data() {
     return {
@@ -112,7 +112,7 @@ export default {
         ref="router-view-licenses"
         :api-url="licenseManagementApiUrl"
         :licenses-api-path="licensesApiPath"
-        :license-management-settings-path="licenseManagementSettingsPath"
+        :security-policies-path="securityPoliciesPath"
         :can-manage-licenses="canManageLicenses"
         :always-open="true"
         report-section-class="split-report-section"

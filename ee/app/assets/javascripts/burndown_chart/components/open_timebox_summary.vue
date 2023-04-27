@@ -1,7 +1,7 @@
 <script>
 import { WORKSPACE_GROUP, WORKSPACE_PROJECT } from '~/issues/constants';
 import { __ } from '~/locale';
-import { Unit } from '../constants';
+import { unit } from '../constants';
 import summaryStatsQuery from '../graphql/iteration_issues_summary.query.graphql';
 
 export default {
@@ -41,8 +41,8 @@ export default {
     displayValue: {
       type: String,
       required: false,
-      default: Unit.count,
-      validator: (val) => Unit[val],
+      default: unit.count,
+      validator: (val) => unit[val],
     },
   },
   data() {
@@ -60,7 +60,7 @@ export default {
         fullPath: this.fullPath,
         id: this.iterationId,
         isGroup: this.namespaceType === WORKSPACE_GROUP,
-        weight: this.displayValue === Unit.weight,
+        weight: this.displayValue === unit.weight,
       };
     },
     columns() {

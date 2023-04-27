@@ -1,7 +1,7 @@
 <script>
 import { GlBadge, GlButton, GlButtonGroup, GlTabs, GlTab, GlTooltipDirective } from '@gitlab/ui';
 import { __ } from '~/locale';
-import { FilterState } from '../constants';
+import { filterState } from '../constants';
 
 export default {
   i18n: {
@@ -11,7 +11,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  FilterState,
+  filterState,
   components: {
     GlBadge,
     GlButton,
@@ -39,13 +39,13 @@ export default {
   },
   computed: {
     isOpenTab() {
-      return this.filterBy === FilterState.opened;
+      return this.filterBy === filterState.opened;
     },
     isArchivedTab() {
-      return this.filterBy === FilterState.archived;
+      return this.filterBy === filterState.archived;
     },
     isAllTab() {
-      return this.filterBy === FilterState.all;
+      return this.filterBy === filterState.all;
     },
   },
 };
@@ -59,7 +59,7 @@ export default {
           'data-testid': 'state-opened',
         } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isOpenTab"
-        @click="$emit('click-tab', { filterBy: $options.FilterState.opened })"
+        @click="$emit('click-tab', { filterBy: $options.filterState.opened })"
       >
         <template #title>
           <span>{{ __('Open') }}</span>
@@ -71,7 +71,7 @@ export default {
           'data-testid': 'state-archived',
         } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isArchivedTab"
-        @click="$emit('click-tab', { filterBy: $options.FilterState.archived })"
+        @click="$emit('click-tab', { filterBy: $options.filterState.archived })"
       >
         <template #title>
           <span>{{ __('Archived') }}</span>
@@ -85,7 +85,7 @@ export default {
           'data-testid': 'state-all',
         } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
         :active="isAllTab"
-        @click="$emit('click-tab', { filterBy: $options.FilterState.all })"
+        @click="$emit('click-tab', { filterBy: $options.filterState.all })"
       >
         <template #title>
           <span>{{ __('All') }}</span>

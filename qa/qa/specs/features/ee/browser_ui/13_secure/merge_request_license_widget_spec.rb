@@ -3,6 +3,9 @@
 module QA
   RSpec.describe 'Secure', :runner, product_group: :composition_analysis, feature_flag: {
     name: 'license_scanning_sbom_scanner'
+  }, quarantine: {
+    type: :waiting_on,
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/397067'
   } do
     describe 'License merge request widget' do
       describe 'when a license scanning report exists' do

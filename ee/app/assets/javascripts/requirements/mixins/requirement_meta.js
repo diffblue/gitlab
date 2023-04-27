@@ -2,7 +2,7 @@ import { getTimeago } from '~/lib/utils/datetime_utility';
 import { __, sprintf } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-import { FilterState } from '../constants';
+import { filterState } from '../constants';
 
 export default {
   legacyReferenceDeprecationUrl: helpPagePath('update/deprecations', {
@@ -22,7 +22,7 @@ export default {
       return this.requirement?.descriptionHtml;
     },
     isArchived() {
-      return this.requirement?.state === FilterState.archived;
+      return this.requirement?.state === filterState.archived;
     },
     author() {
       return this.requirement?.author;

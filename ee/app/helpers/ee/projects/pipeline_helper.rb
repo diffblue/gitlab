@@ -17,17 +17,11 @@ module EE
           expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
           is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
           license_management_api_url: license_management_api_url(project),
-          license_management_settings_path: license_management_path(user, project),
           license_scan_count: license_scan_count(project, pipeline),
           licenses_api_path: licenses_api_path(project, pipeline),
+          security_policies_path: security_policies_path(project),
           vulnerability_report_data: vulnerability_report_data(project, pipeline, user).to_json
         )
-      end
-
-      def license_management_path(user, project)
-        if user&.can?(:admin_software_license_policy, project)
-          license_management_settings_path(project)
-        end
       end
 
       def licenses_api_path(project, pipeline)
