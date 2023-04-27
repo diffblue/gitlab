@@ -16,18 +16,26 @@ import { isEmpty, isEqual } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
 import { thWidthPercent } from '~/lib/utils/table_utility';
-import externalAuditEventDestinationCreate from '../../graphql/create_external_destination.mutation.graphql';
-import externalAuditEventDestinationHeaderCreate from '../../graphql/create_external_destination_header.mutation.graphql';
-import externalAuditEventDestinationHeaderUpdate from '../../graphql/update_external_destination_header.mutation.graphql';
-import externalAuditEventDestinationHeaderDelete from '../../graphql/delete_external_destination_header.mutation.graphql';
-import deleteExternalDestinationFilters from '../../graphql/delete_external_destination_filters.mutation.graphql';
-import updateExternalDestinationFilters from '../../graphql/update_external_destination_filters.mutation.graphql';
+import externalAuditEventDestinationCreate from '../../graphql/mutations/create_external_destination.mutation.graphql';
+import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
+import externalAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_external_destination_header.mutation.graphql';
+import externalAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_external_destination_header.mutation.graphql';
+import deleteExternalDestinationFilters from '../../graphql/mutations/delete_external_destination_filters.mutation.graphql';
+import updateExternalDestinationFilters from '../../graphql/mutations/update_external_destination_filters.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
   createBlankHeader,
 } from '../../constants';
-import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
+import {
+  addAuditEventsStreamingDestination,
+  removeAuditEventsStreamingDestination,
+  addAuditEventStreamingHeader,
+  removeAuditEventStreamingHeader,
+  updateEventTypeFilters,
+  removeEventTypeFilters,
+} from '../../graphql/cache_update';
 import { mapAllMutationErrors, mapItemHeadersToFormData } from '../../utils';
 import StreamFilters from './stream_filters.vue';
 
@@ -137,6 +145,17 @@ export default {
         context: {
           isSingleRequest: true,
         },
+        update(cache, { data: updateData }, args) {
+          if (updateData.externalAuditEventDestinationCreate.errors.length) {
+            return;
+          }
+          addAuditEventsStreamingDestination({
+            store: cache,
+            fullPath: args.variables.fullPath,
+            newDestination:
+              updateData.externalAuditEventDestinationCreate.externalAuditEventDestination,
+          });
+        },
       });
 
       return data.externalAuditEventDestinationCreate;
@@ -151,6 +170,17 @@ export default {
               destinationId,
               key: header.name,
               value: header.value,
+            },
+            update(cache, { data }) {
+              if (data.auditEventsStreamingHeadersCreate.errors.length) {
+                return;
+              }
+
+              addAuditEventStreamingHeader({
+                store: cache,
+                destinationId,
+                newHeader: data.auditEventsStreamingHeadersCreate.header,
+              });
             },
           });
         });
@@ -174,6 +204,7 @@ export default {
       return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersUpdate');
     },
     async deleteDestinationHeaders(headers) {
+      const { id: destinationId } = this.item;
       const mutations = headers
         .filter((header) => this.isHeaderFilled(header))
         .map((header) => {
@@ -182,12 +213,24 @@ export default {
             variables: {
               headerId: header.id,
             },
+            update(cache, { data }) {
+              if (data.auditEventsStreamingHeadersDestroy.errors.length) {
+                return;
+              }
+
+              removeAuditEventStreamingHeader({
+                store: cache,
+                destinationId,
+                headerId: header.id,
+              });
+            },
           });
         });
 
       return mapAllMutationErrors(mutations, 'auditEventsStreamingHeadersDestroy');
     },
     async deleteCreatedDestination(destinationId) {
+      const { groupPath: fullPath } = this;
       return this.$apollo.mutate({
         mutation: deleteExternalDestination,
         variables: {
@@ -195,6 +238,17 @@ export default {
         },
         context: {
           isSingleRequest: true,
+        },
+        update(cache, { data }) {
+          if (data.externalAuditEventDestinationDestroy.errors.length) {
+            return;
+          }
+
+          removeAuditEventsStreamingDestination({
+            store: cache,
+            fullPath,
+            destinationId,
+          });
         },
       });
     },
@@ -224,8 +278,19 @@ export default {
           destinationId,
           eventTypeFilters: filters,
         },
+        update(cache, { data: updateData }) {
+          if (updateData.auditEventsStreamingDestinationEventsRemove.errors.length) {
+            return;
+          }
+
+          removeEventTypeFilters({
+            store: cache,
+            destinationId,
+            filtersToRemove: filters,
+          });
+        },
       });
-      const error = data?.deleteExternalDestinationFilters?.errors || [];
+      const error = data.auditEventsStreamingDestinationEventsRemove.errors || [];
 
       return error;
     },
@@ -236,8 +301,19 @@ export default {
           destinationId,
           eventTypeFilters: filters,
         },
+        update(cache, { data: updateData }) {
+          if (updateData.auditEventsStreamingDestinationEventsAdd.errors.length) {
+            return;
+          }
+
+          updateEventTypeFilters({
+            store: cache,
+            destinationId,
+            filters,
+          });
+        },
       });
-      const error = data?.updateExternalDestinationFilters?.errors || [];
+      const error = data.auditEventsStreamingDestinationEventsAdd.errors || [];
 
       return error;
     },
@@ -248,8 +324,12 @@ export default {
       this.loading = true;
 
       try {
-        const { errors = [], externalAuditEventDestination } = await this.addDestinationUrl();
-
+        const errors = [];
+        const {
+          errors: destinationErrors = [],
+          externalAuditEventDestination,
+        } = await this.addDestinationUrl();
+        errors.push(...destinationErrors);
         destinationId = externalAuditEventDestination?.id;
 
         if (!errors.length) {

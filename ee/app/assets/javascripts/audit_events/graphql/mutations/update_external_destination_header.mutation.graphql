@@ -1,3 +1,5 @@
+#import "../fragments/audit_event_streaming_header.fragment.graphql"
+
 mutation updateExternalDestinationHeader(
   $headerId: AuditEventsStreamingHeaderID!
   $key: String!
@@ -6,5 +8,8 @@ mutation updateExternalDestinationHeader(
   auditEventsStreamingHeadersUpdate(input: { headerId: $headerId, key: $key, value: $value }) {
     errors
     clientMutationId
+    header {
+      ...AuditEventStreamingHeaderFragment
+    }
   }
 }

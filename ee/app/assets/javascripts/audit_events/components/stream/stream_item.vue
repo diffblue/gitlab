@@ -12,7 +12,7 @@ import {
 import { __, sprintf } from '~/locale';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
-import deleteExternalDestination from '../../graphql/delete_external_destination.mutation.graphql';
+import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
 
