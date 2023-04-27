@@ -5,8 +5,9 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 describe('MaxExpirationDateMessage', () => {
   let wrapper;
 
+  const date = '2022-03-02';
   const defaultPropsData = {
-    maxDate: new Date('2022-3-2'),
+    maxDate: new Date(date),
   };
 
   const createComponent = (propsData = defaultPropsData) => {
@@ -21,7 +22,9 @@ describe('MaxExpirationDateMessage', () => {
     });
 
     it('renders max date expiration message', () => {
-      expect(wrapper.element).toMatchSnapshot();
+      expect(wrapper.text()).toContain(
+        `An Administrator has set the maximum expiration date to ${date}`,
+      );
     });
   });
 

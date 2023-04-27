@@ -87,14 +87,14 @@ describe('Approvals ModalRuleRemove', () => {
   });
 
   it.each`
-    type                    | rule
-    ${'multiple approvers'} | ${TEST_RULE}
-    ${'singular approver'}  | ${SINGLE_APPROVER}
-  `('matches the snapshot for $type', ({ rule }) => {
+    type                    | rule               | expectedText
+    ${'multiple approvers'} | ${TEST_RULE}       | ${'You are about to remove the Lorem approver group which has 5 members'}
+    ${'singular approver'}  | ${SINGLE_APPROVER} | ${'You are about to remove the Lorem approver group which has 1 member'}
+  `('renders the correct text for $type', ({ expectedText, rule }) => {
     deleteModalState.data = rule;
     factory();
 
-    expect(findModal().element).toMatchSnapshot();
+    expect(findModal().text()).toContain(expectedText);
   });
 
   it('calls deleteRule when the modal is submitted', () => {
