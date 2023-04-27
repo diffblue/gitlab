@@ -21,7 +21,7 @@ import UserToken from '~/vue_shared/components/filtered_search_bar/tokens/user_t
 import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 
 import {
-  FilterState,
+  filterState,
   availableSortOptions,
   STATE_PASSED,
   testReportStatusToValue,
@@ -149,7 +149,7 @@ export default {
 
         // Include `state` only if `filterBy` is not `ALL`.
         // as Grqph query only supports `OPEN` and `ARCHIVED`.
-        if (this.filterBy !== FilterState.all) {
+        if (this.filterBy !== filterState.all) {
           queryVariables.state = this.filterBy;
         }
 
@@ -238,16 +238,16 @@ export default {
         pageInfo: {},
       },
       requirementsCount: {
-        OPENED: this.initialRequirementsCount[FilterState.opened],
-        ARCHIVED: this.initialRequirementsCount[FilterState.archived],
-        ALL: this.initialRequirementsCount[FilterState.all],
+        OPENED: this.initialRequirementsCount[filterState.opened],
+        ARCHIVED: this.initialRequirementsCount[filterState.archived],
+        ALL: this.initialRequirementsCount[filterState.all],
       },
       alert: null,
     };
   },
   computed: {
     requirementsList() {
-      return this.filterBy !== FilterState.all
+      return this.filterBy !== filterState.all
         ? this.requirements.list.filter(({ state }) => state === this.filterBy)
         : this.requirements.list;
     },
@@ -586,7 +586,7 @@ export default {
       this.stateChangeRequestActiveFor = requirement.iid;
       return this.updateRequirement(requirement, {
         errorFlashMessage:
-          requirement.state === FilterState.opened
+          requirement.state === filterState.opened
             ? __('Something went wrong while reopening a requirement.')
             : __('Something went wrong while archiving a requirement.'),
       })
@@ -597,7 +597,7 @@ export default {
             this.$apollo.queries.requirementsCount.refetch();
             const reference = `REQ-${updateReqMutation.requirement.iid}`;
             let toastMessage;
-            if (requirement.state === FilterState.opened) {
+            if (requirement.state === filterState.opened) {
               toastMessage = sprintf(__('Requirement %{reference} has been reopened'), {
                 reference,
               });
