@@ -19,7 +19,6 @@ feature_category: :continuous_integration do
         project(fullPath: "#{project.full_path}") {
           pipeline(iid: "#{pipeline.iid}") {
             securityReportFinding(uuid: "#{security_finding.uuid}") {
-              confidence
               severity
               reportType
               name
@@ -55,7 +54,6 @@ feature_category: :continuous_integration do
     scan.report_findings.each do |finding|
       create(:security_finding,
             severity: finding.severity,
-            confidence: finding.confidence,
             project_fingerprint: finding.project_fingerprint,
             deduplicated: true,
             scan: scan,
@@ -86,7 +84,6 @@ feature_category: :continuous_integration do
         expect(security_report_finding.dig('project', 'fullPath')).to eq(project.full_path)
         expect(security_report_finding.dig('project', 'visibility')).to eq(project.visibility)
         expect(security_report_finding['identifiers'].length).to eq(expected_finding.identifiers.length)
-        expect(security_report_finding['confidence']).to eq(expected_finding.confidence)
         expect(security_report_finding['severity']).to eq(expected_finding.severity.upcase)
         expect(security_report_finding['reportType']).to eq(expected_finding.report_type.upcase)
         expect(security_report_finding['name']).to eq(expected_finding.name)

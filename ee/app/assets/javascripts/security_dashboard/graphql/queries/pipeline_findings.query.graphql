@@ -35,7 +35,6 @@ query pipelineFindings(
           name
           description
           falsePositive @include(if: $vetEnabled)
-          confidence
           identifiers {
             externalType
             name

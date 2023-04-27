@@ -29,7 +29,6 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
        name
        title
        severity
-       confidence
        scanner
        identifiers
        links
