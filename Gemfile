@@ -28,7 +28,7 @@ gem 'sprockets', '~> 3.7.0'
 gem 'view_component', '~> 2.82.0'
 
 # Supported DBs
-gem 'pg', '~> 1.4.6'
+gem 'pg', '~> 1.5.2'
 
 gem 'neighbor', '~> 0.2.3'
 
@@ -375,7 +375,7 @@ group :development do
   gem 'solargraph', '~> 0.47.2', require: false
 
   gem 'letter_opener_web', '~> 2.0.0'
-  gem 'lookbook', '~> 1.5', '>= 1.5.3'
+  gem 'lookbook', '~> 1.5', '>= 1.5.5'
 
   # Better errors handler
   gem 'better_errors', '~> 2.9.1'
