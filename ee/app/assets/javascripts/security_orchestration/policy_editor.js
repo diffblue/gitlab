@@ -3,7 +3,6 @@ import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_
 import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
 import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
-import createStore from './store';
 import { decomposeApproversV2 } from './utils';
 
 export default (el, namespaceType) => {
@@ -60,7 +59,6 @@ export default (el, namespaceType) => {
         ? convertObjectPropsToCamelCase(policyProject)
         : DEFAULT_ASSIGNED_POLICY_PROJECT,
     },
-    store: createStore(),
     render(createElement) {
       return createElement(NewPolicyApp);
     },

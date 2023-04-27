@@ -1,7 +1,5 @@
-import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
-import Vue from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -32,7 +30,6 @@ import {
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
-import ScanResultPoliciesStore from 'ee/security_orchestration/store/modules/scan_result_policies';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 
@@ -56,8 +53,6 @@ jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
     .isValidPolicy,
 }));
 
-Vue.use(Vuex);
-
 describe('ScanResultPolicyEditor', () => {
   let mock;
   let wrapper;
@@ -71,14 +66,7 @@ describe('ScanResultPolicyEditor', () => {
   const scanResultPolicyApprovers = [{ id: 1, username: 'the.one', state: 'active' }];
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
-    const store = new Vuex.Store({
-      modules: {
-        scanResultPolicies: ScanResultPoliciesStore(),
-      },
-    });
-
     wrapper = shallowMount(ScanResultPolicyEditor, {
-      store,
       propsData: {
         assignedPolicyProject: DEFAULT_ASSIGNED_POLICY_PROJECT,
         ...propsData,
