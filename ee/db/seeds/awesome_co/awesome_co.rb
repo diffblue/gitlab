@@ -12,6 +12,8 @@ module AwesomeCo
         Parsers::Yaml.new(seed_file, owner).parse
       when /\.json(\.erb)?/
         Parsers::Json.new(seed_file, owner).parse
+      when /\.rb/
+        Parsers::Ruby.new(seed_file, owner).parse
       end
     end
   end
@@ -208,6 +210,34 @@ module AwesomeCo
         @name = @definitions.delete('name')
 
         super
+      end
+    end
+
+    class Ruby < Parser
+      def initialize(seed_file, owner)
+        @seed_file = seed_file
+        @owner = owner
+        @name = File.basename(@seed_file, '.rb')
+
+        # create the seeded group with a path that is hyphenated and random
+        @group = FactoryBot.create(:group, name: @name,
+                                          path: "#{@name.parameterize}-#{@owner.username}-#{SecureRandom.hex(3)}")
+        @group.add_owner(@owner)
+      end
+
+      def parse
+        load @seed_file
+
+        DataSeeder.include(FactoryBot::Syntax::Methods) unless DataSeeder.include?(FactoryBot::Syntax::Methods)
+
+        DataSeeder.new.tap do |seeder|
+          seeder.instance_variable_set(:@seed_file, @seed_file)
+          seeder.instance_variable_set(:@owner, @owner)
+          seeder.instance_variable_set(:@name, @name)
+          seeder.instance_variable_set(:@group, @group)
+
+          seeder.seed
+        end
       end
     end
   end
