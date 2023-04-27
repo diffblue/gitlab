@@ -9,7 +9,8 @@ import {
   UPDATE_STREAM_MESSAGE,
   streamsLabel,
 } from '../constants';
-import externalDestinationsQuery from '../graphql/get_external_destinations.query.graphql';
+import { removeAuditEventsStreamingDestination } from '../graphql/cache_update';
+import externalDestinationsQuery from '../graphql/queries/get_external_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
 import StreamDestinationEditor from './stream/stream_destination_editor.vue';
 import StreamItem from './stream/stream_item.vue';
@@ -56,17 +57,19 @@ export default {
       return this.$apollo.queries.externalAuditEventDestinations.refetch();
     },
     async onAddedDestination() {
-      await this.refreshDestinations();
       this.setEditorVisibility(false);
       this.successMessage = ADD_STREAM_MESSAGE;
     },
     async onUpdatedDestination() {
-      await this.refreshDestinations();
       this.setEditorVisibility(false);
       this.successMessage = UPDATE_STREAM_MESSAGE;
     },
-    async onDeletedDestination() {
-      await this.refreshDestinations();
+    async onDeletedDestination(id) {
+      removeAuditEventsStreamingDestination({
+        store: this.$apollo.provider.defaultClient,
+        fullPath: this.groupPath,
+        destinationId: id,
+      });
 
       if (this.destinationsCount) {
         this.successMessage = DELETE_STREAM_MESSAGE;
@@ -151,7 +154,7 @@ export default {
         :key="item.id"
         :item="item"
         :group-event-filters="groupEventFilters"
-        @deleted="onDeletedDestination"
+        @deleted="onDeletedDestination(item.id)"
         @updated="onUpdatedDestination"
         @error="clearSuccessMessage"
       />

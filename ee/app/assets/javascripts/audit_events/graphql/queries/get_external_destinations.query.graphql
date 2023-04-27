@@ -1,0 +1,12 @@
+#import "../fragments/external_audit_event_destination.fragment.graphql"
+
+query getExternalDestinations($fullPath: ID!) {
+  group(fullPath: $fullPath) {
+    id
+    externalAuditEventDestinations {
+      nodes {
+        ...ExternalAuditEventDestinationFragment
+      }
+    }
+  }
+}

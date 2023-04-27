@@ -5,12 +5,11 @@ import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import externalDestinationsQuery from 'ee/audit_events/graphql/get_external_destinations.query.graphql';
+import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
 import {
   AUDIT_STREAMS_NETWORK_ERRORS,
   ADD_STREAM_MESSAGE,
   DELETE_STREAM_MESSAGE,
-  UPDATE_STREAM_MESSAGE,
 } from 'ee/audit_events/constants';
 import AuditEventsStream from 'ee/audit_events/components/audit_events_stream.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
@@ -96,9 +95,8 @@ describe('AuditEventsStream', () => {
       expect(findStreamDestinationEditor().exists()).toBe(true);
     });
 
-    it('refreshes the query and exits edit mode when an external destination is added', async () => {
+    it('exits edit mode when an external destination is added', async () => {
       expect(findLoadingIcon().exists()).toBe(false);
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
       expect(findStreamDestinationEditor().exists()).toBe(false);
 
       findAddDestinationButton().vm.$emit('click');
@@ -111,7 +109,6 @@ describe('AuditEventsStream', () => {
       streamDestinationEditorComponent.vm.$emit('added');
       await waitForPromises();
 
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
       expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
     });
 
@@ -148,24 +145,17 @@ describe('AuditEventsStream', () => {
       expect(findStreamItems().at(1).props('item')).toStrictEqual(mockExternalDestinations[1]);
     });
 
-    it.each`
-      eventName    | successMessage
-      ${'updated'} | ${UPDATE_STREAM_MESSAGE}
-      ${'deleted'} | ${DELETE_STREAM_MESSAGE}
-    `(
-      'refreshes the query when an external destination is %{eventName}',
-      async ({ eventName, successMessage }) => {
-        await waitForPromises();
+    it('updates list when destination is removed', async () => {
+      await waitForPromises();
 
-        expect(findLoadingIcon().exists()).toBe(false);
-        expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+      expect(findLoadingIcon().exists()).toBe(false);
+      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
 
-        findStreamItems().at(0).vm.$emit(eventName);
-        await waitForPromises();
-
-        expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(2);
-        expect(findSuccessMessage().text()).toBe(successMessage);
-      },
-    );
+      const currentLength = findStreamItems().length;
+      findStreamItems().at(0).vm.$emit('deleted');
+      await waitForPromises();
+      expect(findStreamItems()).toHaveLength(currentLength - 1);
+      expect(findSuccessMessage().text()).toBe(DELETE_STREAM_MESSAGE);
+    });
   });
 });
