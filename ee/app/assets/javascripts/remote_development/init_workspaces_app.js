@@ -39,7 +39,10 @@ const createApolloProvider = () => {
         workspaces: {
           nodes: [
             generateDummyWorkspace(WORKSPACE_STATES.running, WORKSPACE_DESIRED_STATES.running),
-            generateDummyWorkspace(WORKSPACE_STATES.creating, WORKSPACE_DESIRED_STATES.restarting),
+            generateDummyWorkspace(
+              WORKSPACE_STATES.creationRequested,
+              WORKSPACE_DESIRED_STATES.restartRequested,
+            ),
             generateDummyWorkspace(WORKSPACE_STATES.starting, WORKSPACE_DESIRED_STATES.stopped),
             generateDummyWorkspace(WORKSPACE_STATES.stopped, WORKSPACE_DESIRED_STATES.terminated),
             generateDummyWorkspace(WORKSPACE_STATES.stopping, WORKSPACE_DESIRED_STATES.running),

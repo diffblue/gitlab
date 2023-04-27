@@ -5,7 +5,7 @@ import { WORKSPACE_STATES, FILL_CLASS_GREEN, FILL_CLASS_ORANGE } from '../../con
 
 export const i18n = {
   tooltips: {
-    [WORKSPACE_STATES.creating]: s__('Workspaces|Creating'),
+    [WORKSPACE_STATES.creationRequested]: s__('Workspaces|Creating'),
     [WORKSPACE_STATES.starting]: s__('Workspaces|Starting'),
     [WORKSPACE_STATES.running]: s__('Workspaces|Running'),
     [WORKSPACE_STATES.stopping]: s__('Workspaces|Stopping'),
@@ -17,7 +17,7 @@ export const i18n = {
 };
 
 const STATE_TO_ICON_MAP = {
-  [WORKSPACE_STATES.creating]: 'status-running',
+  [WORKSPACE_STATES.creationRequested]: 'status-running',
   [WORKSPACE_STATES.starting]: 'status-running',
   [WORKSPACE_STATES.running]: 'status-active',
   [WORKSPACE_STATES.stopping]: 'status-running',
@@ -28,7 +28,7 @@ const STATE_TO_ICON_MAP = {
 };
 
 const STATE_TO_CSS_CLASS_MAP = {
-  [WORKSPACE_STATES.creating]: FILL_CLASS_GREEN,
+  [WORKSPACE_STATES.creationRequested]: FILL_CLASS_GREEN,
   [WORKSPACE_STATES.starting]: FILL_CLASS_GREEN,
   [WORKSPACE_STATES.running]: FILL_CLASS_GREEN,
   [WORKSPACE_STATES.failed]: FILL_CLASS_ORANGE,

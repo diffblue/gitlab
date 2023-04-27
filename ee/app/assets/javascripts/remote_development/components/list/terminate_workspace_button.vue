@@ -37,9 +37,6 @@ export default {
         ? i18n.terminatingWorkspaceTooltip
         : i18n.terminateWorkspaceTooltip;
     },
-    icon() {
-      return this.isTerminatedDesiredState ? '' : 'remove';
-    },
   },
 };
 </script>
@@ -48,8 +45,8 @@ export default {
     <gl-button
       :disabled="isTerminatedDesiredState"
       :loading="isTerminatedDesiredState"
-      :icon="icon"
       :aria-label="tooltip"
+      icon="remove"
       @click="$emit('click')"
     />
   </span>

@@ -33,7 +33,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             name: 'workspace-1-1-idmi02',
             namespace: 'gl-rd-ns-1-1-idmi02',
             desiredState: 'Stopped',
-            actualState: 'Creating',
+            actualState: 'CreationRequested',
             url: 'http://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
