@@ -7,39 +7,53 @@ module EE
         extend ::Gitlab::Utils::Override
 
         override :handle_access
-        def handle_access(access_as, user_access)
-          super || (access_as.key?(:user) && access_as_user(user_access))
+        def handle_access(access_as)
+          super || (access_as.key?('user') && access_as_user)
         end
 
-        def access_as_user(user_access)
-          projects = authorized_projects(user_access)
-          groups = authorized_groups(user_access)
-          return unless projects.size + groups.size > 0
+        private
+
+        def access_as_user
+          return if authorizations.empty?
 
           response_base.merge(
             access_as: {
               user: {
-                # FIXME: N+1 queries on projects and groups
-                # see https://gitlab.com/gitlab-org/gitlab/-/issues/393336
-                projects: projects.map { |p| { id: p.id, roles: project_roles(p) } },
-                groups: groups.map { |g| { id: g.id, roles: group_roles(g) } }
+                projects: projects_payload,
+                groups: groups_payload
               }
             }
           )
         end
 
-        def project_roles(project)
-          user_access_level = current_user.max_member_access_for_project(project.id)
+        def projects_payload
+          project_authorizations.map do |authorization|
+            { id: authorization.project_id, roles: roles(authorization.access_level) }
+          end
+        end
+
+        def groups_payload
+          group_authorizations.map do |authorization|
+            { id: authorization.group_id, roles: roles(authorization.access_level) }
+          end
+        end
+
+        def roles(access_level)
           ::Gitlab::Access.sym_options_with_owner
-            .select { |_role, role_access_level| role_access_level <= user_access_level }
+            .select { |_role, role_access_level| role_access_level <= access_level }
             .map(&:first)
         end
 
-        def group_roles(group)
-          user_access_level = current_user.max_member_access_for_group(group.id)
-          ::Gitlab::Access.sym_options_with_owner
-            .select { |_role, role_access_level| role_access_level <= user_access_level }
-            .map(&:first)
+        def project_authorizations
+          @project_authorizations ||= authorizations.select do |authorization|
+            authorization.is_a?(::Clusters::Agents::Authorizations::UserAccess::ProjectAuthorization)
+          end
+        end
+
+        def group_authorizations
+          @group_authorizations ||= authorizations.select do |authorization|
+            authorization.is_a?(::Clusters::Agents::Authorizations::UserAccess::GroupAuthorization)
+          end
         end
       end
     end
