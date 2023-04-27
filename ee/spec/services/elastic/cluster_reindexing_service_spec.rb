@@ -78,7 +78,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('indexing_paused').to('reindexing')
 
         subtasks = task.subtasks
-        expect(subtasks.count).to eq(6)
+        expect(subtasks.count).to eq(7)
 
         subtask_1 = subtasks.find { |subtask| subtask.alias_name == main_alias }
         slice_1 = subtask_1.slices.first

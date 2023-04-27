@@ -11,7 +11,7 @@ RSpec.describe Search::IndexCurationWorker, feature_category: :global_search do
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
 
   describe '#curator_settings' do
-    let(:standalone_index_types) { %w[commits issues merge_requests notes users] }
+    let(:standalone_index_types) { %w[commits issues merge_requests notes users wikis] }
     let(:curation_include_patterns) { [main_index_pattern] + standalone_index_types.map { |x| /#{x}/ } }
     let(:main_index_target_name) { "gitlab-test" }
     let(:main_index_name) { "gitlab-test-20220923-1517" }
