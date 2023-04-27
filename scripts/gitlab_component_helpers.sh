@@ -118,7 +118,7 @@ function check_fixtures_download() {
   if [[ -z "${CI_MERGE_REQUEST_IID:-}" ]]; then
     return 1
   else
-    if tooling/bin/find_only_js_changes && ! fixtures_archive_doesnt_exist; then
+    if tooling/bin/find_only_allowed_files_changes && ! fixtures_archive_doesnt_exist; then
       return 0
     else
       return 1
