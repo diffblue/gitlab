@@ -11478,6 +11478,9 @@ msgstr ""
 msgid "ContainerRegistry|Configuration digest: %{digest}"
 msgstr ""
 
+msgid "ContainerRegistry|Configure in settings"
+msgstr ""
+
 msgid "ContainerRegistry|Container Registry"
 msgstr ""
 
