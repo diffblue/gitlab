@@ -33,16 +33,16 @@ module Elastic
       end
 
       def delete_index_for_commits_and_blobs(wiki: false)
-        types =
-          if wiki
-            %w[wiki_blob]
-          else
-            %w[commit blob]
-          end
+        types = wiki ? %w[wiki_blob] : %w[commit blob]
+        if (wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
+          index, rid = if wiki
+                         [::Elastic::Latest::WikiConfig.index_name, "wiki_#{project_id}"]
+                       else
+                         [::Elastic::Latest::CommitConfig.index_name, project_id]
+                       end
 
-        if types.include?('commit')
-          client.delete_by_query(
-            index: ::Elastic::Latest::CommitConfig.index_name,
+          response = client.delete_by_query(
+            index: index,
             routing: es_parent,
             body: {
               query: {
@@ -50,7 +50,7 @@ module Elastic
                   filter: [
                     {
                       term: {
-                        rid: project_id
+                        rid: rid
                       }
                     }
                   ]
@@ -58,6 +58,7 @@ module Elastic
               }
             }
           )
+          return response if wiki
         end
 
         client.delete_by_query(

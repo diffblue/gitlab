@@ -178,14 +178,13 @@ module Gitlab
       alias_method :limited_milestones_count, :milestones_count
 
       def self.parse_search_result(result, project)
-        ref = result["_source"]["blob"]["commit_sha"]
-        path = result["_source"]["blob"]["path"] || ''
+        path = extract_path_from_result result['_source']
         basename = File.join(File.dirname(path), File.basename(path, '.*'))
-        content = result["_source"]["blob"]["content"]
+        content = extract_content_from_result(result['_source'])
         project_id = result['_source']['project_id'].to_i
         total_lines = content.lines.size
 
-        highlight_content = result.dig('highlight', 'blob.content')&.first || ''
+        highlight_content = get_highlight_content result
 
         found_line_number = 0
         highlight_found = false
@@ -218,7 +217,7 @@ module Gitlab
         ::Gitlab::Search::FoundBlob.new(
           path: path,
           basename: basename,
-          ref: ref,
+          ref: extract_ref_from_result(result['_source']),
           matched_lines_count: matched_lines_count,
           startline: from + 1,
           highlight_line: highlight_line,
@@ -404,6 +403,27 @@ module Gitlab
 
       def allowed_to_read_users?
         Ability.allowed?(current_user, :read_users_list)
+      end
+
+      def self.use_separate_wiki_index?(type)
+        type.eql?('wiki_blob') && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+      end
+
+      def self.extract_ref_from_result(source)
+        use_separate_wiki_index?(source['type']) ? source['commit_sha'] : source['blob']['commit_sha']
+      end
+
+      def self.extract_path_from_result(source)
+        (use_separate_wiki_index?(source['type']) ? source['path'] : source['blob']['path']) || ''
+      end
+
+      def self.extract_content_from_result(source)
+        use_separate_wiki_index?(source['type']) ? source['content'] : source['blob']['content']
+      end
+
+      def self.get_highlight_content(result)
+        content_key = use_separate_wiki_index?(result['_source']['type']) ? 'content' : 'blob.content'
+        result.dig('highlight', content_key)&.first || ''
       end
     end
   end

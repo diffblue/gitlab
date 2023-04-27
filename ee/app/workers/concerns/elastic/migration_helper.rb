@@ -49,6 +49,7 @@ module Elastic
     end
 
     def new_documents_count
+      helper.refresh_index(index_name: new_index_name)
       helper.documents_count(index_name: new_index_name)
     end
 
@@ -110,6 +111,22 @@ module Elastic
       end
 
       query
+    end
+
+    def create_index_for_first_batch!(target_classes)
+      return if migration_state[:slice].present?
+
+      reindexing_cleanup! # support retries
+
+      log "Change index settings for #{document_type_plural} index under #{new_index_name}"
+
+      default_setting = Elastic::IndexSetting.default
+      Elastic::IndexSetting[new_index_name].update!(number_of_replicas: default_setting.number_of_replicas,
+        number_of_shards: default_setting.number_of_shards)
+
+      log "Create standalone #{document_type_plural} index under #{new_index_name}"
+
+      helper.create_standalone_indices(target_classes: target_classes)
     end
   end
 end

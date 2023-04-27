@@ -25,12 +25,13 @@ module Gitlab
         end
       end
 
-      attr_reader :project, :index_status, :wiki, :force
+      attr_reader :project, :group, :index_status, :wiki, :force
       alias_method :index_wiki?, :wiki
       alias_method :force_reindexing?, :force
 
       def initialize(project, wiki: false, force: false)
         @project = project
+        @group = project.group
         @wiki = wiki
         @force = force
 
@@ -50,6 +51,7 @@ module Gitlab
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           logger.debug(build_structured_payload(message: 'indexing_commit_range',
+                                                group_id: group&.id,
                                                 project_id: project.id,
                                                 from_sha: from_sha,
                                                 to_sha: commit.sha,
@@ -90,46 +92,17 @@ module Gitlab
       end
 
       def run_indexer!(base_sha, to_sha, target)
-        vars = build_envvars(base_sha, to_sha, target)
-        path_to_indexer = Gitlab.config.elasticsearch.indexer_path
-
-        project_id_argument = "--project-id=#{project.id}"
-        timeout_argument = "--timeout=#{self.class.timeout}s"
-
-        command = [path_to_indexer, project_id_argument, timeout_argument]
-
-        command << "--search-curation" if Feature.enabled?(:search_index_curation)
-        command << "--from-sha=#{base_sha}"
-        command << "--to-sha=#{to_sha}"
-        command << "--full-path=#{project.full_path}"
-        command << "--visibility-level=#{project.visibility_level}"
-
-        command += if index_wiki?
-                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{project.wiki_access_level}]
-                   else
-                     %W[
-                       --repository-access-level=#{project.repository_access_level}
-                     ].tap do |c|
-                       migration_name = :add_hashed_root_namespace_id_to_commits
-                       migration_done = ::Elastic::DataMigrationService.migration_has_finished?(migration_name)
-
-                       c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
-                     end
-                   end
-
-        if traversal_id_migration_applied?
-          command << "--traversal-ids=#{project.namespace_ancestry}"
-        end
-
-        command += [repository_path]
+        vars = build_envvars(target)
+        command = build_command(base_sha, to_sha)
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
 
-        return unless status.present?
+        return if status.blank?
 
         payload = build_structured_payload(
           message: output,
           status: status,
+          group_id: group&.id,
           project_id: project.id,
           from_sha: base_sha,
           to_sha: to_sha,
@@ -154,10 +127,10 @@ module Gitlab
       def purge_unreachable_commits_from_index!(target)
         target.delete_index_for_commits_and_blobs(wiki: index_wiki?)
       rescue ::Elasticsearch::Transport::Transport::Errors::BadRequest => e
-        Gitlab::ErrorTracking.track_exception(e, project_id: project.id)
+        Gitlab::ErrorTracking.track_exception(e, group_id: group&.id, project_id: project.id)
       end
 
-      def build_envvars(from_sha, to_sha, target)
+      def build_envvars(target)
         # We accept any form of settings, including string and array
         # This is why JSON is needed
         vars = {
@@ -176,6 +149,36 @@ module Gitlab
 
         # Users can override default SSL certificate path via SSL_CERT_FILE SSL_CERT_DIR
         vars.merge(ENV.slice('SSL_CERT_FILE', 'SSL_CERT_DIR'))
+      end
+
+      def build_command(base_sha, to_sha)
+        path_to_indexer = Gitlab.config.elasticsearch.indexer_path
+        timeout_argument = "--timeout=#{self.class.timeout}s"
+        visibility_level_argument = "--visibility-level=#{project.visibility_level}"
+
+        command = [path_to_indexer, timeout_argument, visibility_level_argument]
+
+        command << "--group-id=#{group.id}" if group
+        command << "--project-id=#{project.id}" if project
+        command << '--search-curation' if Feature.enabled?(:search_index_curation)
+        command << "--from-sha=#{base_sha}"
+        command << "--to-sha=#{to_sha}"
+        command << "--full-path=#{project.full_path}"
+
+        command += if index_wiki?
+                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{project.wiki_access_level}]
+                   else
+                     %W[--repository-access-level=#{project.repository_access_level}].tap do |c|
+                       migration_name = :add_hashed_root_namespace_id_to_commits
+                       migration_done = ::Elastic::DataMigrationService.migration_has_finished?(migration_name)
+
+                       c << "--hashed-root-namespace-id=#{project.namespace.hashed_root_namespace_id}" if migration_done
+                     end
+                   end
+
+        command << "--traversal-ids=#{project.namespace_ancestry}" if traversal_id_migration_applied?
+
+        command << repository_path
       end
 
       def build_aws_credentials_env(vars)
@@ -231,6 +234,10 @@ module Gitlab
           config[:index_name_commits] = ::Elastic::Latest::CommitConfig.index_name
         end
 
+        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+          config[:index_name_wikis] = ::Elastic::Latest::WikiConfig.index_name
+        end
+
         # We need to pass a percent encoded URL string instead of a hash
         # to the go indexer because it passes authentication credentials
         # embedded in the url.
@@ -251,11 +258,12 @@ module Gitlab
       # rubocop: disable CodeReuse/ActiveRecord
       def update_index_status(to_sha)
         unless Project.exists?(id: project.id)
-          logger.debug(build_structured_payload(message: 'Index status not updated. The project does not exist.',
-                                                project_id: project.id,
-                                                index_wiki: index_wiki?
-                                               )
-                      )
+          logger.debug(build_structured_payload(
+            message: "Index status not updated. The project does not exist.",
+            group_id: group&.id,
+            project_id: project.id,
+            index_wiki: index_wiki?
+          ))
           return false
         end
 
@@ -265,19 +273,20 @@ module Gitlab
         # even if the repository is empty, so we know it's been looked at.
         @index_status ||= IndexStatus.safe_find_or_create_by!(project_id: project.id)
 
-        attributes =
-          if index_wiki?
-            { last_wiki_commit: to_sha, wiki_indexed_at: Time.now }
-          else
-            { last_commit: to_sha, indexed_at: Time.now }
-          end
+        attributes = if index_wiki?
+                       { last_wiki_commit: to_sha, wiki_indexed_at: Time.now }
+                     else
+                       { last_commit: to_sha, indexed_at: Time.now }
+                     end
 
         @index_status.update!(attributes)
 
         project.reload_index_status
       rescue ActiveRecord::InvalidForeignKey
-        logger.debug(build_structured_payload(message: 'Index status not created, project not found',
-                                              project_id: project.id))
+        logger.debug(
+          build_structured_payload(message: "Index status not created, project not found",
+                                   group_id: group&.id, project_id: project.id)
+        )
       end
       # rubocop: enable CodeReuse/ActiveRecord
 

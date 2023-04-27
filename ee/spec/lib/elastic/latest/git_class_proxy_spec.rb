@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :global_search do
+RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
   let(:project) { create(:project, :public, :repository) }
   let(:included_class) { Elastic::Latest::RepositoryClassProxy }
 
@@ -14,6 +14,44 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, feature_category: :glob
   end
 
   subject { included_class.new(project.repository) }
+
+  describe '#elastic_search' do
+    context 'if type is wiki_blob' do
+      let_it_be(:wiki_project) { create(:project, :wiki_repo, visibility_level: 0, wiki_access_level: 0) }
+
+      context 'if migrate_wikis_to_separate_index is not finished' do
+        before do
+          set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: false)
+          wiki_project.wiki.create_page('home_page', 'Bla bla term')
+          wiki_project.wiki.index_wiki_blobs
+          ensure_elasticsearch_index!
+        end
+
+        it 'fetches the results from the main index' do
+          results = subject.elastic_search('Bla', type: 'wiki_blob')[:wiki_blobs][:results]
+
+          expect(results.total).to eq 1
+          expect(results.first._index).to match(/#{es_helper.target_name}/)
+        end
+      end
+
+      context 'if migrate_wikis_to_separate_index is finished' do
+        before do
+          set_elasticsearch_migration_to(:migrate_wikis_to_separate_index, including: true)
+          wiki_project.wiki.create_page('home_page', 'Bla bla term')
+          wiki_project.wiki.index_wiki_blobs
+          ensure_elasticsearch_index!
+        end
+
+        it 'fetches the results from the new separate index' do
+          results = subject.elastic_search('Bla', type: 'wiki_blob')[:wiki_blobs][:results]
+
+          expect(results.total).to eq 1
+          expect(results.first._index).to match(/#{es_helper.target_name}-wikis/)
+        end
+      end
+    end
+  end
 
   describe '#elastic_search_as_found_blob' do
     it 'returns FoundBlob', :sidekiq_inline do
