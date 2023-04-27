@@ -221,7 +221,7 @@ export default {
         >
       </gl-form-group>
       <gl-form-group :label="__('Start date')" :description="$options.i18n.epicDatesHint">
-        <div class="gl-display-inline-block gl-mr-2">
+        <div class="gl-display-inline-block gl-xs-mb-3">
           <gl-datepicker
             v-model="startDateFixed"
             :max-date="dueDateFixed"
@@ -231,7 +231,7 @@ export default {
         </div>
         <gl-button
           v-show="startDateFixed"
-          variant="link"
+          variant="tertiary"
           class="gl-white-space-nowrap"
           data-testid="clear-start-date"
           @click="updateStartDate(null)"
@@ -239,7 +239,7 @@ export default {
         >
       </gl-form-group>
       <gl-form-group :label="__('Due date')" :description="$options.i18n.epicDatesHint">
-        <div class="gl-display-inline-block gl-mr-2">
+        <div class="gl-display-inline-block gl-xs-mb-3">
           <gl-datepicker
             v-model="dueDateFixed"
             :min-date="startDateFixed"
@@ -249,7 +249,7 @@ export default {
         </div>
         <gl-button
           v-show="dueDateFixed"
-          variant="link"
+          variant="tertiary"
           class="gl-white-space-nowrap"
           data-testid="clear-due-date"
           @click="updateDueDate(null)"
