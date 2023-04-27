@@ -16,10 +16,12 @@ RSpec.describe Projects::Analytics::CycleAnalytics::StagesController, feature_ca
   end
 
   let_it_be(:value_stream) do
-    create(:cycle_analytics_value_stream,
-           namespace: namespace,
-           name: 'First value stream',
-           stages: stages)
+    create(
+      :cycle_analytics_value_stream,
+      namespace: namespace,
+      name: 'First value stream',
+      stages: stages
+    )
   end
 
   let(:params) do
