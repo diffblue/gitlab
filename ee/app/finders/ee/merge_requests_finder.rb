@@ -15,7 +15,7 @@ module EE
     override :by_approved
     def by_approved(items)
       approved_param = ::Gitlab::Utils.to_boolean(params.fetch(:approved, nil))
-      return items if approved_param.nil?
+      return items if approved_param.nil? || ::Feature.disabled?(:mr_approved_filter, type: :ops)
 
       approved_filter = ->(item) {
         if item.approval_needed?
