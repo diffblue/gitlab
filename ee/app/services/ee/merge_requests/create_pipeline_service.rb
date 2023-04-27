@@ -39,11 +39,6 @@ module EE
         return false unless merge_request.project.merge_pipelines_enabled?
         return false unless can_create_pipeline_in_target_project?(merge_request)
 
-        if ::Feature.enabled?(:legacy_merge_request_state_check_for_merged_result_pipelines,
-                              merge_request.target_project)
-          return false if !merge_request.open? || merge_request.broken? || merge_request.draft?
-        end
-
         can_create_pipeline_for?(merge_request)
       end
     end

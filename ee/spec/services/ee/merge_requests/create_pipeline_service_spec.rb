@@ -96,14 +96,6 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
       end
 
       it_behaves_like 'merged result pipeline'
-
-      context 'when legacy_merge_request_state_check_for_merged_result_pipelines feature flag is enabled' do
-        before do
-          stub_feature_flags(legacy_merge_request_state_check_for_merged_result_pipelines: merge_request.target_project)
-        end
-
-        it_behaves_like 'detached merge request pipeline'
-      end
     end
 
     context 'when merge request requires an approval' do
