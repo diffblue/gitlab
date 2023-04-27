@@ -4,6 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 import {
   getInvalidBranches,
   invalidScanners,
+  invalidVulnerabilitiesAllowed,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 
 describe('invalidScanners', () => {
@@ -83,5 +84,17 @@ describe('getInvalidBranches', () => {
       projectId,
     });
     expect(response).toStrictEqual(output);
+  });
+});
+
+describe('invalidVulnerabilitiesAllowed', () => {
+  it.each`
+    payload                                | expectedResult
+    ${{ vulnerabilities_allowed: 'test' }} | ${true}
+    ${{ vulnerabilities_allowed: 1.1 }}    | ${true}
+    ${{ vulnerabilities_allowed: -1 }}     | ${true}
+    ${{ scanners: [] }}                    | ${false}
+  `('returns $expectedResult when payload is set to $payload', ({ payload, expectedResult }) => {
+    expect(invalidVulnerabilitiesAllowed([payload])).toBe(expectedResult);
   });
 });

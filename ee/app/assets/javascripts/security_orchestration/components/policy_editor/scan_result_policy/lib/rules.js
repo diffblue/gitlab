@@ -59,6 +59,11 @@ export function invalidScanners(rules) {
   );
 }
 
+export function invalidVulnerabilitiesAllowed(rules) {
+  return rules
+    .map((rule) => rule.vulnerabilities_allowed)
+    .some((value) => Boolean(value) && !/^\d+$/.test(value));
+}
 /*
   Returns the config for a particular rule type
 */
