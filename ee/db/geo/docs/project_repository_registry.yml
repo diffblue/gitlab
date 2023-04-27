@@ -1,0 +1,10 @@
+---
+table_name: project_repository_registry
+description: The registry table to track replication and verification state
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117909
+milestone: '16.0'
+feature_categories:
+- geo_replication
+classes:
+- Geo::ProjectRepositoryRegistry
+gitlab_schema: gitlab_geo

@@ -4,7 +4,7 @@ export const DEFAULT_DEVFILE_PATH = '.devfile.yaml';
 export const DEFAULT_EDITOR = 'webide';
 /* eslint-disable @gitlab/require-i18n-strings */
 export const WORKSPACE_STATES = {
-  creating: 'Creating',
+  creationRequested: 'CreationRequested',
   starting: 'Starting',
   running: 'Running',
   stopping: 'Stopping',
@@ -17,12 +17,12 @@ export const WORKSPACE_STATES = {
 
 export const WORKSPACE_DESIRED_STATES = {
   ...pick(WORKSPACE_STATES, 'running', 'stopped', 'terminated'),
-  restarting: 'Restarting',
+  restartRequested: 'RestartRequested',
 };
 /* eslint-enable @gitlab/require-i18n-strings */
 
 export const DEFAULT_DESIRED_STATE = WORKSPACE_STATES.running;
-
+export const WORKSPACES_LIST_POLL_INTERVAL = 3000;
 export const ROUTES = {
   index: 'index',
   create: 'create',

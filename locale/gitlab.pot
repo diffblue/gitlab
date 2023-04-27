@@ -50461,6 +50461,12 @@ msgstr ""
 msgid "Workspaces|New workspace"
 msgstr ""
 
+msgid "Workspaces|Restart"
+msgstr ""
+
+msgid "Workspaces|Restarting"
+msgstr ""
+
 msgid "Workspaces|Running"
 msgstr ""
 
@@ -50473,7 +50479,13 @@ msgstr ""
 msgid "Workspaces|Select project"
 msgstr ""
 
+msgid "Workspaces|Start"
+msgstr ""
+
 msgid "Workspaces|Starting"
+msgstr ""
+
+msgid "Workspaces|Stop"
 msgstr ""
 
 msgid "Workspaces|Stopped"

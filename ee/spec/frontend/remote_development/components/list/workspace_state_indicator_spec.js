@@ -21,15 +21,15 @@ describe('WorkspaceStateIndicator', () => {
   };
 
   it.each`
-    workspaceState               | iconName            | tooltip                                     | cssClass
-    ${WORKSPACE_STATES.creating} | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.creating]} | ${FILL_CLASS_GREEN}
-    ${WORKSPACE_STATES.starting} | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.starting]} | ${FILL_CLASS_GREEN}
-    ${WORKSPACE_STATES.running}  | ${'status-active'}  | ${i18n.tooltips[WORKSPACE_STATES.running]}  | ${FILL_CLASS_GREEN}
-    ${WORKSPACE_STATES.stopping} | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.stopping]} | ${null}
-    ${WORKSPACE_STATES.stopped}  | ${'status-stopped'} | ${i18n.tooltips[WORKSPACE_STATES.stopped]}  | ${null}
-    ${WORKSPACE_STATES.failed}   | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.failed]}   | ${FILL_CLASS_ORANGE}
-    ${WORKSPACE_STATES.error}    | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.error]}    | ${FILL_CLASS_ORANGE}
-    ${WORKSPACE_STATES.unknown}  | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.unknown]}  | ${FILL_CLASS_ORANGE}
+    workspaceState                        | iconName            | tooltip                                              | cssClass
+    ${WORKSPACE_STATES.creationRequested} | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.creationRequested]} | ${FILL_CLASS_GREEN}
+    ${WORKSPACE_STATES.starting}          | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.starting]}          | ${FILL_CLASS_GREEN}
+    ${WORKSPACE_STATES.running}           | ${'status-active'}  | ${i18n.tooltips[WORKSPACE_STATES.running]}           | ${FILL_CLASS_GREEN}
+    ${WORKSPACE_STATES.stopping}          | ${'status-running'} | ${i18n.tooltips[WORKSPACE_STATES.stopping]}          | ${null}
+    ${WORKSPACE_STATES.stopped}           | ${'status-stopped'} | ${i18n.tooltips[WORKSPACE_STATES.stopped]}           | ${null}
+    ${WORKSPACE_STATES.failed}            | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.failed]}            | ${FILL_CLASS_ORANGE}
+    ${WORKSPACE_STATES.error}             | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.error]}             | ${FILL_CLASS_ORANGE}
+    ${WORKSPACE_STATES.unknown}           | ${'status_warning'} | ${i18n.tooltips[WORKSPACE_STATES.unknown]}           | ${FILL_CLASS_ORANGE}
   `(
     'displays $iconName with $tooltip and $cssClass when workspace state is $state',
     ({ workspaceState, iconName, tooltip, cssClass }) => {
