@@ -1,15 +1,17 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { shallowMount } from '@vue/test-utils';
 import approvalRulesResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules.json';
 import approvalRulesCodeownersResponse from 'test_fixtures/graphql/merge_requests/approvals/approval_rules_with_code_owner.json';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import approvalRulesQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approval_rules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import ApprovalsList from 'ee/vue_merge_request_widget/components/approvals/approvals_list.vue';
 import ApprovedIcon from 'ee/vue_merge_request_widget/components/approvals/approved_icon.vue';
+import { s__ } from '~/locale';
 import UserAvatarList from '~/vue_shared/components/user_avatar/user_avatar_list.vue';
 import NumberOfApprovals from 'ee/vue_merge_request_widget/components/approvals/number_of_approvals.vue';
+import ApprovalsUsersList from 'ee/vue_merge_request_widget/components/approvals/approvals_users_list.vue';
 
 Vue.use(VueApollo);
 
@@ -17,7 +19,7 @@ describe('EE MRWidget approvals list', () => {
   let wrapper;
 
   const createComponent = (response = approvalRulesResponse) => {
-    wrapper = shallowMount(ApprovalsList, {
+    wrapper = shallowMountExtended(ApprovalsList, {
       propsData: {
         projectPath: 'gitlab-org/gitlab',
         iid: '1',
@@ -152,11 +154,20 @@ describe('EE MRWidget approvals list', () => {
         expect(summary.text()).toContain(`${count} of ${required} approvals from ${name}`);
       });
 
-      it('renders approvers list', () => {
-        const approvers = summary.findAllComponents(UserAvatarList).at(0);
+      it('does not render eligible approvers list when there are none', () => {
+        const rowWithoutEligibleApprovers = wrapper.findAllByTestId('approval-rules-row').at(0);
+        const approvers = rowWithoutEligibleApprovers.findAllComponents(UserAvatarList);
 
-        expect(approvers.exists()).toBe(true);
-        expect(approvers.props()).toEqual(
+        expect(approvers).toHaveLength(2);
+      });
+
+      it('renders eligible approvers list if any', () => {
+        const rowWithEligibleApprovers = wrapper.findAllByTestId('approval-rules-row').at(1);
+        const approvers = rowWithEligibleApprovers.findAllComponents(UserAvatarList);
+
+        expect(approvers).toHaveLength(4);
+        expect(approvers.at(0).exists()).toBe(true);
+        expect(approvers.at(0).props()).toEqual(
           expect.objectContaining({
             items: rule.eligibleApprovers,
           }),
@@ -164,23 +175,21 @@ describe('EE MRWidget approvals list', () => {
       });
 
       it('renders commented by list', () => {
-        const commentedBy = summary.findAllComponents(UserAvatarList).at(1);
+        const commentedBy = summary.findAllComponents(ApprovalsUsersList).at(0);
 
-        expect(commentedBy.props()).toEqual(
-          expect.objectContaining({
-            items: rule.commentedBy.nodes,
-          }),
-        );
+        expect(commentedBy.props()).toEqual({
+          label: s__('MRApprovals|Commented by'),
+          users: rule.commentedBy.nodes,
+        });
       });
 
       it('renders approved by list', () => {
-        const approvedBy = summary.findAllComponents(UserAvatarList).at(2);
+        const approvedBy = summary.findAllComponents(ApprovalsUsersList).at(1);
 
-        expect(approvedBy.props()).toEqual(
-          expect.objectContaining({
-            items: rule.approvedBy.nodes,
-          }),
-        );
+        expect(approvedBy.props()).toEqual({
+          label: s__('MRApprovals|Approved by'),
+          users: rule.approvedBy.nodes,
+        });
       });
     });
   });
