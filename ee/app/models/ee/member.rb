@@ -73,8 +73,7 @@ module EE
 
     override :maintaining_elasticsearch?
     def maintaining_elasticsearch?
-      ::Gitlab::CurrentSettings.elasticsearch_indexing? &&
-        ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
+      ::Gitlab::CurrentSettings.elasticsearch_indexing?
     end
 
     override :maintain_elasticsearch_create
