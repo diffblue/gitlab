@@ -69,7 +69,6 @@ module Resolvers
 
       vulnerabilities(args)
         .with_findings_scanner_and_identifiers
-        .with_created_issue_links_and_issues
     end
 
     def unconditional_includes

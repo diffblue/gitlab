@@ -62,15 +62,6 @@ module Types
           null: true,
           description: 'Severity of the vulnerability finding.'
 
-    field :confidence,
-          type: GraphQL::Types::String,
-          null: true,
-          description: 'Type of the security report that found the vulnerability.',
-          deprecated: {
-            reason: 'This field will be removed from the Finding domain model',
-            milestone: '15.4'
-          }
-
     field :false_positive,
           type: GraphQL::Types::Boolean,
           null: true,
