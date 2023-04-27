@@ -1,5 +1,3 @@
-import { iterationStates } from 'ee/iterations/constants';
-
 export const mockIterationNode = {
   description: 'some description',
   descriptionHtml: '<p>some description</p>',
@@ -7,7 +5,7 @@ export const mockIterationNode = {
   id: 'gid://gitlab/Iteration/4',
   iid: '1',
   startDate: '2021-02-10',
-  state: iterationStates.upcoming,
+  state: 'upcoming',
   title: 'top-level-iteration',
   webPath: '/groups/top-level-group/-/iterations/4',
   scopedPath: '/groups/top-level-group/-/iterations/4',

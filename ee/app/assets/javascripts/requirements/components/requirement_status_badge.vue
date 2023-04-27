@@ -3,7 +3,7 @@ import { GlBadge, GlTooltip } from '@gitlab/ui';
 import { __ } from '~/locale';
 import timeagoMixin from '~/vue_shared/mixins/timeago';
 
-import { TestReportStatus } from '../constants';
+import { STATE_FAILED, STATE_PASSED } from '../constants';
 
 export default {
   components: {
@@ -24,14 +24,14 @@ export default {
   },
   computed: {
     testReportBadge() {
-      if (this.testReport.state === TestReportStatus.Passed) {
+      if (this.testReport.state === STATE_PASSED) {
         return {
           variant: 'success',
           icon: 'status-success',
           text: __('satisfied'),
           tooltipTitle: __('Passed on'),
         };
-      } else if (this.testReport.state === TestReportStatus.Failed) {
+      } else if (this.testReport.state === STATE_FAILED) {
         return {
           variant: 'danger',
           icon: 'status-failed',

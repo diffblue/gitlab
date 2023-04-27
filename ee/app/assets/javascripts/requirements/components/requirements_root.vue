@@ -23,7 +23,7 @@ import { DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
 import {
   FilterState,
   availableSortOptions,
-  TestReportStatus,
+  STATE_PASSED,
   testReportStatusToValue,
 } from '../constants';
 import createRequirement from '../queries/create_requirement.mutation.graphql';
@@ -177,7 +177,7 @@ export default {
         const list = requirementsRoot?.nodes.map((node) => {
           return {
             ...node,
-            satisfied: node.lastTestReportState === TestReportStatus.Passed,
+            satisfied: node.lastTestReportState === STATE_PASSED,
           };
         });
 

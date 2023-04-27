@@ -17,9 +17,10 @@ import ZenMode from '~/zen_mode';
 import { renderGFM } from '~/behaviors/markdown/render_gfm';
 import { TITLE_LENGTH_MAX } from '~/issues/constants';
 import {
-  TestReportStatus,
   I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_TITLE,
   I18N_LEGACY_REFERENCE_DEPRECATION_NOTE_DETAIL,
+  STATE_FAILED,
+  STATE_PASSED,
 } from '../constants';
 import RequirementMeta from '../mixins/requirement_meta';
 import RequirementStatusBadge from './requirement_status_badge.vue';
@@ -165,7 +166,7 @@ export default {
         this.satisfied !== this.requirement.satisfied;
 
       if (updateCondition1 || updateCondition2) {
-        return this.satisfied ? TestReportStatus.Passed : TestReportStatus.Failed;
+        return this.satisfied ? STATE_PASSED : STATE_FAILED;
       }
 
       return null;

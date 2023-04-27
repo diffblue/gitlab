@@ -1,5 +1,8 @@
 import { __, s__ } from '~/locale';
 
+export const STATE_FAILED = 'FAILED';
+export const STATE_PASSED = 'PASSED';
+
 export const FilterState = {
   opened: 'OPENED',
   archived: 'ARCHIVED',
@@ -29,11 +32,6 @@ export const availableSortOptions = [
     },
   },
 ];
-
-export const TestReportStatus = {
-  Passed: 'PASSED',
-  Failed: 'FAILED',
-};
 
 export const testReportStatusToValue = {
   satisfied: 'PASSED',
