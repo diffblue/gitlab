@@ -1,0 +1,4 @@
+- user_push_access_levels = protected_branch.push_access_levels.for_user
+- if user_push_access_levels.any?
+  %p.small
+    = _('The following %{user} can also push to this branch: %{branch}') % { user: 'user'.pluralize(user_push_access_levels.size), branch: user_push_access_levels.map(&:humanize).to_sentence }

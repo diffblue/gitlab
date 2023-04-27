@@ -1,0 +1,4 @@
+- user_merge_access_levels = protected_branch.merge_access_levels.for_user
+- if user_merge_access_levels.any?
+  %p.small
+    = _('The following %{user} can also merge into this branch: %{branch}') % { user: 'user'.pluralize(user_merge_access_levels.size), branch: user_merge_access_levels.map(&:humanize).to_sentence }
