@@ -38210,9 +38210,6 @@ msgstr ""
 msgid "Runners|Clear selection"
 msgstr ""
 
-msgid "Runners|Cloud templates"
-msgstr ""
-
 msgid "Runners|Command to register runner"
 msgstr ""
 
