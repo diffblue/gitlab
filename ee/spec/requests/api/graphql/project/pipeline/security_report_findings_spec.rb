@@ -16,7 +16,6 @@ feature_category: :continuous_integration do
           pipeline(iid: "#{pipeline.iid}") {
             securityReportFindings(reportType: ["sast", "dast"]) {
               nodes {
-                confidence
                 severity
                 reportType
                 name
@@ -78,7 +77,6 @@ feature_category: :continuous_integration do
         expect(security_report_finding.dig('project', 'fullPath')).to eq(project.full_path)
         expect(security_report_finding.dig('project', 'visibility')).to eq(project.visibility)
         expect(security_report_finding['identifiers'].length).to eq(3)
-        expect(security_report_finding['confidence']).not_to be_nil
         expect(security_report_finding['severity']).not_to be_nil
         expect(security_report_finding['reportType']).not_to be_nil
         expect(security_report_finding['name']).not_to be_nil
