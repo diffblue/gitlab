@@ -7,8 +7,8 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import workItemHealthStatusSubscription from 'ee/work_items/graphql/work_item_health_status.subscription.graphql';
-import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import {
   HEALTH_STATUS_AT_RISK,
@@ -20,7 +20,7 @@ import {
 
 import {
   updateWorkItemMutationResponse,
-  workItemResponseFactory,
+  workItemByIidResponseFactory,
   workItemHealthStatusSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 
@@ -35,7 +35,7 @@ describe('WorkItemHealthStatus component', () => {
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
-  const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
+  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
@@ -49,14 +49,11 @@ describe('WorkItemHealthStatus component', () => {
     healthStatus,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
     mountFn = shallowMount,
-    fetchByIid = false,
-    queryVariables = {
-      id: workItemId,
-    },
+    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = mountFn(WorkItemHealthStatus, {
       apolloProvider: createMockApollo([
-        [workItemQuery, workItemQueryHandler],
+        [workItemByIidQuery, workItemQueryHandler],
         [updateWorkItemMutation, mutationHandler],
         [workItemHealthStatusSubscription, healthStatusSubscriptionHandler],
       ]),
@@ -65,7 +62,6 @@ describe('WorkItemHealthStatus component', () => {
         healthStatus,
         workItemId,
         workItemType,
-        fetchByIid,
         queryVariables,
         fullPath: 'test-project-path',
       },
