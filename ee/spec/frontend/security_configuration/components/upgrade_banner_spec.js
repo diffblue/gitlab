@@ -4,7 +4,7 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import UpgradeBanner, {
   SECURITY_UPGRADE_BANNER,
   UPGRADE_OR_FREE_TRIAL,
-} from '~/security_configuration/components/upgrade_banner.vue';
+} from 'ee/security_configuration/components/upgrade_banner.vue';
 
 const upgradePath = '/upgrade';
 
