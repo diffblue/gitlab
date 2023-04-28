@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, type: :component do
+RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, feature_category: :consumables_cost_management, type: :component do
   include ActionView::Helpers::NumberHelper
   include StorageHelper
 
@@ -47,7 +47,41 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, typ
       it 'includes the correct navigation instruction in the banner text' do
         render_inline(component)
 
-        expect(page).to have_text "View and manage your usage from User settings > Usage quotas"
+        expect(page).to have_text 'View and manage your usage from User settings > Usage quotas'
+      end
+
+      context 'when the user dismissed the banner under 14 days ago', :freeze_time do
+        before do
+          create(
+            :callout,
+            user: user,
+            feature_name: 'namespace_storage_pre_enforcement_banner',
+            dismissed_at: 1.day.ago
+          )
+        end
+
+        it 'does not render the banner' do
+          render_inline(component)
+
+          expect(page).not_to have_text "A namespace storage limit will soon be enforced"
+        end
+      end
+
+      context 'when the user dismissed the banner over 14 days ago', :freeze_time do
+        before do
+          create(
+            :callout,
+            user: user,
+            feature_name: 'namespace_storage_pre_enforcement_banner',
+            dismissed_at: 14.days.ago
+          )
+        end
+
+        it 'does render the banner' do
+          render_inline(component)
+
+          expect(page).to have_text "A namespace storage limit will soon be enforced"
+        end
       end
     end
   end
