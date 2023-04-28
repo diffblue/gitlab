@@ -224,6 +224,19 @@ The work is planned in [this epic](https://gitlab.com/groups/gitlab-org/-/epics/
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### GraphQL: The `DISABLED_WITH_OVERRIDE` value of the `SharedRunnersSetting` enum is deprecated. Use `DISABLED_AND_OVERRIDABLE` instead
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.8</span>
+- [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
+</div>
+
+In GitLab 17.0, the `DISABLED_WITH_OVERRIDE` value of the `SharedRunnersSetting` GraphQL enum type will be replaced with the value, `DISABLED_AND_OVERRIDABLE`.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Load Performance Testing is deprecated
 
 <div class="deprecation-notes">
@@ -1075,19 +1088,6 @@ be present during the 16.x cycle to avoid breaking the API signature, and will b
 </div>
 
 The `confidential` field for a `Note` will be deprecated and renamed to `internal`.
-
-</div>
-
-<div class="deprecation breaking-change" data-milestone="16.0">
-
-### GraphQL: The `DISABLED_WITH_OVERRIDE` value of the `SharedRunnersSetting` enum is deprecated. Use `DISABLED_AND_OVERRIDABLE` instead
-
-<div class="deprecation-notes">
-- Announced in: GitLab <span class="milestone">15.8</span>
-- [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
-</div>
-
-In GitLab 16.0, the `DISABLED_WITH_OVERRIDE` value of the `SharedRunnersSetting` GraphQL enum type will be replaced with the value, `DISABLED_AND_OVERRIDABLE`.
 
 </div>
 
