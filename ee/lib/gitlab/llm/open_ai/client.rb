@@ -31,8 +31,6 @@ module Gitlab
         end
 
         def chat(content:, **options)
-          return unless enabled?
-
           messages_chat(
             **{ messages: [{ role: DEFAULT_ROLE, content: content }] }.merge(options)
           )
@@ -42,11 +40,10 @@ module Gitlab
         # the value of `role` should be one of GPT_ROLES
         # this needed to pass back conversation history
         def messages_chat(messages:, **options)
-          return unless enabled?
-
           raise ArgumentError unless messages.all? { |m| GPT_ROLES.member? m[:role] }
 
-          client.chat(
+          request(
+            :chat,
             parameters: {
               model: DEFAULT_MODELS[:chat],
               temperature: DEFAULT_TEMPERATURE,
@@ -56,9 +53,8 @@ module Gitlab
         end
 
         def completions(prompt:, **options)
-          return unless enabled?
-
-          client.completions(
+          request(
+            :completions,
             parameters: {
               model: DEFAULT_MODELS[:completions],
               prompt: prompt,
@@ -68,9 +64,8 @@ module Gitlab
         end
 
         def edits(input:, instruction:, **options)
-          return unless enabled?
-
-          client.edits(
+          request(
+            :edits,
             parameters: {
               model: DEFAULT_MODELS[:edits],
               input: input,
@@ -80,9 +75,8 @@ module Gitlab
         end
 
         def embeddings(input:, **options)
-          return unless enabled?
-
-          client.embeddings(
+          request(
+            :embeddings,
             parameters: {
               model: DEFAULT_MODELS[:embeddings],
               input: input
@@ -106,6 +100,46 @@ module Gitlab
 
         def access_token
           @token ||= ::Gitlab::CurrentSettings.openai_api_key
+        end
+
+        def request(endpoint, options)
+          return unless enabled?
+
+          response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
+
+          track_cost(
+            usage_data: response.parsed_response&.dig('usage'),
+            model: response.parsed_response&.dig('model')
+          )
+
+          response
+        end
+
+        def track_cost(usage_data:, model:)
+          return unless usage_data
+
+          track_cost_metric("#{model}/prompt", usage_data['prompt_tokens'])
+          track_cost_metric("#{model}/completion", usage_data['completion_tokens'])
+        end
+
+        def track_cost_metric(context, amount)
+          return unless amount
+
+          cost_metric.increment(
+            {
+              vendor: 'open_ai',
+              item: context,
+              unit: 'tokens'
+            },
+            amount
+          )
+        end
+
+        def cost_metric
+          @cost_metric ||= Gitlab::Metrics.counter(
+            :gitlab_cloud_cost_spend_entry_total,
+            'Number of units spent per vendor entry'
+          )
         end
       end
     end

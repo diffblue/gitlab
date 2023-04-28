@@ -11,6 +11,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   let(:options) { {} }
   let(:example_response) do
     {
+      'model' => 'model',
       'choices' => [
         {
           'message' => {
@@ -22,7 +23,12 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
             'content' => 'bar'
           }
         }
-      ]
+      ],
+      'usage' => {
+        'prompt_tokens' => 1,
+        'completion_tokens' => 2,
+        'total_tokens' => 3
+      }
     }
   end
 
@@ -34,7 +40,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     allow(response_double).to receive(:server_error?).and_return(false)
     allow(response_double).to receive(:too_many_requests?).and_return(false)
     allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
-      allow(open_ai_client).to receive(method).with(hash_including(expected_options)).and_return(response_double)
+      allow(open_ai_client)
+        .to receive(:public_send)
+        .with(method, hash_including(expected_options))
+        .and_return(response_double)
     end
   end
 
@@ -45,6 +54,33 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
 
     context 'when feature flag and access token is set' do
       it { is_expected.to eq(response_double) }
+
+      describe 'cost tracking' do
+        it 'tracks prompt and completion tokens cost' do
+          counter = instance_double(Prometheus::Client::Counter, increment: true)
+
+          allow(Gitlab::Metrics)
+            .to receive(:counter)
+            .with(:gitlab_cloud_cost_spend_entry_total, anything)
+            .and_return(counter)
+
+          expect(counter)
+            .to receive(:increment)
+            .with(
+              { vendor: 'open_ai', item: 'model/prompt', unit: 'tokens' },
+              example_response['usage']['prompt_tokens']
+            )
+
+          expect(counter)
+            .to receive(:increment)
+            .with(
+              { vendor: 'open_ai', item: 'model/completion', unit: 'tokens' },
+              example_response['usage']['completion_tokens']
+            )
+
+          subject
+        end
+      end
     end
 
     context 'when using options' do
@@ -140,6 +176,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:method) { :embeddings }
     let(:example_response) do
       {
+        'model' => 'model',
         "data" => [
           {
             "embedding" => [
@@ -147,7 +184,12 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
               -0.005336422007530928
             ]
           }
-        ]
+        ],
+        'usage' => {
+          'prompt_tokens' => 1,
+          'completion_tokens' => 2,
+          'total_tokens' => 3
+        }
       }
     end
 
