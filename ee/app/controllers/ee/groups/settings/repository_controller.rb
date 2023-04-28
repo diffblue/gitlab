@@ -30,26 +30,10 @@ module EE
         def define_protected_branches
           @protected_branches = group.protected_branches.order(:name).page(params[:page])
           @protected_branch = group.protected_branches.new
-          gon.push(access_levels_options)
+          gon.push(helpers.protected_access_levels_for_dropdowns)
         end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
         # rubocop:enable CodeReuse/ActiveRecord
-
-        def access_levels_options
-          {
-            create_access_levels: levels_for_dropdown,
-            push_access_levels: levels_for_dropdown,
-            merge_access_levels: levels_for_dropdown
-          }
-        end
-
-        def levels_for_dropdown
-          roles = ::ProtectedRef::AccessLevel.human_access_levels.map do |id, text|
-            { id: id, text: text, before_divider: true }
-          end
-
-          { roles: roles }
-        end
       end
     end
   end
