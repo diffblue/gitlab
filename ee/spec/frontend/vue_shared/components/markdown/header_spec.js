@@ -1,7 +1,7 @@
 import { GlTabs, GlDisclosureDropdown, GlListboxItem } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import HeaderComponent from '~/vue_shared/components/markdown/header.vue';
-import AiActionsDropdown from 'ee_component/vue_shared/components/markdown/ai_actions_dropdown.vue';
+import AiActionsDropdown from 'ee/ai/components/ai_actions_dropdown.vue';
 
 describe('Markdown field header component', () => {
   let wrapper;

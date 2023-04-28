@@ -12692,6 +12692,9 @@ msgstr ""
 msgid "Creates a summary of all comments"
 msgstr ""
 
+msgid "Creates a summary of all your draft code comments"
+msgstr ""
+
 msgid "Creates branch '%{branch_name}' and a merge request to resolve this issue."
 msgstr ""
 
@@ -43231,6 +43234,9 @@ msgstr ""
 msgid "Summarize comments"
 msgstr ""
 
+msgid "Summarize my code review"
+msgstr ""
+
 msgid "Summary"
 msgstr ""
 
@@ -47113,6 +47119,9 @@ msgid "Unable to sign you in to the group with SAML due to \"%{reason}\""
 msgstr ""
 
 msgid "Unable to suggest a path. Please refresh and try again."
+msgstr ""
+
+msgid "Unable to summarize your review. No draft comments found."
 msgstr ""
 
 msgid "Unable to update label prioritization at this time"
