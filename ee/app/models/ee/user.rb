@@ -16,7 +16,7 @@ module EE
     DEFAULT_GROUP_VIEW = 'details'
     ELASTICSEARCH_TRACKED_FIELDS = %w[id username email public_email name admin state organization
                                       timezone external otp_required_for_login].freeze
-    AI_SUPPORTED_PLANS = [::Plan::ULTIMATE].freeze
+    AI_SUPPORTED_PLANS = GitlabSubscriptions::Features.saas_plans_with_feature(:ai_tanuki_bot).freeze
 
     prepended do
       include UsageStatistics
