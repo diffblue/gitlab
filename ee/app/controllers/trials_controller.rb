@@ -32,7 +32,7 @@ class TrialsController < ApplicationController
       if namespace.present? # only 1 possible namespace to apply trial, so we'll just automatically apply it
         params[:namespace_id] = namespace.id
 
-        trial_result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
+        trial_result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params(namespace)).execute
 
         if trial_result.success?
           Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
@@ -75,7 +75,7 @@ class TrialsController < ApplicationController
       # setting as an integer instead of string sometimes and integer other times.
       params[:namespace_id] = namespace.id
       # test the indifferent access here...
-      result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params).execute
+      result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params(namespace)).execute
 
       if result.success?
         Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
@@ -149,11 +149,12 @@ class TrialsController < ApplicationController
     params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).to_h
   end
 
-  def apply_trial_params
+  def apply_trial_params(namespace)
     gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
+    namespace_params = { namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on) }
 
     {
-      trial_user_information: trial_params.merge(gl_com_params),
+      trial_user_information: trial_params.merge(gl_com_params, namespace_params),
       uid: current_user.id
     }
   end

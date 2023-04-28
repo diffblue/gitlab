@@ -177,6 +177,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
                                         .new(post_params).permit(:namespace_id, :glm_source, :glm_content)
                                         .merge(
                                           namespace_id: namespace.id,
+                                          namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on),
                                           gitlab_com_trial: true,
                                           sync_to_gl: true
                                         )
@@ -305,17 +306,18 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           namespace_id: namespace.id,
           trial_entity: 'company',
           glm_source: 'source',
-          glm_content: 'content'
+          glm_content: 'content',
+          namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on)
         }
         apply_trial_params = {
           uid: user.id,
-          trial_user_information: ActionController::Parameters.new(post_params)
-                                                              .permit(
-                                                                :namespace_id,
-                                                                :trial_entity,
-                                                                :glm_source,
-                                                                :glm_content
-                                                              ).merge(gl_com_params)
+          trial_user_information: ActionController::Parameters.new(post_params).permit(
+            :namespace_id,
+            :trial_entity,
+            :glm_source,
+            :glm_content,
+            namespace: [:id, :name, :path, :kind, :trial_ends_on]
+          ).merge(gl_com_params)
         }
 
         expect_next_instance_of(GitlabSubscriptions::Trials::ApplyTrialService, apply_trial_params) do |instance|

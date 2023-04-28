@@ -35,7 +35,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
       # success
       fill_in_trial_form_for_new_group
 
-      submit_new_group_trial_selection_form
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs)
 
       expect_to_be_on_group_page
     end
@@ -54,7 +54,9 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group
 
-        submit_new_group_trial_selection_form(extra_params: { glm_content: 'discover-group-security' })
+        submit_new_group_trial_selection_form(
+          extra_params: { glm_content: 'discover-group-security', **new_group_attrs }
+        )
 
         expect_to_be_on_group_security_dashboard(group_for_path: Group.last)
       end
@@ -76,7 +78,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group(glm_source: glm_source)
 
-        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source })
+        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source, **new_group_attrs })
 
         expect_to_be_on_group_page
       end
@@ -98,7 +100,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
         fill_in_trial_form_for_new_group(glm_source: glm_source)
 
-        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source })
+        submit_new_group_trial_selection_form(extra_params: { glm_source: glm_source, **new_group_attrs })
 
         expect_to_be_on_group_page
       end
@@ -126,7 +128,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
       fill_in_trial_form_for_new_group
 
-      submit_new_group_trial_selection_form
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs)
 
       expect_to_be_on_group_page
     end
@@ -147,12 +149,12 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
       fill_in_trial_form_for_new_group
 
       # trial failure
-      submit_new_group_trial_selection_form(success: false)
+      submit_new_group_trial_selection_form(success: false, extra_params: new_group_attrs)
 
       expect_to_be_on_namespace_selection_with_errors
 
       # success
-      submit_new_group_trial_selection_form
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs)
 
       expect_to_be_on_group_page
     end

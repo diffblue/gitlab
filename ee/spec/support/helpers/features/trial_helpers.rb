@@ -95,7 +95,13 @@ module Features
       end
 
       # trial
-      stub_apply_trial(namespace_id: group.id, success: trial_success, extra_params: extra_params) if with_trial
+      if with_trial
+        stub_apply_trial(
+          namespace_id: group.id,
+          success: trial_success,
+          extra_params: extra_params.merge(existing_group_attrs)
+        )
+      end
 
       click_button 'Continue'
 
@@ -103,7 +109,11 @@ module Features
     end
 
     def submit_trial_selection_form(success: true, extra_params: {})
-      stub_apply_trial(namespace_id: group.id, success: success, extra_params: extra_with_glm_source(extra_params))
+      stub_apply_trial(
+        namespace_id: group.id,
+        success: success,
+        extra_params: extra_with_glm_source(extra_params).merge(existing_group_attrs)
+      )
 
       click_button 'Start your free trial'
     end
@@ -118,6 +128,22 @@ module Features
       extra_params[:trial_entity] = 'company' unless extra_params[:glm_source] == 'about.gitlab.com'
 
       extra_params
+    end
+
+    def existing_group_attrs
+      { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on) }
+    end
+
+    def new_group_attrs(path: 'gitlab')
+      {
+        namespace: {
+          id: anything,
+          path: path,
+          name: 'gitlab',
+          kind: 'group',
+          trial_ends_on: nil
+        }
+      }
     end
 
     def stub_apply_trial(namespace_id: anything, success: true, extra_params: {})
