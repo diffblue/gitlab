@@ -7,6 +7,27 @@ RSpec.describe Users::DestroyService, feature_category: :user_management do
 
   subject(:service) { described_class.new(current_user) }
 
+  shared_examples 'auditable' do
+    before do
+      stub_licensed_features(extended_audit_events: true)
+    end
+
+    it 'creates audit event record' do
+      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+        name: "user_destroyed"
+      })).and_call_original
+
+      expect { operation }.to change { AuditEvent.count }.by(1)
+
+      audit_event = ::AuditEvent.last
+      details = audit_attributes.delete(:details) || {}
+      audit_attributes.each do |method, value|
+        expect(audit_event.public_send(method)).to eq(value)
+      end
+      expect(audit_event.details).to include(details)
+    end
+  end
+
   describe '#execute' do
     let!(:user) { create(:user) }
 
@@ -21,6 +42,17 @@ RSpec.describe Users::DestroyService, feature_category: :user_management do
     context 'when admin mode is enabled', :enable_admin_mode do
       context 'when project is a mirror' do
         let(:project) { create(:project, :mirror, mirror_user_id: user.id) }
+        let(:audit_attributes) do
+          {
+            author: current_user,
+            entity: user,
+            target_id: user.id,
+            target_details: user.full_path,
+            details: {
+              custom_message: "User #{user.full_path} scheduled for deletion"
+            }
+          }
+        end
 
         it 'disables mirror and does not assign a new mirror_user' do
           expect(::Gitlab::ErrorTracking).to receive(:track_exception)
@@ -34,6 +66,8 @@ RSpec.describe Users::DestroyService, feature_category: :user_management do
           expect { operation }.to change { project.reload.mirror_user }.from(user).to(nil)
             .and change { project.reload.mirror }.from(true).to(false)
         end
+
+        it_behaves_like 'auditable'
       end
 
       context 'when user has oncall rotations' do

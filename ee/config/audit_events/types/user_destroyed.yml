@@ -1,0 +1,9 @@
+---
+name: user_destroyed
+description: Event triggered when a user is scheduled for removal from the instance
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374107
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113784
+feature_category: user_management
+milestone: '15.11'
+saved_to_database: true
+streamed: false

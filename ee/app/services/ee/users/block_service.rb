@@ -15,12 +15,14 @@ module EE
       private
 
       def log_audit_event(user)
-        ::AuditEventService.new(
-          current_user,
-          user,
-          action: :custom,
-          custom_message: 'Blocked user'
-        ).for_user.security_event
+        ::Gitlab::Audit::Auditor.audit({
+          name: 'user_approved',
+          message: 'Blocked user',
+          author: current_user,
+          scope: user,
+          target: user,
+          target_details: user.username
+        })
       end
     end
   end

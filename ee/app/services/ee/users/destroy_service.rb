@@ -7,11 +7,15 @@ module EE
 
       override :execute
       def execute(user, options = {})
-        super(user, options) do |delete_user|
+        result = super(user, options) do |delete_user|
           mirror_cleanup(delete_user)
           oncall_rotations_cleanup(delete_user)
           escalation_rules_cleanup(delete_user)
         end
+
+        log_audit_event(user) if audit_required?
+
+        result
       end
 
       def mirror_cleanup(user)
@@ -50,6 +54,21 @@ module EE
         mirror_owners -= [user]
 
         mirror_owners.first
+      end
+
+      def log_audit_event(user)
+        ::Gitlab::Audit::Auditor.audit({
+          name: "user_destroyed",
+          author: current_user,
+          scope: user,
+          target: user,
+          target_details: user.full_path,
+          message: "User #{user.username} scheduled for deletion"
+        })
+      end
+
+      def audit_required?
+        current_user.present?
       end
     end
   end

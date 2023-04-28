@@ -143,9 +143,7 @@ export default {
       return this.activeStages.length;
     },
     showDashboardsLink() {
-      return Boolean(
-        this.features?.groupLevelAnalyticsDashboard && this.features?.groupAnalyticsDashboardsPage,
-      );
+      return Boolean(this.features?.groupLevelAnalyticsDashboard);
     },
     dashboardsPath() {
       if (this.showDashboardsLink) {

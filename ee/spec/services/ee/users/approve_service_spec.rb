@@ -19,18 +19,27 @@ RSpec.describe Users::ApproveService, feature_category: :system_access do
         end
 
         context 'when user approve operation succeeds' do
-          it 'logs an audit event' do
-            expect { operation }.to change { AuditEvent.count }.by(1)
-          end
+          it 'logs an audit event', :aggregate_failures do
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+              name: 'user_approved'
+            })).and_call_original
 
-          it 'logs the audit event info', :aggregate_failures do
-            operation
+            expect { operation }.to change { AuditEvent.count }.by(1)
 
             audit_event = AuditEvent.where(author_id: current_user.id).last
 
             expect(audit_event.ip_address).to eq(current_user.current_sign_in_ip)
-            expect(audit_event.details[:target_details]).to eq(user.username)
-            expect(audit_event.details[:custom_message]).to eq('Instance access request approved')
+            expect(audit_event.author).to eq(current_user)
+            expect(audit_event.entity).to eq(user)
+            expect(audit_event.attributes).to include({
+              "target_id" => user.id,
+              "target_details" => user.username,
+              "target_type" => "User"
+            })
+            expect(audit_event.details).to include({
+              target_details: user.username,
+              custom_message: "Instance access request approved"
+            })
           end
         end
 
