@@ -26,8 +26,15 @@ module Groups
           'Access granted' => -> (member) { member.created_at.to_s(:csv) },
           'Access expires' => -> (member) { member.expires_at },
           'Max role' => 'human_access',
-          'Source' => -> (member) { member.source == container ? 'Direct member' : 'Inherited member' }
+          'Source' => -> (member) { member_source(member) }
         }
+      end
+
+      def member_source(member)
+        return 'Direct member' if member.source == container
+        return 'Inherited member' if container.ancestor_ids.include?(member.source_id)
+
+        'Descendant member'
       end
     end
   end
