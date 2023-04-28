@@ -30,7 +30,7 @@ module QA
         end
       end
 
-      # This group can't be removed because it is linked to a subscription.
+      # This group can't be removed while it is linked to a subscription.
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "fulfillment-free-plan-group-#{hash}"
@@ -59,9 +59,7 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/373506'
         ) do
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            # waiting for the plan to be updated in the UI
-            expect { billing.billing_plan_header }
-              .to eventually_match(/ultimate saas/i).within(max_attempts: 30, sleep_interval: 2, reload_page: page)
+            billing.wait_for_subscription('ultimate saas', page: page)
             billing.refresh_subscription_seats
 
             aggregate_failures do

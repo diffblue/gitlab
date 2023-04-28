@@ -21,6 +21,10 @@ module Gitlab
             tanuki_bot: {
               service_class: ::Gitlab::Llm::OpenAi::Completions::TanukiBot,
               prompt_class: ::Gitlab::Llm::OpenAi::Templates::TanukiBot
+            },
+            generate_test_file: {
+              service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateTestFile,
+              prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateTestFile
             }
           }.freeze
 
