@@ -140,7 +140,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
           group: group,
           feature_name: 'namespace_storage_pre_enforcement_banner'
         )
-        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?).and_return(false)
+        allow(::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?).and_return(false)
       end
 
       it 'does not render' do
@@ -168,7 +168,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
     context 'when group does not meet the criteria to render the alert' do
       it 'does not render' do
-        allow(::EE::Gitlab::Namespaces::Storage::Enforcement)
+        allow(::Namespaces::Storage::Enforcement)
           .to receive(:show_pre_enforcement_alert?).and_return(false)
 
         render_inline(component)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
+RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consumables_cost_management do
   include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
@@ -302,10 +302,10 @@ RSpec.describe ::EE::Gitlab::Namespaces::Storage::Enforcement, :saas do
   end
 
   def stub_enforcement_date(date)
-    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', date)
+    stub_const('::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', date)
   end
 
   def stub_effective_date(date)
-    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', date)
+    stub_const('::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', date)
   end
 end

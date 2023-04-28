@@ -13,7 +13,7 @@ module Namespaces
 
       def render?
         return false unless user_allowed?
-        return false unless ::EE::Gitlab::Namespaces::Storage::Enforcement.show_pre_enforcement_alert?(root_namespace)
+        return false unless ::Namespaces::Storage::Enforcement.show_pre_enforcement_alert?(root_namespace)
 
         !dismissed?
       end

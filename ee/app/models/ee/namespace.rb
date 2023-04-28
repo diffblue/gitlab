@@ -441,7 +441,7 @@ module EE
     end
 
     def root_storage_size
-      if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_ancestor)
+      if ::Namespaces::Storage::Enforcement.enforce_limit?(root_ancestor)
         ::Namespaces::Storage::RootSize.new(root_ancestor)
       else
         ::Namespaces::Storage::RootExcessSize.new(root_ancestor)

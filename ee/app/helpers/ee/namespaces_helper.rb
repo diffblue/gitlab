@@ -63,7 +63,7 @@ module EE
       super.merge({
         purchase_storage_url: buy_storage_path(namespace),
         buy_addon_target_attr: buy_addon_target_attr(namespace),
-        storage_limit_enforced: ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(namespace).to_s,
+        storage_limit_enforced: ::Namespaces::Storage::Enforcement.enforce_limit?(namespace).to_s,
         can_show_inline_alert: project_storage_limit_enforced?(namespace).to_s
       })
     end
