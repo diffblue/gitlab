@@ -26,12 +26,15 @@ export default {
   },
   computed: {
     subscriptionVariables() {
-      return this.actions.reduce((acc, action) => {
-        if (action.subscriptionVariables) {
-          Object.assign(acc, action.subscriptionVariables());
-        }
-        return acc;
-      }, {});
+      return this.actions.reduce(
+        (acc, action) => {
+          if (action.subscriptionVariables) {
+            Object.assign(acc, action.subscriptionVariables());
+          }
+          return acc;
+        },
+        { userId: undefined, resourceId: undefined },
+      );
     },
     availableActions() {
       const items = this.actions.map((item) => {
@@ -81,6 +84,9 @@ export default {
             this.insertResponse(data.aiCompletionResponse.responseBody);
           }
         },
+        skip() {
+          return this.actions.every((action) => !('apolloMutation' in action));
+        },
       },
     },
   },
@@ -118,6 +124,9 @@ export default {
         .then(({ data: { aiAction } }) => {
           if (aiAction.errors.length > 0) {
             this.handleError(new Error(aiAction.errors));
+            // do not move this to the `finally` callback
+            // this mutation only launches a subscription
+            // so we only need to trigger this on error
             this.afterAction();
             return;
           }
