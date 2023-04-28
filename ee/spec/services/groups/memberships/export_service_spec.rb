@@ -95,32 +95,47 @@ RSpec.describe Groups::Memberships::ExportService, feature_category: :subgroups 
           expect(csv.size).to eq(9)
         end
 
-        context 'a direct user', :aggregate_failures do
-          let(:direct_user_row) { csv[5] }
+        context 'checking member source' do
+          let_it_be(:group) { create(:group) }
+          let_it_be(:sub_group) { create(:group, parent: group) }
+          let_it_be(:descendant_group) { create(:group, parent: sub_group) }
 
-          it 'has the correct information' do
-            expect(direct_user_row[0]).to eq('mwoolf')
-            expect(direct_user_row[1]).to eq('Max Woolf')
-            expect(direct_user_row[2]).to eq('2021-02-01 00:00:00')
-            expect(direct_user_row[3]).to eq(expiry_date.to_s)
-            expect(direct_user_row[4]).to eq('Owner')
-            expect(direct_user_row[5]).to eq('Direct member')
-          end
-        end
+          let_it_be(:direct_user) { create(:user, username: 'Alice', name: 'Alice') }
+          let_it_be(:inherited_user) { create(:user, username: 'Bob', name: 'Bob') }
+          let_it_be(:descendant_user) { create(:user, username: 'John', name: 'John') }
 
-        context 'a user in a subgroup' do
-          before do
-            sub_group = create(:group, parent: group)
-            create(:group_member, group: sub_group, user: create(:user, username: 'Oliver', name: 'Oliver D', email: 'oliver@test.com'))
+          before_all do
+            create(:group_member, :owner, group: group, user: direct_user)
+            create(:group_member, group: sub_group, user: inherited_user)
+            create(:group_member, group: descendant_group, user: descendant_user)
           end
 
-          it 'has the correct information' do
-            row = csv.find { |row| row['Username'] == 'Oliver' }
+          let_it_be(:subgroup_service) { described_class.new(container: sub_group, current_user: direct_user) }
 
-            expect(row[0]).to eq('Oliver')
-            expect(row[1]).to eq('Oliver D')
-            expect(row[4]).to eq('Owner')
+          subject(:csv) { CSV.parse(subgroup_service.execute.payload, headers: true) }
+
+          it 'has correct source for direct member', :aggregate_failures do
+            row = csv.find { |row| row['Username'] == 'Alice' }
+
+            expect(row[0]).to eq('Alice')
+            expect(row[1]).to eq('Alice')
             expect(row[5]).to eq('Inherited member')
+          end
+
+          it 'has correct source for inherited member', :aggregate_failures do
+            row = csv.find { |row| row['Username'] == 'Bob' }
+
+            expect(row[0]).to eq('Bob')
+            expect(row[1]).to eq('Bob')
+            expect(row[5]).to eq('Direct member')
+          end
+
+          it 'has correct source for descendant member', :aggregate_failures do
+            row = csv.find { |row| row['Username'] == 'John' }
+
+            expect(row[0]).to eq('John')
+            expect(row[1]).to eq('John')
+            expect(row[5]).to eq('Descendant member')
           end
         end
       end
