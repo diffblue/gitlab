@@ -24,8 +24,7 @@ module EE
       end
 
       condition(:group_analytics_dashboards_available, scope: :subject) do
-        ::Feature.enabled?(:group_analytics_dashboards_page, @subject) &&
-          @subject.feature_available?(:group_level_analytics_dashboard)
+        @subject.feature_available?(:group_level_analytics_dashboard)
       end
 
       condition(:cycle_analytics_available, scope: :subject) do

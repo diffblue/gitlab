@@ -12,7 +12,6 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   before_action :request_params, only: :show
 
   before_action do
-    push_frontend_feature_flag(:group_analytics_dashboards_page, @group)
     push_licensed_feature(:group_level_analytics_dashboard) if group_feature?(:group_level_analytics_dashboard)
     render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
   end

@@ -25,7 +25,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
 
     before do
       stub_licensed_features(group_level_analytics_dashboard: true)
-      stub_feature_flags(group_analytics_dashboards_page: true)
     end
 
     context 'when user is not logged in' do
@@ -56,7 +55,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
     context 'when user is not logged in' do
       before do
         stub_licensed_features(group_level_analytics_dashboard: true)
-        stub_feature_flags(group_analytics_dashboards_page: true)
       end
 
       it 'redirects the user to the login page' do
@@ -71,7 +69,6 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
 
       before do
         stub_licensed_features(group_level_analytics_dashboard: true)
-        stub_feature_flags(group_analytics_dashboards_page: true)
 
         sign_in(user)
       end
@@ -89,118 +86,84 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
           stub_licensed_features(group_level_analytics_dashboard: false)
         end
 
-        context 'when the feature is disabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboards_page: false)
-          end
-
-          it_behaves_like 'forbidden response'
-        end
-
-        context 'when the feature is enabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboards_page: true)
-          end
-
-          it_behaves_like 'forbidden response'
-        end
+        it_behaves_like 'forbidden response'
       end
 
       context 'when the license is available' do
+        let_it_be(:subgroup) { create(:group, parent: group) }
+        let_it_be(:projects) { create_list(:project, 4, :public, group: group) }
+        let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+
         before do
           stub_licensed_features(group_level_analytics_dashboard: true)
         end
 
-        context 'when the feature is disabled' do
-          before do
-            stub_feature_flags(group_analytics_dashboards_page: false)
-          end
+        it 'succeeds' do
+          request
 
-          it_behaves_like 'forbidden response'
+          expect(response).to be_successful
         end
 
-        context 'when the feature is enabled' do
-          let_it_be(:subgroup) { create(:group, parent: group) }
-          let_it_be(:projects) { create_list(:project, 4, :public, group: group) }
-          let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+        it 'can accept a `query` params' do
+          project = projects.first
 
-          before do
-            stub_feature_flags(group_analytics_dashboards_page: group)
-          end
+          get build_dashboard_path(
+            value_streams_dashboard_group_analytics_dashboards_path(group),
+            [another_group, subgroup, project]
+          )
 
-          it 'succeeds' do
-            request
+          expect(response).to be_successful
 
-            expect(response).to be_successful
-          end
+          expect(response.body.include?("data-namespaces")).to be_truthy
+          expect(response.body).not_to include(parsed_response(another_group, false))
+          expect(response.body).to include(parsed_response(subgroup, false))
+          expect(response.body).to include(parsed_response(project))
+        end
 
-          it 'can accept a `query` params' do
-            project = projects.first
+        it 'will only return the first 4 namespaces' do
+          get build_dashboard_path(
+            value_streams_dashboard_group_analytics_dashboards_path(group),
+            [].concat(projects, [subgroup])
+          )
 
-            get build_dashboard_path(
-              value_streams_dashboard_group_analytics_dashboards_path(group),
-              [another_group, subgroup, project]
-            )
+          expect(response).to be_successful
+          expect(response.body).not_to include(parsed_response(subgroup, false))
 
-            expect(response).to be_successful
-
-            expect(response.body.include?("data-namespaces")).to be_truthy
-            expect(response.body).not_to include(parsed_response(another_group, false))
-            expect(response.body).to include(parsed_response(subgroup, false))
+          projects.each do |project|
             expect(response.body).to include(parsed_response(project))
           end
+        end
 
-          it 'will only return the first 4 namespaces' do
-            get build_dashboard_path(
-              value_streams_dashboard_group_analytics_dashboards_path(group),
-              [].concat(projects, [subgroup])
-            )
+        it 'will return projects in a subgroup' do
+          first_parent_project = projects.first
+          params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
 
-            expect(response).to be_successful
-            expect(response.body).not_to include(parsed_response(subgroup, false))
+          get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
 
-            projects.each do |project|
-              expect(response.body).to include(parsed_response(project))
-            end
+          expect(response).to be_successful
+          expect(response.body).to include(parsed_response(subgroup, false))
+          expect(response.body).to include(parsed_response(first_parent_project))
+
+          subgroup_projects.each do |project|
+            expect(response.body).to include(parsed_response(project))
           end
+        end
 
-          it 'will return projects in a subgroup' do
-            first_parent_project = projects.first
-            params = [].concat(subgroup_projects, [subgroup], [first_parent_project])
+        it 'tracks page view on usage ping' do
+          expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
 
-            get build_dashboard_path(value_streams_dashboard_group_analytics_dashboards_path(group), params)
+          request
 
-            expect(response).to be_successful
-            expect(response.body).to include(parsed_response(subgroup, false))
-            expect(response.body).to include(parsed_response(first_parent_project))
+          expect(response).to be_successful
+        end
 
-            subgroup_projects.each do |project|
-              expect(response.body).to include(parsed_response(project))
-            end
-          end
+        def parsed_response(namespace, is_project = true)
+          json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
+          HTMLEntities.new.encode(json)
+        end
 
-          it 'tracks page view on usage ping' do
-            expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
-
-            request
-
-            expect(response).to be_successful
-          end
-
-          context 'when the feature is not enabled for that group' do
-            let(:request) { get(value_streams_dashboard_group_analytics_dashboards_path(another_group)) }
-
-            it_behaves_like 'forbidden response'
-          end
-
-          def parsed_response(namespace, is_project = true)
-            json = { name: namespace.name, full_path: namespace.full_path, is_project: is_project }.to_json
-            HTMLEntities.new.encode(json)
-          end
-
-          def build_dashboard_path(path, namespaces)
-            "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
-          end
+        def build_dashboard_path(path, namespaces)
+          "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
         end
       end
     end

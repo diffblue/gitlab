@@ -61,7 +61,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
   before do
     stub_licensed_features(cycle_analytics_for_groups: true, type_of_work_analytics: true, dora4_analytics: true, group_level_analytics_dashboard: true)
-    stub_feature_flags(group_analytics_dashboards_page: true)
 
     group.add_owner(user)
     project.add_maintainer(user)
@@ -202,18 +201,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
         expected_url = value_streams_dashboard_group_analytics_dashboards_path(target_group)
         expect(page.find(vsd_link_selector)).to have_link("Value Streams Dashboard | DORA", href: expected_url)
-      end
-
-      context 'with `group_analytics_dashboards_page` disabled' do
-        before do
-          stub_feature_flags(group_analytics_dashboards_page: false)
-
-          select_group(target_group)
-        end
-
-        it 'does not render a link' do
-          expect(page).not_to have_selector(vsd_link_selector)
-        end
       end
     end
 
