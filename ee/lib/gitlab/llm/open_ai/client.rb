@@ -40,7 +40,7 @@ module Gitlab
         # the value of `role` should be one of GPT_ROLES
         # this needed to pass back conversation history
         def messages_chat(messages:, **options)
-          raise ArgumentError unless messages.all? { |m| GPT_ROLES.member? m[:role] }
+          raise ArgumentError unless messages.all? { |m| GPT_ROLES.member? m.with_indifferent_access[:role] }
 
           request(
             :chat,

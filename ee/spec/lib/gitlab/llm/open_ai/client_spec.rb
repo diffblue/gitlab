@@ -126,7 +126,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:messages) do
       [
         { role: described_class::SYSTEM_ROLE, content: 'you are a language model' },
-        { role: described_class::DEFAULT_ROLE, content: 'what?' }
+        { role: described_class::DEFAULT_ROLE, content: 'what?' },
+        { 'role' => described_class::DEFAULT_ROLE, 'content' => 'are string keys ok?' }
       ]
     end
 
