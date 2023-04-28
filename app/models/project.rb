@@ -1664,7 +1664,7 @@ class Project < ApplicationRecord
   end
 
   def disabled_integrations
-    []
+    %w[shimo zentao]
   end
 
   def find_or_initialize_integration(name)
