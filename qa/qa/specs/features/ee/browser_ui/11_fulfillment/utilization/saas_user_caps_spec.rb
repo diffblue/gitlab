@@ -3,36 +3,24 @@
 module QA
   RSpec.describe 'Fulfillment', :requires_admin,
     product_group: :utilization, feature_flag: { name: 'saas_user_caps', scope: :group },
-    only: { pipeline: %i[staging staging-canary] }, quarantine: {
-      type: :investigating,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/408958'
-    } do
+    only: { pipeline: %i[staging staging-canary] } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
-      let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: group_owner) }
       let(:hash) { SecureRandom.hex(8) }
       let(:user_2) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
       let(:user_3) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
 
-      let(:group_owner) do
-        Resource::User.fabricate_via_api! do |user|
-          user.email = "test-user-#{hash}@gitlab.com"
-          user.api_client = admin_api_client
-          user.hard_delete_on_api_removal = true
-        end
-      end
-
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "fulfillment-private-group-#{hash}"
-          sandbox.api_client = owner_api_client
+          sandbox.api_client = admin_api_client
         end
       end
 
       before do
         Runtime::Feature.enable(:saas_user_caps, group: group)
 
-        Flow::Login.sign_in(as: group_owner)
+        Flow::Login.sign_in_as_admin
         group.visit!
         Page::Group::Menu.perform(&:click_group_general_settings_item)
         Page::Group::Settings::General.perform do |settings|
