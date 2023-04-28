@@ -29,6 +29,11 @@ module EE
 
         validate :validate_group_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
         validate :validate_user_membership, if: -> { !importing? && protected_refs_for_users_required_and_available }
+
+        scope :by_user, ->(user) { where(user_id: user) }
+        scope :by_group, ->(group) { where(group_id: group) }
+        scope :for_user, -> { where.not(user_id: nil) }
+        scope :for_group, -> { where.not(group_id: nil) }
       end
     end
 

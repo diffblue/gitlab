@@ -1,0 +1,4 @@
+- group_merge_access_levels = protected_branch.merge_access_levels.for_group
+- if group_merge_access_levels.any?
+  %p.small
+    = _('Members of %{group} can also merge into this branch: %{branch}') % { group: (group_merge_access_levels.size > 1 ? 'these groups' : 'this group'), branch: group_merge_access_levels.map(&:humanize).to_sentence }
