@@ -22,7 +22,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     FIELDS
   end
 
-  let_it_be(:query) { pagination_query }
+  let(:query) { pagination_query }
 
   let!(:occurrences) { create_list(:sbom_occurrence, 5, project: project) }
 
@@ -130,6 +130,19 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     it 'does not return dependency data' do
       subject
       expect(graphql_data_at(:project, :dependencies)).to be_blank
+    end
+  end
+
+  context 'with sort as an argument' do
+    let(:query) { pagination_query({ sort: :NAME_DESC }) }
+
+    it 'sorts by component name descending' do
+      subject
+
+      result = graphql_data_at(:project, :dependencies, :nodes)
+      names = result.pluck('name')
+
+      expect(names).to eq(names.sort.reverse)
     end
   end
 end

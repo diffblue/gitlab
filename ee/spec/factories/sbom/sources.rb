@@ -7,6 +7,7 @@ FactoryBot.define do
     transient do
       sequence(:input_file_path) { |n| "subproject-#{n}/package-lock.json" }
       sequence(:source_file_path) { |n| "subproject-#{n}/package.json" }
+      packager_name { 'npm' }
     end
 
     source do
@@ -14,7 +15,7 @@ FactoryBot.define do
         'category' => 'development',
         'input_file' => { 'path' => input_file_path },
         'source_file' => { 'path' => source_file_path },
-        'package_manager' => { 'name' => 'npm' },
+        'package_manager' => { 'name' => packager_name },
         'language' => { 'name' => 'JavaScript' }
       }
     end

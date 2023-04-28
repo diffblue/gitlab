@@ -19,6 +19,16 @@ module Sbom
 
     scope :order_by_id, -> { order(id: :asc) }
 
+    scope :order_by_component_name, ->(direction) do
+      sort_direction = direction&.downcase == 'desc' ? 'desc' : 'asc'
+      joins(:component).order("sbom_components.name #{sort_direction}")
+    end
+
+    scope :order_by_package_name, ->(direction) do
+      sort_direction = direction&.downcase == 'desc' ? 'desc' : 'asc'
+      joins(:source).order(Arel.sql("sbom_sources.source->'package_manager'->'name' #{sort_direction}"))
+    end
+
     def location
       {
         blob_path: input_file_blob_path,
