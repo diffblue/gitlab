@@ -30,7 +30,6 @@ RSpec.describe Projects::PipelineHelper, feature_category: :pipeline_composition
         license_management_api_url: license_management_api_url(project),
         licenses_api_path: helper.licenses_api_path(project, pipeline),
         failed_jobs_count: pipeline.failed_builds.count,
-        failed_jobs_summary: prepare_failed_jobs_summary_data(pipeline.failed_builds),
         project_path: project.full_path,
         graphql_resource_etag: graphql_etag_pipeline_path(pipeline),
         metrics_path: namespace_project_ci_prometheus_metrics_histograms_path(namespace_id: project.namespace, project_id: project, format: :json),

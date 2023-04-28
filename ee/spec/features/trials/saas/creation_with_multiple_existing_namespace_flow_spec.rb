@@ -81,7 +81,7 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       # success
       fill_in_trial_selection_form_for_new_group
 
-      submit_new_group_trial_selection_form
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: 'gitlab1'))
 
       expect_to_be_on_group_page(path: 'gitlab1')
     end

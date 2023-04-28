@@ -26,6 +26,7 @@ module EE
         mount ::API::Experiments
         mount ::API::GeoReplication
         mount ::API::GeoNodes
+        mount ::API::GeoSites
         mount ::API::Ldap
         mount ::API::LdapGroupLinks
         mount ::API::License

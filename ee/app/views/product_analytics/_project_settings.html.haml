@@ -1,0 +1,55 @@
+- return unless @project.feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project)
+
+%section.settings.product-analytics.no-animate#js-product-analytics-settings{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Product Analytics')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p
+      = s_('ProjectSettings|Configure product analytics to track events within your project applications.')
+      = link_to _('Learn more.'), help_page_path('user/product_analytics/index')
+  .settings-content
+    = gitlab_ui_form_for @project, html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
+      = f.fields_for :project_setting do |settings|
+        %fieldset
+          .form-group
+            = settings.label :jitsu_host, s_('ProjectSettings|Jitsu host'), class: 'label-light'
+            = settings.url_field :jitsu_host, class: 'form-control gl-form-input', placeholder: 'https://jitsu.gitlab.com'
+            .form-text.text-muted
+              = s_('ProjectSettings|The host of your Jitsu instance.')
+          .form-group
+            = settings.label :jitsu_project_xid, s_('ProjectSettings|Jitsu project ID'), class: 'label-light'
+            = settings.text_field :jitsu_project_xid, class: 'form-control gl-form-input'
+            .form-text.text-muted
+              = s_('ProjectSettings|The ID of the project in Jitsu. The project contains all analytics instances.')
+          .form-group
+            = settings.label :jitsu_administrator_email, s_('ProjectSettings|Jitsu administrator email'), class: 'label-light'
+            = settings.email_field :jitsu_administrator_email, class: 'form-control gl-form-input', placeholder: 'jitsu.admin@gitlab.com', autocomplete: 'off'
+            .form-text.text-muted
+              = s_('ProjectSettings|Used to generate short-lived API access tokens.')
+          .form-group
+            = settings.label :jitsu_administrator_password, s_('ProjectSettings|Jitsu administrator password'), class: 'label-light'
+            = settings.password_field :jitsu_administrator_password, value: '', class: 'form-control gl-form-input', autocomplete: 'off'
+            .form-text.text-muted
+              = s_('ProjectSettings|Used to generate short-lived API access tokens.')
+          .form-group
+            = settings.label :product_analytics_data_collector_host, s_('ProjectSettings|Collector host'), class: 'label-light'
+            = settings.url_field :product_analytics_data_collector_host, class: 'form-control gl-form-input', placeholder: 'https://collector.gitlab.com'
+            .form-text.text-muted
+              = s_('ProjectSettings|The host of your data collector instance.')
+          .form-group
+            = settings.label :product_analytics_clickhouse_connection_string, s_('ProjectSettings|Clickhouse URL'), class: 'label-light'
+            = settings.url_field :product_analytics_clickhouse_connection_string, class: 'form-control gl-form-input', placeholder: 'https://user:pass@clickhouse.gitlab.com:8123'
+            .form-text.text-muted
+              = s_('ProjectSettings|Used to connect Jitsu to the Clickhouse instance.')
+          .form-group
+            = settings.label :cube_api_base_url, s_('ProjectSettings|Cube API URL'), class: 'label-light'
+            = settings.url_field :cube_api_base_url, class: 'form-control gl-form-input', placeholder: 'https://cube.gitlab.com'
+            .form-text.text-muted
+              = s_('ProjectSettings|The URL of your Cube instance.')
+          .form-group
+            = settings.label :cube_api_key, s_('ProjectSettings|Cube API key'), class: 'label-light'
+            = settings.text_field :cube_api_key, class: 'form-control gl-form-input'
+            .form-text.text-muted
+              = s_('ProjectSettings|Used to retrieve dashboard data from the Cube instance.')
+      = f.submit _('Save changes'), class: 'gl-button btn btn-confirm'

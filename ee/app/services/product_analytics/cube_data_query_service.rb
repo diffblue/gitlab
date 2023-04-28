@@ -2,6 +2,8 @@
 
 module ProductAnalytics
   class CubeDataQueryService < BaseContainerService
+    include Gitlab::Utils::StrongMemoize
+
     REFRESH_TOKEN_EXPIRE = 1.day
 
     def execute
@@ -54,8 +56,8 @@ module ProductAnalytics
 
     def product_analytics_enabled?
       Gitlab::CurrentSettings.product_analytics_enabled? &&
-        Gitlab::CurrentSettings.cube_api_base_url.present? &&
-        Gitlab::CurrentSettings.cube_api_key.present? &&
+        product_analytics_settings.cube_api_base_url.present? &&
+        product_analytics_settings.cube_api_key.present? &&
         project.product_analytics_enabled?
     end
 
@@ -64,7 +66,7 @@ module ProductAnalytics
     end
 
     def cube_server_url(endpoint)
-      "#{ProductAnalytics::Settings.cube_api_base_url}/cubejs-api/v1/" + endpoint
+      "#{product_analytics_settings.cube_api_base_url}/cubejs-api/v1/" + endpoint
     end
 
     def gitlab_token
@@ -87,12 +89,17 @@ module ProductAnalytics
 
       {
         "Content-Type": 'application/json',
-        Authorization: JWT.encode(payload, ProductAnalytics::Settings.cube_api_key, 'HS256')
+        Authorization: JWT.encode(payload, product_analytics_settings.cube_api_key, 'HS256')
       }
     end
 
     def database_missing?(body)
       body['error'] =~ %r{\AError: Code: (81|60)\..*(UNKNOWN_DATABASE|UNKNOWN_TABLE)}
     end
+
+    def product_analytics_settings
+      ProductAnalytics::Settings.for_project(project)
+    end
+    strong_memoize_attr :product_analytics_settings
   end
 end
