@@ -16,19 +16,10 @@ module QA
         end
       end
 
-      let(:developer_user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
+      let(:developer_user) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
+      let(:guest_user) { Resource::User.fabricate_via_api! { |user| user.api_client = admin_api_client } }
 
-      let(:guest_user) do
-        Resource::User.fabricate_via_api! do |user|
-          user.api_client = admin_api_client
-        end
-      end
-
-      # This group can't be removed because it is linked to a subscription.
+      # This group can't be removed while it is linked to a subscription.
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
           sandbox.path = "fulfillment-free-plan-group-#{hash}"
@@ -40,15 +31,13 @@ module QA
         Flow::Login.sign_in(as: user)
         group.visit!
         Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
-        group.add_member(guest_user, Resource::Members::AccessLevel::GUEST)
-        group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
-        Page::Group::Menu.perform(&:go_to_billing)
-      end
-
-      after do
-        user.remove_via_api!
-        guest_user.remove_via_api!
-        developer_user.remove_via_api!
+        Support::Waiter.wait_until(max_duration: 15) { page.text.include?('successfully purchased') }
+        Gitlab::Page::Group::Settings::Billing.perform do |billing|
+          billing.wait_for_subscription('ultimate saas', page: page)
+          group.add_member(guest_user, Resource::Members::AccessLevel::GUEST)
+          group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
+          billing.refresh_subscription_seats
+        end
       end
 
       context 'in usage quotas' do
@@ -56,17 +45,8 @@ module QA
           'user seat data is displayed correctly',
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377358'
         ) do
-          Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            # waiting for the plan to be updated in the UI
-            expect { billing.billing_plan_header }
-              .to eventually_match(/ultimate saas/i).within(max_attempts: 30, sleep_interval: 2, reload_page: page)
-            billing.refresh_subscription_seats
-          end
-
           Page::Group::Menu.perform(&:go_to_usage_quotas)
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            usage_quota.seats_tab
-
             aggregate_failures do
               expect(usage_quota.seats_in_use).to match(%r{2 / 1})
               expect(usage_quota.seats_in_use).to match(%r{Seats in use / Seats in subscription}i)
@@ -77,6 +57,26 @@ module QA
               # Guest user not shown in Usage Quotas seats for Ultimate License
               expect(usage_quota.subscription_users).not_to match(/#{guest_user.name}/)
               expect(usage_quota.group_usage_message).to match(/fulfillment-free-plan-group-#{hash} group/)
+            end
+          end
+        end
+
+        it(
+          'max seats used count does not change after members are removed',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/408486'
+        ) do
+          Gitlab::Page::Group::Settings::Billing.perform do |billing|
+            group.remove_member(developer_user)
+            group.remove_member(guest_user)
+            billing.refresh_subscription_seats
+          end
+
+          Page::Group::Menu.perform(&:go_to_usage_quotas)
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            aggregate_failures do
+              expect(usage_quota.seats_in_use).to match(%r{1 / 1})
+              expect(usage_quota.seats_used).to match(%r{2 Max seats used}i)
+              expect(usage_quota.seats_owed).to match(%r{1 Seats owed}i)
             end
           end
         end
