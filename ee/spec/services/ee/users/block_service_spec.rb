@@ -19,16 +19,27 @@ RSpec.describe Users::BlockService, feature_category: :user_management do
         end
 
         context 'when user block operation succeeds' do
-          it 'logs an audit event' do
+          it 'logs an audit event', :aggregate_failures do
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+              name: 'user_approved'
+            })).and_call_original
+
             expect { operation }.to change { AuditEvent.count }.by(1)
-          end
 
-          it 'logs the audit event info' do
-            operation
+            audit_event = AuditEvent.where(author_id: current_user.id).last
 
-            expect(AuditEvent.last).to have_attributes(
-              details: hash_including(custom_message: 'Blocked user')
-            )
+            expect(audit_event.ip_address).to eq(current_user.current_sign_in_ip)
+            expect(audit_event.author).to eq(current_user)
+            expect(audit_event.entity).to eq(user)
+            expect(audit_event.attributes).to include({
+              "target_id" => user.id,
+              "target_details" => user.username,
+              "target_type" => "User"
+            })
+            expect(audit_event.details).to include({
+              target_details: user.username,
+              custom_message: "Blocked user"
+            })
           end
         end
 

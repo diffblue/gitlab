@@ -15,11 +15,17 @@ module EE
       private
 
       def log_audit_event(user)
-        ::AuditEventService.new(
-          current_user,
-          user,
-          action: :create
-        ).for_user.security_event
+        ::Gitlab::Audit::Auditor.audit({
+          name: "user_created",
+          author: current_user,
+          scope: user,
+          target: user,
+          target_details: user.full_path,
+          message: "User #{user.username} created",
+          additional_details: {
+            add: "user"
+          }
+        })
       end
 
       def audit_required?

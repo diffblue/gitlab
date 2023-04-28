@@ -17,17 +17,27 @@ RSpec.describe Users::RejectService, feature_category: :user_management do
         end
 
         context 'when user is successfully rejected' do
-          it 'logs an audit event' do
-            expect { reject_user }.to change { AuditEvent.count }.by(1)
-          end
+          it 'logs an audit event', :aggregate_failures do
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
+              name: 'user_approved'
+            })).and_call_original
 
-          it 'logs the audit event info', :aggregate_failures do
-            reject_user
+            expect { reject_user }.to change { AuditEvent.count }.by(1)
+
             audit_event = AuditEvent.where(author_id: current_user.id).last
 
             expect(audit_event.ip_address).to eq(current_user.current_sign_in_ip)
-            expect(audit_event.details[:target_details]).to eq(user.username)
-            expect(audit_event.details[:custom_message]).to eq('Instance access request rejected')
+            expect(audit_event.author).to eq(current_user)
+            expect(audit_event.entity).to eq(user)
+            expect(audit_event.attributes).to include({
+              "target_id" => user.id,
+              "target_details" => user.username,
+              "target_type" => "User"
+            })
+            expect(audit_event.details).to include({
+              target_details: user.username,
+              custom_message: "Instance access request rejected"
+            })
           end
         end
 

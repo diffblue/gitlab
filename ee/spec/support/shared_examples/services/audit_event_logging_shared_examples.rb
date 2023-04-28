@@ -8,6 +8,12 @@ RSpec.shared_examples 'audit event logging' do
 
     context 'when operation succeeds' do
       it 'logs an audit event' do
+        if defined?(audit_event_name)
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including(
+            name: audit_event_name
+          )).and_call_original
+        end
+
         expect { operation }.to change(AuditEvent, :count).by(1)
       end
 
