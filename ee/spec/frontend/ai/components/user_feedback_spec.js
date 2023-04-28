@@ -1,13 +1,14 @@
-import { GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import Tracking from '~/tracking';
-import { FEEDBACK_OPTIONS } from 'ee/ai/constants';
+import { FEEDBACK_OPTIONS, EXPLAIN_CODE_TRACKING_EVENT_NAME } from 'ee/ai/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 
 describe('UserFeedback', () => {
   let wrapper;
 
+  const promptLocation = 'before_content';
   const createComponent = (props = {}) => {
     wrapper = shallowMountExtended(UserFeedback, {
       propsData: {
@@ -18,10 +19,9 @@ describe('UserFeedback', () => {
 
   const findButtons = () => wrapper.findAllComponents(GlButton);
   const firstButton = () => wrapper.findAllComponents(GlButton).at(0);
-  const findSkeleton = () => wrapper.findAllComponents(GlSkeletonLoader);
 
   beforeEach(() => {
-    createComponent();
+    createComponent({ eventName: EXPLAIN_CODE_TRACKING_EVENT_NAME, promptLocation });
     jest.spyOn(Tracking, 'event');
   });
 
@@ -37,22 +37,13 @@ describe('UserFeedback', () => {
     it('receives correct icon prop', () => {
       expect(firstButton().props('icon')).toBe(FEEDBACK_OPTIONS[0].icon);
     });
-
-    it('does not render skeleton with the default props', () => {
-      expect(findSkeleton().exists()).toBe(false);
-    });
-
-    it('renders sekeleton loader id isLoading prop is set to true', () => {
-      createComponent({ isLoading: true });
-      expect(findSkeleton().exists()).toBe(true);
-    });
   });
 
   describe('tracking', () => {
     it('fires tracking event  when component is destroyed if button was clicked', () => {
       firstButton().vm.$emit('click');
 
-      expect(Tracking.event).toHaveBeenCalledWith(undefined, 'explain_code_blob_viewer', {
+      expect(Tracking.event).toHaveBeenCalledWith(undefined, EXPLAIN_CODE_TRACKING_EVENT_NAME, {
         action: 'click_button',
         extra: { prompt_location: 'before_content' },
         label: 'response_feedback',
@@ -63,7 +54,7 @@ describe('UserFeedback', () => {
     it('fires tracking event when the window is closed', () => {
       firstButton().vm.$emit('click');
 
-      expect(Tracking.event).toHaveBeenCalledWith(undefined, 'explain_code_blob_viewer', {
+      expect(Tracking.event).toHaveBeenCalledWith(undefined, EXPLAIN_CODE_TRACKING_EVENT_NAME, {
         action: 'click_button',
         extra: { prompt_location: 'before_content' },
         label: 'response_feedback',

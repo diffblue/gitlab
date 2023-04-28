@@ -147,6 +147,7 @@ export default {
             <slot
               v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
               name="feedback"
+              :prompt-location="index ? 'after_content' : 'before_content'"
             ></slot>
           </div>
           <div v-if="isLoading" class="gl-p-5 gl-display-flex">
