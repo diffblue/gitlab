@@ -2388,17 +2388,16 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
     end
   end
 
-  describe 'users banned from projects' do
-    let(:user) { create(:user) }
+  describe 'user banned from namespace' do
+    let_it_be_with_reload(:current_user) { create(:user) }
 
     let_it_be(:group) { create(:group, :private) }
-    let_it_be(:project) { create(:project, :private, group: group) }
+    let_it_be(:project) { create(:project, :private, public_builds: false, group: group) }
 
     before do
-      group.add_developer(user)
+      stub_licensed_features(unique_project_download_limit: true)
+      project.add_developer(current_user)
     end
-
-    subject { described_class.new(user, project) }
 
     context 'when user is not banned' do
       it { is_expected.to be_allowed(:read_project) }
@@ -2406,20 +2405,42 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
 
     context 'when user is banned' do
       before do
-        create(:namespace_ban, user: user, namespace: group.root_ancestor)
+        create(:namespace_ban, user: current_user, namespace: group.root_ancestor)
       end
 
       it { is_expected.to be_disallowed(:read_project) }
 
-      context 'when group is a subgroup' do
-        let_it_be(:group) { create(:group, :private) }
-        let_it_be(:sub_group) { create(:group, :private, parent: group) }
-        let_it_be(:project) { create(:project, :private, group: sub_group) }
+      context 'as an owner of the project' do
+        before do
+          project.add_owner(current_user)
+        end
 
         it { is_expected.to be_disallowed(:read_project) }
       end
 
-      context 'when feature flag is disabled' do
+      context 'when project is inside subgroup' do
+        let_it_be(:subgroup) { create(:group, :private, parent: group) }
+        let_it_be(:project) { create(:project, :private, public_builds: false, group: subgroup) }
+
+        it { is_expected.to be_disallowed(:read_project) }
+      end
+
+      context 'as an admin' do
+        let_it_be(:current_user) { admin }
+
+        context 'when admin mode is enabled', :enable_admin_mode do
+          it { is_expected.to be_allowed(:read_project) }
+        end
+      end
+
+      context 'when project is public' do
+        let_it_be(:group) { create(:group, :public) }
+        let_it_be(:project) { create(:project, :public, public_builds: false, group: group) }
+
+        it { is_expected.to be_disallowed(:read_project) }
+      end
+
+      context 'when the limit_unique_project_downloads_per_namespace_user feature flag is disabled' do
         before do
           stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
         end
@@ -2427,34 +2448,9 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         it { is_expected.to be_allowed(:read_project) }
       end
 
-      context 'when project is public' do
-        let_it_be(:group) { create(:group, :public) }
-        let_it_be(:project) { create(:project, :public, group: group) }
-
-        it { is_expected.to be_allowed(:read_project) }
-
-        context 'when group is a subgroup' do
-          let_it_be(:group) { create(:group, :public) }
-          let_it_be(:sub_group) { create(:group, :public, parent: group) }
-          let_it_be(:project) { create(:project, :public, group: sub_group) }
-
-          it { is_expected.to be_allowed(:read_project) }
-        end
-      end
-
-      context 'when user is a project owner' do
+      context 'when licensed feature unique_project_download_limit is not available' do
         before do
-          project.add_owner(user)
-        end
-
-        it { is_expected.to be_disallowed(:read_project) }
-      end
-
-      context 'when user is an admin' do
-        let(:user) { create(:user, :admin) }
-
-        before do
-          enable_admin_mode!(user)
+          stub_licensed_features(unique_project_download_limit: false)
         end
 
         it { is_expected.to be_allowed(:read_project) }
