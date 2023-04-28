@@ -302,6 +302,7 @@ export default {
             :list="list"
             :filter-params="filtersToUse"
             :is-swimlanes-header="true"
+            @setActiveList="$emit('setActiveList', $event)"
           />
         </div>
       </component>

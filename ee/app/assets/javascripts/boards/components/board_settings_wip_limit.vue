@@ -3,6 +3,7 @@ import { GlButton, GlFormInput } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, n__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import listUpdateLimitMetricsMutation from '../graphql/list_update_limit_metrics.mutation.graphql';
 
 export default {
   i18n: {
@@ -11,6 +12,7 @@ export default {
     noneText: __('None'),
     inputPlaceholderText: __('Enter number of issues'),
     removeLimitText: __('Remove limit'),
+    updateListError: __('Something went wrong while updating your list settings'),
   },
   components: {
     GlButton,
@@ -19,7 +21,12 @@ export default {
   directives: {
     autofocusonshow,
   },
+  inject: ['isApolloBoard'],
   props: {
+    activeListId: {
+      type: String,
+      required: true,
+    },
     maxIssueCount: {
       type: Number,
       required: true,
@@ -70,33 +77,52 @@ export default {
         this.updating = true;
         // need to reassign bc were clearing the ref in resetStateAfterUpdate.
         const wipLimit = this.currentWipLimit;
-        const id = this.activeId;
 
-        this.updateListWipLimit({ maxIssueCount: wipLimit, listId: id })
-          .catch(() => {
-            this.unsetActiveId();
-            this.setError({
-              message: __('Something went wrong while updating your list settings'),
+        if (this.isApolloBoard) {
+          this.updateWipLimit(this.activeListId, wipLimit);
+        } else {
+          this.updateListWipLimit({ maxIssueCount: wipLimit, listId: this.activeId })
+            .catch(() => {
+              this.unsetActiveId();
+              this.setError({
+                message: this.$options.i18n.updateListError,
+              });
+            })
+            .finally(() => {
+              this.resetStateAfterUpdate();
             });
-          })
-          .finally(() => {
-            this.resetStateAfterUpdate();
-          });
+        }
       } else {
         this.edit = false;
       }
     },
     clearWipLimit() {
-      this.updateListWipLimit({ maxIssueCount: 0, listId: this.activeId })
-        .catch(() => {
-          this.unsetActiveId();
-          this.setError({
-            message: __('Something went wrong while updating your list settings'),
+      if (this.isApolloBoard) {
+        this.updateWipLimit(this.activeListId, 0);
+      } else {
+        this.updateListWipLimit({ maxIssueCount: 0, listId: this.activeId })
+          .catch(() => {
+            this.unsetActiveId();
+            this.setError({
+              message: this.$options.i18n.updateListError,
+            });
+          })
+          .finally(() => {
+            this.resetStateAfterUpdate();
           });
-        })
-        .finally(() => {
-          this.resetStateAfterUpdate();
-        });
+      }
+    },
+    updateWipLimit(listId, maxIssueCount) {
+      this.$apollo.mutate({
+        mutation: listUpdateLimitMetricsMutation,
+        variables: {
+          input: {
+            listId,
+            maxIssueCount,
+          },
+        },
+      });
+      this.resetStateAfterUpdate();
     },
   },
 };

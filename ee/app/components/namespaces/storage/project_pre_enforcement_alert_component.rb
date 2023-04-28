@@ -20,7 +20,7 @@ module Namespaces
         # We can't use Users::Callout because we'd dismiss user A Namespace alert
         # So we rely on Users::ProjectCallout for proper dismissal without side effects
         user.dismissed_callout_for_project?(
-          feature_name: callout_feature_name,
+          **dismissed_callout_args,
           project: context
         )
       end

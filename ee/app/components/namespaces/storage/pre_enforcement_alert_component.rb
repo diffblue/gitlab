@@ -128,20 +128,23 @@ module Namespaces
       end
 
       def extra_callout_data
-        { group_id: root_namespace_id }
+        { group_id: root_namespace.id }
       end
 
       def dismiss_endpoint
         group_callouts_path
       end
 
-      def root_namespace_id
-        root_namespace.id
+      def dismissed_callout_args
+        {
+          feature_name: callout_feature_name,
+          ignore_dismissal_earlier_than: 14.days.ago
+        }
       end
 
       def dismissed?
         user.dismissed_callout_for_group?(
-          feature_name: callout_feature_name,
+          **dismissed_callout_args,
           group: root_namespace
         )
       end

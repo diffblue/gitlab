@@ -29,9 +29,7 @@ module Namespaces
       end
 
       def dismissed?
-        user.dismissed_callout?(
-          feature_name: callout_feature_name
-        )
+        user.dismissed_callout?(**dismissed_callout_args)
       end
 
       def dismiss_endpoint
