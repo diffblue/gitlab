@@ -15,12 +15,14 @@ module EE
       end
 
       def log_audit_event(user)
-        ::AuditEventService.new(
-          current_user,
-          user,
-          action: :custom,
-          custom_message: _('Instance access request approved')
-        ).for_user.security_event
+        ::Gitlab::Audit::Auditor.audit({
+          name: 'user_approved',
+          message: _('Instance access request approved'),
+          author: current_user,
+          scope: user,
+          target: user,
+          target_details: user.username
+        })
       end
     end
   end

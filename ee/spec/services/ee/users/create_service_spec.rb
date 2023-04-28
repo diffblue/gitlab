@@ -21,6 +21,8 @@ RSpec.describe Users::CreateService, feature_category: :user_management do
 
     context 'audit events' do
       include_examples 'audit event logging' do
+        let(:audit_event_name) { 'user_created' }
+
         let(:fail_condition!) do
           expect_any_instance_of(User)
             .to receive(:save).and_return(false)
@@ -33,7 +35,9 @@ RSpec.describe Users::CreateService, feature_category: :user_management do
             entity_type: 'User',
             details: {
               add: 'user',
+              author_class: 'User',
               author_name: current_user.name,
+              custom_message: "User #{@resource.username} created",
               target_id: @resource.id,
               target_type: 'User',
               target_details: @resource.full_path
