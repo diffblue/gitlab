@@ -52560,9 +52560,6 @@ msgstr ""
 msgid "failed to dismiss associated finding(id=%{finding_id}): %{message}"
 msgstr ""
 
-msgid "failed to dismiss finding: %{message}"
-msgstr ""
-
 msgid "failed to dismiss security finding: %{message}"
 msgstr ""
 
