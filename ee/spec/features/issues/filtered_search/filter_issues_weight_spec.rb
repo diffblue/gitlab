@@ -57,7 +57,7 @@ RSpec.describe 'Filter issues weight', :js, feature_category: :team_planning do
   describe 'weight with other filters' do
     it 'filters issues by searched weight and text' do
       select_tokens 'Weight', '=', issue2.weight
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_search_term 'bug'
@@ -65,7 +65,7 @@ RSpec.describe 'Filter issues weight', :js, feature_category: :team_planning do
 
     it 'filters issues by searched weight, author and text' do
       select_tokens 'Weight', '=', '2', 'Author', '=', user.username
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_search_term 'bug'
@@ -73,7 +73,7 @@ RSpec.describe 'Filter issues weight', :js, feature_category: :team_planning do
 
     it 'filters issues by searched weight, author, assignee and text' do
       select_tokens 'Weight', '=', '2', 'Author', '=', user.username, 'Assignee', '=', user.username
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_search_term 'bug'
@@ -81,7 +81,7 @@ RSpec.describe 'Filter issues weight', :js, feature_category: :team_planning do
 
     it 'filters issues by searched weight, author, assignee, label and text' do
       select_tokens 'Weight', '=', '2', 'Author', '=', user.username, 'Assignee', '=', user.username, 'Label', '=', label.title
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_search_term 'bug'
@@ -89,7 +89,7 @@ RSpec.describe 'Filter issues weight', :js, feature_category: :team_planning do
 
     it 'filters issues by searched weight, milestone and text' do
       select_tokens 'Weight', '=', '2', 'Milestone', '=', milestone.title
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_search_term 'bug'

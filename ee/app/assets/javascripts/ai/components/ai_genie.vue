@@ -8,7 +8,12 @@ import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { renderMarkdown } from '~/notes/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
-import { i18n, AI_GENIE_DEBOUNCE, GENIE_CHAT_MODEL_ROLES } from '../constants';
+import {
+  i18n,
+  AI_GENIE_DEBOUNCE,
+  GENIE_CHAT_MODEL_ROLES,
+  EXPLAIN_CODE_TRACKING_EVENT_NAME,
+} from '../constants';
 import explainCodeMutation from '../graphql/explain_code.mutation.graphql';
 
 const linesWithDigitsOnly = /^\d+$\n/gm;
@@ -16,6 +21,7 @@ const linesWithDigitsOnly = /^\d+$\n/gm;
 export default {
   name: 'AiGenie',
   i18n,
+  trackingEventName: EXPLAIN_CODE_TRACKING_EVENT_NAME,
   components: {
     GlButton,
     AiGenieChat,
@@ -203,8 +209,8 @@ export default {
           class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0 gl-overflow-y-auto"
         />
       </template>
-      <template #feedback>
-        <user-feedback />
+      <template #feedback="{ promptLocation }">
+        <user-feedback :event-name="$options.trackingEventName" :prompt-location="promptLocation" />
       </template>
     </ai-genie-chat>
   </div>

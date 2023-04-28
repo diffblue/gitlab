@@ -52,3 +52,5 @@ export const FEEDBACK_OPTIONS = [
 const MODEL_MAX_TOKENS = 4096; // max for 'gpt-3.5-turbo' model as per https://platform.openai.com/docs/models/gpt-3-5
 export const MAX_RESPONSE_TOKENS = 300;
 export const TOKENS_THRESHOLD = MODEL_MAX_TOKENS * 0.85; // We account for 15% fault in tokens calculation
+
+export const EXPLAIN_CODE_TRACKING_EVENT_NAME = 'explain_code_blob_viewer';

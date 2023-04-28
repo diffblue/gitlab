@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import Tracking from '~/tracking';
 import { FEEDBACK_OPTIONS } from '../constants';
 
@@ -7,15 +7,18 @@ export default {
   name: 'UserFeedback',
   components: {
     GlButton,
-    GlSkeletonLoader,
   },
   mixins: [Tracking.mixin()],
   feedbackOptions: FEEDBACK_OPTIONS,
   props: {
-    isLoading: {
-      type: Boolean,
+    eventName: {
+      type: String,
+      required: true,
+    },
+    promptLocation: {
+      type: String,
       required: false,
-      default: false,
+      default: '',
     },
   },
   data() {
@@ -24,31 +27,21 @@ export default {
     };
   },
   computed: {
-    showFeedbackOptions() {
-      return !this.isLoading && !this.feedbackValue;
-    },
     savedFeedbackOption() {
       return this.feedbackValue
         ? FEEDBACK_OPTIONS.find((option) => option.value === this.feedbackValue)
         : null;
     },
   },
-  watch: {
-    isLoading(newVal) {
-      if (newVal) {
-        this.feedbackValue = '';
-      }
-    },
-  },
   methods: {
     trackFeedback(value) {
       this.feedbackValue = value;
-      this.track('explain_code_blob_viewer', {
+      this.track(this.eventName, {
         action: 'click_button',
         label: 'response_feedback',
         property: value,
         extra: {
-          prompt_location: 'before_content',
+          prompt_location: this.promptLocation,
         },
       });
     },
@@ -58,8 +51,7 @@ export default {
 
 <template>
   <div class="gl-display-flex gl-mt-6">
-    <gl-skeleton-loader v-if="isLoading" :lines="1" />
-    <template v-if="showFeedbackOptions">
+    <template v-if="!feedbackValue">
       <gl-button
         v-for="option in $options.feedbackOptions"
         :key="option.value"
