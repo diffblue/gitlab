@@ -51,6 +51,7 @@ The following fields are included in the JWT:
 | `job_id`                | Always                       | ID of this job                                                                                                                                                                                       |
 | `ref`                   | Always                       | Git ref for this job                                                                                                                                                                                 |
 | `ref_type`              | Always                       | Git ref type, either `branch` or `tag`                                                                                                                                                               |
+| `ref_path`              | Always                       | Fully qualified ref for the job. Ex: `refs/heads/main` |
 | `ref_protected`         | Always                       | `true` if this Git ref is protected, `false` otherwise                                                                                                                                               |
 | `environment`           | Job specifies an environment | Environment this job specifies ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/294440) in GitLab 13.9)                                                                                   |
 | `environment_protected` | Job specifies an environment | `true` if specified environment is protected, `false` otherwise ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/294440) in GitLab 13.9)                                                  |
@@ -78,6 +79,7 @@ Example JWT payload:
   "job_id": "1212",
   "ref": "auto-deploy-2020-04-01",
   "ref_type": "branch",
+  "ref_path": "refs/heads/auto-deploy-2020-04-01",
   "ref_protected": "true",
   "environment": "production",
   "environment_protected": "true"
