@@ -26,6 +26,12 @@ module Namespaces
         strong_memoize(:current_size) { root_namespace.total_repository_size_excess }
       end
 
+      def exceeded_size(change_size = 0)
+        exceeded_size = current_size + change_size - limit
+
+        [exceeded_size, 0].max
+      end
+
       def limit
         strong_memoize(:limit) do
           root_namespace.additional_purchased_storage_size.megabytes
@@ -34,6 +40,12 @@ module Namespaces
 
       def enforce_limit?
         ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
+      end
+
+      def error_message
+        message_params = { namespace_name: root_namespace.name }
+
+        @error_message_object ||= ::Gitlab::RepositorySizeErrorMessage.new(self, message_params)
       end
 
       def enforcement_type

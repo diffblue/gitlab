@@ -56,11 +56,12 @@ module EE
     def storage_size_limit_alert
       return unless repository&.repo_type&.project?
 
-      storage_notification = ::Namespaces::Storage::CliNotification.new(project.namespace, user)
+      root_namespace = project.root_ancestor
+      size_checker = root_namespace.root_storage_size
+      error_message_object = size_checker.error_message
 
-      return unless storage_notification.show?
-
-      storage_notification.payload
+      return error_message_object.push_warning if size_checker.usage_ratio >= 0.95 && size_checker.usage_ratio < 1
+      return error_message_object.push_error if size_checker.usage_ratio >= 1
     end
   end
 end

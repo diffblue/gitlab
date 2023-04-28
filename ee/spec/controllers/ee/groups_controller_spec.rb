@@ -13,6 +13,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
   let_it_be(:subgroup2) { create(:group, :private, parent: subgroup) }
 
   describe 'GET #show' do
+    render_views
     let(:namespace) { group }
 
     subject(:get_show) { get :show, params: { id: group.to_param } }
