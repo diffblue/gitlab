@@ -1,5 +1,5 @@
 import { GlDisclosureDropdown, GlDisclosureDropdownItem } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
@@ -39,6 +39,8 @@ describe('Board List Header Component', () => {
   let fakeApollo;
 
   const setFullBoardIssuesCountSpy = jest.fn();
+  const mockClientToggleListCollapsedResolver = jest.fn();
+  const mockClientToggleEpicListCollapsedResolver = jest.fn();
 
   afterEach(() => {
     fakeApollo = null;
@@ -58,8 +60,9 @@ describe('Board List Header Component', () => {
     state = { activeId: inactiveId },
     isEpicBoard = false,
     issuableType = 'issue',
+    injectedProps = {},
   } = {}) => {
-    const boardId = '1';
+    const boardId = 'gid://gitlab/Board/1';
 
     const listMock = {
       ...listMocks[listType],
@@ -74,10 +77,18 @@ describe('Board List Header Component', () => {
       );
     }
 
-    fakeApollo = createMockApollo([
-      [listQuery, listQueryHandler],
-      [epicListQuery, jest.fn().mockResolvedValue(epicBoardListQueryResponse())],
-    ]);
+    fakeApollo = createMockApollo(
+      [
+        [listQuery, listQueryHandler],
+        [epicListQuery, jest.fn().mockResolvedValue(epicBoardListQueryResponse())],
+      ],
+      {
+        Mutation: {
+          clientToggleListCollapsed: mockClientToggleListCollapsedResolver,
+          clientToggleEpicListCollapsed: mockClientToggleEpicListCollapsedResolver,
+        },
+      },
+    );
 
     store = new Vuex.Store({
       state,
@@ -94,15 +105,16 @@ describe('Board List Header Component', () => {
         list: listMock,
         filterParams: {},
         isSwimlanesHeader,
+        boardId,
       },
       provide: {
-        boardId,
         weightFeatureAvailable,
         currentUserId,
         canCreateEpic,
         isEpicBoard,
         disabled: false,
         issuableType,
+        ...injectedProps,
       },
       stubs: {
         GlDisclosureDropdown,
@@ -121,6 +133,7 @@ describe('Board List Header Component', () => {
   const findDropdown = () => wrapper.findComponent(GlDisclosureDropdown);
   const findNewEpicButton = () => wrapper.findByTestId(newEpicBtnTestId);
   const findSettingsButton = () => wrapper.findByTestId(listSettingsTestId);
+  const findCaret = () => wrapper.findByTestId('board-title-caret');
 
   afterEach(() => {
     localStorage.clear();
@@ -276,5 +289,35 @@ describe('Board List Header Component', () => {
 
       expect(wrapper.findComponent({ ref: 'weightTooltip' }).exists()).toBe(false);
     });
+  });
+
+  describe('Apollo boards', () => {
+    it.each`
+      issuableType | isEpicBoard | queryHandler                                 | notCalledHandler
+      ${'epic'}    | ${true}     | ${mockClientToggleEpicListCollapsedResolver} | ${mockClientToggleListCollapsedResolver}
+      ${'issue'}   | ${false}    | ${mockClientToggleListCollapsedResolver}     | ${mockClientToggleEpicListCollapsedResolver}
+    `(
+      'sets $issuableType list collapsed state',
+      async ({ issuableType, isEpicBoard, queryHandler, notCalledHandler }) => {
+        createComponent({
+          injectedProps: { isApolloBoard: true, issuableType, isEpicBoard },
+        });
+
+        await nextTick();
+        findCaret().vm.$emit('click');
+        await nextTick();
+
+        expect(queryHandler).toHaveBeenCalledWith(
+          {},
+          {
+            list: mockList,
+            collapsed: true,
+          },
+          expect.anything(),
+          expect.anything(),
+        );
+        expect(notCalledHandler).not.toHaveBeenCalled();
+      },
+    );
   });
 });

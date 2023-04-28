@@ -302,6 +302,7 @@ export default {
             :list="list"
             :filter-params="filtersToUse"
             :is-swimlanes-header="true"
+            :board-id="boardId"
             @setActiveList="$emit('setActiveList', $event)"
           />
         </div>

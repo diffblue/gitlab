@@ -1,0 +1,9 @@
+#import "../epic_board_list.fragment.graphql"
+
+mutation toggleEpicListCollapsed($list: EpicBoardList!, $collapsed: Boolean!) {
+  clientToggleEpicListCollapsed(list: $list, collapsed: $collapsed) @client {
+    list {
+      ...EpicBoardListFragment
+    }
+  }
+}
