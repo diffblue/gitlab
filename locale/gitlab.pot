@@ -43927,13 +43927,13 @@ msgstr ""
 msgid "Terraform|Download JSON"
 msgstr ""
 
+msgid "Terraform|Explore documentation"
+msgstr ""
+
 msgid "Terraform|Failed to load Terraform reports"
 msgstr ""
 
 msgid "Terraform|Generating the report caused an error."
-msgstr ""
-
-msgid "Terraform|How to use GitLab-managed Terraform state?"
 msgstr ""
 
 msgid "Terraform|Job status"
