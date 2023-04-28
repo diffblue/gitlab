@@ -25281,6 +25281,9 @@ msgstr ""
 msgid "Job|Manual"
 msgstr ""
 
+msgid "Job|No job log"
+msgstr ""
+
 msgid "Job|No search results found"
 msgstr ""
 
@@ -29443,9 +29446,6 @@ msgid "No issues found"
 msgstr ""
 
 msgid "No iteration"
-msgstr ""
-
-msgid "No job log"
 msgstr ""
 
 msgid "No label"
@@ -48760,9 +48760,6 @@ msgid "View job"
 msgstr ""
 
 msgid "View job currently using resource"
-msgstr ""
-
-msgid "View job log"
 msgstr ""
 
 msgid "View jobs"
