@@ -37,6 +37,33 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.order_by_component_name' do
+    let_it_be(:occurrence_1) { create(:sbom_occurrence, component: create(:sbom_component, name: 'component_1')) }
+    let_it_be(:occurrence_2) { create(:sbom_occurrence, component: create(:sbom_component, name: 'component_2')) }
+
+    it 'returns records sorted by component name asc' do
+      expect(described_class.order_by_component_name('asc').map(&:name)).to eq(%w[component_1 component_2])
+    end
+
+    it 'returns records sorted by component name desc' do
+      expect(described_class.order_by_component_name('desc').map(&:name)).to eq(%w[component_2 component_1])
+    end
+  end
+
+  describe '.order_by_package_name' do
+    let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
+    let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
+    let_it_be(:occurrence_null) { create(:sbom_occurrence, source: nil) }
+
+    it 'returns records sorted by package name asc' do
+      expect(described_class.order_by_package_name('asc').map(&:packager)).to eq(%w[npm nuget])
+    end
+
+    it 'returns records sorted by package name desc' do
+      expect(described_class.order_by_package_name('desc').map(&:packager)).to eq(%w[nuget npm])
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }

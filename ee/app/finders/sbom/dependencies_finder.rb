@@ -8,8 +8,15 @@ module Sbom
     end
 
     def execute
-      project.sbom_occurrences
-        .order_by_id
+      sbom_occurrences = project.sbom_occurrences
+      case params[:sort_by]
+      when 'name'
+        sbom_occurrences.order_by_component_name(params[:sort])
+      when 'packager'
+        sbom_occurrences.order_by_package_name(params[:sort])
+      else
+        sbom_occurrences.order_by_id
+      end
     end
 
     private

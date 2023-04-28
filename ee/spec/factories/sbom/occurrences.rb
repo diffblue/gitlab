@@ -7,7 +7,11 @@ FactoryBot.define do
     commit_sha { pipeline.sha }
     component_version { association :sbom_component_version }
     component { component_version&.component || association(:sbom_component) }
-    source { association :sbom_source }
+    source { association :sbom_source, packager_name: packager_name }
+
+    transient do
+      packager_name { 'npm' }
+    end
 
     after(:build) do |occurrence|
       occurrence.uuid = Sbom::OccurrenceUUID.generate(
