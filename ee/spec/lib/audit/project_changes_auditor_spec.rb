@@ -247,31 +247,33 @@ RSpec.describe Audit::ProjectChangesAuditor, feature_category: :audit_events do
                      remove_source_branch_after_merge only_allow_merge_if_pipeline_succeeds
                      only_allow_merge_if_all_discussions_are_resolved]
         columns.each do |column|
-          where(:prev_value, :new_value) do
-            true  | false
-            false | true
-          end
-
-          with_them do
-            before do
-              project.update_attribute(column, prev_value)
-              project.update_attribute(column, new_value)
+          context "with #{column}" do
+            where(:prev_value, :new_value) do
+              true  | false
+              false | true
             end
 
-            it 'creates an audit event' do
-              expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-              expect(AuditEvent.last.details).to include({
-                                                           change: column,
-                                                           from: prev_value,
-                                                           to: new_value
-                                                         })
-            end
+            with_them do
+              before do
+                project.update_attribute(column, prev_value)
+                project.update_attribute(column, new_value)
+              end
 
-            it 'streams correct audit event', :aggregate_failures do
-              event_name = "project_#{column}_updated"
-              expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
-                .with(event_name, anything, anything)
-              subject.execute
+              it 'creates an audit event' do
+                expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
+                expect(AuditEvent.last.details).to include({
+                                                            change: column,
+                                                            from: prev_value,
+                                                            to: new_value
+                                                          })
+              end
+
+              it 'streams correct audit event', :aggregate_failures do
+                event_name = "project_#{column}_updated"
+                expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+                  .with(event_name, anything, anything)
+                subject.execute
+              end
             end
           end
         end
