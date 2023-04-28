@@ -507,14 +507,14 @@ class License < MainClusterwide::ApplicationRecord
   end
 
   def check_trueup
-    unless previous_user_count
+    unless trueup_period_seat_count
       check_restricted_user_count
       return
     end
 
     trueup_qty = restrictions[:trueup_quantity]
     max_historical = historical_max(from: trueup_from, to: trueup_to)
-    expected_trueup_qty = max_historical - previous_user_count
+    expected_trueup_qty = max_historical - trueup_period_seat_count
 
     if trueup_quantity_with_threshold >= expected_trueup_qty
       check_restricted_user_count
@@ -569,6 +569,10 @@ class License < MainClusterwide::ApplicationRecord
     strong_memoize(:daily_billable_users) do
       ::Analytics::UsageTrends::Measurement.find_latest_or_fallback(:billable_users)
     end
+  end
+
+  def trueup_period_seat_count
+    restricted_attr(:trueup_period_seat_count) || previous_user_count
   end
 end
 

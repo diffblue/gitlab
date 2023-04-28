@@ -86,7 +86,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when reconciliation_completed is false on the license' do
         it 'adds errors for invalid true up figures' do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: false, previous_user_count: 0)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, reconciliation_completed: false, trueup_period_seat_count: 0)
 
           expect(license).not_to be_valid
           expect(license.errors.added?(:base, :check_trueup)).to eq(true)
@@ -97,7 +97,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when reconciliation_completed is not present on the license' do
         it 'adds errors for invalid true up figures' do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, previous_user_count: 0)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, trueup_period_seat_count: 0)
 
           expect(license).not_to be_valid
           expect(license.errors.added?(:base, :check_trueup)).to eq(true)
@@ -108,7 +108,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when trueup quantity with threshold is more than the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, previous_user_count: 0)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, trueup_period_seat_count: 0)
         end
 
         it { is_expected.to be_valid }
@@ -118,7 +118,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when trueup quantity with threshold is equal to the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, previous_user_count: 0)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 10, trueup_period_seat_count: 0)
         end
 
         let(:active_user_count) { described_class.current.daily_billable_users_count + 11 }
@@ -130,7 +130,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
 
       context 'when trueup quantity with threshold is less than the required quantity' do
         before do
-          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, previous_user_count: 0)
+          set_restrictions(restricted_user_count: 10, trueup_quantity: 8, trueup_period_seat_count: 0)
         end
 
         it 'is not valid' do
@@ -139,7 +139,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
         end
       end
 
-      context 'when previous user count is not present' do
+      context 'when trueup_period_seat_count is absent and previous_user_count is absent' do
         before do
           set_restrictions(restricted_user_count: 10, trueup_quantity: 10)
         end
@@ -149,12 +149,22 @@ RSpec.describe License, feature_category: :sm_provisioning do
         it_behaves_like 'invalid if active users with threshold exceeds restricted user count'
       end
 
-      context 'when previous user count is present' do
+      context 'when trueup_period_seat_count is present' do
+        before do
+          set_restrictions(restricted_user_count: 5, trueup_quantity: 6, trueup_period_seat_count: 4)
+        end
+
+        it { is_expected.to be_valid }
+      end
+
+      context 'when trueup_period_seat_count is absent but previous_user_count is present' do
         before do
           set_restrictions(restricted_user_count: 5, trueup_quantity: 6, previous_user_count: 4)
         end
 
         it { is_expected.to be_valid }
+
+        it_behaves_like 'invalid if active users with threshold exceeds restricted user count'
       end
 
       context 'when customer is switching from a legacy license to a cloud license' do
@@ -1492,6 +1502,7 @@ RSpec.describe License, feature_category: :sm_provisioning do
     gl_license.restrictions = {
       active_user_count: opts[:restricted_user_count],
       previous_user_count: opts[:previous_user_count],
+      trueup_period_seat_count: opts[:trueup_period_seat_count],
       trueup_quantity: opts[:trueup_quantity],
       trueup_from: (date - 1.year).to_s,
       trueup_to: date.to_s,
