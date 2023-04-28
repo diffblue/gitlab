@@ -12,7 +12,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
     let(:logger) { instance_double('Logger') }
     let(:instance) { described_class.new(current_user: user, question: question, logger: logger) }
     let(:openai_client) { ::Gitlab::Llm::OpenAi::Client.new(user) }
-    let(:embedding_response) { { "data" => [{ "embedding" => Array.new(1536, 0.5) }] } }
+    let(:embedding) { Array.new(1536, 0.5) }
+    let(:embedding_response) { { "data" => [{ "embedding" => embedding }] } }
     let(:attrs) { embeddings.map(&:id).map { |x| "CNT-IDX-#{x}" }.join(", ") }
     let(:completion_response) { { "choices" => [{ "text" => "#{answer} ATTRS: #{attrs}" }] } }
     let(:status_code) { 200 }
@@ -148,7 +149,11 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
               it 'queries the embedding database for nearest neighbors' do
                 allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
 
-                expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for).and_call_original.once
+                expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for)
+                  .with(embedding,
+                    limit: described_class::RECORD_LIMIT,
+                    minimum_distance: described_class::MINIMUM_DISTANCE)
+                  .and_call_original.once
 
                 execute
               end

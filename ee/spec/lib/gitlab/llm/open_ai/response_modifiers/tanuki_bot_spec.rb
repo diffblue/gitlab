@@ -34,4 +34,18 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot, feature_catego
       expect(subject).to eq(response)
     end
   end
+
+  context "when the message contains the text I don't know" do
+    let(:text) { "I don't know the answer to your question" }
+    let(:record_id) { non_existing_record_id }
+
+    it 'sets sources as empty' do
+      response = {
+        msg: text,
+        sources: []
+      }
+
+      expect(subject).to eq(response)
+    end
+  end
 end
