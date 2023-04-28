@@ -30,7 +30,6 @@ describe('The Pipeline Tabs', () => {
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
     failedJobsCount: 1,
-    failedJobsSummary: [],
     isFullCodequalityReportAvailable: true,
     licenseManagementApiUrl: '/path/to/license_management_api_url',
     licensesApiPath: '/path/to/licenses_api',
