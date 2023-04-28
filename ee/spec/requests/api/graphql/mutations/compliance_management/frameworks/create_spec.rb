@@ -21,6 +21,10 @@ RSpec.describe 'Create a Compliance Framework', feature_category: :compliance_ma
     )
   end
 
+  let(:pipeline_configuration_full_path) do
+    '.compliance-gitlab-ci.yml@compliance/hipaa'
+  end
+
   subject { post_graphql_mutation(mutation, current_user: current_user) }
 
   def mutation_response
@@ -38,7 +42,7 @@ RSpec.describe 'Create a Compliance Framework', feature_category: :compliance_ma
       expect(mutation_response['framework']['color']).to eq '#ABC123'
       expect(mutation_response['framework']['name']).to eq 'GDPR'
       expect(mutation_response['framework']['description']).to eq 'Example Description'
-      expect(mutation_response['framework']['pipelineConfigurationFullPath']).to eq '.compliance-gitlab-ci.yml@compliance/hipaa'
+      expect(mutation_response['framework']['pipelineConfigurationFullPath']).to eq pipeline_configuration_full_path
     end
   end
 
@@ -55,10 +59,36 @@ RSpec.describe 'Create a Compliance Framework', feature_category: :compliance_ma
     before do
       stub_licensed_features(custom_compliance_frameworks: true, evaluate_group_level_compliance_pipeline: false)
       namespace.add_owner(current_user)
-      post_graphql_mutation(mutation, current_user: current_user)
     end
 
-    it_behaves_like 'a mutation that returns errors in the response', errors: ['Pipeline configuration full path feature is not available']
+    context 'when pipeline_configuration_full_path is set' do
+      before do
+        post_graphql_mutation(mutation, current_user: current_user)
+      end
+
+      it_behaves_like 'a mutation that returns errors in the response', errors: ['Pipeline configuration full path feature is not available']
+    end
+
+    context 'when pipeline_configuration_full_path is not set' do
+      let(:mutation) do
+        graphql_mutation(
+          :create_compliance_framework,
+          namespace_path: namespace.full_path,
+          params: {
+            name: 'GDPR',
+            description: 'Example Description',
+            color: '#ABC123',
+            pipeline_configuration_full_path: ''
+          }
+        )
+      end
+
+      let(:pipeline_configuration_full_path) do
+        nil
+      end
+
+      it_behaves_like 'a mutation that creates a compliance framework'
+    end
   end
 
   context 'feature is licensed' do
