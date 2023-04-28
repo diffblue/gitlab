@@ -4262,6 +4262,7 @@ RSpec.describe MergeRequest, factory_default: :keep, feature_category: :code_rev
     it 'fetches the ref and expires the ancestor cache' do
       expect { subject.target_project.repository.delete_refs(subject.ref_path) }.not_to raise_error
 
+      expect(project.repository).to receive(:expire_ancestor_cache).with(subject.target_branch_sha, subject.diff_head_sha).and_call_original
       expect(subject).to receive(:expire_ancestor_cache).and_call_original
 
       subject.fetch_ref!
