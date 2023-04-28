@@ -115,7 +115,7 @@ Due to limited customer usage, Browser Performance Testing is deprecated and wil
 </div>
 
 The `CiRunner.projects`'s field default sort order value will change from `id_asc` to `id_desc`.
-If you're relying on the order of the returned projects to be `id_asc`, please change your scripts to make the choice explicit.
+If you rely on the order of the returned projects to be `id_asc`, change your scripts to make the choice explicit.
 
 </div>
 

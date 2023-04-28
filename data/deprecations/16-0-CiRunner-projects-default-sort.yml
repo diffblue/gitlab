@@ -10,7 +10,7 @@
   issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/372117 # (required) Link to the deprecation issue in GitLab
   body: |  # (required) Do not modify this line, instead modify the lines below.
     The `CiRunner.projects`'s field default sort order value will change from `id_asc` to `id_desc`.
-    If you're relying on the order of the returned projects to be `id_asc`, please change your scripts to make the choice explicit.
+    If you rely on the order of the returned projects to be `id_asc`, change your scripts to make the choice explicit.
 #
 # OPTIONAL END OF SUPPORT FIELDS
 #
