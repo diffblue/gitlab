@@ -5,7 +5,7 @@ import { initRelatedIssues } from '~/related_issues';
 import initWorkItemLinks from '~/work_items/components/work_item_links';
 import initSidebarBundle from '~/sidebar/sidebar_bundle';
 import UserCallout from '~/user_callout';
-import { summarizeCommentsAction } from 'ee/notes/ai/summarize_comments';
+import { summarizeCommentsAction } from 'ee/ai/editor_actions/summarize_comments';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 
 const editorAiActions = [];

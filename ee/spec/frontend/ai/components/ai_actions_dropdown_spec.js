@@ -8,10 +8,10 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 
-import AiActionsDropdown from 'ee/vue_shared/components/markdown/ai_actions_dropdown.vue';
+import AiActionsDropdown from 'ee/ai/components/ai_actions_dropdown.vue';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import { resetHTMLFixture, setHTMLFixture } from 'helpers/fixtures';
-import dummyMutation from './dummy_mutation.graphql';
+import dummyMutation from './mocks/dummy_mutation.graphql';
 
 Vue.use(VueApollo);
 
