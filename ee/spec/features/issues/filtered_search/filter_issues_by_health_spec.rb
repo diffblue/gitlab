@@ -120,7 +120,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
   describe 'health with other filters' do
     it 'filters issues by searched health and text' do
       select_tokens 'Health', '=', 'At risk'
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
@@ -130,7 +130,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
 
     it 'filters issues by searched health, author and text' do
       select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
@@ -140,7 +140,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
 
     it 'filters issues by searched health, author, assignee and text' do
       select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username, 'Assignee', '=', user.username
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
@@ -151,7 +151,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
     it 'filters issues by searched health, author, assignee, label and text' do
       select_tokens 'Health', '=', 'At risk', 'Author', '=', user.username
       select_tokens 'Assignee', '=', user.username, 'Label', '=', label.title
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
@@ -161,7 +161,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
 
     it 'filters issues by searched health, milestone and text' do
       select_tokens 'Health', '=', 'At risk', 'Milestone', '=', milestone.title
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
@@ -171,7 +171,7 @@ RSpec.describe 'Filter issues health status', :js, feature_category: :team_plann
 
     it 'filters issues by not on track, milestone and text' do
       select_tokens 'Health', '!=', 'On track', 'Milestone', '=', milestone.title
-      send_keys 'bug', :enter
+      send_keys 'bug', :enter, :enter
 
       expect_issues_list_count 1
       expect_issues_list_to_contain([issue2])
