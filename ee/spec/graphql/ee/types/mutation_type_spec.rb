@@ -14,8 +14,7 @@ RSpec.describe Types::MutationType do
       let(:field) { get_field(field_name) }
       let(:deprecation_reason) { "#{reason}. Deprecated in #{milestone}." }
 
-      it { expect(field).to be_present }
-      it { expect(field.deprecation_reason).to eq(deprecation_reason) }
+      it { expect(field).not_to be_present }
     end
   end
 
