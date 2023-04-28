@@ -14,6 +14,8 @@ const TEST_ENDPOINT = `${TEST_HOST}/diff/endpoint`;
 
 Vue.use(Vuex);
 
+Vue.config.ignoredElements = ['copy-code'];
+
 describe('diffs/components/app', () => {
   let store;
   let wrapper;

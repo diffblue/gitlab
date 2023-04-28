@@ -21,7 +21,8 @@ module EE
     override :diffs_tab_pane_data
     def diffs_tab_pane_data(project, merge_request, params)
       super.merge(
-        endpoint_codequality: (codequality_mr_diff_reports_project_merge_request_path(project, merge_request, 'json') if project.licensed_feature_available?(:inline_codequality) && merge_request.has_codequality_mr_diff_report?)
+        endpoint_codequality: (codequality_mr_diff_reports_project_merge_request_path(project, merge_request, 'json') if project.licensed_feature_available?(:inline_codequality) && merge_request.has_codequality_mr_diff_report?),
+        show_generate_test_file_button: ::Llm::GenerateTestFileService.new(current_user, merge_request).valid?.to_s
       )
     end
   end

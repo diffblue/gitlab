@@ -78,3 +78,6 @@ export const fetchCodequality = ({ commit, state, dispatch }) => {
     }
   });
 };
+
+export const setGenerateTestFilePath = ({ commit }, path) =>
+  commit(types.SET_GENERATE_TEST_FILE_PATH, path);

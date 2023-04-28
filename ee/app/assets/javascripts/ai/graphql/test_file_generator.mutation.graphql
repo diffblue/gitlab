@@ -1,0 +1,10 @@
+mutation generateTestFile($resourceId: AiModelID!, $filePath: String!) {
+  aiAction(
+    input: {
+      generateTestFile: { resourceId: $resourceId, filePath: $filePath }
+      markupFormat: HTML
+    }
+  ) {
+    errors
+  }
+}
