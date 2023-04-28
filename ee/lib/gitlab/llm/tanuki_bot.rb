@@ -9,12 +9,14 @@ module Gitlab
         max_tokens: 256,
         top_p: 1,
         n: 1,
-        best_of: 1
+        best_of: 1,
+        temperature: 0
       }.freeze
       REQUEST_TIMEOUT = 30
       CONTENT_ID_FIELD = 'ATTRS'
       CONTENT_ID_REGEX = /CNT-IDX-(?<id>\d+)/
       RECORD_LIMIT = 7
+      MINIMUM_DISTANCE = 0.6
 
       def self.execute(current_user:, question:, logger: nil)
         new(current_user: current_user, question: question, logger: logger).execute
@@ -126,8 +128,11 @@ module Gitlab
         embeddings_result = client.embeddings(input: question)
         question_embedding = embeddings_result['data'].first['embedding']
 
-        nearest_neighbors = ::Embedding::TanukiBotMvc.neighbor_for(question_embedding).limit(RECORD_LIMIT)
-        nearest_neighbors.map do |item|
+        ::Embedding::TanukiBotMvc.neighbor_for(
+          question_embedding,
+          limit: RECORD_LIMIT,
+          minimum_distance: MINIMUM_DISTANCE
+        ).map do |item|
           item.metadata['source_url'] = item.url
 
           {
