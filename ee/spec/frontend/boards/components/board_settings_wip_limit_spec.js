@@ -1,16 +1,22 @@
 import { GlFormInput } from '@gitlab/ui';
 import { noop } from 'lodash';
 import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardSettingsWipLimit from 'ee_component/boards/components/board_settings_wip_limit.vue';
+import listUpdateLimitMetricsMutation from 'ee_component/boards/graphql/list_update_limit_metrics.mutation.graphql';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mockLabelList } from 'jest/boards/mock_data';
+import { mockUpdateListWipLimitResponse } from '../mock_data';
 
+Vue.use(VueApollo);
 Vue.use(Vuex);
 
 describe('BoardSettingsWipLimit', () => {
   let wrapper;
+  let mockApollo;
   let storeActions;
   const listId = mockLabelList.id;
   const currentWipLimit = 1; // Needs to be other than null to trigger requests
@@ -20,12 +26,21 @@ describe('BoardSettingsWipLimit', () => {
   const findWipLimit = () => wrapper.findByTestId('wip-limit');
   const findInput = () => wrapper.findComponent(GlFormInput);
 
+  const listUpdateLimitMetricsMutationHandler = jest
+    .fn()
+    .mockResolvedValue(mockUpdateListWipLimitResponse);
+
   const createComponent = ({
     vuexState = { activeId: listId },
     actions = {},
     localState = {},
     props = { maxIssueCount: 0 },
+    injectedProps = {},
+    listUpdateWipLimitMutationHandler = listUpdateLimitMetricsMutationHandler,
   }) => {
+    mockApollo = createMockApollo([
+      [listUpdateLimitMetricsMutation, listUpdateWipLimitMutationHandler],
+    ]);
     storeActions = actions;
 
     const store = new Vuex.Store({
@@ -34,7 +49,15 @@ describe('BoardSettingsWipLimit', () => {
     });
 
     wrapper = shallowMountExtended(BoardSettingsWipLimit, {
-      propsData: props,
+      apolloProvider: mockApollo,
+      provide: {
+        isApolloBoard: false,
+        ...injectedProps,
+      },
+      propsData: {
+        activeListId: listId,
+        ...props,
+      },
       store,
       data() {
         return localState;
@@ -290,6 +313,50 @@ describe('BoardSettingsWipLimit', () => {
 
       it('passes `number`', () => {
         expect(findInput().attributes().number).toBeDefined();
+      });
+    });
+  });
+
+  describe('Apollo boards', () => {
+    it('adds limit', async () => {
+      createComponent({
+        injectedProps: {
+          isApolloBoard: true,
+        },
+      });
+
+      expect(findWipLimit().text()).toContain('None');
+
+      clickEdit();
+
+      await nextTick();
+
+      findInput().vm.$emit('input', 11);
+      triggerBlur('blur');
+
+      await waitForPromises();
+
+      expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
+        input: { listId, maxIssueCount: 11 },
+      });
+    });
+
+    it('removes limit', async () => {
+      createComponent({
+        props: { maxIssueCount: 11 },
+        injectedProps: {
+          isApolloBoard: true,
+        },
+      });
+
+      expect(findWipLimit().text()).toContain('11');
+
+      findRemoveWipLimit().vm.$emit('click');
+
+      await waitForPromises();
+
+      expect(listUpdateLimitMetricsMutationHandler).toHaveBeenCalledWith({
+        input: { listId, maxIssueCount: 0 },
       });
     });
   });
