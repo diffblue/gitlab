@@ -32,21 +32,20 @@ module EE
         }
       end
 
-      def push_error(_change_size = 0)
-        params = {
-          namespace_name: message_params[:namespace_name],
-          manage_storage_url: help_page_url('user/usage_quotas', 'manage-your-storage-usage'),
-          restricted_actions_url: help_page_url('user/read_only_namespaces', 'restricted-actions'),
-          current_size: formatted(current_size),
-          size_limit: formatted(limit),
-          usage_percentage: usage_percentage
-        }
+      def push_warning
+        _("##### WARNING ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
+           "(%{current_size} of %{size_limit}). If %{namespace_name} exceeds the storage quota, " \
+           "all projects in the namespace will be locked and actions will be restricted. " \
+           "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
+           "To learn more about restricted actions, see %{restricted_actions_url}") % push_message_params
+      end
 
+      def push_error(_change_size = 0)
         _("##### ERROR ##### You have used %{usage_percentage} of the storage quota for %{namespace_name} " \
            "(%{current_size} of %{size_limit}). %{namespace_name} is now read-only. " \
            "Projects under this namespace are locked and actions will be restricted. " \
            "To manage storage, or purchase additional storage, see %{manage_storage_url}. " \
-           "To learn more about restricted actions, see %{restricted_actions_url}") % params
+           "To learn more about restricted actions, see %{restricted_actions_url}") % push_message_params
       end
 
       def new_changes_error
@@ -64,6 +63,17 @@ module EE
       private
 
       attr_reader :message_params
+
+      def push_message_params
+        {
+          namespace_name: message_params[:namespace_name],
+          manage_storage_url: help_page_url('user/usage_quotas', 'manage-your-storage-usage'),
+          restricted_actions_url: help_page_url('user/read_only_namespaces', 'restricted-actions'),
+          current_size: formatted(current_size),
+          size_limit: formatted(limit),
+          usage_percentage: usage_percentage
+        }
+      end
 
       def formatted(number)
         number_to_human_size(number, delimiter: ',', precision: 2)

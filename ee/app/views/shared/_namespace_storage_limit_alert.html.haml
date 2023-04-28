@@ -2,6 +2,4 @@
 - context = local_assigns.fetch(:context)
 
 = cache([context, current_user], expires_in: 1.minute) do
-  - storage_notification = EE::Namespace::Storage::Notification.new(context, current_user)
-  - if storage_notification.show?
-    = render Namespaces::Storage::LimitAlertComponent.new(context: context, user: current_user, notification_data: storage_notification.payload)
+  = render Namespaces::Storage::LimitAlertComponent.new(context: context, user: current_user)
