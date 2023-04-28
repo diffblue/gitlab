@@ -24,15 +24,15 @@ RSpec.describe EE::API::Entities::GeoSite, feature_category: :geo_replication do
   end
 
   describe '#self' do
-    it { expect(subject[:_links][:self]).to eq expose_url(api_v4_geo_nodes_path(id: geo_node.id)) }
+    it { expect(subject[:_links][:self]).to eq expose_url(api_v4_geo_sites_path(id: geo_node.id)) }
   end
 
   describe '#status' do
-    it { expect(subject[:_links][:status]).to eq expose_url(api_v4_geo_nodes_status_path(id: geo_node.id)) }
+    it { expect(subject[:_links][:status]).to eq expose_url(api_v4_geo_sites_status_path(id: geo_node.id)) }
   end
 
   describe '#repair' do
-    it { expect(subject[:_links][:repair]).to eq expose_url(api_v4_geo_nodes_repair_path(id: geo_node.id)) }
+    it { expect(subject[:_links][:repair]).to eq expose_url(api_v4_geo_sites_repair_path(id: geo_node.id)) }
   end
 
   describe '#current' do

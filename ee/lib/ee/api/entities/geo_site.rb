@@ -20,40 +20,40 @@ module EE
         expose :selective_sync_shards
         expose :namespace_ids, as: :selective_sync_namespace_ids
         expose :minimum_reverification_interval
-        expose :sync_object_storage, if: ->(geo_node, _) { geo_node.secondary? }
+        expose :sync_object_storage, if: ->(geo_site, _) { geo_site.secondary? }
 
         # Retained for backwards compatibility. Remove in API v5
         expose :clone_protocol do |_record, _options|
           'http'
         end
 
-        expose :web_edit_url do |geo_node|
-          ::Gitlab::Routing.url_helpers.edit_admin_geo_node_url(geo_node)
+        expose :web_edit_url do |geo_site|
+          ::Gitlab::Routing.url_helpers.edit_admin_geo_node_url(geo_site)
         end
 
         # @deprecated in favor of web_geo_replication_details_url
-        expose :web_geo_projects_url, if: ->(geo_node) { geo_node.secondary? },
-          proc: ->(geo_node) { geo_node.geo_projects_url }
+        expose :web_geo_projects_url, if: ->(geo_site) { geo_site.secondary? },
+          proc: ->(geo_site) { geo_site.geo_projects_url }
 
-        expose :web_geo_replication_details_url, if: ->(geo_node) { geo_node.secondary? },
-          proc: ->(geo_node) { geo_node.geo_replication_details_url }
+        expose :web_geo_replication_details_url, if: ->(geo_site) { geo_site.secondary? },
+          proc: ->(geo_site) { geo_site.geo_replication_details_url }
 
         expose :_links do
-          expose :self do |geo_node|
-            expose_url api_v4_geo_nodes_path(id: geo_node.id)
+          expose :self do |geo_site|
+            expose_url api_v4_geo_sites_path(id: geo_site.id)
           end
 
-          expose :status do |geo_node|
-            expose_url api_v4_geo_nodes_status_path(id: geo_node.id)
+          expose :status do |geo_site|
+            expose_url api_v4_geo_sites_status_path(id: geo_site.id)
           end
 
-          expose :repair do |geo_node|
-            expose_url api_v4_geo_nodes_repair_path(id: geo_node.id)
+          expose :repair do |geo_site|
+            expose_url api_v4_geo_sites_repair_path(id: geo_site.id)
           end
         end
 
-        expose :current do |geo_node|
-          ::GeoNode.current?(geo_node)
+        expose :current do |geo_site|
+          ::GeoNode.current?(geo_site)
         end
       end
     end
