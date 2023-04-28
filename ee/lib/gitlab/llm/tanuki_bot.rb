@@ -26,7 +26,7 @@ module Gitlab
         return false unless user
         return false unless ::License.feature_available?(:ai_tanuki_bot)
         return false unless Feature.enabled?(:openai_experimentation) && Feature.enabled?(:tanuki_bot, user)
-        return false if ::Gitlab.com? && !user&.has_paid_namespace?(plans: [::Plan::ULTIMATE])
+        return false if ::Gitlab.com? && !user.has_paid_namespace?(plans: [::EE::User::AI_SUPPORTED_PLANS])
 
         true
       end
