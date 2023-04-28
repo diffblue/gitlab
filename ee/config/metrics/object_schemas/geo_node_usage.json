@@ -3,125 +3,738 @@
   "items": {
     "type": "object",
     "properties": {
-      "projects_count": { "type": "number", "description": "Projects count" },
-      "lfs_objects_count": { "type": "number" },
-      "wikis_failed_count": { "type": "number" },
-      "wikis_synced_count": { "type": "number" },
-      "job_artifacts_count": { "type": "number" },
-      "package_files_count": { "type": "number" },
-      "wikis_verified_count": { "type": "number" },
-      "pages_deployments_count": { "type": "number" },
-      "wikis_checksummed_count": { "type": "number" },
-      "lfs_objects_failed_count": { "type": "number" },
-      "lfs_objects_synced_count": { "type": "number" },
-      "pipeline_artifacts_count": { "type": "number" },
-      "design_repositories_count": { "type": "number" },
-      "merge_request_diffs_count": { "type": "number" },
-      "repositories_failed_count": { "type": "number" },
-      "repositories_synced_count": { "type": "number" },
-      "job_artifacts_failed_count": { "type": "number" },
-      "job_artifacts_synced_count": { "type": "number" },
-      "lfs_objects_registry_count": { "type": "number" },
-      "lfs_objects_verified_count": { "type": "number" },
-      "package_files_failed_count": { "type": "number" },
-      "package_files_synced_count": { "type": "number" },
-      "snippet_repositories_count": { "type": "number" },
-      "wikis_checksum_total_count": { "type": "number" },
-      "git_push_event_count_weekly": { "type": "number" },
-      "repositories_verified_count": { "type": "number" },
-      "wikis_checksum_failed_count": { "type": "number" },
-      "container_repositories_count": { "type": "number" },
-      "git_fetch_event_count_weekly": { "type": "number" },
-      "package_files_registry_count": { "type": "number" },
-      "package_files_verified_count": { "type": "number" },
-      "group_wiki_repositories_count": { "type": "number" },
-      "lfs_objects_checksummed_count": { "type": "number" },
-      "wikis_checksum_mismatch_count": { "type": "number" },
-      "pages_deployments_failed_count": { "type": "number" },
-      "pages_deployments_synced_count": { "type": "number" },
-      "repositories_checksummed_count": { "type": "number" },
-      "terraform_state_versions_count": { "type": "number" },
-      "wikis_verification_total_count": { "type": "number" },
-      "package_files_checksummed_count": { "type": "number" },
-      "pipeline_artifacts_failed_count": { "type": "number" },
-      "pipeline_artifacts_synced_count": { "type": "number" },
-      "repository_verification_enabled": { "type": "boolean" },
-      "wikis_verification_failed_count": { "type": "number" },
-      "design_repositories_failed_count": { "type": "number" },
-      "design_repositories_synced_count": { "type": "number" },
-      "lfs_objects_checksum_total_count": { "type": "number" },
-      "merge_request_diffs_synced_count": { "type": "number" },
-      "pages_deployments_registry_count": { "type": "number" },
-      "pages_deployments_verified_count": { "type": "number" },
-      "repositories_replication_enabled": { "type": "boolean" },
-      "lfs_objects_checksum_failed_count": { "type": "number" },
-      "pipeline_artifacts_registry_count": { "type": "number" },
-      "pipeline_artifacts_verified_count": { "type": "number" },
-      "repositories_checksum_total_count": { "type": "number" },
-      "snippet_repositories_failed_count": { "type": "number" },
-      "snippet_repositories_synced_count": { "type": "number" },
-      "wikis_retrying_verification_count": { "type": "number" },
-      "merge_request_diffs_registry_count": { "type": "number" },
-      "merge_request_diffs_verified_count": { "type": "number" },
-      "package_files_checksum_total_count": { "type": "number" },
-      "repositories_checksum_failed_count": { "type": "number" },
-      "container_repositories_failed_count": { "type": "number" },
-      "container_repositories_synced_count": { "type": "number" },
-      "package_files_checksum_failed_count": { "type": "number" },
-      "pages_deployments_checksummed_count": { "type": "number" },
-      "snippet_repositories_registry_count": { "type": "number" },
-      "snippet_repositories_verified_count": { "type": "number" },
-      "group_wiki_repositories_failed_count": { "type": "number" },
-      "group_wiki_repositories_synced_count": { "type": "number" },
-      "lfs_objects_verification_total_count": { "type": "number" },
-      "pipeline_artifacts_checksummed_count": { "type": "number" },
-      "repositories_checksum_mismatch_count": { "type": "number" },
-      "container_repositories_registry_count": { "type": "number" },
-      "lfs_objects_verification_failed_count": { "type": "number" },
-      "merge_request_diffs_checksummed_count": { "type": "number" },
-      "repositories_verification_total_count": { "type": "number" },
-      "terraform_state_versions_failed_count": { "type": "number" },
-      "terraform_state_versions_synced_count": { "type": "number" },
-      "group_wiki_repositories_registry_count": { "type": "number" },
-      "group_wiki_repositories_verified_count": { "type": "number" },
-      "package_files_verification_total_count": { "type": "number" },
-      "pages_deployments_checksum_total_count": { "type": "number" },
-      "repositories_verification_failed_count": { "type": "number" },
-      "snippet_repositories_checksummed_count": { "type": "number" },
-      "design_repositories_replication_enabled": { "type": "boolean" },
-      "package_files_verification_failed_count": { "type": "number" },
-      "pages_deployments_checksum_failed_count": { "type": "number" },
-      "pipeline_artifacts_checksum_total_count": { "type": "number" },
-      "proxy_local_requests_event_count_weekly": { "type": "number" },
-      "terraform_state_versions_registry_count": { "type": "number" },
-      "terraform_state_versions_verified_count": { "type": "number" },
-      "merge_request_diffs_checksum_total_count": { "type": "number" },
-      "pipeline_artifacts_checksum_failed_count": { "type": "number" },
-      "proxy_remote_requests_event_count_weekly": { "type": "number" },
-      "repositories_retrying_verification_count": { "type": "number" },
-      "group_wiki_repositories_checksummed_count": { "type": "number" },
-      "merge_request_diffs_checksum_failed_count": { "type": "number" },
-      "snippet_repositories_checksum_total_count": { "type": "number" },
-      "container_repositories_replication_enabled": { "type": "boolean" },
-      "pages_deployments_verification_total_count": { "type": "number" },
-      "snippet_repositories_checksum_failed_count": { "type": "number" },
-      "terraform_state_versions_checksummed_count": { "type": "number" },
-      "pages_deployments_verification_failed_count": { "type": "number" },
-      "pipeline_artifacts_verification_total_count": { "type": "number" },
-      "group_wiki_repositories_checksum_total_count": { "type": "number" },
-      "merge_request_diffs_verification_total_count": { "type": "number" },
-      "pipeline_artifacts_verification_failed_count": { "type": "number" },
-      "group_wiki_repositories_checksum_failed_count": { "type": "number" },
-      "job_artifacts_synced_missing_on_primary_count": { "type": "number" },
-      "merge_request_diffs_verification_failed_count": { "type": "number" },
-      "snippet_repositories_verification_total_count": { "type": "number" },
-      "terraform_state_versions_checksum_total_count": { "type": "number" },
-      "snippet_repositories_verification_failed_count": { "type": "number" },
-      "terraform_state_versions_checksum_failed_count": { "type": "number" },
-      "group_wiki_repositories_verification_total_count": { "type": "number" },
-      "group_wiki_repositories_verification_failed_count": { "type": "number" },
-      "terraform_state_versions_verification_total_count": { "type": "number" },
-      "terraform_state_versions_verification_failed_count": { "type": "number" }
+      "ci_secure_files_checksum_failed_count": {
+        "description": "Ci secure files checksum failed count",
+        "type": "number"
+      },
+      "ci_secure_files_checksum_total_count": {
+        "description": "Ci secure files checksum total count",
+        "type": "number"
+      },
+      "ci_secure_files_checksummed_count": {
+        "description": "Ci secure files checksummed count",
+        "type": "number"
+      },
+      "ci_secure_files_count": {
+        "description": "Ci secure files count",
+        "type": "number"
+      },
+      "ci_secure_files_failed_count": {
+        "description": "Ci secure files failed count",
+        "type": "number"
+      },
+      "ci_secure_files_registry_count": {
+        "description": "Ci secure files registry count",
+        "type": "number"
+      },
+      "ci_secure_files_synced_count": {
+        "description": "Ci secure files synced count",
+        "type": "number"
+      },
+      "ci_secure_files_verification_failed_count": {
+        "description": "Ci secure files verification failed count",
+        "type": "number"
+      },
+      "ci_secure_files_verification_total_count": {
+        "description": "Ci secure files verification total count",
+        "type": "number"
+      },
+      "ci_secure_files_verified_count": {
+        "description": "Ci secure files verified count",
+        "type": "number"
+      },
+      "container_repositories_checksum_failed_count": {
+        "description": "Container repositories checksum failed count",
+        "type": "number"
+      },
+      "container_repositories_checksum_total_count": {
+        "description": "Container repositories checksum total count",
+        "type": "number"
+      },
+      "container_repositories_checksummed_count": {
+        "description": "Container repositories checksummed count",
+        "type": "number"
+      },
+      "container_repositories_count": {
+        "description": "Container repositories count",
+        "type": "number"
+      },
+      "container_repositories_failed_count": {
+        "description": "Container repositories failed count",
+        "type": "number"
+      },
+      "container_repositories_registry_count": {
+        "description": "Container repositories registry count",
+        "type": "number"
+      },
+      "container_repositories_replication_enabled": {
+        "description": "Container repositories replication enabled",
+        "type": "number"
+      },
+      "container_repositories_synced_count": {
+        "description": "Container repositories synced count",
+        "type": "number"
+      },
+      "container_repositories_verification_failed_count": {
+        "description": "Container repositories verification failed count",
+        "type": "number"
+      },
+      "container_repositories_verification_total_count": {
+        "description": "Container repositories verification total count",
+        "type": "number"
+      },
+      "container_repositories_verified_count": {
+        "description": "Container repositories verified count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_checksum_failed_count": {
+        "description": "Dependency proxy blobs checksum failed count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_checksum_total_count": {
+        "description": "Dependency proxy blobs checksum total count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_checksummed_count": {
+        "description": "Dependency proxy blobs checksummed count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_count": {
+        "description": "Dependency proxy blobs count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_failed_count": {
+        "description": "Dependency proxy blobs failed count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_registry_count": {
+        "description": "Dependency proxy blobs registry count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_synced_count": {
+        "description": "Dependency proxy blobs synced count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_verification_failed_count": {
+        "description": "Dependency proxy blobs verification failed count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_verification_total_count": {
+        "description": "Dependency proxy blobs verification total count",
+        "type": "number"
+      },
+      "dependency_proxy_blobs_verified_count": {
+        "description": "Dependency proxy blobs verified count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_checksum_failed_count": {
+        "description": "Dependency proxy manifests checksum failed count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_checksum_total_count": {
+        "description": "Dependency proxy manifests checksum total count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_checksummed_count": {
+        "description": "Dependency proxy manifests checksummed count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_count": {
+        "description": "Dependency proxy manifests count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_failed_count": {
+        "description": "Dependency proxy manifests failed count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_registry_count": {
+        "description": "Dependency proxy manifests registry count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_synced_count": {
+        "description": "Dependency proxy manifests synced count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_verification_failed_count": {
+        "description": "Dependency proxy manifests verification failed count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_verification_total_count": {
+        "description": "Dependency proxy manifests verification total count",
+        "type": "number"
+      },
+      "dependency_proxy_manifests_verified_count": {
+        "description": "Dependency proxy manifests verified count",
+        "type": "number"
+      },
+      "design_repositories_count": {
+        "description": "Design repositories count",
+        "type": "number"
+      },
+      "design_repositories_failed_count": {
+        "description": "Design repositories failed count",
+        "type": "number"
+      },
+      "design_repositories_replication_enabled": {
+        "description": "Design repositories replication enabled",
+        "type": "number"
+      },
+      "design_repositories_synced_count": {
+        "description": "Design repositories synced count",
+        "type": "number"
+      },
+      "git_fetch_event_count_weekly": {
+        "description": "Git fetch event count weekly",
+        "type": "number"
+      },
+      "git_push_event_count_weekly": {
+        "description": "Git push event count weekly",
+        "type": "number"
+      },
+      "group_wiki_repositories_checksum_failed_count": {
+        "description": "Group wiki repositories checksum failed count",
+        "type": "number"
+      },
+      "group_wiki_repositories_checksum_total_count": {
+        "description": "Group wiki repositories checksum total count",
+        "type": "number"
+      },
+      "group_wiki_repositories_checksummed_count": {
+        "description": "Group wiki repositories checksummed count",
+        "type": "number"
+      },
+      "group_wiki_repositories_count": {
+        "description": "Group wiki repositories count",
+        "type": "number"
+      },
+      "group_wiki_repositories_failed_count": {
+        "description": "Group wiki repositories failed count",
+        "type": "number"
+      },
+      "group_wiki_repositories_registry_count": {
+        "description": "Group wiki repositories registry count",
+        "type": "number"
+      },
+      "group_wiki_repositories_synced_count": {
+        "description": "Group wiki repositories synced count",
+        "type": "number"
+      },
+      "group_wiki_repositories_verification_failed_count": {
+        "description": "Group wiki repositories verification failed count",
+        "type": "number"
+      },
+      "group_wiki_repositories_verification_total_count": {
+        "description": "Group wiki repositories verification total count",
+        "type": "number"
+      },
+      "group_wiki_repositories_verified_count": {
+        "description": "Group wiki repositories verified count",
+        "type": "number"
+      },
+      "job_artifacts_checksum_failed_count": {
+        "description": "Job artifacts checksum failed count",
+        "type": "number"
+      },
+      "job_artifacts_checksum_total_count": {
+        "description": "Job artifacts checksum total count",
+        "type": "number"
+      },
+      "job_artifacts_checksummed_count": {
+        "description": "Job artifacts checksummed count",
+        "type": "number"
+      },
+      "job_artifacts_count": {
+        "description": "Job artifacts count",
+        "type": "number"
+      },
+      "job_artifacts_failed_count": {
+        "description": "Job artifacts failed count",
+        "type": "number"
+      },
+      "job_artifacts_registry_count": {
+        "description": "Job artifacts registry count",
+        "type": "number"
+      },
+      "job_artifacts_synced_count": {
+        "description": "Job artifacts synced count",
+        "type": "number"
+      },
+      "job_artifacts_synced_missing_on_primary_count": {
+        "description": "Job artifacts synced missing on primary count",
+        "type": "number"
+      },
+      "job_artifacts_verification_failed_count": {
+        "description": "Job artifacts verification failed count",
+        "type": "number"
+      },
+      "job_artifacts_verification_total_count": {
+        "description": "Job artifacts verification total count",
+        "type": "number"
+      },
+      "job_artifacts_verified_count": {
+        "description": "Job artifacts verified count",
+        "type": "number"
+      },
+      "lfs_objects_checksum_failed_count": {
+        "description": "Lfs objects checksum failed count",
+        "type": "number"
+      },
+      "lfs_objects_checksum_total_count": {
+        "description": "Lfs objects checksum total count",
+        "type": "number"
+      },
+      "lfs_objects_checksummed_count": {
+        "description": "Lfs objects checksummed count",
+        "type": "number"
+      },
+      "lfs_objects_count": {
+        "description": "Lfs objects count",
+        "type": "number"
+      },
+      "lfs_objects_failed_count": {
+        "description": "Lfs objects failed count",
+        "type": "number"
+      },
+      "lfs_objects_registry_count": {
+        "description": "Lfs objects registry count",
+        "type": "number"
+      },
+      "lfs_objects_synced_count": {
+        "description": "Lfs objects synced count",
+        "type": "number"
+      },
+      "lfs_objects_verification_failed_count": {
+        "description": "Lfs objects verification failed count",
+        "type": "number"
+      },
+      "lfs_objects_verification_total_count": {
+        "description": "Lfs objects verification total count",
+        "type": "number"
+      },
+      "lfs_objects_verified_count": {
+        "description": "Lfs objects verified count",
+        "type": "number"
+      },
+      "merge_request_diffs_checksum_failed_count": {
+        "description": "Merge request diffs checksum failed count",
+        "type": "number"
+      },
+      "merge_request_diffs_checksum_total_count": {
+        "description": "Merge request diffs checksum total count",
+        "type": "number"
+      },
+      "merge_request_diffs_checksummed_count": {
+        "description": "Merge request diffs checksummed count",
+        "type": "number"
+      },
+      "merge_request_diffs_count": {
+        "description": "Merge request diffs count",
+        "type": "number"
+      },
+      "merge_request_diffs_failed_count": {
+        "description": "Merge request diffs failed count",
+        "type": "number"
+      },
+      "merge_request_diffs_registry_count": {
+        "description": "Merge request diffs registry count",
+        "type": "number"
+      },
+      "merge_request_diffs_synced_count": {
+        "description": "Merge request diffs synced count",
+        "type": "number"
+      },
+      "merge_request_diffs_verification_failed_count": {
+        "description": "Merge request diffs verification failed count",
+        "type": "number"
+      },
+      "merge_request_diffs_verification_total_count": {
+        "description": "Merge request diffs verification total count",
+        "type": "number"
+      },
+      "merge_request_diffs_verified_count": {
+        "description": "Merge request diffs verified count",
+        "type": "number"
+      },
+      "package_files_checksum_failed_count": {
+        "description": "Package files checksum failed count",
+        "type": "number"
+      },
+      "package_files_checksum_total_count": {
+        "description": "Package files checksum total count",
+        "type": "number"
+      },
+      "package_files_checksummed_count": {
+        "description": "Package files checksummed count",
+        "type": "number"
+      },
+      "package_files_count": {
+        "description": "Package files count",
+        "type": "number"
+      },
+      "package_files_failed_count": {
+        "description": "Package files failed count",
+        "type": "number"
+      },
+      "package_files_registry_count": {
+        "description": "Package files registry count",
+        "type": "number"
+      },
+      "package_files_synced_count": {
+        "description": "Package files synced count",
+        "type": "number"
+      },
+      "package_files_verification_failed_count": {
+        "description": "Package files verification failed count",
+        "type": "number"
+      },
+      "package_files_verification_total_count": {
+        "description": "Package files verification total count",
+        "type": "number"
+      },
+      "package_files_verified_count": {
+        "description": "Package files verified count",
+        "type": "number"
+      },
+      "pages_deployments_checksum_failed_count": {
+        "description": "Pages deployments checksum failed count",
+        "type": "number"
+      },
+      "pages_deployments_checksum_total_count": {
+        "description": "Pages deployments checksum total count",
+        "type": "number"
+      },
+      "pages_deployments_checksummed_count": {
+        "description": "Pages deployments checksummed count",
+        "type": "number"
+      },
+      "pages_deployments_count": {
+        "description": "Pages deployments count",
+        "type": "number"
+      },
+      "pages_deployments_failed_count": {
+        "description": "Pages deployments failed count",
+        "type": "number"
+      },
+      "pages_deployments_registry_count": {
+        "description": "Pages deployments registry count",
+        "type": "number"
+      },
+      "pages_deployments_synced_count": {
+        "description": "Pages deployments synced count",
+        "type": "number"
+      },
+      "pages_deployments_verification_failed_count": {
+        "description": "Pages deployments verification failed count",
+        "type": "number"
+      },
+      "pages_deployments_verification_total_count": {
+        "description": "Pages deployments verification total count",
+        "type": "number"
+      },
+      "pages_deployments_verified_count": {
+        "description": "Pages deployments verified count",
+        "type": "number"
+      },
+      "pipeline_artifacts_checksum_failed_count": {
+        "description": "Pipeline artifacts checksum failed count",
+        "type": "number"
+      },
+      "pipeline_artifacts_checksum_total_count": {
+        "description": "Pipeline artifacts checksum total count",
+        "type": "number"
+      },
+      "pipeline_artifacts_checksummed_count": {
+        "description": "Pipeline artifacts checksummed count",
+        "type": "number"
+      },
+      "pipeline_artifacts_count": {
+        "description": "Pipeline artifacts count",
+        "type": "number"
+      },
+      "pipeline_artifacts_failed_count": {
+        "description": "Pipeline artifacts failed count",
+        "type": "number"
+      },
+      "pipeline_artifacts_registry_count": {
+        "description": "Pipeline artifacts registry count",
+        "type": "number"
+      },
+      "pipeline_artifacts_synced_count": {
+        "description": "Pipeline artifacts synced count",
+        "type": "number"
+      },
+      "pipeline_artifacts_verification_failed_count": {
+        "description": "Pipeline artifacts verification failed count",
+        "type": "number"
+      },
+      "pipeline_artifacts_verification_total_count": {
+        "description": "Pipeline artifacts verification total count",
+        "type": "number"
+      },
+      "pipeline_artifacts_verified_count": {
+        "description": "Pipeline artifacts verified count",
+        "type": "number"
+      },
+      "project_wiki_repositories_checksum_failed_count": {
+        "description": "Project wiki repositories checksum failed count",
+        "type": "number"
+      },
+      "project_wiki_repositories_checksum_total_count": {
+        "description": "Project wiki repositories checksum total count",
+        "type": "number"
+      },
+      "project_wiki_repositories_checksummed_count": {
+        "description": "Project wiki repositories checksummed count",
+        "type": "number"
+      },
+      "project_wiki_repositories_count": {
+        "description": "Project wiki repositories count",
+        "type": "number"
+      },
+      "project_wiki_repositories_failed_count": {
+        "description": "Project wiki repositories failed count",
+        "type": "number"
+      },
+      "project_wiki_repositories_registry_count": {
+        "description": "Project wiki repositories registry count",
+        "type": "number"
+      },
+      "project_wiki_repositories_synced_count": {
+        "description": "Project wiki repositories synced count",
+        "type": "number"
+      },
+      "project_wiki_repositories_verification_failed_count": {
+        "description": "Project wiki repositories verification failed count",
+        "type": "number"
+      },
+      "project_wiki_repositories_verification_total_count": {
+        "description": "Project wiki repositories verification total count",
+        "type": "number"
+      },
+      "project_wiki_repositories_verified_count": {
+        "description": "Project wiki repositories verified count",
+        "type": "number"
+      },
+      "projects_count": {
+        "description": "Projects count",
+        "type": "number"
+      },
+      "proxy_local_requests_event_count_weekly": {
+        "description": "Proxy local requests event count weekly",
+        "type": "number"
+      },
+      "proxy_remote_requests_event_count_weekly": {
+        "description": "Proxy remote requests event count weekly",
+        "type": "number"
+      },
+      "repositories_checksum_failed_count": {
+        "description": "Repositories checksum failed count",
+        "type": "number"
+      },
+      "repositories_checksum_mismatch_count": {
+        "description": "Repositories checksum mismatch count",
+        "type": "number"
+      },
+      "repositories_checksum_total_count": {
+        "description": "Repositories checksum total count",
+        "type": "number"
+      },
+      "repositories_checksummed_count": {
+        "description": "Repositories checksummed count",
+        "type": "number"
+      },
+      "repositories_failed_count": {
+        "description": "Repositories failed count",
+        "type": "number"
+      },
+      "repositories_replication_enabled": {
+        "description": "Repositories replication enabled",
+        "type": "number"
+      },
+      "repositories_retrying_verification_count": {
+        "description": "Repositories retrying verification count",
+        "type": "number"
+      },
+      "repositories_synced_count": {
+        "description": "Repositories synced count",
+        "type": "number"
+      },
+      "repositories_verification_failed_count": {
+        "description": "Repositories verification failed count",
+        "type": "number"
+      },
+      "repositories_verification_total_count": {
+        "description": "Repositories verification total count",
+        "type": "number"
+      },
+      "repositories_verified_count": {
+        "description": "Repositories verified count",
+        "type": "number"
+      },
+      "repository_verification_enabled": {
+        "description": "Repository verification enabled",
+        "type": "number"
+      },
+      "snippet_repositories_checksum_failed_count": {
+        "description": "Snippet repositories checksum failed count",
+        "type": "number"
+      },
+      "snippet_repositories_checksum_total_count": {
+        "description": "Snippet repositories checksum total count",
+        "type": "number"
+      },
+      "snippet_repositories_checksummed_count": {
+        "description": "Snippet repositories checksummed count",
+        "type": "number"
+      },
+      "snippet_repositories_count": {
+        "description": "Snippet repositories count",
+        "type": "number"
+      },
+      "snippet_repositories_failed_count": {
+        "description": "Snippet repositories failed count",
+        "type": "number"
+      },
+      "snippet_repositories_registry_count": {
+        "description": "Snippet repositories registry count",
+        "type": "number"
+      },
+      "snippet_repositories_synced_count": {
+        "description": "Snippet repositories synced count",
+        "type": "number"
+      },
+      "snippet_repositories_verification_failed_count": {
+        "description": "Snippet repositories verification failed count",
+        "type": "number"
+      },
+      "snippet_repositories_verification_total_count": {
+        "description": "Snippet repositories verification total count",
+        "type": "number"
+      },
+      "snippet_repositories_verified_count": {
+        "description": "Snippet repositories verified count",
+        "type": "number"
+      },
+      "terraform_state_versions_checksum_failed_count": {
+        "description": "Terraform state versions checksum failed count",
+        "type": "number"
+      },
+      "terraform_state_versions_checksum_total_count": {
+        "description": "Terraform state versions checksum total count",
+        "type": "number"
+      },
+      "terraform_state_versions_checksummed_count": {
+        "description": "Terraform state versions checksummed count",
+        "type": "number"
+      },
+      "terraform_state_versions_count": {
+        "description": "Terraform state versions count",
+        "type": "number"
+      },
+      "terraform_state_versions_failed_count": {
+        "description": "Terraform state versions failed count",
+        "type": "number"
+      },
+      "terraform_state_versions_registry_count": {
+        "description": "Terraform state versions registry count",
+        "type": "number"
+      },
+      "terraform_state_versions_synced_count": {
+        "description": "Terraform state versions synced count",
+        "type": "number"
+      },
+      "terraform_state_versions_verification_failed_count": {
+        "description": "Terraform state versions verification failed count",
+        "type": "number"
+      },
+      "terraform_state_versions_verification_total_count": {
+        "description": "Terraform state versions verification total count",
+        "type": "number"
+      },
+      "terraform_state_versions_verified_count": {
+        "description": "Terraform state versions verified count",
+        "type": "number"
+      },
+      "uploads_checksum_failed_count": {
+        "description": "Uploads checksum failed count",
+        "type": "number"
+      },
+      "uploads_checksum_total_count": {
+        "description": "Uploads checksum total count",
+        "type": "number"
+      },
+      "uploads_checksummed_count": {
+        "description": "Uploads checksummed count",
+        "type": "number"
+      },
+      "uploads_count": {
+        "description": "Uploads count",
+        "type": "number"
+      },
+      "uploads_failed_count": {
+        "description": "Uploads failed count",
+        "type": "number"
+      },
+      "uploads_registry_count": {
+        "description": "Uploads registry count",
+        "type": "number"
+      },
+      "uploads_synced_count": {
+        "description": "Uploads synced count",
+        "type": "number"
+      },
+      "uploads_verification_failed_count": {
+        "description": "Uploads verification failed count",
+        "type": "number"
+      },
+      "uploads_verification_total_count": {
+        "description": "Uploads verification total count",
+        "type": "number"
+      },
+      "uploads_verified_count": {
+        "description": "Uploads verified count",
+        "type": "number"
+      },
+      "wikis_checksum_failed_count": {
+        "description": "Wikis checksum failed count",
+        "type": "number"
+      },
+      "wikis_checksum_mismatch_count": {
+        "description": "Wikis checksum mismatch count",
+        "type": "number"
+      },
+      "wikis_checksum_total_count": {
+        "description": "Wikis checksum total count",
+        "type": "number"
+      },
+      "wikis_checksummed_count": {
+        "description": "Wikis checksummed count",
+        "type": "number"
+      },
+      "wikis_failed_count": {
+        "description": "Wikis failed count",
+        "type": "number"
+      },
+      "wikis_retrying_verification_count": {
+        "description": "Wikis retrying verification count",
+        "type": "number"
+      },
+      "wikis_synced_count": {
+        "description": "Wikis synced count",
+        "type": "number"
+      },
+      "wikis_verification_failed_count": {
+        "description": "Wikis verification failed count",
+        "type": "number"
+      },
+      "wikis_verification_total_count": {
+        "description": "Wikis verification total count",
+        "type": "number"
+      },
+      "wikis_verified_count": {
+        "description": "Wikis verified count",
+        "type": "number"
+      }
     }
   }
 }
