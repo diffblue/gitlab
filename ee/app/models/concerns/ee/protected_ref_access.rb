@@ -19,7 +19,7 @@ module EE
         belongs_to :user
         belongs_to :group
 
-        protected_type = self.module_parent.model_name.singular
+        protected_type = module_parent.model_name.singular
         validates :group_id, uniqueness: { scope: protected_type, allow_nil: true }
         validates :user_id, uniqueness: { scope: protected_type, allow_nil: true }
         validates :access_level, uniqueness: { scope: protected_type, if: :role?,
@@ -50,19 +50,16 @@ module EE
 
     override :type
     def type
-      if self.user.present?
-        :user
-      elsif self.group.present?
-        :group
-      else
-        super
-      end
+      return :user if user.present?
+      return :group if group.present?
+
+      super
     end
 
     override :humanize
     def humanize
-      return self.user.name if self.user.present?
-      return self.group.name if self.group.present?
+      return user.name if user.present?
+      return group.name if group.present?
 
       super
     end
@@ -89,7 +86,7 @@ module EE
       return unless group
 
       unless project.project_group_links.where(group: group).exists?
-        self.errors.add(:group, 'does not have access to the project')
+        errors.add(:group, 'does not have access to the project')
       end
     end
 
@@ -97,7 +94,7 @@ module EE
       return unless user
 
       unless project.team.member?(user)
-        self.errors.add(:user, 'is not a member of the project')
+        errors.add(:user, 'is not a member of the project')
       end
     end
   end
