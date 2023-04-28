@@ -802,8 +802,6 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
     let(:results) { described_class.new(user, query, [], public_and_internal_projects: true) }
 
     before do
-      set_elasticsearch_migration_to(:create_user_index, including: true)
-
       @user_1 = create(:user, name: 'Sarah John')
       @user_2 = create(:user, name: 'John Doe', state: :blocked)
       @user_3 = create(:user, email: 'john@c.o')

@@ -60,25 +60,8 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
       context 'when scope is users' do
         let(:params) { { scope: 'users' } }
 
-        using RSpec::Parameterized::TableSyntax
-
-        where(:create_user_index_finished, :backfill_users_finished, :result) do
-          true | true | true
-          true | false | false
-          false | true | false
-          false | false | false
-        end
-
-        with_them do
-          it 'returns the correct result' do
-            allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-            .with(:create_user_index).and_return(create_user_index_finished)
-
-            allow(Elastic::DataMigrationService).to receive(:migration_has_finished?)
-            .with(:backfill_users).and_return(backfill_users_finished)
-
-            expect(class_instance.use_elasticsearch?).to eq(result)
-          end
+        it 'returns true' do
+          expect(class_instance).to be_use_elasticsearch
         end
       end
     end

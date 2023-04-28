@@ -2428,7 +2428,6 @@ RSpec.describe User, feature_category: :system_access do
 
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
-      set_elasticsearch_migration_to(:create_user_index, including: true)
     end
 
     context 'on create' do
@@ -2545,24 +2544,22 @@ RSpec.describe User, feature_category: :system_access do
   end
 
   describe '#maintaining_elasticsearch?', :elastic, feature_category: :global_search do
-    using RSpec::Parameterized::TableSyntax
-
     subject { user.maintaining_elasticsearch? }
 
-    where(:elasticsearch_indexing, :migration_finished, :expected_result) do
-      true | true  | true
-      true | false | false
-      false | true | false
-      false | false | false
-    end
-
-    with_them do
+    context 'when elasticsearch_indexing is enabled' do
       before do
-        stub_ee_application_setting(elasticsearch_indexing: elasticsearch_indexing)
-        set_elasticsearch_migration_to(:create_user_index, including: migration_finished)
+        stub_ee_application_setting(elasticsearch_indexing: true)
       end
 
-      it { is_expected.to eq(expected_result) }
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when elasticsearch_indexing is disabled' do
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: false)
+      end
+
+      it { is_expected.to eq(false) }
     end
   end
 end
