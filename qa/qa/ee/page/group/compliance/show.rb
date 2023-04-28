@@ -31,8 +31,14 @@ module QA
               wait_for_requests
             end
 
-            def has_violation?(reason, merge_request_title)
-              has_element?(:violation_reason_content, text: reason, description: merge_request_title)
+            RSpec::Matchers.define :have_violation do |reason, merge_request_title|
+              match do |page|
+                page.has_element?(:violation_reason_content, text: reason, description: merge_request_title)
+              end
+
+              match_when_negated do |page|
+                page.has_no_element?(:violation_reason_content, text: reason, description: merge_request_title)
+              end
             end
 
             def has_name?(name)
