@@ -12209,6 +12209,9 @@ msgstr ""
 msgid "Couldn't find event type filters where audit event type(s): %{missing_filters}"
 msgstr ""
 
+msgid "Couldn't link %{issuable}. You must have at least the Reporter role in both projects."
+msgstr ""
+
 msgid "Country / Region"
 msgstr ""
 
