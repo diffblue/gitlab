@@ -35,7 +35,8 @@ module EE
       context = super
       root_namespace = (project || group)&.root_ancestor
 
-      context.merge!(trial_data(root_namespace), show_tanuki_bot: show_tanuki_bot_chat?)
+      context.merge!(trial_data(root_namespace),
+        show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user))
 
       show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
 
