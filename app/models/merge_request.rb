@@ -1213,6 +1213,10 @@ class MergeRequest < ApplicationRecord
     additional_checks.success?
   end
 
+  def expire_ancestor_cache
+    project.repository.expire_ancestor_cache(target_branch_sha, diff_head_sha)
+  end
+
   def ff_merge_possible?
     project.repository.ancestor?(target_branch_sha, diff_head_sha)
   end

@@ -6,6 +6,7 @@ module MergeRequests
 
     def execute(merge_request)
       merge_request.ensure_merge_request_diff
+      merge_request.expire_ancestor_cache
 
       prepare_for_mergeability(merge_request)
       prepare_merge_request(merge_request)
