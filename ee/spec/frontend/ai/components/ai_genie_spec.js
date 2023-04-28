@@ -8,7 +8,7 @@ import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
-import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
+import { i18n, GENIE_CHAT_MODEL_ROLES, EXPLAIN_CODE_TRACKING_EVENT_NAME } from 'ee/ai/constants';
 import { renderMarkdown } from '~/notes/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
@@ -366,6 +366,12 @@ describe('AiGenie', () => {
       await simulateSelectText();
       await requestExplanation();
       expect(findUserFeedback().exists()).toBe(true);
+    });
+    it('receives expected props', async () => {
+      await simulateSelectText();
+      await requestExplanation();
+      expect(findUserFeedback().props('eventName')).toBe(EXPLAIN_CODE_TRACKING_EVENT_NAME);
+      expect(findUserFeedback().props('promptLocation')).toBe('before_content');
     });
   });
 });
