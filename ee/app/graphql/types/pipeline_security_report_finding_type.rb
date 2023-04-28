@@ -44,14 +44,6 @@ module Types
           resolver: Resolvers::Vulnerabilities::DetailsResolver,
           description: 'Details of the security finding.'
 
-    # TODO: deprecate the `name` field because it's been replaced by the `title` field
-    # See https://gitlab.com/gitlab-org/gitlab/-/issues/346335
-    field :name,
-          type: GraphQL::Types::String,
-          null: true,
-          deprecated: { reason: 'Use `title`', milestone: '15.1' },
-          description: 'Name of the vulnerability finding.'
-
     field :title,
           type: GraphQL::Types::String,
           null: true,

@@ -32,7 +32,8 @@ query pipelineFindings(
           # This query is used by vulnerability_list_graphql.vue, which expects an id property for
           # the bulk select feature.
           id: uuid
-          name
+          # Removed in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119055
+          name: title
           description
           falsePositive @include(if: $vetEnabled)
           identifiers {

@@ -26,7 +26,6 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
 
   let(:fields) do
     %i[report_type
-       name
        title
        severity
        scanner

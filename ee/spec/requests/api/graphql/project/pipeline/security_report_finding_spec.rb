@@ -21,7 +21,7 @@ feature_category: :continuous_integration do
             securityReportFinding(uuid: "#{security_finding.uuid}") {
               severity
               reportType
-              name
+              name: title
               scanner {
                 name
               }
