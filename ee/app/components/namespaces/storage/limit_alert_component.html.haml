@@ -10,14 +10,9 @@
     = c.body do
       = sprite_icon(alert_icon, css_class: "gl-icon gl-alert-icon")
 
-      %p
-        = alert_body_message
-        = link_to alert_body_cta_text, alert_body_cta_href, target: '_blank', rel: 'noopener noreferrer'
-
-      - if alert_footer_message
+      - alert_message.each do |paragraph|
         %p
-          = alert_footer_message
-          = link_to alert_footer_cta_text, alert_footer_cta_href, target: '_blank', rel: 'noopener noreferrer'
+          = paragraph
 
     - if purchase_link || usage_quotas_link
       = c.actions do
