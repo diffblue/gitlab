@@ -22,7 +22,8 @@ module ProductAnalytics
 
       return unless @project&.product_analytics_enabled?
 
-      return if ProductAnalytics::Settings.jitsu_host.nil? || ProductAnalytics::Settings.jitsu_project_xid.nil?
+      settings = ProductAnalytics::Settings.for_project(@project)
+      return if settings.jitsu_host.nil? || settings.jitsu_project_xid.nil?
 
       ProductAnalytics::JitsuAuthentication.new(jid, @project).create_clickhouse_destination!
       ::ProductAnalytics::InitializeStackService.new(container: @project).unlock!

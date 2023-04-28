@@ -6,11 +6,12 @@ module ProductAnalytics
       @jid = jid
       @project = project
 
-      @root_url = ProductAnalytics::Settings.jitsu_host
-      @clickhouse_connection_string = ProductAnalytics::Settings.product_analytics_clickhouse_connection_string
-      @jitsu_project_xid = ProductAnalytics::Settings.jitsu_project_xid
-      @jitsu_administrator_email = ProductAnalytics::Settings.jitsu_administrator_email
-      @jitsu_administrator_password = ProductAnalytics::Settings.jitsu_administrator_password
+      settings = ProductAnalytics::Settings.for_project(project)
+      @root_url = settings.jitsu_host
+      @clickhouse_connection_string = settings.product_analytics_clickhouse_connection_string
+      @jitsu_project_xid = settings.jitsu_project_xid
+      @jitsu_administrator_email = settings.jitsu_administrator_email
+      @jitsu_administrator_password = settings.jitsu_administrator_password
     end
 
     def create_api_key!

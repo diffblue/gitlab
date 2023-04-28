@@ -91,7 +91,18 @@ module EE
 
     override :project_setting_attributes
     def project_setting_attributes
-      attributes = %i[prevent_merge_without_jira_issue cve_id_request_enabled]
+      attributes = %i[
+        prevent_merge_without_jira_issue
+        cve_id_request_enabled
+        jitsu_host
+        jitsu_project_xid
+        jitsu_administrator_email
+        jitsu_administrator_password
+        product_analytics_data_collector_host
+        product_analytics_clickhouse_connection_string
+        cube_api_base_url
+        cube_api_key
+      ]
 
       if project&.licensed_feature_available?(:external_status_checks)
         attributes << :only_allow_merge_if_all_status_checks_passed
