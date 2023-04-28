@@ -14,8 +14,8 @@ module EE
         end
 
         ::GeoNodeStatus.percentage_methods.each do |method_name|
-          expose method_name do |node|
-            number_to_percentage(node[method_name], precision: 2)
+          expose method_name do |site|
+            number_to_percentage(site[method_name], precision: 2)
           end
         end
 
@@ -27,8 +27,8 @@ module EE
         expose :replication_slots_used_count
 
         expose :healthy?, as: :healthy
-        expose :health do |node|
-          node.healthy? ? 'Healthy' : node.health
+        expose :health do |site|
+          site.healthy? ? 'Healthy' : site.health
         end
         expose :health_status
         expose :missing_oauth_application
@@ -77,12 +77,12 @@ module EE
         expose :storage_shards_match?, as: :storage_shards_match
 
         expose :_links do
-          expose :self do |geo_node_status|
-            expose_url api_v4_geo_nodes_status_path(id: geo_node_status.geo_node_id)
+          expose :self do |geo_site_status|
+            expose_url api_v4_geo_sites_status_path(id: geo_site_status.geo_node_id)
           end
 
-          expose :node do |geo_node_status|
-            expose_url api_v4_geo_nodes_path(id: geo_node_status.geo_node_id)
+          expose :site do |geo_site_status|
+            expose_url api_v4_geo_sites_path(id: geo_site_status.geo_node_id)
           end
         end
 
