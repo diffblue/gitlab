@@ -1001,10 +1001,6 @@ class Repository
     raw_repository.merge_base(*commit_ids)
   end
 
-  def ancestor_cache_key(ancestor_id, descendant_id)
-    "ancestor:#{ancestor_id}:#{descendant_id}"
-  end
-
   def ancestor?(ancestor_id, descendant_id)
     return false if ancestor_id.nil? || descendant_id.nil?
 
@@ -1241,6 +1237,10 @@ class Repository
   end
 
   private
+
+  def ancestor_cache_key(ancestor_id, descendant_id)
+    "ancestor:#{ancestor_id}:#{descendant_id}"
+  end
 
   # TODO Genericize finder, later split this on finders by Ref or Oid
   # https://gitlab.com/gitlab-org/gitlab/issues/19877

@@ -1487,6 +1487,7 @@ class MergeRequest < ApplicationRecord
 
   def fetch_ref!
     target_project.repository.fetch_source_branch!(source_project.repository, source_branch, ref_path)
+    expire_ancestor_cache
   end
 
   # Returns the current merge-ref HEAD commit.
