@@ -38,6 +38,7 @@ import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/
 import ReleaseToken from '~/vue_shared/components/filtered_search_bar/tokens/release_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
+import { mockLabelList } from 'jest/boards/mock_data';
 
 export const mockEpicBoard = {
   id: 'gid://gitlab/Board::EpicBoard/1',
@@ -837,6 +838,54 @@ export const mockEpicSwimlanesResponse = {
             endCursor: null,
             hasNextPage: false,
           },
+        },
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockUpdateListWipLimitResponse = {
+  data: {
+    boardListUpdateLimitMetrics: {
+      list: mockLabelList,
+      errors: [],
+      __typename: 'BoardListUpdateLimitMetricsPayload',
+    },
+  },
+};
+
+const mockEpicLabelList = {
+  id: 'gid://gitlab/Boards::EpicList/2',
+  title: 'To Do',
+  position: 0,
+  listType: 'label',
+  collapsed: false,
+  label: {
+    id: 'gid://gitlab/GroupLabel/121',
+    title: 'To Do',
+    color: '#F0AD4E',
+    textColor: '#FFFFFF',
+    description: null,
+    descriptionHtml: null,
+    __typename: 'Label',
+  },
+  metadata: {
+    epicsCount: 10,
+    totalWeight: 33,
+  },
+  __typename: 'EpicList',
+};
+
+export const epicBoardListsQueryResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/1',
+      board: {
+        id: 'gid://gitlab/Boards::EpicBoard/1',
+        hideBacklogList: false,
+        lists: {
+          nodes: [mockEpicLabelList],
         },
       },
       __typename: 'Group',
