@@ -25,9 +25,10 @@ module EE
         end
 
         # rubocop:disable Gitlab/ModuleWithInstanceVariables
-        override :access_levels_options
-        def access_levels_options
-          super.merge(
+        override :load_gon_index
+        def load_gon_index
+          super
+          gon.push(
             selected_merge_access_levels: @protected_branch.merge_access_levels.map { |access_level| access_level.user_id || access_level.access_level },
             selected_push_access_levels: @protected_branch.push_access_levels.map { |access_level| access_level.user_id || access_level.access_level },
             selected_create_access_levels: @protected_tag.create_access_levels.map { |access_level| access_level.user_id || access_level.access_level }
