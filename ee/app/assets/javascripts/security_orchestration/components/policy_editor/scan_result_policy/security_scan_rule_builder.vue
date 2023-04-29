@@ -1,13 +1,16 @@
 <script>
-import { GlSprintf, GlFormInput } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
+import { ANY_OPERATOR, MORE_THAN_OPERATOR } from '../constants';
+import { enforceIntValue } from '../utils';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import StatusFilter from './scan_filters/status_filter.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
+import NumberRangeSelect from './number_range_select.vue';
 import { SEVERITY, STATUS, FILTER_POLICY_PROPERTY_MAP } from './scan_filters/constants';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
@@ -15,17 +18,17 @@ export default {
   SEVERITY,
   STATUS,
   scanResultRuleCopy: s__(
-    'ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) more than %{vulnerabilitiesAllowed} %{boldDescription} of the following criteria:',
+    'ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
   components: {
     BaseLayoutComponent,
     GlSprintf,
-    GlFormInput,
     PolicyRuleBranchSelection,
     PolicyRuleMultiSelect,
     ScanFilterSelector,
     SeverityFilter,
     StatusFilter,
+    NumberRangeSelect,
   },
   props: {
     initRule: {
@@ -67,10 +70,10 @@ export default {
     },
     vulnerabilitiesAllowed: {
       get() {
-        return this.initRule.vulnerabilities_allowed;
+        return enforceIntValue(this.initRule.vulnerabilities_allowed);
       },
       set(value) {
-        this.triggerChanged({ vulnerabilities_allowed: parseInt(value || '0', 10) });
+        this.triggerChanged({ vulnerabilities_allowed: enforceIntValue(value) });
       },
     },
     isSeverityFilterSelected() {
@@ -78,6 +81,9 @@ export default {
     },
     isStatusFilterSelected() {
       return this.isFilterSelected(this.$options.STATUS) || this.vulnerabilityStates.length > 0;
+    },
+    selectedVulnerabilitiesOperator() {
+      return this.vulnerabilitiesAllowed === 0 ? ANY_OPERATOR : MORE_THAN_OPERATOR;
     },
   },
   methods: {
@@ -96,11 +102,17 @@ export default {
       this.addedFilters = this.addedFilters.filter((item) => item !== filter);
       this.triggerChanged({ [FILTER_POLICY_PROPERTY_MAP[filter]]: [] });
     },
+    handleVulnerabilitiesAllowedOperatorChange(value) {
+      if (value === ANY_OPERATOR) {
+        this.vulnerabilitiesAllowed = 0;
+      }
+    },
   },
   REPORT_TYPES_DEFAULT_KEYS: Object.keys(REPORT_TYPES_DEFAULT),
   REPORT_TYPES_DEFAULT,
   SEVERITY_LEVELS,
   APPROVAL_VULNERABILITY_STATES,
+  VULNERABILITIES_ALLOWED_OPERATORS: [ANY_OPERATOR, MORE_THAN_OPERATOR],
   i18n: {
     severityLevels: s__('ScanResultPolicy|severity levels'),
     scanners: s__('ScanResultPolicy|scanners'),
@@ -141,17 +153,14 @@ export default {
                 />
               </template>
 
-              <template #vulnerabilitiesAllowed>
-                <label for="vulnerabilities-allowed" class="gl-sr-only">{{
-                  $options.i18n.vulnerabilitiesAllowed
-                }}</label>
-                <gl-form-input
+              <template #vulnerabilitiesNumber>
+                <number-range-select
                   id="vulnerabilities-allowed"
                   v-model="vulnerabilitiesAllowed"
-                  type="number"
-                  class="gl-w-11! gl-display-inline! gl-vertical-align-middle"
-                  :min="0"
-                  data-testid="vulnerabilities-allowed-input"
+                  :label="$options.i18n.vulnerabilitiesAllowed"
+                  :selected-operator="selectedVulnerabilitiesOperator"
+                  :operators="$options.VULNERABILITIES_ALLOWED_OPERATORS"
+                  @operator-change="handleVulnerabilitiesAllowedOperatorChange"
                 />
               </template>
 
