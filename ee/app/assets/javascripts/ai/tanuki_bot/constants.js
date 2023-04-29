@@ -21,7 +21,7 @@ export const SOURCE_TYPES = {
 };
 
 export const ERROR_MESSAGE = s__(
-  'TanukiBot|There was an error communicating with Tanuki Bot. Please reach out to GitLab support for more assistance or try again later.',
+  'TanukiBot|There was an error communicating with GitLab Chat. Please reach out to GitLab support for more assistance or try again later.',
 );
 
 export const TANUKI_BOT_FEEDBACK_ISSUE_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/408527';
