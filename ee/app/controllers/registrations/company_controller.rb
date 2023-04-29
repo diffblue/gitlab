@@ -25,6 +25,12 @@ module Registrations
 
       if result.success?
         track_event('successfully_submitted_form')
+
+        unless params[:trial] == 'true'
+          experiment(:automatic_trial_registration, actor: current_user).track(:successfully_submitted_form,
+            label: tracking_label)
+        end
+
         path = new_users_sign_up_groups_project_path(redirect_params)
         save_onboarding_step_url(path)
         redirect_to path
@@ -53,9 +59,13 @@ module Registrations
     end
 
     def redirect_params
-      return glm_tracking_params unless params[:trial_onboarding_flow] == 'true'
+      # Pass through trial param for automatic_trial_registration experiment
+      # to exclude user that comes from trial registration
+      base_params = glm_tracking_params.merge(trial: params[:trial])
 
-      glm_tracking_params.merge(trial_onboarding_flow: true)
+      return base_params unless params[:trial_onboarding_flow] == 'true'
+
+      base_params.merge(trial_onboarding_flow: true)
     end
 
     def track_event(action)

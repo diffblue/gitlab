@@ -1,7 +1,7 @@
 - @html_class = "subscriptions-layout-html"
 - @hide_flash = true
 - page_title _('Your GitLab group')
-- form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content], skip_trial: params[:skip_trial] }
+- form_params = { trial_onboarding_flow: params[:trial_onboarding_flow], glm_source: params[:glm_source], glm_content: params[:glm_content], skip_trial: params[:skip_trial], trial: params[:trial] }
 - content_for :page_specific_javascripts do
   = render "layouts/google_tag_manager_head"
   = render "layouts/one_trust"

@@ -18,6 +18,11 @@ module Registrations
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
       Onboarding::Progress.onboard(group)
 
+      unless params[:trial] == 'true'
+        experiment(:automatic_trial_registration, actor: user).track(:assignment,
+          namespace: group)
+      end
+
       apply_trial if in_trial_onboarding_flow?
     end
 
