@@ -21,6 +21,8 @@ import {
   TRIAL_COMPANY_SIZE_PROMPT,
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
+  AUTOMATIC_TRIAL_DESCRIPTION,
+  AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
 import Tracking from '~/tracking';
 import { trackCompanyForm } from '~/google_tag_manager';
@@ -37,10 +39,19 @@ export default {
     CountryOrRegionSelector,
     GlToggle,
   },
-  mixins: [Tracking.mixin()],
+  mixins: [
+    Tracking.mixin({
+      experiment: 'automatic_trial_registration',
+    }),
+  ],
   inject: ['submitPath'],
   props: {
     trial: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    automaticTrial: {
       type: Boolean,
       required: false,
       default: false,
@@ -54,7 +65,7 @@ export default {
       country: '',
       state: '',
       websiteUrl: '',
-      trialOnboardingFlow: this.trial,
+      trialOnboardingFlow: this.automaticTrial || this.trial,
     };
   },
   computed: {
@@ -71,6 +82,14 @@ export default {
       return this.trial
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
+    },
+    showTrialToggle() {
+      return !this.automaticTrial && !this.trial;
+    },
+    submitButtonText() {
+      return this.automaticTrial
+        ? this.$options.i18n.automaticTrialFormSubmitText
+        : this.$options.i18n.formSubmitText;
     },
   },
   methods: {
@@ -103,6 +122,8 @@ export default {
       trial: __('To activate your trial, we need additional details from you.'),
       registration: __('To complete registration, we need additional details from you.'),
     },
+    automaticTrialDescription: AUTOMATIC_TRIAL_DESCRIPTION,
+    automaticTrialFormSubmitText: AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
   },
 };
 </script>
@@ -187,7 +208,7 @@ export default {
       />
     </gl-form-group>
     <gl-form-group
-      v-show="!trial"
+      v-show="showTrialToggle"
       :label="$options.i18n.trialLabel"
       label-size="sm"
       :optional-text="$options.i18n.optional"
@@ -204,9 +225,17 @@ export default {
         @change="toggleTrial"
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm" class="gl-w-20" data-qa-selector="confirm_button">
-      {{ $options.i18n.formSubmitText }}
+    <gl-button
+      type="submit"
+      variant="confirm"
+      :class="{ 'gl-w-20': !automaticTrial }"
+      data-qa-selector="confirm_button"
+    >
+      {{ submitButtonText }}
     </gl-button>
+    <gl-form-text v-if="automaticTrial" data-testid="automatic_trial_description_text">{{
+      $options.i18n.automaticTrialDescription
+    }}</gl-form-text>
   </gl-form>
 </template>
 

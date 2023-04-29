@@ -1,0 +1,21 @@
+- ultimate_trial_value_props = [s_('InProductMarketing|Invite unlimited colleagues'), s_('InProductMarketing|Security risk mitigation'), s_('InProductMarketing|Advanced security testing'), s_('InProductMarketing|Portfolio management'), s_('InProductMarketing|Value stream management'), s_('InProductMarketing|Free guest users')]
+.col-md-4.gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
+  .gl-w-28
+    .gl-mb-6
+      = image_tag 'illustrations/saas-trial-illustration.svg'
+
+    %h2.gl-mb-2.gl-text-center.gl-text-gray-800= s_('InProductMarketing|Free 30-day trial')
+    %p.gl-font-lg.gl-text-center.gl-text-gray-800= s_('InProductMarketing|No credit card required.')
+
+    %ul.gl-pl-0.gl-mb-6.gl-pl-0.gl-mb-6x.gl-text-gray-800.gl-font-sm
+      - ultimate_trial_value_props.each do |value_prop|
+        %li.gl-display-flex.gl-mb-5
+          %span.gl-mr-3.gl-text-green-400= sprite_icon 'check-circle', css_class: 'gl-icon'
+          = value_prop
+
+    %p.gl-mb-3.gl-text-gray-400.gl-font-sm.gl-line-height-24= s_('InProductMarketing|Used by more than 100,000 organizations from around the globe:')
+
+    %ul.gl-display-flex.gl-flex-wrap.gl-pl-0.gl-font-sm.gl-font-weight-bold
+      - reassurance_logo_data.each do |logo_data|
+        %li.gl-display-flex.gl-align-items-center{ class: logo_data[:css_classes] }
+          = image_tag logo_data[:image_path], alt: logo_data[:image_alt_text], title: logo_data[:name], class: 'gl-max-w-full'

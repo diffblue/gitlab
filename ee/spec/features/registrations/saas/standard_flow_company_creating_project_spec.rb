@@ -39,6 +39,46 @@ feature_category: :onboarding do
     end
   end
 
+  context 'when user in automatic_trial_registration experiment' do
+    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+      stub_experiments(automatic_trial_registration: :candidate)
+
+      user_signs_up(glm_params)
+
+      expect_to_see_account_confirmation_page
+
+      confirm_account
+
+      user_signs_in
+
+      expect_to_see_welcome_form
+
+      fills_in_welcome_form
+      click_on 'Continue'
+
+      expect_to_see_company_form
+      expect(page).to have_content 'Your GitLab Ultimate free trial lasts for 30 days.'
+      expect(page).to have_content 'Free 30-day trial'
+      expect(page).to have_content 'Invite unlimited colleagues'
+      expect(page).to have_content 'Used by more than 100,000'
+
+      fill_in_company_form
+      click_on 'Start GitLab Ultimate free trial'
+
+      expect_to_see_group_and_project_creation_form
+
+      fills_in_group_and_project_creation_form
+      expect_to_apply_trial
+      click_on 'Create project'
+
+      expect_to_be_in_continuous_onboarding
+
+      click_on 'Ok, let\'s go'
+
+      expect_to_be_in_learn_gitlab
+    end
+  end
+
   context 'when not opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding' do
       user_signs_up
