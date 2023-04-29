@@ -1,0 +1,8 @@
+---
+name: automatic_trial_registration
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117456
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/408872
+milestone: '16.0'
+type: experiment
+group: group::acquisition
+default_enabled: false

@@ -6,11 +6,19 @@
 = render "layouts/google_tag_manager_body"
 
 .row
-  .col-md-6.m-sm-6
-    %h2.gl-pb-5.gl-my-0
-      = _("About your company")
+  - experiment(:automatic_trial_registration, actor: current_user) do |e|
+    - e.exclude! if trial_selected?
+    - e.control do
+      .col-md-6.m-sm-6
+        %h2.gl-pb-5.gl-my-0
+          = _("About your company")
+        #js-registrations-company-form{ data: create_company_form_data }
 
-    #js-registrations-company-form{ data: create_company_form_data }
-
-  .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
-    = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-display-none d-md-inline gl-w-full'
+      .col-md-4.gl-display-inline-flex.gl-vertical-align-middle
+        = image_tag 'illustrations/saas-trial-illustration.svg', alt: '', class: 'gl-display-none d-md-inline gl-w-full'
+    - e.candidate do
+      .col-md-6.m-6
+        %h2.gl-pb-5.gl-my-0
+          = _("About your company")
+        #js-registrations-company-form{ data: create_company_form_data.merge(automatic_trial: 'true') }
+      = render 'automatic_trial_reassurances'

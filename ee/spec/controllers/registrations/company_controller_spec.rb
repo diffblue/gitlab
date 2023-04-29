@@ -182,7 +182,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         end
 
         context 'when in trial flow' do
-          let(:params) { super().merge(trial: true) }
+          let(:params) { { trial: 'true' } }
 
           it 'tracks successful submission event' do
             post_create
@@ -194,6 +194,23 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
               label: 'trial_registration'
             )
           end
+
+          it 'does not track submission event with automatic_trial_registration experiment context' do
+            stub_experiments(automatic_trial_registration: true)
+
+            expect(controller).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
+
+            post_create
+          end
+        end
+
+        it 'tracks successful submission event with automatic_trial_registration experiment context', :experiment do
+          expect(experiment(:automatic_trial_registration)).to track(:successfully_submitted_form,
+            label: 'free_registration')
+            .on_next_instance
+            .with_context(actor: user)
+
+          post_create
         end
       end
     end
@@ -230,7 +247,7 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
         end
 
         context 'when in trial flow' do
-          let(:params) { super().merge(trial: true) }
+          let(:params) { { trial: 'true' } }
 
           it 'tracks successful submission event' do
             post_create

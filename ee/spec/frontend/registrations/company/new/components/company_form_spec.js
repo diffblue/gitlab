@@ -3,7 +3,12 @@ import { nextTick } from 'vue';
 import RegistrationForm from 'ee/registrations/components/company_form.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking } from 'helpers/tracking_helper';
-import { TRIAL_FORM_SUBMIT_TEXT } from 'ee/trials/constants';
+import {
+  TRIAL_FORM_SUBMIT_TEXT,
+  AUTOMATIC_TRIAL_DESCRIPTION,
+  AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT,
+} from 'ee/trials/constants';
+import { stubExperiments } from 'helpers/experimentation_helper';
 
 const SUBMIT_PATH = '_submit_path_';
 
@@ -26,6 +31,8 @@ describe('RegistrationForm', () => {
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormInput = (testId) => wrapper.findByTestId(testId);
   const findToggle = () => wrapper.findComponent(GlToggle);
+  const findAutomaticTrialDescriptionText = () =>
+    wrapper.findByTestId('automatic_trial_description_text');
 
   describe('when trial is true', () => {
     beforeEach(() => {
@@ -110,6 +117,70 @@ describe('RegistrationForm', () => {
           label: 'OFF',
         });
       });
+    });
+  });
+
+  describe('when automatic_trial_registration experiment is control', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ propsData: { automaticTrial: false } });
+      stubExperiments({ automatic_trial_registration: 'control' });
+    });
+
+    const trackingExperimentContext = {
+      data: {
+        experiment: 'automatic_trial_registration',
+        variant: 'control',
+      },
+      schema: 'iglu:com.gitlab/gitlab_experiment/jsonschema/1-0-0',
+    };
+
+    it('shows trial toggle', () => {
+      expect(findToggle().isVisible()).toBe(true);
+    });
+
+    it('does not display automaticTrialDescription text', () => {
+      expect(findAutomaticTrialDescriptionText().exists()).toBe(false);
+    });
+
+    it('tracks trial toggle is enabled with experiment context', () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      findToggle().vm.$emit('change', true);
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
+        label: 'ON',
+        context: trackingExperimentContext,
+      });
+    });
+
+    it('tracks trial toggle is disabled with experiment context', () => {
+      const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+
+      findToggle().vm.$emit('change', false);
+
+      expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_trial_toggle', {
+        label: 'OFF',
+        context: trackingExperimentContext,
+      });
+    });
+  });
+
+  describe('when automatic_trial_registration experiment is candidate', () => {
+    beforeEach(() => {
+      wrapper = createComponent({ propsData: { automaticTrial: true } });
+    });
+
+    it('hides trial toggle', () => {
+      expect(findToggle().isVisible()).toBe(false);
+    });
+
+    it('displays automaticTrialFormSubmitText on submit button', () => {
+      expect(findButton().text()).toBe(AUTOMATIC_TRIAL_FORM_SUBMIT_TEXT);
+    });
+
+    it('displays automaticTrialDescription text', () => {
+      expect(findAutomaticTrialDescriptionText().exists()).toBe(true);
+      expect(findAutomaticTrialDescriptionText().text()).toBe(AUTOMATIC_TRIAL_DESCRIPTION);
     });
   });
 });
