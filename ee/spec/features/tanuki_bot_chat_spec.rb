@@ -18,7 +18,7 @@ RSpec.describe 'GitLab Chat', :js, feature_category: :global_search do
     it 'opens a chat drawer to chat with GitLab Chat' do
       page.within '[data-testid="super-sidebar"]' do
         click_button('Help')
-        click_button('Ask the GitLab Chat')
+        click_button('Ask GitLab Chat')
       end
 
       wait_for_requests

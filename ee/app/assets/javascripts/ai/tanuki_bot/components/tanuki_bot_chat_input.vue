@@ -7,7 +7,7 @@ export default {
   name: 'TanukiBotChatInput',
   i18n: {
     askAQuestion: s__('TanukiBot|Ask a question about GitLab'),
-    exampleQuestion: s__('TanukiBot|For example, %{linkStart}what is a fork?%{linkEnd}'),
+    exampleQuestion: s__('TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?'),
     whatIsAForkQuestion: s__('TanukiBot|What is a fork?'),
     send: __('Send'),
   },
