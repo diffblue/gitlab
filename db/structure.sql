@@ -603,6 +603,15 @@ CREATE TABLE security_findings (
 )
 PARTITION BY LIST (partition_number);
 
+CREATE TABLE value_stream_dashboard_counts (
+    id bigint NOT NULL,
+    namespace_id bigint NOT NULL,
+    count bigint NOT NULL,
+    recorded_at timestamp with time zone NOT NULL,
+    metric smallint NOT NULL
+)
+PARTITION BY RANGE (recorded_at);
+
 CREATE TABLE verification_codes (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     visitor_id_code text NOT NULL,
@@ -23774,6 +23783,15 @@ CREATE SEQUENCE users_statistics_id_seq
 
 ALTER SEQUENCE users_statistics_id_seq OWNED BY users_statistics.id;
 
+CREATE SEQUENCE value_stream_dashboard_counts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE value_stream_dashboard_counts_id_seq OWNED BY value_stream_dashboard_counts.id;
+
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
     milestone_id bigint,
@@ -25714,6 +25732,8 @@ ALTER TABLE ONLY users_ops_dashboard_projects ALTER COLUMN id SET DEFAULT nextva
 ALTER TABLE ONLY users_star_projects ALTER COLUMN id SET DEFAULT nextval('users_star_projects_id_seq'::regclass);
 
 ALTER TABLE ONLY users_statistics ALTER COLUMN id SET DEFAULT nextval('users_statistics_id_seq'::regclass);
+
+ALTER TABLE ONLY value_stream_dashboard_counts ALTER COLUMN id SET DEFAULT nextval('value_stream_dashboard_counts_id_seq'::regclass);
 
 ALTER TABLE ONLY vulnerabilities ALTER COLUMN id SET DEFAULT nextval('vulnerabilities_id_seq'::regclass);
 
@@ -28224,6 +28244,9 @@ ALTER TABLE ONLY users_star_projects
 
 ALTER TABLE ONLY users_statistics
     ADD CONSTRAINT users_statistics_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY value_stream_dashboard_counts
+    ADD CONSTRAINT value_stream_dashboard_counts_pkey PRIMARY KEY (namespace_id, metric, recorded_at, count, id);
 
 ALTER TABLE ONLY verification_codes
     ADD CONSTRAINT verification_codes_pkey PRIMARY KEY (created_at, visitor_id_code, code, phone);
