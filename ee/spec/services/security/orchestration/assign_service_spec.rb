@@ -21,13 +21,23 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       described_class.new(container: container, current_user: current_user, params: { policy_project_id: policy_project.id }).execute
     end
 
-    shared_examples 'executes assign service' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-      end
+    before do
+      stub_licensed_features(security_orchestration_policies: true)
+    end
 
+    shared_examples 'executes assign service' do
       it 'raises AccessDeniedError if user does not have permission' do
         expect { service }.to raise_error Gitlab::Access::AccessDeniedError
+      end
+
+      context 'with developer access' do
+        before do
+          container.add_developer(current_user)
+        end
+
+        it 'raises AccessDeniedError if user does not have permission' do
+          expect { service }.to raise_error Gitlab::Access::AccessDeniedError
+        end
       end
 
       context 'with owner access' do
@@ -185,6 +195,30 @@ RSpec.describe Security::Orchestration::AssignService, feature_category: :securi
       let(:another_container) { another_project }
 
       it_behaves_like 'executes assign service'
+
+      context 'with owner access' do
+        before do
+          container.add_owner(current_user)
+        end
+
+        it 'triggers the project bot user create worker' do
+          expect(Security::OrchestrationConfigurationCreateBotWorker).to receive(:perform_async).with(anything, current_user.id)
+
+          expect(service).to be_success
+        end
+
+        context 'when the scan_execution_bot_users feature is disabled' do
+          before do
+            stub_feature_flags(scan_execution_bot_users: false)
+          end
+
+          it 'does not trigger the project bot user create worker' do
+            expect(service).to be_success
+
+            expect(Security::OrchestrationConfigurationCreateBotWorker).not_to receive(:perform_async)
+          end
+        end
+      end
     end
 
     context 'for namespace' do

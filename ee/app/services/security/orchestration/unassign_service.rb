@@ -8,6 +8,8 @@ module Security
 
         old_policy_project = security_orchestration_policy_configuration.security_policy_management_project
 
+        remove_bot(security_orchestration_policy_configuration.bot_user)
+
         result = security_orchestration_policy_configuration.delete
 
         if result
@@ -34,6 +36,12 @@ module Security
 
       def error(message)
         ServiceResponse.error(message: message)
+      end
+
+      def remove_bot(bot_user)
+        return unless bot_user
+
+        security_orchestration_policy_configuration.project.member(bot_user).destroy
       end
     end
   end
