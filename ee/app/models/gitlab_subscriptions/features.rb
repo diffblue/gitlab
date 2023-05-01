@@ -255,6 +255,7 @@ module GitlabSubscriptions
     STARTER_FEATURES_WITH_USAGE_PING = %i[
       send_emails_from_admin_area
       repository_size_limit
+      maintenance_mode
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[

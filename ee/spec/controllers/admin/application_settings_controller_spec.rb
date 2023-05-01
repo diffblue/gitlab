@@ -176,6 +176,31 @@ RSpec.describe Admin::ApplicationSettingsController do
       let(:feature) { :geo }
 
       it_behaves_like 'settings for licensed features'
+
+      context "with geo feature disabled" do
+        context "with registration features disabled" do
+          it 'does not update settings' do
+            stub_application_setting(usage_ping_features_enabled: false)
+
+            attribute_names = settings.keys.map(&:to_s)
+
+            expect { put :update, params: { application_setting: settings } }
+              .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
+          end
+        end
+
+        context "with registration features enabled" do
+          it 'updates settings' do
+            stub_application_setting(usage_ping_features_enabled: true)
+
+            put :update, params: { application_setting: settings }
+
+            settings.each do |attribute, value|
+              expect(ApplicationSetting.current.public_send(attribute)).to eq(value)
+            end
+          end
+        end
+      end
     end
 
     context 'deletion adjourned period' do
