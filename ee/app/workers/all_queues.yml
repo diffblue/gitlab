@@ -1641,6 +1641,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_orchestration_configuration_create_bot
+  :worker_name: Security::OrchestrationConfigurationCreateBotWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: security_orchestration_policy_rule_schedule_namespace
   :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
   :feature_category: :security_policy_management

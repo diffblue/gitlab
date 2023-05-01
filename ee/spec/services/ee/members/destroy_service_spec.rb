@@ -191,6 +191,21 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         include_examples 'calls the destroy service', 'with rules for the project', :project_1_rule
       end
     end
+
+    context 'when user is a security_policy_bot' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:user) { create(:user, user_type: :security_policy_bot) }
+      let_it_be(:member) { create(:project_member, user: user, project: project) }
+      let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, bot_user: user) }
+
+      before do
+        project.add_owner(current_user)
+      end
+
+      it 'nullifies the configuration bot_user_id' do
+        expect { subject.execute(member) }.to change { security_orchestration_policy_configuration.reload.bot_user_id }.to(nil)
+      end
+    end
   end
 
   context 'when current user is not present' do # ie, when the system initiates the destroy

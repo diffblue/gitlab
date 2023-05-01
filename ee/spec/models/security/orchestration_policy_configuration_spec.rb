@@ -93,6 +93,19 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '.for_bot_user' do
+    let_it_be(:bot_user) { create(:user, user_type: :security_policy_bot) }
+    let_it_be(:security_orchestration_policy_configuration_1) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration, bot_user: bot_user) }
+    let_it_be(:security_orchestration_policy_configuration_3) { create(:security_orchestration_policy_configuration, bot_user: bot_user) }
+
+    subject { described_class.for_bot_user(bot_user) }
+
+    it 'returns configurations for the given bot user' do
+      is_expected.to contain_exactly(security_orchestration_policy_configuration_2, security_orchestration_policy_configuration_3)
+    end
+  end
+
   describe '.policy_management_project?' do
     before do
       create(:security_orchestration_policy_configuration, security_policy_management_project: security_policy_management_project)

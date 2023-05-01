@@ -39,6 +39,8 @@ module Security
           p.security_policy_management_project_id = policy_project.id
         end
 
+        create_security_policy_project_bot(create_result)
+
         if create_result
           audit(policy_project, "Linked #{policy_project.name} as the security policy project")
           Security::SyncScanPoliciesWorker.perform_async(container.security_orchestration_policy_configuration.id)
@@ -104,6 +106,12 @@ module Security
 
       def policy_project_id
         params[:policy_project_id]
+      end
+
+      def create_security_policy_project_bot(configuration)
+        return unless container.is_a?(Project) && Feature.enabled?(:scan_execution_bot_users, container)
+
+        Security::OrchestrationConfigurationCreateBotWorker.perform_async(configuration.id, current_user.id)
       end
     end
   end

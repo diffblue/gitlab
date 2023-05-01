@@ -114,6 +114,22 @@ RSpec.describe Security::Orchestration::UnassignService, feature_category: :secu
         end
       end
 
+      context 'when project has a security_policy_bot' do
+        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let(:service) { described_class.new(container: container, current_user: current_user) }
+
+        before do
+          container.add_guest(security_policy_bot)
+          container.security_orchestration_policy_configuration.update!(bot_user: security_policy_bot)
+        end
+
+        it 'unassigns policy project and removes the bot', :aggregate_failures do
+          expect(result).to be_success
+          expect(container.security_orchestration_policy_configuration).to be_destroyed
+          expect(container.users.where(user_type: :security_policy_bot)).to be_empty
+        end
+      end
+
       it_behaves_like 'unassigns policy project'
     end
 
