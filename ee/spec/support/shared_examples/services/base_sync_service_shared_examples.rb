@@ -109,51 +109,97 @@ end
 
 RSpec.shared_examples 'sync retries use the snapshot RPC' do
   context 'snapshot synchronization method' do
-    let(:temp_repo) { subject.send(:temp_repo) }
+    context 'when feature flag geo_deprecate_redownload is enabled' do
+      let(:temp_repo) { subject.send(:temp_repo) }
 
-    def receive_create_from_snapshot
-      receive(:create_from_snapshot).with(primary.snapshot_url(temp_repo), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
-    end
+      def receive_create_from_snapshot
+        receive(:create_from_snapshot).with(primary.snapshot_url(temp_repo), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
+      end
 
-    it 'does not attempt to snapshot for initial sync' do
-      allow(repository).to receive(:exists?) { false }
+      it 'does not attempt to snapshot for initial sync' do
+        allow(repository).to receive(:exists?) { false }
 
-      expect(repository).not_to receive_create_from_snapshot
-      expect(temp_repo).not_to receive_create_from_snapshot
-      expect(subject).to receive(:clone_geo_mirror)
-
-      subject.execute
-    end
-
-    it 'does not attempt to snapshot for ordinary retries' do
-      registry_with_retry_count(retry_count - 1)
-
-      expect(repository).not_to receive_create_from_snapshot
-      expect(temp_repo).not_to receive_create_from_snapshot
-      expect(subject).to receive(:fetch_geo_mirror)
-
-      subject.execute
-    end
-
-    context 'registry is ready to be snapshotted' do
-      let!(:registry) { registry_with_retry_count(retry_count + 1) }
-
-      it 'attempts to snapshot' do
         expect(repository).not_to receive_create_from_snapshot
-        expect(temp_repo).to receive_create_from_snapshot
-        expect(subject).not_to receive(:fetch_geo_mirror)
-        expect(subject).not_to receive(:clone_geo_mirror)
-        expect(subject).to receive(:set_temp_repository_as_main)
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:clone_geo_mirror)
 
         subject.execute
       end
 
-      it 'attempts to clone if snapshotting raises an exception' do
+      it 'does not attempt to snapshot for ordinary retries' do
+        registry_with_retry_count(retry_count - 1)
+
         expect(repository).not_to receive_create_from_snapshot
-        expect(temp_repo).to receive_create_from_snapshot.and_raise(ArgumentError)
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:fetch_geo_mirror)
+
+        subject.execute
+      end
+
+      context 'registry has many retries' do
+        let!(:registry) { registry_with_retry_count(retry_count + 1) }
+
+        it 'does not attempt to snapshot' do
+          expect(repository).not_to receive_create_from_snapshot
+          expect(temp_repo).not_to receive_create_from_snapshot
+          expect(subject).to receive(:fetch_geo_mirror)
+
+          subject.execute
+        end
+      end
+    end
+
+    context 'when feature flag geo_deprecate_redownload is disabled' do
+      before do
+        stub_feature_flags(geo_deprecate_redownload: false)
+      end
+
+      let(:temp_repo) { subject.send(:temp_repo) }
+
+      def receive_create_from_snapshot
+        receive(:create_from_snapshot).with(primary.snapshot_url(temp_repo), match(/^GL-Geo/)) { Gitaly::CreateRepositoryFromSnapshotResponse.new }
+      end
+
+      it 'does not attempt to snapshot for initial sync' do
+        allow(repository).to receive(:exists?) { false }
+
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).not_to receive_create_from_snapshot
         expect(subject).to receive(:clone_geo_mirror)
 
         subject.execute
+      end
+
+      it 'does not attempt to snapshot for ordinary retries' do
+        registry_with_retry_count(retry_count - 1)
+
+        expect(repository).not_to receive_create_from_snapshot
+        expect(temp_repo).not_to receive_create_from_snapshot
+        expect(subject).to receive(:fetch_geo_mirror)
+
+        subject.execute
+      end
+
+      context 'registry is ready to be snapshotted' do
+        let!(:registry) { registry_with_retry_count(retry_count + 1) }
+
+        it 'attempts to snapshot' do
+          expect(repository).not_to receive_create_from_snapshot
+          expect(temp_repo).to receive_create_from_snapshot
+          expect(subject).not_to receive(:fetch_geo_mirror)
+          expect(subject).not_to receive(:clone_geo_mirror)
+          expect(subject).to receive(:set_temp_repository_as_main)
+
+          subject.execute
+        end
+
+        it 'attempts to clone if snapshotting raises an exception' do
+          expect(repository).not_to receive_create_from_snapshot
+          expect(temp_repo).to receive_create_from_snapshot.and_raise(ArgumentError)
+          expect(subject).to receive(:clone_geo_mirror)
+
+          subject.execute
+        end
       end
     end
   end

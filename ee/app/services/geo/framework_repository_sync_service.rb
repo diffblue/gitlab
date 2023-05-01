@@ -292,6 +292,7 @@ module Geo
     end
 
     def should_be_redownloaded?
+      return false if Feature.enabled?(:geo_deprecate_redownload)
       return true if registry.force_to_redownload
 
       retries = registry.retry_count

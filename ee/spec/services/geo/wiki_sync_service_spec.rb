@@ -232,14 +232,30 @@ RSpec.describe Geo::WikiSyncService, :geo, feature_category: :geo_replication do
         context 'no Wiki repository' do
           let(:project) { create(:project, :repository) }
 
-          it 'does not raise an error' do
-            create(:geo_project_registry, project: project, force_to_redownload_wiki: true)
+          context 'when redownloading' do
+            it 'does not raise an error' do
+              stub_feature_flags(geo_deprecate_redownload: false)
 
-            allow(repository).to receive(:update_root_ref)
-            expect(repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
-            expect(subject).not_to receive(:fail_registry_sync!)
+              create(:geo_project_registry, project: project, force_to_redownload_wiki: true)
 
-            subject.execute
+              allow(repository).to receive(:update_root_ref)
+              expect(repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
+              expect(subject).not_to receive(:fail_registry_sync!)
+
+              subject.execute
+            end
+          end
+
+          context 'when not redownloading' do
+            it 'does not raise an error' do
+              create(:geo_project_registry, project: project)
+
+              allow(repository).to receive(:update_root_ref)
+              expect(repository).to receive(:expire_exists_cache).twice.and_call_original
+              expect(subject).not_to receive(:fail_registry_sync!)
+
+              subject.execute
+            end
           end
         end
       end

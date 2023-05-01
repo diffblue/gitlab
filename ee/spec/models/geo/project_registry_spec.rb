@@ -1226,16 +1226,36 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
   end
 
   describe '#candidate_for_redownload?' do
-    it 'returns false when repository_retry_count is 1 or less' do
-      registry = create(:geo_project_registry, :sync_failed)
+    context 'when feature flag geo_deprecate_redownload is enabled' do
+      it 'returns false when repository_retry_count is 1 or less' do
+        registry = create(:geo_project_registry, :sync_failed)
 
-      expect(registry.candidate_for_redownload?).to be_falsey
+        expect(registry.candidate_for_redownload?).to be_falsey
+      end
+
+      it 'returns false when repository_retry_count is > 1' do
+        registry = create(:geo_project_registry, :sync_failed, repository_retry_count: 2)
+
+        expect(registry.candidate_for_redownload?).to be_falsey
+      end
     end
 
-    it 'returns true when repository_retry_count is > 1' do
-      registry = create(:geo_project_registry, :sync_failed, repository_retry_count: 2)
+    context 'when feature flag geo_deprecate_redownload is disabled' do
+      before do
+        stub_feature_flags(geo_deprecate_redownload: false)
+      end
 
-      expect(registry.candidate_for_redownload?).to be_truthy
+      it 'returns false when repository_retry_count is 1 or less' do
+        registry = create(:geo_project_registry, :sync_failed)
+
+        expect(registry.candidate_for_redownload?).to be_falsey
+      end
+
+      it 'returns true when repository_retry_count is > 1' do
+        registry = create(:geo_project_registry, :sync_failed, repository_retry_count: 2)
+
+        expect(registry.candidate_for_redownload?).to be_truthy
+      end
     end
   end
 

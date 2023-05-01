@@ -78,6 +78,8 @@ module Geo
     end
 
     def redownload?
+      return false if Feature.enabled?(:geo_deprecate_redownload)
+
       registry.should_be_redownloaded?
     end
   end

@@ -486,6 +486,8 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   #
   # @return [Boolean] whether the registry is candidate for a re-download
   def candidate_for_redownload?
+    return false if Feature.enabled?(:geo_deprecate_redownload)
+
     self.repository_retry_count && self.repository_retry_count > 1
   end
 
