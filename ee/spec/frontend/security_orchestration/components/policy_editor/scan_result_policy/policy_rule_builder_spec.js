@@ -36,7 +36,7 @@ describe('PolicyRuleBuilder', () => {
     license_states: ['newly_detected', 'detected'],
   };
 
-  const factory = (propsData = {}, provide = {}) => {
+  const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMountExtended(PolicyRuleBuilder, {
       propsData: {
         initRule: emptyBuildRule(),
@@ -95,7 +95,7 @@ describe('PolicyRuleBuilder', () => {
       ${'security scan'} | ${SECURITY_SCAN_RULE}    | ${true}          | ${false}
       ${'license scan'}  | ${LICENSE_SCANNING_RULE} | ${false}         | ${true}
     `('renders the $ruleType policy', ({ rule, showSecurityRule, showLicenseRule }) => {
-      factory({ initRule: rule });
+      factory({ propsData: { initRule: rule } });
       expect(findSecurityScanRule().exists()).toBe(showSecurityRule);
       expect(findLicenseScanRule().exists()).toBe(showLicenseRule);
     });
@@ -108,12 +108,36 @@ describe('PolicyRuleBuilder', () => {
       ${securityScanBuildRule()} | ${findSecurityScanRule} | ${licenseScanBuildRule()}
     `('selects correct rule for scan type', ({ initialRule, findComponent, expectedRule }) => {
       factory({
-        initRule: initialRule,
+        propsData: {
+          initRule: initialRule,
+        },
       });
 
       findComponent().vm.$emit('changed', expectedRule);
 
       expect(wrapper.emitted('changed')).toEqual([[expectedRule]]);
+    });
+  });
+
+  describe('preserve state', () => {
+    it('should preserve state after editing and switching scan type', () => {
+      factory({
+        propsData: { initRule: licenseScanBuildRule() },
+      });
+
+      expect(findLicenseScanRule().props('initRule')).toEqual(licenseScanBuildRule());
+
+      const updatedLicenceRule = {
+        ...licenseScanBuildRule(),
+        branches: ['main'],
+      };
+
+      findLicenseScanRule().vm.$emit('changed', updatedLicenceRule);
+
+      findLicenseScanRule().vm.$emit('set-scan-type', securityScanBuildRule());
+
+      expect(wrapper.emitted('changed')[0]).toEqual([updatedLicenceRule]);
+      expect(wrapper.emitted('changed')[1]).toEqual([securityScanBuildRule()]);
     });
   });
 });

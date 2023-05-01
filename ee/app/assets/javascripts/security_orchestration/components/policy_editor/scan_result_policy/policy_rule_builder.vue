@@ -16,6 +16,24 @@ export default {
       required: true,
     },
   },
+  data() {
+    const previousRules = {
+      [SCAN_FINDING]: null,
+      [LICENSE_FINDING]: null,
+    };
+
+    /**
+     * Case for existing initRule
+     * Or updates from yaml editor
+     */
+    if (this.initRule.type) {
+      previousRules[this.initRule.type] = { ...this.initRule };
+    }
+
+    return {
+      previousRules,
+    };
+  },
   computed: {
     isSecurityRule() {
       return this.initRule.type === SCAN_FINDING;
@@ -31,7 +49,17 @@ export default {
     removeRule() {
       this.$emit('remove');
     },
-    updateRule(value) {
+    updateRule(rule) {
+      this.$emit('changed', rule);
+    },
+    setScanType(rule) {
+      const { type: previousType } = this.initRule;
+
+      if (previousType) {
+        this.previousRules[previousType] = this.initRule;
+      }
+
+      const value = this.previousRules[rule.type] || rule;
       this.$emit('changed', value);
     },
   },
@@ -44,6 +72,7 @@ export default {
     :init-rule="initRule"
     @changed="updateRule"
     @remove="removeRule"
+    @set-scan-type="setScanType"
   />
 
   <security-scan-rule-builder
@@ -51,6 +80,7 @@ export default {
     :init-rule="initRule"
     @changed="updateRule"
     @remove="removeRule"
+    @set-scan-type="setScanType"
   />
 
   <license-scan-rule-builder
@@ -58,5 +88,6 @@ export default {
     :init-rule="initRule"
     @changed="updateRule"
     @remove="removeRule"
+    @set-scan-type="setScanType"
   />
 </template>

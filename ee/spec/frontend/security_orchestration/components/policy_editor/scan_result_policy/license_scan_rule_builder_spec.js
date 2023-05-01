@@ -7,6 +7,11 @@ import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_r
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
 import { STATUS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
+import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
+import {
+  SCAN_FINDING,
+  getDefaultRule,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('LicenseScanRuleBuilder', () => {
@@ -54,6 +59,7 @@ describe('LicenseScanRuleBuilder', () => {
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
+  const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
 
   beforeEach(() => {
     jest
@@ -128,5 +134,12 @@ describe('LicenseScanRuleBuilder', () => {
     factory({ initRule: UPDATED_RULE });
     await nextTick();
     expect(findBranchesLabel().exists()).toBe(true);
+  });
+
+  it('can change scan type', () => {
+    factory({ initRule: DEFAULT_RULE });
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')).toEqual([[getDefaultRule(SCAN_FINDING)]]);
   });
 });
