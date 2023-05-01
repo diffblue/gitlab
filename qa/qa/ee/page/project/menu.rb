@@ -18,7 +18,7 @@ module QA
               prepend SubMenus::Settings
 
               if QA::Runtime::Env.super_sidebar_enabled?
-                prepend Page::SubMenus::SuperSidebar::Secure
+                prepend SubMenus::SuperSidebar::Secure
                 prepend SubMenus::SuperSidebar::Code
                 prepend SubMenus::SuperSidebar::Analyze
               end
