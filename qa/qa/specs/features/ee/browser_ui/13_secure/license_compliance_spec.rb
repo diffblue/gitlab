@@ -21,7 +21,7 @@ module QA
       it 'has empty state', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347681' do
         Flow::Login.sign_in_unless_signed_in
         @project.visit!
-        Page::Project::Menu.perform(&:click_on_license_compliance)
+        Page::Project::Menu.perform(&:go_to_license_compliance)
 
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           aggregate_failures do
@@ -110,7 +110,7 @@ module QA
           before do
             Flow::Login.sign_in_unless_signed_in
             @project.visit!
-            Page::Project::Menu.perform(&:click_on_license_compliance)
+            Page::Project::Menu.perform(&:go_to_license_compliance)
           end
 
           after(:context) do
@@ -167,7 +167,7 @@ module QA
           before do
             Flow::Login.sign_in_unless_signed_in
             @project.visit!
-            Page::Project::Menu.perform(&:click_on_license_compliance)
+            Page::Project::Menu.perform(&:go_to_license_compliance)
           end
 
           after(:context) do
@@ -188,7 +188,7 @@ module QA
         @project.visit!
         Flow::Pipeline.wait_for_latest_pipeline(status: 'passed')
         @project.visit!
-        Page::Project::Menu.perform(&:click_on_license_compliance)
+        Page::Project::Menu.perform(&:go_to_license_compliance)
         EE::Page::Project::Secure::LicenseCompliance.perform do |license_compliance|
           license_compliance.open_tab
           license_compliance.approve_license(approved_license_name)

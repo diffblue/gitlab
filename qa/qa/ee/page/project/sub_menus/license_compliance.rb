@@ -8,7 +8,7 @@ module QA
           module LicenseCompliance
             extend QA::Page::PageConcern
 
-            def click_on_license_compliance
+            def go_to_license_compliance
               hover_security_compliance do
                 within_submenu do
                   click_element(:sidebar_menu_item_link, menu_item: 'License compliance')
