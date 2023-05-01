@@ -129,7 +129,7 @@ export default {
     },
     setScanType(value) {
       const rule = getDefaultRule(value);
-      this.$emit('changed', rule);
+      this.$emit('set-scan-type', rule);
     },
   },
 };

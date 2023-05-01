@@ -6,12 +6,14 @@ import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selecto
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
+import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   securityScanBuildRule,
   SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
+import { getDefaultRule } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import {
   SEVERITY,
   STATUS,
@@ -61,6 +63,7 @@ describe('SecurityScanRuleBuilder', () => {
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
   const findSeverityFilter = () => wrapper.findComponent(SeverityFilter);
+  const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
 
   beforeEach(() => {
     jest
@@ -197,5 +200,12 @@ describe('SecurityScanRuleBuilder', () => {
     factory({ initRule: UPDATED_RULE });
     await nextTick();
     expect(findBranchesLabel().exists()).toBe(true);
+  });
+
+  it('can change scan type', () => {
+    factory({ initRule: securityScanBuildRule() });
+    findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
+
+    expect(wrapper.emitted('set-scan-type')).toEqual([[getDefaultRule(SCAN_FINDING)]]);
   });
 });

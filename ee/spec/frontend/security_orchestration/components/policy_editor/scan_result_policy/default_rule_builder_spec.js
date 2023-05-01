@@ -44,17 +44,17 @@ describe('DefaultRuleBuilder', () => {
   it('selects type without branches', () => {
     findScanTypeSelect().vm.$emit('select', LICENSE_FINDING);
 
-    expect(wrapper.emitted('changed')).toEqual([[getDefaultRule(LICENSE_FINDING)]]);
+    expect(wrapper.emitted('set-scan-type')).toEqual([[getDefaultRule(LICENSE_FINDING)]]);
   });
 
   it('selects branches and scan type', () => {
     findPolicyRuleBranchSelection().vm.$emit('changed', { branches: ['main'] });
 
-    expect(wrapper.emitted('changed')).toBeUndefined();
+    expect(wrapper.emitted('set-scan-type')).toBeUndefined();
 
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);
 
-    expect(wrapper.emitted('changed')).toEqual([
+    expect(wrapper.emitted('set-scan-type')).toEqual([
       [
         {
           ...getDefaultRule(SCAN_FINDING),
