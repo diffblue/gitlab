@@ -38,7 +38,6 @@ Lint/AmbiguousOperatorPrecedence:
     - 'ee/app/models/geo/upload_registry.rb'
     - 'ee/app/models/iterations/cadence.rb'
     - 'ee/app/models/license.rb'
-    - 'ee/app/models/namespaces/storage/root_size.rb'
     - 'ee/app/policies/ee/issuable_policy.rb'
     - 'ee/app/services/boards/epics/position_create_service.rb'
     - 'ee/app/services/geo/registry_consistency_service.rb'
