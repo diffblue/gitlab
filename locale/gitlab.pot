@@ -26886,9 +26886,6 @@ msgstr ""
 msgid "MattermostService|Fill in the word that works best for your team."
 msgstr ""
 
-msgid "MattermostService|Install"
-msgstr ""
-
 msgid "MattermostService|Request URL"
 msgstr ""
 
