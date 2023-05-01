@@ -7,7 +7,14 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import SearchProjectsListbox from '../components/create/search_projects_listbox.vue';
 import GetProjectDetailsQuery from '../components/create/get_project_details_query.vue';
 import workspaceCreateMutation from '../graphql/mutations/workspace_create.mutation.graphql';
-import { DEFAULT_DESIRED_STATE, DEFAULT_DEVFILE_PATH, DEFAULT_EDITOR, ROUTES } from '../constants';
+import { addWorkspace } from '../services/apollo_cache_mutators';
+import {
+  DEFAULT_DESIRED_STATE,
+  DEFAULT_DEVFILE_PATH,
+  DEFAULT_EDITOR,
+  ROUTES,
+  PROJECT_VISIBILITY,
+} from '../constants';
 
 export const i18n = {
   title: s__('Workspaces|New workspace'),
@@ -19,7 +26,9 @@ export const i18n = {
     agentId: s__('Workspaces|Select cluster agent'),
     editor: s__('Workspaces|Select default editor'),
     help: {
-      devfileProjectHelp: s__('Workspaces|You can create a workspace for Premium projects only.'),
+      devfileProjectHelp: s__(
+        'Workspaces|You can create a workspace for public Premium projects only.',
+      ),
     },
   },
   invalidProjectAlert: {
@@ -62,6 +71,7 @@ export default {
       projectId: null,
       rootRef: null,
       projectDetailsLoaded: false,
+      error: '',
     };
   },
   computed: {
@@ -92,11 +102,10 @@ export default {
     },
   },
   methods: {
-    onProjectDetailsResult({ hasDevFile, clusterAgents, groupPath, id, rootRef }) {
+    onProjectDetailsResult({ hasDevFile, clusterAgents, id, rootRef }) {
       this.projectDetailsLoaded = true;
       this.hasDevFile = hasDevFile;
       this.clusterAgents = clusterAgents;
-      this.groupPath = groupPath;
       this.projectId = id;
       this.rootRef = rootRef;
     },
@@ -112,7 +121,6 @@ export default {
           variables: {
             input: {
               projectId: this.projectId,
-              groupPath: this.groupPath,
               clusterAgentId: this.selectedAgent,
               editor: DEFAULT_EDITOR,
               desiredState: DEFAULT_DESIRED_STATE,
@@ -120,19 +128,28 @@ export default {
               devfileRef: this.rootRef,
             },
           },
+          update(store, { data }) {
+            if (data.workspaceCreate.errors.length > 0) {
+              return;
+            }
+
+            addWorkspace(store, data.workspaceCreate.workspace);
+          },
         });
 
-        const { errors } = result.data.workspaceCreate;
+        const {
+          errors: [error],
+        } = result.data.workspaceCreate;
 
-        if (errors.length > 0) {
-          createAlert({ message: errors[0] });
+        if (error) {
+          this.error = error;
           return;
         }
 
         this.$router.push(ROUTES.index);
       } catch (error) {
         logError(error);
-        createAlert({ message: i18n.createWorkspaceFailedMessage });
+        this.error = i18n.createWorkspaceFailedMessage;
       } finally {
         this.isCreatingWorkspace = false;
       }
@@ -140,6 +157,7 @@ export default {
   },
   i18n,
   ROUTES,
+  PROJECT_VISIBILITY,
 };
 </script>
 <template>
@@ -163,7 +181,10 @@ export default {
         :label-description="$options.i18n.form.help.devfileProjectHelp"
         label-for="workspace-devfile-project-id"
       >
-        <search-projects-listbox v-model="selectedProject" />
+        <search-projects-listbox
+          v-model="selectedProject"
+          :visibility="$options.PROJECT_VISIBILITY.public"
+        />
         <gl-alert
           v-if="displayClusterAgentsAlert"
           data-testid="no-agents-alert"
@@ -186,7 +207,7 @@ export default {
         </gl-alert>
       </gl-form-group>
       <gl-form-group
-        v-if="clusterAgents.length"
+        v-if="!emptyAgents"
         :label="$options.i18n.form.agentId"
         label-for="workspace-cluster-agent-id"
         data-testid="workspace-cluster-agent-form-group"
@@ -216,6 +237,16 @@ export default {
           {{ $options.i18n.cancelButton }}
         </gl-button>
       </div>
+      <gl-alert
+        v-if="error"
+        data-testid="create-workspace-error-alert"
+        class="gl-mt-3"
+        variant="danger"
+        dismissible
+        @dismiss="error = ''"
+      >
+        {{ error }}
+      </gl-alert>
     </gl-form>
   </div>
 </template>

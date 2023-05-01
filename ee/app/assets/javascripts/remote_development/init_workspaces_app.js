@@ -20,16 +20,24 @@ const generateDummyWorkspace = (actualState, desiredState) => {
     devfilePath: '.devfile.yaml',
     actualState,
     desiredState,
-    project: {
-      id: 'gid://gitlab/Project/2',
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      nameWithNamespace: 'Gitlab Shell',
-    },
+    projectId: 'gid://gitlab/Project/2',
   };
 };
 
 const createApolloProvider = () => {
-  const defaultClient = createDefaultClient();
+  const defaultClient = createDefaultClient({
+    Mutation: {
+      workspaceCreate: () => {
+        return {
+          workspace: generateDummyWorkspace(
+            WORKSPACE_STATES.creationRequested,
+            WORKSPACE_STATES.running,
+          ),
+          errors: [],
+        };
+      },
+    },
+  });
   // what: Dummy data to support development
   defaultClient.cache.writeQuery({
     query: userWorkspacesListQuery,

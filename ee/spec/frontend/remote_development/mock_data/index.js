@@ -5,15 +5,13 @@ const WORKSPACE = {
   id: 1,
   name: 'Workspace 1',
   namespace: 'Namespace',
-  projectFullPath: 'GitLab.org / GitLab',
+  projectId: 'gid://gitlab/Project/2',
   desiredState: 'Running',
   actualState: 'Started',
   displayedState: 'Started',
   url: `${TEST_HOST}/workspace/1`,
-  editor: 'VSCode',
-  devfile: 'devfile',
-  branch: 'master',
-  lastUsed: '2020-01-01T00:00:00.000Z',
+  devfileRef: 'main',
+  devfilePath: '.devfile.yaml',
 };
 
 export const WORKSPACE_QUERY_RESULT = {
@@ -37,10 +35,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             url: 'http://8000-workspace-1-1-idmi02.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
-            project: {
-              id: 'gid://gitlab/Project/2',
-              nameWithNamespace: 'Gitlab Shell',
-            },
+            projectId: 'gid://gitlab/Project/2',
           },
           {
             id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
@@ -51,10 +46,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             url: 'http://8000-workspace-1-1-rfu27q.workspaces.localdev.me?tkn=password',
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
-            project: {
-              id: 'gid://gitlab/Project/2',
-              nameWithNamespace: 'Gitlab Shell',
-            },
+            projectId: 'gid://gitlab/Project/2',
           },
         ],
       },
@@ -83,11 +75,13 @@ export const SEARCH_PROJECTS_QUERY_RESULT = {
           id: 1,
           nameWithNamespace: 'GitLab Org / GitLab',
           fullPath: 'gitlab-org/gitlab',
+          visibility: 'public',
         },
         {
           id: 2,
           nameWithNamespace: 'GitLab Org / GitLab Shell',
           fullPath: 'gitlab-org/gitlab-shell',
+          visibility: 'public',
         },
       ],
     },
@@ -129,6 +123,10 @@ export const WORKSPACE_CREATE_MUTATION_RESULT = {
   data: {
     workspaceCreate: {
       errors: [],
+      workspace: {
+        ...cloneDeep(WORKSPACE),
+        id: 2,
+      },
     },
   },
 };

@@ -1,5 +1,6 @@
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
+import { cloneDeep } from 'lodash';
 import { GlCollapsibleListbox, GlIcon, GlListboxItem } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import SelectProjectListbox, {
@@ -7,6 +8,7 @@ import SelectProjectListbox, {
   PROJECTS_MAX_LIMIT,
 } from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import searchProjectsQuery from 'ee/remote_development/graphql/queries/search_projects.query.graphql';
+import { PROJECT_VISIBILITY } from 'ee/remote_development/constants';
 import {
   shallowMountExtended,
   mountExtended,
@@ -30,11 +32,18 @@ describe('remote_development/components/create/search_projects_listbox', () => {
     searchProjectsQueryHandler.mockResolvedValueOnce(SEARCH_PROJECTS_QUERY_RESULT);
     mockApollo = createMockApollo([[searchProjectsQuery, searchProjectsQueryHandler]]);
   };
-  const buildWrapper = ({ mountFn = shallowMountExtended, value = null } = {}) => {
+  const buildWrapper = ({
+    mountFn = shallowMountExtended,
+    value = null,
+    visibility,
+    membership,
+  } = {}) => {
     wrapper = mountFn(SelectProjectListbox, {
       apolloProvider: mockApollo,
       propsData: {
         value,
+        visibility,
+        membership,
       },
       stubs: {
         GlCollapsibleListbox,
@@ -69,7 +78,7 @@ describe('remote_development/components/create/search_projects_listbox', () => {
         })),
         headerText: i18n.dropdownHeader,
         noResultsText: i18n.noResultsMessage,
-        searchPlaceholder: i18n.searchPlaceholder,
+        searchPlaceholder: expect.stringContaining('Search your projects'),
       });
     });
 
@@ -81,6 +90,60 @@ describe('remote_development/components/create/search_projects_listbox', () => {
 
     it('displays empty field placeholder as the toggle button text', () => {
       expect(findCollapsibleListbox().props().toggleText).toBe(i18n.emptyFieldPlaceholder);
+    });
+  });
+
+  describe('when a project visibility is provided', () => {
+    beforeEach(async () => {
+      const customProjectsResults = cloneDeep(SEARCH_PROJECTS_QUERY_RESULT);
+      const project = customProjectsResults.data.projects.nodes[0];
+
+      customProjectsResults.data.projects.nodes.push({
+        ...project,
+        fullPath: 'gitlab-org/private-project',
+        nameWithNamespace: 'private project',
+        visibility: 'private',
+      });
+
+      searchProjectsQueryHandler.mockReset();
+      searchProjectsQueryHandler.mockResolvedValueOnce(customProjectsResults);
+
+      buildWrapper({ visibility: PROJECT_VISIBILITY.public });
+
+      await waitForPromises();
+    });
+
+    it('displays the visibility in the search placeholder', () => {
+      expect(findCollapsibleListbox().props().searchPlaceholder).toBe(
+        `Search your ${PROJECT_VISIBILITY.public} projects`,
+      );
+    });
+
+    it('does not display projects with a different visibility', () => {
+      expect(findCollapsibleListbox().text()).not.toContain('private project');
+      getMockProjectsNameWithNamespace().forEach((name) => {
+        expect(findCollapsibleListbox().text()).toContain(name);
+      });
+    });
+  });
+
+  describe('when membership property is false', () => {
+    beforeEach(async () => {
+      buildWrapper({ membership: false });
+
+      await waitForPromises();
+    });
+
+    it('does not include word "your" in the search placeholder', () => {
+      expect(findCollapsibleListbox().props().searchPlaceholder).toBe(`Search projects`);
+    });
+
+    it('specifies that membership is not required in GraphQL query', () => {
+      expect(searchProjectsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          membership: false,
+        }),
+      );
     });
   });
 
@@ -135,6 +198,7 @@ describe('remote_development/components/create/search_projects_listbox', () => {
         search: searchTerm,
         first: PROJECTS_MAX_LIMIT,
         sort: 'similarity',
+        membership: true,
       });
     });
   });

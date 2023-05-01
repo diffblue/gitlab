@@ -1,5 +1,16 @@
 mutation workspaceCreate($input: WorkspaceCreateInput!) {
   workspaceCreate(input: $input) @client {
+    workspace {
+      id
+      name
+      namespace
+      projectId
+      desiredState
+      actualState
+      url
+      devfileRef
+      devfilePath
+    }
     errors
   }
 }
