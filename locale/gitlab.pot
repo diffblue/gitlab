@@ -43818,7 +43818,7 @@ msgstr ""
 msgid "TanukiBot|Sources"
 msgstr ""
 
-msgid "TanukiBot|There was an error communicating with GitLab Chat. Please reach out to GitLab support for more assistance or try again later."
+msgid "TanukiBot|There was an error communicating with GitLab Chat. Please try again later."
 msgstr ""
 
 msgid "TanukiBot|What is a fork?"
