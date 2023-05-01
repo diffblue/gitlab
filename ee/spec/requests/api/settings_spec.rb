@@ -313,6 +313,58 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
     let(:feature) { :geo }
 
     it_behaves_like 'settings for licensed features'
+
+    context 'when geo feature is disabled' do
+      let(:attribute_names) { settings.keys.map(&:to_s) }
+
+      context "with registration features disabled" do
+        before do
+          stub_application_setting(usage_ping_features_enabled: false)
+        end
+
+        it 'hides the attributes in the API' do
+          get api(path, admin, admin_mode: true)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          attribute_names.each do |attribute|
+            expect(json_response.keys).not_to include(attribute)
+          end
+        end
+
+        it 'does not update application settings' do
+          put api(path, admin, admin_mode: true), params: settings
+
+          expect(response).to have_gitlab_http_status(:ok)
+
+          expect { put api(path, admin, admin_mode: true), params: settings }
+            .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
+        end
+      end
+
+      context "with registration features enabled" do
+        before do
+          stub_application_setting(usage_ping_features_enabled: true)
+        end
+
+        it 'includes the attributes in the API' do
+          get api(path, admin, admin_mode: true)
+
+          expect(response).to have_gitlab_http_status(:ok)
+          attribute_names.each do |attribute|
+            expect(json_response.keys).to include(attribute)
+          end
+        end
+
+        it 'allows updating the settings' do
+          put api(path, admin, admin_mode: true), params: settings
+          expect(response).to have_gitlab_http_status(:ok)
+
+          settings.each do |attribute, value|
+            expect(ApplicationSetting.current.public_send(attribute)).to eq(value)
+          end
+        end
+      end
+    end
   end
 
   context 'password complexity settings' do
