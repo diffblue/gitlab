@@ -15,6 +15,11 @@ export default {
       type: Array,
       required: true,
     },
+    pointerProject: {
+      type: Object,
+      required: false,
+      default: () => ({}),
+    },
   },
   i18n: {
     learnMore: __('Learn more'),

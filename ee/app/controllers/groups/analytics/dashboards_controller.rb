@@ -20,6 +20,8 @@ module Groups
       end
 
       def value_streams_dashboard
+        @pointer_project = find_pointer_project
+
         @namespaces =
           if params[:query].present?
             paths_array = params[:query].split(",").first(MAX_ALLOWED_PATHS)
@@ -40,6 +42,12 @@ module Groups
       end
 
       private
+
+      def find_pointer_project
+        Project.find_by_id(
+          @group.analytics_dashboards_pointer&.target_project_id
+        )&.as_json(only: %w[id name], methods: %w[full_path])
+      end
 
       def project?(source)
         source.model_name.param_key == "project"

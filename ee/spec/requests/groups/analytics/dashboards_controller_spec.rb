@@ -93,6 +93,9 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
         let_it_be(:subgroup) { create(:group, parent: group) }
         let_it_be(:projects) { create_list(:project, 4, :public, group: group) }
         let_it_be(:subgroup_projects) { create_list(:project, 2, :public, group: subgroup) }
+        let(:analytics_dashboards_pointer) do
+          create(:analytics_dashboards_pointer, namespace: group, target_project: projects.first)
+        end
 
         before do
           stub_licensed_features(group_level_analytics_dashboard: true)
@@ -149,6 +152,36 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
           end
         end
 
+        it 'passes pointer_project if it has been configured' do
+          analytics_dashboards_pointer
+          request
+
+          expect(response).to be_successful
+
+          expect(js_app_attributes['data-pointer-project'].value).to eq({
+            id: analytics_dashboards_pointer.target_project.id,
+            name: analytics_dashboards_pointer.target_project.name,
+            full_path: analytics_dashboards_pointer.target_project.full_path
+          }.to_json)
+        end
+
+        it 'does not pass pointer_project if the configured project is missing' do
+          analytics_dashboards_pointer.target_project.destroy!
+          request
+
+          expect(response).to be_successful
+
+          expect(js_app_attributes).not_to include('data-pointer-project')
+        end
+
+        it 'does not pass pointer_project if it was not configured' do
+          request
+
+          expect(response).to be_successful
+
+          expect(js_app_attributes).not_to include('data-pointer-project')
+        end
+
         it 'tracks page view on usage ping' do
           expect(::Gitlab::UsageDataCounters::ValueStreamsDashboardCounter).to receive(:count).with(:views)
 
@@ -164,6 +197,10 @@ RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgr
 
         def build_dashboard_path(path, namespaces)
           "#{path}?query=#{namespaces.map(&:full_path).join(',')}"
+        end
+
+        def js_app_attributes
+          Nokogiri::HTML.parse(response.body).at_css('div#js-analytics-dashboards-app').attributes
         end
       end
     end
