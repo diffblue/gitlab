@@ -271,7 +271,7 @@ RSpec.describe GroupsHelper do
 
     context 'when project-level storage limits are enabled' do
       before do
-        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
+        allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
       end
 
       context 'when the project limit is enforced' do
@@ -293,7 +293,7 @@ RSpec.describe GroupsHelper do
 
     context 'when namespace-level storage limits are enabled' do
       before do
-        allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
+        allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
       end
 
       it { is_expected.to be false }

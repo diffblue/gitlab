@@ -127,7 +127,7 @@ module Namespaces
 
       def enforcement_type
         @enforcement_type ||=
-          if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
+          if ::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
             :namespace
           else
             :repository
