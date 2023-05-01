@@ -79,6 +79,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
           expected_result = [
             {
               id: issue2.id,
+              iid: issue2.iid,
               type: issue2.issue_type.upcase,
               title: issue2.title,
               assignees: [],
@@ -97,6 +98,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
             },
             {
               id: issue1.id,
+              iid: issue1.iid,
               type: issue1.issue_type.upcase,
               title: issue1.title,
               assignees: [],
@@ -115,6 +117,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
             },
             {
               id: issue3.id,
+              iid: issue3.iid,
               type: issue3.issue_type.upcase,
               title: issue3.title,
               assignees: [],
@@ -146,6 +149,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
           expected_result = [
             {
               id: issue2.id,
+              iid: issue2.iid,
               type: issue2.issue_type.upcase,
               title: issue2.title,
               assignees: [],
@@ -164,6 +168,7 @@ RSpec.describe EpicIssues::ListService, feature_category: :portfolio_management 
             },
             {
               id: issue1.id,
+              iid: issue1.iid,
               type: issue1.issue_type.upcase,
               title: issue1.title,
               assignees: [],
