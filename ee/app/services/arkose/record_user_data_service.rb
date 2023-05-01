@@ -29,6 +29,7 @@ module Arkose
     def custom_attributes
       custom_attributes = []
       custom_attributes.push({ key: 'arkose_session', value: response.session_id })
+      custom_attributes.push({ key: 'arkose_device_id', value: response.device_id }) unless response.device_id.nil?
       custom_attributes.push({ key: UserCustomAttribute::ARKOSE_RISK_BAND, value: response.risk_band })
       custom_attributes.push({ key: 'arkose_global_score', value: response.global_score })
       custom_attributes.push({ key: 'arkose_custom_score', value: response.custom_score })

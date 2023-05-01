@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::VerifyResponse do
+RSpec.describe Arkose::VerifyResponse, feature_category: :instance_resiliency do
   def parse_json(file_path)
     Gitlab::Json.parse(File.read(Rails.root.join(file_path)))
   end
@@ -166,6 +166,7 @@ RSpec.describe Arkose::VerifyResponse do
         :risk_category        | "BOT-STD"
         :global_telltale_list | lazy { global_telltale_list }
         :custom_telltale_list | lazy { custom_telltale_list }
+        :device_id            | "gaFCZkxoGZYW6"
       end
 
       with_them do
@@ -186,6 +187,7 @@ RSpec.describe Arkose::VerifyResponse do
         :risk_category        | 'Unavailable'
         :global_telltale_list | 'Unavailable'
         :custom_telltale_list | 'Unavailable'
+        :device_id            | nil
       end
 
       with_them do
