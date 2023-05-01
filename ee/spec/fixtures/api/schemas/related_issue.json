@@ -17,6 +17,7 @@
   ],
   "properties": {
     "id": { "type": "integer" },
+    "iid": { "type": "integer" },
     "confidential": { "type": "boolean" },
     "title": { "type": "string" },
     "type": { "type": "string" },
