@@ -17,7 +17,7 @@ module TrialsHelper
   end
 
   def create_company_form_data
-    submit_params = glm_params.merge(passed_through_params.to_unsafe_h.symbolize_keys)
+    submit_params = glm_params.merge(passed_through_params.to_unsafe_h)
     {
       submit_path: users_sign_up_company_path(submit_params)
     }
