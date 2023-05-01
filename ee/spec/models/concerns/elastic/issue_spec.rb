@@ -142,11 +142,6 @@ RSpec.describe Issue, :elastic, feature_category: :global_search do
       expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
 
-    it 'does not return label_ids and schema_version if migration is not finished' do
-      set_elasticsearch_migration_to :add_label_ids_and_schema_version_to_issues_mapping, including: false
-      expect(issue.__elasticsearch__.as_indexed_json).to eq(expected_hash.except('label_ids', 'schema_version', 'hashed_root_namespace_id'))
-    end
-
     it 'does not have an N+1' do
       set_elasticsearch_migration_to :add_hashed_root_namespace_id_to_issues, including: true
 

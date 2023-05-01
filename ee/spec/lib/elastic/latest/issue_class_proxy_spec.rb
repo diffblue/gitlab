@@ -63,11 +63,6 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
           expect(elasticsearch_hit_ids(result)).not_to include issue.id
         end
 
-        it 'current_user is non admin user and backfill_hidden_on_issues is not finished then user can see the issue' do
-          set_elasticsearch_migration_to :add_hidden_to_issues, including: false
-          expect(elasticsearch_hit_ids(result)).to include issue.id
-        end
-
         it 'current_user is empty then user can not see the issue' do
           options[:current_user] = nil
           result = subject.elastic_search('test', options: options)
