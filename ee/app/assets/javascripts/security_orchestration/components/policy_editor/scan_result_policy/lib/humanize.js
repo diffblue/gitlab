@@ -4,32 +4,13 @@ import { createHumanizedScanners } from '../../utils';
 import { LICENSE_FINDING, LICENSE_STATES } from './rules';
 
 /**
- * Simple logic for indefinite articles which does not include the exceptions
- * @param {String} word string representing the word to be considered
- * @returns {String}
- */
-const articleForWord = (word) => {
-  const vowels = ['a', 'e', 'i', 'o', 'u'];
-
-  return vowels.includes(word[0].toLowerCase())
-    ? s__('SecurityOrchestration|an')
-    : s__('SecurityOrchestration|a');
-};
-
-/**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
  * @param {Array} items strings representing items to compose the final sentence
  * @param {String} singular string to be used for single items
  * @param {String} plural string to be used for multiple items
  * @returns {String}
  */
-const humanizeItems = ({
-  items,
-  singular,
-  plural,
-  hasArticle = false,
-  hasTextBeforeItems = false,
-}) => {
+const humanizeItems = ({ items, singular, plural, hasTextBeforeItems = false }) => {
   if (!items) {
     return '';
   }
@@ -41,10 +22,6 @@ const humanizeItems = ({
   }
 
   const finalSentence = [];
-
-  if (hasArticle && items.length === 1) {
-    finalSentence.push(`${articleForWord(items[0])} `);
-  }
 
   if (hasTextBeforeItems && noun) {
     finalSentence.push(`${noun} `);
@@ -84,6 +61,18 @@ const humanizeBranches = (branches) => {
     }),
   });
 };
+
+/**
+ * Create a human-readable version of the allowed vulnerabilities
+ * @param {Number} vulnerabilitiesAllowed
+ * @returns {String}
+ */
+const humanizeVulnerabilitiesAllowed = (vulnerabilitiesAllowed) =>
+  vulnerabilitiesAllowed
+    ? sprintf(s__('SecurityOrchestration|more than %{allowed}'), {
+        allowed: vulnerabilitiesAllowed,
+      })
+    : s__('SecurityOrchestration|any');
 
 /**
  * Create a human-readable version of the scanners
@@ -154,7 +143,7 @@ const humanizeRule = (rule) => {
 
   return sprintf(
     s__(
-      'SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}.',
+      'SecurityOrchestration|%{scanners} %{vulnerabilitiesAllowed} %{severities} in an open merge request targeting %{branches}.',
     ),
     {
       scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
@@ -162,9 +151,9 @@ const humanizeRule = (rule) => {
         items: rule.severity_levels,
         singular: s__('SecurityOrchestration|vulnerability'),
         plural: s__('SecurityOrchestration|vulnerabilities'),
-        hasArticle: true,
       }),
       branches: humanizeBranches(rule.branches),
+      vulnerabilitiesAllowed: humanizeVulnerabilitiesAllowed(rule.vulnerabilities_allowed),
     },
   );
 };
