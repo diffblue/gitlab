@@ -15,15 +15,22 @@ const buildNamespaces = ({ groupFullPath, groupName, jsonString = '' }) => {
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
-  const { groupFullPath, groupName, namespaces } = el.dataset;
+  const { groupFullPath, groupName, namespaces, pointerProject: pointerProjectJson } = el.dataset;
+
   const chartConfigs = buildNamespaces({ groupFullPath, groupName, jsonString: namespaces });
+  let pointerProject;
+  try {
+    pointerProject = JSON.parse(pointerProjectJson);
+  } catch {
+    pointerProject = undefined;
+  }
 
   return new Vue({
     el,
     name: 'DashboardsApp',
     render: (createElement) =>
       createElement(DashboardsApp, {
-        props: { chartConfigs },
+        props: { chartConfigs, pointerProject },
       }),
   });
 };
