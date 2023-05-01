@@ -1,0 +1,8 @@
+---
+name: geo_deprecate_redownload
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118411
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/408312
+milestone: '16.0'
+type: development
+group: group::geo
+default_enabled: true

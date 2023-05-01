@@ -6,10 +6,7 @@ query userWorkspacesList {
         id
         name
         namespace
-        project {
-          id
-          nameWithNamespace
-        }
+        projectId
         desiredState
         actualState
         url

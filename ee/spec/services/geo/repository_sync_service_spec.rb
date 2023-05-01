@@ -295,80 +295,127 @@ RSpec.describe Geo::RepositorySyncService, :geo, feature_category: :geo_replicat
 
     context 'retries' do
       context 'with repository previously synced' do
-        it 'tries to fetch repo' do
-          create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1)
+        context 'when feature flag geo_deprecate_redownload is enabled' do
+          it 'tries to fetch repo' do
+            create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1)
 
-          expect(subject).to receive(:sync_repository)
+            expect(subject).to receive(:sync_repository)
 
-          subject.execute
+            subject.execute
+          end
+
+          it 'sets the redownload flag to false after success' do
+            registry = create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload_repository: true)
+
+            subject.execute
+
+            expect(registry.reload.force_to_redownload_repository).to be false
+          end
+
+          it 'does not try to redownload repo when there are many retries' do
+            create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1)
+
+            expect(subject).to receive(:sync_repository)
+            expect(subject).not_to receive(:redownload_repository)
+
+            subject.execute
+          end
+
+          it 'does not try to redownload repo when force_redownload flag is set' do
+            create(
+              :geo_project_registry,
+              project: project,
+              repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
+              force_to_redownload_repository: true
+            )
+
+            expect(subject).to receive(:sync_repository)
+            expect(subject).not_to receive(:redownload_repository)
+
+            subject.execute
+          end
         end
 
-        it 'sets the redownload flag to false after success' do
-          registry = create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload_repository: true)
+        context 'when feature flag geo_deprecate_redownload is disabled' do
+          before do
+            stub_feature_flags(geo_deprecate_redownload: false)
+          end
 
-          subject.execute
+          it 'tries to fetch repo' do
+            create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1)
 
-          expect(registry.reload.force_to_redownload_repository).to be false
-        end
+            expect(subject).to receive(:sync_repository)
 
-        it 'tries to redownload repo' do
-          create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1)
+            subject.execute
+          end
 
-          expect(subject).to receive(:sync_repository).and_call_original
-          expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
+          it 'sets the redownload flag to false after success' do
+            registry = create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload_repository: true)
 
-          expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
+            subject.execute
 
-          subject.execute
+            expect(registry.reload.force_to_redownload_repository).to be false
+          end
 
-          expect(project.repository.raw).to exist
-        end
+          it 'tries to redownload repo' do
+            create(:geo_project_registry, project: project, repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 1)
 
-        it 'tries to redownload repo when force_redownload flag is set' do
-          create(
-            :geo_project_registry,
-            project: project,
-            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
-            force_to_redownload_repository: true
-          )
+            expect(subject).to receive(:sync_repository).and_call_original
+            expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
 
-          expect(subject).to receive(:sync_repository)
+            expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
 
-          subject.execute
-        end
+            subject.execute
 
-        it 'cleans temporary repo after redownload' do
-          create(
-            :geo_project_registry,
-            project: project,
-            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
-            force_to_redownload_repository: true
-          )
+            expect(project.repository.raw).to exist
+          end
 
-          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
-          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(project.repository_storage, /.git$/)
+          it 'tries to redownload repo when force_redownload flag is set' do
+            create(
+              :geo_project_registry,
+              project: project,
+              repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
+              force_to_redownload_repository: true
+            )
 
-          subject.execute
-        end
+            expect(subject).to receive(:sync_repository)
 
-        it 'successfully redownloads the repository even if the retry time exceeds max value' do
-          timestamp = Time.current.utc
-          registry = create(
-            :geo_project_registry,
-            project: project,
-            repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 2000,
-            repository_retry_at: timestamp,
-            force_to_redownload_repository: true
-          )
+            subject.execute
+          end
 
-          subject.execute
+          it 'cleans temporary repo after redownload' do
+            create(
+              :geo_project_registry,
+              project: project,
+              repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD - 1,
+              force_to_redownload_repository: true
+            )
 
-          # The repository should be redownloaded and cleared without errors. If
-          # the timestamp were not capped, we would have seen a "timestamp out
-          # of range" in the first update to the project registry.
-          registry.reload
-          expect(registry.repository_retry_at).to be_nil
+            expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+            expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+            expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(project.repository_storage, /.git$/)
+
+            subject.execute
+          end
+
+          it 'successfully redownloads the repository even if the retry time exceeds max value' do
+            timestamp = Time.current.utc
+            registry = create(
+              :geo_project_registry,
+              project: project,
+              repository_retry_count: Geo::ProjectRegistry::RETRIES_BEFORE_REDOWNLOAD + 2000,
+              repository_retry_at: timestamp,
+              force_to_redownload_repository: true
+            )
+
+            subject.execute
+
+            # The repository should be redownloaded and cleared without errors. If
+            # the timestamp were not capped, we would have seen a "timestamp out
+            # of range" in the first update to the project registry.
+            registry.reload
+            expect(registry.repository_retry_at).to be_nil
+          end
         end
       end
 
@@ -378,7 +425,7 @@ RSpec.describe Geo::RepositorySyncService, :geo, feature_category: :geo_replicat
         it 'does not raise an error' do
           create(:geo_project_registry, project: project, force_to_redownload_repository: true)
 
-          expect(project.repository).to receive(:expire_exists_cache).exactly(3).times.and_call_original
+          expect(project.repository).to receive(:expire_exists_cache).twice.and_call_original
           expect(subject).not_to receive(:fail_registry_sync!)
 
           subject.execute

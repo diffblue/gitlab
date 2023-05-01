@@ -1,5 +1,6 @@
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
+import { cloneDeep } from 'lodash';
 import { GlFormSelect, GlForm } from '@gitlab/ui';
 import SearchProjectsListbox from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import WorkspaceCreate, { i18n } from 'ee/remote_development/pages/create.vue';
@@ -12,11 +13,17 @@ import {
   DEFAULT_DESIRED_STATE,
   DEFAULT_DEVFILE_PATH,
   ROUTES,
+  PROJECT_VISIBILITY,
 } from 'ee/remote_development/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
-import { GET_PROJECT_DETAILS_QUERY_RESULT, WORKSPACE_CREATE_MUTATION_RESULT } from '../mock_data';
+import userWorkspacesQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import {
+  GET_PROJECT_DETAILS_QUERY_RESULT,
+  USER_WORKSPACES_QUERY_EMPTY_RESULT,
+  WORKSPACE_CREATE_MUTATION_RESULT,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -51,6 +58,11 @@ describe('remote_development/pages/create.vue', () => {
         workspaceCreate: workspaceCreateMutationHandler,
       },
     });
+
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: userWorkspacesQuery,
+      data: USER_WORKSPACES_QUERY_EMPTY_RESULT.data,
+    });
   };
 
   const createWrapper = () => {
@@ -68,6 +80,8 @@ describe('remote_development/pages/create.vue', () => {
   const findSearchProjectsListbox = () => wrapper.findComponent(SearchProjectsListbox);
   const findNoAgentsGlAlert = () => wrapper.findByTestId('no-agents-alert');
   const findNoDevFileGlAlert = () => wrapper.findByTestId('no-dev-file-alert');
+  const findCreateWorkspaceErrorGlAlert = () =>
+    wrapper.findByTestId('create-workspace-error-alert');
   const findClusterAgentsFormGroup = () =>
     wrapper.findByTestId('workspace-cluster-agent-form-group');
   const findGetProjectDetailsQuery = () => wrapper.findComponent(GetProjectDetailsQuery);
@@ -101,6 +115,10 @@ describe('remote_development/pages/create.vue', () => {
   describe('default', () => {
     beforeEach(() => {
       createWrapper();
+    });
+
+    it('limits projects search to public projects', () => {
+      expect(findSearchProjectsListbox().props().visibility).toBe(PROJECT_VISIBILITY.public);
     });
 
     it('displays a cancel button that allows navigating to the workspaces list', () => {
@@ -238,7 +256,6 @@ describe('remote_development/pages/create.vue', () => {
             input: {
               clusterAgentId: selectedClusterAgentIDFixture,
               projectId: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
-              groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
               editor: DEFAULT_EDITOR,
               desiredState: DEFAULT_DESIRED_STATE,
               devfilePath: DEFAULT_DEVFILE_PATH,
@@ -257,11 +274,45 @@ describe('remote_development/pages/create.vue', () => {
       });
 
       describe('when the workspaceCreate mutation succeeds', () => {
+        it('adds created workspace to the apolloQuery', async () => {
+          const apolloClient = mockApollo.clients.defaultClient;
+          let workspaces = apolloClient.readQuery({ query: userWorkspacesQuery });
+
+          expect(workspaces.currentUser.workspaces.nodes.length).toBe(0);
+
+          await submitCreateWorkspaceForm();
+          await waitForPromises();
+
+          workspaces = apolloClient.readQuery({ query: userWorkspacesQuery });
+
+          expect(workspaces.currentUser.workspaces.nodes.length).toBe(1);
+        });
+
         it('redirects the user to the workspaces list', async () => {
           await submitCreateWorkspaceForm();
           await waitForPromises();
 
           expect(mockRouter.push).toHaveBeenCalledWith(ROUTES.index);
+        });
+      });
+
+      describe('when the workspaceCreate mutation returns an error response', () => {
+        it('displays an alert that contains the error response', async () => {
+          const customMutationResponse = cloneDeep(WORKSPACE_CREATE_MUTATION_RESULT);
+          const error = 'error response';
+
+          customMutationResponse.data.workspaceCreate.workspace = null;
+          customMutationResponse.data.workspaceCreate.errors.push(error);
+
+          workspaceCreateMutationHandler.mockReset();
+          workspaceCreateMutationHandler.mockResolvedValueOnce(
+            customMutationResponse.data.workspaceCreate,
+          );
+
+          await submitCreateWorkspaceForm();
+          await waitForPromises();
+
+          expect(findCreateWorkspaceErrorGlAlert().text()).toContain(error);
         });
       });
 
@@ -283,7 +334,18 @@ describe('remote_development/pages/create.vue', () => {
         });
 
         it('displays alert indicating that creating a workspace failed', () => {
-          expect(createAlert).toHaveBeenCalledWith({ message: i18n.createWorkspaceFailedMessage });
+          expect(findCreateWorkspaceErrorGlAlert().text()).toContain(
+            i18n.createWorkspaceFailedMessage,
+          );
+        });
+
+        describe('when dismissing the create workspace error alert', () => {
+          it('hides the workspace error alert', async () => {
+            findCreateWorkspaceErrorGlAlert().vm.$emit('dismiss');
+            await nextTick();
+
+            expect(findCreateWorkspaceErrorGlAlert().exists()).toBe(false);
+          });
         });
       });
     });

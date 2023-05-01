@@ -30,3 +30,9 @@ export const ROUTES = {
 
 export const FILL_CLASS_GREEN = 'gl-fill-green-500';
 export const FILL_CLASS_ORANGE = 'gl-fill-orange-500';
+
+export const PROJECT_VISIBILITY = {
+  public: 'public',
+  private: 'private',
+  internal: 'internal',
+};

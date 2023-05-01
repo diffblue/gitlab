@@ -106,7 +106,7 @@ describe('remote_development/pages/list.vue', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
         USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.map((x) => {
           const workspaceData = {
-            nameText: `${x.project.nameWithNamespace}   ${x.name}`,
+            nameText: `${x.projectId}   ${x.name}`,
             workspaceState: x.actualState,
           };
 
