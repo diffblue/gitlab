@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Emails::FreeUserCap do
+RSpec.describe Emails::FreeUserCap, feature_category: :experimentation_conversion do
   include EmailSpec::Matchers
 
   let_it_be(:user) { create :user }
@@ -24,7 +24,7 @@ RSpec.describe Emails::FreeUserCap do
       expect(email).to have_body_text("foobar/-/billings?source=over-user-limit-email-btn-cta")
       expect(email).to have_body_text("foobar/-/billings?source=over-user-limit-email-upgrade-link")
       expect(email).to have_body_text("usage_quotas#seats-quota-tab")
-      expect(email).to have_body_text("-/trials/new")
+      expect(email).to have_body_text("-/trials/new?namespace_id=#{namespace.id}")
       expect(email).to be_delivered_to([user.notification_email_or_default])
     end
   end

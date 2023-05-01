@@ -13,7 +13,7 @@
   .gl-mb-5
     = s_("BillingPlans|Ready to explore the value of the paid features today? Start a trial, no credit card required.")
   = link_to s_("BillingPlans|Start a free Ultimate trial"),
-        new_trial_path,
+        new_trial_path(namespace_id: namespace.id),
         class: ["gl-mb-6 btn gl-button btn-confirm-secondary"],
         data: start_free_trial_data
   .billing-plan-divider.gl-m-auto.gl-border-b.gl-mb-7

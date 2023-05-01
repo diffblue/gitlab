@@ -158,7 +158,8 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           expect_create_failure(failure_reason, payload)
         end
 
-        context 'when lead is created but we need to select the namespace' do
+        context 'when lead is created from outside a namespace and we need to select the namespace' do
+          let(:trial_params) { {} }
           let(:failure_reason) { :no_namespace }
 
           it { is_expected.to redirect_to(select_trials_path(glm_params)) }

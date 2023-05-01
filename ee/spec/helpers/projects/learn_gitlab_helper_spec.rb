@@ -117,15 +117,21 @@ RSpec.describe Projects::LearnGitlabHelper, feature_category: :onboarding do
           namespace.add_owner(user)
           result = {
             trial_started: a_hash_including(
-              url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-start-trial'),
+              url: new_trial_path(
+                namespace_id: namespace.id, glm_source: 'gitlab.com', glm_content: 'onboarding-start-trial'
+              ),
               enabled: true
             ),
             code_owners_enabled: a_hash_including(
-              url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-code-owners'),
+              url: new_trial_path(
+                namespace_id: namespace.id, glm_source: 'gitlab.com', glm_content: 'onboarding-code-owners'
+              ),
               enabled: true
             ),
             required_mr_approvals_enabled: a_hash_including(
-              url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'onboarding-require-merge-approvals'),
+              url: new_trial_path(
+                namespace_id: namespace.id, glm_source: 'gitlab.com', glm_content: 'onboarding-require-merge-approvals'
+              ),
               enabled: true
             )
           }
