@@ -21687,6 +21687,9 @@ msgstr ""
 msgid "Hide shared projects"
 msgstr ""
 
+msgid "Hide sidebar"
+msgstr ""
+
 msgid "Hide thread"
 msgstr ""
 
@@ -41445,6 +41448,9 @@ msgid "Show password"
 msgstr ""
 
 msgid "Show project milestones"
+msgstr ""
+
+msgid "Show sidebar"
 msgstr ""
 
 msgid "Show sub-group milestones"
