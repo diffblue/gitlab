@@ -33422,9 +33422,6 @@ msgstr ""
 msgid "Preferences|Disable follow users feature"
 msgstr ""
 
-msgid "Preferences|Display time in 24-hour format"
-msgstr ""
-
 msgid "Preferences|Enable Gitpod integration"
 msgstr ""
 
