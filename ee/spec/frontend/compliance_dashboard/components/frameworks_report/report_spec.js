@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { GlAlert } from '@gitlab/ui';
 
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -11,6 +11,8 @@ import { createComplianceFrameworksResponse } from 'ee_jest/compliance_dashboard
 
 import ComplianceFrameworksReport from 'ee/compliance_dashboard/components/frameworks_report/report.vue';
 import complianceFrameworksGroupProjects from 'ee/compliance_dashboard/graphql/compliance_frameworks_group_projects.query.graphql';
+import complianceFrameworksProjectFragment from 'ee/compliance_dashboard/graphql/compliance_frameworks_project.fragment.graphql';
+
 import { ROUTE_FRAMEWORKS } from 'ee/compliance_dashboard/constants';
 import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
 import Pagination from 'ee/compliance_dashboard/components/frameworks_report/pagination.vue';
@@ -20,6 +22,7 @@ Vue.use(VueApollo);
 
 describe('ComplianceFrameworksReport component', () => {
   let wrapper;
+  let apolloProvider;
   const groupPath = 'group-path';
   const rootAncestorPath = 'root-ancestor-path';
   const newGroupComplianceFrameworkPath = 'new-framework-path';
@@ -52,9 +55,12 @@ describe('ComplianceFrameworksReport component', () => {
         Object.assign(currentQueryParams, query);
       }),
     };
-    return extendedWrapper(
+
+    apolloProvider = createMockApolloProvider(resolverMock);
+
+    wrapper = extendedWrapper(
       mountFn(ComplianceFrameworksReport, {
-        apolloProvider: createMockApolloProvider(resolverMock),
+        apolloProvider,
         propsData: {
           groupPath,
           rootAncestorPath,
@@ -74,7 +80,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('default behavior', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
     });
 
     it('does not render an error message', () => {
@@ -84,7 +90,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when initializing', () => {
     beforeEach(() => {
-      wrapper = createComponent(mount, {}, mockGraphQlLoading);
+      createComponent(mount, {}, mockGraphQlLoading);
     });
 
     it('renders the filters', () => {
@@ -106,7 +112,7 @@ describe('ComplianceFrameworksReport component', () => {
     });
 
     it('passes the url query params when fetching projects', () => {
-      wrapper = createComponent(mount, {}, mockGraphQlLoading, {
+      createComponent(mount, {}, mockGraphQlLoading, {
         perPage: 99,
         after: 'fgfgfg-after',
       });
@@ -122,7 +128,7 @@ describe('ComplianceFrameworksReport component', () => {
   describe('when the query fails', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
-      wrapper = createComponent(shallowMount, {}, mockGraphQlError);
+      createComponent(shallowMount, {}, mockGraphQlError);
     });
 
     it('renders the error message', async () => {
@@ -138,7 +144,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when there are projects', () => {
     beforeEach(async () => {
-      wrapper = createComponent(mount, {}, mockGraphQlSuccess);
+      createComponent(mount, {}, mockGraphQlSuccess);
       await waitForPromises();
     });
 
@@ -183,7 +189,7 @@ describe('ComplianceFrameworksReport component', () => {
       beforeEach(() => {
         mockResolver = jest.fn().mockResolvedValue(multiplePagesResponse);
 
-        wrapper = createComponent(mount, {}, mockResolver);
+        createComponent(mount, {}, mockResolver);
         return waitForPromises();
       });
 
@@ -230,7 +236,7 @@ describe('ComplianceFrameworksReport component', () => {
         });
         const mockResolver = jest.fn().mockResolvedValue(noPagesResponse);
 
-        wrapper = createComponent(mount, {}, mockResolver);
+        createComponent(mount, {}, mockResolver);
         return waitForPromises();
       });
 
@@ -244,7 +250,7 @@ describe('ComplianceFrameworksReport component', () => {
     beforeEach(() => {
       const emptyProjectsResponse = createComplianceFrameworksResponse({ count: 0 });
       const mockResolver = jest.fn().mockResolvedValue(emptyProjectsResponse);
-      wrapper = createComponent(mount, {}, mockResolver);
+      createComponent(mount, {}, mockResolver);
     });
 
     it('does not show the pagination', () => {
@@ -254,7 +260,7 @@ describe('ComplianceFrameworksReport component', () => {
 
   describe('when the filter is updated', () => {
     beforeEach(async () => {
-      wrapper = createComponent(mount, {}, mockGraphQlSuccess);
+      createComponent(mount, {}, mockGraphQlSuccess);
       await waitForPromises();
     });
 
@@ -299,5 +305,48 @@ describe('ComplianceFrameworksReport component', () => {
 
       expect(mockGraphQlSuccess).toHaveBeenCalledTimes(2);
     });
+  });
+
+  it('should not open update popover on filters on update from projects table when filters are not provided', async () => {
+    createComponent(shallowMount, {}, mockGraphQlSuccess, {});
+
+    findProjectsTable().vm.$emit('updated');
+
+    await nextTick();
+    expect(findFilters().props('showUpdatePopover')).toBe(false);
+  });
+
+  it('should open update popover on filters on update from projects table when filters are provided', async () => {
+    createComponent(shallowMount, {}, mockGraphQlSuccess, {
+      framework: 'some-framework',
+    });
+
+    findProjectsTable().vm.$emit('updated');
+
+    await nextTick();
+    expect(findFilters().props('showUpdatePopover')).toBe(true);
+  });
+
+  it('does not refresh the list when underlying project is updated', async () => {
+    createComponent(shallowMount, {}, mockGraphQlSuccess);
+    await waitForPromises();
+
+    expect(mockGraphQlSuccess).toHaveBeenCalledTimes(1);
+
+    // We've intentionally directly modifying cache because our component
+    // should not care for the source of the change
+    const { defaultClient: apolloClient } = apolloProvider;
+    const projectToModify = projectsResponse.data.group.projects.nodes[0];
+    const projectToModifyId = apolloClient.cache.identify(projectToModify);
+    apolloClient.writeFragment({
+      id: projectToModifyId,
+      fragment: complianceFrameworksProjectFragment,
+      data: {
+        ...projectToModify,
+        name: `NEW_NAME`,
+      },
+    });
+
+    expect(mockGraphQlSuccess).toHaveBeenCalledTimes(1);
   });
 });

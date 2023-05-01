@@ -110,7 +110,7 @@ describe('compliance report utils', () => {
       const filters = [{ type: 'framework', value: { data: 'my-framework', operator: '!=' } }];
       expect(utils.mapFiltersToUrlParams(filters)).toEqual({
         framework: 'my-framework',
-        frameworkExclude: true,
+        frameworkExclude: 'true',
       });
     });
 

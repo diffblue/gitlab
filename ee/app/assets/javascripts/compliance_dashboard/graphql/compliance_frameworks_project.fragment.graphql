@@ -1,0 +1,15 @@
+fragment ComplianceFrameworksProjectFragment on Project {
+  id
+  name
+  fullPath
+  webUrl
+  complianceFrameworks {
+    nodes {
+      id
+      name
+      default
+      description
+      color
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import * as Sentry from '@sentry/browser';
 import { GlAlert } from '@gitlab/ui';
 
+import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
 
 import {
@@ -48,11 +49,16 @@ export default {
         list: [],
         pageInfo: {},
       },
+      shouldShowUpdatePopover: false,
     };
   },
   apollo: {
     projects: {
       query: complianceFrameworksGroupProjects,
+      fetchPolicy: fetchPolicies.NETWORK_ONLY,
+      // See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118580#note_1366339919 for explanation
+      // why we need nextFetchPolicy
+      nextFetchPolicy: fetchPolicies.CACHE_FIRST,
       variables() {
         return {
           groupPath: this.groupPath,
@@ -148,6 +154,7 @@ export default {
       });
     },
     onFiltersChanged(filters) {
+      this.shouldShowUpdatePopover = false;
       const newFilters = mapFiltersToUrlParams(filters);
       if (checkFilterForChange({ currentFilters: this.$route.query, newFilters })) {
         this.$router.push({
@@ -160,6 +167,11 @@ export default {
         });
       } else {
         this.$apollo.queries.projects.refetch();
+      }
+    },
+    showUpdatePopoverIfNeeded() {
+      if (this.filters.length) {
+        this.shouldShowUpdatePopover = true;
       }
     },
   },
@@ -177,6 +189,8 @@ export default {
       :value="filters"
       :root-ancestor-path="rootAncestorPath"
       :error="hasQueryError"
+      :show-update-popover="shouldShowUpdatePopover"
+      @update-popover-hidden="shouldShowUpdatePopover = false"
       @submit="onFiltersChanged"
     />
 
@@ -191,6 +205,7 @@ export default {
       :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
+      @updated="showUpdatePopoverIfNeeded"
     />
 
     <pagination
