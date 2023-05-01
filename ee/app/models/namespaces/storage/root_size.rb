@@ -55,7 +55,7 @@ module Namespaces
       end
 
       def enforce_limit?
-        ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
+        ::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
       end
 
       alias_method :enabled?, :enforce_limit?

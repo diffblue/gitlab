@@ -9,7 +9,7 @@ module EE
 
       override :notify_storage_usage
       def notify_storage_usage(namespace)
-        return unless ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(namespace)
+        return unless ::Namespaces::Storage::Enforcement.enforce_limit?(namespace)
 
         mailer = ::Emails::NamespaceStorageUsageMailer
         ::Namespaces::Storage::EmailNotificationService.new(mailer).execute(namespace)

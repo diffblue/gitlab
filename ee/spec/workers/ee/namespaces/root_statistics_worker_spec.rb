@@ -20,7 +20,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
 
   context 'when storage limits are enforced for the namespace' do
     before do
-      allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
+      allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(true)
     end
 
     context 'when the namespace is running low on storage' do
@@ -84,7 +84,7 @@ RSpec.describe Namespaces::RootStatisticsWorker, '#perform', :saas, feature_cate
 
   context 'when storage limits are not enforced for the namespace' do
     before do
-      allow(::EE::Gitlab::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
+      allow(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(group).and_return(false)
     end
 
     context 'when the namespace is running low on storage' do

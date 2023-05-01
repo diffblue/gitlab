@@ -16,8 +16,8 @@ module NamespaceStorageHelpers
   def enforce_namespace_storage_limit(root_namespace)
     stub_ee_application_setting(enforce_namespace_storage_limit: true)
     stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', 2.years.ago.to_date)
-    stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', 1.year.ago.to_date)
+    stub_const('::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', 2.years.ago.to_date)
+    stub_const('::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', 1.year.ago.to_date)
     stub_feature_flags(
       namespace_storage_limit: root_namespace,
       enforce_storage_limit_for_paid: root_namespace,

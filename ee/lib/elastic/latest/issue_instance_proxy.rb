@@ -22,11 +22,7 @@ module Elastic
         # assignee_ids can't be easily preloaded and does
         # unnecessary joins
         data['assignee_id'] = safely_read_attribute_for_elasticsearch(:issue_assignee_user_ids)
-
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hidden_to_issues)
-          data['hidden'] = target.hidden?
-        end
-
+        data['hidden'] = target.hidden?
         data['visibility_level'] = target.project.visibility_level
         data['issues_access_level'] = safely_read_project_feature_for_elasticsearch(:issues)
 
