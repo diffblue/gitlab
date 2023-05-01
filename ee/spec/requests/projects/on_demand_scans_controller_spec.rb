@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::OnDemandScansController, type: :request,
-                                                  feature_category: :dynamic_application_security_testing do
+RSpec.describe Projects::OnDemandScansController,
+  type: :request,
+  feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project, :repository) }

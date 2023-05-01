@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::DastProfilesController, type: :request,
-                                                           feature_category: :dynamic_application_security_testing do
+RSpec.describe Projects::Security::DastProfilesController,
+  type: :request,
+  feature_category: :dynamic_application_security_testing do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 
