@@ -539,7 +539,6 @@ export default {
     :has-issues="true"
     :should-emit-toggle-event="true"
     class="mr-widget-border-top grouped-security-reports mr-report"
-    data-qa-selector="vulnerability_report_grouped"
     track-action="users_expanding_secure_security_report"
     @toggleEvent="handleToggleEvent"
   >
