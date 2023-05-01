@@ -10740,6 +10740,26 @@ CREATE TABLE gitlab_partitions_static.product_analytics_events_experimental_63 (
 );
 ALTER TABLE ONLY product_analytics_events_experimental ATTACH PARTITION gitlab_partitions_static.product_analytics_events_experimental_63 FOR VALUES WITH (modulus 64, remainder 63);
 
+CREATE TABLE abuse_report_events (
+    id bigint NOT NULL,
+    abuse_report_id bigint NOT NULL,
+    user_id bigint,
+    created_at timestamp with time zone NOT NULL,
+    action smallint DEFAULT 1 NOT NULL,
+    reason smallint,
+    comment text,
+    CONSTRAINT check_bb4cd85618 CHECK ((char_length(comment) <= 1024))
+);
+
+CREATE SEQUENCE abuse_report_events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE abuse_report_events_id_seq OWNED BY abuse_report_events.id;
+
 CREATE TABLE abuse_reports (
     id integer NOT NULL,
     reporter_id integer,
@@ -24694,6 +24714,8 @@ CREATE SEQUENCE zoom_meetings_id_seq
 
 ALTER SEQUENCE zoom_meetings_id_seq OWNED BY zoom_meetings.id;
 
+ALTER TABLE ONLY abuse_report_events ALTER COLUMN id SET DEFAULT nextval('abuse_report_events_id_seq'::regclass);
+
 ALTER TABLE ONLY abuse_reports ALTER COLUMN id SET DEFAULT nextval('abuse_reports_id_seq'::regclass);
 
 ALTER TABLE ONLY abuse_trust_scores ALTER COLUMN id SET DEFAULT nextval('abuse_trust_scores_id_seq'::regclass);
@@ -26401,6 +26423,9 @@ ALTER TABLE ONLY gitlab_partitions_static.product_analytics_events_experimental_
 
 ALTER TABLE ONLY gitlab_partitions_static.product_analytics_events_experimental_63
     ADD CONSTRAINT product_analytics_events_experimental_63_pkey PRIMARY KEY (id, project_id);
+
+ALTER TABLE ONLY abuse_report_events
+    ADD CONSTRAINT abuse_report_events_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY abuse_reports
     ADD CONSTRAINT abuse_reports_pkey PRIMARY KEY (id);
@@ -29582,6 +29607,10 @@ CREATE UNIQUE INDEX idx_vulnerability_issue_links_on_vulnerability_id_and_link_t
 CREATE INDEX idx_vulnerability_reads_project_id_scanner_id_vulnerability_id ON vulnerability_reads USING btree (project_id, scanner_id, vulnerability_id);
 
 CREATE UNIQUE INDEX idx_work_item_types_on_namespace_id_and_name_null_namespace ON work_item_types USING btree (btrim(lower(name)), ((namespace_id IS NULL))) WHERE (namespace_id IS NULL);
+
+CREATE INDEX index_abuse_report_events_on_abuse_report_id ON abuse_report_events USING btree (abuse_report_id);
+
+CREATE INDEX index_abuse_report_events_on_user_id ON abuse_report_events USING btree (user_id);
 
 CREATE INDEX index_abuse_reports_on_status_and_created_at ON abuse_reports USING btree (status, created_at);
 
@@ -34655,6 +34684,9 @@ ALTER TABLE ONLY incident_management_timeline_events
 ALTER TABLE ONLY project_features
     ADD CONSTRAINT fk_18513d9b92 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY abuse_report_events
+    ADD CONSTRAINT fk_18c774c06b FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+
 ALTER TABLE ONLY ci_pipelines
     ADD CONSTRAINT fk_190998ef09 FOREIGN KEY (external_pull_request_id) REFERENCES external_pull_requests(id) ON DELETE SET NULL;
 
@@ -35548,6 +35580,9 @@ ALTER TABLE ONLY system_note_metadata
 
 ALTER TABLE ONLY vulnerability_remediations
     ADD CONSTRAINT fk_fc61a535a0 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY abuse_report_events
+    ADD CONSTRAINT fk_fdd4d610e0 FOREIGN KEY (abuse_report_id) REFERENCES abuse_reports(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY project_import_data
     ADD CONSTRAINT fk_ffb9ee3a10 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
