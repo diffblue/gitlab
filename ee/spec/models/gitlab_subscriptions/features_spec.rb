@@ -223,4 +223,16 @@ RSpec.describe GitlabSubscriptions::Features do
       it { is_expected.to be_falsey }
     end
   end
+
+  it 'ensures that there is no same names between licensed features and feature flags', :aggregate_failures do
+    all_features = GitlabSubscriptions::Features::FEATURES_BY_PLAN.values.flatten
+
+    all_features.each do |licensed_feature|
+      # This is currently failing feature. Needs to be fixed by the responsible team
+      next if licensed_feature == :group_protected_branches
+
+      expect { Feature.enabled?(licensed_feature) }.to raise_error(Feature::InvalidFeatureFlagError),
+        "Licensed feature '#{licensed_feature}' has a matching feature flag. Please rename the feature or the FF"
+    end
+  end
 end
