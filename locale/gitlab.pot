@@ -29020,7 +29020,7 @@ msgstr ""
 msgid "Navigation|Secure"
 msgstr ""
 
-msgid "Navigation|Switch to..."
+msgid "Navigation|Switch context"
 msgstr ""
 
 msgid "Navigation|There was an error fetching search results."
