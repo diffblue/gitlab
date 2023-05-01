@@ -11,14 +11,15 @@ import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
 import NumberRangeSelect from './number_range_select.vue';
+import ScanTypeSelect from './base_layout/scan_type_select.vue';
 import { SEVERITY, STATUS, FILTER_POLICY_PROPERTY_MAP } from './scan_filters/constants';
-import { APPROVAL_VULNERABILITY_STATES } from './lib';
+import { APPROVAL_VULNERABILITY_STATES, getDefaultRule } from './lib';
 
 export default {
   SEVERITY,
   STATUS,
   scanResultRuleCopy: s__(
-    'ScanResultPolicy|When %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
+    'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
   components: {
     BaseLayoutComponent,
@@ -26,6 +27,7 @@ export default {
     PolicyRuleBranchSelection,
     PolicyRuleMultiSelect,
     ScanFilterSelector,
+    ScanTypeSelect,
     SeverityFilter,
     StatusFilter,
     NumberRangeSelect,
@@ -98,6 +100,10 @@ export default {
         this.addedFilters.push(filter);
       }
     },
+    setScanType(value) {
+      const rule = getDefaultRule(value);
+      this.$emit('set-scan-type', rule);
+    },
     removeFilter(filter) {
       this.addedFilters = this.addedFilters.filter((item) => item !== filter);
       this.triggerChanged({ [FILTER_POLICY_PROPERTY_MAP[filter]]: [] });
@@ -128,7 +134,6 @@ export default {
     <base-layout-component
       class="gl-pb-0"
       :type="initRule.type"
-      :show-scan-type-dropdown="false"
       :show-remove-button="false"
       @changed="$emit('changed', $event)"
     >
@@ -136,6 +141,10 @@ export default {
         <base-layout-component class="gl-bg-white!" :type="initRule.type" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="$options.scanResultRuleCopy">
+              <template #scanType>
+                <scan-type-select :scan-type="initRule.type" @select="setScanType" />
+              </template>
+
               <template #scanners>
                 <policy-rule-multi-select
                   v-model="scannersToAdd"

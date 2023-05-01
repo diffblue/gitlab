@@ -38,7 +38,7 @@ export default {
       const rule = getDefaultRule(type);
       rule.branches = this.selectedBranches;
 
-      this.$emit('changed', rule);
+      this.$emit('set-scan-type', rule);
     },
     setSelectedBranches({ branches }) {
       this.selectedBranches = branches;
