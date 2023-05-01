@@ -66,6 +66,10 @@ export default {
       if (frameworkId === FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK.id)
         return FRAMEWORKS_FILTER_VALUE_NO_FRAMEWORK.name;
 
+      if (this.$apollo.queries.complianceFrameworks.loading) {
+        return frameworkId;
+      }
+
       const framework = this.complianceFrameworks.find(
         (complianceFramework) => complianceFramework.id === frameworkId,
       );

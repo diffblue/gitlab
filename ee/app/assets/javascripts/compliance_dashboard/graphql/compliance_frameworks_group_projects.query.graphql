@@ -1,4 +1,5 @@
 #import "~/graphql_shared/fragments/page_info.fragment.graphql"
+#import "./compliance_frameworks_project.fragment.graphql"
 
 query complianceFrameworksGroupProjects(
   $groupPath: ID!
@@ -27,19 +28,7 @@ query complianceFrameworksGroupProjects(
       }
     ) {
       nodes {
-        id
-        name
-        fullPath
-        webUrl
-        complianceFrameworks {
-          nodes {
-            id
-            name
-            default
-            description
-            color
-          }
-        }
+        ...ComplianceFrameworksProjectFragment
       }
       pageInfo {
         ...PageInfo
