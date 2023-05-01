@@ -1,5 +1,5 @@
 ---
-name: generate_test_file
+name: generate_test_file_flag
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118365
 rollout_issue_url:
 milestone: '16.0'

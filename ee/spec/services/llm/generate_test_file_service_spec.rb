@@ -46,7 +46,7 @@ RSpec.describe Llm::GenerateTestFileService, feature_category: :code_review_work
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(generate_test_file: false)
+        stub_feature_flags(generate_test_file_flag: false)
       end
 
       it 'returns an error' do
