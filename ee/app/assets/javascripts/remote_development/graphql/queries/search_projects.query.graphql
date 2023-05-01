@@ -1,9 +1,21 @@
-query searchRemoteDevelopmentProjects($search: String, $first: Int, $sort: String) {
-  projects(search: $search, searchNamespaces: true, membership: true, first: $first, sort: $sort) {
+query searchRemoteDevelopmentProjects(
+  $search: String
+  $membership: Boolean
+  $first: Int
+  $sort: String
+) {
+  projects(
+    search: $search
+    searchNamespaces: true
+    membership: $membership
+    first: $first
+    sort: $sort
+  ) {
     nodes {
       id
       nameWithNamespace
       fullPath
+      visibility
     }
   }
 }

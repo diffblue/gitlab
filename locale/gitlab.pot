@@ -39464,6 +39464,12 @@ msgstr ""
 msgid "Search your projects"
 msgstr ""
 
+msgid "Search your%{visibility}projects"
+msgstr ""
+
+msgid "Search%{visibility}projects"
+msgstr ""
+
 msgid "SearchCodeResults|of %{link_to_project}"
 msgstr ""
 
@@ -50614,7 +50620,7 @@ msgstr ""
 msgid "Workspaces|Workspaces"
 msgstr ""
 
-msgid "Workspaces|You can create a workspace for Premium projects only."
+msgid "Workspaces|You can create a workspace for public Premium projects only."
 msgstr ""
 
 msgid "Workspaces|You can't create a workspace for this project"

@@ -1,13 +1,15 @@
 <script>
 import { debounce, isString } from 'lodash';
 import { GlCollapsibleListbox, GlIcon } from '@gitlab/ui';
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import { logError } from '~/lib/logger';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { PROJECT_VISIBILITY } from '../../constants';
 import searchProjectsQuery from '../../graphql/queries/search_projects.query.graphql';
 
 export const i18n = {
-  searchPlaceholder: __('Search projects'),
+  searchPlaceholder: __('Search%{visibility}projects'),
+  searchPlaceholderWithMembership: __('Search your%{visibility}projects'),
   noResultsMessage: __('No results'),
   emptyFieldPlaceholder: __('Select a project'),
   searchFailedMessage: __('Something went wrong while fetching projects.'),
@@ -34,6 +36,17 @@ export default {
         return !value || (isString(value.fullPath) && isString(value.nameWithNamespace));
       },
     },
+    visibility: {
+      type: String,
+      required: false,
+      default: '',
+      validator: (value) => value === '' || Object.values(PROJECT_VISIBILITY).includes(value),
+    },
+    membership: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
   },
   apollo: {
     projects: {
@@ -42,6 +55,7 @@ export default {
         return {
           search: this.searchProjectsTerm,
           first: PROJECTS_MAX_LIMIT,
+          membership: this.membership,
           sort: 'similarity',
         };
       },
@@ -56,6 +70,7 @@ export default {
         this.searchProjectsResult = projects.map((project) => ({
           text: project.nameWithNamespace,
           value: project.fullPath,
+          visibility: project.visibility,
           project,
         }));
       },
@@ -81,6 +96,20 @@ export default {
     },
     listBoxSelectedValue() {
       return this.value?.fullPath;
+    },
+    filteredSearchProjectsResult() {
+      return this.visibility
+        ? this.searchProjectsResult.filter(({ visibility }) => visibility === this.visibility)
+        : this.searchProjectsResult;
+    },
+    searchPlaceholder() {
+      const placeholder = this.membership
+        ? i18n.searchPlaceholderWithMembership
+        : i18n.searchPlaceholder;
+
+      return sprintf(placeholder, {
+        visibility: this.visibility ? ` ${this.visibility} ` : ' ',
+      });
     },
   },
   created() {
@@ -109,11 +138,11 @@ export default {
     block
     searchable
     :selected="listBoxSelectedValue"
-    :items="searchProjectsResult"
+    :items="filteredSearchProjectsResult"
     :searching="isSearchingProjects"
     :header-text="$options.i18n.dropdownHeader"
     :no-results-text="$options.i18n.noResultsMessage"
-    :search-placeholder="$options.i18n.searchPlaceholder"
+    :search-placeholder="searchPlaceholder"
     :toggle-text="projectSelectorToggleText"
     @search="searchProjectDebounced"
     @select="selectProject"

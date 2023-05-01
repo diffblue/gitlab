@@ -48,7 +48,7 @@ export default {
       query: userWorkspacesListQuery,
       pollInterval: WORKSPACES_LIST_POLL_INTERVAL,
       update(data) {
-        return data.currentUser.workspaces.nodes;
+        return data.currentUser.workspaces?.nodes || [];
       },
       error(err) {
         logError(err);
@@ -169,7 +169,7 @@ export default {
           <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
             <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
             <div class="gl-display-flex gl-flex-direction-column">
-              <span> {{ item.project.nameWithNamespace }} </span>
+              <span> {{ item.projectId }} </span>
               <span> {{ item.name }} </span>
             </div>
           </div>
