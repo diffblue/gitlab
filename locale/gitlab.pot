@@ -39771,7 +39771,7 @@ msgstr ""
 msgid "SecurityOrchestration|%{scanners}"
 msgstr ""
 
-msgid "SecurityOrchestration|%{scanners} %{severities} in an open merge request targeting %{branches}."
+msgid "SecurityOrchestration|%{scanners} %{vulnerabilitiesAllowed} %{severities} in an open merge request targeting %{branches}."
 msgstr ""
 
 msgid "SecurityOrchestration|, and %{count} more"
@@ -40149,16 +40149,13 @@ msgstr ""
 msgid "SecurityOrchestration|You don't have any security policies yet"
 msgstr ""
 
-msgid "SecurityOrchestration|a"
-msgstr ""
-
 msgid "SecurityOrchestration|all namespaces"
 msgstr ""
 
 msgid "SecurityOrchestration|all protected branches"
 msgstr ""
 
-msgid "SecurityOrchestration|an"
+msgid "SecurityOrchestration|any"
 msgstr ""
 
 msgid "SecurityOrchestration|branch"
@@ -40171,6 +40168,9 @@ msgid "SecurityOrchestration|group level branch input"
 msgstr ""
 
 msgid "SecurityOrchestration|group level branch selector"
+msgstr ""
+
+msgid "SecurityOrchestration|more than %{allowed}"
 msgstr ""
 
 msgid "SecurityOrchestration|or from:"

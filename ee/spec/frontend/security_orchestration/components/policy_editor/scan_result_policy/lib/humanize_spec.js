@@ -19,12 +19,12 @@ const singleValuedSecurityScannerRule = {
     type: SCAN_FINDING,
     branches: ['main'],
     scanners: ['sast'],
-    vulnerabilities_allowed: 1,
+    vulnerabilities_allowed: 0,
     severity_levels: ['critical'],
     vulnerability_states: ['newly_detected'],
   },
   humanized:
-    'SAST scanner finds a critical vulnerability in an open merge request targeting the main branch.',
+    'SAST scanner finds any critical vulnerability in an open merge request targeting the main branch.',
 };
 
 const multipleValuedSecurityScannerRule = {
@@ -37,7 +37,7 @@ const multipleValuedSecurityScannerRule = {
     vulnerability_states: ['resolved'],
   },
   humanized:
-    'DAST or SAST scanners find info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
+    'DAST or SAST scanners find more than 2 info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
 };
 
 const allValuedSecurityScannerRule = {
@@ -50,7 +50,7 @@ const allValuedSecurityScannerRule = {
     vulnerability_states: ['resolved'],
   },
   humanized:
-    'Any security scanner finds info or critical vulnerabilities in an open merge request targeting all protected branches.',
+    'Any security scanner finds more than 2 info or critical vulnerabilities in an open merge request targeting all protected branches.',
 };
 
 const singleValuedLicenseScanRule = {
