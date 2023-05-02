@@ -353,14 +353,25 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
   end
 
   describe '#plan_feature_list' do
-    let(:plan) do
-      Hashie::Mash.new(features: (1..3).map { |i| { title: "feat 0#{i}", highlight: i.even? } })
+    let(:plan_code) { 'ultimate' }
+    let(:plan) { Hashie::Mash.new(code: plan_code) }
+
+    let(:features_list) do
+      Hashie::Mash.new({
+        plan_code => [
+          { title: s_('BillingPlans|All the benefits of Premium +'), highlight: true },
+          { title: s_('BillingPlans|Company wide portfolio management') },
+          { title: s_('BillingPlans|Advanced application security') },
+          { title: s_('BillingPlans|Executive level insights') },
+          { title: s_('BillingPlans|Compliance automation') },
+          { title: s_('BillingPlans|Free guest users') },
+          { title: s_('BillingPlans|50000 CI/CD minutes') }
+        ]
+      })
     end
 
-    it 'returns features list sorted by highlight attribute' do
-      expect(helper.plan_feature_list(plan)).to eq([{ 'title' => 'feat 02', 'highlight' => true },
-                                                    { 'title' => 'feat 01', 'highlight' => false },
-                                                    { 'title' => 'feat 03', 'highlight' => false }])
+    it 'returns features list' do
+      expect(helper.plan_feature_list(plan)).to eq(features_list[plan.code])
     end
   end
 

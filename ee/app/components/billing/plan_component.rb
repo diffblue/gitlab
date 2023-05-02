@@ -17,7 +17,7 @@ module Billing
     delegate :number_to_plan_currency, :plan_purchase_url, to: :helpers
 
     def render?
-      !plan.deprecated? && !plan.hide_card?
+      plans_data.key?(plan.code)
     end
 
     def free?
@@ -82,7 +82,7 @@ module Billing
     end
 
     def features
-      plan.features || [] # features can be nil
+      plan.features
     end
 
     def plans_data
