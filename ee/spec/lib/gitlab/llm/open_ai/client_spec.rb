@@ -32,55 +32,41 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     }
   end
 
+  let(:moderation_response) do
+    { 'results' => [{ 'flagged' => false }] }
+  end
+
   let(:response_double) do
     instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: example_response)
+  end
+
+  let(:moderation_response_double) do
+    instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: moderation_response)
   end
 
   before do
     allow(response_double).to receive(:server_error?).and_return(false)
     allow(response_double).to receive(:too_many_requests?).and_return(false)
+    allow(moderation_response_double).to receive(:server_error?).and_return(false)
+    allow(moderation_response_double).to receive(:too_many_requests?).and_return(false)
     allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
       allow(open_ai_client)
         .to receive(:public_send)
         .with(method, hash_including(expected_options))
         .and_return(response_double)
+
+      allow(open_ai_client)
+        .to receive(:public_send)
+        .with(:moderations, anything)
+        .and_return(moderation_response_double)
     end
+
+    stub_application_setting(openai_api_key: access_token)
   end
 
   shared_examples 'forwarding the request correctly' do
-    before do
-      stub_application_setting(openai_api_key: access_token)
-    end
-
     context 'when feature flag and access token is set' do
       it { is_expected.to eq(response_double) }
-
-      describe 'cost tracking' do
-        it 'tracks prompt and completion tokens cost' do
-          counter = instance_double(Prometheus::Client::Counter, increment: true)
-
-          allow(Gitlab::Metrics)
-            .to receive(:counter)
-            .with(:gitlab_cloud_cost_spend_entry_total, anything)
-            .and_return(counter)
-
-          expect(counter)
-            .to receive(:increment)
-            .with(
-              { vendor: 'open_ai', item: 'model/prompt', unit: 'tokens' },
-              example_response['usage']['prompt_tokens']
-            )
-
-          expect(counter)
-            .to receive(:increment)
-            .with(
-              { vendor: 'open_ai', item: 'model/completion', unit: 'tokens' },
-              example_response['usage']['completion_tokens']
-            )
-
-          subject
-        end
-      end
     end
 
     context 'when using options' do
@@ -105,12 +91,110 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     end
   end
 
+  shared_examples 'cost tracking' do
+    it 'tracks prompt and completion tokens cost' do
+      counter = instance_double(Prometheus::Client::Counter, increment: true)
+
+      allow(Gitlab::Metrics)
+        .to receive(:counter)
+        .with(:gitlab_cloud_cost_spend_entry_total, anything)
+        .and_return(counter)
+
+      expect(counter)
+        .to receive(:increment)
+        .with(
+          { vendor: 'open_ai', item: 'model/prompt', unit: 'tokens' },
+          example_response['usage']['prompt_tokens']
+        )
+
+      expect(counter)
+        .to receive(:increment)
+        .with(
+          { vendor: 'open_ai', item: 'model/completion', unit: 'tokens' },
+          example_response['usage']['completion_tokens']
+        )
+
+      subject
+    end
+  end
+
+  shared_examples 'input moderation' do
+    context 'when moderation flag is true' do
+      let(:options) { { moderated: true } }
+
+      context 'when response is not flagged' do
+        it 'returns the response from original endpoint' do
+          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(method, anything)
+              .and_return(response_double)
+
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(:moderations, anything)
+              .and_return(moderation_response_double)
+          end
+
+          subject
+        end
+      end
+
+      context 'when response is flagged' do
+        let(:moderation_response) do
+          { 'results' => [{ 'flagged' => true }, { 'flagged' => false }] }
+        end
+
+        it 'raises InputModerationError' do
+          expect { subject }
+            .to raise_error(described_class::InputModerationError, "Provided input violates OpenAI's Content Policy")
+        end
+      end
+
+      context 'when openai_moderation feature flag is disabled' do
+        it 'does not moderate input' do
+          stub_feature_flags(openai_moderation: false)
+
+          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(method, anything)
+              .and_return(response_double)
+
+            expect(open_ai_client).not_to receive(:moderations)
+          end
+
+          subject
+        end
+      end
+    end
+
+    context 'when moderation flag is false' do
+      let(:options) { { moderated: false } }
+
+      it 'does not call the moderation endpoint' do
+        expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+          expect(open_ai_client)
+            .to receive(:public_send)
+            .with(method, anything)
+            .and_return(response_double)
+
+          expect(open_ai_client).not_to receive(:moderations)
+        end
+
+        expect(subject).to eq(response_double)
+      end
+    end
+  end
+
   describe '#chat' do
     subject(:chat) { described_class.new(user).chat(content: 'anything', **options) }
 
     let(:method) { :chat }
 
     it_behaves_like 'forwarding the request correctly'
+    include_examples 'cost tracking'
+    include_examples 'input moderation'
   end
 
   describe '#messages_chat' do
@@ -136,12 +220,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:expected_options) { { parameters: hash_including({ messages: messages, temperature: 0.1 }) } }
 
     it_behaves_like 'forwarding the request correctly'
+    include_examples 'cost tracking'
+    include_examples 'input moderation'
 
     context 'without the correct role' do
-      before do
-        stub_application_setting(openai_api_key: access_token)
-      end
-
       let(:messages) do
         [
           { role: 'Charles Darwin', content: 'you are a language model' },
@@ -161,6 +243,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:method) { :completions }
 
     it_behaves_like 'forwarding the request correctly'
+    include_examples 'cost tracking'
+    include_examples 'input moderation'
   end
 
   describe '#edits' do
@@ -169,6 +253,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:method) { :edits }
 
     it_behaves_like 'forwarding the request correctly'
+    include_examples 'cost tracking'
+    include_examples 'input moderation'
   end
 
   describe '#embeddings' do
@@ -192,6 +278,41 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
           'total_tokens' => 3
         }
       }
+    end
+
+    it_behaves_like 'forwarding the request correctly'
+    include_examples 'cost tracking'
+    include_examples 'input moderation'
+  end
+
+  describe '#moderations' do
+    subject(:moderations) { described_class.new(user).moderations(input: 'foo', **options) }
+
+    let(:method) { :moderations }
+    let(:example_response) do
+      {
+        'model' => 'text-moderation-001',
+        'results' => [
+          {
+            "categories" => {
+              "category" => false
+            },
+            "category_scores" => {
+              "category" => 0.22714105248451233
+            },
+            "flagged" => false
+          }
+        ]
+      }
+    end
+
+    before do
+      allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
+        allow(open_ai_client)
+          .to receive(:public_send)
+          .with(method, hash_including(expected_options))
+          .and_return(response_double)
+      end
     end
 
     it_behaves_like 'forwarding the request correctly'
