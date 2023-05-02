@@ -2,34 +2,57 @@
 
 require 'spec_helper'
 
-RSpec.describe UsersHelper do
-  let(:user) { create(:user) }
+RSpec.describe UsersHelper, feature_category: :user_profile do
+  let(:user) { build_stubbed(:user) }
 
-  describe '#current_user_menu_items' do
-    using RSpec::Parameterized::TableSyntax
+  describe '#trials_allowed?' do
+    context 'without cache concerns' do
+      using RSpec::Parameterized::TableSyntax
 
-    where(
-      has_paid_namespace?: [true, false],
-      user?: [true, false],
-      gitlab_com?: [true, false],
-      user_eligible?: [true, false]
-    )
+      where(
+        has_paid_namespace?: [true, false],
+        user?: [true, false],
+        check_namespace_plan?: [true, false],
+        group_without_trial?: [true, false]
+      )
 
-    with_them do
+      with_them do
+        let(:local_user) { user? ? user : nil }
+
+        before do
+          stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan?)
+          allow(user).to receive(:owns_group_without_trial?) { group_without_trial? }
+          allow(user).to receive(:has_paid_namespace?) { has_paid_namespace? }
+        end
+
+        let(:expected_result) { !has_paid_namespace? && user? && check_namespace_plan? && group_without_trial? }
+
+        subject { helper.trials_allowed?(local_user) }
+
+        it { is_expected.to eq(expected_result) }
+      end
+    end
+
+    context 'with cache concerns', :use_clean_rails_redis_caching do
       before do
-        allow(helper).to receive(:current_user) { user? ? user : nil }
-        allow(helper).to receive(:can?).and_return(false)
-
-        allow(::Gitlab).to receive(:com?) { gitlab_com? }
-        allow(user).to receive(:owns_group_without_trial?) { user_eligible? }
-        allow(user).to receive(:has_paid_namespace?) { has_paid_namespace? }
+        stub_ee_application_setting(should_check_namespace_plan: true)
+        allow(user).to receive(:owns_group_without_trial?).and_return(true)
+        allow(user).to receive(:has_paid_namespace?).and_return(false)
       end
 
-      let(:expected_result) { !has_paid_namespace? && user? && gitlab_com? && user_eligible? }
+      it 'uses cache for result on next running of the method same user' do
+        expect(helper.trials_allowed?(user)).to eq(true)
 
-      subject { helper.current_user_menu_items.include?(:start_trial) }
+        allow(user).to receive(:has_paid_namespace?).and_return(true)
 
-      it { is_expected.to eq(expected_result) }
+        expect(helper.trials_allowed?(user)).to eq(true)
+      end
+
+      it 'does not find a different user in cache result on next running of the method' do
+        expect(helper.trials_allowed?(user)).to eq(true)
+
+        expect(helper.trials_allowed?(build(:user))).to eq(false)
+      end
     end
   end
 

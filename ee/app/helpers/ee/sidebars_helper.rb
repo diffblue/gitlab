@@ -36,6 +36,10 @@ module EE
       root_namespace = (project || group)&.root_ancestor
 
       context.merge!(trial_data(root_namespace), show_tanuki_bot: show_tanuki_bot_chat?)
+      context[:trial] = {
+        has_start_trial: trials_allowed?(user),
+        url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')
+      }
 
       show_buy_pipeline_minutes = show_buy_pipeline_minutes?(project, group)
 

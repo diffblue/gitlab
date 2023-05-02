@@ -1005,7 +1005,7 @@ RSpec.describe Epic, feature_category: :portfolio_management do
 
     where(:epic_color, :expected_text_color) do
       ::EE::Epic::DEFAULT_COLOR | ::Gitlab::Color.of('#FFFFFF')
-      ::Gitlab::Color.of('#FFFFFF') | ::Gitlab::Color.of('#333333')
+      ::Gitlab::Color.of('#FFFFFF') | ::Gitlab::Color.of('#1F1E24')
       ::Gitlab::Color.of('#000000') | ::Gitlab::Color.of('#FFFFFF')
     end
 
