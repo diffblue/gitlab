@@ -64,7 +64,7 @@ module Gitlab
       end
 
       def send_initial_prompt(doc:, prompt:)
-        result = client.completions(prompt: prompt, **DEFAULT_OPTIONS)
+        result = client.completions(prompt: prompt, moderated: false, **DEFAULT_OPTIONS)
 
         info(
           document_id: doc[:id],
@@ -108,7 +108,11 @@ module Gitlab
 
         final_prompt = Gitlab::Llm::OpenAi::Templates::TanukiBot.final_prompt(question: question, documents: documents)
 
-        final_prompt_result = client.completions(prompt: final_prompt[:prompt], **final_prompt[:options])
+        final_prompt_result = client.completions(
+          prompt: final_prompt[:prompt],
+          moderated: false,
+          **final_prompt[:options]
+        )
 
         unless final_prompt_result.success?
           raise final_prompt_result.dig('error', 'message') || "Final prompt failed with '#{final_prompt_result}'"
@@ -125,7 +129,7 @@ module Gitlab
       end
 
       def query_search_documents
-        embeddings_result = client.embeddings(input: question)
+        embeddings_result = client.embeddings(input: question, moderated: true)
         question_embedding = embeddings_result['data'].first['embedding']
 
         ::Embedding::TanukiBotMvc.neighbor_for(

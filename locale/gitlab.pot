@@ -29708,6 +29708,9 @@ msgstr ""
 msgid "No prioritized labels with such name or description"
 msgstr ""
 
+msgid "No prioritized labels yet!"
+msgstr ""
+
 msgid "No project subscribes to the pipelines in this project."
 msgstr ""
 
@@ -31192,13 +31195,13 @@ msgstr ""
 msgid "Orphaned member"
 msgstr ""
 
-msgid "Other Labels"
-msgstr ""
-
 msgid "Other available runners"
 msgstr ""
 
 msgid "Other information"
+msgstr ""
+
+msgid "Other labels"
 msgstr ""
 
 msgid "Other merge requests block this MR"
@@ -33751,10 +33754,10 @@ msgstr ""
 msgid "Prioritize label"
 msgstr ""
 
-msgid "Prioritized Labels"
+msgid "Prioritized"
 msgstr ""
 
-msgid "Prioritized label"
+msgid "Prioritized labels"
 msgstr ""
 
 msgid "Priority"
@@ -42741,7 +42744,7 @@ msgstr ""
 msgid "Standard"
 msgstr ""
 
-msgid "Star labels to start sorting by priority"
+msgid "Star labels to start sorting by priority."
 msgstr ""
 
 msgid "Star toggle failed. Try again later."
