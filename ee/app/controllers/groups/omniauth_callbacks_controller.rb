@@ -135,7 +135,22 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   end
 
   def saml_redirect_path
-    params['RelayState'].presence
+    return params['RelayState'] if params['RelayState'].to_s.start_with?("/")
+
+    begin
+      parsed_uri = URI.parse(params['RelayState'].to_s)
+    rescue URI::InvalidURIError
+      parsed_uri = nil
+    end
+
+    if parsed_uri.present? &&
+        (parsed_uri.scheme =~ /\Ahttps?\z/i) &&
+        (parsed_uri.host == Gitlab.config.gitlab.host) &&
+        (parsed_uri.port == Gitlab.config.gitlab.port)
+      params['RelayState']
+    else
+      group_path(@unauthenticated_group)
+    end
   end
 
   override :find_message

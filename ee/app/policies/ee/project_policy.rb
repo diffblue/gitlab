@@ -190,17 +190,17 @@ module EE
         @subject.okrs_mvc_feature_flag_enabled? && @subject.feature_available?(:okrs)
       end
 
-      rule { membership_locked_via_parent_group }.policy do
-        prevent :import_project_members_from_another_project
-      end
-
-      condition(:user_banned_from_project) do
+      condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
 
         root_namespace = @subject.root_ancestor
-        next unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, root_namespace)
+        next unless root_namespace.group_namespace? && root_namespace.unique_project_download_limit_enabled?
 
         @user.banned_from_namespace?(root_namespace)
+      end
+
+      rule { membership_locked_via_parent_group }.policy do
+        prevent :import_project_members_from_another_project
       end
 
       condition(:custom_roles_allowed) do
@@ -217,14 +217,6 @@ module EE
       with_scope :subject
       condition(:suggested_reviewers_available) do
         @subject.can_suggest_reviewers?
-      end
-
-      # Owners can be banned from their own project except for top-level group
-      # owners. This exception is made at the service layer
-      # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
-      # is created.
-      rule { ~public_project & ~admin & user_banned_from_project }.policy do
-        prevent :read_project
       end
 
       rule { visual_review_bot }.policy do
@@ -457,6 +449,10 @@ module EE
       rule { owner | reporter | internal_access | public_project }.enable :build_read_project
 
       rule { ~admin & owner & owner_cannot_destroy_project }.prevent :remove_project
+
+      rule { ~admin & user_banned_from_namespace }.policy do
+        prevent :read_project
+      end
 
       with_scope :subject
       condition(:needs_new_sso_session) do

@@ -135,6 +135,15 @@ RSpec.describe Gitlab::Auth::Oidc::User, feature_category: :system_access do
           expect(gl_user).to be_valid
           expect(gl_user).not_to be_external
         end
+
+        it 'does not demote existing external user' do
+          stub_omniauth_setting(auto_link_user: true)
+          create(:user, email: 'john@example.com', external: true)
+          oidc_user.save # rubocop:disable Rails/SaveBang
+
+          expect(gl_user).to be_valid
+          expect(gl_user).to be_external
+        end
       end
 
       context 'when defined' do
