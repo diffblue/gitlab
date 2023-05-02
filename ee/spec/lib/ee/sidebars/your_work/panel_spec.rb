@@ -9,6 +9,9 @@ RSpec.describe Sidebars::YourWork::Panel, feature_category: :navigation do
 
   subject(:panel) { described_class.new(context) }
 
+  it_behaves_like 'a panel with uniquely identifiable menu items'
+  it_behaves_like 'a panel without placeholders'
+
   it 'renders Workspaces' do
     expect(contains_menu?(::Sidebars::YourWork::Menus::WorkspacesMenu)).to be(true)
   end

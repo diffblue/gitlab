@@ -12,20 +12,5 @@ RSpec.describe Sidebars::Search::Panel, feature_category: :navigation do
   subject { described_class.new(context) }
 
   it_behaves_like 'a panel with uniquely identifiable menu items'
-
-  describe '#aria_label' do
-    it 'returns the correct aria label' do
-      expect(panel.aria_label).to eq(_('Search'))
-    end
-  end
-
-  describe '#super_sidebar_context_header' do
-    it 'returns a hash with the correct title and icon' do
-      expected_header = {
-        title: 'Search',
-        icon: 'search'
-      }
-      expect(panel.super_sidebar_context_header).to eq(expected_header)
-    end
-  end
+  it_behaves_like 'a panel without placeholders'
 end
