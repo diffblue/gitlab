@@ -47,8 +47,8 @@ module Integrations
               response = ::Slack::API.new(slack_installation).post(
                 'views.update',
                 {
-                  'view_id': view[:id],
-                  'view': modal
+                  view_id: view[:id],
+                  view: modal
                 }
               )
             rescue *::Gitlab::HTTP::HTTP_ERRORS => e

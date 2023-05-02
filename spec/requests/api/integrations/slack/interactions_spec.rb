@@ -30,7 +30,7 @@ RSpec.describe API::Integrations::Slack::Interactions, feature_category: :integr
 
     context 'when type param is unknown' do
       let(:payload) do
-        { 'type': 'unknown_type' }
+        { type: 'unknown_type' }
       end
 
       it 'generates a tracked error' do
@@ -46,11 +46,11 @@ RSpec.describe API::Integrations::Slack::Interactions, feature_category: :integr
     context 'when event.type param is view_closed' do
       let(:payload) do
         {
-          'type': 'view_closed',
-          'team_id': slack_installation.team_id,
-          'event': {
-            'type': 'view_closed',
-            'user': 'U0123ABCDEF'
+          type: 'view_closed',
+          team_id: slack_installation.team_id,
+          event: {
+            type: 'view_closed',
+            user: 'U0123ABCDEF'
           }
         }
       end

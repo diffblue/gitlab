@@ -60,14 +60,14 @@ module Integrations
 
         def incident_params
           {
-            "title": values.dig(:title_input, :title, :value),
-            "severity": severity,
-            "confidential": confidential?,
-            "description": description,
-            "escalation_status": { status: status },
-            "issue_type": "incident",
-            "assignee_ids": [assignee],
-            "label_ids": labels
+            title: values.dig(:title_input, :title, :value),
+            severity: severity,
+            confidential: confidential?,
+            description: description,
+            escalation_status: { status: status },
+            issue_type: "incident",
+            assignee_ids: [assignee],
+            label_ids: labels
           }
         end
 
@@ -79,8 +79,8 @@ module Integrations
           response_url = params.dig(:view, :private_metadata)
 
           body = {
-            'replace_original': 'true',
-            'text': text
+            replace_original: 'true',
+            text: text
           }
 
           Gitlab::HTTP.post(

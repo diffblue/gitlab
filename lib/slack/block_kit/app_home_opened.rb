@@ -9,6 +9,7 @@ module Slack
   module BlockKit
     class AppHomeOpened
       include ActionView::Helpers::AssetUrlHelper
+      include Gitlab::Routing.url_helpers
 
       def initialize(slack_user_id, slack_workspace_id, slack_gitlab_user_connection, slack_installation)
         @slack_user_id = slack_user_id
@@ -19,8 +20,8 @@ module Slack
 
       def build
         {
-          "type": "home",
-          "blocks": [
+          type: "home",
+          blocks: [
             header,
             section_introduction,
             section_notifications_heading,
@@ -39,14 +40,14 @@ module Slack
 
       def header
         {
-          "type": "header",
-          "text": {
-            "type": "plain_text",
-            "text": format(
+          type: "header",
+          text: {
+            type: "plain_text",
+            text: format(
               s_("Slack|%{emoji}Welcome to GitLab for Slack!"),
               emoji: '✨ '
             ),
-            "emoji": true
+            emoji: true
           }
         }
       end
@@ -57,8 +58,8 @@ module Slack
             s_("Slack|GitLab for Slack now supports channel-based notifications. " \
                "Let your team know when new issues are created or new CI/CD jobs are run." \
                "%{startMarkup}Learn more%{endMarkup}."),
-              startMarkup: " <https://docs.gitlab.com/ee/integration/slash_commands.html|",
-              endMarkup: ">"
+            startMarkup: " <#{help_page_url('integration/slash_commands')}|",
+            endMarkup: ">"
           )
         )
       end
@@ -76,9 +77,10 @@ module Slack
         section(
           format(
             s_("Slack|To start using notifications, " \
-              "%{startMarkup}enable the GitLab for Slack app integration%{endMarkup} in your project settings."),
-              startMarkup: "<https://docs.gitlab.com/ee/user/project/integrations/gitlab_slack_application.html#configuration|",
-              endMarkup: ">"
+               "%{startMarkup}enable the GitLab for Slack app integration%{endMarkup} in your project settings."),
+            startMarkup: "<#{help_page_url('user/project/integrations/gitlab_slack_application',
+              anchor: 'configuration')}|",
+            endMarkup: ">"
           )
         )
       end
@@ -95,11 +97,11 @@ module Slack
       def section_slash_commands
         section(
           format(
-            s_("Slack|Control GitLab from Slack with" \
-              " %{startMarkup}slash commands%{endMarkup}. For a list of available commands, enter %{command}."),
-              startMarkup: "<https://docs.gitlab.com/ee/user/project/integrations/gitlab_slack_application.html#usage|",
-              endMarkup: ">",
-              command: "`/gitlab help`"
+            s_("Slack|Control GitLab from Slack with " \
+               "%{startMarkup}slash commands%{endMarkup}. For a list of available commands, enter %{command}."),
+            startMarkup: "<#{help_page_url('user/project/integrations/gitlab_slack_application', anchor: 'usage')}|",
+            endMarkup: ">",
+            command: "`/gitlab help`"
           )
         )
       end
@@ -141,17 +143,17 @@ module Slack
         ).execute
 
         {
-          "type": "actions",
-          "elements": [
+          type: "actions",
+          elements: [
             {
-              "type": "button",
-              "text": {
-                "type": "plain_text",
-                "text": s_("Slack|Connect your GitLab account"),
-                "emoji": true
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: s_("Slack|Connect your GitLab account"),
+                emoji: true
               },
-              "style": "primary",
-              "url": account_connection_url
+              style: "primary",
+              url: account_connection_url
             }
           ]
         }
@@ -159,10 +161,10 @@ module Slack
 
       def section(text)
         {
-          "type": "section",
-          "text": {
-            "type": "mrkdwn",
-            "text": text
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: text
           }
         }
       end

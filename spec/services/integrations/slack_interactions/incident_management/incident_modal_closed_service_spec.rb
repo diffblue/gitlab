@@ -7,8 +7,8 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
   describe '#execute' do
     let_it_be(:request_body) do
       {
-        'replace_original': 'true',
-        'text': 'Incident creation cancelled.'
+        replace_original: 'true',
+        text: 'Incident creation cancelled.'
       }
     end
 

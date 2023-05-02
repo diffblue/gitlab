@@ -63,8 +63,6 @@ module EE
         mount ::API::GroupProtectedBranches
         mount ::API::Ci::Minutes
         mount ::API::CaptchaCheck
-        mount ::API::Integrations::Slack::Events
-        mount ::API::Integrations::Slack::Interactions
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
 
