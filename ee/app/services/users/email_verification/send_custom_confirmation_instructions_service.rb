@@ -22,7 +22,7 @@ module Users
         # Don't send Devise notification, we send our own custom notification
         user.skip_confirmation_notification!
 
-        service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token)
+        service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token, user: user)
         @token, digest = service.execute
 
         user.confirmation_token = digest

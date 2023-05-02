@@ -79,11 +79,11 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
 
       context 'when identity verification is turned on' do
         let_it_be(:custom_token) { '123456' }
-        let_it_be(:encrypted_token) { Devise.token_generator.digest(User, :confirmation_token, custom_token) }
+        let_it_be(:encrypted_token) { Devise.token_generator.digest(User, user_attrs[:email], custom_token) }
 
         before do
           stub_feature_flags(identity_verification: true)
-          allow_next_instance_of(::Users::EmailVerification::GenerateTokenService, attr: :confirmation_token) do |srvc|
+          allow_next_instance_of(::Users::EmailVerification::GenerateTokenService) do |srvc|
             allow(srvc).to receive(:generate_token).and_return(custom_token)
           end
         end
@@ -114,6 +114,16 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
             user = User.find_by_username(user_attrs[:username])
 
             expect(user.confirmation_token).to eq(encrypted_token)
+          end
+        end
+
+        describe 'preventing token collisions' do
+          it 'does not raise an error when an identical token exists in the database' do
+            create_user
+
+            user_attrs = build_stubbed(:user).slice(:first_name, :last_name, :username, :email, :password)
+
+            expect { post user_registration_path, params: { user: user_attrs } }.not_to raise_error
           end
         end
 

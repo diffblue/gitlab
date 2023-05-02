@@ -35,7 +35,7 @@ feature_category: :system_access do
       before do
         allow(service).to receive(:enabled?).and_return(true)
 
-        allow_next_instance_of(::Users::EmailVerification::GenerateTokenService, attr: :confirmation_token) do |service|
+        allow_next_instance_of(::Users::EmailVerification::GenerateTokenService) do |service|
           allow(service).to receive(:execute).and_return(%w[xxx token_digest])
         end
       end
