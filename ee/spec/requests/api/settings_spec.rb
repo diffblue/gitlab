@@ -75,26 +75,6 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
       end
     end
 
-    context 'slack app settings' do
-      it 'updates slack app settings' do
-        put api('/application/settings', admin, admin_mode: true),
-          params: {
-            slack_app_enabled: true,
-            slack_app_id: 'SLACK_APP_ID',
-            slack_app_secret: 'SLACK_APP_SECRET',
-            slack_app_signing_secret: 'SLACK_APP_SIGNING_SECRET',
-            slack_app_verification_token: 'SLACK_APP_VERIFICATION_TOKEN'
-          }
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response['slack_app_enabled']).to eq(true)
-        expect(json_response['slack_app_id']).to eq('SLACK_APP_ID')
-        expect(json_response['slack_app_secret']).to eq('SLACK_APP_SECRET')
-        expect(json_response['slack_app_signing_secret']).to eq('SLACK_APP_SIGNING_SECRET')
-        expect(json_response['slack_app_verification_token']).to eq('SLACK_APP_VERIFICATION_TOKEN')
-      end
-    end
-
     context 'secret_detection_token_revocation_enabled is true' do
       context 'secret_detection_token_revocation_url value is present' do
         let(:revocation_url) { 'https://example.com/secret_detection_token_revocation' }

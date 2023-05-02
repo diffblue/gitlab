@@ -9,8 +9,6 @@ module EE
     ).freeze
     GROUP_LEVEL_PROVIDERS = %i(group_saml).freeze
 
-    delegate :slack_app_id, to: :'Gitlab::CurrentSettings.current_application_settings'
-
     override :display_providers_on_profile?
     def display_providers_on_profile?
       super || group_saml_enabled?
