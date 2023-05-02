@@ -62,7 +62,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
           allow(::Geo::RepositoryUpdatedService)
             .to receive(:new)
-            .with(project.design_repository.git_repo)
+            .with(project.design_repository)
             .and_return(design_updated_service)
         end
 
