@@ -124,7 +124,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
           status_page_issues
           status_page_projects
           user_preferences_group_overview_details
-          user_preferences_group_overview_security_dashboard
           template_repositories
         ))
 
@@ -141,7 +140,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
     it 'gathers group overview preferences usage data', :aggregate_failures do
       expect(subject[:counts][:user_preferences_group_overview_details]).to eq(User.active.count - 2) # we have exactly 2 active users with security dashboard set
-      expect(subject[:counts][:user_preferences_group_overview_security_dashboard]).to eq 2
     end
 
     it 'includes a recording_ee_finished_at timestamp' do
@@ -568,7 +566,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
     it 'includes accurate usage_activity_by_stage data' do
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_preferences_group_overview_security_dashboard: 3,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -604,7 +601,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       end
 
       expect(described_class.usage_activity_by_stage_secure({})).to include(
-        user_preferences_group_overview_security_dashboard: 3,
         user_unique_users_all_secure_scanners: 1,
         sast_scans: 2,
         dependency_scanning_scans: 6,
@@ -615,7 +611,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       )
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_preferences_group_overview_security_dashboard: 3,
         sast_pipeline: be_within(error_rate).percent_of(1),
         dependency_scanning_pipeline: be_within(error_rate).percent_of(2),
         container_scanning_pipeline: be_within(error_rate).percent_of(1),
@@ -642,7 +637,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       end
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_preferences_group_overview_security_dashboard: 3,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -667,7 +661,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       end
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
-        user_preferences_group_overview_security_dashboard: 3,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -714,7 +707,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
           end
 
           expect(subject).to include(
-            user_preferences_group_overview_security_dashboard: -1,
             sast_pipeline: -1,
             sast_scans: -1,
             dependency_scanning_pipeline: -1,
