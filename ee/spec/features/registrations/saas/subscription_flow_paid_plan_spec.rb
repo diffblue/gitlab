@@ -82,7 +82,9 @@ feature_category: :onboarding do
       allow(instance).to receive(:execute).and_return(plan_data)
     end
 
-    stub_request(:get, "#{EE::SUBSCRIPTIONS_URL}/payment_forms/paid_signup_flow")
+    subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+    stub_request(:get, "#{subscription_portal_url}/payment_forms/paid_signup_flow")
       .with(
         headers: {
           'Accept' => 'application/json',

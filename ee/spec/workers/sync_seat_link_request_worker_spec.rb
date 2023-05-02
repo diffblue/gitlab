@@ -8,7 +8,8 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
       described_class.new.perform('2020-01-01T01:20:12+02:00', '123', 5, 4)
     end
 
-    let(:seat_link_url) { [EE::SUBSCRIPTIONS_URL, '/api/v1/seat_links'].join }
+    let(:subscription_portal_url) { ::Gitlab::Routing.url_helpers.subscription_portal_url }
+    let(:seat_link_url) { [subscription_portal_url, '/api/v1/seat_links'].join }
 
     it 'makes an HTTP POST request with passed params' do
       stub_request(:post, seat_link_url).to_return(status: 200)

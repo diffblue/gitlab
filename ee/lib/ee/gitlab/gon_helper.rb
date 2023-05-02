@@ -12,11 +12,12 @@ module EE
         gon.roadmap_epics_limit = 1000
 
         if ::Gitlab.com?
-          gon.subscriptions_url                = ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
-          gon.subscriptions_legacy_sign_in_url = ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_LEGACY_SIGN_IN_URL
-          gon.payment_form_url                 = ::Gitlab::SubscriptionPortal::PAYMENT_FORM_URL
+          gon.subscriptions_url                = ::Gitlab::Routing.url_helpers.subscription_portal_url
+          gon.subscriptions_legacy_sign_in_url = ::Gitlab::Routing.url_helpers.subscription_portal_legacy_sign_in_url
+          gon.payment_form_url                 = ::Gitlab::Routing.url_helpers.subscription_portal_payment_form_url
           gon.payment_validation_form_id       = ::Gitlab::SubscriptionPortal::PAYMENT_VALIDATION_FORM_ID
-          gon.registration_validation_form_url = ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_URL
+          gon.registration_validation_form_url = ::Gitlab::Routing.url_helpers
+                                                                  .subscription_portal_registration_validation_form_url
         end
       end
 

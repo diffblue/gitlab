@@ -74,7 +74,9 @@ module Gitlab
       end
 
       def customers_dot_url
-        "<a href='#{EE::SUBSCRIPTIONS_EDIT_ACCOUNT_URL}'>Customers Portal</a>".html_safe
+        edit_account_url = ::Gitlab::Routing.url_helpers.subscription_portal_edit_account_url
+
+        %(<a href="#{edit_account_url}">Customers Portal</a>).html_safe
       end
     end
   end

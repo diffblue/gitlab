@@ -32,8 +32,10 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
   end
 
   def external_upgrade_url(namespace, plan)
+    subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
     if Plan::PAID_HOSTED_PLANS.include?(plan.name)
-      "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{namespace.id}/upgrade/#{plan.name}-external-id"
+      "#{subscription_portal_url}/gitlab/namespaces/#{namespace.id}/upgrade/#{plan.name}-external-id"
     end
   end
 

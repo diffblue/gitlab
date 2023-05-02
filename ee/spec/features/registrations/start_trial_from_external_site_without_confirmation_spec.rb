@@ -16,7 +16,9 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(159)
 
-    stub_request(:post, "#{EE::SUBSCRIPTIONS_URL}/trials")
+    subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+    stub_request(:post, "#{subscription_portal_url}/trials")
   end
 
   it 'passes glm parameters until user is onboarded' do

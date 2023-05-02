@@ -6,7 +6,7 @@ RSpec.describe GitlabSubscriptions::FetchSubscriptionPlansService, feature_categ
   describe '#execute' do
     subject(:execute_service) { described_class.new(plan: plan).execute }
 
-    let(:endpoint_url) { EE::SUBSCRIPTIONS_GITLAB_PLANS_URL }
+    let(:endpoint_url) { ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url }
     let(:plan) { 'bronze' }
     let(:response_mock) { double(body: [{ 'foo' => 'bar' }].to_json) }
 

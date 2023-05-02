@@ -79,15 +79,18 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
         it_behaves_like 'hides search settings'
 
         it 'shows the proper title and subscription data' do
-          extra_seats_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
-          renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
+          subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+          extra_seats_url = "#{subscription_portal_url}/gitlab/namespaces/#{group.id}/extra_seats"
+          renew_url = "#{subscription_portal_url}/gitlab/namespaces/#{group.id}/renew"
+          manage_url = "#{subscription_portal_url}/subscriptions"
 
           visit group_billings_path(group)
 
           expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
           within subscription_table do
             expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-            expect(page).to have_link("Manage", href: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL)
+            expect(page).to have_link("Manage", href: manage_url)
             expect(page).to have_link("Add seats", href: extra_seats_url)
             expect(page).to have_link("Renew", href: renew_url)
             expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
@@ -125,9 +128,11 @@ RSpec.describe 'Groups > Billing', :js, :saas, feature_category: :purchase do
       it 'shows the proper title and subscription data' do
         visit group_billings_path(group)
 
+        manage_url = "#{subscription_portal_url}/subscriptions"
+
         expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
         within subscription_table do
-          expect(page).to have_link("Manage", href: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL)
+          expect(page).to have_link("Manage", href: manage_url)
         end
       end
     end

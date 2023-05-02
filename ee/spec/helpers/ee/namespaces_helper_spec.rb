@@ -19,6 +19,7 @@ RSpec.describe EE::NamespacesHelper do
   end
 
   let(:ci_minutes_used) { 100 }
+  let(:more_storage_url) { ::Gitlab::Routing.url_helpers.subscription_portal_more_storage_url }
 
   describe '#ci_minutes_report', feature_category: :continuous_integration do
     let(:usage) { Ci::Minutes::Usage.new(user_group) }
@@ -112,7 +113,9 @@ RSpec.describe EE::NamespacesHelper do
       let(:personal_namespace) { build_stubbed(:user_namespace) }
 
       it 'returns the default purchase' do
-        expect(helper.buy_additional_minutes_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+        more_minutes_url = ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url
+
+        expect(helper.buy_additional_minutes_path(personal_namespace)).to eq more_minutes_url
       end
     end
 
@@ -148,7 +151,7 @@ RSpec.describe EE::NamespacesHelper do
       let(:personal_namespace) { build_stubbed(:user_namespace) }
 
       it 'returns the default purchase' do
-        expect(helper.buy_storage_path(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
+        expect(helper.buy_storage_path(personal_namespace)).to eq more_storage_url
       end
     end
   end
@@ -174,7 +177,7 @@ RSpec.describe EE::NamespacesHelper do
       let(:personal_namespace) { build_stubbed(:user_namespace) }
 
       it 'returns the default purchase' do
-        expect(helper.buy_storage_url(personal_namespace)).to eq EE::SUBSCRIPTIONS_MORE_STORAGE_URL
+        expect(helper.buy_storage_url(personal_namespace)).to eq more_storage_url
       end
     end
   end
@@ -208,6 +211,8 @@ RSpec.describe EE::NamespacesHelper do
 
       shared_examples 'returns a hash with proper SaaS data' do
         it 'matches the returned hash' do
+          more_minutes_url = ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url
+
           expect(helper.pipeline_usage_app_data(user_group)).to eql({
             namespace_actual_plan_name: user_group.actual_plan_name,
             namespace_path: user_group.full_path,
@@ -225,7 +230,7 @@ RSpec.describe EE::NamespacesHelper do
               purchased_minutes_used_percentage: minutes_usage_presenter.purchased_percent_used,
               purchased_minutes_limit: minutes_usage_presenter.purchased_minutes_report.limit
             },
-            buy_additional_minutes_path: EE::SUBSCRIPTIONS_MORE_MINUTES_URL,
+            buy_additional_minutes_path: more_minutes_url,
             buy_additional_minutes_target: '_blank'
           })
         end
@@ -250,7 +255,7 @@ RSpec.describe EE::NamespacesHelper do
   describe '#purchase_storage_url', feature_category: :consumables_cost_management do
     subject { helper.purchase_storage_url }
 
-    it { is_expected.to eq(EE::SUBSCRIPTIONS_MORE_STORAGE_URL) }
+    it { is_expected.to eq(more_storage_url) }
   end
 
   describe '#storage_usage_app_data', feature_category: :consumables_cost_management do
@@ -268,7 +273,7 @@ RSpec.describe EE::NamespacesHelper do
         namespace_path: namespace.full_path,
         user_namespace: namespace.user_namespace?.to_s,
         default_per_page: Kaminari.config.default_per_page,
-        purchase_storage_url: EE::SUBSCRIPTIONS_MORE_STORAGE_URL,
+        purchase_storage_url: more_storage_url,
         buy_addon_target_attr: '_blank',
         storage_limit_enforced: 'false',
         can_show_inline_alert: 'false'

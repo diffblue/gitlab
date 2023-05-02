@@ -492,7 +492,9 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
                 )
             end
 
-            stub_request(:get, "#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=free&namespace_id=")
+            gitlab_plans_url = ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url
+
+            stub_request(:get, "#{gitlab_plans_url}?plan=free&namespace_id=")
           end
 
           it 'does not create a group' do

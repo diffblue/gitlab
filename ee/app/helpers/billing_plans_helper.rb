@@ -52,7 +52,7 @@ module BillingPlansHelper
       namespace_name: namespace.name,
       add_seats_href: add_seats_url(namespace),
       plan_renew_href: plan_renew_url(namespace),
-      customer_portal_url: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL,
+      customer_portal_url: ::Gitlab::Routing.url_helpers.subscription_portal_manage_url,
       billable_seats_href: billable_seats_href(namespace),
       plan_name: plan&.name,
       read_only: read_only.to_s,
@@ -221,19 +221,19 @@ module BillingPlansHelper
   def add_seats_url(group)
     return unless group
 
-    ::Gitlab::SubscriptionPortal.add_extra_seats_url(group.id)
+    ::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(group.id)
   end
 
   def plan_upgrade_url(group, plan)
     return unless group && plan&.id
 
-    ::Gitlab::SubscriptionPortal.upgrade_subscription_url(group.id, plan.id)
+    ::Gitlab::Routing.url_helpers.subscription_portal_upgrade_subscription_url(group.id, plan.id)
   end
 
   def plan_renew_url(group)
     return unless group
 
-    ::Gitlab::SubscriptionPortal.renew_subscription_url(group.id)
+    ::Gitlab::Routing.url_helpers.subscription_portal_renew_subscription_url(group.id)
   end
 
   def billable_seats_href(namespace)

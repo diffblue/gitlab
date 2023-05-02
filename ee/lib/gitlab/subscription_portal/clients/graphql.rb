@@ -315,7 +315,7 @@ module Gitlab
           end
 
           def graphql_endpoint
-            EE::SUBSCRIPTIONS_GRAPHQL_URL
+            ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url
           end
 
           def track_error(query, response)
