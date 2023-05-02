@@ -24,7 +24,6 @@ RSpec.describe 'Database schema', feature_category: :database do
   REMOVED_FKS = {
     clusters_applications_cilium: %w[cluster_id],
     clusters_applications_helm: %w[cluster_id],
-    clusters_applications_ingress: %w[cluster_id],
     clusters_applications_knative: %w[cluster_id],
     clusters_applications_prometheus: %w[cluster_id],
     clusters_applications_runners: %w[cluster_id],
