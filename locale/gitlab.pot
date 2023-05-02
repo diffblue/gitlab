@@ -32440,7 +32440,7 @@ msgstr ""
 msgid "PipelineEditor|The CI/CD configuration is continuously validated. Errors and warnings are displayed when the CI/CD configuration file is not empty."
 msgstr ""
 
-msgid "PipelineEditor|The merged YAML view is displayed when the CI/CD configuration file has valid syntax."
+msgid "PipelineEditor|The full configuration view is displayed when the CI/CD configuration file has valid syntax."
 msgstr ""
 
 msgid "PipelineEditor|The pipeline visualization is displayed when the CI/CD configuration file has valid syntax."
@@ -32755,7 +32755,7 @@ msgstr ""
 msgid "Pipelines|Could not load artifacts."
 msgstr ""
 
-msgid "Pipelines|Could not load merged YAML content"
+msgid "Pipelines|Could not load full configuration content"
 msgstr ""
 
 msgid "Pipelines|Description"
@@ -32771,6 +32771,12 @@ msgid "Pipelines|Editor"
 msgstr ""
 
 msgid "Pipelines|Follow these instructions to install GitLab Runner on macOS."
+msgstr ""
+
+msgid "Pipelines|Full configuration"
+msgstr ""
+
+msgid "Pipelines|Full configuration is view only"
 msgstr ""
 
 msgid "Pipelines|Get familiar with GitLab CI syntax by  setting up a simple pipeline running a  \"Hello world\" script to see how it runs, explore how CI/CD works."
@@ -32813,9 +32819,6 @@ msgid "Pipelines|Loading Pipelines"
 msgstr ""
 
 msgid "Pipelines|Loading pipelines"
-msgstr ""
-
-msgid "Pipelines|Merged YAML is view only"
 msgstr ""
 
 msgid "Pipelines|More Information"
@@ -32936,9 +32939,6 @@ msgid "Pipelines|Validate"
 msgstr ""
 
 msgid "Pipelines|Validating GitLab CI configuration…"
-msgstr ""
-
-msgid "Pipelines|View merged YAML"
 msgstr ""
 
 msgid "Pipelines|Visualize"
