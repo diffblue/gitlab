@@ -241,7 +241,8 @@ RSpec.describe 'Project Environments query', feature_category: :continuous_deliv
           run_with_clean_state(multi_query, context: { current_user: user })
         end
 
-        expect(multi).not_to exceed_query_limit(baseline)
+        # +1 for each protected environment to check if user has been banned from project
+        expect(multi).not_to exceed_query_limit(baseline).with_threshold(1)
       end
     end
 

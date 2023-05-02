@@ -175,11 +175,11 @@ module EE
         @subject.feature_available?(:service_accounts)
       end
 
-      condition(:user_banned_from_group) do
+      condition(:user_banned_from_namespace) do
         next unless @user.is_a?(User)
 
         root_namespace = @subject.root_ancestor
-        next unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, root_namespace)
+        next unless root_namespace.unique_project_download_limit_enabled?
 
         @user.banned_from_namespace?(root_namespace)
       end
@@ -204,11 +204,7 @@ module EE
         Ability.allowed?(@user, :developer_access, security_orchestration_policy_configuration.security_policy_management_project)
       end
 
-      # Owners can be banned from their own group except for top-level group
-      # owners. This exception is made at the service layer
-      # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
-      # is created.
-      rule { ~public_group & ~admin & user_banned_from_group }.policy do
+      rule { ~admin & user_banned_from_namespace }.policy do
         prevent :read_group
       end
 
