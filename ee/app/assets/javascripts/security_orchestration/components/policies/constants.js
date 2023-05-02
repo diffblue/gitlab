@@ -3,7 +3,7 @@ import { s__ } from '~/locale';
 export const POLICY_SOURCE_OPTIONS = {
   ALL: {
     value: 'INHERITED',
-    text: s__('SecurityOrchestration|All policies'),
+    text: s__('SecurityOrchestration|All sources'),
   },
   DIRECT: {
     value: 'DIRECT',
@@ -18,7 +18,7 @@ export const POLICY_SOURCE_OPTIONS = {
 export const POLICY_TYPE_FILTER_OPTIONS = {
   ALL: {
     value: '',
-    text: s__('SecurityOrchestration|All policies'),
+    text: s__('SecurityOrchestration|All types'),
   },
   POLICY_TYPE_SCAN_EXECUTION: {
     value: 'POLICY_TYPE_SCAN_EXECUTION',
