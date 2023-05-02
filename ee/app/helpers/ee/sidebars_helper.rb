@@ -35,7 +35,10 @@ module EE
       context = super
       root_namespace = (project || group)&.root_ancestor
 
-      context.merge!(trial_data(root_namespace), show_tanuki_bot: show_tanuki_bot_chat?)
+      context.merge!(
+        trial_data(root_namespace),
+        show_tanuki_bot: ::Gitlab::Llm::TanukiBot.enabled_for?(user: current_user)
+      )
       context[:trial] = {
         has_start_trial: trials_allowed?(user),
         url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')

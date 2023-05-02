@@ -12,9 +12,9 @@ RSpec.describe 'layouts/_page', feature_category: :global_search do
       allow(view).to receive(:current_user_mode).and_return(Gitlab::Auth::CurrentUserMode.new(user))
     end
 
-    describe 'when show_tanuki_bot_chat? is true' do
+    describe 'when ::Gitlab::Llm::TanukiBot.enabled_for?(user) is true' do
       before do
-        allow(view).to receive(:show_tanuki_bot_chat?).and_return(true)
+        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?).with(user: user).and_return(true)
       end
 
       it 'renders #js-tanuki-bot-chat-app' do
@@ -24,9 +24,9 @@ RSpec.describe 'layouts/_page', feature_category: :global_search do
       end
     end
 
-    describe 'when show_tanuki_bot_chat? is false' do
+    describe 'when ::Gitlab::Llm::TanukiBot.enabled_for?(user) is false' do
       before do
-        allow(view).to receive(:show_tanuki_bot_chat?).and_return(false)
+        allow(::Gitlab::Llm::TanukiBot).to receive(:enabled_for?).with(user: user).and_return(false)
       end
 
       it 'does not render #js-tanuki-bot-chat-app' do
