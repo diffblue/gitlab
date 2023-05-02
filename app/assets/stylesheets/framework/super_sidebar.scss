@@ -209,7 +209,8 @@ $super-sidebar-transition-hint-duration: $super-sidebar-transition-duration / 4;
   display: none;
 }
 
-.super-sidebar-peekable {
+.super-sidebar-peek,
+.super-sidebar-peek-hint {
   @include gl-shadow;
   border-right: 0;
 }

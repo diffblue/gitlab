@@ -48,7 +48,6 @@ export default {
     },
     peekClasses() {
       return {
-        'super-sidebar-peekable': this.sidebarState.isPeekable,
         'super-sidebar-peek-hint': this.showPeekHint,
         'super-sidebar-peek': this.sidebarState.isPeek,
       };

@@ -35,7 +35,6 @@ const TrialStatusPopoverStub = {
 
 const peekClass = 'super-sidebar-peek';
 const peekHintClass = 'super-sidebar-peek-hint';
-const peekableClass = 'super-sidebar-peekable';
 
 describe('SuperSidebar component', () => {
   let wrapper;
@@ -169,7 +168,6 @@ describe('SuperSidebar component', () => {
       createWrapper();
 
       expect(findPeekBehavior().exists()).toBe(false);
-      expect(findSidebar().classes()).not.toContain(peekableClass);
     });
   });
 
@@ -189,7 +187,6 @@ describe('SuperSidebar component', () => {
       createWrapper({ sidebarState: { isCollapsed: true, isPeekable: true } });
 
       expect(findSidebar().attributes('inert')).toBe('inert');
-      expect(findSidebar().classes()).toContain(peekableClass);
       expect(findSidebar().classes()).not.toContain(peekHintClass);
       expect(findSidebar().classes()).not.toContain(peekClass);
     });
@@ -201,7 +198,6 @@ describe('SuperSidebar component', () => {
       await nextTick();
 
       expect(findSidebar().attributes('inert')).toBe('inert');
-      expect(findSidebar().classes()).toContain(peekableClass);
       expect(findSidebar().classes()).toContain(peekHintClass);
       expect(findSidebar().classes()).not.toContain(peekClass);
     });
@@ -215,7 +211,6 @@ describe('SuperSidebar component', () => {
         await nextTick();
 
         expect(findSidebar().attributes('inert')).toBe(undefined);
-        expect(findSidebar().classes()).toContain(peekableClass);
         expect(findSidebar().classes()).toContain(peekClass);
         expect(findSidebar().classes()).not.toContain(peekHintClass);
       },
