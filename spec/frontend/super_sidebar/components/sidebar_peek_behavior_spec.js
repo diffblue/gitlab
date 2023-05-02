@@ -4,14 +4,31 @@ import {
   SUPER_SIDEBAR_PEEK_CLOSE_DELAY,
 } from '~/super_sidebar/constants';
 import SidebarPeek, {
-  X_NEAR_WINDOW_EDGE,
-  X_SIDEBAR_EDGE,
-  X_AWAY_FROM_SIDEBAR,
   STATE_CLOSED,
   STATE_WILL_OPEN,
   STATE_OPEN,
   STATE_WILL_CLOSE,
 } from '~/super_sidebar/components/sidebar_peek_behavior.vue';
+
+// These are measured at runtime in the browser, but statically defined here
+// since Jest does not do layout/styling.
+const X_NEAR_WINDOW_EDGE = 5;
+const X_SIDEBAR_EDGE = 10;
+const X_AWAY_FROM_SIDEBAR = 20;
+
+jest.mock('~/lib/utils/css_utils', () => ({
+  getCssClassDimensions: (className) => {
+    if (className === 'gl-w-3') {
+      return { width: X_NEAR_WINDOW_EDGE };
+    }
+
+    if (className === 'super-sidebar') {
+      return { width: X_SIDEBAR_EDGE };
+    }
+
+    throw new Error(`No mock for CSS class ${className}`);
+  },
+}));
 
 describe('SidebarPeek component', () => {
   let wrapper;
