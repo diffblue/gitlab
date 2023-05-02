@@ -1,0 +1,9 @@
+---
+name: third_party_ai_features_enabled_updated
+description: Event triggered on toggling setting for enabling third-party AI features
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/404856/
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118222
+feature_category: not_owned
+milestone: '16.0'
+saved_to_database: true
+streamed: true

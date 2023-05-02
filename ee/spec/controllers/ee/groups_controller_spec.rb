@@ -829,6 +829,40 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     end
   end
 
+  context 'when ai settings are specified' do
+    let(:group) { create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: Date.tomorrow) }
+
+    before do
+      allow(Gitlab).to receive(:com?).and_return(true)
+      stub_licensed_features(ai_features: true)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      group.add_owner(user)
+
+      sign_in(user)
+    end
+
+    it 'updates the attribute' do
+      put :update, params: { id: group.to_param, group: { experiment_features_enabled: true,
+                                                          third_party_ai_features_enabled: false } }
+
+      expect(group.reload.experiment_features_enabled).to eq(true)
+      expect(group.reload.third_party_ai_features_enabled).to eq(false)
+    end
+
+    context 'when ai licensed features are not available for the group' do
+      before do
+        stub_licensed_features(ai_features: false)
+      end
+
+      it 'does not update attributes' do
+        expect do
+          put :update, params: { id: group.to_param, group: { experiment_features_enabled: true,
+                                                              third_party_ai_features_enabled: false } }
+        end.to not_change { group.reload.experiment_features_enabled }.and not_change { group.reload.third_party_ai_features_enabled }
+      end
+    end
+  end
+
   describe '#ai_assist_ui_enabled?', :saas do
     let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:subgroup) { create(:group, parent: group) }

@@ -99,6 +99,10 @@ module EE
         params_ee << :prevent_forking_outside_group if can_change_prevent_forking?(current_user, current_group)
         params_ee << :code_suggestions if ai_assist_ui_enabled?
 
+        if experimental_and_third_party_ai_settings_enabled?
+          params_ee.push(:experiment_features_enabled, :third_party_ai_features_enabled)
+        end
+
         if current_group&.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
             ::Feature.disabled?(:always_perform_delayed_deletion)
           params_ee << :delayed_project_removal
@@ -112,8 +116,12 @@ module EE
         ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
         ::Feature.enabled?(:ai_assist_ui) &&
         ::Feature.enabled?(:ai_assist_flag, current_group) &&
-        current_group.root? &&
-        current_group.licensed_feature_available?(:ai_assist)
+        current_group.licensed_feature_available?(:ai_assist) &&
+        current_group.root?
+    end
+
+    def experimental_and_third_party_ai_settings_enabled?
+      current_group && current_group.ai_settings_allowed?
     end
 
     def current_group

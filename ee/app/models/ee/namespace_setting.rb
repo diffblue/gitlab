@@ -21,8 +21,12 @@ module EE
         allow_nil: false,
         user_id_existence: true,
         if: :unique_project_download_limit_alertlist_changed?
+      validates :experiment_features_enabled, inclusion: { in: [true, false] }
+      validates :third_party_ai_features_enabled, inclusion: { in: [true, false] }
 
       validate :user_cap_allowed, if: -> { enabling_user_cap? }
+      validate :third_party_ai_settings_allowed
+      validate :experiment_features_allowed
 
       before_save :set_prevent_sharing_groups_outside_hierarchy, if: -> { user_cap_enabled? }
       after_save :disable_project_sharing!, if: -> { user_cap_enabled? }
@@ -70,6 +74,14 @@ module EE
         self[:unique_project_download_limit_alertlist].presence || active_owner_ids
       end
 
+      def ai_settings_allowed?
+        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+          ::Feature.enabled?(:openai_experimentation) &&
+          ::Feature.enabled?(:ai_related_settings, namespace) &&
+          namespace.licensed_feature_available?(:ai_features) &&
+          namespace.root?
+      end
+
       private
 
       def enabling_user_cap?
@@ -100,6 +112,20 @@ module EE
         return [] unless namespace&.group_namespace?
 
         namespace.owners.active.pluck_primary_key
+      end
+
+      def third_party_ai_settings_allowed
+        return unless third_party_ai_features_enabled_changed?
+        return if ai_settings_allowed?
+
+        errors.add(:third_party_ai_features_enabled, _('Third party AI settings not allowed.'))
+      end
+
+      def experiment_features_allowed
+        return unless experiment_features_enabled_changed?
+        return if ai_settings_allowed?
+
+        errors.add(:experiment_features_enabled, _("Experiment features' settings not allowed."))
       end
     end
 

@@ -44,6 +44,36 @@ RSpec.describe NamespaceSetting do
           expect(subject.errors[attr]).to include("exceeds maximum length (100 usernames)")
         end
       end
+
+      describe 'AI related settings' do
+        subject(:settings) { group.namespace_settings }
+
+        shared_examples 'AI related settings validations' do |attr|
+          before do
+            allow(subject).to receive(:ai_settings_allowed?).and_return(true)
+          end
+
+          it { is_expected.to allow_value(false).for(attr) }
+          it { is_expected.to allow_value(true).for(attr) }
+          it { is_expected.not_to allow_value(nil).for(attr) }
+
+          context 'when AI settings are not allowed' do
+            before do
+              allow(subject).to receive(:ai_settings_allowed?).and_return(false)
+            end
+
+            it "#{attr} is not valid" do
+              subject[attr] = !subject[attr]
+
+              expect(subject).not_to be_valid
+              expect(subject.errors[attr].first).to include("settings not allowed.")
+            end
+          end
+        end
+
+        it_behaves_like 'AI related settings validations', :third_party_ai_features_enabled
+        it_behaves_like 'AI related settings validations', :experiment_features_enabled
+      end
     end
 
     describe 'unique_project_download_limit_alertlist', feature_category: :insider_threat do
@@ -371,6 +401,34 @@ RSpec.describe NamespaceSetting do
       it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :only_allow_merge_if_pipeline_succeeds
       it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :allow_merge_on_skipped_pipeline
       it_behaves_like '[configuration](inherit_group_setting: bool) and [configuration]_locked?', :only_allow_merge_if_all_discussions_are_resolved
+    end
+  end
+
+  describe '.ai_settings_allowed?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:check_namespace_plan, :main_feature_flag, :secondary_feature_flag, :licensed_feature, :is_root, :result) do
+      true  | true  | true  | true  | true  | true
+      false | true  | true  | true  | true  | false
+      true  | false | true  | true  | true  | false
+      true  | true  | false | true  | true  | false
+      true  | true  | true  | false | true  | false
+      true  | true  | true  | true  | false | false
+    end
+
+    with_them do
+      let(:group) { create(:group) }
+      subject { group.namespace_settings.ai_settings_allowed? }
+
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_namespace_plan)
+        stub_feature_flags(openai_experimentation: main_feature_flag)
+        stub_feature_flags(ai_related_settings: secondary_feature_flag)
+        allow(group).to receive(:licensed_feature_available?).with(:ai_features).and_return(licensed_feature)
+        allow(group).to receive(:root?).and_return(is_root)
+      end
+
+      it { is_expected.to eq result }
     end
   end
 end
