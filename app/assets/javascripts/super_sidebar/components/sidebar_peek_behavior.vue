@@ -23,10 +23,12 @@ export default {
     this.xSidebarEdge = getCssClassDimensions('super-sidebar').width;
     this.xAwayFromSidebar = 2 * this.xSidebarEdge;
     document.addEventListener('mousemove', this.onMouseMove);
+    document.documentElement.addEventListener('mouseleave', this.onDocumentLeave);
     this.changeState(STATE_CLOSED);
   },
   beforeDestroy() {
     document.removeEventListener('mousemove', this.onMouseMove);
+    document.documentElement.removeEventListener('mouseleave', this.onDocumentLeave);
     this.clearTimers();
   },
   methods: {
@@ -64,6 +66,13 @@ export default {
         } else if (clientX < this.xSidebarEdge) {
           this.open();
         }
+      }
+    },
+    onDocumentLeave() {
+      if (this.state === STATE_OPEN) {
+        this.willClose();
+      } else if (this.state === STATE_WILL_OPEN) {
+        this.close();
       }
     },
     willClose() {

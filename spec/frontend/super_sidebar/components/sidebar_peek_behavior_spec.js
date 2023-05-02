@@ -45,6 +45,11 @@ describe('SidebarPeek component', () => {
     document.dispatchEvent(event);
   };
 
+  const moveMouseOutOfDocument = () => {
+    const event = new MouseEvent('mouseleave');
+    document.documentElement.dispatchEvent(event);
+  };
+
   const lastNChangeEvents = (n = 1) => wrapper.emitted('change').slice(-n).flat();
 
   beforeEach(() => {
@@ -173,5 +178,30 @@ describe('SidebarPeek component', () => {
     jest.runOnlyPendingTimers();
 
     expect(lastNChangeEvents(1)).toEqual([STATE_WILL_OPEN]);
+  });
+
+  it('transitions will-open -> closed if cursor leaves document', () => {
+    moveMouse(0);
+    moveMouseOutOfDocument();
+
+    expect(lastNChangeEvents(2)).toEqual([STATE_WILL_OPEN, STATE_CLOSED]);
+  });
+
+  it('transitions open -> will-close if cursor leaves document', () => {
+    moveMouse(0);
+    jest.runOnlyPendingTimers();
+    moveMouseOutOfDocument();
+
+    expect(lastNChangeEvents(2)).toEqual([STATE_OPEN, STATE_WILL_CLOSE]);
+  });
+
+  it('cleans up document mouseleave listener before destroy', () => {
+    moveMouse(0);
+
+    wrapper.destroy();
+
+    moveMouseOutOfDocument();
+
+    expect(lastNChangeEvents(1)).not.toEqual([STATE_CLOSED]);
   });
 });
