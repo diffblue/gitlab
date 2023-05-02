@@ -139,7 +139,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
       end
 
       context 'when role_approvers in policy is not empty' do
-        let(:roles) { %w[MAINTAINER DEVELOPER] }
+        let(:roles) { %w[maintainer developer] }
 
         it 'returns role approvers' do
           response = service.execute
@@ -147,6 +147,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
           expect(response[:status]).to eq(:success)
           expect(response[:roles]).to match_array(roles)
           expect(response[:users]).to be_empty
+        end
+
+        context 'and contains GUEST or REPORTER' do
+          let(:roles) { %w[maintainer developer guest reporter] }
+
+          it 'returns role approvers without guest and reporters' do
+            response = service.execute
+
+            expect(response[:status]).to eq(:success)
+            expect(response[:roles]).to match_array(%w[maintainer developer])
+            expect(response[:users]).to be_empty
+          end
         end
       end
     end

@@ -73,7 +73,7 @@ module Security
       end
 
       def role_approvers(action)
-        action[:role_approvers] || []
+        action[:role_approvers].to_a & Security::ScanResultPolicy::ALLOWED_ROLES
       end
 
       def search_groups_globally?

@@ -14,6 +14,8 @@ module Security
 
     REQUIRE_APPROVAL = 'require_approval'
 
+    ALLOWED_ROLES = %w[developer maintainer owner].freeze
+
     included do
       has_many :scan_result_policy_reads,
         class_name: 'Security::ScanResultPolicyRead',
