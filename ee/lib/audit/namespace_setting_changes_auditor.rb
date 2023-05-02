@@ -2,6 +2,12 @@
 
 module Audit
   class NamespaceSettingChangesAuditor < BaseChangesAuditor
+    EVENT_NAME_PER_COLUMN = {
+      code_suggestions: 'code_suggestions_updated',
+      experiment_features_enabled: 'experiment_features_enabled_updated',
+      third_party_ai_features_enabled: 'third_party_ai_features_enabled_updated'
+    }.freeze
+
     def initialize(current_user, namespace_setting, group)
       @group = group
 
@@ -10,9 +16,10 @@ module Audit
 
     def execute
       return if model.blank?
-      return unless audit_required? :code_suggestions
 
-      audit_changes(:code_suggestions, entity: @group, model: model, event_type: 'code_suggestions_updated')
+      EVENT_NAME_PER_COLUMN.each do |column, event_name|
+        audit_changes(column, entity: @group, model: model, event_type: event_name)
+      end
     end
 
     private

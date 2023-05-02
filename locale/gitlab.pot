@@ -1842,16 +1842,31 @@ msgstr ""
 msgid "AI actions"
 msgstr ""
 
+msgid "AI| %{link_start}How is my data used?%{link_end}"
+msgstr ""
+
+msgid "AI| %{link_start}What are experiment features?%{link_end}"
+msgstr ""
+
 msgid "AI|Close the Code Explanation"
 msgstr ""
 
 msgid "AI|Code Explanation"
 msgstr ""
 
+msgid "AI|Enabling these features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}."
+msgstr ""
+
 msgid "AI|Experiment"
 msgstr ""
 
+msgid "AI|Experiment features"
+msgstr ""
+
 msgid "AI|Explain the code from %{filePath} in human understandable language presented in Markdown format. In the response add neither original code snippet nor any title. `%{text}`"
+msgstr ""
+
+msgid "AI|Features that use third-party AI services require transmission of data, including personal data."
 msgstr ""
 
 msgid "AI|Helpful"
@@ -1869,7 +1884,19 @@ msgstr ""
 msgid "AI|There is too much text in the chat. Please try again with a shorter text."
 msgstr ""
 
+msgid "AI|These features could cause performance and stability issues and may change over time."
+msgstr ""
+
+msgid "AI|Third-party AI services"
+msgstr ""
+
 msgid "AI|Unhelpful"
+msgstr ""
+
+msgid "AI|Use experiment features"
+msgstr ""
+
+msgid "AI|Use third-party AI services"
 msgstr ""
 
 msgid "AI|What does the selected code mean?"
@@ -17593,6 +17620,9 @@ msgid "Expected documents: %{expected_documents}"
 msgstr ""
 
 msgid "Experiment"
+msgstr ""
+
+msgid "Experiment features' settings not allowed."
 msgstr ""
 
 msgid "Experiments"
@@ -45222,6 +45252,9 @@ msgid "Things to be aware of before transferring:"
 msgstr ""
 
 msgid "Third Party Advisory Link"
+msgstr ""
+
+msgid "Third party AI settings not allowed."
 msgstr ""
 
 msgid "This %{issuableDisplayName} is locked. Only project members can comment."
