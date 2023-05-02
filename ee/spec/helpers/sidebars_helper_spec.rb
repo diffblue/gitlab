@@ -117,6 +117,21 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       end
     end
 
+    context 'with global concerns' do
+      subject do
+        helper.super_sidebar_context(user, group: nil, project: nil, panel: panel, panel_type: nil)
+      end
+
+      it 'returns sidebar values from user', :use_clean_rails_memory_store_caching do
+        trial = {
+          has_start_trial: false,
+          url: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')
+        }
+
+        expect(subject).to include(trial: trial)
+      end
+    end
+
     context 'when in project scope' do
       before do
         allow(helper).to receive(:show_buy_pipeline_minutes?).and_return(true)
