@@ -14335,24 +14335,6 @@ CREATE TABLE clusters (
     helm_major_version integer DEFAULT 3 NOT NULL
 );
 
-CREATE TABLE clusters_applications_cilium (
-    id bigint NOT NULL,
-    cluster_id bigint NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    status integer NOT NULL,
-    status_reason text
-);
-
-CREATE SEQUENCE clusters_applications_cilium_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE clusters_applications_cilium_id_seq OWNED BY clusters_applications_cilium.id;
-
 CREATE TABLE clusters_applications_helm (
     id integer NOT NULL,
     cluster_id integer NOT NULL,
@@ -24995,8 +24977,6 @@ ALTER TABLE ONLY cluster_providers_gcp ALTER COLUMN id SET DEFAULT nextval('clus
 
 ALTER TABLE ONLY clusters ALTER COLUMN id SET DEFAULT nextval('clusters_id_seq'::regclass);
 
-ALTER TABLE ONLY clusters_applications_cilium ALTER COLUMN id SET DEFAULT nextval('clusters_applications_cilium_id_seq'::regclass);
-
 ALTER TABLE ONLY clusters_applications_helm ALTER COLUMN id SET DEFAULT nextval('clusters_applications_helm_id_seq'::regclass);
 
 ALTER TABLE ONLY clusters_applications_ingress ALTER COLUMN id SET DEFAULT nextval('clusters_applications_ingress_id_seq'::regclass);
@@ -26897,9 +26877,6 @@ ALTER TABLE ONLY cluster_providers_aws
 
 ALTER TABLE ONLY cluster_providers_gcp
     ADD CONSTRAINT cluster_providers_gcp_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY clusters_applications_cilium
-    ADD CONSTRAINT clusters_applications_cilium_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY clusters_applications_helm
     ADD CONSTRAINT clusters_applications_helm_pkey PRIMARY KEY (id);
@@ -30325,8 +30302,6 @@ CREATE INDEX index_cluster_providers_aws_on_cluster_id_and_status ON cluster_pro
 CREATE INDEX index_cluster_providers_gcp_on_cloud_run ON cluster_providers_gcp USING btree (cloud_run);
 
 CREATE UNIQUE INDEX index_cluster_providers_gcp_on_cluster_id ON cluster_providers_gcp USING btree (cluster_id);
-
-CREATE UNIQUE INDEX index_clusters_applications_cilium_on_cluster_id ON clusters_applications_cilium USING btree (cluster_id);
 
 CREATE UNIQUE INDEX index_clusters_applications_helm_on_cluster_id ON clusters_applications_helm USING btree (cluster_id);
 
