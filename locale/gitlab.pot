@@ -2673,6 +2673,9 @@ msgstr ""
 msgid "Admin Area"
 msgstr ""
 
+msgid "Admin Area / Dashboard"
+msgstr ""
+
 msgid "Admin Mode"
 msgstr ""
 
@@ -2680,9 +2683,6 @@ msgid "Admin Note"
 msgstr ""
 
 msgid "Admin Notifications"
-msgstr ""
-
-msgid "Admin Section"
 msgstr ""
 
 msgid "Admin mode already enabled"
