@@ -7964,6 +7964,9 @@ msgstr ""
 msgid "Built-in"
 msgstr ""
 
+msgid "Bulk edit"
+msgstr ""
+
 msgid "Bulk request concurrency"
 msgstr ""
 
@@ -15946,9 +15949,6 @@ msgstr ""
 msgid "Edit environment"
 msgstr ""
 
-msgid "Edit epics"
-msgstr ""
-
 msgid "Edit files in the editor and commit changes here"
 msgstr ""
 
@@ -15976,13 +15976,7 @@ msgstr ""
 msgid "Edit inline"
 msgstr ""
 
-msgid "Edit issues"
-msgstr ""
-
 msgid "Edit link"
-msgstr ""
-
-msgid "Edit merge requests"
 msgstr ""
 
 msgid "Edit project: %{project_name}"

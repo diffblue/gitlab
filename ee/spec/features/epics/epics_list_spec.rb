@@ -75,7 +75,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
 
         it 'renders epics list header actions', :aggregate_failures do
           page.within('.issuable-list-container .nav-controls') do
-            expect(page).to have_button('Edit epics')
+            expect(page).to have_button('Bulk edit')
             expect(page).to have_link('New epic')
           end
         end
@@ -143,7 +143,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         end
 
         it 'shows bulk editing sidebar with actions and labels select dropdown', :aggregate_failures do
-          click_button 'Edit epics'
+          click_button 'Bulk edit'
 
           page.within('.issuable-list-container aside.right-sidebar') do
             expect(page).to have_button('Update all', disabled: true)
@@ -155,7 +155,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
         end
 
         it 'shows checkboxes for selecting epics while bulk editing sidebar is visible', :aggregate_failures do
-          click_button 'Edit epics'
+          click_button 'Bulk edit'
 
           page.within('.issuable-list-container') do
             expect(page).to have_selector('.vue-filtered-search-bar-container input[type="checkbox"]')
@@ -169,7 +169,7 @@ RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
 
           # Bulk edit all epics to apply label
           page.within('.issuable-list-container') do
-            click_button 'Edit epics'
+            click_button 'Bulk edit'
 
             page.within('.vue-filtered-search-bar-container') do
               page.find('input[type="checkbox"]').click
