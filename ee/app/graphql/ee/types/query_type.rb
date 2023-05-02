@@ -66,6 +66,7 @@ module EE
         field :vulnerability,
               ::Types::VulnerabilityType,
               null: true,
+              authorize: :read_vulnerability,
               description: "Find a vulnerability." do
                 argument :id, ::Types::GlobalIDType[::Vulnerability],
                   required: true,

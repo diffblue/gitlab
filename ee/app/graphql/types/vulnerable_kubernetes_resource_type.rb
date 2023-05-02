@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  # Vulnerability locations have their authorization enforced by VulnerabilityType
+  # Vulnerability locations have their authorization enforced by VulnerabilityLocationType
   # rubocop: disable Graphql/AuthorizeTypes
   class VulnerableKubernetesResourceType < BaseObject
     graphql_name 'VulnerableKubernetesResource'
