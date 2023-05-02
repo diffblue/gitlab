@@ -38443,6 +38443,9 @@ msgstr ""
 msgid "Runners|Architecture"
 msgstr ""
 
+msgid "Runners|Are you sure you want to disable shared runners for %{groupName}?"
+msgstr ""
+
 msgid "Runners|Assigned Group"
 msgstr ""
 
@@ -38721,6 +38724,9 @@ msgstr ""
 msgid "Runners|No spot. This is the default choice for Linux Docker executor."
 msgstr ""
 
+msgid "Runners|No, keep shared runners enabled"
+msgstr ""
+
 msgid "Runners|Not accepting jobs"
 msgstr ""
 
@@ -38945,6 +38951,9 @@ msgstr ""
 msgid "Runners|Shared runners are disabled in the group settings"
 msgstr ""
 
+msgid "Runners|Shared runners will be disabled for all projects and subgroups in this group. If you proceed, you must manually re-enable shared runners in the settings of each project and subgroup."
+msgstr ""
+
 msgid "Runners|Show only inherited"
 msgstr ""
 
@@ -39113,6 +39122,9 @@ msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. %
 msgstr ""
 
 msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. Non-spot."
+msgstr ""
+
+msgid "Runners|Yes, disable shared runners"
 msgstr ""
 
 msgid "Runners|Yes, start deleting stale runners"
