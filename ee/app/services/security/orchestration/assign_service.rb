@@ -50,14 +50,9 @@ module Security
       end
 
       def unassign_policy_project
-        old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
-        delete_result = container.security_orchestration_policy_configuration.delete
+        result = UnassignService.new(container: container, current_user: current_user).execute
 
-        if delete_result
-          audit(old_policy_project, "Unlinked #{old_policy_project.name} as the security policy project")
-        end
-
-        delete_result
+        result.success?
       end
 
       def reassign_policy_project(policy_project)

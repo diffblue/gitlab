@@ -140,7 +140,8 @@ module Security
         return [] unless role_approvers
 
         roles_map = Gitlab::Access.sym_options_with_owner
-        role_approvers.filter_map { |role| roles_map[role.to_sym] }
+        role_approvers
+          .filter_map { |role| roles_map[role.to_sym] if role.to_s.in?(Security::ScanResultPolicy::ALLOWED_ROLES) }
       end
 
       def search_groups_globally?
