@@ -71,8 +71,13 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
           it 'executes calls through to open ai' do
             embeddings
 
-            expect(openai_client).to receive(:completions).exactly(3).times.and_return(completion_response)
-            expect(openai_client).to receive(:embeddings).and_return(embedding_response)
+            expect(openai_client).to receive(:completions)
+              .with(hash_including(moderated: false))
+              .exactly(3).times
+              .and_return(completion_response)
+            expect(openai_client).to receive(:embeddings)
+              .with(hash_including(moderated: true))
+              .and_return(embedding_response)
             allow(completion_response).to receive(:parsed_response).and_return(completion_response)
 
             execute
@@ -118,7 +123,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
         context 'when no neighbors are found' do
           before do
             allow(Embedding::TanukiBotMvc).to receive(:neighbor_for).and_return(Embedding::TanukiBotMvc.none)
-            allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
+            allow(openai_client).to receive(:embeddings)
+              .with(input: question, moderated: true)
+              .and_return(embedding_response)
           end
 
           it 'returns an i do not know' do
@@ -137,17 +144,23 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
             describe 'getting matching documents' do
               before do
-                allow(openai_client).to receive(:completions).and_return(completion_response)
+                allow(openai_client).to receive(:completions)
+                  .with(hash_including(moderated: false))
+                  .and_return(completion_response)
               end
 
               it 'creates an embedding for the question' do
-                expect(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
+                expect(openai_client).to receive(:embeddings)
+                  .with(input: question, moderated: true)
+                  .and_return(embedding_response)
 
                 execute
               end
 
               it 'queries the embedding database for nearest neighbors' do
-                allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
+                allow(openai_client).to receive(:embeddings)
+                  .with(input: question, moderated: true)
+                  .and_return(embedding_response)
 
                 expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for)
                   .with(embedding,
@@ -162,14 +175,17 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                 let(:final_completion_response) { { error: { message: 'something went wrong' } } }
 
                 before do
-                  allow(openai_client).to receive(:completions).with(hash_including(prompt: /create a final answer/))
+                  allow(openai_client).to receive(:completions)
+                    .with(hash_including(prompt: /create a final answer/, moderated: false))
                     .and_return(final_completion_response)
                   allow(final_completion_response).to receive(:code).and_return(500)
                   allow(final_completion_response).to receive(:success?).and_return(false)
                 end
 
                 it 'raises an error when an error is returned' do
-                  allow(openai_client).to receive(:embeddings).with(input: question).and_return(embedding_response)
+                  allow(openai_client).to receive(:embeddings)
+                    .with(input: question, moderated: true)
+                    .and_return(embedding_response)
 
                   expect { execute }.to raise_error(RuntimeError, /something went wrong/)
                 end
@@ -178,16 +194,19 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
             describe 'checking documents for relevance and summarizing' do
               before do
-                allow(openai_client).to receive(:embeddings).and_return(embedding_response)
+                allow(openai_client).to receive(:embeddings)
+                  .with(hash_including(moderated: true))
+                  .and_return(embedding_response)
               end
 
               it 'calls the completions API once for each document and once for summarizing' do
                 expect(openai_client).to receive(:completions)
-                  .with(hash_including(prompt: /see if any of the text is relevant to answer the question/))
+                  .with(hash_including(prompt: /see if any of the text is relevant to answer the question/,
+                    moderated: false))
                   .and_return(completion_response).twice
 
                 expect(openai_client).to receive(:completions)
-                  .with(hash_including(prompt: /create a final answer/))
+                  .with(hash_including(prompt: /create a final answer/, moderated: false))
                   .and_return(completion_response).once
 
                 execute
