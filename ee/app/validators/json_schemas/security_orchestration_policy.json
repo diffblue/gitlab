@@ -362,7 +362,7 @@
                 },
                 "vulnerability_states": {
                   "type": "array",
-                  "description": "Specifies a list of vulnerability states that should be concidered to enforce this policy. The `newly_detected` state considers all newly detected vulnerabilities regardless of their status or dismissal. The other states consider findings that match the selected state and already exist in the default branch.",
+                  "description": "Specifies a list of vulnerability states that should be considered to enforce this policy. The `newly_detected` state considers all newly detected vulnerabilities regardless of their status or dismissal. The other states consider findings that match the selected state and already exist in the default branch.",
                   "additionalItems": false,
                   "items": {
                     "type": "string",
@@ -371,7 +371,9 @@
                       "detected",
                       "confirmed",
                       "resolved",
-                      "dismissed"
+                      "dismissed",
+                      "new_needs_triage",
+                      "new_dismissed"
                     ]
                   }
                 },

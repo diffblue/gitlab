@@ -49,7 +49,7 @@ module Security
       def findings_count_violated?(approval_rule, target_pipeline_uuids)
         vulnerabilities_allowed = approval_rule.vulnerabilities_allowed
 
-        pipeline_uuids = uuids_from_findings(pipeline_security_findings, approval_rule)
+        pipeline_uuids = uuids_from_findings(pipeline_security_findings, approval_rule, true)
         new_uuids = pipeline_uuids - target_pipeline_uuids
 
         if only_newly_detected?(approval_rule)
@@ -76,30 +76,50 @@ module Security
         vulnerabilities_count[:exceeded_allowed_count]
       end
 
-      def uuids_from_findings(security_findings, approval_rule)
+      def uuids_from_findings(security_findings, approval_rule, check_dismissed = false)
+        vulnerability_states = approval_rule.vulnerability_states_for_branch
+
         findings = security_findings.by_severity_levels(approval_rule.severity_levels)
         findings = findings.by_report_types(approval_rule.scanners) if approval_rule.scanners.present?
+
+        if check_dismissed &&
+            vulnerability_states.exclude?(ApprovalProjectRule::NEW_DISMISSED) &&
+            vulnerability_states.include?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
+          findings = undismissed_security_findings(findings)
+        end
+
         findings.fetch_uuids
       end
 
+      def undismissed_security_findings(findings)
+        if Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
+          findings.undismissed_by_vulnerability
+        else
+          findings.undismissed
+        end
+      end
+
       def include_newly_detected?(approval_rule)
-        approval_rule.vulnerability_states_for_branch.include?(ApprovalProjectRule::NEWLY_DETECTED)
+        (approval_rule.vulnerability_states_for_branch & ApprovalProjectRule::NEWLY_DETECTED_STATUSES).any?
       end
 
       def only_newly_detected?(approval_rule)
-        approval_rule.vulnerability_states_for_branch == [ApprovalProjectRule::NEWLY_DETECTED]
+        approval_rule.vulnerability_states_for_branch.all? do |state|
+          state.in?(ApprovalProjectRule::NEWLY_DETECTED_STATUSES)
+        end
       end
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)
-        states_without_newly_detected = approval_rule.vulnerability_states_for_branch
-          .reject { |state| ApprovalProjectRule::NEWLY_DETECTED == state }
-
         VulnerabilitiesCountService.new(
           pipeline: pipeline,
           uuids: uuids,
-          states: states_without_newly_detected,
+          states: states_without_newly_detected(approval_rule.vulnerability_states),
           allowed_count: approval_rule.vulnerabilities_allowed
         ).execute
+      end
+
+      def states_without_newly_detected(vulnerability_states)
+        vulnerability_states.reject { |state| ApprovalProjectRule::NEWLY_DETECTED_STATUSES.include?(state) }
       end
     end
   end
