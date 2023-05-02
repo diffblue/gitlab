@@ -56,7 +56,7 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
       expect(page).to have_button('This is a new board')
     end
 
-    it 'deletes an epic board' do
+    it 'deletes an epic board', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/396791' do
       in_boards_switcher_dropdown do
         aggregate_failures do
           expect(page).to have_content(epic_board.name)
