@@ -88,7 +88,7 @@ export default {
         {{ item.title }}
       </span>
 
-      <span class="gl-flex-grow-1 gl-text-right gl-mr-3">
+      <span class="gl-flex-grow-1 gl-text-right gl-mr-3 gl-text-gray-400">
         <gl-icon :name="collapseIcon" />
       </span>
     </button>
