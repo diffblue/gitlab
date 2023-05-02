@@ -18,7 +18,7 @@ feature_category: :continuous_integration do
               nodes {
                 severity
                 reportType
-                name
+                name: title
                 scanner {
                   name
                 }
