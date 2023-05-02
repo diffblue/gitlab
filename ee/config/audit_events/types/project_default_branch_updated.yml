@@ -1,9 +1,0 @@
----
-name: project_default_branch_updated
-description: Event triggered when default branch of a project's repository is updated.
-introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374105
-introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117543
-feature_category: projects
-milestone: '16.0'
-saved_to_database: true
-streamed: true

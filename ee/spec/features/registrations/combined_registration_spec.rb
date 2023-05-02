@@ -9,7 +9,7 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js, featu
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(151)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(148)
     stub_experiments(experiments)
     sign_in(user)
     visit users_sign_up_welcome_path
