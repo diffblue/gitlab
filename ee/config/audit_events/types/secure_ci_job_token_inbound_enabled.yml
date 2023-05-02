@@ -1,0 +1,8 @@
+name: secure_ci_job_token_inbound_enabled
+description: Event triggered when CI_JOB_TOKEN permissions enabled for inbound 
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/338255
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115350
+feature_category: "verify_security"
+milestone: "16.0"
+saved_to_database: true
+streamed: true
