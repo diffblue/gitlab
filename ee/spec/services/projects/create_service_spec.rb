@@ -392,17 +392,20 @@ RSpec.describe Projects::CreateService, '#execute' do
         allow(Gitlab::VisibilityLevel).to receive(:allowed_for?).and_return(false)
       end
 
+      let(:event_type) { Projects::CreateService::AUDIT_EVENT_TYPE }
+
       let(:attributes) do
         {
            author_id: user.id,
            entity_id: @resource.id,
            entity_type: 'Project',
            details: {
-             add: 'project',
              author_name: user.name,
              target_id: @resource.id,
              target_type: 'Project',
-             target_details: @resource.full_path
+             target_details: @resource.full_path,
+             custom_message: Projects::CreateService::AUDIT_EVENT_MESSAGE,
+             author_class: user.class.name
            }
          }
       end

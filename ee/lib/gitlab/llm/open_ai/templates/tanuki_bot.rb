@@ -38,10 +38,9 @@ module Gitlab
             end.join("\n\n")
 
             prompt = <<~PROMPT.strip
-              Given the following extracted parts of a long document and a question,
-              create a final answer with references "#{CONTENT_ID_FIELD}".
+              Given the following extracted parts of technical documentation and a question, create a final answer.
               If you don't know the answer, just say that you don't know. Don't try to make up an answer.
-              At the end of your answer ALWAYS return a "#{CONTENT_ID_FIELD}" part and
+              At the end of your answer ALWAYS return a "#{CONTENT_ID_FIELD}" part for references and
               ALWAYS name it #{CONTENT_ID_FIELD}.
 
               QUESTION: #{question}

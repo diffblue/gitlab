@@ -187,7 +187,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                   .and_return(completion_response).twice
 
                 expect(openai_client).to receive(:completions)
-                  .with(hash_including(prompt: /create a final answer with references/))
+                  .with(hash_including(prompt: /create a final answer/))
                   .and_return(completion_response).once
 
                 execute
