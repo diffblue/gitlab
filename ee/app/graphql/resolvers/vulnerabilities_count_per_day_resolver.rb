@@ -2,7 +2,11 @@
 
 module Resolvers
   class VulnerabilitiesCountPerDayResolver < VulnerabilitiesBaseResolver
+    include Gitlab::Graphql::Authorize::AuthorizeResource
+
     type Types::VulnerabilitiesCountByDayType, null: true
+    authorize :read_security_resource
+    authorizes_object!
 
     argument :start_date, GraphQL::Types::ISO8601Date,
       required: true,
