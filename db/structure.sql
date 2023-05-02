@@ -318,6 +318,15 @@ BEGIN
 END;
 $$;
 
+CREATE FUNCTION trigger_b2d852e1e2cb() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."id_convert_to_bigint" := NEW."id";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_bfc6e47be8cc() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -13660,6 +13669,7 @@ CREATE TABLE ci_pipelines (
     ci_ref_id bigint,
     locked smallint DEFAULT 1 NOT NULL,
     partition_id bigint DEFAULT 100 NOT NULL,
+    id_convert_to_bigint bigint DEFAULT 0 NOT NULL,
     CONSTRAINT check_d7e99a025e CHECK ((lock_version IS NOT NULL))
 );
 
@@ -34420,6 +34430,8 @@ CREATE TRIGGER trigger_482bac5ec48a BEFORE INSERT OR UPDATE ON system_note_metad
 CREATE TRIGGER trigger_775287b6d67a BEFORE INSERT OR UPDATE ON note_diff_files FOR EACH ROW EXECUTE FUNCTION trigger_775287b6d67a();
 
 CREATE TRIGGER trigger_909cf0a06094 BEFORE INSERT OR UPDATE ON award_emoji FOR EACH ROW EXECUTE FUNCTION trigger_909cf0a06094();
+
+CREATE TRIGGER trigger_b2d852e1e2cb BEFORE INSERT OR UPDATE ON ci_pipelines FOR EACH ROW EXECUTE FUNCTION trigger_b2d852e1e2cb();
 
 CREATE TRIGGER trigger_bfc6e47be8cc BEFORE INSERT OR UPDATE ON snippet_user_mentions FOR EACH ROW EXECUTE FUNCTION trigger_bfc6e47be8cc();
 
