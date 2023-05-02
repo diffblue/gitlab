@@ -20,8 +20,8 @@ Support is not provided for features listed as "Experimental" or "Alpha" or any 
 - Can be removed at any time.
 - Data loss may occur.
 - Documentation may not exist or just be in a blog format.
-- Behind a feature flag that is on by default and the UI reflects Experiment status.
-- Behind a toggle that is off by default and the UI reflects Experiment status.
+- Behind a feature flag that is on by default and the [UI reflects Experiment status](https://design.gitlab.com/usability/feature-management#highlighting-feature-versions).
+- Behind a toggle that is off by default and the [UI reflects Experiment status](https://design.gitlab.com/usability/feature-management#highlighting-feature-versions).
 - Feedback issue to engage with team.
 - UX not finalized, might be just quick action access.
 - Not announced in a release post.
@@ -38,8 +38,8 @@ Commercially-reasonable efforts are made to provide limited support for features
 - Support on a commercially-reasonable effort basis.
 - Documentation reflects Beta status.
 - UX complete or near completion.
-- Behind a feature flag that is on by default and the UI reflects Beta status.
-- Behind a toggle that is off by default and the UI reflects Beta status.
+- Behind a feature flag that is on by default and the [UI reflects Beta status](https://design.gitlab.com/usability/feature-management#highlighting-feature-versions).
+- Behind a toggle that is off by default and the [UI reflects Beta status](https://design.gitlab.com/usability/feature-management#highlighting-feature-versions).
 - Can be announced in a release post that reflects Beta status.
 
 ## Generally Available (GA)
