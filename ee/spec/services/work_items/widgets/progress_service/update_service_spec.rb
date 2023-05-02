@@ -6,12 +6,16 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be_with_reload(:work_item) { create(:work_item, :objective, project: project, author: user) }
-  let_it_be_with_reload(:progress) { create(:progress, work_item: work_item, progress: 5) }
+  let_it_be_with_reload(:progress) { create(:progress, work_item: work_item, progress: 5, current_value: 5) }
 
   let(:widget) { work_item.widgets.find { |widget| widget.is_a?(WorkItems::Widgets::Progress) } }
 
   def work_item_progress
     work_item.reload.progress&.progress
+  end
+
+  def work_item_current_value
+    work_item.reload.progress&.current_value
   end
 
   describe '#before_update_in_transaction' do
@@ -23,6 +27,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
       it 'does not change work item progress value' do
         expect { subject }
           .to not_change { work_item_progress }
+          .and not_change { work_item_current_value }
           .and not_change { work_item.updated_at }
       end
 
@@ -34,7 +39,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
     shared_examples 'progress is updated' do |new_value|
       it 'updates work item progress value' do
         expect { subject }
-          .to change { work_item_progress }.to(new_value)
+          .to change { work_item_progress }.to(new_value).and change { work_item_current_value }.to(new_value)
       end
 
       it 'creates notes' do
@@ -127,7 +132,7 @@ RSpec.describe WorkItems::Widgets::ProgressService::UpdateService, feature_categ
           let(:params) { { progress: nil } }
 
           it_behaves_like 'raises a WidgetError' do
-            let(:message) { 'Progress is not a number' }
+            let(:message) { "Progress is not a number, Current value can't be blank" }
           end
         end
       end

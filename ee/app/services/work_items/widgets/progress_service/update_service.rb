@@ -13,6 +13,12 @@ module WorkItems
           progress = work_item.progress || work_item.build_progress
           progress.progress = params[:progress]
 
+          # In the followup MR the progress will not be updated rather
+          # current value will be updated and progress will be just read-only
+          # and will be calculated based on start, end, and current values
+          # Issue - https://gitlab.com/gitlab-org/incubation-engineering/okr/meta/-/issues/33
+          progress.current_value = params[:progress]
+
           raise WidgetError, progress.errors.full_messages.join(', ') unless progress.save
 
           create_notes if progress.saved_change_to_attribute?(:progress)

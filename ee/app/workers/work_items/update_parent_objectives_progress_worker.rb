@@ -28,6 +28,11 @@ module WorkItems
       parent_progress.lock!
       new_progress = parent.average_progress_of_children
       parent_progress.progress = new_progress
+
+      # In the followup MR we will write to current_value instead of progress and
+      # calculate progress based on start, end, and current value.
+      # Issue - https://gitlab.com/gitlab-org/incubation-engineering/okr/meta/-/issues/33
+      parent_progress.current_value = new_progress
       return unless parent_progress.progress_changed?
 
       parent_progress.save!
