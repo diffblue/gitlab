@@ -38398,6 +38398,9 @@ msgstr ""
 msgid "Runners|Existing runners are not affected. To permit runner registration for all projects, enable this setting in the Admin Area in Settings &gt; CI/CD."
 msgstr ""
 
+msgid "Runners|Failed adding runner to project"
+msgstr ""
+
 msgid "Runners|Fetch GitLab Runner release version data from GitLab.com"
 msgstr ""
 
