@@ -17,6 +17,7 @@ module QA
                 prepend SubMenus::SuperSidebar::Plan
                 prepend SubMenus::SuperSidebar::Analyze
                 prepend SubMenus::SuperSidebar::Manage
+                prepend SubMenus::SuperSidebar::Settings
               end
             end
           end
@@ -42,6 +43,8 @@ module QA
           end
 
           def go_to_saml_sso_group_settings
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_settings do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'SAML SSO')
