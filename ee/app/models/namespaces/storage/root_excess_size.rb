@@ -23,8 +23,9 @@ module Namespaces
       end
 
       def current_size
-        strong_memoize(:current_size) { root_namespace.total_repository_size_excess }
+        root_namespace.total_repository_size_excess
       end
+      strong_memoize_attr :current_size
 
       def exceeded_size(change_size = 0)
         exceeded_size = current_size + change_size - limit
@@ -33,10 +34,9 @@ module Namespaces
       end
 
       def limit
-        strong_memoize(:limit) do
-          root_namespace.additional_purchased_storage_size.megabytes
-        end
+        root_namespace.additional_purchased_storage_size.megabytes
       end
+      strong_memoize_attr :limit
 
       def enforce_limit?
         ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
