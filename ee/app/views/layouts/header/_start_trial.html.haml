@@ -1,0 +1,6 @@
+- return unless trials_allowed?(current_user)
+
+%li
+  %a.trial-link{ href: new_trial_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown') }
+    = s_("CurrentUser|Start an Ultimate trial")
+    = emoji_icon('rocket')

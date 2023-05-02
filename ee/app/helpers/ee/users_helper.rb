@@ -21,10 +21,6 @@ module EE
       users.map { |user| link_to(user.name, user, class: link_class) }.to_sentence.html_safe
     end
 
-    def trials_link_url
-      new_trial_registration_path(glm_source: 'gitlab.com', glm_content: 'top-right-dropdown')
-    end
-
     def user_badges_in_admin_section(user)
       super(user).tap do |badges|
         if !::Gitlab.com? && user.using_license_seat?
@@ -35,11 +31,9 @@ module EE
       end
     end
 
-    private
-
     def trials_allowed?(user)
-      return unless user
-      return unless ::Gitlab.com?
+      return false unless user
+      return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
       Rails.cache.fetch(['users', user.id, 'trials_allowed?'], expires_in: 10.minutes) do
         !user.has_paid_namespace? && user.owns_group_without_trial?
