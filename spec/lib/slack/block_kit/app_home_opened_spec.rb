@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Slack::BlockKit::AppHomeOpened do
+RSpec.describe Slack::BlockKit::AppHomeOpened, feature_category: :integrations do
   let_it_be(:slack_installation) { create(:slack_integration) }
 
   let(:chat_name) { nil }

@@ -8,7 +8,7 @@ module API
   class Integrations
     module Slack
       class Events < ::API::Base
-        include ::API::Integrations::Slack::Concerns::VerifiesRequest
+        include Slack::Concerns::VerifiesRequest
 
         feature_category :integrations
 

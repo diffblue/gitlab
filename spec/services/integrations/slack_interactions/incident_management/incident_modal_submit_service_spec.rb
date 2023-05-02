@@ -112,8 +112,8 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
             api_url,
             body: Gitlab::Json.dump(
               {
-                'replace_original': 'true',
-                'text': 'There was a problem creating the incident. Please try again.'
+                replace_original: 'true',
+                text: 'There was a problem creating the incident. Please try again.'
               }
             ),
             headers: { 'Content-Type' => 'application/json' }
@@ -153,9 +153,9 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
               api_url,
               body: Gitlab::Json.dump(
                 {
-                  'replace_original': 'true',
-                  'text': "New incident has been created: " \
-                          "<#{issue_url(incident)}|#{incident.to_reference} - a href=\"url\"incident title/a>. "
+                  replace_original: 'true',
+                  text: "New incident has been created: " \
+                        "<#{issue_url(incident)}|#{incident.to_reference} - a href=\"url\"incident title/a>. "
                 }
               ),
               headers: { 'Content-Type' => 'application/json' }
