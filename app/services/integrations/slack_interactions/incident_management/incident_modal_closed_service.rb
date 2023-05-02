@@ -44,8 +44,8 @@ module Integrations
 
         def close_request_body
           {
-            'replace_original': 'true',
-            'text': _('Incident creation cancelled.')
+            replace_original: 'true',
+            text: _('Incident creation cancelled.')
           }
         end
 

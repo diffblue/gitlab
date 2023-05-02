@@ -1012,9 +1012,6 @@ msgstr ""
 msgid "%{reportType} detected no new vulnerabilities."
 msgstr ""
 
-msgid "%{reported} reported for %{category} by %{reporter}"
-msgstr ""
-
 msgid "%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approval%{approvalEnd} from:"
 msgid_plural "%{requireStart}Require%{requireEnd} %{approvalsRequired} %{approvalStart}approvals%{approvalEnd} from:"
 msgstr[0] ""
@@ -2070,6 +2067,12 @@ msgid "Abuse reports"
 msgstr ""
 
 msgid "Abuse reports notification email"
+msgstr ""
+
+msgid "AbuseReports|%{reportedUser} reported for %{category} by %{reporter}"
+msgstr ""
+
+msgid "AbuseReports|Deleted user"
 msgstr ""
 
 msgid "AbuseReports|No reports found"
@@ -8427,6 +8430,9 @@ msgstr ""
 msgid "CICD|Deployment strategy"
 msgstr ""
 
+msgid "CICD|Disabling this feature is a permanent change."
+msgstr ""
+
 msgid "CICD|Enable feature to allow job token access by the following projects."
 msgstr ""
 
@@ -8449,6 +8455,9 @@ msgid "CICD|Manage which projects can use their CI_JOB_TOKEN to access this proj
 msgstr ""
 
 msgid "CICD|Select the projects that can be accessed by API requests authenticated with this project's CI_JOB_TOKEN CI/CD variable. It is a security risk to disable this feature, because unauthorized projects might attempt to retrieve an active token and access the API. %{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
+msgid "CICD|The %{boldStart}Limit CI_JOB_TOKEN%{boldEnd} scope is deprecated and will be removed the 17.0 milestone. Configure the %{boldStart}CI_JOB_TOKEN%{boldEnd} allowlist instead. %{linkStart}How do I do this?%{linkEnd}"
 msgstr ""
 
 msgid "CICD|The Auto DevOps pipeline runs by default in all projects with no CI/CD configuration file. %{link_start}What is Auto DevOps?%{link_end}"
@@ -32434,7 +32443,7 @@ msgstr ""
 msgid "PipelineEditor|The CI/CD configuration is continuously validated. Errors and warnings are displayed when the CI/CD configuration file is not empty."
 msgstr ""
 
-msgid "PipelineEditor|The merged YAML view is displayed when the CI/CD configuration file has valid syntax."
+msgid "PipelineEditor|The full configuration view is displayed when the CI/CD configuration file has valid syntax."
 msgstr ""
 
 msgid "PipelineEditor|The pipeline visualization is displayed when the CI/CD configuration file has valid syntax."
@@ -32749,7 +32758,7 @@ msgstr ""
 msgid "Pipelines|Could not load artifacts."
 msgstr ""
 
-msgid "Pipelines|Could not load merged YAML content"
+msgid "Pipelines|Could not load full configuration content"
 msgstr ""
 
 msgid "Pipelines|Description"
@@ -32765,6 +32774,12 @@ msgid "Pipelines|Editor"
 msgstr ""
 
 msgid "Pipelines|Follow these instructions to install GitLab Runner on macOS."
+msgstr ""
+
+msgid "Pipelines|Full configuration"
+msgstr ""
+
+msgid "Pipelines|Full configuration is view only"
 msgstr ""
 
 msgid "Pipelines|Get familiar with GitLab CI syntax by  setting up a simple pipeline running a  \"Hello world\" script to see how it runs, explore how CI/CD works."
@@ -32807,9 +32822,6 @@ msgid "Pipelines|Loading Pipelines"
 msgstr ""
 
 msgid "Pipelines|Loading pipelines"
-msgstr ""
-
-msgid "Pipelines|Merged YAML is view only"
 msgstr ""
 
 msgid "Pipelines|More Information"
@@ -32930,9 +32942,6 @@ msgid "Pipelines|Validate"
 msgstr ""
 
 msgid "Pipelines|Validating GitLab CI configuration…"
-msgstr ""
-
-msgid "Pipelines|View merged YAML"
 msgstr ""
 
 msgid "Pipelines|Visualize"
@@ -48278,9 +48287,6 @@ msgid "User is blocked"
 msgstr ""
 
 msgid "User is not allowed to resolve thread"
-msgstr ""
-
-msgid "User joined %{timeAgo}"
 msgstr ""
 
 msgid "User key"
