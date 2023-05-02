@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 require 'spec_helper'
-require_relative '../../../../db/seeds/awesome_co/awesome_co'
+require_relative '../../../../db/seeds/data_seeder/data_seeder'
 
-module AwesomeCo
-  RSpec.describe AwesomeCo, feature_category: :scalability do
-    let(:seed_file_name) { 'awesome_co' }
+module Gitlab
+  RSpec.describe DataSeeder, feature_category: :scalability do
+    let(:seed_file_name) { 'data_seeder' }
     let(:seed_file_content) do
       'Content'
     end
@@ -30,7 +30,7 @@ module AwesomeCo
       subject(:seed) { described_class.seed(owner, seed_file) }
 
       context 'when seed file is a yaml file' do
-        let(:seed_file_name) { 'awesome_co.yml' }
+        let(:seed_file_name) { 'data_seeder.yml' }
         let(:seed_file_content) do
           <<~YAML
             ---
@@ -40,9 +40,9 @@ module AwesomeCo
           YAML
         end
 
-        shared_examples 'parses the yaml' do
-          it 'parses the yaml' do
-            expect_next_instance_of(AwesomeCo::Parsers::Yaml) do |instance|
+        shared_examples 'parses the file' do |klass|
+          it "parses with #{klass}" do
+            expect_next_instance_of(klass) do |instance|
               expect(instance).to receive(:parse)
             end
             seed
@@ -50,13 +50,25 @@ module AwesomeCo
         end
 
         context 'with .yml extension' do
-          it_behaves_like 'parses the yaml'
+          it_behaves_like 'parses the file', DataSeeder::Parsers::Yaml
         end
 
         context 'with .yml.erb extension' do
-          let(:seed_file_name) { 'awesome_co.yml.erb' }
+          let(:seed_file_name) { 'data_seeder.yml.erb' }
 
-          it_behaves_like 'parses the yaml'
+          it_behaves_like 'parses the file', DataSeeder::Parsers::Yaml
+        end
+
+        context 'with .json.erb extension' do
+          let(:seed_file_name) { 'data_seeder.json.erb' }
+
+          it_behaves_like 'parses the file', DataSeeder::Parsers::Json
+        end
+
+        context 'with .json extension' do
+          let(:seed_file_name) { 'data_seeder.json' }
+
+          it_behaves_like 'parses the file', DataSeeder::Parsers::Json
         end
 
         context 'when seed file is invalid yaml' do
@@ -82,7 +94,7 @@ module AwesomeCo
       end
     end
 
-    describe FactoryDefinitions do
+    describe DataSeeder::FactoryDefinitions do
       subject(:factory_definitions) { described_class.new('group_labels', group, [factory_attributes]) }
 
       describe '#to_s' do
@@ -96,7 +108,7 @@ module AwesomeCo
 
         it 'returns exactly one well-formed definition', :aggregate_failures do
           expect(definitions.size).to eq(1)
-          expect(definitions.first).to be_a(FactoryDefinitions::FactoryDefinition)
+          expect(definitions.first).to be_a(DataSeeder::FactoryDefinitions::FactoryDefinition)
         end
       end
 
@@ -112,7 +124,7 @@ module AwesomeCo
         end
       end
 
-      describe FactoryDefinitions::FactoryDefinition do
+      describe DataSeeder::FactoryDefinitions::FactoryDefinition do
         subject(:definition) { described_class.new('group_label', nil, **factory_attributes) }
 
         describe '#fabricate' do
@@ -158,7 +170,7 @@ module AwesomeCo
 
       subject(:parser) { described_class.new(seed_file, owner) }
 
-      describe Parsers::Parser do
+      describe DataSeeder::Parsers::Parser do
         describe '#initialize' do
           it 'raises an error if trying to initialize Parser without a subclass' do
             expect { parser }.to raise_error(RuntimeError, /Parser subclass/)
@@ -180,8 +192,8 @@ module AwesomeCo
         end
       end
 
-      describe Parsers::Yaml do
-        let(:seed_file_name) { 'awesome_co.yml' }
+      describe DataSeeder::Parsers::Yaml do
+        let(:seed_file_name) { 'data_seeder.yml' }
         let(:seed_file_content) do
           <<~YAML
             ---
@@ -351,7 +363,7 @@ module AwesomeCo
         end
       end
 
-      describe Parsers::Json do
+      describe DataSeeder::Parsers::Json do
         let(:seed_file_name) { 'seeder.json' }
         let(:seed_file_content) do
           {
@@ -494,7 +506,7 @@ module AwesomeCo
         end
       end
 
-      describe Parsers::Ruby do
+      describe DataSeeder::Parsers::Ruby do
         let(:seed_file_name) { 'awesome.rb' }
         let(:seed_file_content) do
           <<~RUBY
