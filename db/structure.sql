@@ -23836,6 +23836,12 @@ CREATE SEQUENCE users_statistics_id_seq
 
 ALTER SEQUENCE users_statistics_id_seq OWNED BY users_statistics.id;
 
+CREATE TABLE value_stream_dashboard_aggregations (
+    namespace_id bigint NOT NULL,
+    last_run_at timestamp with time zone,
+    enabled boolean DEFAULT true NOT NULL
+);
+
 CREATE SEQUENCE value_stream_dashboard_counts_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -28306,6 +28312,9 @@ ALTER TABLE ONLY users_star_projects
 ALTER TABLE ONLY users_statistics
     ADD CONSTRAINT users_statistics_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY value_stream_dashboard_aggregations
+    ADD CONSTRAINT value_stream_dashboard_aggregations_pkey PRIMARY KEY (namespace_id);
+
 ALTER TABLE ONLY value_stream_dashboard_counts
     ADD CONSTRAINT value_stream_dashboard_counts_pkey PRIMARY KEY (namespace_id, metric, recorded_at, count, id);
 
@@ -31674,6 +31683,8 @@ CREATE INDEX index_on_users_lower_email ON users USING btree (lower((email)::tex
 CREATE INDEX index_on_users_lower_username ON users USING btree (lower((username)::text));
 
 CREATE INDEX index_on_users_name_lower ON users USING btree (lower((name)::text));
+
+CREATE INDEX index_on_value_stream_dashboard_aggregations_last_run_at_id ON value_stream_dashboard_aggregations USING btree (last_run_at, namespace_id) WHERE (enabled IS TRUE);
 
 CREATE INDEX index_onboarding_progresses_for_create_track ON onboarding_progresses USING btree (created_at) WHERE (git_write_at IS NULL);
 
@@ -36510,6 +36521,9 @@ ALTER TABLE ONLY zentao_tracker_data
 
 ALTER TABLE ONLY boards_epic_user_preferences
     ADD CONSTRAINT fk_rails_851fe1510a FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY value_stream_dashboard_aggregations
+    ADD CONSTRAINT fk_rails_859b4f86f3 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY deployment_merge_requests
     ADD CONSTRAINT fk_rails_86a6d8bf12 FOREIGN KEY (merge_request_id) REFERENCES merge_requests(id) ON DELETE CASCADE;
