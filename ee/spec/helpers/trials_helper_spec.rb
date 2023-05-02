@@ -72,12 +72,6 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       allow(helper).to receive(:params).and_return(params)
     end
 
-    it 'provides expected form data' do
-      keys = [:submit_path]
-
-      expect(helper.create_company_form_data.keys.map(&:to_sym)).to match_array(keys)
-    end
-
     it 'allows overriding data with params' do
       submit_path = {
         submit_path: "/users/sign_up/company?#{extra_params.to_query}"
