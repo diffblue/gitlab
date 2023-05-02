@@ -58,3 +58,8 @@ We will get higher quality (more diverse) feedback if people from different orga
 We've also learned that internal only as a state slows us down more than it speeds us up.
 Release the experiment instead of testing internally or waiting for the feature to be in a Beta state.
 The experimental features are only shown when people/organizations opt-in to experiments, we are allowed to make mistakes here and literally experiment.
+
+## All features are in production
+
+All features that are available on GitLab.com are considered "in production."
+Because all Experiment, Beta, and Generally Available features are available on GitLab.com, they are all considered to be in production.
