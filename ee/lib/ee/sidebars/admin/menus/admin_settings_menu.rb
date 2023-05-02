@@ -56,7 +56,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Security and Compliance'),
               link: security_and_compliance_admin_application_settings_path,
-              active_routes: { path: 'admin/application_settings#templates' },
+              active_routes: { path: 'admin/application_settings#security_and_compliance' },
               item_id: :admin_security_and_compliance,
               container_html_options: { 'data-qa-selector': 'admin_security_and_compliance_link' }
             )
