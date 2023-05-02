@@ -162,6 +162,10 @@ export default {
       {{ shortcutLink.title }}
     </a>
 
+    <!--
+      Only mount SidebarPeekBehavior if the sidebar is peekable, to avoid
+      setting up event listeners unnecessarily.
+    -->
     <sidebar-peek-behavior v-if="sidebarState.isPeekable" @change="onPeekChange" />
   </div>
 </template>

@@ -40,6 +40,19 @@ export default {
     this.clearTimers();
   },
   methods: {
+    /**
+     * Callback for document-wide mousemove events.
+     *
+     * Since mousemove events can fire frequently, it's important for this to
+     * do as little work as possible.
+     *
+     * When mousemove events fire within one of the defined regions, this ends
+     * up being a no-op. Only when the cursor moves from one region to another
+     * does this do any work: it sets a non-reactive instance property, maybe
+     * cancels/starts timers, and emits an event.
+     *
+     * @params {MouseEvent} event
+     */
     onMouseMove({ clientX }) {
       if (this.state === STATE_CLOSED) {
         if (clientX < X_NEAR_WINDOW_EDGE) {
