@@ -8,6 +8,7 @@ module EE
 
     prepended do
       include Arkose::ContentSecurityPolicy
+      include RegistrationsTracking
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action only: [:new, :create] do
@@ -93,6 +94,16 @@ module EE
         action: :custom,
         custom_message: _('Instance access request')
       ).for_user.security_event
+    end
+
+    override :after_sign_up_path
+    def after_sign_up_path
+      ::Gitlab::Utils.add_url_parameters(super, glm_tracking_params)
+    end
+
+    override :registration_path_params
+    def registration_path_params
+      glm_tracking_params.to_h
     end
 
     def verify_arkose_labs_token
