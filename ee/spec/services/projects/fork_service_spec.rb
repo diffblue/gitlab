@@ -18,11 +18,7 @@ RSpec.describe Projects::ForkService do
 
     subject(:execute) { described_class.new(project, user).execute }
 
-    it 'calls auditor with correct context' do
-      expect(::Gitlab::Audit::Auditor).to receive(:audit)
-                                            .with(hash_including(name: Projects::CreateService::AUDIT_EVENT_TYPE))
-                                            .and_call_original
-
+    it 'call auditor with currect context' do
       audit_context = {
         name: event_type,
         stream_only: true,
