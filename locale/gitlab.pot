@@ -6783,7 +6783,13 @@ msgstr ""
 msgid "BillingPlans|10,000 CI/CD minutes per month"
 msgstr ""
 
+msgid "BillingPlans|10000 CI/CD minutes"
+msgstr ""
+
 msgid "BillingPlans|10GB transfer per month"
+msgstr ""
+
+msgid "BillingPlans|400 CI/CD minutes"
 msgstr ""
 
 msgid "BillingPlans|400 CI/CD minutes per month"
@@ -6795,6 +6801,9 @@ msgstr ""
 msgid "BillingPlans|50,000 CI/CD minutes per month"
 msgstr ""
 
+msgid "BillingPlans|50000 CI/CD minutes"
+msgstr ""
+
 msgid "BillingPlans|5GB storage"
 msgstr ""
 
@@ -6804,7 +6813,19 @@ msgstr ""
 msgid "BillingPlans|Advanced CI/CD"
 msgstr ""
 
+msgid "BillingPlans|Advanced application security"
+msgstr ""
+
 msgid "BillingPlans|All plans have unlimited (private) repositories."
+msgstr ""
+
+msgid "BillingPlans|All stages of the DevOps lifecycle"
+msgstr ""
+
+msgid "BillingPlans|All the benefits of Free +"
+msgstr ""
+
+msgid "BillingPlans|All the benefits of Premium +"
 msgstr ""
 
 msgid "BillingPlans|All the features from Free"
@@ -6816,13 +6837,28 @@ msgstr ""
 msgid "BillingPlans|Billed annually at %{price_per_year} USD"
 msgstr ""
 
+msgid "BillingPlans|Bring your own CI runners"
+msgstr ""
+
+msgid "BillingPlans|Bring your own production environment"
+msgstr ""
+
 msgid "BillingPlans|Check out all groups"
+msgstr ""
+
+msgid "BillingPlans|Company wide portfolio management"
 msgstr ""
 
 msgid "BillingPlans|Compliance"
 msgstr ""
 
+msgid "BillingPlans|Compliance automation"
+msgstr ""
+
 msgid "BillingPlans|Congratulations, your free trial is activated."
+msgstr ""
+
+msgid "BillingPlans|Cross-team project management"
 msgstr ""
 
 msgid "BillingPlans|End of availability for the Bronze Plan"
@@ -6832,6 +6868,9 @@ msgid "BillingPlans|Enhance team productivity and collaboration"
 msgstr ""
 
 msgid "BillingPlans|Enterprise agile planning"
+msgstr ""
+
+msgid "BillingPlans|Executive level insights"
 msgstr ""
 
 msgid "BillingPlans|Faster code reviews"
@@ -6852,6 +6891,9 @@ msgstr ""
 msgid "BillingPlans|If you would like to downgrade your plan please contact %{support_link_start}Customer Support%{support_link_end}."
 msgstr ""
 
+msgid "BillingPlans|Includes"
+msgstr ""
+
 msgid "BillingPlans|Includes free static websites"
 msgstr ""
 
@@ -6870,6 +6912,12 @@ msgstr ""
 msgid "BillingPlans|Manage plan"
 msgstr ""
 
+msgid "BillingPlans|Multi-region support"
+msgstr ""
+
+msgid "BillingPlans|Multiple approval rules"
+msgstr ""
+
 msgid "BillingPlans|Not the group you're looking for? %{all_groups_link}."
 msgstr ""
 
@@ -6886,6 +6934,9 @@ msgid "BillingPlans|Premium"
 msgstr ""
 
 msgid "BillingPlans|Pricing page"
+msgstr ""
+
+msgid "BillingPlans|Priority support"
 msgstr ""
 
 msgid "BillingPlans|Ready to explore the value of the paid features today? Start a trial, no credit card required."

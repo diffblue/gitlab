@@ -73,9 +73,7 @@ module BillingPlansHelper
   end
 
   def plan_feature_list(plan)
-    return [] unless plan.features
-
-    plan.features.sort_by! { |feature| feature.highlight ? 0 : 1 }
+    plans_features[plan.code] || []
   end
 
   def plan_purchase_or_upgrade_url(group, plan)
@@ -267,6 +265,36 @@ module BillingPlansHelper
   def highest_tier?(namespace)
     namespace.gold_plan? || namespace.ultimate_plan? || namespace.opensource_plan?
   end
+
+  def plans_features
+    Hashie::Mash.new({
+      free: [
+        { title: s_('BillingPlans|Includes'), highlight: true },
+        { title: s_('BillingPlans|All stages of the DevOps lifecycle') },
+        { title: s_('BillingPlans|Bring your own CI runners') },
+        { title: s_('BillingPlans|Bring your own production environment') },
+        { title: s_('BillingPlans|400 CI/CD minutes') }
+      ],
+      premium: [
+        { title: s_('BillingPlans|All the benefits of Free +'), highlight: true },
+        { title: s_('BillingPlans|Cross-team project management') },
+        { title: s_('BillingPlans|Multiple approval rules') },
+        { title: s_('BillingPlans|Multi-region support') },
+        { title: s_('BillingPlans|Priority support') },
+        { title: s_('BillingPlans|10000 CI/CD minutes') }
+      ],
+      ultimate: [
+        { title: s_('BillingPlans|All the benefits of Premium +'), highlight: true },
+        { title: s_('BillingPlans|Company wide portfolio management') },
+        { title: s_('BillingPlans|Advanced application security') },
+        { title: s_('BillingPlans|Executive level insights') },
+        { title: s_('BillingPlans|Compliance automation') },
+        { title: s_('BillingPlans|Free guest users') },
+        { title: s_('BillingPlans|50000 CI/CD minutes') }
+      ]
+    })
+  end
+  strong_memoize_attr :plans_features
 end
 
 BillingPlansHelper.prepend_mod
