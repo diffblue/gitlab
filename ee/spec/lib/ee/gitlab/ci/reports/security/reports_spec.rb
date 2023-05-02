@@ -2,9 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::Security::Reports do
-  let_it_be(:pipeline) { create(:ci_pipeline) }
-  let_it_be(:sast_artifact) { create(:ci_job_artifact, :sast) }
+RSpec.describe Gitlab::Ci::Reports::Security::Reports, feature_category: :vulnerability_management do
+  let_it_be(:project) { create(:project, :repository, :public) }
+  let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+  let_it_be(:ci_build) { create(:ci_build, :success, name: 'sast', pipeline: pipeline) }
+  let_it_be(:sast_artifact) { create(:ci_job_artifact, :sast, job: ci_build) }
+  let_it_be(:scan) { create(:security_scan, :latest_successful, scan_type: :sast, build: ci_build) }
 
   let(:security_reports) { described_class.new(pipeline) }
 
@@ -53,6 +56,22 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           it { is_expected.to be(true) }
         end
 
+        context 'with vulnerability states matching new vulnerabilities' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(:filtering_states, :result) do
+            %w(new_dismissed) | true
+            %w(new_needs_triage) | true
+            %w(new_dismissed new_needs_triage) | true
+          end
+
+          with_them do
+            let(:vulnerability_states) { filtering_states }
+
+            it { is_expected.to be(result) }
+          end
+        end
+
         context 'with vulnerabilities_allowed higher than the number of new vulnerabilities' do
           let(:vulnerabilities_allowed) { 10000 }
 
@@ -63,6 +82,26 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
           let(:severity_levels) { %w(critical) }
 
           it { is_expected.to be(false) }
+        end
+
+        context 'when the new vulnerability was dismissed' do
+          let!(:finding) { create(:vulnerabilities_finding, :dismissed, report_type: :sast, project: pipeline.project, uuid: high_severity_sast.uuid) }
+
+          before do
+            create(:security_finding,
+                   severity: finding.severity,
+                   confidence: finding.confidence,
+                   project_fingerprint: finding.project_fingerprint,
+                   deduplicated: true,
+                   scan: scan,
+                   uuid: finding.uuid)
+          end
+
+          context 'when filtering by new_needs_triage' do
+            let(:vulnerability_states) { %w(new_needs_triage) }
+
+            it { is_expected.to be(false) }
+          end
         end
       end
 
@@ -88,6 +127,24 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
             let(:vulnerability_states) { %w(resolved) }
 
             it { is_expected.to be(false) }
+
+            context 'when filtering by new_dismissed' do
+              let(:vulnerability_states) { %w(new_dismissed) }
+
+              it { is_expected.to be(false) }
+            end
+
+            context 'when filtering by new_needs_triage' do
+              let(:vulnerability_states) { %w(new_needs_triage) }
+
+              it { is_expected.to be(false) }
+            end
+
+            context 'when filtering by new_dismissed and new_needs_triage' do
+              let(:vulnerability_states) { %w(new_dismissed new_needs_triage) }
+
+              it { is_expected.to be(false) }
+            end
           end
         end
       end

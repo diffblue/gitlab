@@ -93,5 +93,9 @@ module Vulnerabilities
         .select(:location_image)
         .distinct
     end
+
+    def self.fetch_uuids
+      pluck(:uuid)
+    end
   end
 end

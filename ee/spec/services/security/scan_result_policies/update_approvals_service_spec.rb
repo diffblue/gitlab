@@ -68,6 +68,18 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       end
     end
 
+    shared_examples_for 'new vulnerability_states' do |vulnerability_states|
+      before do
+        report_approver_rule.update!(vulnerability_states: vulnerability_states)
+      end
+
+      it 'does not call VulnerabilitiesCountService' do
+        expect(Security::ScanResultPolicies::VulnerabilitiesCountService).not_to receive(:new)
+
+        service
+      end
+    end
+
     context 'when security scan is removed in current pipeline' do
       let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
 
@@ -90,15 +102,27 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
     context 'when the number of findings in current pipeline exceed the allowed limit' do
       context 'when vulnerability_states has only newly_detected' do
-        before do
-          report_approver_rule.update!(vulnerability_states: ['newly_detected'])
-        end
+        it_behaves_like 'new vulnerability_states', ['newly_detected']
+      end
 
-        it 'does not call VulnerabilitiesCountService' do
-          expect(Security::ScanResultPolicies::VulnerabilitiesCountService).not_to receive(:new)
+      context 'when vulnerability_states has only new_needs_triage' do
+        it_behaves_like 'new vulnerability_states', ['new_needs_triage']
 
-          service
+        context 'when deprecate_vulnerabilities_feedback is disabled' do
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+          end
+
+          it_behaves_like 'new vulnerability_states', ['new_needs_triage']
         end
+      end
+
+      context 'when vulnerability_states has only new_dismissed' do
+        it_behaves_like 'new vulnerability_states', ['new_dismissed']
+      end
+
+      context 'when vulnerability_states are new_dismissed and new_needs_triage' do
+        it_behaves_like 'new vulnerability_states', %w[new_dismissed new_needs_triage]
       end
 
       context 'when vulnerabilities count exceeds the allowed limit' do
@@ -126,6 +150,24 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
         context 'when vulnerability_states has newly_detected' do
           let(:vulnerability_states) { %w[detected newly_detected] }
+
+          it_behaves_like 'updates approvals_required'
+        end
+
+        context 'when vulnerability_states has new_needs_triage' do
+          let(:vulnerability_states) { %w[detected new_needs_triage] }
+
+          it_behaves_like 'updates approvals_required'
+        end
+
+        context 'when vulnerability_states has new_dismissed' do
+          let(:vulnerability_states) { %w[detected new_dismissed] }
+
+          it_behaves_like 'updates approvals_required'
+        end
+
+        context 'when vulnerability_states has new_needs_triage and new_dismissed' do
+          let(:vulnerability_states) { %w[detected new_needs_triage new_dismissed] }
 
           it_behaves_like 'updates approvals_required'
         end

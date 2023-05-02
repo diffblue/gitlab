@@ -10,6 +10,10 @@ module ApprovalRuleLike
   APPROVALS_REQUIRED_MAX = 100
   ALL_MEMBERS = 'All Members'
   NEWLY_DETECTED = 'newly_detected'
+  NEW_NEEDS_TRIAGE = 'new_needs_triage'
+  NEW_DISMISSED = 'new_dismissed'
+
+  NEWLY_DETECTED_STATUSES = [NEWLY_DETECTED, NEW_NEEDS_TRIAGE, NEW_DISMISSED].freeze
 
   included do
     has_and_belongs_to_many :users,
