@@ -55,7 +55,8 @@ module EE
 
         field :related_vulnerabilities, ::Types::VulnerabilityType.connection_type,
           null: true,
-          description: 'Related vulnerabilities of the issue.'
+          description: 'Related vulnerabilities of the issue.',
+          authorize: :read_vulnerability
 
         def iteration
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iteration, object.sprint_id).find

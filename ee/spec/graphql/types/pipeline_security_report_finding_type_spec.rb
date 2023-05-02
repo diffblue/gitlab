@@ -138,6 +138,16 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     end
   end
 
+  context 'when a field has specific authorization' do
+    def fetch_authorizations(field_name)
+      described_class.fields[field_name].instance_variable_get(:@authorize)
+    end
+
+    it 'runs the authorization' do
+      expect(fetch_authorizations('vulnerability')).to include(:read_vulnerability)
+    end
+  end
+
   describe 'vulnerability' do
     let(:query_for_test) do
       %(

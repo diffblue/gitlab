@@ -118,7 +118,7 @@ RSpec.describe GitlabSchema.types['Issue'] do
     shared_examples_for 'does not include related vulnerabilities' do
       it "does not return related vulnerabilities" do
         related_vulnerabilities = graphql_dig_at(subject.to_h, :data, :project, :issue, :relatedVulnerabilities, :nodes)
-        expect(related_vulnerabilities).to be_empty
+        expect(related_vulnerabilities).to be_blank
       end
     end
 
