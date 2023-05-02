@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/show', :saas do
+RSpec.describe 'registrations/welcome/show', :saas, feature_category: :user_management do
   using RSpec::Parameterized::TableSyntax
 
   before do
     allow(view).to receive(:current_user).and_return(build_stubbed(:user))
-    allow(view).to receive(:glm_tracking_params).and_return({})
+    allow(view).to receive(:welcome_update_params).and_return({})
   end
 
   describe 'forms and progress bar', :experiments do

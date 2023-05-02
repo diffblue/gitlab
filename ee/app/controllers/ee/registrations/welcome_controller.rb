@@ -10,6 +10,7 @@ module EE
         include OneTrustCSP
         include GoogleAnalyticsCSP
         include Onboarding::SetRedirect
+        include RegistrationsTracking
       end
 
       private
@@ -84,6 +85,11 @@ module EE
         return 'invite_registration' if helpers.user_has_memberships?
 
         'free_registration'
+      end
+
+      override :welcome_update_params
+      def welcome_update_params
+        glm_tracking_params
       end
     end
   end

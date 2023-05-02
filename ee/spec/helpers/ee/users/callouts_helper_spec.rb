@@ -5,7 +5,6 @@ require "spec_helper"
 RSpec.describe EE::Users::CalloutsHelper do
   include Devise::Test::ControllerHelpers
   using RSpec::Parameterized::TableSyntax
-  include CalloutsTestHelper
 
   describe '.show_enable_hashed_storage_warning?' do
     subject { helper.show_enable_hashed_storage_warning? }
