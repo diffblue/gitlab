@@ -30,11 +30,11 @@ module EE
     def renew_subscription_path
       return plan_renew_url(current_namespace) if decorated_subscription
 
-      ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL
+      ::Gitlab::Routing.url_helpers.subscription_portal_manage_url
     end
 
     def upgrade_subscription_path
-      ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL
+      ::Gitlab::Routing.url_helpers.subscription_portal_manage_url
     end
 
     def link_to_button_style(path:, track_property:)

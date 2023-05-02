@@ -9,7 +9,7 @@ module CustomersDot
     urgency :low
 
     def graphql
-      response = Gitlab::HTTP.post(EE::SUBSCRIPTIONS_GRAPHQL_URL,
+      response = Gitlab::HTTP.post(subscription_portal_graphql_url,
         body: request.raw_post,
         headers: forward_headers
       )

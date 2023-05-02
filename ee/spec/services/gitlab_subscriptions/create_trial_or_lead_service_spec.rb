@@ -34,7 +34,9 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService, feature_category: 
       end
 
       before do
-        stub_request(:post, "#{EE::SUBSCRIPTIONS_URL}/trials#{path}")
+        subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+        stub_request(:post, "#{subscription_portal_url}/trials#{path}")
       end
 
       it do

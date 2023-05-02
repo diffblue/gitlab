@@ -6,6 +6,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
   include Spec::Support::Helpers::ModalHelpers
 
   let_it_be(:admin) { create(:admin) }
+  let(:graphql_url) { ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url }
 
   before do
     sign_in(admin)
@@ -130,7 +131,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
       it 'displays an error when the activation fails',
         quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/390580' do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: 422, body: '', headers: {})
+        stub_request(:post, graphql_url).to_return(status: 422, body: '', headers: {})
 
         within_modal do
           fill_activation_form
@@ -140,7 +141,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       end
 
       it 'displays a connectivity error', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/391244' do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:post, graphql_url)
           .to_return(status: 500, body: '', headers: {})
 
         within_modal do
@@ -169,7 +170,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
 
     context 'when activating a subscription fails' do
       before do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
             "data": {
               "cloudActivationActivate": {
@@ -194,7 +195,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current - 1.year - 1.month, expires_at: Date.current - 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
 
       before do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
             "data": {
               "cloudActivationActivate": {
@@ -217,7 +218,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current + 1.month, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
 
       before do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
             "data": {
               "cloudActivationActivate": {
@@ -242,7 +243,7 @@ RSpec.describe 'Admin views Subscription', :js, feature_category: :subscription_
       let_it_be(:license_to_be_created) { build(:license, data: build(:gitlab_license, { starts_at: Date.current, cloud_licensing_enabled: true, plan: License::ULTIMATE_PLAN }).export) }
 
       before do
-        stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:post, graphql_url)
           .to_return(status: 200, body: {
             "data": {
               "cloudActivationActivate": {

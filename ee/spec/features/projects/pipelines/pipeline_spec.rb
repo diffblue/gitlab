@@ -386,7 +386,9 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
 
     context 'with payment validation via CustomersDot api' do
       before do
-        stub_request(:get, "#{EE::SUBSCRIPTIONS_URL}/payment_forms/payment_method_validation")
+        subscription_portal_url = ::Gitlab::Routing.url_helpers.subscription_portal_url
+
+        stub_request(:get, "#{subscription_portal_url}/payment_forms/payment_method_validation")
           .with(
             headers: {
               'Accept' => 'application/json',

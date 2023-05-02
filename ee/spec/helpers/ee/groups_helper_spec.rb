@@ -313,7 +313,7 @@ RSpec.describe GroupsHelper do
         seat_usage_export_path: group_seat_usage_path(group, format: :csv),
         pending_members_page_path: pending_members_group_usage_quotas_path(group),
         pending_members_count: ::Member.in_hierarchy(group).with_state("awaiting").count,
-        add_seats_href: ::Gitlab::SubscriptionPortal.add_extra_seats_url(group.id),
+        add_seats_href: ::Gitlab::Routing.url_helpers.subscription_portal_add_extra_seats_url(group.id),
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: 10,
         explore_plans_path: group_billings_path(group),

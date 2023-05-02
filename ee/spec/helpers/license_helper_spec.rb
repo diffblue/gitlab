@@ -81,8 +81,7 @@ RSpec.describe LicenseHelper, feature_category: :subscription_management do
 
   describe '#cloud_license_view_data' do
     before do
-      stub_const('::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL', 'subscriptions_manage_url')
-
+      allow(helper).to receive(:subscription_portal_manage_url).and_return('subscriptions_manage_url')
       allow(helper).to receive(:new_trial_url).and_return('new_trial_url')
     end
 

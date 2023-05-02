@@ -13,8 +13,10 @@ module GitlabSubscriptions
     private
 
     def send_request
+      plans_url = ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url
+
       response = Gitlab::HTTP.get(
-        EE::SUBSCRIPTIONS_GITLAB_PLANS_URL,
+        plans_url,
         allow_local_requests: true,
         query: { plan: @plan, namespace_id: @namespace_id },
         headers: { 'Accept' => 'application/json' }

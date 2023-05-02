@@ -19,9 +19,11 @@ RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js, :saas, feature_cate
   let_it_be(:page_path) { group_billings_path(namespace) }
 
   before do
+    gitlab_plans_url = ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url
+
     stub_signing_key
     stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_full_request("#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=#{plan.name}&namespace_id=#{namespace.id}")
+    stub_full_request("#{gitlab_plans_url}?plan=#{plan.name}&namespace_id=#{namespace.id}")
       .to_return(status: 200, body: plans_data.to_json)
     stub_subscription_management_data(namespace.id)
     sign_in(user)

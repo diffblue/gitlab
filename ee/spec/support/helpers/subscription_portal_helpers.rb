@@ -3,6 +3,10 @@
 module SubscriptionPortalHelpers
   include StubRequests
 
+  def graphql_url
+    ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url
+  end
+
   def stub_signing_key
     key = OpenSSL::PKey::RSA.new(2048)
 
@@ -10,7 +14,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_eoa_eligibility_request(namespace_id, eligible = false, free_upgrade_plan_id = nil, assisted_upgrade_plan_id = nil)
-    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    stub_full_request(graphql_url, method: :post)
       .with(
         body: "{\"query\":\"{\\n  subscription(namespaceId: \\\"#{namespace_id}\\\") {\\n    eoaStarterBronzeEligible\\n    assistedUpgradePlanId\\n    freeUpgradePlanId\\n  }\\n}\\n\"}",
         headers: {
@@ -34,8 +38,11 @@ module SubscriptionPortalHelpers
   end
 
   def stub_billing_plans(namespace_id, plan = 'free', plans_data = nil, raise_error: nil)
-    stub = stub_full_request("#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?namespace_id=#{namespace_id}&plan=#{plan}")
+    gitlab_plans_url = ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url
+
+    stub = stub_full_request("#{gitlab_plans_url}?namespace_id=#{namespace_id}&plan=#{plan}")
              .with(headers: { 'Accept' => 'application/json' })
+
     if raise_error
       stub.to_raise(raise_error)
     else
@@ -44,7 +51,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_subscription_request_seat_usage(eligible)
-    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    stub_full_request(graphql_url, method: :post)
     .to_return(status: 200, body: {
       "data": {
         "subscription": {
@@ -55,7 +62,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_reconciliation_request(eligible)
-    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    stub_full_request(graphql_url, method: :post)
     .to_return(status: 200, body: {
       "data": {
         "reconciliation": {
@@ -66,7 +73,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_subscription_management_data(namespace_id, can_add_seats: true, can_renew: true)
-    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    stub_full_request(graphql_url, method: :post)
       .with(
         body: "{\"operationName\":\"getSubscriptionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    canRenew\\n    __typename\\n  }\\n}\\n\"}"
       )
@@ -81,7 +88,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_invoice_preview
-    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+    stub_full_request(graphql_url, method: :post)
       .with(
         body: invoice_preview_request_body
       )

@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :billing_and_payments do
   let(:client) { Gitlab::SubscriptionPortal::Client }
+  let(:graphql_url) { ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url }
 
   describe '#activate' do
     let(:license_key) { 'license_key' }
@@ -109,7 +110,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     context 'when remote server returns error' do
       it 'returns connectivity error' do
-        stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+        stub_request(:any, graphql_url)
           .to_return(status: [500, "Internal Server Error"], body: 'body')
         allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
@@ -130,7 +131,7 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
 
     context 'when the remote server is unreachable' do
       it 'returns connectivity error' do
-        stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
+        stub_request(:any, graphql_url).to_timeout
         allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
         result = client.activate('activation_code_abc', automated: false)
@@ -590,13 +591,13 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql, feature_category: :
     end
 
     it 'returns connectivity error when remote server returns error' do
-      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: [500, "Internal Server Error"])
+      stub_request(:any, graphql_url).to_return(status: [500, "Internal Server Error"])
 
       expect(update_request).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
     end
 
     it 'returns connectivity error when the remote server is unreachable' do
-      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
+      stub_request(:any, graphql_url).to_timeout
       allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
       expect(update_request).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })

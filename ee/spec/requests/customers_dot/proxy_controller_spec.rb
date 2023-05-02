@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe CustomersDot::ProxyController, type: :request, feature_category: :customersdot_application do
   describe 'POST graphql' do
-    let_it_be(:customers_dot) { ::EE::SUBSCRIPTIONS_GRAPHQL_URL }
+    let_it_be(:customers_dot) { ::Gitlab::Routing.url_helpers.subscription_portal_graphql_url }
     let_it_be(:default_headers) { { 'Content-Type' => 'application/json' } }
 
     shared_examples 'customersdot proxy' do

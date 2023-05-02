@@ -22,7 +22,7 @@ module LicenseHelper
   # EE:Self Managed
   def new_trial_url
     return_to_url = CGI.escape(Gitlab.config.gitlab.url)
-    uri = URI.parse(::EE::SUBSCRIPTIONS_URL)
+    uri = URI.parse(subscription_portal_url)
     uri.path = '/trials/new'
     uri.query = "return_to=#{return_to_url}&id=#{Base64.strict_encode64(current_user.email)}"
     uri.to_s
@@ -58,7 +58,7 @@ module LicenseHelper
   def cloud_license_view_data
     {
       buy_subscription_path: Gitlab::Saas.about_pricing_url,
-      customers_portal_url: Gitlab::SubscriptionPortal::SUBSCRIPTIONS_MANAGE_URL,
+      customers_portal_url: subscription_portal_manage_url,
       free_trial_path: new_trial_url,
       has_active_license: (has_active_license? ? 'true' : 'false'),
       license_remove_path: admin_license_path,

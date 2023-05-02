@@ -10,9 +10,11 @@ RSpec.describe 'Welcome screen', :js, feature_category: :subscription_management
 
   describe 'on GitLab.com' do
     before do
+      gitlab_plans_url = ::Gitlab::Routing.url_helpers.subscription_portal_gitlab_plans_url
+
       group.add_owner(user)
       gitlab_sign_in(user)
-      stub_request(:get, "#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=free&namespace_id=")
+      stub_request(:get, "#{gitlab_plans_url}?plan=free&namespace_id=")
         .to_return(status: 200, body: '{}', headers: {})
 
       visit edit_subscriptions_group_path(group.path, params)

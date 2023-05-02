@@ -61,7 +61,7 @@
           %li.gl-p-0.gl-pt-3
             - if plan.about_page_href
               = link_to s_("BillingPlans|See all %{plan_name} features") % { plan_name: plan.name },
-                EE::SUBSCRIPTIONS_COMPARISON_URL,
+                subscriptions_comparison_url,
                 data: { track_action: 'click_link',
                         track_label: 'plan_features',
                         track_property: plan.code }

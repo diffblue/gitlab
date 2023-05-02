@@ -53,7 +53,7 @@ module Gitlab
           end
 
           def base_url
-            EE::SUBSCRIPTIONS_URL
+            ::Gitlab::Routing.url_helpers.subscription_portal_url
           end
 
           def http_get(path, headers)

@@ -8,7 +8,7 @@ module EE
       override :jobs_data
       def jobs_data
         super.merge({
-          "subscriptions_more_minutes_url" => ::EE::SUBSCRIPTIONS_MORE_MINUTES_URL
+          "subscriptions_more_minutes_url" => ::Gitlab::Routing.url_helpers.subscription_portal_more_minutes_url
         })
       end
     end

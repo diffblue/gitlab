@@ -23,7 +23,7 @@ class SyncSeatLinkRequestWorker
   def perform(timestamp, license_key, max_historical_user_count, billable_users_count)
     response = Gitlab::HTTP.post(
       URI_PATH,
-      base_uri: EE::SUBSCRIPTIONS_URL,
+      base_uri: ::Gitlab::Routing.url_helpers.subscription_portal_url,
       headers: request_headers,
       body: request_body(timestamp, license_key, max_historical_user_count, billable_users_count)
     )

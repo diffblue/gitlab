@@ -16,7 +16,9 @@ RSpec.describe 'shared/billings/_billing_plan.html.haml', :saas do
 
   shared_examples 'contains the default page features' do
     it 'contains the feature link' do
-      expect(rendered).to have_link "See all #{plan.name} features", href: EE::SUBSCRIPTIONS_COMPARISON_URL
+      comparison_url = ::Gitlab::Routing.url_helpers.subscriptions_comparison_url
+
+      expect(rendered).to have_link "See all #{plan.name} features", href: comparison_url
     end
 
     it 'contains tracking' do
