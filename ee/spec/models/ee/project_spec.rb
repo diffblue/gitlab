@@ -561,16 +561,30 @@ RSpec.describe Project, feature_category: :projects do
     describe '.with_feature_available', :saas do
       it 'lists projects with the feature available' do
         user = create(:user)
+
         ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
+        ultimate_subgroup = create(:group, parent: ultimate_group)
         premium_group = create(:group_with_plan, plan: :premium_plan)
+        premium_subgroup = create(:group, parent: premium_group)
         no_plan_group = create(:group_with_plan, plan: nil)
+        no_plan_subgroup = create(:group, parent: no_plan_group)
+
         ultimate_project = create(:project, :archived, creator: user, namespace: ultimate_group)
         premium_project = create(:project, :archived, creator: user, namespace: premium_group)
-        no_plan_project = create(:project, :archived, creator: user, namespace: no_plan_group)
-        no_plan_public_project = create(:project, :archived, creator: user, visibility: ::Gitlab::VisibilityLevel::PUBLIC, namespace: no_plan_group)
+        create(:project, :archived, creator: user, namespace: no_plan_group)
 
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(premium_project, ultimate_project, no_plan_public_project)
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project)
+        no_plan_public_project = create(:project, :archived, creator: user, visibility: ::Gitlab::VisibilityLevel::PUBLIC, namespace: no_plan_group)
+        ultimate_subgroup_project = create(:project, :archived, creator: user, namespace: ultimate_subgroup)
+        premium_subgroup_project = create(:project, :archived, creator: user, namespace: premium_subgroup)
+        create(:project, :archived, creator: user, namespace: no_plan_subgroup)
+
+        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(
+          premium_project,
+          premium_subgroup_project,
+          ultimate_project,
+          ultimate_subgroup_project,
+          no_plan_public_project
+        )
       end
     end
 
