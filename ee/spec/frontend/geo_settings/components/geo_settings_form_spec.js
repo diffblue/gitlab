@@ -57,7 +57,7 @@ describe('GeoSettingsForm', () => {
         });
 
         it('disables button', () => {
-          expect(findGeoSettingsSaveButton().attributes('disabled')).toBe('disabled');
+          expect(findGeoSettingsSaveButton().attributes('disabled')).toBeDefined();
         });
       });
 

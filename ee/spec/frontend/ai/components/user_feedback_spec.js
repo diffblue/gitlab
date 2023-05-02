@@ -67,7 +67,7 @@ describe('UserFeedback', () => {
       findButtons().at(selectedButtonIndex).vm.$emit('click');
       await nextTick();
       expect(findButtons()).toHaveLength(1);
-      expect(firstButton().attributes('disabled')).toBe('true');
+      expect(firstButton().attributes('disabled')).toBeDefined();
       expect(firstButton().text()).toBe(FEEDBACK_OPTIONS[selectedButtonIndex].title);
     });
   });

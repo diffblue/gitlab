@@ -25,8 +25,8 @@ describe('PromoCodeInput', () => {
   const enterPromoCode = () => findPromoCodeInput().vm.$emit('input', samplePromoCode);
 
   const assertDisabledState = () => {
-    expect(findPromoCodeInput().attributes('disabled')).toBe('disabled');
-    expect(findApplyButton().attributes('disabled')).toBe('disabled');
+    expect(findPromoCodeInput().attributes('disabled')).toBeDefined();
+    expect(findApplyButton().attributes('disabled')).toBeDefined();
   };
 
   beforeEach(() => {
@@ -148,7 +148,7 @@ describe('PromoCodeInput', () => {
   });
 
   it('disables the apply CTA when there is no promo code', () => {
-    expect(findApplyButton().attributes('disabled')).toBe('disabled');
+    expect(findApplyButton().attributes('disabled')).toBeDefined();
   });
 
   it('enables the apply CTA when there is a promo code', async () => {

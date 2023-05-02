@@ -104,7 +104,7 @@ describe('Download test coverage component', () => {
 
       describe('with no projects selected', () => {
         it('renders a disabled primary action button', () => {
-          expect(findCodeCoverageDownloadButton().attributes('disabled')).toBe('true');
+          expect(findCodeCoverageDownloadButton().attributes('disabled')).toBeDefined();
         });
       });
 

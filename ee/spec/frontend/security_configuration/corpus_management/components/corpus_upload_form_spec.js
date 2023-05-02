@@ -164,7 +164,7 @@ describe('Corpus upload modal', () => {
 
       it('shows the choose file button as disabled', () => {
         expect(findUploadAttachment().exists()).toBe(true);
-        expect(findUploadAttachment().attributes('disabled')).toBe('disabled');
+        expect(findUploadAttachment().attributes('disabled')).toBeDefined();
       });
 
       it('does not show the upload corpus button', () => {
@@ -362,7 +362,7 @@ describe('Corpus upload modal', () => {
 
         it('shows the upload corpus button as disabled', () => {
           expect(findUploadCorpus().exists()).toBe(true);
-          expect(findUploadCorpus().attributes('disabled')).toBe('disabled');
+          expect(findUploadCorpus().attributes('disabled')).toBeDefined();
         });
 
         it('does not show the upload progress', () => {

@@ -85,7 +85,7 @@ describe('GroupProjectFields', () => {
           const groupInput = findInputByTestId('persisted-group-name');
 
           expect(groupInput.exists()).toBe(true);
-          expect(groupInput.attributes('disabled')).toBe('true');
+          expect(groupInput.attributes('disabled')).toBeDefined();
 
           expect(findInputByTestId('group-name').exists()).toBe(false);
           expect(findInputByTestId('project-name').exists()).toBe(true);

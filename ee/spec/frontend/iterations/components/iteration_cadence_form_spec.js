@@ -282,9 +282,9 @@ describe('Iteration cadence form', () => {
       });
 
       it('disables the fields concerning automatic scheduling', () => {
-        expect(findUpcomingIterations().attributes('disabled')).toBe('disabled');
-        expect(findDuration().attributes('disabled')).toBe('disabled');
-        expect(findStartDate().attributes('disabled')).toBe('disabled');
+        expect(findUpcomingIterations().attributes('disabled')).toBeDefined();
+        expect(findDuration().attributes('disabled')).toBeDefined();
+        expect(findStartDate().attributes('disabled')).toBeDefined();
       });
 
       it('resets the fields concerning automatic scheduling on disabling automatic scheduling', async () => {

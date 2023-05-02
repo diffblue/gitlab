@@ -146,7 +146,7 @@ describe('ApprovalSettings', () => {
       createWrapper();
       await waitForPromises();
 
-      expect(findSaveButton().attributes('disabled')).toBe('true');
+      expect(findSaveButton().attributes('disabled')).toBeDefined();
     });
 
     it('renders the button as enabled when a setting was changed', async () => {

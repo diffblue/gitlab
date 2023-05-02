@@ -77,7 +77,7 @@ describe('Confirm Order', () => {
       it('button should be disabled', async () => {
         await nextTick();
 
-        expect(findConfirmButton().attributes('disabled')).toBe('true');
+        expect(findConfirmButton().attributes('disabled')).toBeDefined();
       });
     });
 
@@ -100,7 +100,7 @@ describe('Confirm Order', () => {
         store.commit(types.UPDATE_INVOICE_PREVIEW, mockInvoicePreviewBronze);
         await nextTick();
 
-        expect(findConfirmButton().attributes('disabled')).toBe('true');
+        expect(findConfirmButton().attributes('disabled')).toBeDefined();
       });
 
       it('should be disabled when not confirming and has invalid price details', async () => {
@@ -108,7 +108,7 @@ describe('Confirm Order', () => {
         store.commit(types.UPDATE_INVOICE_PREVIEW, null);
         await nextTick();
 
-        expect(findConfirmButton().attributes('disabled')).toBe('true');
+        expect(findConfirmButton().attributes('disabled')).toBeDefined();
       });
     });
   });

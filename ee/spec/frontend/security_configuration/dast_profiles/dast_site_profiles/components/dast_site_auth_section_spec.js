@@ -149,7 +149,7 @@ describe('DastSiteAuthSection', () => {
     describe('when profile does comes from a policy', () => {
       it('should disable all form groups', () => {
         createComponent({ mountFn: shallowMount, disabled: true, fields: { enabled: true } });
-        expect(findParentFormGroup().attributes('disabled')).toBe('true');
+        expect(findParentFormGroup().attributes('disabled')).toBeDefined();
       });
     });
   });

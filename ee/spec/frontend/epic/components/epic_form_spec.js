@@ -79,7 +79,7 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
 
     it('disables submit button if no title is provided', () => {
-      expect(findSaveButton().attributes('disabled')).toBe('true');
+      expect(findSaveButton().attributes('disabled')).toBeDefined();
     });
 
     it.each`
