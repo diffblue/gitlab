@@ -7,8 +7,8 @@
   }
 }
 
-$sidebar-transition-duration: $gl-transition-duration-medium;
-$sidebar-transition-hint-duration: $sidebar-transition-duration / 4;
+$super-sidebar-transition-duration: $gl-transition-duration-medium;
+$super-sidebar-transition-hint-duration: $super-sidebar-transition-duration / 4;
 
 @mixin notification-dot($color, $size, $top, $left) {
   background-color: $color;
@@ -45,7 +45,7 @@ $sidebar-transition-hint-duration: $sidebar-transition-duration / 4;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    transition: transform $sidebar-transition-duration;
+    transition: transform $super-sidebar-transition-duration;
   }
 
   .user-bar {
@@ -216,7 +216,7 @@ $sidebar-transition-hint-duration: $sidebar-transition-duration / 4;
 
 .super-sidebar-peek-hint {
   @media (prefers-reduced-motion: no-preference) {
-    transition: transform $sidebar-transition-hint-duration ease-out;
+    transition: transform $super-sidebar-transition-hint-duration ease-out;
   }
 }
 
@@ -224,7 +224,7 @@ $sidebar-transition-hint-duration: $sidebar-transition-duration / 4;
   padding-left: 0;
 
   @media (prefers-reduced-motion: no-preference) {
-    transition: padding-left $sidebar-transition-duration;
+    transition: padding-left $super-sidebar-transition-duration;
   }
 
   &:not(.page-with-super-sidebar-collapsed) {
