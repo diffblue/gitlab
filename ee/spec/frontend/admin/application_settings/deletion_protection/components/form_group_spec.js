@@ -184,8 +184,8 @@ describe('Form group component', () => {
     it('disables the "Keep deleted" input fields', () => {
       createComponent();
 
-      expect(findSelectProjectRemoval().attributes('disabled')).toBe('true');
-      expect(findAdjournedPeriodInput().attributes('disabled')).toBe('true');
+      expect(findSelectProjectRemoval().attributes('disabled')).toBeDefined();
+      expect(findAdjournedPeriodInput().attributes('disabled')).toBeDefined();
     });
 
     it('selects the "groups only" option', () => {

@@ -83,7 +83,7 @@ describe('History Comment Editor', () => {
   it('disables all elements when the comment is being saved', () => {
     createWrapper({ isSaving: true });
 
-    expect(textarea().attributes('disabled')).toBe('true');
+    expect(textarea().attributes('disabled')).toBeDefined();
     expect(saveButton().props('loading')).toBe(true);
     expect(cancelButton().props('disabled')).toBe(true);
   });

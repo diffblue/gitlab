@@ -183,7 +183,7 @@ describe('DastScannerProfileForm', () => {
     });
 
     it('should disable all form groups', () => {
-      expect(findParentFormGroup().attributes('disabled')).toBe('true');
+      expect(findParentFormGroup().attributes('disabled')).toBeDefined();
     });
   });
 
@@ -197,7 +197,7 @@ describe('DastScannerProfileForm', () => {
     });
 
     it('should disable the profile name field', () => {
-      expect(findProfileNameInput().attributes('disabled')).toBe('true');
+      expect(findProfileNameInput().attributes('disabled')).toBeDefined();
     });
   });
 });

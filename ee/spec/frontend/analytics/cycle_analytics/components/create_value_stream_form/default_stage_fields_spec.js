@@ -54,7 +54,7 @@ describe('DefaultStageFields', () => {
   });
 
   it('disables input for the stage field name', () => {
-    expect(findStageFieldNameInput().attributes('disabled')).toBe('disabled');
+    expect(findStageFieldNameInput().attributes('disabled')).toBeDefined();
   });
 
   it('renders the field start event', () => {

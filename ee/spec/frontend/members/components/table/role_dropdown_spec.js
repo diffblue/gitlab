@@ -53,7 +53,7 @@ describe('RoleDropdown', () => {
           member: { ...member, isOverridden: false },
         });
 
-        expect(findDropdown().attributes('disabled')).toBe('true');
+        expect(findDropdown().attributes('disabled')).toBeDefined();
       });
     });
   });

@@ -266,7 +266,7 @@ describe('Status checks extension', () => {
         const actionButton = getAndClickRetryActionButton();
         await nextTick();
 
-        expect(actionButton.attributes('disabled')).toBe('disabled');
+        expect(actionButton.attributes('disabled')).toBeDefined();
         expect(actionButton.find('[aria-label="Loading"]').exists()).toBe(true);
       });
 

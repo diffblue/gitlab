@@ -80,7 +80,7 @@ describe('CustomStageEventField', () => {
 
       wrapper = createComponent({ disabled: true });
 
-      expect(findEventDropdown().attributes('disabled')).toBe('true');
+      expect(findEventDropdown().attributes('disabled')).toBeDefined();
     });
   });
 

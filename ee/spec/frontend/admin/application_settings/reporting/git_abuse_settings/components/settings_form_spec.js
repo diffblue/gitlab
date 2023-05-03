@@ -240,7 +240,7 @@ describe('Git abuse rate limit settings form component', () => {
 
         expect(findAllowedUsersFormGroup().attributes('state')).toBe(undefined);
 
-        expect(findSubmitButton().attributes('disabled')).toBe('true');
+        expect(findSubmitButton().attributes('disabled')).toBeDefined();
       });
     });
   });
@@ -303,7 +303,7 @@ describe('Git abuse rate limit settings form component', () => {
 
         expect(findAlertedUsersFormGroup().attributes('state')).toBe(undefined);
 
-        expect(findSubmitButton().attributes('disabled')).toBe('true');
+        expect(findSubmitButton().attributes('disabled')).toBeDefined();
       });
 
       it('should be invalid with 0 users', async () => {
@@ -318,7 +318,7 @@ describe('Git abuse rate limit settings form component', () => {
 
         expect(findAlertedUsersFormGroup().attributes('state')).toBe(undefined);
 
-        expect(findSubmitButton().attributes('disabled')).toBe('true');
+        expect(findSubmitButton().attributes('disabled')).toBeDefined();
       });
     });
   });

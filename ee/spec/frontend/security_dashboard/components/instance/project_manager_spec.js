@@ -133,7 +133,7 @@ describe('Project Manager component', () => {
   describe('adding projects', () => {
     it('disables the add project button if no projects are selected', () => {
       createWrapper({});
-      expect(findAddProjectsButton().attributes('disabled')).toBe('true');
+      expect(findAddProjectsButton().attributes('disabled')).toBeDefined();
     });
 
     it('enables the add project button if projects are selected', () => {

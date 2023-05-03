@@ -204,7 +204,7 @@ describe('PolicyEditorLayout component', () => {
       ${'description text area'} | ${findDescriptionTextArea}
       ${'enabled radio group'}   | ${findEnabledRadioGroup}
     `('disables the $component', ({ findFn }) => {
-      expect(findFn().attributes('disabled')).toBe('true');
+      expect(findFn().attributes('disabled')).toBeDefined();
     });
   });
 
@@ -221,7 +221,7 @@ describe('PolicyEditorLayout component', () => {
       factory({ propsData: { disableUpdate: true } });
       await nextTick();
       expect(findSavePolicyButton().exists()).toBe(true);
-      expect(findSavePolicyButton().attributes('disabled')).toBe('true');
+      expect(findSavePolicyButton().attributes('disabled')).toBeDefined();
     });
 
     it('enables the save button tooltip when "disableTooltip" is false', async () => {

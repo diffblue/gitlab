@@ -45,7 +45,7 @@ describe('Filter Item component', () => {
     });
 
     it('disables the dropdown item', () => {
-      expect(dropdownItem().attributes('disabled')).toBe('true');
+      expect(dropdownItem().attributes('disabled')).toBeDefined();
     });
 
     it('displays tooltip', () => {

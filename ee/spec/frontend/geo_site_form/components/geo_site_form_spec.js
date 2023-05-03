@@ -81,7 +81,7 @@ describe('GeoSiteForm', () => {
         });
 
         it('disables button', () => {
-          expect(findGeoSiteSaveButton().attributes('disabled')).toBe('true');
+          expect(findGeoSiteSaveButton().attributes('disabled')).toBeDefined();
         });
       });
 
