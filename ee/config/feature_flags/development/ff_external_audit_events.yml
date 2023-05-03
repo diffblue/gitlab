@@ -1,0 +1,8 @@
+---
+name: ff_external_audit_events
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118363/diffs
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/393772
+milestone: '16.0'
+type: development
+group: group::compliance
+default_enabled: false

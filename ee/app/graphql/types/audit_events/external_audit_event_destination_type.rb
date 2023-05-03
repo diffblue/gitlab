@@ -7,21 +7,11 @@ module Types
       description 'Represents an external resource to send audit events to'
       authorize :admin_external_audit_events
 
-      field :id, GraphQL::Types::ID,
-            null: false,
-            description: 'ID of the destination.'
-
-      field :destination_url, GraphQL::Types::String,
-            null: false,
-            description: 'External destination to send audit events to.'
+      implements(ExternalAuditEventDestinationInterface)
 
       field :group, ::Types::GroupType,
             null: false,
             description: 'Group the destination belongs to.'
-
-      field :verification_token, GraphQL::Types::String,
-            null: false,
-            description: 'Verification token to validate source of event.'
 
       field :headers, ::Types::AuditEvents::Streaming::HeaderType.connection_type,
             null: false,
