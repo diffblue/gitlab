@@ -8,6 +8,14 @@ module EE
 
       private
 
+      override :require_namespace_project_creation_permission
+      def require_namespace_project_creation_permission
+        render_404 unless can?(current_user, :admin_project, project) ||
+          can?(current_user, :import_projects, project.namespace) ||
+          (can?(current_user, :create_projects, project.namespace) &&
+          project.gitlab_custom_project_template_import?)
+      end
+
       override :import_params_attributes
       def import_params_attributes
         super + [:mirror]

@@ -57,6 +57,13 @@ module EE
         ::Geo::RepositoryCreatedEventStore.new(project).create!
       end
 
+      override :validate_import_permissions
+      def validate_import_permissions
+        return if project.gitlab_custom_project_template_import?
+
+        super
+      end
+
       override :after_create_actions
       def after_create_actions
         super do
