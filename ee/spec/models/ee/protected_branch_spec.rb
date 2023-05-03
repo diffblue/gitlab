@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProtectedBranch do
+RSpec.describe ProtectedBranch, feature_category: :source_code_management do
   subject { create(:protected_branch) }
 
   let(:project) { subject.project }
@@ -172,10 +172,16 @@ RSpec.describe ProtectedBranch do
         subject.unprotect_access_levels.create!(access_level: Gitlab::Access::MAINTAINER)
       end
 
-      it 'defaults to requiring maintainer access' do
-        expect(subject.can_unprotect?(user)).to eq false
-        expect(subject.can_unprotect?(maintainer)).to eq true
-        expect(subject.can_unprotect?(admin)).to eq true
+      it 'prevents access to users' do
+        expect(subject.can_unprotect?(user)).to eq(false)
+      end
+
+      it 'grants access to maintainers' do
+        expect(subject.can_unprotect?(maintainer)).to eq(true)
+      end
+
+      it 'prevents access to admins' do
+        expect(subject.can_unprotect?(admin)).to eq(false)
       end
     end
 
@@ -185,11 +191,11 @@ RSpec.describe ProtectedBranch do
       end
 
       it 'prevents access to maintainers' do
-        expect(subject.can_unprotect?(maintainer)).to eq false
+        expect(subject.can_unprotect?(maintainer)).to eq(false)
       end
 
       it 'grants access to admins' do
-        expect(subject.can_unprotect?(admin)).to eq true
+        expect(subject.can_unprotect?(admin)).to eq(true)
       end
     end
 
