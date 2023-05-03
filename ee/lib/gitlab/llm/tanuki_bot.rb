@@ -35,6 +35,7 @@ module Gitlab
         @current_user = current_user
         @question = question
         @logger = logger || Gitlab::AppJsonLogger.build
+        @correlation_id = Labkit::Correlation::CorrelationId.current_id
       end
 
       def execute
@@ -49,7 +50,7 @@ module Gitlab
 
       private
 
-      attr_reader :current_user, :question, :logger
+      attr_reader :current_user, :question, :logger, :correlation_id
 
       def client
         @client ||= ::Gitlab::Llm::OpenAi::Client.new(current_user, request_timeout: REQUEST_TIMEOUT)
@@ -119,7 +120,7 @@ module Gitlab
         end
 
         info(
-          prompt: final_prompt,
+          prompt: final_prompt[:prompt],
           status_code: final_prompt_result.code,
           openai_completions_response: final_prompt_result.parsed_response,
           message: 'Final prompt request'
@@ -157,7 +158,7 @@ module Gitlab
       def info(payload)
         return unless logger
 
-        logger.info(build_structured_payload(**payload))
+        logger.info(build_structured_payload(**payload.merge(correlation_id: correlation_id)))
       end
     end
   end
