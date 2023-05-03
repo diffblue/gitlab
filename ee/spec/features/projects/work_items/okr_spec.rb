@@ -297,6 +297,8 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   end
 
   def create_okr(type, title)
+    wait_for_all_requests
+
     page.within('[data-testid="work-item-tree"]') do
       click_button 'Add'
       click_button "New #{type}"
