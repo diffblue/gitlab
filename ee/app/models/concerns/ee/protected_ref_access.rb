@@ -67,9 +67,9 @@ module EE
     override :check_access
     def check_access(user)
       return false unless user
-      return true if user.admin?
       return user.id == self.user_id if self.user.present?
       return group.users.exists?(user.id) if self.group.present?
+      return user.admin? if access_level == ::Gitlab::Access::ADMIN
 
       super
     end

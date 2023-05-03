@@ -91,19 +91,16 @@ module Gitlab
 
           response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
 
-          track_cost(
-            usage_data: response.parsed_response&.dig('usage'),
-            model: response.parsed_response&.dig('model')
-          )
+          track_cost(endpoint, response.parsed_response&.dig('usage'))
 
           response
         end
 
-        def track_cost(usage_data:, model:)
+        def track_cost(endpoint, usage_data)
           return unless usage_data
 
-          track_cost_metric("#{model}/prompt", usage_data['prompt_tokens'])
-          track_cost_metric("#{model}/completion", usage_data['completion_tokens'])
+          track_cost_metric("#{endpoint}/prompt", usage_data['prompt_tokens'])
+          track_cost_metric("#{endpoint}/completion", usage_data['completion_tokens'])
         end
 
         def track_cost_metric(context, amount)
@@ -113,7 +110,8 @@ module Gitlab
             {
               vendor: 'open_ai',
               item: context,
-              unit: 'tokens'
+              unit: 'tokens',
+              feature_category: ::Gitlab::ApplicationContext.current_context_attribute(:feature_category)
             },
             amount
           )
