@@ -2,6 +2,8 @@
 import { GlDrawer, GlIcon, GlBadge } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
+import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import { helpCenterState } from '~/super_sidebar/constants';
 import TanukiBotChat from './tanuki_bot_chat.vue';
 import TanukiBotChatInput from './tanuki_bot_chat_input.vue';
@@ -19,13 +21,54 @@ export default {
     TanukiBotChat,
     TanukiBotChatInput,
   },
+  props: {
+    userId: {
+      type: String,
+      required: true,
+    },
+  },
+  apollo: {
+    // https://apollo.vuejs.org/guide/apollo/subscriptions.html#simple-subscription
+    $subscribe: {
+      aiCompletionResponse: {
+        query: aiResponseSubscription,
+        variables() {
+          return {
+            resourceId: this.userId,
+            userId: this.userId,
+          };
+        },
+        result({ data }) {
+          this.receiveTanukiBotMessage(data);
+        },
+        error() {
+          this.tanukiBotMessageError();
+        },
+      },
+    },
+  },
   data() {
     return {
       helpCenterState,
     };
   },
   methods: {
-    ...mapActions(['sendMessage']),
+    ...mapActions(['sendUserMessage', 'receiveTanukiBotMessage', 'tanukiBotMessageError']),
+    sendMessage(question) {
+      this.sendUserMessage(question);
+
+      this.$apollo
+        .mutate({
+          mutation: tanukiBotMutation,
+          variables: {
+            question,
+            resourceId: this.userId,
+          },
+        })
+        .catch(() => {
+          this.tanukiBotMessageError();
+        });
+    },
     closeDrawer() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },

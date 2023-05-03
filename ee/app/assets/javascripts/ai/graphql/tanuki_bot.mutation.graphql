@@ -1,0 +1,5 @@
+mutation tanukiBot($question: String!, $resourceId: AiModelID!) {
+  aiAction(input: { tanukiBot: { question: $question, resourceId: $resourceId } }) {
+    errors
+  }
+}

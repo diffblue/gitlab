@@ -1,8 +1,13 @@
 import { GlLink, GlIcon } from '@gitlab/ui';
 import TanukiBotChatMessage from 'ee/ai/tanuki_bot/components/tanuki_bot_chat_message.vue';
 import { SOURCE_TYPES, TANUKI_BOT_FEEDBACK_ISSUE_URL } from 'ee/ai/tanuki_bot/constants';
+import { renderMarkdown } from '~/notes/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE, MOCK_SOURCE_TYPES } from '../mock_data';
+
+jest.mock('~/notes/utils', () => ({
+  renderMarkdown: jest.fn(),
+}));
 
 describe('TanukiBotChatMessage', () => {
   let wrapper;
@@ -38,6 +43,10 @@ describe('TanukiBotChatMessage', () => {
       );
     });
 
+    it('do not use renderMarkdown to render the message', () => {
+      expect(renderMarkdown).not.toHaveBeenCalledWith(MOCK_USER_MESSAGE.msg);
+    });
+
     it('does not render Share Feedback link', () => {
       expect(findSendFeedbackLink().exists()).toBe(false);
     });
@@ -57,6 +66,10 @@ describe('TanukiBotChatMessage', () => {
         expect(findTanukiBotChatMessage().classes()).toEqual(
           expect.arrayContaining(['tanuki-bot-message', 'gl-text-gray-900']),
         );
+      });
+
+      it('uses renderMarkdown to render the message', () => {
+        expect(renderMarkdown).toHaveBeenCalledWith(MOCK_TANUKI_MESSAGE.msg);
       });
 
       it('does render Share Feedback Link', () => {
