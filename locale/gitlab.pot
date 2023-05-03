@@ -1352,6 +1352,9 @@ msgstr ""
 msgid "(external link)"
 msgstr ""
 
+msgid "(external participant)"
+msgstr ""
+
 msgid "(leave blank if you don't want to change it)"
 msgstr ""
 
