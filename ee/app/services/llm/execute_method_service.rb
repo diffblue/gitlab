@@ -9,7 +9,8 @@ module Llm
       summarize_comments: Llm::GenerateSummaryService,
       explain_code: Llm::ExplainCodeService,
       tanuki_bot: Llm::TanukiBotService,
-      generate_test_file: Llm::GenerateTestFileService
+      generate_test_file: Llm::GenerateTestFileService,
+      generate_description: Llm::GenerateDescriptionService
     }.freeze
 
     def initialize(user, resource, method, options = {})

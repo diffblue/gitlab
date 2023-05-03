@@ -25,6 +25,10 @@ module Gitlab
             generate_test_file: {
               service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateTestFile,
               prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateTestFile
+            },
+            generate_description: {
+              service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateDescription,
+              prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateDescription
             }
           }.freeze
 

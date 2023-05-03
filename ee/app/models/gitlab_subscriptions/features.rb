@@ -200,6 +200,7 @@ module GitlabSubscriptions
       evaluate_group_level_compliance_pipeline
       explain_code
       external_audit_events
+      generate_description
       generate_test_file
       git_abuse_rate_limit
       group_ci_cd_analytics
