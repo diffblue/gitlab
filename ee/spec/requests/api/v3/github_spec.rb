@@ -16,6 +16,10 @@ RSpec.describe API::V3::Github, feature_category: :integrations do
       private_group.add_maintainer(user)
     end
 
+    it_behaves_like 'a GitHub Enterprise Jira DVCS reversible end of life endpoint' do
+      subject { get api(path, user, version: 'v3'), headers: { 'User-Agent' => user_agent } }
+    end
+
     it 'returns status 200' do
       get api(path, user, version: 'v3'), headers: { 'User-Agent' => user_agent }
 
