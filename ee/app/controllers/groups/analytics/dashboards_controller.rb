@@ -5,7 +5,11 @@ module Groups
     class DashboardsController < Groups::Analytics::ApplicationController
       include ProductAnalyticsTracking
 
-      track_event :value_streams_dashboard, name: 'g_metrics_comparison_page'
+      track_event :value_streams_dashboard,
+        name: 'g_metrics_comparison_page',
+        action: 'perform_analytics_usage_action',
+        label: 'redis_hll_counters.analytics.g_metrics_comparison_page_monthly',
+        destinations: %i[redis_hll snowplow]
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
 
@@ -51,6 +55,14 @@ module Groups
 
       def project?(source)
         source.model_name.param_key == "project"
+      end
+
+      def tracking_namespace_source
+        @group
+      end
+
+      def tracking_project_source
+        nil
       end
     end
   end

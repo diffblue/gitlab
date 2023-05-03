@@ -224,4 +224,15 @@ RSpec.describe Groups::Analytics::DashboardsController, type: :controller, featu
     let(:request_params) { { group_id: group.to_param } }
     let(:target_id) { 'g_metrics_comparison_page' }
   end
+
+  it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+    subject { get :value_streams_dashboard, params: { group_id: group.to_param }, format: :html }
+
+    let(:category) { described_class.name }
+    let(:action) { 'perform_analytics_usage_action' }
+    let(:label) { 'redis_hll_counters.analytics.g_metrics_comparison_page_monthly' }
+    let(:property) { 'g_metrics_comparison_page' }
+    let(:namespace) { group }
+    let(:project) { nil }
+  end
 end

@@ -1,0 +1,23 @@
+---
+key_path: analytics_unique_visits.g_metrics_comparison_page
+description: Unique visitors to groups/-/analytics/dashboards/value_streams_dashboard
+product_section: dev
+product_stage: plan
+product_group: optimize
+product_category:
+value_type: number
+status: active
+milestone: "15.11"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/115416
+time_frame: 7d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+options:
+  events:
+  - g_metrics_comparison_page
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- ultimate
