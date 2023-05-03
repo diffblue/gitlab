@@ -119,8 +119,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   end
 
   shared_examples 'input moderation' do
-    context 'when moderation flag is true' do
-      let(:options) { { moderated: true } }
+    context 'when moderation flag is set' do
+      let(:options) { { moderated: :input } }
 
       context 'when response is not flagged' do
         it 'returns the response from original endpoint' do
@@ -133,6 +133,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
             expect(open_ai_client)
               .to receive(:public_send)
               .with(:moderations, anything)
+              .once
               .and_return(moderation_response_double)
           end
 
@@ -145,7 +146,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
           { 'results' => [{ 'flagged' => true }, { 'flagged' => false }] }
         end
 
-        it 'raises InputModerationError' do
+        it 'raises TextModerationError' do
           expect { subject }
             .to raise_error(described_class::InputModerationError, "Provided input violates OpenAI's Content Policy")
         end
@@ -153,6 +154,90 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
 
       context 'when openai_moderation feature flag is disabled' do
         it 'does not moderate input' do
+          stub_feature_flags(openai_moderation: false)
+
+          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(method, anything)
+              .and_return(response_double)
+
+            expect(open_ai_client).not_to receive(:moderations)
+          end
+
+          subject
+        end
+      end
+    end
+
+    context 'when moderation flag is false' do
+      let(:options) { { moderated: false } }
+
+      it 'does not call the moderation endpoint' do
+        expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+          expect(open_ai_client)
+            .to receive(:public_send)
+            .with(method, anything)
+            .and_return(response_double)
+
+          expect(open_ai_client).not_to receive(:moderations)
+        end
+
+        expect(subject).to eq(response_double)
+      end
+    end
+  end
+
+  shared_examples 'output moderation' do
+    before do
+      allow_next_instance_of(::OpenAI::Client) do |open_ai_client|
+        allow(open_ai_client)
+          .to receive(:public_send)
+          .with(method, anything)
+          .and_return(response_double)
+
+        allow(open_ai_client)
+          .to receive(:public_send)
+          .with(:moderations, anything)
+          .and_return(moderation_response_double)
+      end
+    end
+
+    context 'when output moderation flag is true' do
+      let(:options) { { moderated: :output } }
+
+      context 'when response is not flagged' do
+        it 'returns the response from original endpoint' do
+          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(method, anything)
+              .and_return(response_double)
+
+            expect(open_ai_client)
+              .to receive(:public_send)
+              .with(:moderations, anything)
+              .once
+              .and_return(moderation_response_double)
+          end
+
+          subject
+        end
+      end
+
+      context 'when response is flagged' do
+        let(:moderation_response) do
+          { 'results' => [{ 'flagged' => true }, { 'flagged' => false }] }
+        end
+
+        it 'raises TextModerationError' do
+          expect { subject }
+            .to raise_error(described_class::OutputModerationError, "Provided output violates OpenAI's Content Policy")
+        end
+      end
+
+      context 'when openai_moderation feature flag is disabled' do
+        it 'does not moderate output' do
           stub_feature_flags(openai_moderation: false)
 
           expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
@@ -195,6 +280,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     it_behaves_like 'forwarding the request correctly'
     include_examples 'cost tracking'
     include_examples 'input moderation'
+    include_examples 'output moderation'
   end
 
   describe '#messages_chat' do
@@ -222,6 +308,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     it_behaves_like 'forwarding the request correctly'
     include_examples 'cost tracking'
     include_examples 'input moderation'
+    include_examples 'output moderation'
 
     context 'without the correct role' do
       let(:messages) do
@@ -245,6 +332,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     it_behaves_like 'forwarding the request correctly'
     include_examples 'cost tracking'
     include_examples 'input moderation'
+    include_examples 'output moderation'
   end
 
   describe '#edits' do
@@ -255,6 +343,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     it_behaves_like 'forwarding the request correctly'
     include_examples 'cost tracking'
     include_examples 'input moderation'
+    include_examples 'output moderation'
   end
 
   describe '#embeddings' do
