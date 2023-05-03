@@ -259,7 +259,7 @@ describe('EE - DastProfilesList', () => {
       createFullComponent({ propsData: { profiles: policySiteProfiles } });
       const disabledRow = getAllTableRows()[0];
       const deleteButton = getDeleteButtonWithin(disabledRow);
-      expect(deleteButton.attributes('disabled')).toBe('disabled');
+      expect(deleteButton.attributes('disabled')).toBeDefined();
       expect(deleteButton.attributes('aria-disabled')).toBe('true');
     });
 

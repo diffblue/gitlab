@@ -150,12 +150,12 @@ describe('License Management', () => {
 
           await nextTick();
           expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(true);
-          expect(wrapper.findComponent(GlButton).attributes('disabled')).toBe('true');
+          expect(wrapper.findComponent(GlButton).attributes('disabled')).toBeDefined();
         });
 
         it('should not render the form if the form is closed and have active button', () => {
           expect(wrapper.findComponent(AddLicenseForm).exists()).toBe(false);
-          expect(wrapper.findComponent(GlButton).attributes('disabled')).not.toBe('true');
+          expect(wrapper.findComponent(GlButton).attributes('disabled')).toBeUndefined();
         });
 
         it('should render delete confirmation modal', () => {

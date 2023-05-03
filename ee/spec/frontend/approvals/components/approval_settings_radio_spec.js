@@ -61,7 +61,7 @@ describe('ApprovalSettingsRadio', () => {
       });
 
       it('disables the input', () => {
-        expect(findRadio().attributes('disabled')).toBe('disabled');
+        expect(findRadio().attributes('disabled')).toBeDefined();
       });
 
       it('renders locked_icon', () => {

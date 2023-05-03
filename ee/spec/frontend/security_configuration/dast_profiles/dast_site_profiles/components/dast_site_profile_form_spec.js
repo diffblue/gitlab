@@ -253,7 +253,7 @@ describe('DastSiteProfileForm', () => {
       describe('scan method option', () => {
         it('should render all scan method options', () => {
           expect(findScanMethodInput().exists()).toBe(true);
-          expect(getScanMethodOption(0).attributes('disabled')).toBe('disabled');
+          expect(getScanMethodOption(0).attributes('disabled')).toBeDefined();
           Object.values(SCAN_METHODS).forEach((method, index) => {
             expect(getScanMethodOption(index + 1).text()).toBe(method.text);
           });
@@ -363,7 +363,7 @@ describe('DastSiteProfileForm', () => {
     });
 
     it('should disable all form groups', () => {
-      expect(findParentFormGroup().attributes('disabled')).toBe('true');
+      expect(findParentFormGroup().attributes('disabled')).toBeDefined();
     });
   });
 
@@ -377,7 +377,7 @@ describe('DastSiteProfileForm', () => {
     });
 
     it('should disable the profile name field', () => {
-      expect(findProfileNameInput().attributes('disabled')).toBe('true');
+      expect(findProfileNameInput().attributes('disabled')).toBeDefined();
     });
   });
 });

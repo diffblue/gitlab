@@ -183,7 +183,7 @@ describe('Step', () => {
       const mockApollo = createMockApolloProvider(STEPS, 1);
       wrapper = createComponent({ propsData: { isValid: false }, apolloProvider: mockApollo });
 
-      expect(wrapper.findComponent(GlButton).attributes('disabled')).toBe('true');
+      expect(wrapper.findComponent(GlButton).attributes('disabled')).toBeDefined();
     });
 
     it('is enabled when this step is valid', () => {

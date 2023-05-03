@@ -4385,6 +4385,9 @@ msgstr ""
 msgid "All Members"
 msgstr ""
 
+msgid "All activity"
+msgstr ""
+
 msgid "All branch names must match %{link_start}this regular expression%{link_end}. If empty, any branch name is allowed."
 msgstr ""
 
@@ -5651,6 +5654,9 @@ msgstr ""
 msgid "ApprovalSettings|When a commit is added:"
 msgstr ""
 
+msgid "Approvals"
+msgstr ""
+
 msgid "Approvals are optional."
 msgstr ""
 
@@ -6161,6 +6167,9 @@ msgid "Assignee(s)"
 msgstr ""
 
 msgid "Assignees"
+msgstr ""
+
+msgid "Assignees & reviewers"
 msgstr ""
 
 msgid "Assigns %{assignee_users_sentence}."
@@ -10958,6 +10967,9 @@ msgid "CommitWidget|authored"
 msgstr ""
 
 msgid "Commits"
+msgstr ""
+
+msgid "Commits & branches"
 msgstr ""
 
 msgid "Commits feed"
@@ -16210,6 +16222,9 @@ msgid "Editing markdown"
 msgstr ""
 
 msgid "Editing rich text"
+msgstr ""
+
+msgid "Edits"
 msgstr ""
 
 msgid "Elapsed time"
@@ -26699,6 +26714,9 @@ msgstr ""
 msgid "Lock not found"
 msgstr ""
 
+msgid "Lock status"
+msgstr ""
+
 msgid "Lock the discussion"
 msgstr ""
 
@@ -27600,6 +27618,9 @@ msgstr ""
 msgid "Memory Usage"
 msgstr ""
 
+msgid "Mentions"
+msgstr ""
+
 msgid "Menu"
 msgstr ""
 
@@ -27688,6 +27709,9 @@ msgid "Merge request not merged"
 msgstr ""
 
 msgid "Merge request reports"
+msgstr ""
+
+msgid "Merge request status"
 msgstr ""
 
 msgid "Merge request unlocked."
@@ -46984,6 +47008,9 @@ msgid "Track important events in your project."
 msgstr ""
 
 msgid "Track time with quick actions"
+msgstr ""
+
+msgid "Tracking"
 msgstr ""
 
 msgid "Training mode"

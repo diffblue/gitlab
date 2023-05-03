@@ -104,7 +104,7 @@ describe('JiraIssueCreationVulnerabilities', () => {
       });
 
       it('disables the checkbox', () => {
-        expect(findEnableJiraVulnerabilities().attributes('disabled')).toBe('true');
+        expect(findEnableJiraVulnerabilities().attributes('disabled')).toBeDefined();
       });
     });
   });

@@ -157,7 +157,7 @@ describe('StreamDestinationEditor', () => {
         expect(findHeaderValueInput(0).attributes('placeholder')).toBe(
           ADD_STREAM_EDITOR_I18N.VALUE_INPUT_PLACEHOLDER,
         );
-        expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBe('disabled');
+        expect(findHeaderCheckbox(0).find('input').attributes('disabled')).toBeDefined();
         expect(findHeaderDeleteBtn(0).exists()).toBe(true);
       });
     });
@@ -441,7 +441,7 @@ describe('StreamDestinationEditor', () => {
 
       it('disables the destination URL field', () => {
         expect(findDestinationUrl().element.value).toBe(mockExternalDestinations[0].destinationUrl);
-        expect(findDestinationUrl().attributes('disabled')).toBe('disabled');
+        expect(findDestinationUrl().attributes('disabled')).toBeDefined();
       });
 
       it('changes the save button text', () => {

@@ -97,7 +97,7 @@ describe('EscalationRule', () => {
 
     it('should disable the dropdown and show the info icon when no schedules provided', () => {
       createComponent({ props: { schedules: [], schedulesLoading: false } });
-      expect(findSchedulesDropdown().attributes('disabled')).toBe('true');
+      expect(findSchedulesDropdown().attributes('disabled')).toBeDefined();
       expect(findNoSchedulesInfoIcon().exists()).toBe(true);
     });
 

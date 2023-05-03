@@ -135,7 +135,7 @@ describe('Verify phone verification code input component', () => {
       expect(findVerificationCodeInput().attributes('value')).toBe('');
       expect(findVerificationCodeInput().attributes('state')).toBe(undefined);
 
-      expect(findVerifyCodeButton().attributes('disabled')).toBe('true');
+      expect(findVerifyCodeButton().attributes('disabled')).toBeDefined();
     });
   });
 
