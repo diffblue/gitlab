@@ -23,7 +23,7 @@ module EE
 
         new_approvers = all_approvers(merge_request) - old_approvers
 
-        if new_approvers.any?
+        if ::Feature.disabled?(:no_todo_for_approvers, merge_request.target_project) && new_approvers.any?
           todo_service.add_merge_request_approvers(merge_request, new_approvers)
           notification_service.add_merge_request_approvers(merge_request, new_approvers, current_user)
         end
