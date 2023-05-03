@@ -89,6 +89,7 @@ module EE
 
       def create_new_approval_todos_for_all_approvers(merge_request)
         return if merge_request.closed?
+        return if ::Feature.enabled?(:no_todo_for_approvers, merge_request.target_project)
 
         todo_service.add_merge_request_approvers(merge_request, all_approvers(merge_request))
       end

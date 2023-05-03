@@ -24,6 +24,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
     )
   end
 
+  let(:no_todo_for_approvers_ff_enabled) { true }
+
   before do
     project.add_maintainer(user)
     project.add_developer(user2)
@@ -132,6 +134,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       let(:new_approver) { create(:user) }
 
       before do
+        stub_feature_flags(no_todo_for_approvers: no_todo_for_approvers_ff_enabled)
+
         project.add_developer(existing_approver)
         project.add_developer(removed_approver)
         project.add_developer(new_approver)
@@ -151,9 +155,22 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
           end
         end
 
-        it 'adds todos for and sends emails to the new approvers' do
-          expect(Todo.where(user: new_approver, action: Todo::APPROVAL_REQUIRED)).not_to be_empty
-          should_email(new_approver)
+        context 'when no_todo_for_approvers feature flag is disabled' do
+          let(:no_todo_for_approvers_ff_enabled) { false }
+
+          it 'adds todos for and sends emails to the new approvers' do
+            expect(Todo.where(user: new_approver, action: Todo::APPROVAL_REQUIRED)).not_to be_empty
+            should_email(new_approver)
+          end
+        end
+
+        context 'when no_todo_for_approvers feature flag is enabled' do
+          let(:no_todo_for_approvers_ff_enabled) { true }
+
+          it 'does not add todos for or send emails to the new approvers' do
+            expect(Todo.where(user: new_approver, action: Todo::APPROVAL_REQUIRED)).to be_empty
+            should_not_email(new_approver)
+          end
         end
 
         it 'does not add todos for or send emails to the existing approvers' do
@@ -187,6 +204,8 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
       let(:new_approver) { create(:user) }
 
       before do
+        stub_feature_flags(no_todo_for_approvers: no_todo_for_approvers_ff_enabled)
+
         project.add_developer(existing_approver)
         project.add_developer(new_approver)
 
@@ -204,8 +223,20 @@ RSpec.describe MergeRequests::UpdateService, :mailer, feature_category: :code_re
         expect(merge_request.reload.approvals).to be_empty
       end
 
-      it 'creates new todos for the approvers' do
-        expect(Todo.where(action: Todo::APPROVAL_REQUIRED).map(&:user)).to contain_exactly(new_approver, existing_approver)
+      context 'when no_todo_for_approvers feature flag is disabled' do
+        let(:no_todo_for_approvers_ff_enabled) { false }
+
+        it 'creates new todos for the approvers' do
+          expect(Todo.where(action: Todo::APPROVAL_REQUIRED).map(&:user)).to contain_exactly(new_approver, existing_approver)
+        end
+      end
+
+      context 'when no_todo_for_approvers feature flag is enabled' do
+        let(:no_todo_for_approvers_ff_enabled) { true }
+
+        it 'does not create new todos for the approvers' do
+          expect(Todo.where(action: Todo::APPROVAL_REQUIRED)).to be_empty
+        end
       end
     end
 

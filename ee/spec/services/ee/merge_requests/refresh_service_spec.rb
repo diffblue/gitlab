@@ -360,7 +360,11 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
       let(:newrev) { commits.first.id }
       let(:approver) { create(:user) }
 
+      let(:no_todo_for_approvers_ff_enabled) { false }
+
       before do
+        stub_feature_flags(no_todo_for_approvers: no_todo_for_approvers_ff_enabled)
+
         group.add_owner(user)
 
         merge_request.approvals.create!(user_id: user.id)
@@ -386,14 +390,32 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
           allow(NotificationService).to receive(:new) { notification_service }
         end
 
-        it 'resets approvals' do
-          service.execute(oldrev, newrev, 'refs/heads/master')
-          reload_mrs
+        context 'when no_todo_for_approvers feature flag is enabled' do
+          let(:no_todo_for_approvers_ff_enabled) { true }
 
-          expect(merge_request.approvals).to be_empty
-          expect(forked_merge_request.approvals).not_to be_empty
-          expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
-          expect(approval_todos(forked_merge_request)).to be_empty
+          it 'resets approvals and does not create approval todos for regular and for merge request' do
+            service.execute(oldrev, newrev, 'refs/heads/master')
+            reload_mrs
+
+            expect(merge_request.approvals).to be_empty
+            expect(forked_merge_request.approvals).not_to be_empty
+            expect(approval_todos(merge_request).map(&:user)).to be_empty
+            expect(approval_todos(forked_merge_request)).to be_empty
+          end
+        end
+
+        context 'when no_todo_for_approvers feature flag is disabled' do
+          let(:no_todo_for_approvers_ff_enabled) { false }
+
+          it 'resets approvals and does create approval todos for regular only' do
+            service.execute(oldrev, newrev, 'refs/heads/master')
+            reload_mrs
+
+            expect(merge_request.approvals).to be_empty
+            expect(forked_merge_request.approvals).not_to be_empty
+            expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
+            expect(approval_todos(forked_merge_request)).to be_empty
+          end
         end
       end
 
@@ -423,13 +445,34 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
         end
 
         context 'open fork merge request' do
-          it 'resets approvals', :sidekiq_might_not_need_inline do
-            refresh
+          context 'when no_todo_for_approvers feature flag is disabled' do
+            before do
+              stub_feature_flags(no_todo_for_approvers: false)
+            end
 
-            expect(merge_request.approvals).not_to be_empty
-            expect(forked_merge_request.approvals).to be_empty
-            expect(approval_todos(merge_request)).to be_empty
-            expect(approval_todos(forked_merge_request).map(&:user)).to contain_exactly(approver)
+            it 'resets approvals and creates approval todo in fork', :sidekiq_might_not_need_inline do
+              refresh
+
+              expect(merge_request.approvals).not_to be_empty
+              expect(forked_merge_request.approvals).to be_empty
+              expect(approval_todos(merge_request)).to be_empty
+              expect(approval_todos(forked_merge_request).map(&:user)).to contain_exactly(approver)
+            end
+          end
+
+          context 'when no_todo_for_approvers feature flag is enabled' do
+            before do
+              stub_feature_flags(no_todo_for_approvers: true)
+            end
+
+            it 'resets approvals and does not create approval todo in fork', :sidekiq_might_not_need_inline do
+              refresh
+
+              expect(merge_request.approvals).not_to be_empty
+              expect(forked_merge_request.approvals).to be_empty
+              expect(approval_todos(merge_request)).to be_empty
+              expect(approval_todos(forked_merge_request)).to be_empty
+            end
           end
         end
 
@@ -489,9 +532,22 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
             reload_mrs
           end
 
-          it 'resets approvals' do
-            expect(merge_request.approvals).to be_empty
-            expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
+          context 'when no_todo_for_approvers feature flag is disabled' do
+            let(:no_todo_for_approvers_ff_enabled) { false }
+
+            it 'resets approvals and creates approval todo for approver' do
+              expect(merge_request.approvals).to be_empty
+              expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
+            end
+          end
+
+          context 'when no_todo_for_approvers feature flag is enabled' do
+            let(:no_todo_for_approvers_ff_enabled) { true }
+
+            it 'resets approvals and creates approval todo for approver' do
+              expect(merge_request.approvals).to be_empty
+              expect(approval_todos(merge_request)).to be_empty
+            end
           end
         end
 
@@ -545,9 +601,22 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
               reload_mrs
             end
 
-            it 'resets the approvals' do
-              expect(merge_request.approvals).to be_empty
-              expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
+            context 'when no_todo_for_approvers feature flag is disabled' do
+              let(:no_todo_for_approvers_ff_enabled) { false }
+
+              it 'resets the approvals' do
+                expect(merge_request.approvals).to be_empty
+                expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver)
+              end
+            end
+
+            context 'when no_todo_for_approvers feature flag is enabled' do
+              let(:no_todo_for_approvers_ff_enabled) { true }
+
+              it 'resets the approvals' do
+                expect(merge_request.approvals).to be_empty
+                expect(approval_todos(merge_request)).to be_empty
+              end
             end
           end
         end

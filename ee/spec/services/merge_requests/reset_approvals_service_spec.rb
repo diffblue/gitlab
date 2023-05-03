@@ -52,12 +52,32 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         create(:approval, merge_request: merge_request, user: owner)
       end
 
-      it 'resets all approvals' do
-        service.execute("refs/heads/master", newrev)
-        merge_request.reload
+      context 'when no_todo_for_approvers feature flag is disabled' do
+        before do
+          stub_feature_flags(no_todo_for_approvers: false)
+        end
 
-        expect(merge_request.approvals).to be_empty
-        expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
+        it 'resets all approvals and creates new todos for approvers' do
+          service.execute("refs/heads/master", newrev)
+          merge_request.reload
+
+          expect(merge_request.approvals).to be_empty
+          expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
+        end
+      end
+
+      context 'when no_todo_for_approvers feature flag is enabled' do
+        before do
+          stub_feature_flags(no_todo_for_approvers: true)
+        end
+
+        it 'resets all approvals and does not create new todos for approvers' do
+          service.execute("refs/heads/master", newrev)
+          merge_request.reload
+
+          expect(merge_request.approvals).to be_empty
+          expect(approval_todos(merge_request).map(&:user)).to be_empty
+        end
       end
 
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
