@@ -2,8 +2,8 @@
 - file_name = params[:id].split("/").last ||= ""
 - is_markdown = Gitlab::MarkupHelper.gitlab_markdown?(file_name)
 
-.file-holder-bottom-radius.file-holder.file.gl-mb-3
-  .js-file-title.file-title.gl-display-flex.gl-align-items-center.clearfix{ data: { current_action: action } }
+.file-holder.file.gl-mb-3
+  .js-file-title.file-title.gl-display-flex.gl-align-items-center.gl-rounded-top-base{ data: { current_action: action } }
     .editor-ref.block-truncated.has-tooltip{ title: ref }
       = sprite_icon('branch', size: 12)
       = ref
