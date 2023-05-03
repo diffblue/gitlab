@@ -3,7 +3,7 @@
 
 = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false) do |c|
   = c.body do
-    = s_('GroupSAML|Some todos may be hidden because your SAML session has expired. Click to reauthenticate with the following groups to view hidden todos:')
+    = s_('GroupSAML|Some to-do items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view the hidden to-do items.')
   = c.actions do
     .gl-display-flex.gl-flex-wrap
       - groups_requiring_saml_reauth.each do |group|
