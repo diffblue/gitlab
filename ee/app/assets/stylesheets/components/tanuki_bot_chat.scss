@@ -32,6 +32,10 @@
     background-color: $gray-50; // Overridden to $gray-100 in dark_mode_overrides.scss
   }
 
+  .tanuki-bot-chat-message-markdown p {
+    margin-bottom: 0;
+  }
+
   .messages-move {
     transition: all 400ms ease;
   }

@@ -1,17 +1,23 @@
-import Api from 'ee/api';
 import * as types from './mutation_types';
 
-export const sendMessage = async ({ commit }, msg) => {
-  try {
-    commit(types.SET_LOADING, true);
-    commit(types.ADD_USER_MESSAGE, msg);
+export const sendUserMessage = ({ commit }, msg) => {
+  commit(types.SET_LOADING, true);
+  commit(types.ADD_USER_MESSAGE, msg);
+};
 
-    const { data } = await Api.requestTanukiBotResponse(msg);
+export const receiveTanukiBotMessage = ({ commit, dispatch }, data) => {
+  const response = data.aiCompletionResponse?.responseBody;
+  const errors = data.aiCompletionResponse?.errors;
 
-    commit(types.ADD_TANUKI_MESSAGE, data);
-  } catch {
-    commit(types.ADD_ERROR_MESSAGE);
-  } finally {
+  if (errors?.length) {
+    dispatch('tanukiBotMessageError');
+  } else if (response) {
     commit(types.SET_LOADING, false);
+    commit(types.ADD_TANUKI_MESSAGE, JSON.parse(response));
   }
+};
+
+export const tanukiBotMessageError = ({ commit }) => {
+  commit(types.SET_LOADING, false);
+  commit(types.ADD_ERROR_MESSAGE);
 };

@@ -1,6 +1,8 @@
 <script>
 import { GlLink, GlIcon } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
+import { renderMarkdown } from '~/notes/utils';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { MESSAGE_TYPES, SOURCE_TYPES, TANUKI_BOT_FEEDBACK_ISSUE_URL } from '../constants';
 
 export default {
@@ -13,6 +15,9 @@ export default {
   components: {
     GlLink,
     GlIcon,
+  },
+  directives: {
+    SafeHtml,
   },
   props: {
     message: {
@@ -61,6 +66,7 @@ export default {
 
       return this.$options.i18n.source;
     },
+    renderMarkdown,
   },
   TANUKI_BOT_FEEDBACK_ISSUE_URL,
 };
@@ -76,7 +82,12 @@ export default {
       'tanuki-bot-message gl-text-gray-900': isTanukiMessage,
     }"
   >
-    <p class="gl-my-0">{{ message.msg }}</p>
+    <div
+      v-if="isTanukiMessage"
+      v-safe-html="renderMarkdown(message.msg)"
+      class="tanuki-bot-chat-message-markdown"
+    ></div>
+    <p v-if="isUserMessage" class="gl-mb-0">{{ message.msg }}</p>
     <div v-if="isTanukiMessage" class="gl-display-flex gl-align-items-flex-end gl-mt-3">
       <div
         v-if="hasSources"

@@ -34,10 +34,17 @@ export const initProjectTransferApp = () => {
 
   if (!el) return false;
 
+  Vue.use(VueApollo);
+
+  const apolloProvider = new VueApollo({
+    defaultClient: createDefaultClient(),
+  });
+
   const { fullPath } = el.dataset;
 
   return new Vue({
     el,
+    apolloProvider,
     name: 'ProjectTransferApp',
     provide: {
       fullPath,

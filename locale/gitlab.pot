@@ -47936,6 +47936,9 @@ msgstr ""
 msgid "UsageQuota|Includes artifacts, repositories, wiki, and other items."
 msgstr ""
 
+msgid "UsageQuota|Includes project artifacts, repositories, packages, and container registries."
+msgstr ""
+
 msgid "UsageQuota|Job artifacts created by CI/CD."
 msgstr ""
 
@@ -47976,6 +47979,9 @@ msgid "UsageQuota|Purchased storage used"
 msgstr ""
 
 msgid "UsageQuota|Recalculate repository usage"
+msgstr ""
+
+msgid "UsageQuota|Registry"
 msgstr ""
 
 msgid "UsageQuota|Search"
@@ -48036,6 +48042,9 @@ msgid "UsageQuota|Transfer data used"
 msgstr ""
 
 msgid "UsageQuota|Transfer data used by month"
+msgstr ""
+
+msgid "UsageQuota|Transfer usage breakout"
 msgstr ""
 
 msgid "UsageQuota|Usage"

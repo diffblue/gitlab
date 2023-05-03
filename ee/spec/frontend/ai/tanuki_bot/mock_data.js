@@ -32,3 +32,25 @@ export const MOCK_USER_MESSAGE = {
   msg: 'User message',
   type: MESSAGE_TYPES.USER,
 };
+
+export const MOCK_TANUKI_SUCCESS_RES = {
+  data: {
+    aiCompletionResponse: {
+      responseBody: JSON.stringify(MOCK_TANUKI_MESSAGE),
+      errors: [],
+    },
+  },
+};
+
+export const MOCK_TANUKI_ERROR_RES = {
+  data: {
+    aiCompletionResponse: {
+      responseBody: null,
+      errors: ['error'],
+    },
+  },
+};
+
+export const MOCK_TANUKI_BOT_MUTATATION_RES = { data: { aiAction: { errors: [] } } };
+
+export const MOCK_USER_ID = 'gid://gitlab/User/1';
