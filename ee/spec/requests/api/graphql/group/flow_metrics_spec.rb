@@ -20,6 +20,18 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
     stub_licensed_features(cycle_analytics_for_groups: true)
   end
 
+  shared_examples 'unavailable when unlicensed' do
+    context 'when cycle analytics is not licensed' do
+      before do
+        stub_licensed_features(cycle_analytics_for_groups: false)
+      end
+
+      it 'returns nil' do
+        expect(result).to eq(nil)
+      end
+    end
+  end
+
   it_behaves_like 'value stream analytics flow metrics issueCount examples' do
     context 'when filtering the project ids' do
       let(:query) do
@@ -58,15 +70,7 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
       end
     end
 
-    context 'when cycle analytics is not licensed' do
-      before do
-        stub_licensed_features(cycle_analytics_for_groups: false)
-      end
-
-      it 'returns nil' do
-        expect(result).to eq(nil)
-      end
-    end
+    it_behaves_like 'unavailable when unlicensed'
   end
 
   it_behaves_like 'value stream analytics flow metrics deploymentCount examples' do
@@ -121,6 +125,8 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
         expect(result).to match(a_hash_including({ 'value' => 0 }))
       end
     end
+
+    it_behaves_like 'unavailable when unlicensed'
   end
 
   it_behaves_like 'value stream analytics flow metrics leadTime examples' do
@@ -153,15 +159,7 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
       end
     end
 
-    context 'when cycle analytics is not licensed' do
-      before do
-        stub_licensed_features(cycle_analytics_for_groups: false)
-      end
-
-      it 'returns nil' do
-        expect(result).to eq(nil)
-      end
-    end
+    it_behaves_like 'unavailable when unlicensed'
   end
 
   it_behaves_like 'value stream analytics flow metrics cycleTime examples' do
@@ -194,14 +192,47 @@ RSpec.describe 'getting group flow metrics', feature_category: :value_stream_man
       end
     end
 
-    context 'when cycle analytics is not licensed' do
-      before do
-        stub_licensed_features(cycle_analytics_for_groups: false)
+    it_behaves_like 'unavailable when unlicensed'
+  end
+
+  it_behaves_like 'value stream analytics flow metrics issuesCompleted examples' do
+    context 'when filtering the project ids' do
+      let(:query) do
+        <<~QUERY
+          query($path: ID!, $projectIds: [ID!], $from: Time!, $to: Time!) {
+            group(fullPath: $path) {
+              flowMetrics {
+                issuesCompletedCount(projectIds: $projectIds, from: $from, to: $to) {
+                  value
+                  unit
+                  identifier
+                  title
+                }
+              }
+            }
+          }
+        QUERY
       end
 
-      it 'returns nil' do
-        expect(result).to eq(nil)
+      let(:variables) do
+        {
+          path: full_path,
+          from: 20.days.ago.iso8601,
+          to: 10.days.ago.iso8601,
+          projectIds: [project1.id]
+        }
+      end
+
+      it 'returns the correct count' do
+        expect(result).to eq({
+          'identifier' => 'issues_completed',
+          'unit' => n_('issue', 'issues', 2),
+          'value' => 2,
+          'title' => "Issues Completed"
+        })
       end
     end
+
+    it_behaves_like 'unavailable when unlicensed'
   end
 end

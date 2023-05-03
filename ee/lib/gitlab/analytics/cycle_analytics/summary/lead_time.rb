@@ -17,6 +17,10 @@ module Gitlab
             :issue_closed
           end
 
+          def count
+            data_collector.count.to_i
+          end
+
           def links
             helpers = Gitlab::Routing.url_helpers
 

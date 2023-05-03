@@ -15639,6 +15639,24 @@ Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
 | <a id="groupvaluestreamanalyticsflowmetricsissuecountprojectids"></a>`projectIds` | [`[ID!]`](#id) | Project IDs within the group hierarchy. |
 | <a id="groupvaluestreamanalyticsflowmetricsissuecountto"></a>`to` | [`Time!`](#time) | Before the date. |
 
+##### `GroupValueStreamAnalyticsFlowMetrics.issuesCompletedCount`
+
+Number of open issues closed (completed) in the given period. Maximum value is 10,001.
+
+Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountfrom"></a>`from` | [`Time!`](#time) | After the date. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountlabelnames"></a>`labelNames` | [`[String!]`](#string) | Labels applied to the issue. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Milestone applied to the issue. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountprojectids"></a>`projectIds` | [`[ID!]`](#id) | Project IDs within the group hierarchy. |
+| <a id="groupvaluestreamanalyticsflowmetricsissuescompletedcountto"></a>`to` | [`Time!`](#time) | Before the date. |
+
 ##### `GroupValueStreamAnalyticsFlowMetrics.leadTime`
 
 Median time from when the issue was created to when it was closed.
@@ -20212,6 +20230,23 @@ Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
 | <a id="projectvaluestreamanalyticsflowmetricsissuecountlabelnames"></a>`labelNames` | [`[String!]`](#string) | Labels applied to the issue. |
 | <a id="projectvaluestreamanalyticsflowmetricsissuecountmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Milestone applied to the issue. |
 | <a id="projectvaluestreamanalyticsflowmetricsissuecountto"></a>`to` | [`Time!`](#time) | Before the date. |
+
+##### `ProjectValueStreamAnalyticsFlowMetrics.issuesCompletedCount`
+
+Number of open issues closed (completed) in the given period. Maximum value is 10,001.
+
+Returns [`ValueStreamAnalyticsMetric`](#valuestreamanalyticsmetric).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Usernames of users assigned to the issue. |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountauthorusername"></a>`authorUsername` | [`String`](#string) | Username of the author of the issue. |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountfrom"></a>`from` | [`Time!`](#time) | After the date. |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountlabelnames"></a>`labelNames` | [`[String!]`](#string) | Labels applied to the issue. |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Milestone applied to the issue. |
+| <a id="projectvaluestreamanalyticsflowmetricsissuescompletedcountto"></a>`to` | [`Time!`](#time) | Before the date. |
 
 ##### `ProjectValueStreamAnalyticsFlowMetrics.leadTime`
 

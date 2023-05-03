@@ -24674,6 +24674,9 @@ msgstr ""
 msgid "Issues"
 msgstr ""
 
+msgid "Issues Completed"
+msgstr ""
+
 msgid "Issues Rate Limits"
 msgstr ""
 
@@ -53165,7 +53168,9 @@ msgid "is too long (maximum is 1000 entries)"
 msgstr ""
 
 msgid "issue"
-msgstr ""
+msgid_plural "issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "issues at risk"
 msgstr ""
