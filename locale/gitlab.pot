@@ -6635,12 +6635,6 @@ msgstr ""
 msgid "Awaiting user signup"
 msgstr ""
 
-msgid "Award added"
-msgstr ""
-
-msgid "Award removed"
-msgstr ""
-
 msgid "AwardEmoji|No emojis found."
 msgstr ""
 
