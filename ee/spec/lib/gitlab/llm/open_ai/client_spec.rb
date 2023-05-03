@@ -93,6 +93,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
 
   shared_examples 'cost tracking' do
     it 'tracks prompt and completion tokens cost' do
+      ::Gitlab::ApplicationContext.push(feature_category: 'not_owned')
+
       counter = instance_double(Prometheus::Client::Counter, increment: true)
 
       allow(Gitlab::Metrics)
@@ -103,14 +105,24 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
       expect(counter)
         .to receive(:increment)
         .with(
-          { vendor: 'open_ai', item: 'model/prompt', unit: 'tokens' },
+          {
+            vendor: 'open_ai',
+            item: "#{method}/prompt",
+            unit: 'tokens',
+            feature_category: 'not_owned'
+          },
           example_response['usage']['prompt_tokens']
         )
 
       expect(counter)
         .to receive(:increment)
         .with(
-          { vendor: 'open_ai', item: 'model/completion', unit: 'tokens' },
+          {
+            vendor: 'open_ai',
+            item: "#{method}/completion",
+            unit: 'tokens',
+            feature_category: 'not_owned'
+          },
           example_response['usage']['completion_tokens']
         )
 
@@ -263,7 +275,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:method) { :embeddings }
     let(:example_response) do
       {
-        'model' => 'model',
+        'model' => 'gpt-3.5-turbo',
         "data" => [
           {
             "embedding" => [
@@ -291,7 +303,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     let(:method) { :moderations }
     let(:example_response) do
       {
-        'model' => 'text-moderation-001',
+        'model' => 'model',
         'results' => [
           {
             "categories" => {
