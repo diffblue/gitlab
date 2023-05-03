@@ -33,10 +33,9 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
 
     it 'renders vsa metrics' do
       metrics_groups = page.all(metrics_groups_selector)
-      expect(metrics_groups.count).to eq(2)
+      expect(metrics_groups.count).to eq(1)
 
       expect(metrics_groups.first).to have_content "Key metrics"
-      expect(metrics_groups.last).to have_content "DORA metrics"
     end
   end
 
@@ -83,7 +82,6 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
         metrics_tiles = page.find(metrics_selector)
         expect(metrics_tiles).to have_content('Commit')
         expect(metrics_tiles).to have_content('Deploy')
-        expect(metrics_tiles).to have_content('Deployment Frequency')
         expect(metrics_tiles).to have_content('New Issue')
       end
     end
@@ -143,7 +141,6 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
           expect(page).to have_css '#issues div', text: 1
           expect(page).to have_css '#commits div', text: 2
           expect(page).to have_css '#deploys div', text: 2
-          expect(page).to have_css '#deployment_frequency div', text: 0.1
           # Not available on Premium level
           expect(page).not_to have_css '#lead_time_for_changes'
           expect(page).not_to have_css '#time_to_restore_service'

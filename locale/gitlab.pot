@@ -48799,9 +48799,6 @@ msgstr ""
 msgid "ValueStreamAnalytics|Average number of deployments to production per day. This metric measures how often value is delivered to end users."
 msgstr ""
 
-msgid "ValueStreamAnalytics|DORA metrics"
-msgstr ""
-
 msgid "ValueStreamAnalytics|Dashboard"
 msgstr ""
 
