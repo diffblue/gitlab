@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "An ordered array of references that identify a vulnerability on internal or external databases. The first identifier is the Primary Identifier, which has special meaning.",
+  "$id": "#/properties/identifiers",
+  "type": "array",
+  "title": "The vulnerability identifiers",
+  "items": {
+    "$id": "#/properties/identifiers/identifier",
+    "type": "object",
+    "title": "A single identifier",
+    "properties": {
+      "type": {
+        "type": "string",
+        "title": "Type of identifier (for example, cve, cwe, osvdb, usn, or an analyzer-dependent type such as gemnasium).",
+        "examples": [
+          "CVE"
+        ],
+        "minLength": 1,
+        "maxLength": 32
+      },
+      "name": {
+        "type": "string",
+        "title": "Human-readable name of the identifier.",
+        "minLength": 1,
+        "maxLength": 64,
+        "examples": [
+          "CVE-2019-3888"
+        ]
+      },
+      "url": {
+        "type": "string",
+        "title": "URL of the identifier's documentation.",
+        "minLength": 1,
+        "maxLength": 512,
+        "examples": [
+          "https://nvd.nist.gov/vuln/detail/CVE-2019-3888"
+        ]
+      },
+      "value": {
+        "type": "string",
+        "title": "Value of the identifier, for matching purpose.",
+        "minLength": 1,
+        "maxLength": 512,
+        "examples": [
+          "CVE-2019-3888"
+        ]
+      }
+    },
+    "required": [
+      "type",
+      "name",
+      "value"
+    ],
+    "additionalProperties": false
+  },
+  "minItems": 1,
+  "maxItems": 10
+}
