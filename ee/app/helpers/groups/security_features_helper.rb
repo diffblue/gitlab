@@ -45,9 +45,9 @@ module Groups::SecurityFeaturesHelper
   end
 
   def group_security_discover_data(group)
-    content = pql_three_cta_test_experiment_candidate?(group.root_ancestor) ? 'discover-group-security-pqltest' : 'discover-group-security'
+    content = 'discover-group-security'
 
-    data = {
+    {
       group: {
         id: group.id,
         name: group.name
@@ -57,7 +57,5 @@ module Groups::SecurityFeaturesHelper
         secondary: group_billings_path(group.root_ancestor, source: content)
       }
     }
-
-    data.merge(hand_raise_props(group.root_ancestor, glm_content: content))
   end
 end
