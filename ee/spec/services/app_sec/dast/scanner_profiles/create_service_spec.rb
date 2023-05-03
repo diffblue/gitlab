@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AppSec::Dast::ScannerProfiles::CreateService, :dynamic_analysis,
-                                                             feature_category: :dynamic_application_security_testing do
+  feature_category: :dynamic_application_security_testing do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository, creator: user) }
   let(:name) { FFaker::Company.catch_phrase }
