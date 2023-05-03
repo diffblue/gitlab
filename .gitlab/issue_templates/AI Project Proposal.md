@@ -50,6 +50,7 @@ _What job to be done will this solve?_
 
 ### Problem validation
 _What validation exists that customers have this problem?_
+<!-- Refer to https://about.gitlab.com/handbook/product/ux/ux-research/research-in-the-AI-space/#guideline-1-problem-validation --- to help identify and understand user needs -->
 
 ### Business objective
 _What business objective will be achieved with this proposal?_
