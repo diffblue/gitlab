@@ -726,9 +726,12 @@ export default {
                   >
                     <template #body>
                       {{ $options.SEVERITY_LEVELS[vuln.severity] }}
-                      <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
-                        vuln.name
-                      }}</gl-button>
+                      <gl-button
+                        variant="link"
+                        class="gl-ml-2 gl-overflow-hidden gl-white-space-nowrap gl-text-overflow-ellipsis"
+                        @click="setModalData(vuln)"
+                        >{{ vuln.name }}</gl-button
+                      >
                       <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
                         $options.i18n.dismissed
                       }}</gl-badge>
