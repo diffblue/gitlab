@@ -58,7 +58,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       it 'shows the user an alert', :aggregate_failures do
         visit page_path
 
-        expect(page).to have_content(s_('GroupSAML|Some todos may be hidden because your SAML session has expired. Click to reauthenticate with the following groups to view hidden todos:')) # rubocop:disable Layout/LineLength
+        expect(page).to have_content(s_('GroupSAML|Some to-do items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view the hidden to-do items.')) # rubocop:disable Layout/LineLength
         expect(page).to have_link(restricted_group.path, href: /#{sso_group_saml_providers_path(restricted_group)}/)
       end
     end
@@ -72,7 +72,7 @@ RSpec.describe 'Dashboard todos', feature_category: :team_planning do
       it 'does not show the user an alert', :aggregate_failures do
         visit page_path
 
-        expect(page).not_to have_content(s_('GroupSAML|Some todos may be hidden because your SAML session has expired. Click to reauthenticate with the following groups to view hidden todos:')) # rubocop:disable Layout/LineLength
+        expect(page).not_to have_content(s_('GroupSAML|Some to-do items may be hidden because your SAML session has expired. Select the group’s path to reauthenticate and view the hidden to-do items.')) # rubocop:disable Layout/LineLength
       end
     end
   end
