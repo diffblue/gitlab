@@ -4,6 +4,7 @@
 = render "layouts/google_tag_manager_body"
 
 - page_title s_("UsageQuota|Usage")
+- @force_desktop_expanded_sidebar = true
 
 - if Feature.enabled?(:usage_quotas_for_all_editions, @group)
   #js-usage-quotas-view{ data: { namespace_name: @group.name } }
