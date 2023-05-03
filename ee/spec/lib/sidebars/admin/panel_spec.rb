@@ -7,11 +7,17 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
 
   let(:context) { Sidebars::Context.new(current_user: user, container: nil) }
 
-  subject { described_class.new(context) }
-
-  it 'implements #super_sidebar_context_header' do
-    expect(subject.super_sidebar_context_header).to eq({ title: 'Admin Area' })
+  before do
+    stub_licensed_features(
+      admin_audit_log: true,
+      custom_file_templates: true,
+      elastic_search: true,
+      license_scanning: true
+    )
   end
 
+  subject { described_class.new(context) }
+
   it_behaves_like 'a panel with uniquely identifiable menu items'
+  it_behaves_like 'a panel without placeholders'
 end

@@ -75,8 +75,9 @@ module EE
           end
 
           def merge_request_analytics_menu_item
+            item_id = context.is_super_sidebar ? :merge_request_analytics : :merge_requests
             unless can?(context.current_user, :read_project_merge_request_analytics, context.project)
-              return ::Sidebars::NilMenuItem.new(item_id: :merge_requests)
+              return ::Sidebars::NilMenuItem.new(item_id: item_id)
             end
 
             ::Sidebars::MenuItem.new(
@@ -84,7 +85,7 @@ module EE
               link: project_analytics_merge_request_analytics_path(context.project),
               super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::AnalyzeMenu,
               active_routes: { path: 'projects/analytics/merge_request_analytics#show' },
-              item_id: :merge_requests
+              item_id: item_id
             )
           end
 
