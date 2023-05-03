@@ -18247,6 +18247,7 @@ CREATE TABLE merge_request_metrics (
     removed_lines integer,
     target_project_id integer,
     id bigint NOT NULL,
+    first_contribution boolean DEFAULT false NOT NULL,
     CONSTRAINT check_e03d0900bf CHECK ((target_project_id IS NOT NULL))
 );
 
