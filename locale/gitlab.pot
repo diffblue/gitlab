@@ -19856,9 +19856,6 @@ msgstr ""
 msgid "GitLab Import"
 msgstr ""
 
-msgid "GitLab Issue"
-msgstr ""
-
 msgid "GitLab KAS"
 msgstr ""
 
