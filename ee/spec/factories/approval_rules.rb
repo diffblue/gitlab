@@ -54,6 +54,11 @@ FactoryBot.define do
     sequence(:name) { |n| "#{ApprovalRuleLike::DEFAULT_NAME}-#{n}" }
     rule_type { :regular }
 
+    trait :any_approver_rule do
+      rule_type { :any_approver }
+      name { "All Members" }
+    end
+
     trait :requires_approval do
       approvals_required { rand(1..ApprovalProjectRule::APPROVALS_REQUIRED_MAX) }
     end

@@ -55,6 +55,10 @@ RSpec.describe MergeRequests::CreateService, feature_category: :code_review_work
       let(:execute) { service.execute }
     end
 
+    it_behaves_like 'service with approval rules' do
+      let(:execute) { service.execute }
+    end
+
     it 'sends the audit streaming event' do
       audit_context = {
         name: 'merge_request_create',

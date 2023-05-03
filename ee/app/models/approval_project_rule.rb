@@ -102,6 +102,18 @@ class ApprovalProjectRule < ApplicationRecord
     super(Array.wrap(value))
   end
 
+  # For initialization of merge request approval rules
+  def to_nested_attributes
+    {
+      name: name,
+      approval_project_rule_id: id,
+      user_ids: user_ids,
+      group_ids: group_ids,
+      approvals_required: approvals_required,
+      rule_type: rule_type
+    }
+  end
+
   private
 
   # There are NULL values in the database and we want to convert them to empty arrays.
