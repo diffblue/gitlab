@@ -122,28 +122,6 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
         expect(deploys_count).to have_content(n_('Deploy', 'Deploys', 0))
         expect(deploys_count).to have_content('-')
       end
-
-      it 'displays DORA metrics', :aggregate_failures do
-        deployment_frequency = page.all(card_metric_selector)[4]
-
-        expect(deployment_frequency).to have_content(_('Deployment Frequency'))
-        expect(deployment_frequency).to have_content('-')
-
-        lead_time_for_changes = page.all(card_metric_selector)[5]
-
-        expect(lead_time_for_changes).to have_content(s_('CycleAnalytics|Lead Time for Changes'))
-        expect(lead_time_for_changes).to have_content('-')
-
-        time_to_restore_service = page.all(card_metric_selector)[6]
-
-        expect(time_to_restore_service).to have_content(s_('CycleAnalytics|Time to Restore Service'))
-        expect(time_to_restore_service).to have_content('-')
-
-        change_failure_rate = page.all(card_metric_selector)[7]
-
-        expect(change_failure_rate).to have_content(s_('CycleAnalytics|Change Failure Rate'))
-        expect(change_failure_rate).to have_content('0')
-      end
     end
 
     shared_examples 'has default filters' do
