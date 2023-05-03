@@ -843,6 +843,12 @@ entry.
 - [Update header section](gitlab-org/gitlab@cf4ab283267d84fa1c0dc90fefb1b6ddd2617b5c) ([merge request](gitlab-org/gitlab!114102)) **GitLab Enterprise Edition**
 - [Swap merge_request_user_mentions.note_id to bigint](gitlab-org/gitlab@96baed47326db4f0cc9f60b2e74215211effd814) ([merge request](gitlab-org/gitlab!113928))
 
+## 15.10.6 (2023-05-03)
+
+### Security (1 change)
+
+- [Only maintainers of projects should be able to assign runners to them](gitlab-org/security/gitlab@a20f5018b757a78a772d2bf1f9f8cdfe95a019ed) ([merge request](gitlab-org/security/gitlab!3235))
+
 ## 15.10.5 (2023-05-01)
 
 ### Security (9 changes)
