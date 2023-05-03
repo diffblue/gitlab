@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
+  include DragTo
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, namespace: group) }
@@ -258,6 +260,23 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
       create_okr('key result', 'KR 2')
 
       expect(find('[data-testid="work-item-tree"]')).to have_content('KR 2')
+    end
+
+    it 'reorders children', :aggregate_failures do
+      create_okr('key result', 'KR 1')
+      create_okr('key result', 'KR 2')
+      create_okr('key result', 'KR 3')
+      click_button 'Cancel'
+
+      expect(page).to have_css('.tree-item:nth-child(1) .item-title', text: 'KR 1')
+      expect(page).to have_css('.tree-item:nth-child(2) .item-title', text: 'KR 2')
+      expect(page).to have_css('.tree-item:nth-child(3) .item-title', text: 'KR 3')
+
+      drag_to(selector: '.sortable-container', from_index: 0, to_index: 2)
+
+      expect(page).to have_css('.tree-item:nth-child(1) .item-title', text: 'KR 2')
+      expect(page).to have_css('.tree-item:nth-child(2) .item-title', text: 'KR 3')
+      expect(page).to have_css('.tree-item:nth-child(3) .item-title', text: 'KR 1')
     end
   end
 
