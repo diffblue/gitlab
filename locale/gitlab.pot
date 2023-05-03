@@ -1841,10 +1841,10 @@ msgstr ""
 msgid "ACTION REQUIRED: Something went wrong while obtaining the Let's Encrypt certificate for GitLab Pages domain '%{domain}'"
 msgstr ""
 
-msgid "AI Generated Test File"
+msgid "AI actions"
 msgstr ""
 
-msgid "AI actions"
+msgid "AI-generated test file"
 msgstr ""
 
 msgid "AISummary|Experiment"

@@ -110,7 +110,7 @@ export default {
     <template #title>
       <div class="gl-display-flex">
         <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">
-          {{ __('AI Generated Test File') }}
+          {{ __('AI-generated test file') }}
         </h2>
         <div>
           <gl-badge variant="info" size="sm" class="gl-ml-3 gl-mt-2">{{
