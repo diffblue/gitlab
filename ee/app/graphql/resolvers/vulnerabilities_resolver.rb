@@ -4,11 +4,8 @@ module Resolvers
   class VulnerabilitiesResolver < VulnerabilitiesBaseResolver
     include Gitlab::Utils::StrongMemoize
     include LooksAhead
-    include Gitlab::Graphql::Authorize::AuthorizeResource
 
     type Types::VulnerabilityType, null: true
-
-    authorize :read_vulnerability
 
     argument :project_id, [GraphQL::Types::ID],
              required: false,

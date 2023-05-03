@@ -101,8 +101,7 @@ module Types
     field :vulnerability,
           type: VulnerabilityType,
           null: true,
-          description: 'Vulnerability related to the security report finding.',
-          authorize: :read_vulnerability
+          description: 'Vulnerability related to the security report finding.'
 
     field :issue_links,
           type: ::Types::Vulnerability::IssueLinkType.connection_type,

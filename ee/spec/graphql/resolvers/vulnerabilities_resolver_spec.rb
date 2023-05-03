@@ -27,8 +27,6 @@ RSpec.describe Resolvers::VulnerabilitiesResolver do
     let(:params) { {} }
     let(:vulnerable) { project }
 
-    it { expect(described_class).to require_graphql_authorizations(:read_vulnerability) }
-
     context 'when given sort' do
       context 'when sorting descending by severity' do
         let(:params) { { sort: :severity_desc } }
