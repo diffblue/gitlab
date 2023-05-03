@@ -9,6 +9,9 @@ module Projects
 
       before_action :dashboards_enabled!, only: [:index]
       before_action :authorize_read_combined_project_analytics_dashboards!
+      before_action do
+        push_frontend_feature_flag(:product_analytics_snowplow_support)
+      end
 
       def index; end
 

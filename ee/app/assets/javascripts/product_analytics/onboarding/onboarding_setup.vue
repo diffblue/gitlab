@@ -2,6 +2,7 @@
 import { GlLoadingIcon, GlLink, GlButton } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AnalyticsClipboardInput from '../shared/analytics_clipboard_input.vue';
 import getProjectJitsuKeyQuery from '../graphql/queries/get_project_jitsu_key.query.graphql';
 import OnboardingSetupCollapse from './components/onboarding_setup_collapse.vue';
@@ -22,6 +23,7 @@ export default {
     GlLink,
     GlButton,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: {
     collectorHost: {
       type: String,
@@ -57,7 +59,7 @@ export default {
     },
     instructions() {
       return {
-        install: INSTALL_NPM_PACKAGE,
+        install: this.replaceKeys(INSTALL_NPM_PACKAGE),
         esmSetup: this.replaceKeys(ESM_SETUP_WITH_NPM),
         commonJsSetup: this.replaceKeys(COMMON_JS_SETUP_WITH_NPM),
         htmlSetup: this.replaceKeys(HTML_SCRIPT_SETUP),
@@ -86,9 +88,21 @@ export default {
   methods: {
     replaceKeys(template) {
       const hostKey = '$host';
-      const applicationId = '$applicationId';
+      const appIdValuePlaceholder = '$applicationId';
+      const appIdPropertyNamePlaceholder = '$appIdProperty';
+      const appIdPropertyName = this.glFeatures.productAnalyticsSnowplowSupport
+        ? 'appId'
+        : 'applicationId';
+      const packageVersionPlaceholder = '$version';
 
-      return template.replace(hostKey, this.collectorHost).replace(applicationId, this.appIdKey);
+      // 0.0.5 is the last version supported by Jitsu. Everything after that is Snowplow.
+      const packageVersion = this.glFeatures.productAnalyticsSnowplowSupport ? '' : '@0.0.5';
+
+      return template
+        .replace(hostKey, this.collectorHost)
+        .replace(appIdValuePlaceholder, this.appIdKey)
+        .replace(appIdPropertyNamePlaceholder, appIdPropertyName)
+        .replaceAll(packageVersionPlaceholder, packageVersion);
     },
   },
   i18n: {
