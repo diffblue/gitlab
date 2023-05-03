@@ -48,7 +48,7 @@ module Tasks
         puts 'Activation successful'.color(:green)
       else
         puts 'Activation unsuccessful'.color(:red)
-        puts result[:errors].join(' ').color(:red)
+        puts Array(result[:errors]).join(' ').color(:red)
         raise 'Activation unsuccessful'
       end
     end

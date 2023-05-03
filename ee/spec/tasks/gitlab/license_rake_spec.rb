@@ -100,6 +100,17 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
         end
       end
 
+      context 'when errors is not array' do
+        let(:service_result) { { success: false, errors: 'CONNECTIVITY_ERROR' } }
+
+        it 'prints error message' do
+          expect_activation
+
+          expect { subject }.to raise_error(RuntimeError, 'Activation unsuccessful')
+            .and output(/CONNECTIVITY_ERROR/).to_stdout
+        end
+      end
+
       context 'when GITLAB_LICENSE_FILE is also set' do
         before do
           stub_env('GITLAB_LICENSE_FILE', license_path)
