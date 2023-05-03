@@ -11714,6 +11714,9 @@ msgstr ""
 msgid "ContainerRegistry|You can add an image to this registry with the following commands:"
 msgstr ""
 
+msgid "Containers"
+msgstr ""
+
 msgid "Content"
 msgstr ""
 
