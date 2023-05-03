@@ -1,0 +1,134 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Overrides the fields of a PackageMetadata::Advisory model.",
+  "type": "object",
+  "properties": {
+    "identifiers": {
+      "$id": "#/properties/identifiers",
+      "type": "array",
+      "title": "The vulnerability identifiers",
+      "items": {
+        "$id": "#/properties/identifiers/identifier",
+        "type": "object",
+        "title": "A single identifier",
+        "properties": {
+          "type": {
+            "type": "string",
+            "title": "Type of identifier (for example, cve, cwe, osvdb, usn, or an analyzer-dependent type such as gemnasium).",
+            "examples": [
+              "CVE"
+            ],
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "name": {
+            "type": "string",
+            "title": "Human-readable name of the identifier.",
+            "minLength": 1,
+            "maxLength": 64,
+            "examples": [
+              "CVE-2019-3888"
+            ]
+          },
+          "url": {
+            "type": "string",
+            "title": "URL of the identifier's documentation.",
+            "minLength": 1,
+            "maxLength": 512,
+            "examples": [
+              "https://nvd.nist.gov/vuln/detail/CVE-2019-3888"
+            ]
+          },
+          "value": {
+            "type": "string",
+            "title": "Value of the identifier, for matching purpose.",
+            "minLength": 1,
+            "maxLength": 512,
+            "examples": [
+              "CVE-2019-3888"
+            ]
+          }
+        },
+        "required": [
+          "type",
+          "name",
+          "value"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 10
+    },
+    "published_date": {
+      "$id": "#/properties/published_date",
+      "type": "string",
+      "title": "The date on which the advisory was published, in ISO-8601 format",
+      "default": "",
+      "examples": [
+        "2019-07-05"
+      ],
+      "pattern": "^(\\d\\d\\d\\d-\\d\\d-\\d\\d)$"
+    },
+    "title": {
+      "$id": "#/properties/title",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 256,
+      "title": "A short description of the security flaw",
+      "default": "",
+      "examples": [
+        "Information Exposure"
+      ]
+    },
+    "description": {
+      "$id": "#/properties/description",
+      "type": "string",
+      "minLength": 0,
+      "maxLength": 8192,
+      "title": "A long description of the security flaw and the possible risks",
+      "default": "",
+      "examples": [
+        "A description with `markdown`"
+      ]
+    },
+    "cvss_v2": {
+      "$id": "#/properties/cvss_v2",
+      "type": "string",
+      "title": "Common Vulnerability Scoring System Vector (according to CVSS version 2)",
+      "default": "",
+      "examples": [
+        "AV:N/AC:M/Au:N/C:N/I:P/A:P"
+      ],
+      "pattern": "^AV:[NALP]\\/AC:[HML]\\/Au:[MSN]\\/C:[NPC]\\/I:[NPC]\\/A:[NPC]$"
+    },
+    "cvss_v3": {
+      "$id": "#/properties/cvss_v3",
+      "type": "string",
+      "title": "Common Vulnerability Scoring System Vector (according to CVSS version 3)",
+      "default": "",
+      "examples": [
+        "CVSS:3.1/AV:N/AC:H/PR:L/UI:N/S:C/C:N/I:L/A:L"
+      ],
+      "pattern": "^CVSS:3\\.[\\d\\.]+\\/AV:[NALP]\\/AC:[LH]\\/PR:[NLH]\\/UI:[NR]\\/S:[UC]\\/C:[NLH]\\/I:[NLH]\\/A:[NLH]$"
+    },
+    "urls": {
+      "$id": "#/properties/urls",
+      "type": "array",
+      "maxItems": 10,
+      "title": "URLs of: detailed advisory, documented exploit, vulnerable source code, etc",
+      "items": {
+        "$id": "#/properties/urls/items",
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 512,
+        "title": "The Items Schema",
+        "default": "",
+        "examples": [
+          "https://nvd.nist.gov/vuln/detail/CVE-2019-3888",
+          "https://bugzilla.redhat.com/show_bug.cgi?id=CVE-2019-3888"
+        ]
+      }
+    },
+    "additionalProperties": "false"
+  }
+}
