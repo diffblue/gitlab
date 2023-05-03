@@ -56,14 +56,14 @@ export default {
     { key: 'storage', label: __('Total'), sortable: true },
     { key: 'repository', label: __('Repository') },
     { key: 'snippets', label: __('Snippets') },
-    { key: 'buildArtifacts', label: __('Job artifacts') },
-    { key: 'pipelineArtifacts', label: __('Pipeline artifacts') },
+    { key: 'buildArtifacts', label: __('Jobs') },
+    { key: 'pipelineArtifacts', label: __('Pipelines') },
     { key: 'lfsObjects', label: __('LFS') },
     { key: 'packages', label: __('Packages') },
     { key: 'wiki', label: __('Wiki') },
     {
       key: 'containerRegistry',
-      label: __('Container Registry'),
+      label: __('Containers'),
       thClass: 'gl-border-l!',
       tdClass: 'gl-border-l!',
     },
@@ -135,7 +135,7 @@ export default {
 
       <gl-link
         :href="getUsageQuotasUrl(project.webUrl)"
-        class="gl-text-gray-900! js-project-link"
+        class="gl-text-gray-900! js-project-link gl-word-break-word"
         data-testid="project-link"
         >{{ project.nameWithNamespace }}</gl-link
       >
