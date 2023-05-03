@@ -68,13 +68,13 @@ describe('Corpus upload modal', () => {
         expect(findUploadStatus().exists()).toBe(false);
       });
 
-      describe('selecting a file', () => {
-        it('transitions to selected state', async () => {
-          jest.spyOn(wrapper.vm, 'onFileUploadChange').mockImplementation(() => {});
-          await wrapper.vm.$forceUpdate();
-          findFileInput().trigger('change');
-          expect(wrapper.vm.onFileUploadChange).toHaveBeenCalled();
-        });
+      it('emits the "resetCorpus" event when a file is uploaded', () => {
+        const file = new File(['foo'], 'foo.txt');
+        const input = findFileInput();
+        Object.defineProperty(input.element, 'files', { value: [file] });
+        input.trigger('change');
+
+        expect(wrapper.emitted('resetCorpus')).toHaveLength(1);
       });
     });
 
@@ -121,13 +121,9 @@ describe('Corpus upload modal', () => {
         expect(findUploadStatus().exists()).toBe(false);
       });
 
-      describe('clicking upload file', () => {
-        it('begins the file upload', async () => {
-          jest.spyOn(wrapper.vm, 'beginFileUpload').mockImplementation(() => {});
-          await wrapper.vm.$forceUpdate();
-          findUploadCorpus().trigger('click');
-          expect(wrapper.vm.beginFileUpload).toHaveBeenCalled();
-        });
+      it('emits the "beginFileUpload" event when the upload file button is clicked', () => {
+        findUploadCorpus().trigger('click');
+        expect(wrapper.emitted('beginFileUpload')).toHaveLength(1);
       });
     });
 
