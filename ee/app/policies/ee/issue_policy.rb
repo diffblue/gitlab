@@ -16,6 +16,12 @@ module EE
           subject_container.licensed_feature_available?(:summarize_notes)
       end
 
+      with_scope :subject
+      condition(:generate_description_enabled) do
+        ::Feature.enabled?(:generate_description_ai, subject_container) &&
+          subject_container.licensed_feature_available?(:generate_description)
+      end
+
       rule { can_be_promoted_to_epic }.policy do
         enable :promote_to_epic
       end
@@ -23,6 +29,10 @@ module EE
       rule do
         ai_available & summarize_notes_enabled & is_project_member & can?(:read_issue) & ~confidential
       end.enable :summarize_notes
+
+      rule do
+        ai_available & generate_description_enabled & is_project_member & can?(:read_issue) & ~confidential
+      end.enable :generate_description
     end
   end
 end
