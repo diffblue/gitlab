@@ -1,0 +1,16 @@
+query getProjectDataTransferEgress($fullPath: ID!) {
+  project(fullPath: $fullPath) {
+    id
+    dataTransfer {
+      egressNodes {
+        nodes {
+          totalEgress
+          repositoryEgress
+          artifactsEgress
+          packagesEgress
+          registryEgress
+        }
+      }
+    }
+  }
+}
