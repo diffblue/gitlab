@@ -254,7 +254,7 @@ Dangerfile
 /ee/app/workers/merge_requests/ @dskim_gitlab
 /ee/app/workers/merge_request_reset_approvals_worker.rb @dskim_gitlab
 
-^[Merge Requests frontend] @viktomas @jboyson @iamphill @thomasrandolph
+^[Merge Requests frontend] @slashmanov @iamphill @thomasrandolph
 /app/assets/javascripts/diffs
 /app/assets/javascripts/batch_comments/
 /app/assets/javascripts/notes
