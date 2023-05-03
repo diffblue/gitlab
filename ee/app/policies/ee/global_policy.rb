@@ -45,6 +45,11 @@ module EE
         ::License.feature_available?(:service_accounts)
       end
 
+      condition(:instance_external_audit_events_enabled) do
+        ::License.feature_available?(:external_audit_events) &&
+          ::Feature.enabled?(:ff_external_audit_events)
+      end
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       rule { ~anonymous & remote_development_available }.policy do
@@ -85,6 +90,10 @@ module EE
 
       rule { can?(:create_group) }.enable :create_group_via_api
       rule { ~top_level_group_creation_enabled }.prevent :create_group_via_api
+
+      rule { admin & instance_external_audit_events_enabled }.policy do
+        enable :admin_instance_external_audit_events
+      end
     end
   end
 end

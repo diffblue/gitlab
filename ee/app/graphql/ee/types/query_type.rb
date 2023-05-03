@@ -69,8 +69,8 @@ module EE
               authorize: :read_vulnerability,
               description: "Find a vulnerability." do
                 argument :id, ::Types::GlobalIDType[::Vulnerability],
-                  required: true,
-                  description: 'Global ID of the Vulnerability.'
+                required: true,
+                description: 'Global ID of the Vulnerability.'
               end
 
         field :ci_catalog_resources,
