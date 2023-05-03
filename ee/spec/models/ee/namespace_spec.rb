@@ -1396,13 +1396,12 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#namespace_limit' do
-    let(:group) { create(:group, parent: parent) }
-
-    subject(:namespace_limit) { group.namespace_limit }
+  describe '#namespace_limit', feature_category: :consumables_cost_management do
+    let_it_be(:parent) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: parent) }
 
     context 'when there is a parent namespace' do
-      let_it_be(:parent) { create(:group) }
+      subject(:namespace_limit) { subgroup.namespace_limit }
 
       context 'with a namespace limit' do
         it 'returns the parent namespace limit' do
@@ -1415,6 +1414,8 @@ RSpec.describe Namespace do
 
       context 'with no namespace limit' do
         it 'builds namespace limit' do
+          parent.namespace_limit.destroy!
+
           expect(namespace_limit).to be_present
           expect(namespace_limit).not_to be_persisted
         end
@@ -1422,10 +1423,8 @@ RSpec.describe Namespace do
     end
 
     context 'when there is no parent ancestor' do
-      let(:parent) { nil }
-
       context 'for personal namespaces' do
-        let(:namespace) { create(:namespace, parent: parent) }
+        let_it_be(:namespace) { create(:namespace) }
 
         subject(:namespace_limit) { namespace.namespace_limit }
 
@@ -1440,6 +1439,8 @@ RSpec.describe Namespace do
 
         context 'with no namespace limit' do
           it 'builds namespace limit' do
+            namespace.namespace_limit.destroy!
+
             expect(namespace_limit).to be_present
             expect(namespace_limit).not_to be_persisted
           end
@@ -1447,9 +1448,11 @@ RSpec.describe Namespace do
       end
 
       context 'for groups' do
+        subject(:namespace_limit) { parent.namespace_limit }
+
         context 'with a namespace limit' do
           it 'returns the namespace limit' do
-            limit = create(:namespace_limit, namespace: group)
+            limit = create(:namespace_limit, namespace: parent)
 
             expect(namespace_limit).to be_persisted
             expect(namespace_limit).to eq limit
@@ -1458,6 +1461,8 @@ RSpec.describe Namespace do
 
         context 'with no namespace limit' do
           it 'builds namespace limit' do
+            parent.namespace_limit.destroy!
+
             expect(namespace_limit).to be_present
             expect(namespace_limit).not_to be_persisted
           end
