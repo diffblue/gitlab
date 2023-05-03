@@ -63,7 +63,8 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute', feature_categor
   end
 
   context 'when project token is used' do
-    let(:project) { create(:project) }
+    let_it_be(:project) { create(:project, :with_namespace_settings) }
+
     let(:token) { project.runners_token }
     let(:token_scope) { project }
 
