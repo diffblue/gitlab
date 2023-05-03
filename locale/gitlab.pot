@@ -14580,6 +14580,9 @@ msgstr ""
 msgid "DependencyProxy|Clear the Dependency Proxy cache automatically"
 msgstr ""
 
+msgid "DependencyProxy|Configure in settings"
+msgstr ""
+
 msgid "DependencyProxy|Contains %{count} blobs of images (%{size})"
 msgstr ""
 
