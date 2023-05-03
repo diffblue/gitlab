@@ -99,12 +99,22 @@ describe('ProductAnalyticsSetupView', () => {
     });
 
     it.each`
-      instructions                | index
-      ${ESM_SETUP_WITH_NPM}       | ${0}
-      ${COMMON_JS_SETUP_WITH_NPM} | ${1}
-      ${HTML_SCRIPT_SETUP}        | ${2}
-    `('should render instructions at $index', ({ instructions, index }) => {
-      createWrapper();
+      instructions                | index | snowplowFeatureEnabled
+      ${ESM_SETUP_WITH_NPM}       | ${0}  | ${false}
+      ${COMMON_JS_SETUP_WITH_NPM} | ${1}  | ${false}
+      ${HTML_SCRIPT_SETUP}        | ${2}  | ${false}
+      ${ESM_SETUP_WITH_NPM}       | ${0}  | ${true}
+      ${COMMON_JS_SETUP_WITH_NPM} | ${1}  | ${true}
+      ${HTML_SCRIPT_SETUP}        | ${2}  | ${true}
+    `('should render instructions at $index', ({ instructions, index, snowplowFeatureEnabled }) => {
+      createWrapper(
+        {},
+        {
+          glFeatures: {
+            productAnalyticsSnowplowSupport: snowplowFeatureEnabled,
+          },
+        },
+      );
 
       const instructionsWithKeys = wrapper.vm.replaceKeys(instructions);
 
