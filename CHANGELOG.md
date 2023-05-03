@@ -1642,6 +1642,12 @@ entry.
 
 - [Update submit buttons to use Pajamas component](gitlab-org/gitlab@4ffb92755e6be3268c78f02e471f5c2a21f437be) ([merge request](gitlab-org/gitlab!114246))
 
+## 15.9.7 (2023-05-03)
+
+### Security (1 change)
+
+- [Only maintainers of projects should be able to assign runners to them](gitlab-org/security/gitlab@695748314b758ca2d9992df7509025a6ac868000) ([merge request](gitlab-org/security/gitlab!3236))
+
 ## 15.9.6 (2023-05-01)
 
 ### Security (8 changes)
