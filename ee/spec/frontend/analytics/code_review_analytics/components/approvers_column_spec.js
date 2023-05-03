@@ -44,10 +44,6 @@ describe('ApproversColumn component', () => {
     });
   };
 
-  afterEach(() => {
-    if (wrapper) wrapper.destroy();
-  });
-
   const findAvatar = () => wrapper.findComponent(GlAvatarLink);
   const findInlineAvatars = () => wrapper.findComponent(GlAvatarsInline);
 

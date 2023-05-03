@@ -10,13 +10,6 @@ import { PathIdSeparator } from '~/related_issues/constants';
 describe('RelatedIssuesList', () => {
   let wrapper;
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   describe('related item contents', () => {
     beforeAll(() => {
       wrapper = mount(RelatedIssuesList, {

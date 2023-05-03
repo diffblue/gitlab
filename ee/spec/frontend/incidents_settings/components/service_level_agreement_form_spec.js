@@ -27,13 +27,6 @@ describe('Alert integration settings form', () => {
     );
   };
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   const findForm = () => wrapper.findComponent(GlForm);
   const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findSubmitButton = () => wrapper.findComponent(GlButton);

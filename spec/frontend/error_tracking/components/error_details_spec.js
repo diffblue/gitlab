@@ -109,12 +109,6 @@ describe('ErrorDetails', () => {
     };
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   describe('loading', () => {
     beforeEach(() => {
       mountComponent();

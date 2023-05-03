@@ -29,13 +29,6 @@ describe('WeeksHeaderItemComponent', () => {
     mountComponent();
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   const findHeaderLabel = () => wrapper.find('[data-testid="timeline-header-label"]');
 
   describe('lastDayOfCurrentWeek', () => {

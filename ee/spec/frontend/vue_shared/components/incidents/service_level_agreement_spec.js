@@ -58,13 +58,6 @@ describe('Service Level Agreement', () => {
     });
   }
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   beforeEach(() => {
     formatTime.mockImplementation(formatTimeActual);
   });
