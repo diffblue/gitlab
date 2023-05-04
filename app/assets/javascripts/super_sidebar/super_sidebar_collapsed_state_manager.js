@@ -44,7 +44,7 @@ export const initSuperSidebarCollapsedState = (forceDesktopExpandedSidebar = fal
   toggleSuperSidebarCollapsed(collapsed, false);
 };
 
-export const bindSuperSidebarCollapsedEvents = () => {
+export const bindSuperSidebarCollapsedEvents = (forceDesktopExpandedSidebar = false) => {
   let previousWindowWidth = window.innerWidth;
 
   const callback = debounce(() => {
@@ -52,7 +52,7 @@ export const bindSuperSidebarCollapsedEvents = () => {
     const widthChanged = previousWindowWidth !== newWindowWidth;
 
     if (widthChanged) {
-      initSuperSidebarCollapsedState();
+      initSuperSidebarCollapsedState(forceDesktopExpandedSidebar);
     }
     previousWindowWidth = newWindowWidth;
   }, 100);
