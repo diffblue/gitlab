@@ -33,7 +33,7 @@ export default {
     hide() {
       this.$refs.modal.hide();
     },
-    onSuccess(successMessage) {
+    onSuccess({ message: successMessage }) {
       this.$emit('change', successMessage);
     },
   },

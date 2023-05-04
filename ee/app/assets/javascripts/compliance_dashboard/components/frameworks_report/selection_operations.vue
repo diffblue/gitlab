@@ -30,11 +30,16 @@ export default {
       type: String,
       required: true,
     },
+    defaultFramework: {
+      type: Object,
+      required: false,
+      default: () => null,
+    },
   },
   data() {
     return {
       selectedOperation: null,
-      selectedFramework: null,
+      selectedFramework: this.defaultFramework?.id ?? null,
       frameworkSearchQuery: '',
     };
   },
@@ -85,6 +90,10 @@ export default {
   watch: {
     selectedOperation() {
       this.selectedFramework = null;
+    },
+
+    defaultFramework() {
+      this.selectedFramework = this.defaultFramework.id;
     },
   },
 
@@ -155,6 +164,7 @@ export default {
         :disabled="!hasSelection"
         :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
         :root-ancestor-path="rootAncestorPath"
+        @create="$emit('create')"
       />
     </div>
 

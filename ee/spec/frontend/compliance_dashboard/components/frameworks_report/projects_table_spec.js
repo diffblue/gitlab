@@ -1,8 +1,11 @@
-import { GlFormCheckbox, GlLabel, GlLoadingIcon, GlTable } from '@gitlab/ui';
+import { GlFormCheckbox, GlLabel, GlLoadingIcon, GlTable, GlModal } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
+import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { stubComponent } from 'helpers/stub_component';
 
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
@@ -10,6 +13,8 @@ import {
   createComplianceFrameworksResponse,
   createProjectSetComplianceFrameworkResponse,
 } from 'ee_jest/compliance_dashboard/mock_data';
+import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
+import FrameworkSelectionBox from 'ee/compliance_dashboard/components/frameworks_report/framework_selection_box.vue';
 import ProjectsTable from 'ee/compliance_dashboard/components/frameworks_report/projects_table.vue';
 import SelectionOperations from 'ee/compliance_dashboard/components/frameworks_report/selection_operations.vue';
 import { mapProjects } from 'ee/compliance_dashboard/graphql/mappers';
@@ -24,16 +29,27 @@ describe('ProjectsTable component', () => {
   let projectSetComplianceFrameworkMutation;
   let toastMock;
 
+  const GlModalStub = stubComponent(GlModal, { methods: { show: jest.fn(), hide: jest.fn() } });
+
   const groupPath = 'group-path';
   const rootAncestorPath = 'root-ancestor-path';
   const newGroupComplianceFrameworkPath = 'new-framework-path';
 
   const COMPLIANCE_FRAMEWORK_COLUMN_IDX = 3;
+  const ROW_WITH_FRAMEWORK_IDX = 0;
+  const ROW_WITHOUT_FRAMEWORK_IDX = 1;
+
   const findTable = () => wrapper.findComponent(GlTable);
   const findTableHeaders = () => findTable().findAll('th div');
   const findTableRowData = (idx) => findTable().findAll('tbody > tr').at(idx).findAll('td');
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findByTestId('projects-table-empty-state');
+
+  const findModalByModalId = (modalId) =>
+    wrapper.findAllComponents(GlModal).wrappers.find((w) => w.props('modalId') === modalId);
+
+  const findCreateModal = () => findModalByModalId('create-framework-form-modal');
+  const findEditModal = () => findModalByModalId('edit-framework-form-modal');
 
   const findSelectAllCheckbox = () => findTableHeaders().at(0).findComponent(GlFormCheckbox);
   const findSelectedRows = () => findTable().findAll('.b-table-row-selected');
@@ -61,10 +77,12 @@ describe('ProjectsTable component', () => {
         ...props,
       },
       stubs: {
-        FrameworkSelectionBox: {
-          name: 'FrameworkSelectionBox',
+        FrameworkSelectionBox: stubComponent(FrameworkSelectionBox, {
           template: '<div>add-framework-stub</div>',
-        },
+        }),
+        CreateForm: true,
+        EditForm: true,
+        GlModal: GlModalStub,
       },
       mocks: {
         $toast: toastMock,
@@ -252,8 +270,6 @@ describe('ProjectsTable component', () => {
     });
 
     describe('when clicking close sign of framework badge', () => {
-      const ROW_WITH_FRAMEWORK_IDX = 0;
-
       beforeEach(() => {
         findTableRowData(0)
           .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
@@ -279,13 +295,72 @@ describe('ProjectsTable component', () => {
       });
     });
 
-    describe('when add framework selection is made', () => {
-      const NEW_FRAMEWORK_ID = 'new-framework-id';
-      const ROW_WITHOUT_FRAMEWORK_IDX = 1;
+    describe('when new framework requested from framework selection', () => {
       beforeEach(() => {
         findTableRowData(ROW_WITHOUT_FRAMEWORK_IDX)
           .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
-          .findComponent({ name: 'FrameworkSelectionBox' })
+          .findComponent(FrameworkSelectionBox)
+          .vm.$emit('create');
+      });
+
+      it('opens create modal', () => {
+        expect(GlModalStub.methods.show).toHaveBeenCalled();
+      });
+
+      it('when create modal successfully creates framework calls mutation on selected project', () => {
+        const NEW_FRAMEWORK = { id: 'new-framework-id' };
+        findCreateModal()
+          .findComponent(CreateForm)
+          .vm.$emit('success', { framework: NEW_FRAMEWORK });
+        expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledTimes(1);
+        expect(projectSetComplianceFrameworkMutation).toHaveBeenCalledWith({
+          projectId: projects[ROW_WITHOUT_FRAMEWORK_IDX].id,
+          frameworkId: NEW_FRAMEWORK.id,
+        });
+      });
+
+      it('closes modal on cancel', () => {
+        findCreateModal().findComponent(CreateForm).vm.$emit('cancel');
+
+        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      });
+    });
+
+    describe('when edit framework requested from framework badge', () => {
+      beforeEach(() => {
+        findTableRowData(ROW_WITH_FRAMEWORK_IDX)
+          .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+          .findComponent(FrameworkBadge)
+          .vm.$emit('edit');
+      });
+
+      it('opens edit modal with correct props', () => {
+        expect(findEditModal().findComponent(EditForm).props('id')).toEqual(
+          projects[ROW_WITH_FRAMEWORK_IDX].complianceFrameworks[0].id,
+        );
+
+        expect(GlModalStub.methods.show).toHaveBeenCalled();
+      });
+
+      it('closes modal on cancel', () => {
+        findEditModal().findComponent(EditForm).vm.$emit('cancel');
+
+        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      });
+
+      it('closes modal on success', () => {
+        findEditModal().findComponent(EditForm).vm.$emit('success');
+
+        expect(GlModalStub.methods.hide).toHaveBeenCalled();
+      });
+    });
+
+    describe('when add framework selection is made', () => {
+      const NEW_FRAMEWORK_ID = 'new-framework-id';
+      beforeEach(() => {
+        findTableRowData(ROW_WITHOUT_FRAMEWORK_IDX)
+          .at(COMPLIANCE_FRAMEWORK_COLUMN_IDX)
+          .findComponent(FrameworkSelectionBox)
           .vm.$emit('select', NEW_FRAMEWORK_ID);
       });
 

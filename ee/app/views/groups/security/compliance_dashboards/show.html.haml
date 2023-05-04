@@ -4,6 +4,8 @@
 #js-compliance-report{ data: {
   merge_commits_csv_export_path: group_security_merge_commit_reports_path(@group),
   group_path: @group.full_path,
+  group_edit_path: edit_group_path(@group, anchor: 'js-compliance-frameworks-settings'),
   root_ancestor_path: @group.root_ancestor.full_path,
   new_group_compliance_framework_path: new_group_compliance_framework_path(@group),
+  pipeline_configuration_full_path_enabled: can?(current_user, :admin_compliance_pipeline_configuration, @group),
   base_path: group_security_compliance_dashboard_path(@group) } }

@@ -36,9 +36,10 @@ describe('FormModal', () => {
     it('emits the change event on success', async () => {
       expect(wrapper.emitted('change')).toBe(undefined);
 
-      await findCreateForm().vm.$emit('success');
+      const MESSAGE = 'success-message';
+      await findCreateForm().vm.$emit('success', { message: MESSAGE });
 
-      expect(wrapper.emitted('change')).toHaveLength(1);
+      expect(wrapper.emitted('change').at(-1)).toStrictEqual([MESSAGE]);
     });
   });
 
@@ -55,9 +56,10 @@ describe('FormModal', () => {
     it('emits the change event on success', async () => {
       expect(wrapper.emitted('change')).toBe(undefined);
 
-      await findEditForm().vm.$emit('success');
+      const MESSAGE = 'success-message';
+      await findEditForm().vm.$emit('success', { message: MESSAGE });
 
-      expect(wrapper.emitted('change')).toHaveLength(1);
+      expect(wrapper.emitted('change').at(-1)).toStrictEqual([MESSAGE]);
     });
   });
 });

@@ -11302,6 +11302,9 @@ msgstr ""
 msgid "ComplianceReport|Do you want to refresh the filtered results to include your change?"
 msgstr ""
 
+msgid "ComplianceReport|Edit the framework"
+msgstr ""
+
 msgid "ComplianceReport|Framework successfully applied"
 msgstr ""
 

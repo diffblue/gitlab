@@ -1,6 +1,7 @@
 <script>
-import { GlBadge, GlLabel } from '@gitlab/ui';
+import { GlBadge, GlButton, GlLabel, GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
 
 import { FRAMEWORK_BADGE_SIZE_MD, FRAMEWORK_BADGE_SIZES } from '../../constants';
 
@@ -9,6 +10,8 @@ export default {
   components: {
     GlLabel,
     GlBadge,
+    GlButton,
+    GlPopover,
   },
   props: {
     framework: {
@@ -33,26 +36,49 @@ export default {
     },
   },
   computed: {
+    isModalsRefactorEnabled,
     showDefaultBadge() {
       return this.showDefault && this.framework.default;
     },
   },
+  methods: {
+    editFromPopover() {
+      this.$refs.popover.$emit('close');
+      this.$emit('edit');
+    },
+  },
   i18n: {
     default: s__('ComplianceFrameworks|default'),
+    edit: s__('ComplianceReport|Edit the framework'),
   },
 };
 </script>
 <template>
-  <div>
-    <gl-label
-      data-qa-selector="framework_label"
-      :background-color="framework.color"
-      :description="framework.description"
-      :title="framework.name"
-      :size="size"
-      :show-close-button="closeable"
-      @close="$emit('close')"
-    />
+  <div ref="badge">
+    <gl-popover ref="popover" :target="() => $refs.label">
+      <p v-if="framework.description" class="gl-text-left">{{ framework.description }}</p>
+      <div class="gl-text-left">
+        <gl-button
+          v-if="isModalsRefactorEnabled"
+          category="tertiary"
+          variant="confirm"
+          class="gl-font-sm"
+          @click="editFromPopover"
+        >
+          {{ $options.i18n.edit }}
+        </gl-button>
+      </div>
+    </gl-popover>
+    <span ref="label">
+      <gl-label
+        data-qa-selector="framework_label"
+        :background-color="framework.color"
+        :title="framework.name"
+        :size="size"
+        :show-close-button="closeable"
+        @close="$emit('close')"
+      />
+    </span>
     <gl-badge v-if="showDefaultBadge" :size="size" variant="info" data-qa-selector="framework_badge"
       >{{ $options.i18n.default }}
     </gl-badge>
