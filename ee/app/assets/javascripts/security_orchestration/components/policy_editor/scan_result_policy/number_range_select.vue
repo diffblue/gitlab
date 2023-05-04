@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { DEFAULT_NUMBER_RANGE_OPERATORS, ANY_OPERATOR, NUMBER_RANGE_I18N_MAP } from '../constants';
+import { ANY_OPERATOR, NUMBER_RANGE_I18N_MAP } from '../constants';
 
 export default {
   components: {
@@ -22,20 +22,19 @@ export default {
       type: String,
       required: true,
     },
-    selectedOperator: {
+    operators: {
+      type: Array,
+      required: true,
+    },
+    selected: {
       type: String,
       required: false,
       default: null,
     },
-    operators: {
-      type: Array,
-      required: false,
-      default: () => DEFAULT_NUMBER_RANGE_OPERATORS,
-    },
   },
   data() {
     return {
-      operator: this.selectedOperator || this.operators[0],
+      operator: this.selected || this.operators[0],
     };
   },
   computed: {
