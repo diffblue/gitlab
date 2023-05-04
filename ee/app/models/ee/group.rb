@@ -62,6 +62,7 @@ module EE
       has_one :group_merge_request_approval_setting, inverse_of: :group
 
       has_one :deletion_schedule, class_name: 'GroupDeletionSchedule'
+
       has_one :group_wiki_repository
       has_many :repository_storage_moves, class_name: 'Groups::RepositoryStorageMove', inverse_of: :container
 
@@ -73,9 +74,11 @@ module EE
 
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
 
-      delegate :repository_read_only, :code_suggestions, :code_suggestions=,
+      delegate :repository_read_only,
+               :code_suggestions, :code_suggestions=,
                :experiment_features_enabled, :experiment_features_enabled=,
                :third_party_ai_features_enabled, :third_party_ai_features_enabled=,
+               :default_compliance_framework_id,
                to: :namespace_settings, allow_nil: true
 
       delegate :ai_settings_allowed?,

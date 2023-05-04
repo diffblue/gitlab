@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'email_spec'
 
-RSpec.describe Notify do
+RSpec.describe Notify, feature_category: :not_owned do # rubocop:disable RSpec/InvalidFeatureCategory
   include EmailSpec::Helpers
   include EmailSpec::Matchers
   include EmailHelpers
@@ -226,8 +226,9 @@ RSpec.describe Notify do
   end
 
   context 'for a group' do
+    let_it_be(:group) { create(:group) }
+
     describe 'for epics' do
-      let_it_be(:group) { create(:group) }
       let_it_be(:epic) { create(:epic, group: group) }
 
       context 'that are new' do
@@ -293,6 +294,23 @@ RSpec.describe Notify do
 
         it_behaves_like 'a note email'
       end
+    end
+
+    describe 'for compliance frameworks' do
+      let_it_be(:fedramp) { create :compliance_framework, name: 'FedRamp', namespace: group }
+
+      subject do
+        described_class.compliance_frameworks_csv_email(
+          user: current_user,
+          group: group,
+          attachment: "csv_data",
+          filename: "filename.csv"
+        )
+      end
+
+      it_behaves_like 'an email sent from GitLab'
+      it { have_subject "#{group.name} | Compliance Framework Export" }
+      it { is_expected.to have_body_text('Your Compliance Frameworks CSV export for the group') }
     end
   end
 

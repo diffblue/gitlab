@@ -18,6 +18,7 @@ module EE
       include ::Emails::InProductMarketing
       include ::Emails::MergeCommits
       include ::Emails::AbandonedTrialNotification
+      include ::Emails::ComplianceFrameworks
     end
 
     attr_reader :group
