@@ -152,7 +152,7 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
 
   shared_examples 'bulk edit health_status with insufficient permissions' do
     it 'cannot bulk assign health_status', :aggregate_failures do
-      expect(page).not_to have_button 'Edit issues'
+      expect(page).not_to have_button 'Bulk edit'
       expect(page).not_to have_unchecked_field 'Select all'
       expect(page).not_to have_unchecked_field issue1.title
     end
@@ -233,6 +233,6 @@ RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
 
     wait_for_requests
 
-    click_button 'Edit issues'
+    click_button 'Bulk edit'
   end
 end

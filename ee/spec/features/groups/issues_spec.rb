@@ -16,8 +16,8 @@ RSpec.describe 'Group issues page', feature_category: :team_planning do
       visit issues_group_path(group)
     end
 
-    it 'shows sidebar when clicked on "Edit issues"' do
-      click_button 'Edit issues'
+    it 'shows sidebar when clicked on "Bulk edit"' do
+      click_button 'Bulk edit'
 
       page.within('.js-right-sidebar') do
         expect(page).to have_selector('.issuable-sidebar', visible: true)
@@ -25,7 +25,7 @@ RSpec.describe 'Group issues page', feature_category: :team_planning do
     end
 
     it 'shows group milestones within "Milestone" dropdown' do
-      click_button 'Edit issues'
+      click_button 'Bulk edit'
 
       click_button 'Select milestone'
 

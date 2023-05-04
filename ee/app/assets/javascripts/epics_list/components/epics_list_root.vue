@@ -291,7 +291,7 @@ export default {
         v-if="canBulkEditEpics"
         :disabled="showBulkEditSidebar"
         @click="showBulkEditSidebar = true"
-        >{{ __('Edit epics') }}</gl-button
+        >{{ __('Bulk edit') }}</gl-button
       >
       <gl-button
         v-if="canCreateEpic"
