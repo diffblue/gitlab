@@ -164,6 +164,10 @@ RSpec.describe 'New project', :js, feature_category: :projects do
         allow(octokit).to receive(:access_token).and_return('fake-token')
 
         fill_in 'personal_access_token', with: 'fake-token'
+
+        stub_request(:get, 'https://api.github.com/user/orgs?page=1&per_page=25')
+          .to_return(status: 200, body: [].to_json, headers: { 'Content-Type' => 'application/json' })
+
         click_button 'Authenticate'
         wait_for_requests
 
