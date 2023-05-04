@@ -19,7 +19,7 @@ exports[`Snippet Description Edit component rendering matches the snapshot 1`] =
       <gl-form-input-stub
         class="form-control"
         data-qa-selector="description_placeholder"
-        placeholder="Optionally add a description about what your snippet does or how to use it…"
+        placeholder="Describe what your snippet does or how to use it…"
       />
     </div>
      
