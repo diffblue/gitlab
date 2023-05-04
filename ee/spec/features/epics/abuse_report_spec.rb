@@ -19,7 +19,7 @@ RSpec.describe 'Abuse reports on epics', :js, feature_category: :insider_threat 
 
       before do
         visit group_epic_path(group, epic)
-        click_button 'More actions'
+        find('.more-actions-toggle button').click
       end
 
       it_behaves_like 'reports the user with an abuse category'
