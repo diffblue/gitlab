@@ -1,4 +1,4 @@
-import { GlLabel, GlBadge } from '@gitlab/ui';
+import { GlLabel, GlButton, GlBadge, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
@@ -9,7 +9,9 @@ describe('FrameworkBadge component', () => {
   let wrapper;
 
   const findLabel = () => wrapper.findComponent(GlLabel);
+  const findTooltip = () => wrapper.findComponent(GlPopover);
   const findDefaultBadge = () => wrapper.findComponent(GlBadge);
+  const findEditButton = () => wrapper.findComponent(GlPopover).findComponent(GlButton);
 
   const createComponent = (props = {}) => {
     return shallowMount(FrameworkBadge, {
@@ -20,14 +22,35 @@ describe('FrameworkBadge component', () => {
   };
 
   describe('default behavior', () => {
+    describe('when modal refactor feature flag is enabled', () => {
+      beforeEach(() => {
+        window.gon = { features: { manageComplianceFrameworksModalsRefactor: true } };
+        wrapper = createComponent({ framework: complianceFramework });
+      });
+
+      it('renders edit link', () => {
+        expect(findEditButton().exists()).toBe(true);
+      });
+
+      it('emits edit event when edit link is clicked', async () => {
+        await findEditButton().vm.$emit('click', new MouseEvent('click'));
+        expect(wrapper.emitted('edit')).toHaveLength(1);
+      });
+    });
+
+    it('does not render edit link without relevant feature flag', () => {
+      wrapper = createComponent({ framework: complianceFramework });
+      expect(findEditButton().exists()).toBe(false);
+    });
+
     it('renders the framework label', () => {
       wrapper = createComponent({ framework: complianceFramework });
 
       expect(findLabel().props()).toMatchObject({
         backgroundColor: '#009966',
-        description: 'General Data Protection Regulation',
-        title: 'GDPR',
+        title: complianceFramework.name,
       });
+      expect(findTooltip().text()).toContain(complianceFramework.description);
     });
 
     it('renders the default badge when the framework is default', () => {

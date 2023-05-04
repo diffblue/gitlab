@@ -155,5 +155,27 @@ describe('SelectionOperations component', () => {
     it('displays correct text', () => {
       expect(wrapper.text()).toContain(`${COUNT} selected`);
     });
+
+    it('re-emits create from framework selection box', async () => {
+      select(findOperationDropdown(), SelectionOperations.operations.APPLY_OPERATION);
+
+      await nextTick();
+
+      findFrameworkSelectionDropdown().vm.$emit('create');
+
+      expect(wrapper.emitted('create')).toHaveLength(1);
+    });
+
+    it('correctly updates selected framework when defaultFramework prop is updated', async () => {
+      const NEW_FRAMEWORK_ID = 'new-framework-id';
+
+      select(findOperationDropdown(), SelectionOperations.operations.APPLY_OPERATION);
+      await nextTick();
+
+      await wrapper.setProps({ defaultFramework: { id: NEW_FRAMEWORK_ID } });
+      await nextTick();
+
+      expect(findFrameworkSelectionDropdown().props('selected')).toBe(NEW_FRAMEWORK_ID);
+    });
   });
 });
