@@ -762,6 +762,9 @@ msgstr ""
 msgid "%{integrations_link_start}Integrations%{link_end} enable you to make third-party applications part of your GitLab workflow. If the available integrations don't meet your needs, consider using a %{webhooks_link_start}webhook%{link_end}."
 msgstr ""
 
+msgid "%{issuableDisplayName} %{lockStatus}."
+msgstr ""
+
 msgid "%{issuableType} will be removed! Are you sure?"
 msgstr ""
 
@@ -12142,6 +12145,9 @@ msgstr ""
 msgid "Copy %{http_label} clone URL"
 msgstr ""
 
+msgid "Copy %{issueType} email address"
+msgstr ""
+
 msgid "Copy %{name}"
 msgstr ""
 
@@ -16267,6 +16273,9 @@ msgid "Email Notification"
 msgstr ""
 
 msgid "Email a new %{name} to this project"
+msgstr ""
+
+msgid "Email address copied"
 msgstr ""
 
 msgid "Email address suffix"
@@ -21741,6 +21750,12 @@ msgstr ""
 msgid "Header message"
 msgstr ""
 
+msgid "HeaderAction|Notifications and other %{issueType} actions have moved to this menu."
+msgstr ""
+
+msgid "HeaderAction|Okay!"
+msgstr ""
+
 msgid "HeaderAction|incident"
 msgstr ""
 
@@ -26699,6 +26714,9 @@ msgstr ""
 msgid "Lock %{issuableDisplayName}"
 msgstr ""
 
+msgid "Lock %{issuableType}"
+msgstr ""
+
 msgid "Lock File?"
 msgstr ""
 
@@ -26706,9 +26724,6 @@ msgid "Lock memberships to LDAP synchronization"
 msgstr ""
 
 msgid "Lock memberships to SAML Group Links synchronization"
-msgstr ""
-
-msgid "Lock merge request"
 msgstr ""
 
 msgid "Lock not found"
@@ -27702,9 +27717,6 @@ msgstr ""
 msgid "Merge request events"
 msgstr ""
 
-msgid "Merge request locked."
-msgstr ""
-
 msgid "Merge request not merged"
 msgstr ""
 
@@ -27712,9 +27724,6 @@ msgid "Merge request reports"
 msgstr ""
 
 msgid "Merge request status"
-msgstr ""
-
-msgid "Merge request unlocked."
 msgstr ""
 
 msgid "Merge request was scheduled to merge after pipeline succeeds"
@@ -36858,6 +36867,9 @@ msgid "Reduce risk and triage fewer vulnerabilities with security training"
 msgstr ""
 
 msgid "Reference"
+msgstr ""
+
+msgid "Reference copied"
 msgstr ""
 
 msgid "References"
@@ -47585,10 +47597,10 @@ msgstr ""
 msgid "Unlock"
 msgstr ""
 
-msgid "Unlock account"
+msgid "Unlock %{issuableType}"
 msgstr ""
 
-msgid "Unlock merge request"
+msgid "Unlock account"
 msgstr ""
 
 msgid "Unlock more features with GitLab Ultimate"
@@ -53232,6 +53244,9 @@ msgstr ""
 msgid "loading"
 msgstr ""
 
+msgid "locked"
+msgstr ""
+
 msgid "locked by %{path_lock_user_name} %{created_at}"
 msgstr ""
 
@@ -54140,6 +54155,9 @@ msgid "type parameter is missing and is required"
 msgstr ""
 
 msgid "unicode domains should use IDNA encoding"
+msgstr ""
+
+msgid "unlocked"
 msgstr ""
 
 msgid "updated"
