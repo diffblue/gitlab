@@ -158,7 +158,7 @@ export default {
     @action="$refs.dropdown.close()"
   >
     <template #toggle>
-      <gl-button category="tertiary" class="gl-px-3!">
+      <gl-button category="tertiary" size="small" class="gl-mr-3 gl-px-2!">
         <gl-loading-icon v-if="loading" />
         <gl-icon v-else name="tanuki" />
       </gl-button>

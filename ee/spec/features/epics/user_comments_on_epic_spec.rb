@@ -40,7 +40,7 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
       fill_in 'Comment', with: "#{epic2.to_reference(full: true)}+"
 
       page.within('.new-note') do
-        click_link('Preview')
+        click_button("Preview")
         wait_for_requests
 
         within('.md-preview-holder') do
