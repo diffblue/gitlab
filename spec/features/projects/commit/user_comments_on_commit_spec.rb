@@ -109,7 +109,7 @@ RSpec.describe "User comments on commit", :js, feature_category: :source_code_ma
         note.hover
 
         find(".more-actions").click
-        find(".more-actions .dropdown-menu li", match: :first)
+        find(".more-actions li", match: :first)
 
         find(".js-note-delete").click
       end

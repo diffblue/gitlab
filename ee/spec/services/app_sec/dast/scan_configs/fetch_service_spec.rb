@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AppSec::Dast::ScanConfigs::FetchService do
+RSpec.describe AppSec::Dast::ScanConfigs::FetchService, feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:namespace, owner: user) }
   let_it_be(:project) { create(:project, :repository, namespace: namespace) }
@@ -83,7 +83,7 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService do
       context 'with a large .gitlab-ci.yml' do
         before do
           allow_next_instance_of(::Gitlab::Config::Loader::Yaml) do |loader|
-            allow(loader).to receive(:valid?).and_return(false)
+            allow(loader).to receive(:load!).and_raise(::Gitlab::Config::Loader::Yaml::DataTooLargeError)
           end
         end
 

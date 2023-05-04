@@ -13,6 +13,7 @@ describe('NumberRangeSelect', () => {
     id: 'test-dropdown',
     value: 0,
     label: 'Test dropdown',
+    operators: [ANY_OPERATOR, MORE_THAN_OPERATOR],
   };
 
   const createComponent = (propsData = {}) => {
@@ -29,18 +30,18 @@ describe('NumberRangeSelect', () => {
 
   describe('initial rendering', () => {
     it.each`
-      selectedOperator      | inputExists
+      selected              | inputExists
       ${ANY_OPERATOR}       | ${false}
       ${MORE_THAN_OPERATOR} | ${true}
-    `('renders input based on operator with', ({ selectedOperator, inputExists }) => {
-      createComponent({ selectedOperator });
+    `('renders input based on operator with', ({ selected, inputExists }) => {
+      createComponent({ selected });
 
       const operator = findOperator();
 
       expect(operator.exists()).toBe(true);
       expect(findInput().exists()).toBe(inputExists);
 
-      expect(operator.props('selected')).toBe(selectedOperator);
+      expect(operator.props('selected')).toBe(selected);
     });
 
     it('renders default operators', () => {
@@ -76,7 +77,7 @@ describe('NumberRangeSelect', () => {
     });
 
     it('shows the number input when changing to MORE_THAN_OPERATOR', async () => {
-      createComponent({ selectedOperator: ANY_OPERATOR });
+      createComponent({ selected: ANY_OPERATOR });
 
       await findOperator().vm.$emit('select', MORE_THAN_OPERATOR);
 
@@ -85,7 +86,7 @@ describe('NumberRangeSelect', () => {
     });
 
     it('hides the number input when changing to ANY_OPERATOR', async () => {
-      createComponent({ selectedOperator: MORE_THAN_OPERATOR, value: 2 });
+      createComponent({ selected: MORE_THAN_OPERATOR, value: 2 });
 
       await findOperator().vm.$emit('select', ANY_OPERATOR);
 
@@ -94,7 +95,7 @@ describe('NumberRangeSelect', () => {
   });
 
   it('emits underlying input changes', async () => {
-    createComponent({ selectedOperator: MORE_THAN_OPERATOR, value: 2 });
+    createComponent({ selected: MORE_THAN_OPERATOR, value: 2 });
 
     await findInput().vm.$emit('input', '3');
 

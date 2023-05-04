@@ -167,7 +167,7 @@ export default {
                   id="vulnerabilities-allowed"
                   v-model="vulnerabilitiesAllowed"
                   :label="$options.i18n.vulnerabilitiesAllowed"
-                  :selected-operator="selectedVulnerabilitiesOperator"
+                  :selected="selectedVulnerabilitiesOperator"
                   :operators="$options.VULNERABILITIES_ALLOWED_OPERATORS"
                   @operator-change="handleVulnerabilitiesAllowedOperatorChange"
                 />

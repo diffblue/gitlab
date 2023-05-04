@@ -9,7 +9,7 @@ Vue.use(GlToast);
 export default {
   name: 'DashboardsApp',
   created() {
-    this.$router.addRoutes([
+    [
       {
         name: 'index',
         path: '',
@@ -39,7 +39,7 @@ export default {
         // This is the main action that occurs after the list is shown so we preload it rather than lazy importing
         component: AnalyticsDashboard,
       },
-    ]);
+    ].forEach((route) => this.$router.addRoute(route));
   },
 };
 </script>

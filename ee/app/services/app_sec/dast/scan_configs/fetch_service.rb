@@ -75,13 +75,9 @@ module AppSec
         end
 
         def load_yml(data)
-          loader = Gitlab::Config::Loader::Yaml.new(data)
-
-          if loader.valid?
-            loader.load!
-          else
-            errors.push(_('The parsed YAML is too big'))
-          end
+          ::Gitlab::Ci::Config::Yaml.load!(data)
+        rescue ::Gitlab::Config::Loader::FormatError
+          errors.push(_('The parsed YAML is too big'))
         end
       end
     end
