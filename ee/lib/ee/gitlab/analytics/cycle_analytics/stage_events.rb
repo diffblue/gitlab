@@ -18,11 +18,13 @@ module EE
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited => 7,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded => 8,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved => 9,
+            ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt => 11,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestClosed => 105,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastEdited => 106,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded => 107,
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved => 108,
-            ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstCommitAt => 109
+            ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstCommitAt => 109,
+            ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt => 110
           }.freeze
 
           EE_EVENTS = EE_ENUM_MAPPING.keys.freeze
@@ -31,10 +33,12 @@ module EE
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved => [
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueCreated => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
@@ -43,7 +47,8 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstMentionedInCommit,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAddedToBoard => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
@@ -51,7 +56,8 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstMentionedInCommit,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssociatedWithMilestone => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
@@ -59,7 +65,8 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstMentionedInCommit,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstMentionedInCommit => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
@@ -67,9 +74,19 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAddedToBoard,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed => [
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
+            ],
+            ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssignedAt => [
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueClosed,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAddedToBoard,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstAssociatedWithMilestone,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueFirstMentionedInCommit,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelAdded,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::IssueLabelRemoved
@@ -82,7 +99,8 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestMerged
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestMerged,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestCreated => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestClosed,
@@ -91,7 +109,8 @@ module EE
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastBuildFinished,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastEdited,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestClosed => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstDeployedToProduction,
@@ -135,9 +154,20 @@ module EE
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded => [
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved,
-              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestMerged
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestMerged,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt
             ],
             ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved => [
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt
+            ],
+            ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstAssignedAt => [
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestClosed,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastBuildStarted,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestFirstDeployedToProduction,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLastEdited,
+              ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestMerged,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelAdded,
               ::Gitlab::Analytics::CycleAnalytics::StageEvents::MergeRequestLabelRemoved
             ]
