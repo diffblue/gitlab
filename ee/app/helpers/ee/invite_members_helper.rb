@@ -55,7 +55,7 @@ module EE
 
       {
         alert_variant: alert_variant,
-        new_trial_registration_path: new_trial_path,
+        new_trial_registration_path: new_trial_path(namespace_id: source.root_ancestor.id),
         members_path: group_usage_quotas_path(source.root_ancestor),
         purchase_path: group_billings_path(source.root_ancestor),
         remaining_seats: free_user_cap.remaining_seats,

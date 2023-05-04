@@ -72,7 +72,7 @@ RSpec.describe 'Trial lead submission and creation with one eligible namespace',
       expect_to_be_on_namespace_selection_with_errors
 
       # success
-      fill_in_trial_selection_form(from: group.name)
+      fill_in_trial_selection_form(group_select: false)
 
       submit_trial_selection_form
 

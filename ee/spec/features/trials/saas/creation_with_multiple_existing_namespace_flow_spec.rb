@@ -30,6 +30,28 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       expect_to_be_on_group_page
     end
 
+    context 'when new trial is selected from within an existing namespace' do
+      it 'fills out form, has the existing namespace preselected, submits and lands on the group page' do
+        glm_params = { glm_source: '_glm_source_', glm_content: '_glm_content_' }
+
+        sign_in(user)
+
+        visit new_trial_path(namespace_id: group.id, **glm_params)
+
+        fill_in_company_information
+
+        submit_company_information_form(extra_params: glm_params)
+
+        expect_to_be_on_namespace_selection
+
+        fill_in_trial_selection_form(from: group.name)
+
+        submit_trial_selection_form(extra_params: glm_params)
+
+        expect_to_be_on_group_page
+      end
+    end
+
     context 'when part of the discover security flow' do
       it 'fills out form, submits and lands on the group security dashboard page' do
         sign_in(user)

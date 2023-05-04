@@ -9,6 +9,10 @@
   max-width: $wide-drawer;
   width: 100%;
 
+  .legal-warning {
+    margin-bottom: calc(-#{$gl-spacing-scale-5} - #{$gl-spacing-scale-1});
+  }
+
   .tanuki-bot-chat-input-field {
     max-height: 200px;
     height: 2rem;

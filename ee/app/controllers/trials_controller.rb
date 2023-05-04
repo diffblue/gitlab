@@ -34,7 +34,7 @@ class TrialsController < ApplicationController
       redirect_to trial_success_path(result.payload[:namespace])
     elsif result.reason == :no_namespace
       # lead created, but we now need to select namespace and then apply a trial
-      redirect_to select_trials_path(glm_tracking_params)
+      redirect_to select_trials_path(params.permit(:namespace_id).merge(glm_tracking_params))
     elsif result.reason == :not_found
       # namespace not found/not permitted to create
       render_404

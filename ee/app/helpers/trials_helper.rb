@@ -5,14 +5,14 @@ module TrialsHelper
 
   def create_lead_form_data
     {
-      submit_path: create_lead_trials_path(step: :lead, **glm_params),
+      submit_path: create_lead_trials_path(step: :lead, **params.permit(:namespace_id).merge(glm_params)),
       first_name: current_user.first_name,
       last_name: current_user.last_name,
       company_name: current_user.organization
     }.merge(
-      params.slice(
+      params.permit(
         :first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state
-      ).to_unsafe_h.symbolize_keys
+      ).to_h.symbolize_keys
     )
   end
 

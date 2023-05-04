@@ -46,7 +46,7 @@ RSpec.describe EE::InviteMembersHelper, feature_category: :onboarding do
           'alert_variant' => expected_variant,
           'free_users_limit' => ::Namespaces::FreeUserCap.dashboard_limit,
           'remaining_seats' => expected_remaining_seats,
-          'new_trial_registration_path' => new_trial_path,
+          'new_trial_registration_path' => new_trial_path(namespace_id: group.id),
           'purchase_path' => group_billings_path(project.root_ancestor),
           'members_path' => group_usage_quotas_path(project.root_ancestor)
         }

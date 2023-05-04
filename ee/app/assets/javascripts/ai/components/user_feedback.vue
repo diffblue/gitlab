@@ -50,7 +50,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-mt-6">
+  <div class="gl-display-flex gl-mt-6 gl-pb-5">
     <template v-if="!feedbackValue">
       <gl-button
         v-for="option in $options.feedbackOptions"
