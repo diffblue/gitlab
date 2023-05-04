@@ -242,8 +242,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'includes users' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
-          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['users'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
         end
       end
 
@@ -253,8 +253,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'includes groups' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
-          expect(rule['groups'].map { |group| group['id'] }).to contain_exactly(group.id, other_group.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['groups'].pluck('id')).to contain_exactly(group.id, other_group.id)
         end
       end
 
@@ -264,8 +264,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'includes users' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
-          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['users'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
         end
       end
 
@@ -276,8 +276,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'includes users' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(approver.id, other_approver.id)
-          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
+          expect(rule['users'].pluck('id')).to contain_exactly(approver.id, other_approver.id)
         end
       end
 
@@ -402,8 +402,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'changes users' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
-          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(new_approver.id, existing_approver.id)
+          expect(rule['users'].pluck('id')).to contain_exactly(new_approver.id, existing_approver.id)
         end
       end
 
@@ -413,8 +413,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'changes groups' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(new_approver.id, other_approver.id)
-          expect(rule['groups'].map { |group| group['id'] }).to contain_exactly(new_group.id, other_group.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(new_approver.id, other_approver.id)
+          expect(rule['groups'].pluck('id')).to contain_exactly(new_group.id, other_group.id)
         end
       end
 
@@ -444,8 +444,8 @@ RSpec.describe API::MergeRequestApprovalRules, feature_category: :source_code_ma
         it 'includes users' do
           rule = json_response
 
-          expect(rule['eligible_approvers'].map { |approver| approver['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
-          expect(rule['users'].map { |user| user['id'] }).to contain_exactly(new_approver.id, existing_approver.id)
+          expect(rule['eligible_approvers'].pluck('id')).to contain_exactly(new_approver.id, existing_approver.id)
+          expect(rule['users'].pluck('id')).to contain_exactly(new_approver.id, existing_approver.id)
         end
       end
     end
