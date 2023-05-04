@@ -386,12 +386,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
 
     it 'can search for an epic in the search bar' do
       fill_in 'Search', with: 'Epic 1'
-
-      page.within('[data-testid="epic-filtered-search"]') do
-        find('input').native.send_keys(:return)
-      end
-
-      wait_for_requests
+      send_keys :enter, :enter
 
       expect(list_header(label_list)).to have_content('1')
       expect(page).to have_content('Epic1')

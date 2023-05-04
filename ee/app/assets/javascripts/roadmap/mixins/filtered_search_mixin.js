@@ -358,7 +358,6 @@ export default {
       const orAuthors = [];
       const notLabels = [];
       const orLabels = [];
-      const plainText = [];
 
       filters.forEach((filter) => {
         switch (filter.type) {
@@ -404,7 +403,9 @@ export default {
             filterParams.in = filter.value.data;
             break;
           case FILTERED_SEARCH_TERM:
-            if (filter.value.data) plainText.push(filter.value.data);
+            if (filter.value.data) {
+              filterParams.search = filter.value.data;
+            }
             break;
           default:
             break;
@@ -424,10 +425,6 @@ export default {
       }
       if (orLabels.length) {
         filterParams[`or[labelName]`] = orLabels;
-      }
-
-      if (plainText.length) {
-        filterParams.search = plainText.join(' ');
       }
 
       return filterParams;

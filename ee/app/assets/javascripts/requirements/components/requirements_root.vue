@@ -623,7 +623,7 @@ export default {
     handleFilterRequirements(filters = []) {
       const authors = [];
       let status = '';
-      const textSearch = [];
+      let textSearch = '';
 
       filters.forEach((filter) => {
         switch (filter.type) {
@@ -636,7 +636,9 @@ export default {
             status = filter.value.data;
             break;
           case FILTERED_SEARCH_TERM:
-            if (filter.value.data) textSearch.push(filter.value.data);
+            if (filter.value.data) {
+              textSearch = filter.value.data;
+            }
             break;
           default:
             break;
@@ -645,12 +647,12 @@ export default {
 
       this.authorUsernames = [...authors];
       this.status = status;
-      this.textSearch = textSearch.join(' ');
+      this.textSearch = textSearch;
       this.currentPage = 1;
       this.prevPageCursor = '';
       this.nextPageCursor = '';
 
-      if (textSearch.length || authors.length || status) {
+      if (textSearch || authors.length || status) {
         this.track('filter', {
           property: JSON.stringify(filters),
         });
@@ -720,6 +722,7 @@ export default {
       :initial-filter-value="getFilteredSearchValue()"
       :initial-sort-by="sortBy"
       recent-searches-storage-key="requirements"
+      terms-as-tokens
       class="row-content-block"
       @onFilter="handleFilterRequirements"
       @onSort="handleSortRequirements"
