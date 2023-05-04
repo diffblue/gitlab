@@ -12,6 +12,7 @@ const WORKSPACE = {
   url: `${TEST_HOST}/workspace/1`,
   devfileRef: 'main',
   devfilePath: '.devfile.yaml',
+  createdAt: '2023-05-01T18:24:34Z',
 };
 
 export const WORKSPACE_QUERY_RESULT = {
@@ -36,6 +37,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
             projectId: 'gid://gitlab/Project/2',
+            createdAt: '2023-04-29T18:24:34Z',
           },
           {
             id: 'gid://gitlab/RemoteDevelopment::Workspace/1',
@@ -47,6 +49,7 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             devfileRef: 'main',
             devfilePath: '.devfile.yaml',
             projectId: 'gid://gitlab/Project/2',
+            createdAt: '2023-05-01T18:24:34Z',
           },
         ],
       },

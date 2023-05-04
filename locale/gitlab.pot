@@ -50853,6 +50853,9 @@ msgstr ""
 msgid "Workspaces|Terminate"
 msgstr ""
 
+msgid "Workspaces|Terminated"
+msgstr ""
+
 msgid "Workspaces|Terminating"
 msgstr ""
 

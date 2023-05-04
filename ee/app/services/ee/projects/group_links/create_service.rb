@@ -8,7 +8,7 @@ module EE
 
         override :execute
         def execute
-          return error(error_message, 409) unless allowed_to_be_shared_with?
+          return error(error_message, 409) if shared_with_group && !allowed_to_be_shared_with?
 
           super
         end

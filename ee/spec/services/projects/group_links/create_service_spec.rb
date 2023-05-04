@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
+RSpec.describe Projects::GroupLinks::CreateService, '#execute', feature_category: :projects do
   include ProjectForksHelper
 
   let_it_be(:user) { create :user }
@@ -71,7 +71,7 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
     subject { described_class.new(project, group_to_invite, user, opts) }
 
     before do
-      group_to_invite.add_developer(user)
+      group_to_invite&.add_developer(user)
       stub_licensed_features(group_saml: true)
     end
 
@@ -146,6 +146,17 @@ RSpec.describe Projects::GroupLinks::CreateService, '#execute' do
 
           expect(group_link.group_id).to eq(group_to_invite.id)
           expect(group_link.project_id).to eq(forked_project.id)
+        end
+      end
+
+      context 'when group to invite is missing' do
+        let(:group_to_invite) { nil }
+
+        it 'returns error status and message' do
+          result = subject.execute
+
+          expect(result[:message]).to eq('Not Found')
+          expect(result[:status]).to eq(:error)
         end
       end
     end

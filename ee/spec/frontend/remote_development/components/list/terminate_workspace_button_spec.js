@@ -30,6 +30,7 @@ describe('TerminateWorkspaceButton', () => {
     ${WORKSPACE_STATES.stopped}           | ${true}          | ${'visible'}
     ${WORKSPACE_STATES.error}             | ${true}          | ${'visible'}
     ${WORKSPACE_STATES.failed}            | ${true}          | ${'visible'}
+    ${WORKSPACE_STATES.terminating}       | ${true}          | ${'visible'}
     ${WORKSPACE_STATES.unknown}           | ${false}         | ${'hidden'}
     ${WORKSPACE_STATES.terminated}        | ${false}         | ${'hidden'}
   `(

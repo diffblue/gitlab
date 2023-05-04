@@ -4,11 +4,13 @@ import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
+import { getDayDifference } from '~/lib/utils/datetime_utility';
 import {
   WORKSPACE_STATES,
   ROUTES,
   WORKSPACE_DESIRED_STATES,
   WORKSPACES_LIST_POLL_INTERVAL,
+  EXCLUDED_WORKSPACE_AGE_IN_DAYS,
 } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import workspaceUpdateMutation from '../graphql/mutations/workspace_update.mutation.graphql';
@@ -18,6 +20,28 @@ import TerminateWorkspaceButton from '../components/list/terminate_workspace_but
 import StartWorkspaceButton from '../components/list/start_workspace_button.vue';
 import StopWorkspaceButton from '../components/list/stop_workspace_button.vue';
 import RestartWorkspaceButton from '../components/list/restart_workspace_button.vue';
+
+const isTerminated = (w) => w.actualState === WORKSPACE_STATES.terminated;
+
+// Moves terminated workspaces to the end of the list
+const sortWorkspacesByTerminatedState = (workspaceA, workspaceB) => {
+  const isWorkspaceATerminated = isTerminated(workspaceA);
+  const isWorkspaceBTerminated = isTerminated(workspaceB);
+
+  if (isWorkspaceATerminated === isWorkspaceBTerminated) {
+    return 0; // Preserve default order when neither workspace is terminated, or both workspaces are terminated.
+  } else if (isWorkspaceATerminated) {
+    return 1; // Place workspaceA after workspaceB since it is terminated.
+  }
+
+  return -1; // Place workspaceA before workspaceB since it is not terminated.
+};
+
+const excludeOldTerminatedWorkspaces = ({ createdAt, actualState }) => {
+  return actualState === WORKSPACE_STATES.terminated
+    ? getDayDifference(new Date(createdAt), new Date()) <= EXCLUDED_WORKSPACE_AGE_IN_DAYS
+    : true;
+};
 
 export const i18n = {
   updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
@@ -83,15 +107,15 @@ export default {
   },
   computed: {
     isEmpty() {
-      return !this.workspaces.length && !this.isLoading;
+      return !this.sortedWorkspaces.length && !this.isLoading;
     },
     isLoading() {
       return this.$apollo.loading;
     },
-    filteredWorkspaces() {
-      return this.workspaces?.filter(
-        (workspace) => workspace.actualState !== WORKSPACE_STATES.terminated,
-      );
+    sortedWorkspaces() {
+      return [...this.workspaces]
+        .filter(excludeOldTerminatedWorkspaces)
+        .sort(sortWorkspacesByTerminatedState);
     },
   },
   methods: {
@@ -164,7 +188,7 @@ export default {
         <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
       </div>
 
-      <gl-table-lite v-else :items="filteredWorkspaces" :fields="$options.fields">
+      <gl-table-lite v-else :items="sortedWorkspaces" :fields="$options.fields">
         <template #cell(name)="{ item }">
           <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
             <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
