@@ -14453,27 +14453,6 @@ CREATE SEQUENCE clusters_applications_ingress_id_seq
 
 ALTER SEQUENCE clusters_applications_ingress_id_seq OWNED BY clusters_applications_ingress.id;
 
-CREATE TABLE clusters_applications_jupyter (
-    id integer NOT NULL,
-    cluster_id integer NOT NULL,
-    oauth_application_id integer,
-    status integer NOT NULL,
-    version character varying NOT NULL,
-    hostname character varying,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    status_reason text
-);
-
-CREATE SEQUENCE clusters_applications_jupyter_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE clusters_applications_jupyter_id_seq OWNED BY clusters_applications_jupyter.id;
-
 CREATE TABLE clusters_applications_knative (
     id integer NOT NULL,
     cluster_id integer NOT NULL,
@@ -25083,8 +25062,6 @@ ALTER TABLE ONLY clusters_applications_helm ALTER COLUMN id SET DEFAULT nextval(
 
 ALTER TABLE ONLY clusters_applications_ingress ALTER COLUMN id SET DEFAULT nextval('clusters_applications_ingress_id_seq'::regclass);
 
-ALTER TABLE ONLY clusters_applications_jupyter ALTER COLUMN id SET DEFAULT nextval('clusters_applications_jupyter_id_seq'::regclass);
-
 ALTER TABLE ONLY clusters_applications_knative ALTER COLUMN id SET DEFAULT nextval('clusters_applications_knative_id_seq'::regclass);
 
 ALTER TABLE ONLY clusters_applications_prometheus ALTER COLUMN id SET DEFAULT nextval('clusters_applications_prometheus_id_seq'::regclass);
@@ -26999,9 +26976,6 @@ ALTER TABLE ONLY clusters_applications_helm
 
 ALTER TABLE ONLY clusters_applications_ingress
     ADD CONSTRAINT clusters_applications_ingress_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY clusters_applications_jupyter
-    ADD CONSTRAINT clusters_applications_jupyter_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY clusters_applications_knative
     ADD CONSTRAINT clusters_applications_knative_pkey PRIMARY KEY (id);
@@ -30441,10 +30415,6 @@ CREATE UNIQUE INDEX index_clusters_applications_crossplane_on_cluster_id ON clus
 CREATE UNIQUE INDEX index_clusters_applications_helm_on_cluster_id ON clusters_applications_helm USING btree (cluster_id);
 
 CREATE UNIQUE INDEX index_clusters_applications_ingress_on_cluster_id ON clusters_applications_ingress USING btree (cluster_id);
-
-CREATE UNIQUE INDEX index_clusters_applications_jupyter_on_cluster_id ON clusters_applications_jupyter USING btree (cluster_id);
-
-CREATE INDEX index_clusters_applications_jupyter_on_oauth_application_id ON clusters_applications_jupyter USING btree (oauth_application_id);
 
 CREATE UNIQUE INDEX index_clusters_applications_knative_on_cluster_id ON clusters_applications_knative USING btree (cluster_id);
 
