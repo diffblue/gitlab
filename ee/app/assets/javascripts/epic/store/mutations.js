@@ -24,18 +24,6 @@ export default {
     state.sidebarCollapsed = isSidebarCollapsed;
   },
 
-  [types.REQUEST_EPIC_TODO_TOGGLE](state) {
-    state.epicTodoToggleInProgress = true;
-  },
-  [types.REQUEST_EPIC_TODO_TOGGLE_SUCCESS](state, { todoDeletePath }) {
-    state.todoDeletePath = todoDeletePath;
-    state.todoExists = !state.todoExists;
-    state.epicTodoToggleInProgress = false;
-  },
-  [types.REQUEST_EPIC_TODO_TOGGLE_FAILURE](state) {
-    state.epicTodoToggleInProgress = false;
-  },
-
   [types.SET_EPIC_CREATE_TITLE](state, { newEpicTitle }) {
     state.newEpicTitle = newEpicTitle;
   },

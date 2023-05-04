@@ -1,7 +1,7 @@
 import epicDetailsQuery from 'shared_queries/epic/epic_details.query.graphql';
 import { createAlert } from '~/alert';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
-import { STATUS_CLOSED, TYPE_EPIC } from '~/issues/constants';
+import { STATUS_CLOSED } from '~/issues/constants';
 
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
@@ -96,58 +96,6 @@ export const toggleContainerClassAndCookie = (_, sidebarCollapsed) => {
 export const toggleSidebar = ({ dispatch }, { sidebarCollapsed }) => {
   dispatch('toggleContainerClassAndCookie', !sidebarCollapsed);
   dispatch('toggleSidebarFlag', !sidebarCollapsed);
-};
-
-/**
- * Methods to handle toggling Todo from sidebar
- */
-export const requestEpicTodoToggle = ({ commit }) => commit(types.REQUEST_EPIC_TODO_TOGGLE);
-export const requestEpicTodoToggleSuccess = ({ commit }, data) =>
-  commit(types.REQUEST_EPIC_TODO_TOGGLE_SUCCESS, data);
-export const requestEpicTodoToggleFailure = ({ commit, state }, data) => {
-  commit(types.REQUEST_EPIC_TODO_TOGGLE_FAILURE, data);
-
-  if (state.todoExists) {
-    createAlert({
-      message: __('There was an error deleting the To Do.'),
-    });
-  } else {
-    createAlert({
-      message: __('There was an error adding a To Do.'),
-    });
-  }
-};
-export const triggerTodoToggleEvent = (_, { count }) => {
-  const event = new CustomEvent('todo:toggle', {
-    detail: {
-      count,
-    },
-  });
-
-  document.dispatchEvent(event);
-};
-export const toggleTodo = ({ state, dispatch }) => {
-  let reqPromise;
-
-  dispatch('requestEpicTodoToggle');
-
-  if (!state.todoExists) {
-    reqPromise = axios.post(state.todoPath, {
-      issuable_id: state.epicId,
-      issuable_type: TYPE_EPIC,
-    });
-  } else {
-    reqPromise = axios.delete(state.todoDeletePath);
-  }
-
-  reqPromise
-    .then(({ data }) => {
-      dispatch('triggerTodoToggleEvent', { count: data.count });
-      dispatch('requestEpicTodoToggleSuccess', { todoDeletePath: data.delete_path });
-    })
-    .catch(() => {
-      dispatch('requestEpicTodoToggleFailure');
-    });
 };
 
 /**
