@@ -86,6 +86,18 @@ Review the details carefully before upgrading.
 
 The [GitLab Conan repository](https://docs.gitlab.com/ee/user/packages/conan_repository/) supports the `conan search` command, but when searching a project-level endpoint, instance-level Conan packages could have been returned. This unintended functionality is removed in GitLab 16.0. The search endpoint for the project level now only returns packages from the target project.
 
+### Configuring Redis config file paths using environment variables is no longer supported
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+You can no longer specify Redis configuration file locations
+using the environment variables like `GITLAB_REDIS_CACHE_CONFIG_FILE` or
+`GITLAB_REDIS_QUEUES_CONFIG_FILE`. Use the default
+configuration file locations instead, for example `config/redis.cache.yml` or
+`config/redis.queues.yml`.
+
 ### Container Registry pull-through cache is removed
 
 WARNING:
