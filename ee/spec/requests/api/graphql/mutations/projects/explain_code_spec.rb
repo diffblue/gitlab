@@ -2,11 +2,12 @@
 
 require "spec_helper"
 
-RSpec.describe 'AiAction for Explain Code', feature_category: :source_code_management do
+RSpec.describe 'AiAction for Explain Code', :saas, feature_category: :source_code_management do
   include GraphqlHelpers
   include Graphql::Subscriptions::Notes::Helper
 
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:current_user) { create(:user, developer_projects: [project]) }
 
   let(:messages) do
@@ -32,7 +33,12 @@ RSpec.describe 'AiAction for Explain Code', feature_category: :source_code_manag
   end
 
   before do
-    stub_licensed_features(explain_code: true)
+    stub_application_setting(check_namespace_plan: true)
+    stub_licensed_features(explain_code: true, ai_features: true)
+    project.root_ancestor.update!(
+      experiment_features_enabled: true,
+      third_party_ai_features_enabled: true
+    )
   end
 
   it 'successfully performs an explain code request' do

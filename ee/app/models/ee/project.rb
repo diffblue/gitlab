@@ -1110,7 +1110,9 @@ module EE
     end
 
     def send_to_ai?
-      public? && repository_access_level > ::ProjectFeature::PRIVATE
+      public? &&
+        repository_access_level > ::ProjectFeature::PRIVATE &&
+        namespace.root_ancestor.third_party_ai_features_enabled
     end
 
     def resource_parent

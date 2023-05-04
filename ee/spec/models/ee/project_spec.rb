@@ -4237,13 +4237,16 @@ RSpec.describe Project, feature_category: :projects do
   end
 
   describe '#send_to_ai?' do
-    where(:project, :send_to_ai) do
-      build_stubbed(:project, :private) | false
-      build_stubbed(:project, :public) | true
+    where(:project, :ai_features_enabled, :send_to_ai) do
+      build_stubbed(:project, :public) | true | true
+      build_stubbed(:project, :public) | false | false
+      build_stubbed(:project, :private) | true | false
     end
 
     with_them do
       it 'returns whether a project can be sent to ai' do
+        allow(project.namespace).to receive(:third_party_ai_features_enabled).and_return(ai_features_enabled)
+
         expect(project.send_to_ai?).to eq(send_to_ai)
       end
     end
