@@ -58,20 +58,35 @@ module EE
 
     override :humanize
     def humanize
-      return user.name if user.present?
-      return group.name if group.present?
+      return user.name if user?
+      return group.name if group?
 
       super
     end
 
     override :check_access
-    def check_access(user)
-      return false unless user
-      return user.id == self.user_id if self.user.present?
-      return group.users.exists?(user.id) if self.group.present?
-      return user.admin? if access_level == ::Gitlab::Access::ADMIN
+    def check_access(current_user)
+      super do
+        break current_user.id == user_id if user?
+        break group.users.exists?(current_user.id) if group?
+        break current_user.admin? if admin_access?
 
-      super
+        yield if block_given?
+      end
+    end
+
+    private
+
+    def user?
+      type == :user
+    end
+
+    def group?
+      type == :group
+    end
+
+    def admin_access?
+      role? && access_level == ::Gitlab::Access::ADMIN
     end
 
     # We don't need to validate the license if this access applies to a role.
@@ -79,7 +94,7 @@ module EE
     # If it applies to a user/group we can only skip validation `nil`-validation
     # if the feature is available
     def protected_refs_for_users_required_and_available
-      type != :role && project.feature_available?(:protected_refs_for_users)
+      type != :role && project&.feature_available?(:protected_refs_for_users)
     end
 
     def validate_group_membership

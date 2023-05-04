@@ -41,7 +41,7 @@ module Namespaces
       end
 
       def remaining_storage_percentage
-        [(100 - usage_ratio * 100).floor, 0].max
+        [(100 - (usage_ratio * 100)).floor, 0].max
       end
 
       def remaining_storage_size
