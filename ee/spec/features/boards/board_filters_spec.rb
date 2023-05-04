@@ -142,7 +142,7 @@ RSpec.describe 'Issue board filters', :js, feature_category: :team_planning do
       expect_board_list_issue_count(3)
 
       select_tokens('Health', '=', 'On track', 'Weight', '=', '2', 'Epic', '=', epic.title)
-      send_keys 'Some title', :enter
+      send_keys 'Some title', :enter, :enter
 
       expect_board_list_issue_count(1)
       expect_board_list_to_contain(issue)
@@ -150,7 +150,7 @@ RSpec.describe 'Issue board filters', :js, feature_category: :team_planning do
       visit_project_board
 
       select_tokens('Health', '=', 'None', 'Weight', '!=', '2', 'Epic', '=', 'None', 'Iteration', '=', iteration.period)
-      send_keys 'Other title', :enter
+      send_keys 'Other title', :enter, :enter
 
       expect_board_list_issue_count(1)
       expect_board_list_to_contain(issue_2)

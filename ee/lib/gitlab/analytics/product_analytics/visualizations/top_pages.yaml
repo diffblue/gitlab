@@ -9,8 +9,12 @@ data:
       - SnowplowTrackedEvents.pageViewsCount
     dimensions:
       - SnowplowTrackedEvents.pageUrlpath
+      - SnowplowTrackedEvents.pageUrl
     limit: 100
     timezone: UTC
     filters: []
     timeDimensions: []
-options: {}
+options:
+  links:
+    - text: SnowplowTrackedEvents.pageUrlpath
+      href: SnowplowTrackedEvents.pageUrl

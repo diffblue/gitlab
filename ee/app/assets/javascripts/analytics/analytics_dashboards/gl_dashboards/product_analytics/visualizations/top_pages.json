@@ -9,7 +9,8 @@
         "TrackedEvents.pageViewsCount"
       ],
       "dimensions": [
-        "TrackedEvents.docPath"
+        "TrackedEvents.docPath",
+        "TrackedEvents.url"
       ],
       "limit": 100,
       "timezone": "UTC",
@@ -22,5 +23,11 @@
     }
   },
   "options": {
+    "links": [
+      {
+        "text": "TrackedEvents.docPath",
+        "href": "TrackedEvents.url"
+      }
+    ]
   }
 }

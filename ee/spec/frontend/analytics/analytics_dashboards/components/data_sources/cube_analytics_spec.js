@@ -1,7 +1,7 @@
 import { CubejsApi, HttpTransport, __setMockLoad } from '@cubejs-client/core';
 import { fetch } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { pikadayToString } from '~/lib/utils/datetime_utility';
-import { mockResultSet, mockFilters } from '../../mock_data';
+import { mockResultSet, mockFilters, mockTableWithLinksResultSet } from '../../mock_data';
 
 const mockLoad = jest.fn().mockImplementation(() => mockResultSet);
 
@@ -79,6 +79,35 @@ describe('Cube Analytics Data Source', () => {
           count: '55',
           event_type: 'pageview',
           utc_time: '2022-11-09T00:00:00.000',
+        });
+      });
+
+      it('returns the expected data format for data tables when links config is defined', async () => {
+        mockLoad.mockImplementationOnce(() => mockTableWithLinksResultSet);
+
+        const result = await fetch({
+          projectId,
+          visualizationType: 'DataTable',
+          query: {
+            measures: ['TrackedEvents.pageViewsCount'],
+            dimensions: ['TrackedEvents.docPath', 'TrackedEvents.url'],
+          },
+          visualizationOptions: {
+            links: [
+              {
+                text: 'TrackedEvents.docPath',
+                href: 'TrackedEvents.url',
+              },
+            ],
+          },
+        });
+
+        expect(result[0]).toMatchObject({
+          page_views_count: '1',
+          doc_path: {
+            text: '/foo',
+            href: 'https://example.com/foo',
+          },
         });
       });
 
