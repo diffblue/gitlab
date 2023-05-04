@@ -1,13 +1,12 @@
 import 'bootstrap';
-import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import htmlGroupSamlProvidersShow from 'test_fixtures/groups/saml_providers/show.html';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import SamlSettingsForm from 'ee/saml_providers/saml_settings_form';
 
 describe('SamlSettingsForm', () => {
-  const FIXTURE = 'groups/saml_providers/show.html';
-
   let samlSettingsForm;
   beforeEach(() => {
-    loadHTMLFixture(FIXTURE);
+    setHTMLFixture(htmlGroupSamlProvidersShow);
     samlSettingsForm = new SamlSettingsForm('#js-saml-settings-form');
     samlSettingsForm.init();
   });
