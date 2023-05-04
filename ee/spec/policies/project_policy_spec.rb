@@ -2594,16 +2594,16 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:read_namespace_catalog) }
     end
 
-    context 'when the ci_private_catalog_beta feature flag is disabled' do
+    context 'when the ci_namespace_catalog_experimental feature flag is disabled' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
-        stub_feature_flags(ci_private_catalog_beta: false)
+        stub_feature_flags(ci_namespace_catalog_experimental: false)
       end
 
       it { is_expected.to be_disallowed(:read_namespace_catalog) }
     end
 
-    context 'when ci_namespace_catalog and ci_private_catalog_beta are available' do
+    context 'when ci_namespace_catalog and ci_namespace_catalog_experimental are available' do
       using RSpec::Parameterized::TableSyntax
 
       let(:current_user) { public_send(role) }
@@ -2639,16 +2639,16 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_disallowed(:add_catalog_resource) }
     end
 
-    context 'when the ci_private_catalog_beta feature flag is disabled' do
+    context 'when the ci_namespace_catalog_experimental feature flag is disabled' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
-        stub_feature_flags(ci_private_catalog_beta: false)
+        stub_feature_flags(ci_namespace_catalog_experimental: false)
       end
 
       it { is_expected.to be_disallowed(:add_catalog_resource) }
     end
 
-    context 'when ci_namespace_catalog and ci_private_catalog_beta are available' do
+    context 'when ci_namespace_catalog and ci_namespace_catalog_experimental are available' do
       using RSpec::Parameterized::TableSyntax
 
       let(:current_user) { public_send(role) }
