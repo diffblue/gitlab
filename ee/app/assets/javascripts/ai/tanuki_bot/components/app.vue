@@ -1,9 +1,10 @@
 <script>
-import { GlDrawer, GlIcon, GlBadge } from '@gitlab/ui';
+import { GlDrawer, GlIcon, GlBadge, GlAlert } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { __, s__ } from '~/locale';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
+import { i18n } from 'ee/ai/constants';
 import { helpCenterState } from '~/super_sidebar/constants';
 import TanukiBotChat from './tanuki_bot_chat.vue';
 import TanukiBotChatInput from './tanuki_bot_chat_input.vue';
@@ -13,11 +14,13 @@ export default {
   i18n: {
     gitlabChat: s__('TanukiBot|GitLab Chat'),
     experiment: __('Experiment'),
+    GENIE_CHAT_LEGAL_GENERATED_BY_AI: i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI,
   },
   components: {
     GlIcon,
     GlDrawer,
     GlBadge,
+    GlAlert,
     TanukiBotChat,
     TanukiBotChatInput,
   },
@@ -91,6 +94,19 @@ export default {
           <h3 class="gl-my-0 gl-mx-3">{{ $options.i18n.gitlabChat }}</h3>
           <gl-badge variant="muted">{{ $options.i18n.experiment }}</gl-badge>
         </span>
+      </template>
+
+      <template #header>
+        <gl-alert
+          :dismissible="false"
+          variant="tip"
+          :show-icon="false"
+          class="gl-text-center gl-mx-n5 gl-mt-5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning"
+          role="alert"
+          data-testid="chat-legal-warning"
+        >
+          <span>{{ $options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI }}</span>
+        </gl-alert>
       </template>
 
       <tanuki-bot-chat />

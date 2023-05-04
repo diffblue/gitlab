@@ -58,6 +58,18 @@ describe('TanukiBotChatApp', () => {
   const findGlDrawerBackdrop = () => wrapper.findByTestId('tanuki-bot-chat-drawer-backdrop');
   const findTanukiBotChat = () => wrapper.findComponent(TanukiBotChat);
   const findTanukiBotChatInput = () => wrapper.findComponent(TanukiBotChatInput);
+  const findWarning = () => wrapper.findByTestId('chat-legal-warning');
+
+  describe('rendering', () => {
+    beforeEach(() => {
+      createComponent();
+      helpCenterState.showTanukiBotChatDrawer = true;
+    });
+
+    it('renders a legal info when rendered', () => {
+      expect(findWarning().exists()).toBe(true);
+    });
+  });
 
   describe('GlDrawer interactions', () => {
     beforeEach(() => {
