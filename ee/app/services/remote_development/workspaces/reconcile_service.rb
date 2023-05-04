@@ -3,20 +3,11 @@
 module RemoteDevelopment
   module Workspaces
     class ReconcileService
-      # NOTE: This class intentionally does not follow the constructor conventions from
+      # NOTE: This constructor intentionally does not follow all of the conventions from
       #       https://docs.gitlab.com/ee/development/reusing_abstractions.html#service-classes
-      #       suggesting that the dependencies be passed via the constructor. This is because
-      #       the RemoteDevelopment feature architecture follows a more pure-functional style,
-      #       directly in method calls rather than via constructor. We also don't use any of the
-      #       provided superclasses like BaseContainerService or its descendants, because all of the
-      #       domain logic is isolated and decoupled to the architectural tier below this,
-      #       i.e. in the `*Processor` classes, and therefore these superclasses provide nothing
-      #       of use. In this case we also do not even pass the `current_user:` parameter, because this
-      #       service is called from GA4K kas from an internal kubernetes endpoint, and thus there
-      #       is no current_user in context. Therefore we have no need for a constructor at all.
+      #       suggesting that the dependencies be passed via the constructor.
       #
-      #       See https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/remote-development-feature-architectural-standards.md
-      #       for more discussion on this topic.
+      #       See "Stateless Service layer classes" in ee/lib/remote_development/README.md for more details.
 
       # @param [Clusters::Agent] agent
       # @param [Hash] params

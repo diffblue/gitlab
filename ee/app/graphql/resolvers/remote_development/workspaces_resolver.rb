@@ -23,7 +23,6 @@ module Resolvers
 
       def resolve(**args)
         unless ::Feature.enabled?(:remote_development_feature_flag)
-          # noinspection RubyMismatchedArgumentType
           raise_resource_not_available_error! "'remote_development_feature_flag' feature flag is disabled"
         end
 
