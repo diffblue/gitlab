@@ -8,7 +8,6 @@ import { getDayDifference } from '~/lib/utils/datetime_utility';
 import {
   WORKSPACE_STATES,
   ROUTES,
-  WORKSPACE_DESIRED_STATES,
   WORKSPACES_LIST_POLL_INTERVAL,
   EXCLUDED_WORKSPACE_AGE_IN_DAYS,
 } from '../constants';
@@ -16,10 +15,7 @@ import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.que
 import workspaceUpdateMutation from '../graphql/mutations/workspace_update.mutation.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 import WorkspaceStateIndicator from '../components/list/workspace_state_indicator.vue';
-import TerminateWorkspaceButton from '../components/list/terminate_workspace_button.vue';
-import StartWorkspaceButton from '../components/list/start_workspace_button.vue';
-import StopWorkspaceButton from '../components/list/stop_workspace_button.vue';
-import RestartWorkspaceButton from '../components/list/restart_workspace_button.vue';
+import WorkspaceActions from '../components/list/workspace_actions.vue';
 
 const isTerminated = (w) => w.actualState === WORKSPACE_STATES.terminated;
 
@@ -60,12 +56,9 @@ export default {
     GlLink,
     GlSkeletonLoader,
     GlTableLite,
+    WorkspaceActions,
     WorkspaceEmptyState,
     WorkspaceStateIndicator,
-    TerminateWorkspaceButton,
-    StartWorkspaceButton,
-    StopWorkspaceButton,
-    RestartWorkspaceButton,
   },
   apollo: {
     workspaces: {
@@ -122,22 +115,7 @@ export default {
     clearError() {
       this.error = '';
     },
-    terminateWorkspace(workspace) {
-      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.terminated });
-    },
-    startWorkspace(workspace) {
-      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.running });
-    },
-    stopWorkspace(workspace) {
-      this.updateWorkspace({ id: workspace.id, desiredState: WORKSPACE_DESIRED_STATES.stopped });
-    },
-    restartWorkspace(workspace) {
-      this.updateWorkspace({
-        id: workspace.id,
-        desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
-      });
-    },
-    updateWorkspace({ id, desiredState }) {
+    updateWorkspace(id, desiredState) {
       return this.$apollo
         .mutate({
           mutation: workspaceUpdateMutation,
@@ -207,31 +185,11 @@ export default {
           >
         </template>
         <template #cell(actions)="{ item }">
-          <span class="gl-display-flex gl-justify-content-end">
-            <restart-workspace-button
-              class="gl-mr-2"
-              :actual-state="item.actualState"
-              :desired-state="item.desiredState"
-              @click="restartWorkspace(item)"
-            />
-            <start-workspace-button
-              class="gl-mr-2"
-              :actual-state="item.actualState"
-              :desired-state="item.desiredState"
-              @click="startWorkspace(item)"
-            />
-            <stop-workspace-button
-              class="gl-mr-2"
-              :actual-state="item.actualState"
-              :desired-state="item.desiredState"
-              @click="stopWorkspace(item)"
-            />
-            <terminate-workspace-button
-              :actual-state="item.actualState"
-              :desired-state="item.desiredState"
-              @click="terminateWorkspace(item)"
-            />
-          </span>
+          <workspace-actions
+            :actual-state="item.actualState"
+            :desired-state="item.desiredState"
+            @click="updateWorkspace(item.id, $event)"
+          />
         </template>
       </gl-table-lite>
     </template>
