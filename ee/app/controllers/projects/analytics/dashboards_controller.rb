@@ -13,7 +13,10 @@ module Projects
         push_frontend_feature_flag(:product_analytics_snowplow_support)
       end
 
-      def index; end
+      def index
+        ::Gitlab::UsageDataCounters::ProductAnalyticsCounter.count(:view_dashboard) if
+          params[:vueroute].present?
+      end
 
       private
 

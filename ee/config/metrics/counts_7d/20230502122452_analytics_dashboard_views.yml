@@ -1,0 +1,21 @@
+---
+key_path: counts.analytics_dashboard_views
+description: "Number of views of any single product analytics dashboard"
+product_section: dev
+product_stage: analytics
+product_group: product_analytics
+value_type: number
+status: active
+milestone: "16.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119328
+time_frame: 7d
+data_source: redis
+data_category: optional
+instrumentation_class: RedisMetric
+options:
+  prefix: product_analytics
+  event: view_dashboard
+distribution:
+- ee
+tier:
+- ultimate

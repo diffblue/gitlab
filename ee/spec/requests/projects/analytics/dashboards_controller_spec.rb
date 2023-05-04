@@ -19,6 +19,12 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it 'does not increment counter' do
+        expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).not_to receive(:count)
+
+        send_dashboards_request
+      end
     end
 
     shared_examples 'returns success' do
@@ -26,6 +32,12 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
         send_dashboards_request
 
         expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'increments counter' do
+        expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).to receive(:count).with(:view_dashboard)
+
+        send_dashboards_request
       end
     end
 
@@ -39,7 +51,7 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
 
     context 'with the feature flag enabled' do
       before do
-        stub_feature_flags(combined_project_analytics_dashboards: true)
+        stub_feature_flags(combined_analytics_dashboards: true)
       end
 
       context 'without the licensed feature' do
@@ -68,13 +80,19 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
 
           it_behaves_like params[:example_to_run]
         end
+
+        it 'does not count views for the dashboard listing' do
+          expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).not_to receive(:count)
+
+          get project_analytics_dashboards_path(project)
+        end
       end
     end
 
     private
 
     def send_dashboards_request
-      get project_analytics_dashboards_path(project)
+      get project_analytics_dashboards_path(project, vueroute: 'dashboard_audience')
     end
   end
 end
