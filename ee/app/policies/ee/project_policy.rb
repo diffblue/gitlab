@@ -471,12 +471,12 @@ module EE
       end
 
       # For public projects, SSO enforcement only applies to group members
-      rule { public_project & needs_new_sso_session & group_member & ~admin & ~auditor }.policy do
+      rule { public_project & needs_new_sso_session & group_member }.policy do
         prevent :public_user_access
         prevent :public_access
       end
 
-      rule { needs_new_sso_session & ~admin & ~auditor }.policy do
+      rule { needs_new_sso_session }.policy do
         prevent :guest_access
         prevent :reporter_access
         prevent :developer_access

@@ -504,7 +504,7 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
 
       with_them do
-        context "when SSO for web activity is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
+        context "when 'Enforce SSO-only authentication for web activity for this group' option is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
           around do |example|
             Gitlab::Session.with_session({}) do
               example.run
