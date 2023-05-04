@@ -24,7 +24,10 @@ const convertToCommonChartFormat = (resultSet) => {
   }));
 };
 
-const convertToTableFormat = (resultSet) => {
+const getLinkDimensions = (key, visualizationOptions) =>
+  visualizationOptions?.links?.find(({ text, href }) => [text, href].includes(key));
+
+const convertToTableFormat = (resultSet, _query, visualizationOptions) => {
   const columns = resultSet.tableColumns();
   const rows = resultSet.tablePivot();
 
@@ -34,7 +37,27 @@ const convertToTableFormat = (resultSet) => {
 
   return rows.map((row) => {
     return Object.fromEntries(
-      Object.entries(row).map(([key, value]) => [columnTitles[key], value]),
+      Object.entries(row)
+        .map(([key, value]) => {
+          const linkDimensions = getLinkDimensions(key, visualizationOptions);
+
+          switch (key) {
+            case linkDimensions?.href:
+              // Skipped because the href gets rendered as part of the link text.
+              return null;
+            case linkDimensions?.text:
+              return [
+                columnTitles[key],
+                {
+                  text: value,
+                  href: row[linkDimensions.href],
+                },
+              ];
+            default:
+              return [columnTitles[key], value];
+          }
+        })
+        .filter(Boolean),
     );
   });
 };
@@ -97,6 +120,7 @@ export const createCubeJsApi = (projectId) =>
 export const fetch = async ({
   projectId,
   visualizationType,
+  visualizationOptions,
   query,
   queryOverrides = {},
   filters = {},
@@ -104,5 +128,5 @@ export const fetch = async ({
   const userQuery = buildCubeQuery(query, queryOverrides, filters);
   const resultSet = await createCubeJsApi(projectId).load(userQuery);
 
-  return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery);
+  return VISUALIZATION_PARSERS[visualizationType](resultSet, userQuery, visualizationOptions);
 };

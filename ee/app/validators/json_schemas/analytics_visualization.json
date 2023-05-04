@@ -58,6 +58,12 @@
         },
         "yAxis": {
           "$ref": "#/definitions/YAxis"
+        },
+        "links": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Link"
+          }
         }
       },
       "required": [
@@ -102,6 +108,23 @@
         "type"
       ],
       "title": "YAxis"
+    },
+    "Link": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "text": {
+          "type": "string"
+        },
+        "href": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "href"
+      ],
+      "title": "Link"
     }
   }
 }
