@@ -16251,12 +16251,6 @@ msgstr ""
 msgid "Editing"
 msgstr ""
 
-msgid "Editing markdown"
-msgstr ""
-
-msgid "Editing rich text"
-msgstr ""
-
 msgid "Edits"
 msgstr ""
 
@@ -27042,9 +27036,6 @@ msgid "Mark this issue as related to another issue"
 msgstr ""
 
 msgid "Mark to do as done"
-msgstr ""
-
-msgid "Markdown"
 msgstr ""
 
 msgid "Markdown Help"
@@ -38333,9 +38324,6 @@ msgstr ""
 msgid "Revoked personal access token %{personal_access_token_name}!"
 msgstr ""
 
-msgid "Rich text"
-msgstr ""
-
 msgid "RightSidebar|Copy email address"
 msgstr ""
 
@@ -43871,6 +43859,12 @@ msgstr ""
 msgid "Switch to GitLab Next"
 msgstr ""
 
+msgid "Switch to Markdown"
+msgstr ""
+
+msgid "Switch to rich text"
+msgstr ""
+
 msgid "Switch to the source to copy the file contents"
 msgstr ""
 
@@ -49090,9 +49084,6 @@ msgstr ""
 msgid "View all projects"
 msgstr ""
 
-msgid "View and edit markdown, with the option to preview the formatted output."
-msgstr ""
-
 msgid "View blame"
 msgstr ""
 
@@ -49220,9 +49211,6 @@ msgid "View the %{code_open}last_activity_at%{code_close} attribute for %{projec
 msgstr ""
 
 msgid "View the documentation"
-msgstr ""
-
-msgid "View the formatted output in real-time as you edit."
 msgstr ""
 
 msgid "View the latest successful deployment to this environment"
