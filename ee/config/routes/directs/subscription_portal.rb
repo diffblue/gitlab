@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 direct :subscriptions_comparison do
-  'https://about.gitlab.com/pricing/gitlab-com/feature-comparison'
+  Gitlab::Saas.about_feature_comparison_url
 end
 
 direct :subscription_portal_legacy_sign_in do
