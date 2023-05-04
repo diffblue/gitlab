@@ -10,6 +10,7 @@ mutation workspaceCreate($input: WorkspaceCreateInput!) {
       url
       devfileRef
       devfilePath
+      createdAt
     }
     errors
   }

@@ -8,7 +8,7 @@ import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from './constants';
 
 Vue.use(VueApollo);
 
-const generateDummyWorkspace = (actualState, desiredState) => {
+const generateDummyWorkspace = (actualState, desiredState, createdAt = new Date()) => {
   const id = Math.random(0, 100000).toString(16).substring(0, 9);
 
   return {
@@ -20,6 +20,7 @@ const generateDummyWorkspace = (actualState, desiredState) => {
     devfilePath: '.devfile.yaml',
     actualState,
     desiredState,
+    createdAt: createdAt.toISOString(),
     projectId: 'gid://gitlab/Project/2',
   };
 };
@@ -52,9 +53,18 @@ const createApolloProvider = () => {
               WORKSPACE_DESIRED_STATES.restartRequested,
             ),
             generateDummyWorkspace(WORKSPACE_STATES.starting, WORKSPACE_DESIRED_STATES.stopped),
+            generateDummyWorkspace(
+              WORKSPACE_STATES.terminating,
+              WORKSPACE_DESIRED_STATES.terminated,
+            ),
             generateDummyWorkspace(WORKSPACE_STATES.stopped, WORKSPACE_DESIRED_STATES.terminated),
             generateDummyWorkspace(WORKSPACE_STATES.stopping, WORKSPACE_DESIRED_STATES.running),
             generateDummyWorkspace(WORKSPACE_STATES.terminated, WORKSPACE_DESIRED_STATES.running),
+            generateDummyWorkspace(
+              WORKSPACE_STATES.terminated,
+              WORKSPACE_DESIRED_STATES.running,
+              new Date(2023, 0, 1),
+            ),
             generateDummyWorkspace(WORKSPACE_STATES.failed, WORKSPACE_DESIRED_STATES.running),
             generateDummyWorkspace(WORKSPACE_STATES.error, WORKSPACE_DESIRED_STATES.running),
           ],
