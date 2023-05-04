@@ -18,7 +18,7 @@ class SitemapController < ApplicationController
                      xml_error(response.message)
                    end
 
-        render inline: xml_data
+        render xml: xml_data
       end
     end
   end

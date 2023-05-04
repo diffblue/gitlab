@@ -41,12 +41,6 @@ describe('AddEditRotationForm', () => {
     });
   };
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findRotationLength = () => wrapper.find('[id="rotation-length"]');
   const findRotationStartTime = () => wrapper.find('[data-testid="rotation-start-time"]');
   const findRotationEndsContainer = () => wrapper.find('[data-testid="rotation-ends-on"]');

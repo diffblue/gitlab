@@ -24,12 +24,6 @@ describe('FormStatus', () => {
     });
   }
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   describe('Error alert', () => {
     it('shows the alert when an error are passed in', () => {
       const error = 'Bad things happened';

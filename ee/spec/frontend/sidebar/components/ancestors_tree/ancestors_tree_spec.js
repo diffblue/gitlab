@@ -37,13 +37,6 @@ describe('AncestorsTreeContainer', () => {
     );
   };
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   const findTooltip = () => wrapper.find('.collapse-truncated-title');
   const containsTimeline = () => wrapper.find('.vertical-timeline').exists();
   const containsValue = () => wrapper.find('.value').exists();

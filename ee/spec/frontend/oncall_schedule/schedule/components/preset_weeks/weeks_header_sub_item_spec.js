@@ -30,12 +30,6 @@ describe('WeeksHeaderSubItemComponent', () => {
     mountComponent({});
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findSublabelValues = () => wrapper.findAll('[data-testid="sublabel-value"]');
 
   describe('computed', () => {

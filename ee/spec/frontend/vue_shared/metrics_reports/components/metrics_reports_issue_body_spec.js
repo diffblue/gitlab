@@ -4,12 +4,6 @@ import MetricReportsIssueBody from 'ee/vue_shared/metrics_reports/components/met
 describe('Metrics reports issue body', () => {
   let wrapper;
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   describe('when metric did not change', () => {
     it('should render metric with no changes text', () => {
       wrapper = shallowMount(MetricReportsIssueBody, {

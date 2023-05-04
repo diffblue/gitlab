@@ -26,12 +26,6 @@ describe('ee/oncall_schedules/components/schedule/components/preset_days/days_he
     mountComponent({ timeframeItem: mockTimeframeItem });
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findDaysHeaderCurrentIndicator = () =>
     wrapper.findByTestId('day-item-sublabel-current-indicator');
 

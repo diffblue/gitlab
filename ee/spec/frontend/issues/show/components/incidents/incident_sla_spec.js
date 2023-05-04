@@ -26,13 +26,6 @@ describe('Incident SLA', () => {
     );
   };
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   const findSLA = () => wrapper.findComponent(ServiceLevelAgreement);
 
   it('renders a blank component when there is no data', () => {

@@ -92,12 +92,6 @@ describe('On-call schedule wrapper', () => {
     });
   }
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findLoader = () => wrapper.findComponent(GlLoadingIcon);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findSchedules = () => wrapper.findAllComponents(OnCallSchedule);

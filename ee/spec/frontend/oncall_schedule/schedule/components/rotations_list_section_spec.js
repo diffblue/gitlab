@@ -51,12 +51,6 @@ describe('RotationsListSectionComponent', () => {
   const findRotationNameTooltip = (id) => getBinding(findRotationName(id).element, 'gl-tooltip');
   const findEditAndDeleteButtons = () => wrapper.findByTestId('rotation-edit-button-group');
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   describe('when the timeframe includes today', () => {
     useFakeDate(2021, 0, 14);
 

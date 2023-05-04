@@ -27,12 +27,6 @@ describe('CurrentDayIndicator', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   it('renders span element containing class `current-day-indicator`', () => {
     expect(wrapper.classes('current-day-indicator')).toBe(true);
   });

@@ -21,13 +21,6 @@ describe('Incidents Published Cell', () => {
     });
   }
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      wrapper = null;
-    }
-  });
-
   describe('Published cell', () => {
     beforeEach(() => {
       mountComponent({});
