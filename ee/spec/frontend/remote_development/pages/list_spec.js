@@ -16,6 +16,7 @@ import StopWorkspaceButton from 'ee/remote_development/components/list/stop_work
 import StartWorkspaceButton from 'ee/remote_development/components/list/start_workspace_button.vue';
 import RestartWorkspaceButton from 'ee/remote_development/components/list/restart_workspace_button.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import { useFakeDate } from 'helpers/fake_date';
 
 import {
   WORKSPACE_STATES,
@@ -80,6 +81,19 @@ describe('remote_development/pages/list.vue', () => {
       },
     });
   };
+  const setupMockTerminatedWorkspace = (extraData = {}) => {
+    const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT);
+    const workspace = cloneDeep(customData.data.currentUser.workspaces.nodes[0]);
+
+    customData.data.currentUser.workspaces.nodes.unshift({
+      ...workspace,
+      actualState: WORKSPACE_STATES.terminated,
+      ...extraData,
+    });
+
+    return customData;
+  };
+  useFakeDate(2023, 4, 1);
 
   it('shows empty state when no workspaces are available', async () => {
     createWrapper(USER_WORKSPACES_QUERY_EMPTY_RESULT);
@@ -120,17 +134,6 @@ describe('remote_development/pages/list.vue', () => {
       );
     });
 
-    it('displays the TerminateWorkspaceButton for every workspace', () => {
-      USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.forEach((workspace, index) => {
-        const button = wrapper.findAllComponents(TerminateWorkspaceButton).at(index);
-
-        expect(button.props()).toEqual({
-          actualState: workspace.actualState,
-          desiredState: workspace.desiredState,
-        });
-      });
-    });
-
     it('does not call log error', () => {
       expect(logError).not.toHaveBeenCalled();
     });
@@ -141,23 +144,77 @@ describe('remote_development/pages/list.vue', () => {
 
     describe('when the query returns terminated workspaces', () => {
       beforeEach(async () => {
-        const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT);
-        const workspace = cloneDeep(customData.data.currentUser.workspaces.nodes[0]);
+        createWrapper(setupMockTerminatedWorkspace());
 
-        customData.data.currentUser.workspaces.nodes.push({
-          ...workspace,
-          actualState: WORKSPACE_STATES.terminated,
-        });
-
-        createWrapper(customData);
         await waitForPromises();
       });
 
-      it('does not display terminated workspaces', () => {
-        expect(findTableRowsAsData(wrapper)).toHaveLength(
-          USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.length,
+      it('sorts the list to display terminated workspaces at the end of the list', () => {
+        expect(findTableRowsAsData(wrapper).pop().workspaceState).toBe(WORKSPACE_STATES.terminated);
+      });
+    });
+
+    describe('when the query returns terminated workspaces older than five days', () => {
+      const oldTerminatedWorkspaceName = 'terminated-workspace-older-than-five-days';
+      const oldRunningWorkspaceName = 'running-workspace-older-than-five-days';
+      const createdAt = new Date(2023, 3, 1);
+
+      beforeEach(async () => {
+        const customData = setupMockTerminatedWorkspace({
+          name: oldTerminatedWorkspaceName,
+          createdAt,
+        });
+        const oldRunningWorkspace = {
+          ...customData.data.currentUser.workspaces.nodes[0],
+          actualState: WORKSPACE_STATES.running,
+          name: oldRunningWorkspaceName,
+          createdAt,
+        };
+        customData.data.currentUser.workspaces.nodes.unshift(oldRunningWorkspace);
+
+        createWrapper(customData);
+
+        await waitForPromises();
+      });
+
+      it('excludes terminated workspaces older than five days from the workspaces list', () => {
+        expect(findTableRowsAsData(wrapper)).not.toContainEqual(
+          expect.objectContaining({
+            nameText: expect.stringContaining(oldTerminatedWorkspaceName),
+          }),
         );
       });
+
+      it('displays non-terminated older than five days from the workspaces list', () => {
+        expect(findTableRowsAsData(wrapper)).toContainEqual(
+          expect.objectContaining({
+            nameText: expect.stringContaining(oldRunningWorkspaceName),
+          }),
+        );
+      });
+    });
+  });
+
+  describe('when the query returns only terminated workspaces older than five days', () => {
+    beforeEach(async () => {
+      const customData = setupMockTerminatedWorkspace({
+        name: 'terminated-workspace-older-than-five-days',
+        createdAt: new Date(2023, 3, 1),
+      });
+      customData.data.currentUser.workspaces.nodes = [
+        customData.data.currentUser.workspaces.nodes.shift(),
+      ];
+      createWrapper(customData);
+
+      await waitForPromises();
+    });
+
+    it('displays empty state illustration', () => {
+      expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+    });
+
+    it('hides workspaces table', () => {
+      expect(findTable(wrapper).exists()).toBe(false);
     });
   });
 
@@ -167,76 +224,91 @@ describe('remote_development/pages/list.vue', () => {
     ${'stop'}      | ${StopWorkspaceButton}      | ${WORKSPACE_DESIRED_STATES.stopped}
     ${'start'}     | ${StartWorkspaceButton}     | ${WORKSPACE_DESIRED_STATES.running}
     ${'restart'}   | ${RestartWorkspaceButton}   | ${WORKSPACE_DESIRED_STATES.restartRequested}
-  `('when a "$buttonName" button is clicked', ({ buttonComponent, desiredState }) => {
-    let workspace;
-    let terminateButton;
-
+  `('"$buttonName" button', ({ buttonComponent, desiredState }) => {
     beforeEach(async () => {
       createWrapper(USER_WORKSPACES_QUERY_RESULT);
 
       await waitForPromises();
-
-      // eslint-disable-next-line prefer-destructuring
-      workspace = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[0];
-      terminateButton = wrapper.findAllComponents(buttonComponent).at(0);
     });
 
-    it(`sets workspace desiredState as "${desiredState}" using the workspaceUpdate mutation`, async () => {
-      terminateButton.vm.$emit('click');
+    it('displays the button for every workspace', () => {
+      USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.forEach((workspace, index) => {
+        const button = wrapper.findAllComponents(buttonComponent).at(index);
 
-      await waitForPromises();
-
-      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith(
-        expect.any(Object),
-        {
-          input: {
-            desiredState,
-            id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
-          },
-        },
-        expect.any(Object),
-        expect.any(Object),
-      );
+        expect(button.props()).toEqual({
+          actualState: workspace.actualState,
+          desiredState: workspace.desiredState,
+        });
+      });
     });
 
-    describe('when the workspaceUpdate mutation returns an error message response', () => {
-      const error = 'error message';
+    describe('when clicking', () => {
+      let workspace;
+      let button;
 
       beforeEach(() => {
-        workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockResolvedValueOnce({
-          workspace: null,
-          errors: [error],
+        // eslint-disable-next-line prefer-destructuring
+        workspace = USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[0];
+        button = wrapper.findAllComponents(buttonComponent).at(0);
+      });
+
+      it(`sets workspace desiredState as "${desiredState}" using the workspaceUpdate mutation`, async () => {
+        button.vm.$emit('click');
+
+        await waitForPromises();
+
+        expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith(
+          expect.any(Object),
+          {
+            input: {
+              desiredState,
+              id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
+            },
+          },
+          expect.any(Object),
+          expect.any(Object),
+        );
+      });
+
+      describe('when the workspaceUpdate mutation returns an error message response', () => {
+        const error = 'error message';
+
+        beforeEach(() => {
+          workspaceUpdateMutationHandler.mockReset();
+          workspaceUpdateMutationHandler.mockResolvedValueOnce({
+            workspace: null,
+            errors: [error],
+          });
+        });
+
+        it('shows the error message in a danger alert', async () => {
+          button.vm.$emit('click');
+
+          await waitForPromises();
+
+          expect(findAlert(wrapper).text()).toContain(error);
         });
       });
 
-      it('shows the error message in a danger alert', async () => {
-        terminateButton.vm.$emit('click');
+      describe('when the workspaceUpdate mutation fails', () => {
+        const error = new Error();
 
-        await waitForPromises();
+        beforeEach(async () => {
+          workspaceUpdateMutationHandler.mockReset();
+          workspaceUpdateMutationHandler.mockRejectedValueOnce(error);
 
-        expect(findAlert(wrapper).text()).toContain(error);
-      });
-    });
+          button.vm.$emit('click');
 
-    describe('when the workspaceUpdate mutation fails', () => {
-      const error = new Error();
+          await waitForPromises();
+        });
 
-      beforeEach(async () => {
-        workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockRejectedValueOnce(error);
+        it('shows an alert indicating that the update operation failed', () => {
+          expect(findAlert(wrapper).text()).toContain(i18n.updateWorkspaceFailedMessage);
+        });
 
-        terminateButton.vm.$emit('click');
-
-        await waitForPromises();
-      });
-
-      it('shows an alert indicating that the update operation failed', () => {
-        expect(findAlert(wrapper).text()).toContain(i18n.updateWorkspaceFailedMessage);
-      });
-
-      it('logs the error', () => {
-        expect(logError).toHaveBeenCalledWith(error);
+        it('logs the error', () => {
+          expect(logError).toHaveBeenCalledWith(error);
+        });
       });
     });
   });

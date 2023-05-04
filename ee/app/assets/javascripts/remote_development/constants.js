@@ -9,6 +9,7 @@ export const WORKSPACE_STATES = {
   running: 'Running',
   stopping: 'Stopping',
   stopped: 'Stopped',
+  terminating: 'Terminating',
   terminated: 'Terminated',
   failed: 'Failed',
   error: 'Error',
@@ -30,9 +31,12 @@ export const ROUTES = {
 
 export const FILL_CLASS_GREEN = 'gl-fill-green-500';
 export const FILL_CLASS_ORANGE = 'gl-fill-orange-500';
+export const FILL_CLASS_RED = 'gl-fill-red-500';
 
 export const PROJECT_VISIBILITY = {
   public: 'public',
   private: 'private',
   internal: 'internal',
 };
+
+export const EXCLUDED_WORKSPACE_AGE_IN_DAYS = 5;

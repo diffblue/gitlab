@@ -12,6 +12,7 @@ query userWorkspacesList {
         url
         devfileRef
         devfilePath
+        createdAt
       }
     }
   }
