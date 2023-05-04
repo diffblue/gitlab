@@ -100,8 +100,6 @@ export const ANY_OPERATOR = 'ANY';
 
 export const MORE_THAN_OPERATOR = 'MORE_THAN';
 
-export const DEFAULT_NUMBER_RANGE_OPERATORS = [ANY_OPERATOR, MORE_THAN_OPERATOR];
-
 export const NUMBER_RANGE_I18N_MAP = {
   [ANY_OPERATOR]: s__('ApprovalRule|Any'),
   [MORE_THAN_OPERATOR]: s__('ApprovalRule|More than'),
