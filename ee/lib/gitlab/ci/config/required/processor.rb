@@ -27,7 +27,7 @@ module Gitlab
           private
 
           def required_template_hash
-            Gitlab::Config::Loader::Yaml.new(required_template.content).load!
+            Gitlab::Ci::Config::Yaml.load!(required_template.content)
           end
 
           def required_template
