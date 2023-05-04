@@ -344,7 +344,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           it 'includes a policy for a detected license that is unclassified' do
             expect(policies[0].id).to be_nil
             expect(policies[0].name).to eq("BSD-3-Clause")
-            expect(policies[0].url).to be_blank
+            expect(policies[0].url).to eq("https://spdx.org/licenses/BSD-3-Clause.html")
             expect(policies[0].classification).to eq("unclassified")
             expect(policies[0].spdx_identifier).to eq("BSD-3-Clause")
           end
@@ -352,7 +352,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
           it 'includes a policy for a classified license that was also detected in the scan report' do
             expect(policies[1].id).to eq(mit_policy.id)
             expect(policies[1].name).to eq(mit.name)
-            expect(policies[1].url).to be_blank
+            expect(policies[1].url).to eq("https://spdx.org/licenses/MIT.html")
             expect(policies[1].classification).to eq("denied")
             expect(policies[1].spdx_identifier).to eq("MIT")
           end
@@ -444,7 +444,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[2],
             id: nil,
             name: 'unknown',
-            url: '',
+            url: nil,
             classification: 'unclassified',
             spdx_identifier: nil
           )
@@ -595,7 +595,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[0],
             id: other_license_policy.id,
             name: other_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/BSD-3-Clause.html",
             classification: "allowed",
             spdx_identifier: "BSD-3-Clause"
           )
@@ -606,7 +606,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[1],
             id: nil,
             name: "CUSTOM_DENIED_LICENSE",
-            url: "",
+            url: "https://spdx.org/licenses/CUSTOM_DENIED_LICENSE.html",
             classification: "unclassified",
             spdx_identifier: "CUSTOM_DENIED_LICENSE"
           )
@@ -617,7 +617,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[2],
             id: mit_policy.id,
             name: mit.name,
-            url: "",
+            url: "https://spdx.org/licenses/MIT.html",
             classification: "denied",
             spdx_identifier: "MIT"
           )
@@ -628,7 +628,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[3],
             id: nil,
             name: 'unknown',
-            url: '',
+            url: nil,
             classification: 'unclassified',
             spdx_identifier: nil
           )
@@ -656,7 +656,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[0],
             id: other_license_policy.id,
             name: other_license_policy.software_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/BSD-3-Clause.html",
             classification: 'allowed',
             spdx_identifier: other_license_policy.software_license.spdx_identifier
           )
@@ -672,7 +672,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[0],
             id: other_license_policy.id,
             name: other_license_policy.software_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/BSD-3-Clause.html",
             classification: "allowed",
             spdx_identifier: other_license_policy.software_license.spdx_identifier
           )
@@ -680,7 +680,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[1],
             id: mit_policy.id,
             name: mit_policy.software_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/MIT.html",
             classification: "denied",
             spdx_identifier: mit_policy.software_license.spdx_identifier
           )
@@ -696,7 +696,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[0],
             id: other_license_policy.id,
             name: other_license_policy.software_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/BSD-3-Clause.html",
             classification: "allowed",
             spdx_identifier: other_license_policy.software_license.spdx_identifier
           )
@@ -704,7 +704,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
             results[1],
             id: mit_policy.id,
             name: mit_policy.software_license.name,
-            url: "",
+            url: "https://spdx.org/licenses/MIT.html",
             classification: "denied",
             spdx_identifier: mit_policy.software_license.spdx_identifier
           )

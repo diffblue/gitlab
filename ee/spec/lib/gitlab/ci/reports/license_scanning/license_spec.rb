@@ -3,7 +3,64 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Reports::LicenseScanning::License do
-  describe 'equality' do
+  describe 'url', feature_category: :software_composition_analysis do
+    subject { described_class.new(id: id, name: name, url: url).url }
+
+    context 'with empty url' do
+      let(:url) { '' }
+
+      context 'with SPDX id' do
+        let(:id) { 'MIT-0' }
+        let(:name) { 'MIT No Attibution' }
+
+        it 'returns a SPDX url' do
+          is_expected.to eq('https://spdx.org/licenses/MIT-0.html')
+        end
+      end
+
+      context 'with unknown license' do
+        let(:id) { 'unknown' }
+        let(:name) { 'Unknown' }
+
+        it 'does not return a url' do
+          is_expected.to be_nil
+        end
+      end
+
+      context 'with custom license' do
+        let(:id) { nil }
+        let(:name) { 'Ruby Ruby Ruby' }
+
+        it 'does not return a url' do
+          is_expected.to be_nil
+        end
+      end
+
+      # NOTE: the URL leads to 404, but non SPDX id is a rare case itself
+      # this will be addressed in
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/410389
+      context 'with non-SPDX id' do
+        let(:id) { 'CUSTOM_ID' }
+        let(:name) { 'CUSTOM LICENSE' }
+
+        it 'returns a SPDX url' do
+          is_expected.to eq('https://spdx.org/licenses/CUSTOM_ID.html')
+        end
+      end
+    end
+
+    context 'with url' do
+      let(:id) { 'MIT' }
+      let(:name) { 'MIT License' }
+      let(:url) { 'https://opensource.org/licenses/mit' }
+
+      it 'returns original url' do
+        is_expected.to eq(url)
+      end
+    end
+  end
+
+  describe 'equality', feature_category: :security_policy_management do
     let(:blank) { described_class.new(id: nil, name: nil, url: nil) }
     let(:v1_mit) { described_class.new(id: nil, name: 'MIT', url: '') }
     let(:v1_apache) { described_class.new(id: nil, name: 'Apache 2.0', url: '') }
@@ -40,7 +97,7 @@ RSpec.describe Gitlab::Ci::Reports::LicenseScanning::License do
     end
   end
 
-  describe '#canonical_id' do
+  describe '#canonical_id', feature_category: :security_policy_management do
     context 'when the license was produced from a v1 report' do
       subject { described_class.new(id: nil, name: 'MIT License', url: nil) }
 
