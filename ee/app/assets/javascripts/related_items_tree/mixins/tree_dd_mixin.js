@@ -1,6 +1,7 @@
 import Draggable from 'vuedraggable';
 
 import { defaultSortableOptions } from '~/sortable/constants';
+import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import { idProp, relativePositions, treeItemChevronBtnClassName } from '../constants';
 
 export default {
@@ -94,6 +95,10 @@ export default {
      */
     handleDragOnStart() {
       document.body.classList.add('is-dragging');
+
+      this.dragCancelled = false;
+      // Attach listener to detect `ESC` key press to cancel drag.
+      document.addEventListener('keyup', this.handleKeyUp.bind(this));
     },
     /**
      * This event handler is fired when user releases the dragging
@@ -108,6 +113,11 @@ export default {
     handleDragOnEnd(params) {
       const { oldIndex, newIndex, from, to } = params;
       document.body.classList.remove('is-dragging');
+
+      // Detach listener as soon as drag ends.
+      document.removeEventListener('keyup', this.handleKeyUp.bind(this));
+      // Drag was cancelled, prevent reordering.
+      if (this.dragCancelled) return;
 
       const targetItem = this.children[oldIndex];
 
@@ -131,6 +141,16 @@ export default {
           oldIndex,
           newIndex,
         });
+      }
+    },
+    handleKeyUp(e) {
+      if (e.keyCode === ESC_KEY_CODE) {
+        this.dragCancelled = true;
+        // Sortable.js internally listens for `mouseup` event on document
+        // to register drop event, see https://github.com/SortableJS/Sortable/blob/master/src/Sortable.js#L625
+        // We need to manually trigger it to simulate cancel behaviour as VueDraggable doesn't
+        // natively support it, see https://github.com/SortableJS/Vue.Draggable/issues/968.
+        document.dispatchEvent(new Event('mouseup'));
       }
     },
   },

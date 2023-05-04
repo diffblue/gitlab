@@ -23,6 +23,7 @@ export default {
   },
   data() {
     return {
+      dragCancelled: false,
       fetchInProgress: false,
       currentClientX: 0,
       currentClientY: 0,
