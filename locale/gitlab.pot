@@ -38682,6 +38682,9 @@ msgstr ""
 msgid "Runners|Maintenance note"
 msgstr ""
 
+msgid "Runners|Make sure the runner is online and available to run jobs (not paused). Jobs display here when the runner picks them up."
+msgstr ""
+
 msgid "Runners|Manually verify that the runner is available to pick up jobs."
 msgstr ""
 
@@ -39050,6 +39053,9 @@ msgid "Runners|This registration process is not supported in GitLab Runner 15.9 
 msgstr ""
 
 msgid "Runners|This registration process is only supported in GitLab Runner 15.10 or later"
+msgstr ""
+
+msgid "Runners|This runner has not run any jobs"
 msgstr ""
 
 msgid "Runners|This runner has not run any jobs."
