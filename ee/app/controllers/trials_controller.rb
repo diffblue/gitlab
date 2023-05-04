@@ -25,34 +25,29 @@ class TrialsController < ApplicationController
   def select; end
 
   def create_lead
-    lead_result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
+    result = GitlabSubscriptions::Trials::CreateService.new(
+      step: params[:step], lead_params: lead_params, trial_params: trial_params, user: current_user
+    ).execute
 
-    if lead_result.success?
-      namespace = helpers.only_trialable_group_namespace
-      if namespace.present? # only 1 possible namespace to apply trial, so we'll just automatically apply it
-        params[:namespace_id] = namespace.id
-
-        trial_result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params(namespace)).execute
-
-        if trial_result.success?
-          Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
-
-          redirect_to trial_success_path(namespace)
-        else
-          # We couldn't apply the trial, so we'll bounce the user to the select form with errors
-          # and give them option to create a group or try to re-apply the trial on the 1 namespace
-          # in the select dropdown.
-          @create_errors = trial_result.errors
-
-          render :select
-        end
-      else # more than 1 possible namespace for trial, so we'll ask user and then apply trial
-        redirect_to select_trials_path(glm_tracking_params)
-      end
-    else
-      @create_errors = lead_result.errors
+    if result.success?
+      # lead and trial created
+      redirect_to trial_success_path(result.payload[:namespace])
+    elsif result.reason == :no_namespace
+      # lead created, but we now need to select namespace and then apply a trial
+      redirect_to select_trials_path(glm_tracking_params)
+    elsif result.reason == :not_found
+      # namespace not found/not permitted to create
+      render_404
+    elsif result.reason == :lead_failed
+      @create_errors = result.errors.to_sentence
 
       render :new
+    else
+      # trial failed
+      @create_errors = result.errors.to_sentence
+      params[:namespace_id] = result.payload[:namespace_id]
+
+      render :select
     end
   end
 
@@ -121,28 +116,11 @@ class TrialsController < ApplicationController
     redirect_to new_trial_registration_path(glm_tracking_params), alert: I18n.t('devise.failure.unauthenticated')
   end
 
-  def company_params
-    lead_params.merge(extra_params)
-  end
-
   def lead_params
     params.permit(
       :company_name, :company_size, :first_name, :last_name, :phone_number,
       :country, :state, :website_url, :glm_content, :glm_source
     ).to_h
-  end
-
-  def extra_params
-    attrs = {}
-    attrs[:work_email] = current_user.email
-    attrs[:uid] = current_user.id
-    attrs[:setup_for_company] = current_user.setup_for_company
-    attrs[:skip_email_confirmation] = true
-    attrs[:gitlab_com_trial] = true
-    attrs[:provider] = 'gitlab'
-    attrs[:newsletter_segment] = current_user.email_opted_in
-
-    attrs
   end
 
   def trial_params
