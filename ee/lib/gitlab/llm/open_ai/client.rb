@@ -9,6 +9,7 @@ module Gitlab
         include ExponentialBackoff
 
         InputModerationError = Class.new(StandardError)
+        OutputModerationError = Class.new(StandardError)
 
         def initialize(user, request_timeout: nil)
           @user = user
@@ -84,14 +85,25 @@ module Gitlab
           @token ||= ::Gitlab::CurrentSettings.openai_api_key
         end
 
+        # @param [Symbol] endpoint - OpenAI endpoint to call
+        # @param [Boolean, Symbol] moderated - Whether to moderate the input and/or output.
+        #   `true` - moderate both,
+        #   `false` - moderation none,
+        #   `:input` - moderate only input,
+        #   `:output` - moderate only output
+        # @param [Hash] options - Options to pass to the OpenAI client
         def request(endpoint:, moderated:, **options)
           return unless enabled?
 
-          moderate_input!(moderation_input(endpoint, options)) if moderated
+          moderate!(:input, moderation_input(endpoint, options)) if should_moderate?(:input, moderated)
 
           response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
 
           track_cost(endpoint, response.parsed_response&.dig('usage'))
+
+          if should_moderate?(:output, moderated)
+            moderate!(:output, moderation_output(endpoint, response.parsed_response))
+          end
 
           response
         end
@@ -124,27 +136,55 @@ module Gitlab
           )
         end
 
-        def moderate_input!(input)
-          return if Feature.disabled?(:openai_moderation)
+        def should_moderate?(type, moderation_value)
+          return false if Feature.disabled?(:openai_moderation)
+          return false if moderation_value == false
+          return true if moderation_value == true
+          return true if type == :input && moderation_value == :input
+          return true if type == :output && moderation_value == :output
 
-          flagged = moderations(input: input)
+          false
+        end
+
+        # @param [Symbol] type - Type of text to moderate, input or output
+        # @param [String] text - Text to moderate
+        def moderate!(type, text)
+          return unless text.present?
+
+          flagged = moderations(input: text)
             .parsed_response
             &.dig('results')
             &.any? { |r| r['flagged'] }
 
-          raise(InputModerationError, "Provided input violates OpenAI's Content Policy") if flagged
+          return unless flagged
+
+          error_type = type == :input ? InputModerationError : OutputModerationError
+          error_message = "Provided #{type} violates OpenAI's Content Policy"
+
+          raise(error_type, error_message)
         end
 
+        # rubocop:disable CodeReuse/ActiveRecord
         def moderation_input(endpoint, options)
           case endpoint
           when :chat
-            options.dig(:parameters, :messages).pluck(:content) # rubocop:disable CodeReuse/ActiveRecord
+            options.dig(:parameters, :messages).pluck(:content)
           when :completions
             options.dig(:parameters, :prompt)
           when :edits, :embeddings
             options.dig(:parameters, :input)
           end
         end
+
+        def moderation_output(endpoint, parsed_response)
+          case endpoint
+          when :chat
+            parsed_response&.dig('choices')&.pluck('message')&.pluck('content')&.map { |str| str.delete('\"') }
+          when :edits, :completions
+            parsed_response&.dig('choices')&.pluck('text')
+          end
+        end
+        # rubocop:enable CodeReuse/ActiveRecord
       end
     end
   end
