@@ -49,7 +49,7 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures, feature_cate
         expect(scoped_node).to have_content('Organization wide security')
         expect(scoped_node).to have_link('Upgrade to Ultimate')
 
-        expect(rendered).to have_link('Start a free Ultimate trial', href: new_trial_path)
+        expect(rendered).to have_link('Start a free Ultimate trial', href: new_trial_path(namespace_id: group.id))
       end
 
       it 'has tracking items set as expected' do

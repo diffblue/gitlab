@@ -102,18 +102,21 @@ module Projects
       }
 
       if can_start_trial?(project)
+        namespace_id = project.root_ancestor.id
         trial_items = {
-          trial_started: new_trial_path_with_glm(content: ONBOARDING_START_TRIAL),
-          required_mr_approvals_enabled: new_trial_path_with_glm(content: ONBOARDING_REQUIRE_MR_APPROVALS),
-          code_owners_enabled: new_trial_path_with_glm(content: ONBOARDING_CODE_OWNERS)
+          trial_started: new_trial_path_with_glm(namespace_id: namespace_id, content: ONBOARDING_START_TRIAL),
+          required_mr_approvals_enabled: new_trial_path_with_glm(
+            namespace_id: namespace_id, content: ONBOARDING_REQUIRE_MR_APPROVALS
+          ),
+          code_owners_enabled: new_trial_path_with_glm(namespace_id: namespace_id, content: ONBOARDING_CODE_OWNERS)
         }
       end
 
       urls.merge(trial_items)
     end
 
-    def new_trial_path_with_glm(content:, source: GITLAB_COM)
-      new_trial_path({ glm_source: source, glm_content: content })
+    def new_trial_path_with_glm(namespace_id:, content:, source: GITLAB_COM)
+      new_trial_path({ namespace_id: namespace_id, glm_source: source, glm_content: content })
     end
 
     def deploy_section_action_urls(project)

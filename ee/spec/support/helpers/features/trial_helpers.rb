@@ -33,8 +33,8 @@ module Features
       expect(page).to have_link('Group information')
     end
 
-    def fill_in_trial_selection_form(from: 'Please select a group')
-      select_from_listbox group.name, from: from
+    def fill_in_trial_selection_form(from: 'Please select a group', group_select: true)
+      select_from_listbox group.name, from: from if group_select
       choose :trial_entity_company
     end
 
