@@ -18,7 +18,6 @@ describe('GeoSiteLastUpdated', () => {
 
   const defaultProps = {
     statusCheckTimestamp: staleStatusTime,
-    primary: true,
   };
 
   const createComponent = (props) => {
@@ -48,42 +47,22 @@ describe('GeoSiteLastUpdated', () => {
         expect(findMainText().findComponent(TimeAgo).props('time')).toBe(staleStatusTime);
       });
 
-      describe('when primary is true', () => {
-        beforeEach(() => {
-          createComponent({ primary: true });
-        });
-
-        it('renders the question icon correctly', () => {
-          expect(findGlIcon().exists()).toBe(true);
-          expect(findGlIcon().attributes('name')).toBe('question-o');
-        });
-
-        it('renders the popover', () => {
-          expect(findGlPopover().exists()).toBe(true);
-        });
-
-        it('renders the popover text correctly', () => {
-          expect(findPopoverText().exists()).toBe(true);
-          expect(findPopoverText().findComponent(TimeAgo).props('time')).toBe(staleStatusTime);
-        });
-
-        it('renders the popover link correctly', () => {
-          expect(findPopoverLink().exists()).toBe(true);
-        });
+      it('renders the question icon correctly', () => {
+        expect(findGlIcon().exists()).toBe(true);
+        expect(findGlIcon().attributes('name')).toBe('question-o');
       });
 
-      describe('when primary is false', () => {
-        beforeEach(() => {
-          createComponent({ primary: false });
-        });
+      it('renders the popover', () => {
+        expect(findGlPopover().exists()).toBe(true);
+      });
 
-        it('does not render the question icon', () => {
-          expect(findGlIcon().exists()).toBe(false);
-        });
+      it('renders the popover text correctly', () => {
+        expect(findPopoverText().exists()).toBe(true);
+        expect(findPopoverText().findComponent(TimeAgo).props('time')).toBe(staleStatusTime);
+      });
 
-        it('does not render the popover', () => {
-          expect(findGlPopover().exists()).toBe(false);
-        });
+      it('renders the popover link correctly', () => {
+        expect(findPopoverLink().exists()).toBe(true);
       });
     });
 

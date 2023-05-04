@@ -52,9 +52,6 @@ export default {
         link: HELP_SITE_HEALTH_URL,
       };
     },
-    showPopover() {
-      return this.primary;
-    },
   },
 };
 </script>
@@ -68,23 +65,21 @@ export default {
         </template>
       </gl-sprintf>
     </span>
-    <template v-if="showPopover">
-      <gl-icon
-        ref="lastUpdated"
-        tabindex="0"
-        name="question-o"
-        class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
-      />
-      <gl-popover :target="() => $refs.lastUpdated.$el" placement="top">
-        <p class="gl-font-base" data-testid="geo-last-updated-text">
-          <gl-sprintf :message="$options.i18n.timeAgoPopoverText">
-            <template #timeAgo>
-              <time-ago :time="statusCheckTimestamp" />
-            </template>
-          </gl-sprintf>
-        </p>
-        <gl-link :href="syncHelp.link" target="_blank">{{ syncHelp.text }}</gl-link>
-      </gl-popover>
-    </template>
+    <gl-icon
+      ref="lastUpdated"
+      tabindex="0"
+      name="question-o"
+      class="gl-text-blue-600 gl-cursor-pointer gl-ml-2"
+    />
+    <gl-popover :target="() => $refs.lastUpdated.$el" placement="top">
+      <p class="gl-font-base" data-testid="geo-last-updated-text">
+        <gl-sprintf :message="$options.i18n.timeAgoPopoverText">
+          <template #timeAgo>
+            <time-ago :time="statusCheckTimestamp" />
+          </template>
+        </gl-sprintf>
+      </p>
+      <gl-link :href="syncHelp.link" target="_blank">{{ syncHelp.text }}</gl-link>
+    </gl-popover>
   </div>
 </template>

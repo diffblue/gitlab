@@ -69,7 +69,6 @@ export default {
             v-if="statusCheckTimestamp"
             class="gl-ml-2"
             :status-check-timestamp="statusCheckTimestamp"
-            :primary="site.primary"
           />
         </div>
       </div>
