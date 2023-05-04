@@ -6,6 +6,9 @@ class Groups::Security::ComplianceDashboardsController < Groups::ApplicationCont
   layout 'group'
 
   before_action :authorize_compliance_dashboard!
+  before_action do
+    push_frontend_feature_flag(:manage_compliance_frameworks_modals_refactor, @group)
+  end
 
   track_event :show,
     name: 'g_compliance_dashboard',

@@ -1844,10 +1844,10 @@ msgstr ""
 msgid "ACTION REQUIRED: Something went wrong while obtaining the Let's Encrypt certificate for GitLab Pages domain '%{domain}'"
 msgstr ""
 
-msgid "AI Generated Test File"
+msgid "AI actions"
 msgstr ""
 
-msgid "AI actions"
+msgid "AI-generated test file"
 msgstr ""
 
 msgid "AISummary|Experiment"
@@ -11303,6 +11303,9 @@ msgid "ComplianceReport|Create a new framework"
 msgstr ""
 
 msgid "ComplianceReport|Do you want to refresh the filtered results to include your change?"
+msgstr ""
+
+msgid "ComplianceReport|Edit the framework"
 msgstr ""
 
 msgid "ComplianceReport|Framework successfully applied"
@@ -38500,6 +38503,9 @@ msgstr ""
 msgid "Runners|Architecture"
 msgstr ""
 
+msgid "Runners|Are you sure you want to disable shared runners for %{groupName}?"
+msgstr ""
+
 msgid "Runners|Assigned Group"
 msgstr ""
 
@@ -38781,6 +38787,9 @@ msgstr ""
 msgid "Runners|No spot. This is the default choice for Linux Docker executor."
 msgstr ""
 
+msgid "Runners|No, keep shared runners enabled"
+msgstr ""
+
 msgid "Runners|Not accepting jobs"
 msgstr ""
 
@@ -39005,6 +39014,9 @@ msgstr ""
 msgid "Runners|Shared runners are disabled in the group settings"
 msgstr ""
 
+msgid "Runners|Shared runners will be disabled for all projects and subgroups in this group. If you proceed, you must manually re-enable shared runners in the settings of each project and subgroup."
+msgstr ""
+
 msgid "Runners|Show only inherited"
 msgstr ""
 
@@ -39173,6 +39185,9 @@ msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. %
 msgstr ""
 
 msgid "Runners|Windows 2019 Shell with manual scaling and optional scheduling. Non-spot."
+msgstr ""
+
+msgid "Runners|Yes, disable shared runners"
 msgstr ""
 
 msgid "Runners|Yes, start deleting stale runners"
@@ -43065,6 +43080,9 @@ msgstr ""
 msgid "StatusCheck|Status checks all passed"
 msgstr ""
 
+msgid "StatusCheck|Status checks are API calls to external systems that request the status of an external requirement. %{linkStart}Learn more.%{linkEnd}"
+msgstr ""
+
 msgid "StatusCheck|Status checks are being fetched"
 msgstr ""
 
@@ -43075,6 +43093,9 @@ msgid "StatusCheck|Target branch"
 msgstr ""
 
 msgid "StatusCheck|Update status check"
+msgstr ""
+
+msgid "StatusCheck|What is status check?"
 msgstr ""
 
 msgid "StatusCheck|You are about to remove the %{name} status check."

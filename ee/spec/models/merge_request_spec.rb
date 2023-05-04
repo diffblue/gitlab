@@ -1140,14 +1140,6 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       let(:service_class) { ::Ci::CompareSecurityReportsService }
 
       it { is_expected.to eq(true) }
-
-      context 'when use_merge_base_for_security_widget feature flag is off' do
-        before do
-          stub_feature_flags(use_merge_base_for_security_widget: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
     end
 
     context 'when service class is different' do

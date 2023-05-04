@@ -1,10 +1,20 @@
 <script>
 import Vue from 'vue';
-import { GlFormCheckbox, GlButton, GlLink, GlLoadingIcon, GlTable, GlToast } from '@gitlab/ui';
+import {
+  GlFormCheckbox,
+  GlButton,
+  GlLink,
+  GlLoadingIcon,
+  GlModal,
+  GlTable,
+  GlToast,
+} from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 import { createAlert } from '~/alert';
 
+import CreateForm from 'ee/groups/settings/compliance_frameworks/components/create_form.vue';
+import EditForm from 'ee/groups/settings/compliance_frameworks/components/edit_form.vue';
 import FrameworkBadge from '../shared/framework_badge.vue';
 import setComplianceFrameworkMutation from '../../graphql/set_compliance_framework.mutation.graphql';
 import SelectionOperations from './selection_operations.vue';
@@ -15,6 +25,9 @@ Vue.use(GlToast);
 export default {
   name: 'ProjectsTable',
   components: {
+    CreateForm,
+    EditForm,
+
     FrameworkBadge,
     FrameworkSelectionBox,
     SelectionOperations,
@@ -23,6 +36,7 @@ export default {
     GlFormCheckbox,
     GlLink,
     GlLoadingIcon,
+    GlModal,
     GlTable,
   },
   props: {
@@ -51,6 +65,9 @@ export default {
   data() {
     return {
       selectedRows: [],
+      projectWhichInvokedModal: null,
+      frameworkSelectedForEdit: null,
+      preselectedFrameworkForBulkOperation: null,
       projectsPendindSingleOperation: [],
       isApplyInProgress: false,
     };
@@ -147,6 +164,41 @@ export default {
     hasPendingSingleOperation(projectId) {
       return this.projectsPendindSingleOperation.indexOf(projectId) > -1;
     },
+
+    createComplianceFramework(projectId) {
+      this.projectWhichInvokedModal = projectId;
+      this.$refs.createModal.show();
+    },
+
+    selectNewlyCreatedFramework({ framework }) {
+      const projectId = this.projectWhichInvokedModal;
+      this.resetCreateModal();
+
+      if (projectId === this.$options.BULK_FRAMEWORK_ID) {
+        this.preselectedFrameworkForBulkOperation = framework;
+      } else {
+        this.applySingleItemOperation({
+          projectId,
+          frameworkId: framework.id,
+          previousFrameworkId: null,
+        });
+      }
+    },
+
+    resetCreateModal() {
+      this.projectWhichInvokedModal = null;
+      this.$refs.createModal.hide();
+    },
+
+    editComplianceFramework(framework) {
+      this.frameworkSelectedForEdit = framework;
+      this.$refs.editModal.show();
+    },
+
+    resetEditModal() {
+      this.frameworkSelectedForEdit = null;
+      this.$refs.editModal.hide();
+    },
   },
   fields: [
     {
@@ -179,22 +231,50 @@ export default {
     },
   ],
   i18n: {
+    addTitle: s__('ComplianceFrameworks|New compliance framework'),
+    editTitle: s__('ComplianceFrameworks|Edit compliance framework'),
+
     noProjectsFound: s__('ComplianceReport|No projects found'),
     addFrameworkMessage: s__('ComplianceReport|Add framework'),
 
     successApplyToastMessage: s__('ComplianceReport|Framework successfully applied'),
     successRemoveToastMessage: s__('ComplianceReport|Framework successfully removed'),
   },
+  BULK_FRAMEWORK_ID: '__INTERNAL_BULK_FRAMEWORK_VALUE',
 };
 </script>
 <template>
   <div>
+    <gl-modal
+      ref="createModal"
+      :title="$options.i18n.addTitle"
+      modal-id="create-framework-form-modal"
+      hide-footer
+    >
+      <create-form @success="selectNewlyCreatedFramework" @cancel="resetCreateModal" />
+    </gl-modal>
+    <gl-modal
+      ref="editModal"
+      :title="$options.i18n.editTitle"
+      modal-id="edit-framework-form-modal"
+      hide-footer
+    >
+      <edit-form
+        v-if="frameworkSelectedForEdit"
+        :id="frameworkSelectedForEdit.id"
+        :framework="frameworkSelectedForEdit"
+        @success="resetEditModal"
+        @cancel="resetEditModal"
+      />
+    </gl-modal>
     <selection-operations
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
       :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
       :is-apply-in-progress="isApplyInProgress"
+      :default-framework="preselectedFrameworkForBulkOperation"
       @change="applyOperations"
+      @create="createComplianceFramework($options.BULK_FRAMEWORK_ID)"
     />
     <gl-table
       :fields="$options.fields"
@@ -246,6 +326,7 @@ export default {
               previousFrameworkId: null,
             })
           "
+          @create="createComplianceFramework(id)"
         >
           <template #toggle>
             <gl-button icon="plus" category="tertiary" variant="info">
@@ -259,6 +340,7 @@ export default {
           :key="framework.id"
           closeable
           :framework="framework"
+          @edit="editComplianceFramework(framework)"
           @close="
             applySingleItemOperation({
               projectId: id,

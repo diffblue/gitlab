@@ -1,7 +1,7 @@
 query getAllRunnersCountEE(
   $paused: Boolean
   $status: CiRunnerStatus
-  $upgradeStatus: CiRunnerUpgradeStatusType # Added in EE
+  $upgradeStatus: CiRunnerUpgradeStatus # Added in EE
   $type: CiRunnerType
   $tagList: [String!]
   $search: String

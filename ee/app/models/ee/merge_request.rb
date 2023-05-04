@@ -12,9 +12,7 @@ module EE
     USES_MERGE_BASE_PIPELINE_FOR_COMPARISON = {
       ::Ci::CompareMetricsReportsService => ->(_project) { true },
       ::Ci::CompareCodequalityReportsService => ->(_project) { true },
-      ::Ci::CompareSecurityReportsService => ->(project) do
-        ::Feature.enabled?(:use_merge_base_for_security_widget, project)
-      end
+      ::Ci::CompareSecurityReportsService => ->(_project) { true }
     }.freeze
 
     prepended do

@@ -14,8 +14,10 @@ export default () => {
     basePath,
     mergeCommitsCsvExportPath,
     groupPath,
+    groupEditPath,
     rootAncestorPath,
     newGroupComplianceFrameworkPath,
+    pipelineConfigurationFullPathEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -37,6 +39,11 @@ export default () => {
     apolloProvider,
     name: 'ComplianceReportsApp',
     router,
+    provide: {
+      groupPath,
+      groupEditPath,
+      pipelineConfigurationFullPathEnabled,
+    },
     render: (createElement) =>
       createElement(ReportsApp, {
         props: {

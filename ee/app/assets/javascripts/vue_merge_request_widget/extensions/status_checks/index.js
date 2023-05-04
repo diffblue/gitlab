@@ -8,6 +8,7 @@ import * as StatusCheckRetryApi from 'ee/api/status_check_api';
 import Poll from '~/lib/utils/poll';
 import { responseHasPendingChecks } from 'ee/vue_merge_request_widget/extensions/status_checks/utils';
 import { LOADING_STATES } from '~/vue_merge_request_widget/components/extensions/base.vue';
+import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { getFailedChecksWithLoadingState, mapStatusCheckResponse } from './mappers';
 
@@ -68,16 +69,29 @@ export default {
       return EXTENSION_ICONS.success;
     },
     tertiaryButtons() {
+      const actionButtons = [];
+
       if (this.hasFetchError) {
-        return [
-          {
-            text: __('Retry'),
-            onClick: () => this.loadCollapsedData(),
-          },
-        ];
+        actionButtons.push({
+          text: __('Retry'),
+          onClick: () => this.loadCollapsedData(),
+        });
       }
 
-      return [];
+      actionButtons.push({
+        icon: 'information-o',
+        class: 'btn-icon',
+        id: 'info-status-checks-id',
+        popoverTarget: 'info-status-checks-id',
+        popoverTitle: s__('StatusCheck|What is status check?'),
+        popoverText: s__(
+          'StatusCheck|Status checks are API calls to external systems that request the status of an external requirement. %{linkStart}Learn more.%{linkEnd}',
+        ),
+        popoverLink: helpPagePath('user/project/merge_requests/status_checks'),
+        testId: 'info-status-checks',
+      });
+
+      return actionButtons;
     },
   },
   methods: {

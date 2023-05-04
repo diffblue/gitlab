@@ -1,5 +1,5 @@
-import { GlCollapsibleListbox } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlButton, GlCollapsibleListbox } from '@gitlab/ui';
+import { mount, ErrorWrapper } from '@vue/test-utils';
 import { captureException } from '@sentry/browser';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
@@ -22,6 +22,12 @@ describe('FrameworkSelectionBox component', () => {
   const getComplianceFrameworkQueryResponse = jest
     .fn()
     .mockResolvedValue(getComplianceFrameworksResponse);
+
+  const findNewFrameworkButton = () =>
+    wrapper
+      .findAllComponents(GlButton)
+      .wrappers.find((w) => w.text().includes(FrameworkSelectionBox.i18n.createNewFramework)) ??
+    new ErrorWrapper();
 
   const createComponent = (props) => {
     apolloProvider = createMockApollo([
@@ -94,5 +100,30 @@ describe('FrameworkSelectionBox component', () => {
 
     expect(captureException).toHaveBeenCalledWith(ERROR);
     expect(createAlert).toHaveBeenCalled();
+  });
+
+  it('has new framework button with href', () => {
+    createComponent();
+
+    expect(findNewFrameworkButton().attributes('href')).not.toBeUndefined();
+  });
+
+  describe('when modal refactor ff is available', () => {
+    beforeEach(() => {
+      window.gon = { features: { manageComplianceFrameworksModalsRefactor: true } };
+    });
+
+    it('new framework button does not have a href', () => {
+      createComponent();
+
+      expect(findNewFrameworkButton().attributes('href')).toBeUndefined();
+    });
+
+    it('clicking new framework button emits create event', () => {
+      createComponent();
+      findNewFrameworkButton().vm.$emit('click');
+
+      expect(wrapper.emitted('create')).toHaveLength(1);
+    });
   });
 });

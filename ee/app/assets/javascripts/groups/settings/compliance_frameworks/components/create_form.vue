@@ -82,7 +82,10 @@ export default {
             return;
           }
 
-          this.$emit('success', this.$options.i18n.successMessageText);
+          this.$emit('success', {
+            message: this.$options.i18n.successMessageText,
+            framework: data.createComplianceFramework.framework,
+          });
         }
       } catch (e) {
         this.setError(e, SAVE_ERROR);

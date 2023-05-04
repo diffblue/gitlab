@@ -16,12 +16,14 @@ export default {
     FormStatus,
     SharedForm,
   },
-  inject: [
-    'graphqlFieldName',
-    'groupEditPath',
-    'groupPath',
-    'pipelineConfigurationFullPathEnabled',
-  ],
+  inject: {
+    graphqlFieldName: {
+      default: '',
+    },
+    groupEditPath: 'groupEditPath',
+    groupPath: 'groupPath',
+    pipelineConfigurationFullPathEnabled: 'pipelineConfigurationFullPathEnabled',
+  },
   props: {
     id: {
       type: String,
@@ -148,7 +150,10 @@ export default {
             return;
           }
 
-          this.$emit('success', this.$options.i18n.successMessageText);
+          this.$emit('success', {
+            message: this.$options.i18n.successMessageText,
+            framework: data.updateComplianceFramework.framework,
+          });
         }
       } catch (e) {
         this.setSavingError(e, SAVE_ERROR);
