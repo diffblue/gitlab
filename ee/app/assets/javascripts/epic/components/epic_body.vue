@@ -1,5 +1,5 @@
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 
 import IssuableBody from '~/issues/show/components/app.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
@@ -21,17 +21,14 @@ export default {
       'markdownDocsPath',
       'canUpdate',
       'canDestroy',
-      'canAdmin',
       'initialTitleHtml',
       'initialTitleText',
       'initialDescriptionHtml',
       'initialDescriptionText',
       'lockVersion',
-      'sidebarCollapsed',
       'state',
       'confidential',
     ]),
-    ...mapGetters(['isUserSignedIn']),
   },
 };
 </script>

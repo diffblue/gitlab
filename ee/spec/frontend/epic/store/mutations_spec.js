@@ -63,61 +63,6 @@ describe('Epic Store Mutations', () => {
     });
   });
 
-  describe('REQUEST_EPIC_TODO_TOGGLE', () => {
-    it('Should set `epicTodoToggleInProgress` flag on state as `true`', () => {
-      const state = {
-        epicTodoToggleInProgress: false,
-      };
-
-      mutations[types.REQUEST_EPIC_TODO_TOGGLE](state);
-
-      expect(state.epicTodoToggleInProgress).toBe(true);
-    });
-  });
-
-  describe('REQUEST_EPIC_TODO_TOGGLE_SUCCESS', () => {
-    it('Should set `todoDeletePath` value on state with provided value of `todoDeletePath` param', () => {
-      const todoDeletePath = '/foo/bar';
-      const state = {};
-
-      mutations[types.REQUEST_EPIC_TODO_TOGGLE_SUCCESS](state, { todoDeletePath });
-
-      expect(state.todoDeletePath).toBe(todoDeletePath);
-    });
-
-    it('Should toggle value of `todoExists` value on state', () => {
-      const state = {
-        todoExists: true,
-      };
-
-      mutations[types.REQUEST_EPIC_TODO_TOGGLE_SUCCESS](state, {});
-
-      expect(state.todoExists).toBe(false);
-    });
-
-    it('Should set `epicTodoToggleInProgress` flag on state as `false`', () => {
-      const state = {
-        epicTodoToggleInProgress: true,
-      };
-
-      mutations[types.REQUEST_EPIC_TODO_TOGGLE_SUCCESS](state, {});
-
-      expect(state.epicTodoToggleInProgress).toBe(false);
-    });
-  });
-
-  describe('REQUEST_EPIC_TODO_TOGGLE_FAILURE', () => {
-    it('Should set `epicTodoToggleInProgress` flag on state as `false`', () => {
-      const state = {
-        epicTodoToggleInProgress: true,
-      };
-
-      mutations[types.REQUEST_EPIC_TODO_TOGGLE_FAILURE](state);
-
-      expect(state.epicTodoToggleInProgress).toBe(false);
-    });
-  });
-
   describe('SET_EPIC_CREATE_TITLE', () => {
     it('Should set `newEpicTitle` prop on state as with the value of provided `newEpicTitle` param', () => {
       const state = {

@@ -7,8 +7,6 @@ export default () => ({
   groupPath: '',
   markdownPreviewPath: '',
   labelsPath: '',
-  todoPath: '',
-  todoDeletePath: '',
 
   // URLs to use with links
   epicsWebUrl: '',
@@ -35,7 +33,6 @@ export default () => ({
   initialDescriptionText: '',
   lockVersion: 0,
 
-  todoExists: false,
   startDateSourcingMilestoneTitle: '',
   startDateSourcingMilestoneDates: {
     startDate: '',
@@ -66,7 +63,6 @@ export default () => ({
   // UI status flags
   epicStatusChangeInProgress: false,
   epicDeleteInProgress: false,
-  epicTodoToggleInProgress: false,
   epicStartDateSaveInProgress: false,
   epicDueDateSaveInProgress: false,
   epicLabelsSelectInProgress: false,
