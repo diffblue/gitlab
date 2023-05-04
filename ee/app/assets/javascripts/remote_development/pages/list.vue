@@ -4,14 +4,9 @@ import { logError } from '~/lib/logger';
 import { s__, __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
-import { getDayDifference } from '~/lib/utils/datetime_utility';
-import {
-  WORKSPACE_STATES,
-  ROUTES,
-  WORKSPACES_LIST_POLL_INTERVAL,
-  EXCLUDED_WORKSPACE_AGE_IN_DAYS,
-} from '../constants';
+import { WORKSPACE_STATES, ROUTES, WORKSPACES_LIST_POLL_INTERVAL } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
+import userWorkspacesProjectsNamesQuery from '../graphql/queries/user_workspaces_projects_names.query.graphql';
 import workspaceUpdateMutation from '../graphql/mutations/workspace_update.mutation.graphql';
 import WorkspaceEmptyState from '../components/list/empty_state.vue';
 import WorkspaceStateIndicator from '../components/list/workspace_state_indicator.vue';
@@ -33,12 +28,6 @@ const sortWorkspacesByTerminatedState = (workspaceA, workspaceB) => {
   return -1; // Place workspaceA before workspaceB since it is not terminated.
 };
 
-const excludeOldTerminatedWorkspaces = ({ createdAt, actualState }) => {
-  return actualState === WORKSPACE_STATES.terminated
-    ? getDayDifference(new Date(createdAt), new Date()) <= EXCLUDED_WORKSPACE_AGE_IN_DAYS
-    : true;
-};
-
 export const i18n = {
   updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
   tableColumnHeaders: {
@@ -47,6 +36,9 @@ export const i18n = {
   },
   heading: s__('Workspaces|Workspaces'),
   newWorkspaceButton: s__('Workspaces|New workspace'),
+  loadingWorkspacesFailed: s__(
+    'Workspaces|Unable to load current Workspaces. Please try again or contact an administrator.',
+  ),
 };
 
 export default {
@@ -69,9 +61,24 @@ export default {
       },
       error(err) {
         logError(err);
-        this.error = __(
-          'Unable to load current Workspaces. Please try again or contact an administrator.',
-        );
+      },
+      async result({ data, error }) {
+        if (error) {
+          this.error = i18n.loadingWorkspacesFailed;
+          return;
+        }
+        const workspaces = data.currentUser.workspaces.nodes;
+        const result = await this.fetchProjectNames(workspaces);
+
+        if (result.error) {
+          this.error = i18n.loadingWorkspacesFailed;
+          return;
+        }
+
+        this.workspaces = workspaces.map((workspace) => ({
+          ...workspace,
+          projectName: result.projectIdToNameMap[workspace.projectId] || workspace.projectId,
+        }));
       },
     },
   },
@@ -106,14 +113,41 @@ export default {
       return this.$apollo.loading;
     },
     sortedWorkspaces() {
-      return [...this.workspaces]
-        .filter(excludeOldTerminatedWorkspaces)
-        .sort(sortWorkspacesByTerminatedState);
+      return [...this.workspaces].sort(sortWorkspacesByTerminatedState);
     },
   },
   methods: {
     clearError() {
       this.error = '';
+    },
+    async fetchProjectNames(workspaces) {
+      const projectIds = workspaces.map(({ projectId }) => projectId);
+
+      try {
+        const {
+          data: { projects },
+          error,
+        } = await this.$apollo.query({
+          query: userWorkspacesProjectsNamesQuery,
+          variables: { ids: projectIds },
+        });
+
+        if (error) {
+          return { error };
+        }
+
+        return {
+          projectIdToNameMap: projects.nodes.reduce(
+            (map, project) => ({
+              ...map,
+              [project.id]: project.nameWithNamespace,
+            }),
+            {},
+          ),
+        };
+      } catch (error) {
+        return { error };
+      }
     },
     updateWorkspace(id, desiredState) {
       return this.$apollo
@@ -171,7 +205,7 @@ export default {
           <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
             <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
             <div class="gl-display-flex gl-flex-direction-column">
-              <span> {{ item.projectId }} </span>
+              <span> {{ item.projectName }} </span>
               <span> {{ item.name }} </span>
             </div>
           </div>
