@@ -93,6 +93,7 @@ export default {
         :initial-filter-value="getFilteredSearchValue()"
         :initial-sort-by="sortedBy"
         sync-filter-and-sort
+        terms-as-tokens
         recent-searches-storage-key="epics"
         class="gl-flex-grow-1"
         @onFilter="handleFilterEpics"
