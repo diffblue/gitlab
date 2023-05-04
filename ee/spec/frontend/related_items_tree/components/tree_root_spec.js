@@ -1,9 +1,10 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Draggable from 'vuedraggable';
 import Vuex from 'vuex';
 
+import { ESC_KEY_CODE } from '~/lib/utils/keycodes';
 import TreeRoot from 'ee/related_items_tree/components/tree_root.vue';
 
 import { treeItemChevronBtnClassName } from 'ee/related_items_tree/constants';
@@ -21,13 +22,14 @@ import {
 const { epic } = mockQueryResponse.data.group;
 
 Vue.use(Vuex);
+let store;
 
 const createComponent = ({
   parentItem = mockParentItem,
   epicPageInfo = epic.children.pageInfo,
   issuesPageInfo = epic.issues.pageInfo,
 } = {}) => {
-  const store = createDefaultStore();
+  store = createDefaultStore();
   const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
 
   store.dispatch('setInitialParentItem', mockParentItem);
@@ -90,7 +92,7 @@ describe('RelatedItemsTree', () => {
             });
 
             it('should return string "ul" when userSignedIn prop is false', () => {
-              wrapper.vm.$store.dispatch('setInitialConfig', {
+              store.dispatch('setInitialConfig', {
                 ...mockInitialConfig,
                 userSignedIn: false,
               });
@@ -120,7 +122,7 @@ describe('RelatedItemsTree', () => {
             });
 
             it('should return an empty object when userSignedIn prop is false', () => {
-              wrapper.vm.$store.dispatch('setInitialConfig', {
+              store.dispatch('setInitialConfig', {
                 ...mockInitialConfig,
                 userSignedIn: false,
               });
@@ -250,50 +252,70 @@ describe('RelatedItemsTree', () => {
 
               expect(document.body.classList.contains('is-dragging')).toBe(true);
             });
+
+            it('attaches `keyup` event listener on document', async () => {
+              jest.spyOn(document, 'addEventListener');
+              wrapper.findComponent(Draggable).vm.$emit('start');
+              await nextTick();
+
+              expect(document.addEventListener).toHaveBeenCalledWith('keyup', expect.any(Function));
+            });
           });
 
           describe('handleDragOnEnd', () => {
-            it('removes class `is-dragging` from document body', () => {
-              jest.spyOn(wrapper.vm, 'reorderItem').mockImplementation(() => {});
+            it('removes class `is-dragging` from document body', async () => {
               document.body.classList.add('is-dragging');
 
-              wrapper.vm.handleDragOnEnd({
-                oldIndex: 1,
-                newIndex: 0,
-              });
+              wrapper.findComponent(Draggable).vm.$emit('end', {});
+              await nextTick();
 
               expect(document.body.classList.contains('is-dragging')).toBe(false);
             });
 
-            describe('origin parent is destination parent', () => {
-              it('does not call `reorderItem` action when newIndex is same as oldIndex', () => {
-                jest.spyOn(wrapper.vm, 'reorderItem').mockImplementation(() => {});
+            it('detaches `keyup` event listener on document', async () => {
+              jest.spyOn(document, 'removeEventListener');
 
-                wrapper.vm.handleDragOnEnd({
+              wrapper.findComponent(Draggable).vm.$emit('end', { oldIndex: 0, newIndex: 0 });
+              await nextTick();
+
+              expect(document.removeEventListener).toHaveBeenCalledWith(
+                'keyup',
+                expect.any(Function),
+              );
+            });
+
+            describe('origin parent is destination parent', () => {
+              it('does not call `reorderItem` action when newIndex is same as oldIndex', async () => {
+                jest.spyOn(store, 'dispatch').mockImplementation(() => {});
+
+                wrapper.findComponent(Draggable).vm.$emit('end', {
                   oldIndex: 0,
                   newIndex: 0,
                   from: wrapper.element,
                   to: wrapper.element,
                 });
+                await nextTick();
 
-                expect(wrapper.vm.reorderItem).not.toHaveBeenCalled();
+                expect(store.dispatch).not.toHaveBeenCalled();
               });
 
-              it('calls `reorderItem` action when newIndex is different from oldIndex', () => {
-                jest.spyOn(wrapper.vm, 'reorderItem').mockImplementation(() => {});
+              it('calls `reorderItem` action when newIndex is different from oldIndex', async () => {
+                jest.spyOn(store, 'dispatch').mockImplementation(() => {});
 
-                wrapper.vm.handleDragOnEnd({
+                wrapper.findComponent(Draggable).vm.$emit('end', {
                   oldIndex: 1,
                   newIndex: 0,
                   from: wrapper.element,
                   to: wrapper.element,
                 });
+                await nextTick();
 
-                expect(wrapper.vm.reorderItem).toHaveBeenCalledWith(
+                expect(store.dispatch).toHaveBeenCalledWith(
+                  'reorderItem',
                   expect.objectContaining({
                     treeReorderMutation: expect.any(Object),
-                    parentItem: wrapper.vm.parentItem,
-                    targetItem: wrapper.vm.children[1],
+                    parentItem: mockParentItem,
+                    targetItem: epicUtils.processQueryResponse(mockQueryResponse.data.group)[1],
                     oldIndex: 1,
                     newIndex: 0,
                   }),
@@ -302,17 +324,19 @@ describe('RelatedItemsTree', () => {
             });
 
             describe('origin parent is different than destination parent', () => {
-              it('calls `moveItem`', () => {
-                jest.spyOn(wrapper.vm, 'moveItem').mockImplementation(() => {});
+              it('calls `moveItem`', async () => {
+                jest.spyOn(store, 'dispatch').mockImplementation(() => {});
 
-                wrapper.vm.handleDragOnEnd({
+                wrapper.findComponent(Draggable).vm.$emit('end', {
                   oldIndex: 1,
                   newIndex: 0,
                   from: wrapper.element,
                   to: wrapper.find('li:first-child .sub-tree-root'),
                 });
+                await nextTick();
 
-                expect(wrapper.vm.moveItem).toHaveBeenCalledWith(
+                expect(store.dispatch).toHaveBeenCalledWith(
+                  'moveItem',
                   expect.objectContaining({
                     oldParentItem: wrapper.vm.parentItem,
                     newParentItem: wrapper.find('li:first-child .sub-tree-root').dataset,
@@ -322,6 +346,22 @@ describe('RelatedItemsTree', () => {
                   }),
                 );
               });
+            });
+          });
+
+          describe('handleKeyUp', () => {
+            it('dispatches `mouseup` event when Escape key is pressed', () => {
+              jest.spyOn(store, 'dispatch').mockImplementation(() => {});
+              jest.spyOn(document, 'dispatchEvent');
+
+              document.dispatchEvent(
+                new Event('keyup', {
+                  keyCode: ESC_KEY_CODE,
+                }),
+              );
+
+              expect(document.dispatchEvent).toHaveBeenCalledWith(new Event('mouseup'));
+              expect(store.dispatch).not.toHaveBeenCalled();
             });
           });
         });
