@@ -53,7 +53,7 @@ export default {
   },
   computed: {
     isChatAvaiable() {
-      return this.glFeatures.explainCodeChat;
+      return this.glFeatures.explainCodeChat && this.messages.length;
     },
   },
   watch: {
@@ -78,6 +78,9 @@ export default {
       if (this.prompt) {
         this.$emit('send-chat-prompt', this.prompt);
       }
+    },
+    getPromptLocation(index) {
+      return index ? 'after_content' : 'before_content';
     },
     renderMarkdown,
   },
@@ -116,7 +119,7 @@ export default {
     <gl-alert
       :dismissible="false"
       variant="warning"
-      class="gl-font-sm gl-mb-2 gl-border-b"
+      class="gl-font-sm gl-border-b"
       role="alert"
       data-testid="chat-legal-warning"
       primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
@@ -137,7 +140,7 @@ export default {
             v-for="(message, index) in messages"
             :key="`${message.role}-${index}`"
             :ref="index === messages.length - 1 ? 'lastMessage' : undefined"
-            class="gl-p-5 ai-genie-chat-message gl-text-gray-600"
+            class="gl-px-5 gl-pt-5 ai-genie-chat-message gl-text-gray-600"
             :class="{
               'gl-bg-white gl-border-t gl-border-b':
                 message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
@@ -147,7 +150,7 @@ export default {
             <slot
               v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
               name="feedback"
-              :prompt-location="index ? 'after_content' : 'before_content'"
+              :prompt-location="getPromptLocation(index)"
             ></slot>
           </div>
           <div v-if="isLoading" class="gl-p-5 gl-display-flex">
@@ -166,8 +169,8 @@ export default {
       </section>
     </div>
     <footer
-      v-if="messages.length > 0 && isChatAvaiable"
-      class="gl-drawer-footer gl-drawer-footer-sticky gl-drawer-body-scrim-on-footer gl-p-5 gl-border-t gl-bg-white gl-mt-5"
+      v-if="isChatAvaiable"
+      class="gl-drawer-footer gl-drawer-footer-sticky gl-drawer-body-scrim-on-footer gl-p-5 gl-border-t gl-bg-white"
     >
       <gl-form @submit.stop.prevent="sendChatPrompt">
         <gl-form-input-group>
