@@ -57,7 +57,7 @@ module Security
       def dast_on_demand_template
         strong_memoize(:dast_on_demand_template) do
           template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: DAST_ON_DEMAND_TEMPLATE_NAME).execute
-          Gitlab::Config::Loader::Yaml.new(template.content).load!
+          Gitlab::Ci::Config::Yaml.load!(template.content)
         end
       end
 
