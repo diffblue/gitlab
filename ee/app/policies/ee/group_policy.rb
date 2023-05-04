@@ -87,12 +87,12 @@ module EE
         @subject.feature_available?(:group_forking_protection)
       end
 
-      condition(:needs_new_sso_session) do
-        sso_enforcement_prevents_access?
+      condition(:needs_new_sso_session, scope: :subject) do
+        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(@subject, user: @user)
       end
 
-      condition(:no_active_sso_session) do
-        sso_session_prevents_access?
+      condition(:no_active_sso_session, scope: :subject) do
+        ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(@user, @subject).access_restricted?
       end
 
       condition(:ip_enforcement_prevents_access, scope: :subject) do
@@ -566,21 +566,6 @@ module EE
       return false unless ::Gitlab::CurrentSettings.allow_group_owners_to_manage_ldap?
 
       !!subject.unlock_membership_to_ldap? && subject.owned_by?(user)
-    end
-
-    def sso_enforcement_prevents_access?
-      return false unless subject.persisted?
-      return false if user&.admin?
-      return false if user&.auditor?
-
-      ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject, user: user)
-    end
-
-    def sso_session_prevents_access?
-      return false unless subject.persisted?
-      return false if user&.auditor? || user&.can_read_all_resources?
-
-      ::Gitlab::Auth::GroupSaml::SessionEnforcer.new(user, subject).access_restricted?
     end
 
     # Available in Core for self-managed but only paid, non-trial for .com to prevent abuse

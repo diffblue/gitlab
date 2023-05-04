@@ -65,6 +65,9 @@ module Gitlab
         end
 
         def self.user_authorized?(user, group, for_project)
+          return false unless user
+          return true if user.can_read_all_resources?
+
           return false if for_project
 
           !group.has_parent? && group.owned_by?(user)
