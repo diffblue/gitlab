@@ -65,11 +65,14 @@ export default {
     <template v-if="parsedYaml" #summary>
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
         <require-approvals :action="requireApproval" :approvers="approvers" />
-        <ul>
-          <li v-for="(rule, idx) in humanizedRules" :key="idx">
-            {{ rule }}
-          </li>
-        </ul>
+        <div v-for="({ summary, criteriaList }, idx) in humanizedRules" :key="idx" class="gl-pt-5">
+          {{ summary }}
+          <ul class="gl-m-0">
+            <li v-for="(criteria, criteriaIdx) in criteriaList" :key="criteriaIdx" class="gl-mt-2">
+              {{ criteria }}
+            </li>
+          </ul>
+        </div>
       </policy-info-row>
     </template>
   </policy-drawer-layout>

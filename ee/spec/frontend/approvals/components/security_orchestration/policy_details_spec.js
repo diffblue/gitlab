@@ -50,8 +50,8 @@ describe('PolicyDetails', () => {
     it('renders the text version of the related action and each of the rules', () => {
       const text = wrapper.text();
       expect(findRequiredApprovals().exists()).toBe(true);
-      expect(text).toContain('Any security scanner');
-      expect(text).toContain('critical vulnerability');
+      expect(text).toContain('When any security scanner');
+      expect(text).toContain('critical');
     });
 
     it('renders a link to policy path', () => {

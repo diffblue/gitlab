@@ -1,7 +1,13 @@
-import { sprintf, s__ } from '~/locale';
+import { sprintf, s__, n__, __ } from '~/locale';
 import { NO_RULE_MESSAGE, INVALID_PROTECTED_BRANCHES } from '../../constants';
 import { createHumanizedScanners } from '../../utils';
+import {
+  NEEDS_TRIAGE_PLURAL,
+  APPROVAL_VULNERABILITY_STATE_GROUPS,
+  APPROVAL_VULNERABILITY_STATES_FLAT,
+} from '../scan_filters/constants';
 import { LICENSE_FINDING, LICENSE_STATES } from './rules';
+import { groupSelectedVulnerabilityStates } from './vulnerability_states';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -75,6 +81,48 @@ const humanizeVulnerabilitiesAllowed = (vulnerabilitiesAllowed) =>
     : s__('SecurityOrchestration|any');
 
 /**
+ * Create a translation map for vulnerability statuses,
+ * applying replacements needed for human-readable version of vulnerability states
+ * @returns {Object}
+ */
+const vulnerabilityStatusTranslationMap = {
+  ...APPROVAL_VULNERABILITY_STATES_FLAT,
+  new_needs_triage: NEEDS_TRIAGE_PLURAL,
+  detected: NEEDS_TRIAGE_PLURAL,
+};
+
+/**
+ * Create a human-readable version of the vulnerability states
+ * @param {Array} vulnerabilitiesStates
+ * @returns {String}
+ */
+const humanizeVulnerabilityStates = (vulnerabilitiesStates) => {
+  if (!vulnerabilitiesStates.length) {
+    return '';
+  }
+
+  const divider = __(', or ');
+  const statesByGroup = groupSelectedVulnerabilityStates(vulnerabilitiesStates);
+  const stateGroups = Object.keys(statesByGroup);
+
+  return stateGroups
+    .reduce((sentence, stateGroup) => {
+      return [
+        ...sentence,
+        sprintf(s__('SecurityOrchestration|%{state} and %{statuses}'), {
+          state: APPROVAL_VULNERABILITY_STATE_GROUPS[stateGroup].toLowerCase(),
+          statuses: humanizeItems({
+            items: statesByGroup[stateGroup].map((status) =>
+              vulnerabilityStatusTranslationMap[status].toLowerCase(),
+            ),
+          }),
+        }),
+      ];
+    }, [])
+    .join(divider);
+};
+
+/**
  * Create a human-readable version of the scanners
  * @param {Array} scanners
  * @returns {String}
@@ -83,7 +131,7 @@ const humanizeScanners = (scanners) => {
   const hasEmptyScanners = scanners.length === 0;
 
   if (hasEmptyScanners) {
-    return s__('SecurityOrchestration|Any security scanner finds');
+    return s__('SecurityOrchestration|any security scanner finds');
   }
 
   return sprintf(s__('SecurityOrchestration|%{scanners}'), {
@@ -124,50 +172,69 @@ const humanizeLicenses = (originalLicenses) => {
 /**
  * Create a human-readable version of the rule
  * @param {Object} rule {type: 'scan_finding', branches: ['master'], scanners: ['container_scanning'], vulnerabilities_allowed: 1, severity_levels: ['critical']}
- * @returns {String}
+ * @returns {Object} {summary: '', criteriaList: []}
  */
 const humanizeRule = (rule) => {
   if (rule.type === LICENSE_FINDING) {
-    return sprintf(
-      s__(
-        'SecurityOrchestration|License scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}.',
+    return {
+      summary: sprintf(
+        s__(
+          'SecurityOrchestration|When license scanner finds any license %{matching} %{licenses}%{detection} in an open merge request targeting %{branches}.',
+        ),
+        {
+          matching: rule.match_on_inclusion ? 'matching' : 'except',
+          licenses: humanizeLicenses(rule.license_types),
+          detection: humanizeLicenseDetection(rule.license_states),
+          branches: humanizeBranches(rule.branches),
+        },
       ),
-      {
-        matching: rule.match_on_inclusion ? 'matching' : 'except',
-        licenses: humanizeLicenses(rule.license_types),
-        detection: humanizeLicenseDetection(rule.license_states),
-        branches: humanizeBranches(rule.branches),
-      },
-    );
+    };
   }
 
-  return sprintf(
-    s__(
-      'SecurityOrchestration|%{scanners} %{vulnerabilitiesAllowed} %{severities} in an open merge request targeting %{branches}.',
+  const criteriaList = [
+    rule.severity_levels.length
+      ? sprintf(s__('SecurityOrchestration|Severity is %{severity}.'), {
+          severity: humanizeItems({
+            items: rule.severity_levels,
+          }),
+        })
+      : null,
+    rule.vulnerability_states.length
+      ? sprintf(s__('SecurityOrchestration|Vulnerabilities are %{vulnerabilityStates}.'), {
+          vulnerabilityStates: humanizeVulnerabilityStates(rule.vulnerability_states),
+        })
+      : null,
+  ].filter((criteria) => Boolean(criteria));
+
+  return {
+    summary: sprintf(
+      s__(
+        'SecurityOrchestration|When %{scanners} %{vulnerabilitiesAllowed} %{vulnerability} in an open merge request targeting %{branches}%{criteriaApply}',
+      ),
+      {
+        scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
+        branches: humanizeBranches(rule.branches),
+        vulnerabilitiesAllowed: humanizeVulnerabilitiesAllowed(rule.vulnerabilities_allowed),
+        vulnerability: n__('vulnerability', 'vulnerabilities', rule.vulnerabilities_allowed),
+        criteriaApply: criteriaList.length
+          ? s__('SecurityOrchestration| and all the following apply:')
+          : '.',
+      },
     ),
-    {
-      scanners: humanizeScanners(createHumanizedScanners(rule.scanners)),
-      severities: humanizeItems({
-        items: rule.severity_levels,
-        singular: s__('SecurityOrchestration|vulnerability'),
-        plural: s__('SecurityOrchestration|vulnerabilities'),
-      }),
-      branches: humanizeBranches(rule.branches),
-      vulnerabilitiesAllowed: humanizeVulnerabilitiesAllowed(rule.vulnerabilities_allowed),
-    },
-  );
+    criteriaList,
+  };
 };
 
 /**
  * Create a human-readable version of the rules
  * @param {Array} rules [{type: 'scan_finding', branches: ['master'], scanners: ['container_scanning'], vulnerabilities_allowed: 1, severity_levels: ['critical']}]
- * @returns {Array}
+ * @returns {Array} [{summary: '', criteriaList: []}]
  */
 export const humanizeRules = (rules) => {
   const humanizedRules = rules.reduce((acc, curr) => {
     return [...acc, humanizeRule(curr)];
   }, []);
-  return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
+  return humanizedRules.length ? humanizedRules : [{ summary: NO_RULE_MESSAGE }];
 };
 
 export const humanizeInvalidBranchesError = (branches) => {
