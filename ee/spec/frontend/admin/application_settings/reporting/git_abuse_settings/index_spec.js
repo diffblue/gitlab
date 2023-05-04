@@ -34,10 +34,7 @@ describe('initGitAbuseRateLimitSettingsForm', () => {
   };
 
   afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-      el = null;
-    }
+    el = null;
   });
 
   describe('when there is no app root', () => {

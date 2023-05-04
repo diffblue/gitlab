@@ -9,12 +9,6 @@ describe('AddIssuableResourceLinkForm', () => {
     wrapper = mountExtended(AddIssuableResourceLinkForm);
   };
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findAddButton = () => wrapper.findByTestId('add-button');
   const findCancelButton = () => wrapper.findByText('Cancel');
   const findLinkTextInput = () => wrapper.findByTestId('link-text-input');

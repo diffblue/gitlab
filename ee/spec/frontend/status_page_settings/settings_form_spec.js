@@ -26,12 +26,6 @@ describe('Status Page settings form', () => {
     wrapper = shallowMount(StatusPageSettingsForm, { store: fakeStore() });
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   describe('default state', () => {
     it('should match the default snapshot', () => {
       expect(wrapper.element).toMatchSnapshot();

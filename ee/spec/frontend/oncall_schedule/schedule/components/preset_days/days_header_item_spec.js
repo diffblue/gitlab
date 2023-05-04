@@ -23,12 +23,6 @@ describe('ee/oncall_schedules/components/schedule/components/preset_days/days_he
     mountComponent();
   });
 
-  afterEach(() => {
-    if (wrapper) {
-      wrapper.destroy();
-    }
-  });
-
   const findHeaderItem = () => wrapper.findByTestId('timeline-header-item');
 
   describe('timelineHeaderStyles', () => {
