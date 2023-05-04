@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
+RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
 
   let(:current_time) { Time.zone.local(2019, 6, 1) }
@@ -374,6 +374,62 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         it_behaves_like 'custom Value Stream Analytics Stage'
       end
+
+      context 'between issue first assigned at and issue closed time' do
+        let(:start_event_identifier) { :issue_first_assigned_at }
+        let(:end_event_identifier) { :issue_closed }
+
+        def create_data_for_start_event(example_class)
+          create(:issue, :opened, project: example_class.project).tap do |issue|
+            create(:issue_assignment_event, issue: issue)
+          end
+        end
+
+        def create_data_for_end_event(issue, _example_class)
+          issue.close!
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
+
+      context 'between issue first assigned at and issue label added time' do
+        let(:start_event_identifier) { :issue_first_assigned_at }
+        let(:end_event_identifier) { :issue_label_added }
+        let(:end_event_label) { label }
+
+        def create_data_for_start_event(example_class)
+          create(:issue, :opened, project: example_class.project).tap do |issue|
+            create(:issue_assignment_event, issue: issue)
+          end
+        end
+
+        def create_data_for_end_event(issue, example_class)
+          Sidekiq::Worker.skipping_transaction_check do
+            Issues::UpdateService.new(
+              container: example_class.project,
+              current_user: user,
+              params: { label_ids: [example_class.label.id] }
+            ).execute(issue)
+          end
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
+
+      context 'between issue created and issue first assigned time' do
+        let(:start_event_identifier) { :issue_created }
+        let(:end_event_identifier) { :issue_first_assigned_at }
+
+        def create_data_for_start_event(example_class)
+          create(:issue, :opened, project: example_class.project)
+        end
+
+        def create_data_for_end_event(issue, _example_class)
+          create(:issue_assignment_event, issue: issue)
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
     end
 
     context 'when `MergeRequest` based stage is given' do
@@ -527,6 +583,38 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_end_event(mr, example_class)
           mr.metrics.update!(merged_at: Time.current)
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
+
+      context 'between MR first assigned at and MR closed time' do
+        let(:start_event_identifier) { :merge_request_first_assigned_at }
+        let(:end_event_identifier) { :merge_request_closed }
+
+        def create_data_for_start_event(example_class)
+          create(:merge_request, source_project: example_class.project, allow_broken: true).tap do |mr|
+            create(:merge_request_assignment_event, merge_request: mr)
+          end
+        end
+
+        def create_data_for_end_event(mr, _example_class)
+          mr.metrics.update!(latest_closed_at: Time.current)
+        end
+
+        it_behaves_like 'custom Value Stream Analytics Stage'
+      end
+
+      context 'between MR created and MR first assigned at time' do
+        let(:start_event_identifier) { :merge_request_created }
+        let(:end_event_identifier) { :merge_request_first_assigned_at }
+
+        def create_data_for_start_event(example_class)
+          create(:merge_request, source_project: example_class.project, allow_broken: true)
+        end
+
+        def create_data_for_end_event(mr, _example_class)
+          create(:merge_request_assignment_event, merge_request: mr)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'

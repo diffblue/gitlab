@@ -38,7 +38,7 @@ RSpec.describe "User comments on commit", :js, feature_category: :source_code_ma
         expect(page).not_to have_css(".js-note-text")
 
         # Check on `Write` tab
-        click_button("Write")
+        click_button("Continue editing")
 
         expect(page).to have_field("note[note]", with: "#{comment_text} #{emoji_code}")
 

@@ -50,7 +50,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         fill_in 'issue-description', with: 'New epic description'
 
         page.within('.detail-page-description') do
-          click_link('Preview')
+          click_button("Preview")
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
 
@@ -65,7 +65,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         fill_in 'issue-description', with: 'New epic description'
 
         page.within('.detail-page-description') do
-          click_link('Preview')
+          click_button("Preview")
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
 
@@ -78,7 +78,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         find('.js-issuable-edit').click
 
         page.within('.detail-page-description') do
-          click_link('Preview')
+          click_button("Preview")
           expect(find('.md-preview-holder')).to have_content('New epic description')
         end
       end
@@ -124,7 +124,7 @@ RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
         expect(page.find_field("issue-description").value).to have_content('banana_sample')
 
         page.within('.detail-page-description') do
-          click_link('Preview')
+          click_button("Preview")
           wait_for_requests
 
           within('.md-preview-holder') do
