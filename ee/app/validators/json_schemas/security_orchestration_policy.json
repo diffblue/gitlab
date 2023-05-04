@@ -342,7 +342,8 @@
                 },
                 "vulnerabilities_allowed": {
                   "description": "Specifies a number of vulnerabilities allowed before this rule is enforced.",
-                  "type": "integer"
+                  "type": "integer",
+                  "minimum": 0
                 },
                 "severity_levels": {
                   "description": "Specifies a list of vulnerability security levels that should be concidered to enforce this policy. Possible values: `info`, `unknown`, `low`, `medium`, `high`, `critical`.",

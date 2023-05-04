@@ -44,7 +44,7 @@ class ApprovalProjectRule < ApplicationRecord
   validate :validate_security_report_approver_name
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
-  validates :vulnerabilities_allowed, numericality: { only_integer: true }
+  validates :vulnerabilities_allowed, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
   validates :protected_branches, presence: true, if: -> { scan_finding? && !applies_to_all_protected_branches? }
