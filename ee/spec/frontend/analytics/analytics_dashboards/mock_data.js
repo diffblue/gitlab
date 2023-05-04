@@ -112,6 +112,39 @@ export const mockResultSet = {
   ],
 };
 
+export const mockTableWithLinksResultSet = {
+  tableColumns: () => [
+    {
+      key: 'TrackedEvents.docPath',
+      title: 'Tracked Events Doc Path',
+      shortTitle: 'Doc Path',
+      type: 'string',
+      dataIndex: 'TrackedEvents.docPath',
+    },
+    {
+      key: 'TrackedEvents.url',
+      title: 'Tracked Events Url',
+      shortTitle: 'Url',
+      type: 'string',
+      dataIndex: 'TrackedEvents.url',
+    },
+    {
+      key: 'TrackedEvents.pageViewsCount',
+      type: 'number',
+      dataIndex: 'TrackedEvents.pageViewsCount',
+      title: 'Tracked Events Page Views Count',
+      shortTitle: 'Page Views Count',
+    },
+  ],
+  tablePivot: () => [
+    {
+      'TrackedEvents.docPath': '/foo',
+      'TrackedEvents.url': 'https://example.com/foo',
+      'TrackedEvents.pageViewsCount': '1',
+    },
+  ],
+};
+
 export const mockFilters = {
   startDate: new Date('2015-01-01'),
   endDate: new Date('2016-01-01'),

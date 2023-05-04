@@ -75,6 +75,7 @@ export default {
           query,
           queryOverrides,
           visualizationType: this.visualization.type,
+          visualizationOptions: this.visualization.options,
           filters,
         });
       } catch (error) {

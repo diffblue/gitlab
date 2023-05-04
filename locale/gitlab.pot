@@ -52979,6 +52979,9 @@ msgstr ""
 msgid "expires on %{timebox_due_date}"
 msgstr ""
 
+msgid "external link"
+msgstr ""
+
 msgid "failed"
 msgstr ""
 
