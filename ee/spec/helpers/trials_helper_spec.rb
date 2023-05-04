@@ -239,33 +239,4 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
       it { is_expected.to eq(true) }
     end
   end
-
-  describe '#only_trialable_group_namespace' do
-    subject { helper.only_trialable_group_namespace }
-
-    let_it_be(:group1) { create :group }
-    let_it_be(:group2) { create :group }
-
-    let(:trialable_group_namespaces) { [group1] }
-
-    before do
-      allow(helper).to receive(:trialable_group_namespaces).and_return(trialable_group_namespaces)
-    end
-
-    context 'when there is 1 namespace group eligible' do
-      it { is_expected.to eq(group1) }
-    end
-
-    context 'when more than 1 namespace is eligible' do
-      let(:trialable_group_namespaces) { [group1, group2] }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'when there are 0 namespace groups eligible' do
-      let(:trialable_group_namespaces) { [] }
-
-      it { is_expected.to be_nil }
-    end
-  end
 end

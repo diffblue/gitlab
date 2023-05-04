@@ -5,7 +5,7 @@ module TrialsHelper
 
   def create_lead_form_data
     {
-      submit_path: create_lead_trials_path(glm_params),
+      submit_path: create_lead_trials_path(step: :lead, **glm_params),
       first_name: current_user.first_name,
       last_name: current_user.last_name,
       company_name: current_user.organization
@@ -66,10 +66,6 @@ module TrialsHelper
     options.push(text: _('Groups'), options: group_options) unless group_options.empty?
 
     options
-  end
-
-  def only_trialable_group_namespace
-    trialable_group_namespaces.first if trialable_group_namespaces.count == 1
   end
 
   private
