@@ -66,7 +66,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             resource_version: deployment_resource_version_from_agent,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
-            workspace_exists: workspace_exists
+            workspace_exists: workspace_exists,
+            user_name: user.name,
+            user_email: user.email
           )
         end
 
@@ -228,7 +230,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
                 workspace_namespace: workspace.namespace,
                 agent_id: workspace.agent.id,
                 owning_inventory: owning_inventory,
-                started: expected_value_for_started
+                started: expected_value_for_started,
+                user_name: user.name,
+                user_email: user.email
               )
             end
 
@@ -371,7 +375,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             resource_version: '42',
             previous_actual_state: RemoteDevelopment::Workspaces::States::STOPPING,
             current_actual_state: RemoteDevelopment::Workspaces::States::STOPPED,
-            workspace_exists: false
+            workspace_exists: false,
+            user_name: user.name,
+            user_email: user.email
           )
         end
 
@@ -412,7 +418,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, :
             workspace_namespace: unprovisioned_workspace.namespace,
             agent_id: unprovisioned_workspace.agent.id,
             owning_inventory: owning_inventory,
-            started: expected_value_for_started
+            started: expected_value_for_started,
+            user_name: user.name,
+            user_email: user.email
           )
         end
 

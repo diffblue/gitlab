@@ -28,7 +28,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DesiredConfigGenerator,
           workspace_namespace: workspace.namespace,
           agent_id: workspace.agent.id,
           owning_inventory: owning_inventory,
-          started: started
+          started: started,
+          user_name: user.name,
+          user_email: user.email
         )
       )
     end

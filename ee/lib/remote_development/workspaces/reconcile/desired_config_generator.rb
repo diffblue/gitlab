@@ -12,6 +12,7 @@ module RemoteDevelopment
           namespace = workspace.namespace
           agent = workspace.agent
           desired_state = workspace.desired_state
+          user = workspace.user
 
           domain_template = "{{.port}}-#{name}.#{workspace.dns_zone}"
 
@@ -33,7 +34,8 @@ module RemoteDevelopment
             replicas: replicas,
             domain_template: domain_template,
             labels: labels,
-            annotations: annotations
+            annotations: annotations,
+            user: user
           )
           workspace_resources.insert(0, workspace_inventory_config_map)
 

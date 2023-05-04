@@ -136,17 +136,24 @@ module RemoteDevelopment
           #       reasons
           image_name = 'alpine/git'
           image_tag = '2.36.3'
-
           clone_dir = "#{volume_mount_dir}/#{project.path}"
-
-          # project is cloned only if one doesn't exist already
-          # this done to avoid resetting user's modifications to the workspace
           project_url = project.http_url_to_repo
           project_ref = project.default_branch
+
+          # The project is cloned only if one doesn't exist already.
+          # This done to avoid resetting user's modifications to the workspace.
+          # After cloning the project, set the user's git configuration - name and email.
+          # The name and email are read from environment variable because we do not want to
+          # store PII in the processed devfile in the database.
+          # The environment variables are injected into the gl-cloner-injector container component
+          # when the Kubernetes resources are generated.
           container_args = <<~SH.chomp
             if [ ! -d '#{clone_dir}' ];
             then
               git clone --branch #{Shellwords.shellescape(project_ref)} #{Shellwords.shellescape(project_url)} #{Shellwords.shellescape(clone_dir)};
+              cd #{Shellwords.shellescape(clone_dir)};
+              git config user.name "${GIT_AUTHOR_NAME}";
+              git config user.email "${GIT_AUTHOR_EMAIL}";
             fi
           SH
 

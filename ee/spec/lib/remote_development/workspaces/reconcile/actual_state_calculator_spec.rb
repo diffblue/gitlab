@@ -52,7 +52,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::ActualStateCalculator, 
             resource_version: 1,
             previous_actual_state: previous_actual_state,
             current_actual_state: current_actual_state,
-            workspace_exists: workspace_exists
+            workspace_exists: workspace_exists,
+            user_name: "does not matter",
+            user_email: "does@not.matter"
           )
           workspace_agent_info.fetch('latest_k8s_deployment_info')
         end

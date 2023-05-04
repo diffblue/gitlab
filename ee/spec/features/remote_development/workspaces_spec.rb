@@ -125,7 +125,9 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           workspace_namespace: namespace,
           agent_id: agent.id,
           owning_inventory: "#{name}-workspace-inventory",
-          started: true
+          started: true,
+          user_name: user.name,
+          user_email: user.email
         )
 
         config_to_apply = info.fetch(:config_to_apply)
@@ -145,7 +147,9 @@ RSpec.describe 'Remote Development workspaces', :api, :js, feature_category: :re
           resource_version: resource_version,
           previous_actual_state: RemoteDevelopment::Workspaces::States::STARTING,
           current_actual_state: RemoteDevelopment::Workspaces::States::RUNNING,
-          workspace_exists: false
+          workspace_exists: false,
+          user_name: user.name,
+          user_email: user.email
         )
         reconcile_post_response =
           simulate_agentk_reconcile_post(workspace_agent_infos: [workspace_agent_info])
