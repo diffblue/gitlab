@@ -1,8 +1,20 @@
 import { s__ } from '~/locale';
 import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
+import { isPositiveInteger } from '~/lib/utils/number_utils';
+import {
+  APPROVAL_VULNERABILITY_STATES,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
+} from '../scan_filters/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
+
+export const VULNERABILITY_STATE_KEYS = [
+  NEWLY_DETECTED,
+  ...Object.keys(APPROVAL_VULNERABILITY_STATES[NEWLY_DETECTED]),
+  ...Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]),
+];
 
 export const SCAN_FINDING = 'scan_finding';
 export const LICENSE_FINDING = 'license_finding';
@@ -47,23 +59,39 @@ export function emptyBuildRule() {
   };
 }
 
-/*
-  Check if scanners are valid for each rule.
-*/
-export function invalidScanners(rules) {
-  return (
-    rules
-      ?.filter((rule) => rule.scanners)
-      .flatMap((rule) => rule.scanners)
-      .some((scanner) => !REPORT_TYPES_KEYS.includes(scanner)) || false
-  );
-}
+/**
+ * Check if all rule values of certain key are included in the allowedValues list
+ * @param {Array} rules - List of rules
+ * @param {String} key - Rule key to check
+ * @param {Array} allowedValues - List of possible values
+ * @returns
+ */
+const invalidRuleValues = (rules, key, allowedValues) => {
+  if (!rules) {
+    return false;
+  }
 
-export function invalidVulnerabilitiesAllowed(rules) {
   return rules
+    .filter((rule) => rule[key])
+    .flatMap((rule) => rule[key])
+    .some((value) => !allowedValues.includes(value));
+};
+
+export const invalidScanners = (rules) => invalidRuleValues(rules, 'scanners', REPORT_TYPES_KEYS);
+
+export const invalidVulnerabilityStates = (rules) =>
+  invalidRuleValues(rules, 'vulnerability_states', VULNERABILITY_STATE_KEYS);
+
+export const invalidVulnerabilitiesAllowed = (rules) => {
+  if (!rules) {
+    return false;
+  }
+
+  return rules
+    .filter((rule) => rule.vulnerabilities_allowed)
     .map((rule) => rule.vulnerabilities_allowed)
-    .some((value) => Boolean(value) && !/^\d+$/.test(value));
-}
+    .some((value) => !isPositiveInteger(value));
+};
 /*
   Returns the config for a particular rule type
 */

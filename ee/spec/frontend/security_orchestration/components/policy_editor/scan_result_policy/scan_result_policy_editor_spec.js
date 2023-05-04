@@ -359,6 +359,13 @@ describe('ScanResultPolicyEditor', () => {
       verifiesParsingError();
     });
 
+    it('creates an error when vulnerability_states are invalid', async () => {
+      factoryWithExistingPolicy({ rules: [{ vulnerability_states: ['invalid'] }] });
+
+      await changesToRuleMode();
+      verifiesParsingError();
+    });
+
     it('does not create an error when policy matches existing approvers', async () => {
       factoryWithExistingPolicy();
 
