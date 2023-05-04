@@ -9,6 +9,7 @@ RSpec.shared_examples 'ee protected ref access' do |association|
 
     let(:access_level) { nil }
     let(:user) { nil }
+    let(:group) { nil }
 
     before_all do
       project.add_maintainer(current_user)
@@ -18,8 +19,25 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       described_class.new(
         association => protected_ref,
         user: user,
+        group: group,
         access_level: access_level
       )
+    end
+
+    context 'when instance admin access is configured' do
+      let(:access_level) { Gitlab::Access::ADMIN }
+
+      context 'when current_user is a maintainer' do
+        it { expect(subject.check_access(current_user)).to eq(false) }
+      end
+
+      context 'when current_user is admin' do
+        before do
+          allow(current_user).to receive(:admin?).and_return(true)
+        end
+
+        it { expect(subject.check_access(current_user)).to eq(true) }
+      end
     end
 
     context 'when user is assigned' do
@@ -32,6 +50,22 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       context 'when current_user is another user' do
         let(:user) { create(:user) }
 
+        it { expect(subject.check_access(current_user)).to eq(false) }
+      end
+    end
+
+    context 'when group is assigned' do
+      let(:group) { create(:group) }
+
+      context 'when current_user is in the group' do
+        before do
+          group.add_developer(current_user)
+        end
+
+        it { expect(subject.check_access(current_user)).to eq(true) }
+      end
+
+      context 'when current_user is not in the group' do
         it { expect(subject.check_access(current_user)).to eq(false) }
       end
     end

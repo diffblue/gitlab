@@ -3,6 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe ProtectedBranch::UnprotectAccessLevel, feature_category: :source_code_management do
-  it { is_expected.to validate_inclusion_of(:access_level).in_array([Gitlab::Access::MAINTAINER, Gitlab::Access::DEVELOPER]) }
-  it { is_expected.not_to allow_value(Gitlab::Access::NO_ACCESS).for(:access_level) }
+  include_examples 'protected branch access'
+  include_examples 'ee protected ref access', :protected_branch
+
+  describe '::allowed_access_levels' do
+    it 'does not include NO_ACCESS' do
+      expect(described_class.allowed_access_levels).not_to include(Gitlab::Access::NO_ACCESS)
+    end
+  end
 end
