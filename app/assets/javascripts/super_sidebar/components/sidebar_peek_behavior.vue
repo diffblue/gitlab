@@ -76,30 +76,43 @@ export default {
       }
     },
     willClose() {
-      this.changeState(STATE_WILL_CLOSE);
-      this.closeTimer = setTimeout(this.close, SUPER_SIDEBAR_PEEK_CLOSE_DELAY);
+      if (this.changeState(STATE_WILL_CLOSE)) {
+        this.closeTimer = setTimeout(this.close, SUPER_SIDEBAR_PEEK_CLOSE_DELAY);
+      }
     },
     willOpen() {
-      this.changeState(STATE_WILL_OPEN);
-      this.openTimer = setTimeout(this.open, SUPER_SIDEBAR_PEEK_OPEN_DELAY);
+      if (this.changeState(STATE_WILL_OPEN)) {
+        this.openTimer = setTimeout(this.open, SUPER_SIDEBAR_PEEK_OPEN_DELAY);
+      }
     },
     open() {
-      this.clearTimers();
-      this.changeState(STATE_OPEN);
+      if (this.changeState(STATE_OPEN)) {
+        this.clearTimers();
+      }
     },
     close() {
-      this.clearTimers();
-      this.changeState(STATE_CLOSED);
+      if (this.changeState(STATE_CLOSED)) {
+        this.clearTimers();
+      }
     },
     clearTimers() {
       clearTimeout(this.closeTimer);
       clearTimeout(this.openTimer);
     },
+    /**
+     * Switches to the new state, and emits a change event.
+     *
+     * If the given state is the current state, do nothing.
+     *
+     * @param {string} state The state to transition to.
+     * @returns {boolean} True if the state changed, false otherwise.
+     */
     changeState(state) {
-      if (this.state === state) return;
+      if (this.state === state) return false;
 
       this.state = state;
       this.$emit('change', state);
+      return true;
     },
   },
   render() {
