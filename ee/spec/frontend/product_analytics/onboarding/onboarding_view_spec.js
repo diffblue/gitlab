@@ -138,24 +138,12 @@ describe('ProductAnalyticsOnboardingView', () => {
   });
 
   describe('state component events', () => {
-    it('routes to "index" on complete when there is no event listener', async () => {
+    it('routes to "index" on complete', async () => {
       findStateComponent().vm.$emit('complete');
 
       await nextTick();
 
       expect($router.push).toHaveBeenCalledWith({ name: 'index' });
-      expect(wrapper.emitted('complete')).toBeUndefined();
-    });
-
-    it('emits "complete" on complete when there is an event listener', async () => {
-      createWrapper({ complete: () => {} });
-
-      findStateComponent().vm.$emit('complete');
-
-      await nextTick();
-
-      expect(wrapper.emitted('complete')).toHaveLength(1);
-      expect($router.push).not.toHaveBeenCalled();
     });
 
     it('creates an alert on error with a fixed message', () => {
