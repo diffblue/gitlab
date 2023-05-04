@@ -154,6 +154,9 @@ module EE
               project = ::Project.find(feedback.project_id)
               author = ::User.find(feedback.author_id)
 
+              # https://docs.gitlab.com/ee/development/database/batched_background_migrations.html#isolation
+              # forbids using application code in background migrations but we have an exception for this
+              # in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97699#note_1102465241
               vulnerability = ::Vulnerabilities::CreateService.new(
                 project,
                 author,
@@ -189,6 +192,9 @@ module EE
               project = ::Project.find(feedback.project_id)
               author = ::User.find(feedback.author_id)
 
+              # https://docs.gitlab.com/ee/development/database/batched_background_migrations.html#isolation
+              # forbids using application code in background migrations but we have an exception for this
+              # in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97699#note_1102465241
               response = ::Vulnerabilities::FindOrCreateFromSecurityFindingService.new(
                 project: project,
                 current_user: author,
