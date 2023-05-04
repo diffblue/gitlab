@@ -5,6 +5,7 @@ import {
   GlDisclosureDropdown,
   GlDisclosureDropdownGroup,
   GlDisclosureDropdownItem,
+  GlButton,
 } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __, sprintf } from '~/locale';
@@ -41,6 +42,7 @@ export default {
     GlDisclosureDropdown,
     GlDisclosureDropdownGroup,
     GlDisclosureDropdownItem,
+    GlButton,
     NewNavToggle,
     UserNameGroup,
   },
@@ -242,7 +244,7 @@ export default {
       @shown="onShow"
     >
       <template #toggle>
-        <button class="user-bar-item btn-with-notification">
+        <gl-button category="tertiary" class="user-bar-item btn-with-notification">
           <span class="gl-sr-only">{{ toggleText }}</span>
           <gl-avatar
             :size="24"
@@ -258,7 +260,7 @@ export default {
             v-bind="data.pipeline_minutes.notification_dot_attrs"
           >
           </span>
-        </button>
+        </gl-button>
       </template>
 
       <user-name-group :user="data" />
