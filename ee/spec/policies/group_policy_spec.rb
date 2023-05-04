@@ -703,15 +703,13 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
           ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'private' | false | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
 
@@ -734,28 +732,24 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
           ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
 
           ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'private' | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
 
@@ -775,15 +769,13 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'allows to read group'
           ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | true  | false  | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | true   | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'public'  | false | ref(:member_with_identity)   | false | false  | nil  | nil   | true | 'allows to read group'
 
@@ -800,28 +792,24 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
           ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'allows to read group'
           ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | true  | false | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | true  | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_with_identity)    | false | false | nil  | nil   | true | 'allows to read group'
 
           ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'allows to read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
           ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
           ref(:root_group) | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | true  | nil   | nil  | nil   | nil  | 'does not allow read group'
-          # It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/405021
-          # ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
+          ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | false | nil  | 'does not allow read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'allows to read group'
           ref(:subgroup)   | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'allows to read group'
 
@@ -836,7 +824,7 @@ RSpec.describe GroupPolicy, feature_category: :subgroups do
         end
 
         with_them do
-          context "when SSO for web activity is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
+          context "when 'Enforce SSO-only authentication for web activity for this group' option is #{params[:enforced_sso?] ? 'enabled' : 'not enabled'}" do
             around do |example|
               Gitlab::Session.with_session({}) do
                 example.run

@@ -2,11 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
+RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer, feature_category: :system_access do
   shared_examples 'not enforced' do
-    it 'is not enforced' do
-      expect(enforced?).to be false
-    end
+    it { is_expected.not_to be_access_restricted }
+  end
+
+  shared_examples 'enforced' do
+    it { is_expected.to be_access_restricted }
   end
 
   describe '#access_restricted' do
@@ -16,7 +18,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
 
     let(:root_group) { saml_provider.group }
 
-    subject(:enforced?) { described_class.new(user, root_group).access_restricted? }
+    subject(:group_saml_session_enforcer) { described_class.new(user, root_group) }
 
     before do
       stub_licensed_features(group_saml: true)
@@ -50,7 +52,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
 
           let(:group) { create(:group) }
 
-          subject(:enforced?) { described_class.new(user, group).access_restricted? }
+          subject(:group_saml_session_enforcer) { described_class.new(user, group) }
 
           it_behaves_like 'not enforced'
         end
@@ -58,9 +60,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
         context 'with expired session' do
           let(:session_time) { 2.days.ago }
 
-          it 'returns true' do
-            expect(enforced?).to eq(true)
-          end
+          it_behaves_like 'enforced'
         end
 
         context 'with two active sessions', :clean_gitlab_redis_sessions do
@@ -109,10 +109,16 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
           it_behaves_like 'not enforced'
         end
 
-        context 'with admin', :enable_admin_mode do
+        context 'with admin' do
           let(:user) { create(:user, :admin) }
 
-          it_behaves_like 'not enforced'
+          context 'when admin mode is enabled', :enable_admin_mode do
+            it_behaves_like 'not enforced'
+          end
+
+          context 'when admin mode is disabled' do
+            it_behaves_like 'not enforced'
+          end
         end
 
         context 'with auditor' do
@@ -131,14 +137,18 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
       end
 
       context 'without any session' do
-        it 'returns true' do
-          expect(enforced?).to eq(true)
-        end
+        it_behaves_like 'enforced'
 
-        context 'with admin', :enable_admin_mode do
+        context 'with admin' do
           let(:user) { create(:user, :admin) }
 
-          it_behaves_like 'not enforced'
+          context 'when admin mode is enabled', :enable_admin_mode do
+            it_behaves_like 'not enforced'
+          end
+
+          context 'when admin mode is disabled' do
+            it_behaves_like 'enforced'
+          end
         end
 
         context 'with auditor' do
@@ -161,11 +171,9 @@ RSpec.describe Gitlab::Auth::GroupSaml::SessionEnforcer do
 
             let(:group) { create(:group) }
 
-            subject(:enforced?) { described_class.new(user, group).access_restricted? }
+            subject(:group_saml_session_enforcer) { described_class.new(user, group) }
 
-            it 'returns true' do
-              expect(enforced?).to eq(true)
-            end
+            it_behaves_like 'enforced'
           end
         end
 

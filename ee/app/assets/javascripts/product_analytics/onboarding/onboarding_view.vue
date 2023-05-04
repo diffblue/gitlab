@@ -36,13 +36,7 @@ export default {
   },
   methods: {
     onComplete() {
-      // Temporary logic to support both /analytics and /product_analytics pages.
-      // Can be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/390551
-      if (this.$listeners.complete) {
-        this.$emit('complete');
-      } else {
-        this.$router.push({ name: 'index' });
-      }
+      this.$router.push({ name: 'index' });
     },
     onInitialized() {
       this.pollState = true;

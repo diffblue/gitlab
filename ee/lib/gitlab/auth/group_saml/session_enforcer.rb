@@ -51,7 +51,7 @@ module Gitlab
 
         def user_allowed?
           return true if user.bot?
-          return true if user.auditor? || user.can_read_all_resources?
+          return true if user.can_read_all_resources?
           return true if group.owned_by?(user)
 
           false
