@@ -47870,6 +47870,9 @@ msgstr ""
 msgid "Upstream"
 msgstr ""
 
+msgid "Upstream Gitaly has been exhausted. Try again later"
+msgstr ""
+
 msgid "Upvotes"
 msgstr ""
 
