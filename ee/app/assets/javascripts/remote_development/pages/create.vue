@@ -1,6 +1,14 @@
 <script>
-import { GlAlert, GlButton, GlForm, GlFormGroup, GlFormSelect } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import {
+  GlAlert,
+  GlButton,
+  GlForm,
+  GlFormGroup,
+  GlFormInput,
+  GlFormSelect,
+  GlFormInputGroup,
+} from '@gitlab/ui';
+import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
 import { logError } from '~/lib/logger';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -14,6 +22,7 @@ import {
   DEFAULT_EDITOR,
   ROUTES,
   PROJECT_VISIBILITY,
+  DEFAULT_MAX_HOURS_BEFORE_TERMINATION,
 } from '../constants';
 
 export const i18n = {
@@ -25,6 +34,8 @@ export const i18n = {
     devfileProject: s__('Workspaces|Select project'),
     agentId: s__('Workspaces|Select cluster agent'),
     editor: s__('Workspaces|Select default editor'),
+    maxHoursBeforeTermination: s__('Workspaces|Hours before automatic termination'),
+    maxHoursSuffix: __('hours'),
     help: {
       devfileProjectHelp: s__(
         'Workspaces|You can create a workspace for public Premium projects only.',
@@ -56,7 +67,9 @@ export default {
     GlButton,
     GlForm,
     GlFormGroup,
+    GlFormInputGroup,
     GlFormSelect,
+    GlFormInput,
     SearchProjectsListbox,
     GetProjectDetailsQuery,
   },
@@ -70,6 +83,7 @@ export default {
       groupPath: null,
       projectId: null,
       rootRef: null,
+      maxHoursBeforeTermination: DEFAULT_MAX_HOURS_BEFORE_TERMINATION,
       projectDetailsLoaded: false,
       error: '',
     };
@@ -126,6 +140,7 @@ export default {
               desiredState: DEFAULT_DESIRED_STATE,
               devfilePath: DEFAULT_DEVFILE_PATH,
               devfileRef: this.rootRef,
+              maxHoursBeforeTermination: this.maxHoursBeforeTermination,
             },
           },
           update(store, { data }) {
@@ -206,22 +221,43 @@ export default {
           {{ $options.i18n.invalidProjectAlert.noDevFileContent }}
         </gl-alert>
       </gl-form-group>
-      <gl-form-group
-        v-if="!emptyAgents"
-        :label="$options.i18n.form.agentId"
-        label-for="workspace-cluster-agent-id"
-        data-testid="workspace-cluster-agent-form-group"
-      >
-        <gl-form-select
-          id="workspace-cluster-agent-id"
-          v-model="selectedAgent"
-          :options="clusterAgents"
-          required
-          class="gl-max-w-full"
-          autocomplete="off"
-          data-qa-selector="workspace_cluster_agent_id_field"
-        />
-      </gl-form-group>
+      <div v-if="!emptyAgents">
+        <gl-form-group
+          :label="$options.i18n.form.agentId"
+          label-for="workspace-cluster-agent-id"
+          data-testid="workspace-cluster-agent-form-group"
+        >
+          <gl-form-select
+            id="workspace-cluster-agent-id"
+            v-model="selectedAgent"
+            :options="clusterAgents"
+            required
+            class="gl-max-w-full"
+            autocomplete="off"
+            data-qa-selector="workspace_cluster_agent_id_field"
+          />
+        </gl-form-group>
+        <gl-form-group
+          :label="$options.i18n.form.maxHoursBeforeTermination"
+          label-for="workspace-cluster-max-hours-before-termination"
+          data-testid="workspace-cluster-max-hours-before-termination-form-group"
+        >
+          <gl-form-input-group>
+            <gl-form-input
+              id="workspace-cluster-max-hours-before-termination"
+              v-model="maxHoursBeforeTermination"
+              type="number"
+              required
+              autocomplete="off"
+              data-qa-selector="workspace_cluster_max_hours_before_termination"
+              size="xs"
+            />
+            <template #append>
+              <div class="input-group-text">{{ __('hours') }}</div>
+            </template>
+          </gl-form-input-group>
+        </gl-form-group>
+      </div>
       <div>
         <gl-button
           :loading="isCreatingWorkspace"
