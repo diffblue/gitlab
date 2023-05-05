@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
-import { GlFormSelect, GlForm } from '@gitlab/ui';
+import { GlFormSelect, GlForm, GlFormInput } from '@gitlab/ui';
 import SearchProjectsListbox from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import WorkspaceCreate, { i18n } from 'ee/remote_development/pages/create.vue';
 import GetProjectDetailsQuery from 'ee/remote_development/components/create/get_project_details_query.vue';
@@ -87,6 +87,7 @@ describe('remote_development/pages/create.vue', () => {
   const findGetProjectDetailsQuery = () => wrapper.findComponent(GetProjectDetailsQuery);
   const findCreateWorkspaceButton = () => wrapper.findByTestId('create-workspace');
   const findClusterAgentsFormSelect = () => wrapper.findComponent(GlFormSelectStub);
+  const findMaxHoursBeforeTerminationField = () => wrapper.findComponent(GlFormInput);
   const emitGetProjectDetailsQueryResult = ({
     clusterAgents = [],
     hasDevFile = false,
@@ -147,6 +148,10 @@ describe('remote_development/pages/create.vue', () => {
 
     it('does not display cluster agents form select group', () => {
       expect(findClusterAgentsFormGroup().exists()).toBe(false);
+    });
+
+    it('does not display max hours before termination field', () => {
+      expect(findMaxHoursBeforeTerminationField().exists()).toBe(false);
     });
 
     describe('when a project does not have a .devfile file', () => {
@@ -248,6 +253,11 @@ describe('remote_development/pages/create.vue', () => {
 
     describe('when clicking Create Workspace button', () => {
       it('submits workspaceCreate mutation', async () => {
+        const maxHoursBeforeTermination = 10;
+
+        findMaxHoursBeforeTerminationField().vm.$emit('input', maxHoursBeforeTermination);
+
+        await nextTick();
         await submitCreateWorkspaceForm();
 
         expect(workspaceCreateMutationHandler).toHaveBeenCalledWith(
@@ -259,6 +269,7 @@ describe('remote_development/pages/create.vue', () => {
               editor: DEFAULT_EDITOR,
               desiredState: DEFAULT_DESIRED_STATE,
               devfilePath: DEFAULT_DEVFILE_PATH,
+              maxHoursBeforeTermination,
               devfileRef: rootRefFixture,
             },
           },

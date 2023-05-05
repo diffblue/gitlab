@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module Tofa
       class Client
-        include ::Gitlab::Llm::OpenAi::ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::ExponentialBackoff
 
         def initialize(_user, configuration = Configuration.new)
           @configuration = configuration

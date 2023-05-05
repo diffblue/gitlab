@@ -22,10 +22,10 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     subject { described_class.new.perform(user_id, resource_id, resource_type, ai_action_name, options) }
 
     shared_examples 'performs successfully' do
-      it 'calls Gitlab::Llm::OpenAi::Completions::Factory' do
+      it 'calls Gitlab::Llm::CompletionsFactory' do
         completion = instance_double(Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes)
 
-        expect(Gitlab::Llm::OpenAi::Completions::Factory)
+        expect(Gitlab::Llm::CompletionsFactory)
           .to receive(:completion)
           .with(ai_action_name)
           .and_return(completion)
@@ -80,8 +80,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
       context 'when issue is confidential' do
         let_it_be(:resource) { create(:issue, :confidential, project: project) }
 
-        it 'does not call Gitlab::Llm::OpenAi::Completions::Factory.completion' do
-          expect(Gitlab::Llm::OpenAi::Completions::Factory).not_to receive(:completion)
+        it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
+          expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
 
           subject
         end
@@ -91,8 +91,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
         context 'when user can read resource' do
           let(:user) { resource.project.owner }
 
-          it 'does not call Gitlab::Llm::OpenAi::Completions::Factory.completion' do
-            expect(Gitlab::Llm::OpenAi::Completions::Factory).not_to receive(:completion)
+          it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
+            expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
 
             subject
           end
@@ -103,8 +103,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
         let_it_be(:project) { create(:project, :private) }
         let_it_be(:resource) { create(:issue, project: project) }
 
-        it 'does not call Gitlab::Llm::OpenAi::Completions::Factory.completion' do
-          expect(Gitlab::Llm::OpenAi::Completions::Factory).not_to receive(:completion)
+        it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
+          expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
 
           subject
         end
@@ -114,8 +114,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
         context 'when user can read resource' do
           let(:user) { project.owner }
 
-          it 'does not call Gitlab::Llm::OpenAi::Completions::Factory.completion' do
-            expect(Gitlab::Llm::OpenAi::Completions::Factory).not_to receive(:completion)
+          it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
+            expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
 
             subject
           end

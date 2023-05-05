@@ -6,7 +6,7 @@ module Gitlab
   module Llm
     module OpenAi
       class Client
-        include ExponentialBackoff
+        include ::Gitlab::Llm::Concerns::ExponentialBackoff
 
         InputModerationError = Class.new(StandardError)
         OutputModerationError = Class.new(StandardError)
