@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import VueRouter from 'vue-router';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import DashboardsList from 'ee/analytics/analytics_dashboards/components/dashboards_list.vue';
 import AnalyticsDashboardsApp from 'ee/analytics/analytics_dashboards/dashboards_app.vue';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
@@ -43,14 +43,18 @@ describe('AnalyticsDashboardsApp', () => {
         ${'/test-dashboard-1'}             | ${AnalyticsDashboard}
         ${'/test-dashboard-2'}             | ${AnalyticsDashboard}
       `('sets component as $component.name for path "$path"', async ({ path, component }) => {
-        if (path !== '/') {
-          router.push(path);
+        try {
+          await router.push(path);
+        } catch {
+          // intentionally blank
+          //
+          // * in Vue.js 3 we need to refresh even '/' route
+          // because we dynamically add routes and exception will not be raised
+          //
+          // * in Vue.js 2 this will trigger "redunant navigation" error and will be catched here
         }
 
-        await nextTick();
-
         const [root] = router.currentRoute.matched;
-
         expect(root.components.default).toBe(component);
       });
     });
