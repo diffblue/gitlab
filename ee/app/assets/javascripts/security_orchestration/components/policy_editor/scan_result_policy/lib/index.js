@@ -8,6 +8,7 @@ export {
   getInvalidBranches,
   getDefaultRule,
   invalidScanners,
+  invalidVulnerabilitiesAllowed,
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';

@@ -33,6 +33,7 @@ import {
   approversOutOfSync,
   approversOutOfSyncV2,
   invalidScanners,
+  invalidVulnerabilitiesAllowed,
   humanizeInvalidBranchesError,
 } from './lib';
 
@@ -247,15 +248,14 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
-      if (this.glFeatures.scanResultRoleAction) {
-        return (
-          approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers) ||
-          invalidScanners(this.policy.rules)
-        );
-      }
+      const invalidApprovers = this.glFeatures.scanResultRoleAction
+        ? approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers)
+        : approversOutOfSync(this.policy.actions[0], this.existingApprovers);
+
       return (
-        approversOutOfSync(this.policy.actions[0], this.existingApprovers) ||
-        invalidScanners(this.policy.rules)
+        invalidApprovers ||
+        invalidScanners(this.policy.rules) ||
+        invalidVulnerabilitiesAllowed(this.policy.rules)
       );
     },
     allBranches() {
