@@ -10,6 +10,10 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
       is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type])
     end
 
+    it 'is invalid when vulnerabilities_allowed is a negative integer' do
+      is_expected.to validate_numericality_of(:vulnerabilities_allowed).only_integer.is_greater_than_or_equal_to(0)
+    end
+
     context 'DEFAULT_SEVERITIES' do
       it 'contains a valid subset of severity levels' do
         expect(::Enums::Vulnerability.severity_levels.keys).to include(*described_class::DEFAULT_SEVERITIES)
