@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ai::Experimentation::Tofa, feature_category: :shared do
+RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
   let_it_be(:current_user) { create(:user) }
   let(:body) { { 'test' => 'test' } }
   let(:token) { create(:personal_access_token, user: current_user) }
@@ -17,11 +17,8 @@ RSpec.describe API::Ai::Experimentation::Tofa, feature_category: :shared do
   end
 
   before do
-    allow_next_instance_of(Gitlab::Llm::Tofa::Configuration) do |configuration|
+    allow_next_instance_of(Gitlab::Llm::VertexAi::Configuration) do |configuration|
       allow(configuration).to receive(:access_token).and_return(token)
-      allow(configuration).to receive(:tofa_request_payload)
-        .and_return('{"a":[{"b": [{"c": "{{CONTENT}}"}]}], "parameters": {}}')
-      allow(configuration).to receive(:tofa_request_json_keys).and_return('a b c')
     end
 
     stub_feature_flags(tofa_experimentation: true)

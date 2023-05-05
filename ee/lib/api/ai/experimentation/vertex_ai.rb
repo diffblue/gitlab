@@ -3,7 +3,7 @@
 module API
   module Ai
     module Experimentation
-      class Tofa < ::API::Base
+      class VertexAi < ::API::Base
         feature_category :not_owned # rubocop:todo Gitlab/AvoidFeatureCategoryNotOwned
         urgency :low
 
@@ -18,7 +18,7 @@ module API
               Feature.enabled?(:ai_experimentation_api, current_user)
           end
 
-          def tofa_post(_endpoint, json_body: nil)
+          def vertex_ai_post(_endpoint, json_body: nil)
             headers = {
               "Accept" => ["application/json"],
               "Authorization" => ["Bearer #{tofa_api_token}"],
@@ -37,18 +37,29 @@ module API
 
           def default_payload_for(params)
             tofa_params = params.transform_keys { |name| name.camelize(:lower) }
-            json = JSON.parse(tofa_request_payload) # rubocop: disable Gitlab/Json
-            json_keys = tofa_request_json_keys.split(' ')
             content = tofa_params.delete(:content)
-            json[json_keys[0]][0][json_keys[1]][0][json_keys[2]] = content
+            json = {
+              instances: [
+                {
+                  messages: [
+                    {
+                      author: "content",
+                      content: content
+                    }
+                  ]
+                }
+              ],
+              parameters: {
+                temperature: ::Gitlab::Llm::VertexAi::Client::DEFAULT_TEMPERATURE
+              }
+            }
 
-            json['parameters'].merge!(tofa_params)
-
+            json[:parameters].merge!(tofa_params)
             json
           end
 
           def configuration
-            @configuration ||= Gitlab::Llm::Tofa::Configuration.new
+            @configuration ||= Gitlab::Llm::VertexAi::Configuration.new
           end
 
           def tofa_api_token
@@ -61,15 +72,13 @@ module API
 
           delegate(
             :host,
-            :tofa_request_json_keys,
-            :tofa_request_payload,
             :url,
             to: :configuration
           )
         end
 
         namespace 'ai/experimentation/tofa' do
-          desc 'Proxies request to Tofa chat endpoint'
+          desc 'Proxies request to Vertex AI chat endpoint'
           params do
             requires :content, type: String
             optional :temperature, type: Float, values: 0.0..1.0, default: 0.5
@@ -78,7 +87,7 @@ module API
             optional :top_p, type: Float, values: 0.0..1.0, default: 0.95
           end
           post 'chat' do
-            body tofa_post(
+            body vertex_ai_post(
               'chat', json_body: default_payload_for(declared(params, include_missing: false))
             )
           end
