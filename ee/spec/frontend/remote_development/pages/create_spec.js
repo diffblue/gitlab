@@ -21,7 +21,8 @@ import { createAlert } from '~/alert';
 import userWorkspacesQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
-  USER_WORKSPACES_QUERY_EMPTY_RESULT,
+  USER_WORKSPACES_QUERY_RESULT,
+  WORKSPACE_QUERY_RESULT,
   WORKSPACE_CREATE_MUTATION_RESULT,
 } from '../mock_data';
 
@@ -58,10 +59,27 @@ describe('remote_development/pages/create.vue', () => {
         workspaceCreate: workspaceCreateMutationHandler,
       },
     });
+  };
 
-    mockApollo.clients.defaultClient.cache.writeQuery({
+  const readCachedWorkspaces = () => {
+    const apolloClient = mockApollo.clients.defaultClient;
+    const result = apolloClient.readQuery({ query: userWorkspacesQuery });
+
+    return result?.currentUser.workspaces.nodes;
+  };
+
+  const writeCachedWorkspaces = (worksspaces) => {
+    const apolloClient = mockApollo.clients.defaultClient;
+    apolloClient.writeQuery({
       query: userWorkspacesQuery,
-      data: USER_WORKSPACES_QUERY_EMPTY_RESULT.data,
+      data: {
+        currentUser: {
+          ...USER_WORKSPACES_QUERY_RESULT.data.currentUser,
+          workspaces: {
+            nodes: worksspaces,
+          },
+        },
+      },
     });
   };
 
@@ -285,18 +303,24 @@ describe('remote_development/pages/create.vue', () => {
       });
 
       describe('when the workspaceCreate mutation succeeds', () => {
-        it('adds created workspace to the apolloQuery', async () => {
-          const apolloClient = mockApollo.clients.defaultClient;
-          let workspaces = apolloClient.readQuery({ query: userWorkspacesQuery });
+        it('when workspaces are not previously cached, does not update cache', async () => {
+          await submitCreateWorkspaceForm();
+          await waitForPromises();
 
-          expect(workspaces.currentUser.workspaces.nodes.length).toBe(0);
+          expect(readCachedWorkspaces()).toBeUndefined();
+        });
+
+        it('when workspaces are previously cached, updates cache', async () => {
+          const originalWorkspace = WORKSPACE_QUERY_RESULT.data.workspace;
+          writeCachedWorkspaces([originalWorkspace]);
 
           await submitCreateWorkspaceForm();
           await waitForPromises();
 
-          workspaces = apolloClient.readQuery({ query: userWorkspacesQuery });
-
-          expect(workspaces.currentUser.workspaces.nodes.length).toBe(1);
+          expect(readCachedWorkspaces()).toEqual([
+            WORKSPACE_CREATE_MUTATION_RESULT.data.workspaceCreate.workspace,
+            originalWorkspace,
+          ]);
         });
 
         it('redirects the user to the workspaces list', async () => {

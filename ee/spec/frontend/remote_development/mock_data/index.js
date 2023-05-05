@@ -8,7 +8,6 @@ const WORKSPACE = {
   projectId: 'gid://gitlab/Project/2',
   desiredState: 'Running',
   actualState: 'Started',
-  displayedState: 'Started',
   url: `${TEST_HOST}/workspace/1`,
   devfileRef: 'main',
   devfilePath: '.devfile.yaml',
