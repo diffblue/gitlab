@@ -457,7 +457,7 @@ group :test do
 
   gem 'capybara', '~> 3.39'
   gem 'capybara-screenshot', '~> 1.0.26'
-  gem 'selenium-webdriver', '~> 3.142', '>= 3.142.7'
+  gem 'selenium-webdriver', '~> 4.9'
 
   gem 'graphlyte', '~> 1.0.0'
 
