@@ -24,7 +24,7 @@
         = clipboard_button(text: ssh_public_key, class: 'gl-button btn btn-default btn-icon rspec-copy-ssh-public-key', title: _('Copy SSH public key'), qa_selector: 'copy_public_key_button')
       - if import_state.mirror_update_due? || import_state.updating_mirror?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
-          button_options: { class: 'disabled', title: _('Updating'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'updating_button', testid: 'updating-button' } },
+          button_options: { class: 'disabled', title: _('Updating'), data: { container: 'body', toggle: 'tooltip', testid: 'updating-button' } },
           icon_classes: 'spin')
       - elsif @project.archived?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
