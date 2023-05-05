@@ -45997,9 +45997,6 @@ msgstr ""
 msgid "This merge request was merged. To apply this suggestion, edit this file directly."
 msgstr ""
 
-msgid "This namespace has already been taken! Please choose another one."
-msgstr ""
-
 msgid "This only applies to repository indexing operations."
 msgstr ""
 

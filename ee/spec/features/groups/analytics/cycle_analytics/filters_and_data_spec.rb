@@ -51,12 +51,8 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
     create(:merge_request, params)
   end
 
-  def hover(path, rehover: true)
-    # Move the mouse of the way to ensure hover works reliabily
-    # Selenium v4 has `move_to_location` that we could use in the future.
-    page.driver.browser.action.move_by(-10000, -10000).perform if rehover
-
-    page.find(path).hover
+  def hover(path)
+    page.driver.browser.action.move_to(page.find(path).native).perform
   end
 
   before do
@@ -70,6 +66,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
 
   shared_examples 'empty state' do
     it 'renders the empty state' do
+      wait_for_requests
       expect(page).to have_selector(empty_state_selector)
       expect(page).to have_text(s_('CycleAnalytics|Custom value streams to measure your DevSecOps lifecycle'))
     end
