@@ -245,6 +245,7 @@ module GitlabSubscriptions
       security_training
       ssh_key_expiration_policy
       summarize_mr_changes
+      summarize_my_mr_code_review
       summarize_notes
       stale_runner_cleanup_for_namespace
       status_page
