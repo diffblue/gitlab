@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { random } from 'lodash';
 import VueApollo from 'vue-apollo';
 import createDefaultClient from '~/lib/graphql';
 import App from './pages/app.vue';
@@ -9,7 +10,7 @@ import { WORKSPACE_STATES, WORKSPACE_DESIRED_STATES } from './constants';
 Vue.use(VueApollo);
 
 const generateDummyWorkspace = (actualState, desiredState, createdAt = new Date()) => {
-  const id = Math.random(0, 100000).toString(16).substring(0, 9);
+  const id = random(0, 100000).toString(16).substring(0, 9);
 
   return {
     id: `gid://gitlab/RemoteDevelopment::Workspace/${id}`,
@@ -21,7 +22,7 @@ const generateDummyWorkspace = (actualState, desiredState, createdAt = new Date(
     actualState,
     desiredState,
     createdAt: createdAt.toISOString(),
-    projectId: 'gid://gitlab/Project/2',
+    projectId: random(0, 1) === 1 ? 'gid://gitlab/Project/2' : 'gid://gitlab/Project/2qweqweqw',
   };
 };
 

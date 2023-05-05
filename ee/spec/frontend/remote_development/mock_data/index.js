@@ -133,3 +133,18 @@ export const WORKSPACE_CREATE_MUTATION_RESULT = {
     },
   },
 };
+
+export const USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT = {
+  data: {
+    projects: {
+      nodes: [
+        {
+          id: 'gid://gitlab/Project/2',
+          nameWithNamespace: 'Gitlab Org / Gitlab Shell',
+          __typename: 'Project',
+        },
+      ],
+      __typename: 'ProjectConnection',
+    },
+  },
+};
