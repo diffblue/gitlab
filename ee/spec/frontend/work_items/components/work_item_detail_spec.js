@@ -12,7 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import {
   workItemDatesSubscriptionResponse,
   workItemTitleSubscriptionResponse,
-  workItemByIidResponseFactory as workItemResponseFactory,
+  workItemByIidResponseFactory,
   workItemWeightSubscriptionResponse,
   workItemAssigneesSubscriptionResponse,
   workItemIterationSubscriptionResponse,
@@ -34,7 +34,7 @@ describe('WorkItemDetail component', () => {
 
   Vue.use(VueApollo);
 
-  const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
+  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
   const successHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
   const datesSubscriptionHandler = jest.fn().mockResolvedValue(workItemDatesSubscriptionResponse);
   const titleSubscriptionHandler = jest.fn().mockResolvedValue(workItemTitleSubscriptionResponse);
@@ -103,7 +103,7 @@ describe('WorkItemDetail component', () => {
       it(`${
         iterationWidgetPresent ? 'renders' : 'does not render'
       } iteration component`, async () => {
-        const response = workItemResponseFactory({ iterationWidgetPresent });
+        const response = workItemByIidResponseFactory({ iterationWidgetPresent });
         const handler = jest.fn().mockResolvedValue(response);
         createComponent({ handler });
         await waitForPromises();
@@ -131,7 +131,7 @@ describe('WorkItemDetail component', () => {
       ${'when widget is not returned from API'} | ${false}            | ${false}
     `('$description', ({ weightWidgetPresent, exists }) => {
       it(`${weightWidgetPresent ? 'renders' : 'does not render'} weight component`, async () => {
-        const response = workItemResponseFactory({ weightWidgetPresent });
+        const response = workItemByIidResponseFactory({ weightWidgetPresent });
         const handler = jest.fn().mockResolvedValue(response);
         createComponent({ handler });
         await waitForPromises();
@@ -161,7 +161,7 @@ describe('WorkItemDetail component', () => {
       it(`${
         healthStatusWidgetPresent ? 'renders' : 'does not render'
       } healthStatus component`, async () => {
-        const response = workItemResponseFactory({ healthStatusWidgetPresent });
+        const response = workItemByIidResponseFactory({ healthStatusWidgetPresent });
         const handler = jest.fn().mockResolvedValue(response);
         createComponent({ handler });
         await waitForPromises();
@@ -191,7 +191,7 @@ describe('WorkItemDetail component', () => {
       it(`${
         progressWidgetPresent ? 'renders' : 'does not render'
       } progress component`, async () => {
-        const response = workItemResponseFactory({ progressWidgetPresent });
+        const response = workItemByIidResponseFactory({ progressWidgetPresent });
         const handler = jest.fn().mockResolvedValue(response);
         createComponent({ handler });
         await waitForPromises();
