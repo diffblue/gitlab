@@ -34,6 +34,8 @@ module EE
             to: ::Repositories::DefaultBranchChangedEvent,
             if: -> (_) { ::Gitlab::CurrentSettings.elasticsearch_indexing? }
           store.subscribe ::PackageMetadata::AdvisoryScanWorker, to: ::PackageMetadata::IngestedAdvisoryEvent
+          store.subscribe ::Security::RefreshProjectPoliciesWorker,
+            to: ::ProjectAuthorizations::AuthorizationsChangedEvent
         end
       end
     end
