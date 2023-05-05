@@ -6,7 +6,8 @@ RSpec.describe 'AiAction for Generate Test File', feature_category: :code_review
   include GraphqlHelpers
   include Graphql::Subscriptions::Notes::Helper
 
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:current_user) { create(:user, developer_projects: [project]) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
   let_it_be(:file_path) { "files/js/commit.coffee" }
@@ -23,6 +24,7 @@ RSpec.describe 'AiAction for Generate Test File', feature_category: :code_review
 
   before do
     stub_licensed_features(generate_test_file: true)
+    group.namespace_settings.update!(third_party_ai_features_enabled: true)
   end
 
   it 'successfully performs an explain code request' do

@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::GenerateTestFile }
@@ -24,6 +25,10 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
 
   subject(:generate_test_file) do
     described_class.new(template_class).execute(user, merge_request, { file_path: 'index.js' })
+  end
+
+  before do
+    group.namespace_settings.update!(third_party_ai_features_enabled: true)
   end
 
   describe "#execute" do

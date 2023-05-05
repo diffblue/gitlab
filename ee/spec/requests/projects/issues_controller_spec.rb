@@ -74,11 +74,13 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       context 'when user is a member' do
         before do
           project.add_guest(user)
+
+          allow(Ability).to receive(:allowed?).and_call_original
         end
 
-        context 'when license is set' do
+        context 'when feature is available' do
           before do
-            stub_licensed_features(summarize_notes: true)
+            allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(true)
           end
 
           it 'exposes the required feature flags' do
@@ -88,7 +90,11 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
           end
         end
 
-        context 'when license is not set' do
+        context 'when feature is not available' do
+          before do
+            allow(Ability).to receive(:allowed?).with(user, :summarize_notes, issue).and_return(false)
+          end
+
           it 'does not expose the feature flags' do
             get_show
 

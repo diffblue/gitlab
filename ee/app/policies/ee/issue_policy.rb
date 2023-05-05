@@ -7,7 +7,9 @@ module EE
     prepended do
       with_scope :subject
       condition(:ai_available) do
-        ::Feature.enabled?(:openai_experimentation) && @subject.send_to_ai?
+        ::Feature.enabled?(:openai_experimentation) &&
+          subject_container.root_ancestor.experiment_features_enabled &&
+          @subject.send_to_ai?
       end
 
       with_scope :subject

@@ -106,6 +106,10 @@ module EE
 
       delegate :trial_ends_on, :trial_starts_on, to: :gitlab_subscription, allow_nil: true
 
+      delegate :third_party_ai_features_enabled, :third_party_ai_features_enabled=,
+        :experiment_features_enabled, :experiment_features_enabled=,
+        to: :namespace_settings, allow_nil: true
+
       before_create :sync_membership_lock_with_parent
 
       # Changing the plan or other details may invalidate this cache

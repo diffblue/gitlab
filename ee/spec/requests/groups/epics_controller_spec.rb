@@ -38,38 +38,28 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
     end
 
     context 'for summarize notes feature' do
-      let(:summarize_notes_enabled) { true }
       let(:group) { create(:group, :public) }
 
       before do
-        stub_licensed_features(epics: true, summarize_notes: summarize_notes_enabled)
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?).with(user, :summarize_notes, epic).and_return(summarize_notes_enabled)
+
+        stub_licensed_features(epics: true)
       end
 
-      context 'when user is a member' do
-        before do
-          group.add_developer(user)
-        end
+      context 'when feature is available set' do
+        let(:summarize_notes_enabled) { true }
 
-        context 'when license is set' do
-          it 'exposes the required feature flags' do
-            get group_epic_path(group, epic)
+        it 'exposes the required feature flags' do
+          get group_epic_path(group, epic)
 
-            expect(response.body).to have_pushed_frontend_feature_flags(summarizeComments: true)
-          end
-        end
-
-        context 'when license is not set' do
-          let(:summarize_notes_enabled) { false }
-
-          it 'does not expose the feature flags' do
-            get group_epic_path(group, epic)
-
-            expect(response.body).not_to have_pushed_frontend_feature_flags(summarizeComments: true)
-          end
+          expect(response.body).to have_pushed_frontend_feature_flags(summarizeComments: true)
         end
       end
 
-      context 'when user is not a member' do
+      context 'when feature is not available' do
+        let(:summarize_notes_enabled) { false }
+
         it 'does not expose the feature flags' do
           get group_epic_path(group, epic)
 
