@@ -11,7 +11,8 @@ module Llm
     def valid?
       super &&
         Feature.enabled?(:explain_code_snippet, user) &&
-        resource.licensed_feature_available?(:explain_code)
+        resource.licensed_feature_available?(:explain_code) &&
+        resource.root_ancestor.experiment_features_enabled
     end
 
     private

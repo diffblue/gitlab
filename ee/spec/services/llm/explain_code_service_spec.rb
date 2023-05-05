@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::ExplainCodeService, feature_category: :source_code_management do
+RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_management do
+  let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
 
   let_it_be(:options) do
     {
@@ -15,11 +16,15 @@ RSpec.describe Llm::ExplainCodeService, feature_category: :source_code_managemen
     }
   end
 
+  let(:experiment_features_enabled) { true }
+
   subject { described_class.new(user, project, options) }
 
   before do
-    stub_licensed_features(explain_code: true)
+    stub_application_setting(check_namespace_plan: true)
+    stub_licensed_features(explain_code: true, ai_features: true)
     project.add_guest(user)
+    project.root_ancestor.update!(experiment_features_enabled: experiment_features_enabled)
   end
 
   describe '#perform' do
@@ -56,7 +61,7 @@ RSpec.describe Llm::ExplainCodeService, feature_category: :source_code_managemen
     end
 
     context 'when a project is not public' do
-      let_it_be(:project) { create(:project) }
+      let_it_be(:project) { create(:project, group: group) }
 
       it 'returns an error' do
         expect(Llm::CompletionWorker).not_to receive(:perform_async)
@@ -79,6 +84,16 @@ RSpec.describe Llm::ExplainCodeService, feature_category: :source_code_managemen
       expect(Llm::CompletionWorker).not_to receive(:perform_async)
 
       expect(subject.execute).to be_error
+    end
+
+    context 'when experimental features are not enabled' do
+      let(:experiment_features_enabled) { false }
+
+      it 'returns an error' do
+        expect(Llm::CompletionWorker).not_to receive(:perform_async)
+
+        expect(subject.execute).to be_error
+      end
     end
   end
 end
