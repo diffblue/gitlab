@@ -222,10 +222,11 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
           end
 
           before do
+            stub_ee_application_setting(should_check_namespace_plan: true)
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
           end
 
-          context 'when joining_project is "true"', :experiment do
+          context 'when joining_project is "true"' do
             let(:joining_project) { 'true' }
 
             specify do
