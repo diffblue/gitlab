@@ -19,7 +19,7 @@ export default {
         return { projectPath: this.projectPath };
       },
       update({ project: { statistics } }) {
-        return statistics ? statistics.buildArtifactsSize : null;
+        return statistics?.buildArtifactsSize ?? null;
       },
     },
   },
