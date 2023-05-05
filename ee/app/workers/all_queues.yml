@@ -1524,6 +1524,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: product_analytics_post_push
+  :worker_name: ProductAnalytics::PostPushWorker
+  :feature_category: :product_analytics
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: project_import_schedule
   :worker_name: ProjectImportScheduleWorker
   :feature_category: :source_code_management

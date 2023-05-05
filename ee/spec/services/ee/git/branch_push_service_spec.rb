@@ -184,5 +184,38 @@ RSpec.describe Git::BranchPushService, feature_category: :source_code_management
         end
       end
     end
+
+    context 'Product Analytics' do
+      using RSpec::Parameterized::TableSyntax
+
+      where(:flag_enabled, :default_branch, :licence_available, :called) do
+        true  | 'master' | true  | true
+        true  | 'master' | false | false
+        true  | 'other'  | true  | false
+        true  | 'other'  | false | false
+        false | 'master' | true  | false
+        false | 'master' | false | false
+        false | 'other'  | true  | false
+        false | 'other'  | false | false
+      end
+
+      before do
+        stub_feature_flags(product_analytics_dashboards: flag_enabled)
+        stub_licensed_features(product_analytics: licence_available)
+        allow(project).to receive(:default_branch).and_return(default_branch)
+      end
+
+      with_them do
+        it 'enqueues the worker if appropriate' do
+          if called
+            expect(::ProductAnalytics::PostPushWorker).to receive(:perform_async).once
+          else
+            expect(::ProductAnalytics::PostPushWorker).not_to receive(:perform_async)
+          end
+
+          subject.execute
+        end
+      end
+    end
   end
 end

@@ -1,0 +1,21 @@
+---
+key_path: counts.projects_with_analytics_dashboard_monthly
+description: Count of projects with an analytics dashboard
+product_section: dev
+product_stage: analyze
+product_group: product_analytics
+value_type: number
+status: active
+milestone: "16.0"
+introduced_by_url:
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+distribution:
+- ee
+tier:
+- ultimate
+options:
+  events:
+    - project_created_analytics_dashboard
