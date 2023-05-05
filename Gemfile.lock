@@ -618,7 +618,7 @@ GEM
       opentracing (~> 0.4)
       pg_query (~> 2.1)
       redis (> 3.0.0, < 6.0.0)
-    gitlab-license (2.2.1)
+    gitlab-license (2.2.2)
     gitlab-mail_room (0.0.23)
       jwt (>= 2.0)
       net-imap (>= 0.2.1)
