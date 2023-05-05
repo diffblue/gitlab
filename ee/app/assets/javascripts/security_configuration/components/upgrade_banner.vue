@@ -21,9 +21,7 @@ export default {
       s__('SecurityConfiguration|Vulnerability details and statistics in the merge request'),
       s__('SecurityConfiguration|High-level vulnerability statistics across projects and groups'),
       s__('SecurityConfiguration|Runtime security metrics for application environments'),
-      s__(
-        'SecurityConfiguration|More scan types, including DAST, Dependency Scanning, Fuzzing, and Licence Compliance',
-      ),
+      s__('SecurityConfiguration|More scan types, including DAST, Dependency Scanning, Fuzzing'),
     ],
     buttonText: s__('SecurityConfiguration|Upgrade or start a free trial'),
   },
