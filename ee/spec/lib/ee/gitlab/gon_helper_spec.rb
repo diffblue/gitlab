@@ -18,12 +18,25 @@ RSpec.describe EE::Gitlab::GonHelper do
 
     before do
       allow(helper).to receive(:gon).and_return(gon)
+      allow(helper).to receive(:push_to_gon_attributes).and_return(nil)
+      allow(helper).to receive(:current_user).and_return(create(:user))
     end
 
     it 'includes ee exclusive settings' do
       expect(gon).to receive(:roadmap_epics_limit=).with(1000)
 
       helper.add_gon_variables
+    end
+
+    it 'adds AI gon attributes' do
+      ai_chat = {
+        total_model_token: ::Llm::ExplainCodeService::TOTAL_MODEL_TOKEN_LIMIT,
+        max_response_token: ::Llm::ExplainCodeService::MAX_RESPONSE_TOKENS,
+        input_content_limit: ::Llm::ExplainCodeService::INPUT_CONTENT_LIMIT
+      }
+      helper.add_gon_variables
+
+      expect(helper).to have_received(:push_to_gon_attributes).with('ai', 'chat', ai_chat)
     end
 
     context 'when GitLab.com' do

@@ -1,27 +1,24 @@
 import { utils } from 'ee/ai/utils';
-import {
-  i18n,
-  TOKENS_THRESHOLD,
-  MAX_RESPONSE_TOKENS,
-  GENIE_CHAT_MODEL_ROLES,
-} from 'ee/ai/constants';
+import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 import { sprintf } from '~/locale';
 
-jest.mock('ee/ai/constants', () => {
-  // To simplify the things in testing, we override the constatants
-  // to make the MAX_RESPONSE_TOKENS and TOKENS_THRESHOLD smaller
-  // and easier to control
-  const originalConstants = jest.requireActual('ee/ai/constants');
-  return {
-    ...originalConstants,
-    TOKENS_THRESHOLD: 40, // 36 * 4 = 144 characters.
-    MAX_RESPONSE_TOKENS: 4, // 4 * 4 = 16 characters.
-  };
-});
-
+// To simplify the things in testing, we override the globals
+// to make the MAX_RESPONSE_TOKENS and TOKENS_THRESHOLD smaller
+// and easier to control
+const TOKENS_THRESHOLD = 40;
+const MAX_RESPONSE_TOKENS = 4;
 const MAX_PROMPT_TOKENS = TOKENS_THRESHOLD - MAX_RESPONSE_TOKENS; // 36 tokens
 
 describe('AI Utils', () => {
+  beforeEach(() => {
+    gon.ai = {
+      chat: {
+        max_response_token: MAX_RESPONSE_TOKENS,
+        input_content_limit: TOKENS_THRESHOLD,
+      },
+    };
+  });
+
   describe('generateExplainCodePrompt', () => {
     const filePath = 'fooPath';
     const fileText = 'barText';
@@ -156,6 +153,23 @@ describe('AI Utils', () => {
           i18n.TOO_LONG_ERROR_MESSAGE,
         );
       });
+
+      it.each`
+        max_response_token | input_content_limit
+        ${123}             | ${undefined}
+        ${undefined}       | ${123}
+        ${undefined}       | ${undefined}
+      `(
+        'drops no messages if token limitations are not available (delegates dealing with the prompt to BE)',
+        ({ max_response_token, input_content_limit }) => {
+          gon.ai = {
+            chat: { max_response_token, input_content_limit },
+          };
+
+          result = utils.generateChatPrompt(userPrompt, basePrompts);
+          expect(result).toEqual([...basePrompts, lastUserMessage]);
+        },
+      );
     });
   });
 
