@@ -28,7 +28,7 @@ RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerabi
     %w(dismissed resolved confirmed).each do |state|
       context "state changed to #{state}" do
         let!(:state_transition) do
-          create(:vulnerability_state_transition, vulnerability: vulnerability, to_state: state)
+          create(:vulnerability_state_transition, vulnerability: vulnerability, to_state: state, comment: nil)
         end
 
         it_behaves_like 'a system note', exclude_project: true do
@@ -46,7 +46,7 @@ RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerabi
 
       let!(:state_transition) do
         create(:vulnerability_state_transition, vulnerability: vulnerability, to_state: 'dismissed',
-          dismissal_reason: :false_positive)
+          dismissal_reason: :false_positive, comment: nil)
       end
 
       it_behaves_like 'a system note', exclude_project: true do
@@ -63,7 +63,7 @@ RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerabi
 
       let!(:state_transition) do
         create(:vulnerability_state_transition, vulnerability: vulnerability, from_state: 'resolved',
-          to_state: 'detected', dismissal_reason: :false_positive)
+          to_state: 'detected', dismissal_reason: :false_positive, comment: nil)
       end
 
       it_behaves_like 'a system note', exclude_project: true do
@@ -72,6 +72,17 @@ RSpec.describe SystemNotes::VulnerabilitiesService, feature_category: :vulnerabi
 
       it 'creates the note text correctly' do
         expect(subject.note).to eq("reverted vulnerability status to Detected")
+      end
+    end
+
+    context 'when the state transition comment exists' do
+      let!(:state_transition) do
+        create(:vulnerability_state_transition, vulnerability: vulnerability, from_state: 'resolved',
+          to_state: 'detected', comment: 'test')
+      end
+
+      it 'creates the note text correctly' do
+        expect(subject.note).to eq('reverted vulnerability status to Detected and the following comment: "test"')
       end
     end
 

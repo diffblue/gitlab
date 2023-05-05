@@ -16,10 +16,10 @@ module Gitlab
           @request_timeout = request_timeout
         end
 
-        def chat(content:, moderated: true, **options)
+        def chat(content:, moderated: nil, **options)
           request(
             endpoint: :chat,
-            moderated: moderated,
+            moderated: warn_if_moderated_unset(moderated, default: true),
             parameters: Options.new.chat(content: content, **options)
           )
         end
@@ -27,34 +27,34 @@ module Gitlab
         # messages: an array with `role` and `content` a keys.
         # the value of `role` should be one of GPT_ROLES
         # this needed to pass back conversation history
-        def messages_chat(messages:, moderated: true, **options)
+        def messages_chat(messages:, moderated: nil, **options)
           request(
             endpoint: :chat,
-            moderated: moderated,
+            moderated: warn_if_moderated_unset(moderated, default: true),
             parameters: Options.new.messages_chat(messages: messages, **options)
           )
         end
 
-        def completions(prompt:, moderated: true, **options)
+        def completions(prompt:, moderated: nil, **options)
           request(
             endpoint: :completions,
-            moderated: moderated,
+            moderated: warn_if_moderated_unset(moderated, default: true),
             parameters: Options.new.completions(prompt: prompt, **options)
           )
         end
 
-        def edits(input:, instruction:, moderated: true, **options)
+        def edits(input:, instruction:, moderated: nil, **options)
           request(
             endpoint: :edits,
-            moderated: moderated,
+            moderated: warn_if_moderated_unset(moderated, default: true),
             parameters: Options.new.edits(input: input, instruction: instruction, **options)
           )
         end
 
-        def embeddings(input:, moderated: false, **options)
+        def embeddings(input:, moderated: nil, **options)
           request(
             endpoint: :embeddings,
-            moderated: moderated,
+            moderated: warn_if_moderated_unset(moderated, default: false),
             parameters: Options.new.embeddings(input: input, **options)
           )
         end
@@ -83,6 +83,19 @@ module Gitlab
 
         def access_token
           @token ||= ::Gitlab::CurrentSettings.openai_api_key
+        end
+
+        def warn_if_moderated_unset(moderated, default:)
+          return moderated unless moderated.nil?
+
+          msg = "The `moderated` argument is not set, and defaults to `#{default}`. " \
+                "Please update this code to explicitly pass this argument"
+          # Reject stack entries related to this class to reach client code
+          regexp = /#{__FILE__}|exponential_backoff.rb|circuit_breaker.rb/
+          stacktrace = caller_locations.reject { |loc| loc.to_s =~ regexp }
+          ActiveSupport::Deprecation.warn(msg, stacktrace)
+
+          default
         end
 
         # @param [Symbol] endpoint - OpenAI endpoint to call

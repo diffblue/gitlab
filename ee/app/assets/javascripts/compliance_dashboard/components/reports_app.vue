@@ -1,5 +1,5 @@
 <script>
-import { GlTab, GlTabs } from '@gitlab/ui';
+import { GlTab, GlTabs, GlButton, GlTooltipDirective } from '@gitlab/ui';
 
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -13,11 +13,20 @@ export default {
   components: {
     GlTabs,
     GlTab,
+    GlButton,
     MergeCommitsExportButton,
     ReportHeader,
   },
+  directives: {
+    GlTooltip: GlTooltipDirective,
+  },
   props: {
     mergeCommitsCsvExportPath: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    frameworksCsvExportPath: {
       type: String,
       required: false,
       default: '',
@@ -27,11 +36,14 @@ export default {
     isViolationsReport() {
       return this.$route.name === ROUTE_VIOLATIONS;
     },
-    hasMergeCommitsCsvExportPath() {
-      return Boolean(this.mergeCommitsCsvExportPath);
+    isFrameworksReport() {
+      return this.$route.name === ROUTE_FRAMEWORKS;
     },
     showViolationsExportButton() {
-      return this.hasMergeCommitsCsvExportPath && this.isViolationsReport;
+      return Boolean(this.mergeCommitsCsvExportPath) && this.isViolationsReport;
+    },
+    showFrameworksExportButton() {
+      return Boolean(this.frameworksCsvExportPath) && this.isFrameworksReport;
     },
     tabIndex() {
       return TABS.indexOf(this.$route.name);
@@ -48,6 +60,10 @@ export default {
   ROUTE_FRAMEWORKS,
   i18n: {
     frameworksTab: s__('Compliance Report|Frameworks'),
+    export: s__('Compliance Report|Export as CSV'),
+    exportTitle: s__(
+      'Compliance Report|Export frameworks as CSV. You will be emailed after export is processed.',
+    ),
     heading: __('Compliance report'),
     subheading: __('Compliance violations and compliance frameworks for the group.'),
     violationsTab: s__('Compliance Report|Violations'),
@@ -62,11 +78,22 @@ export default {
       :subheading="$options.i18n.subheading"
       :documentation-path="$options.documentationPath"
     >
-      <template v-if="showViolationsExportButton" #actions>
+      <template #actions>
         <merge-commits-export-button
-          v-if="hasMergeCommitsCsvExportPath"
+          v-if="showViolationsExportButton"
           :merge-commits-csv-export-path="mergeCommitsCsvExportPath"
         />
+        <gl-button
+          v-if="showFrameworksExportButton"
+          v-gl-tooltip.hover
+          :title="$options.i18n.exportTitle"
+          :aria-label="$options.i18n.export"
+          icon="export"
+          data-testid="framework-export"
+          :href="frameworksCsvExportPath"
+        >
+          {{ $options.i18n.export }}
+        </gl-button>
       </template>
     </report-header>
 
