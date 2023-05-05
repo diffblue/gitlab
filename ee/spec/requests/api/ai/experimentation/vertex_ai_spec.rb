@@ -21,7 +21,7 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
       allow(configuration).to receive(:access_token).and_return(token)
     end
 
-    stub_feature_flags(tofa_experimentation: true)
+    stub_feature_flags(explain_vulnerability_vertex: true)
     stub_feature_flags(ai_experimentation_api: current_user)
   end
 
