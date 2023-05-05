@@ -44,6 +44,13 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
     instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: moderation_response)
   end
 
+  around do |ex|
+    # Silence moderation unset deprecations
+    ActiveSupport::Deprecation.silence do
+      ex.run
+    end
+  end
+
   before do
     allow(response_double).to receive(:server_error?).and_return(false)
     allow(response_double).to receive(:too_many_requests?).and_return(false)
@@ -131,6 +138,28 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   end
 
   shared_examples 'input moderation' do
+    context 'when moderation flag is nil' do
+      let(:options) { { moderated: nil } }
+
+      it 'produces a deprecation warning' do
+        expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
+          expect(open_ai_client)
+            .to receive(:public_send)
+            .with(method, anything)
+            .and_return(response_double)
+
+          allow(open_ai_client)
+            .to receive(:public_send)
+            .with(:moderations, anything)
+            .and_return(moderation_response_double)
+        end
+
+        expect(ActiveSupport::Deprecation).to receive(:warn).with(/`moderated` argument is not set/, anything)
+
+        subject
+      end
+    end
+
     context 'when moderation flag is set' do
       let(:options) { { moderated: :input } }
 
@@ -212,6 +241,16 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
           .to receive(:public_send)
           .with(:moderations, anything)
           .and_return(moderation_response_double)
+      end
+    end
+
+    context 'when moderation flag is nil' do
+      let(:options) { { moderated: nil } }
+
+      it 'produces a deprecation warning' do
+        expect(ActiveSupport::Deprecation).to receive(:warn).with(/`moderated` argument is not set/, anything)
+
+        subject
       end
     end
 
