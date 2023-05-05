@@ -76,8 +76,6 @@ module EE
 
       delegate :repository_read_only,
                :code_suggestions, :code_suggestions=,
-               :experiment_features_enabled, :experiment_features_enabled=,
-               :third_party_ai_features_enabled, :third_party_ai_features_enabled=,
                :default_compliance_framework_id,
                to: :namespace_settings, allow_nil: true
 

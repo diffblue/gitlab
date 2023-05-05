@@ -7,12 +7,15 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
 
+  let(:summarize_notes_enabled) { true }
   let(:current_user) { user }
 
   describe '#perform' do
     before do
-      stub_licensed_features(summarize_notes: true)
       group.add_guest(user)
+
+      allow(Ability).to receive(:allowed?).and_call_original
+      allow(Ability).to receive(:allowed?).with(user, :summarize_notes, resource).and_return(summarize_notes_enabled)
     end
 
     subject { described_class.new(current_user, resource, {}).execute }
@@ -40,18 +43,8 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
     end
 
     shared_examples 'ensures feature flags and license' do
-      context 'without the correct license' do
-        before do
-          stub_licensed_features(summarize_notes: false)
-        end
-
-        it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
-      end
-
-      context 'without the feature specific flag enabled' do
-        before do
-          stub_feature_flags(summarize_comments: false)
-        end
+      context 'without the license available' do
+        let(:summarize_notes_enabled) { false }
 
         it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
       end

@@ -27,7 +27,9 @@ class EpicPolicy < BasePolicy
   end
 
   condition(:ai_available, scope: :subject) do
-    ::Feature.enabled?(:openai_experimentation) && @subject.send_to_ai?
+    ::Feature.enabled?(:openai_experimentation) &&
+      @subject.group.root_ancestor.experiment_features_enabled &&
+      @subject.send_to_ai?
   end
 
   condition(:summarize_notes_enabled, scope: :subject) do

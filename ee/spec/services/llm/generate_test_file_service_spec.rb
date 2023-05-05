@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Llm::GenerateTestFileService, feature_category: :code_review_workflow do
+  let_it_be(:group) { create(:group, :public) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
   let(:options) { {} }
 
@@ -13,6 +14,7 @@ RSpec.describe Llm::GenerateTestFileService, feature_category: :code_review_work
   describe '#execute' do
     before do
       stub_licensed_features(generate_test_file: true)
+      group.namespace_settings.update!(third_party_ai_features_enabled: true)
       allow(Llm::CompletionWorker).to receive(:perform_async)
     end
 

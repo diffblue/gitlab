@@ -3,8 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Llm::BaseService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+  let_it_be(:group) { create(:group, :public) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public) }
+  let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:resource) { create(:issue, project: project) }
   let(:options) { {} }
 

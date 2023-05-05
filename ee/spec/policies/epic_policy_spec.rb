@@ -370,12 +370,15 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     end
   end
 
-  describe 'summarize_notes' do
-    let_it_be(:group) { create(:group, :private) }
+  describe 'summarize_notes', :saas do
+    let_it_be(:group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
 
     before do
-      stub_licensed_features(summarize_notes: true)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_licensed_features(summarize_notes: true, ai_features: true)
       stub_feature_flags(summarize_comments: group)
+      group.namespace_settings.update!(experiment_features_enabled: true)
+      group.namespace_settings.update!(third_party_ai_features_enabled: true)
     end
 
     context 'when a member' do
@@ -389,6 +392,22 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         end
 
         it { is_expected.to be_allowed(:summarize_notes) }
+
+        context 'when experiment features are disabled' do
+          before do
+            group.namespace_settings.update!(experiment_features_enabled: false)
+          end
+
+          it { is_expected.to be_disallowed(:summarize_notes) }
+        end
+
+        context 'when third party ai features are disabled' do
+          before do
+            group.namespace_settings.update!(third_party_ai_features_enabled: false)
+          end
+
+          it { is_expected.to be_disallowed(:summarize_notes) }
+        end
 
         context 'when license is not set' do
           before do

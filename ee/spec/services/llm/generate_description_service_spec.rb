@@ -9,11 +9,16 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
 
   let(:current_user) { user }
   let(:service) { described_class.new(current_user, resource, {}) }
+  let(:generate_description_license_enabled) { true }
 
   describe '#perform' do
     before do
       stub_licensed_features(generate_description: true)
+      group.namespace_settings.update!(third_party_ai_features_enabled: true)
       group.add_guest(user)
+      allow(Ability).to receive(:allowed?).and_call_original
+      allow(Ability).to receive(:allowed?)
+        .with(user, :generate_description, resource).and_return(generate_description_license_enabled)
     end
 
     subject { service.execute }
@@ -39,7 +44,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     shared_examples 'ensures license and feature flag checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:generate_description_license_flag, :openai_experimentation_ff, :result) do
+      where(:generate_description_license_enabled, :openai_experimentation_ff, :result) do
         true  | true  | true
         true  | false | false
         false | true  | false
@@ -48,7 +53,6 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
 
       with_them do
         it 'checks validity' do
-          stub_licensed_features(generate_description: generate_description_license_flag)
           stub_feature_flags(openai_experimentation: openai_experimentation_ff)
 
           expect(service.valid?).to be(result)
