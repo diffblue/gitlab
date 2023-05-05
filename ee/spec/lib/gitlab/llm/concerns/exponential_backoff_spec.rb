@@ -3,22 +3,31 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+  let(:body) { { 'test' => 'test' } }
+  let(:response) { instance_double(Net::HTTPResponse, body: body.to_json) }
   let(:success) do
     instance_double(HTTParty::Response,
-      code: 200, success?: true, parsed_response: {}, server_error?: false, too_many_requests?: false
+      code: 200, success?: true, parsed_response: {},
+      response: response, server_error?: false, too_many_requests?: false
     )
   end
 
   let(:too_many_requests_error) do
     instance_double(HTTParty::Response,
-      code: 429, success?: false, parsed_response: {}, server_error?: false, too_many_requests?: true
+      code: 429, success?: false, parsed_response: {},
+      response: response, server_error?: false, too_many_requests?: true
     )
   end
 
   let(:auth_error) do
     instance_double(HTTParty::Response,
-      code: 401, success?: false, parsed_response: {}, server_error?: false, too_many_requests?: false
+      code: 401, success?: false, parsed_response: {},
+      response: response, server_error?: false, too_many_requests?: false
     )
+  end
+
+  let(:empty_response) do
+    instance_double(HTTParty::Response, response: nil)
   end
 
   let(:response_caller) { -> { success } }
@@ -106,6 +115,15 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
           expect(subject).to eq(auth_error)
           expect(response_caller).to have_received(:call).once
         end
+      end
+    end
+
+    context 'when the function response is empty' do
+      it 'does not retry the function' do
+        allow(response_caller).to receive(:call).and_return(empty_response)
+
+        expect(subject).to be_nil
+        expect(response_caller).to have_received(:call).once
       end
     end
   end

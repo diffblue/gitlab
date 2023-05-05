@@ -46,7 +46,11 @@ module Gitlab
           loop do
             response = yield
 
-            return if response.nil?
+            return unless response.present?
+
+            http_response = response.response
+            return if http_response.nil? || http_response.body.blank?
+
             raise InternalServerError if response.server_error? && Feature.enabled?(:circuit_breaker, type: :ops)
             return response unless response.too_many_requests?
 

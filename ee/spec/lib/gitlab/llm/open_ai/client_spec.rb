@@ -9,6 +9,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   let(:default_options) { {} }
   let(:expected_options) { {} }
   let(:options) { {} }
+  let(:response) { instance_double(Net::HTTPResponse, body: example_response.to_json) }
   let(:example_response) do
     {
       'model' => 'model',
@@ -37,11 +38,13 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
   end
 
   let(:response_double) do
-    instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: example_response)
+    instance_double(HTTParty::Response, code: 200, success?: true,
+      response: response, parsed_response: example_response)
   end
 
   let(:moderation_response_double) do
-    instance_double(HTTParty::Response, code: 200, success?: true, parsed_response: moderation_response)
+    instance_double(HTTParty::Response, code: 200, success?: true,
+      response: response, parsed_response: moderation_response)
   end
 
   around do |ex|
