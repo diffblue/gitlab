@@ -1,0 +1,18 @@
+---
+version: '1'
+title: Dashboard Example 1
+description: North Star Metrics across all departments for the last 3 quarters.
+panels:
+  - title: Overall Conversion Rate
+    gridAttributes:
+      yPos: 4
+      xPos: 1
+      width: 12
+      height: 2
+    visualization: ../cube_line_chart
+    queryOverrides:
+      timeDimensions:
+        dateRange:
+          - '2016-01-01'
+          - '2016-01-30'
+
