@@ -32,4 +32,18 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
 
     it_behaves_like 'a valid visualization'
   end
+
+  context 'when visualization is loaded with attempted path traversal' do
+    let_it_be(:project) do
+      create(:project, :with_dashboard_attempting_path_traversal,
+        project_setting: build(:project_setting, product_analytics_instrumentation_key: 'test')
+      )
+    end
+
+    let(:dashboard) { dashboards.find { |d| d.title == 'Dashboard Example 1' } }
+
+    it 'raises an error' do
+      expect { dashboard.panels.first.visualization }.to raise_error(Gitlab::Utils::PathTraversalAttackError)
+    end
+  end
 end

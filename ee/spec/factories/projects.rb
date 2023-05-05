@@ -106,6 +106,28 @@ FactoryBot.modify do
       end
     end
 
+    trait :with_dashboard_attempting_path_traversal do
+      repository
+
+      after(:create) do |project|
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/analytics/dashboards/dangerous_dashboard/dangerous_dashboard.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dangerous_dashboard.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/analytics/dashboards/visualizations/cube_line_chart.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/cube_line_chart.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+      end
+    end
+
     trait :with_product_analytics_funnel do
       repository
 
