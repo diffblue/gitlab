@@ -1,0 +1,38 @@
+.ai-genie-chat {
+  .message-enter-active,
+  .message-leave-active {
+    transition: all 0.5s ease;
+  }
+
+  .message-enter,
+  .message-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .loader-enter-active,
+  .loader-leave-active {
+    transition: opacity 0.5s ease;
+  }
+
+  .loader-enter,
+  .loader-leave-to {
+    opacity: 0;
+  }
+
+  .loader-leave-active {
+    position: absolute;
+  }
+}
+
+.ai-genie-chat-message {
+  pre,
+  code {
+    @include gl-font-sm;
+    @include gl-bg-gray-100;
+  }
+
+  p:last-of-type {
+    margin-bottom: 0;
+  }
+}

@@ -7,6 +7,7 @@ import {
   GlFormInputGroup,
   GlFormInput,
   GlForm,
+  GlIcon,
 } from '@gitlab/ui';
 import { renderMarkdown } from '~/notes/utils';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -23,6 +24,7 @@ export default {
     GlFormInputGroup,
     GlFormInput,
     GlForm,
+    GlIcon,
   },
   directives: {
     SafeHtml,
@@ -44,6 +46,11 @@ export default {
       required: false,
       default: false,
     },
+    fullScreen: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -59,10 +66,11 @@ export default {
   watch: {
     async isLoading() {
       this.isHidden = false;
-      const rect = this.$refs.lastMessage?.at(0)?.getBoundingClientRect();
-      if (rect) {
-        await this.$nextTick();
-        this.$el.scrollTop += rect.bottom;
+      await this.$nextTick();
+      if (this.$refs.lastMessage?.length) {
+        this.$refs.lastMessage
+          .at(0)
+          .scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
       }
     },
     messages() {
@@ -91,18 +99,19 @@ export default {
 <template>
   <aside
     v-if="!isHidden"
-    class="markdown-code-block gl-drawer gl-drawer-default gl-h-auto gl-max-h-full gl-bottom-0 gl-z-index-200 gl-shadow-none gl-border-l gl-border-t"
+    class="markdown-code-block gl-drawer gl-drawer-default gl-max-h-full gl-bottom-0 gl-z-index-9999 gl-shadow-none gl-border-l gl-border-t ai-genie-chat"
+    :class="{ 'gl-h-auto': !fullScreen }"
     role="complementary"
     data-testid="chat-component"
-    style="scroll-behavior: smooth"
   >
     <header
       class="gl-drawer-header gl-drawer-header-sticky gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center gl-z-index-200"
     >
-      <h3 class="gl-font-base gl-m-0">
+      <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
+      <h3 class="gl-my-0">
         <slot name="title"></slot>
       </h3>
-      <gl-badge class="gl-mx-4" variant="info" size="md"
+      <gl-badge class="gl-mx-4" variant="muted" size="md"
         >{{ $options.i18n.EXPERIMENT_BADGE }}
       </gl-badge>
       <gl-button
@@ -119,7 +128,7 @@ export default {
     <gl-alert
       :dismissible="false"
       variant="warning"
-      class="gl-font-sm gl-border-b"
+      class="gl-font-sm"
       role="alert"
       data-testid="chat-legal-warning"
       primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
@@ -128,22 +137,29 @@ export default {
       <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
       <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
     </gl-alert>
-    <div>
+
+    <div class="gl-drawer-body gl-drawer-body gl-display-flex gl-flex-direction-column">
       <slot name="hero"></slot>
 
-      <section class="gl-bg-gray-10">
-        <div v-if="isLoading && !messages.length" class="gl-p-5">
-          <gl-skeleton-loader />
-        </div>
-        <div v-else>
+      <section
+        class="gl-display-flex gl-flex-direction-column gl-justify-content-end gl-flex-grow-1 gl-border-b-0"
+      >
+        <transition-group
+          tag="div"
+          name="message"
+          class="gl-display-flex gl-flex-direction-column gl-justify-content-end gl-h-auto"
+        >
           <div
             v-for="(message, index) in messages"
             :key="`${message.role}-${index}`"
             :ref="index === messages.length - 1 ? 'lastMessage' : undefined"
-            class="gl-px-5 gl-pt-5 ai-genie-chat-message gl-text-gray-600"
+            class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg ai-genie-chat-message gl-shadow-sm"
             :class="{
-              'gl-bg-white gl-border-t gl-border-b':
+              'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
                 message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
+              'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50':
+                message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant,
+              'gl-mb-0!': index === messages.length - 1,
             }"
           >
             <div v-safe-html="renderMarkdown(message.content)"></div>
@@ -153,11 +169,9 @@ export default {
               :prompt-location="getPromptLocation(index)"
             ></slot>
           </div>
-          <div v-if="isLoading" class="gl-p-5 gl-display-flex">
-            <gl-skeleton-loader />
-          </div>
           <gl-alert
             v-if="error"
+            key="error"
             :dismissible="false"
             variant="danger"
             class="gl-mb-0"
@@ -165,7 +179,12 @@ export default {
             data-testid="chat-error"
             ><span v-safe-html="error"></span
           ></gl-alert>
-        </div>
+        </transition-group>
+        <transition name="loader">
+          <div v-if="isLoading" class="gl-pt-0!">
+            <gl-skeleton-loader />
+          </div>
+        </transition>
       </section>
     </div>
     <footer
@@ -183,7 +202,7 @@ export default {
           <template #append>
             <gl-button
               icon="paper-airplane"
-              category="secondary"
+              category="primary"
               variant="info"
               class="gl-border-l-0"
               type="submit"
