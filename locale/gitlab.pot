@@ -20126,9 +20126,6 @@ msgstr ""
 msgid "GitLabPages|Your Project has been configured for Pages. Now we have to wait for the Pipeline to succeed for the first time."
 msgstr ""
 
-msgid "GitLabPages|Your pages are served under:"
-msgstr ""
-
 msgid "Gitaly Servers"
 msgstr ""
 
@@ -51342,6 +51339,9 @@ msgid "You can’t edit files directly in this project. Fork this project and su
 msgstr ""
 
 msgid "You could not create a new trigger."
+msgstr ""
+
+msgid "You currently have no custom domains."
 msgstr ""
 
 msgid "You do not have access to any projects for creating incidents."
