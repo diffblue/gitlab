@@ -159,8 +159,7 @@ module EE
         def user_preferences_usage
           super.tap do |user_prefs_usage|
             user_prefs_usage.merge!(
-              user_preferences_group_overview_details: count(::User.active.group_view_details),
-              user_preferences_group_overview_security_dashboard: count(::User.active.group_view_security_dashboard)
+              user_preferences_group_overview_details: count(::User.active.group_view_details)
             )
           end
         end
@@ -363,11 +362,7 @@ module EE
         def usage_activity_by_stage_secure(time_period)
           prefix = 'user_'
 
-          results = {
-            user_preferences_group_overview_security_dashboard: count(::User.active.group_view_security_dashboard.where(time_period))
-          }
-
-          results.merge!(count_secure_pipelines(time_period))
+          results = count_secure_pipelines(time_period)
           results.merge!(count_secure_scans(time_period))
 
           results[:"#{prefix}unique_users_all_secure_scanners"] = distinct_count(::Ci::Build.where(name: SECURE_PRODUCT_TYPES.keys).where(time_period), :user_id)
