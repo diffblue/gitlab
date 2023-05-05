@@ -275,9 +275,10 @@ export const generateDateRanges = (now) => {
  * @returns {Array} Tuple of time periods
  */
 export const generateChartTimePeriods = (now) => {
-  return [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
+  return [5, 4, 3, 2, 1, 0].map((monthsAgo, index) => ({
     end: monthsAgo === 0 ? now : nMonthsBefore(now, monthsAgo),
     start: nMonthsBefore(now, monthsAgo + 1),
+    key: `chart-period-${index}`,
   }));
 };
 
@@ -303,4 +304,33 @@ export const generateDashboardTableFields = (now) => {
       tdClass: 'gl-py-2!',
     },
   ];
+};
+
+/**
+ * Takes an array of timePeriods, a query function to execute and query parameters
+ * and will execute the queries, returning an array of data in order.
+ *
+ * @param {Array} timePeriods - Array of time periods [startdate, enddate] to iterate over and request
+ * @param {Date} timePeriods.start - Start date for the request
+ * @param {Date} timePeriods.end - End date for the request
+ * @param {Function} queryFn - A function that returns a promise to execute a query, eg REST api request, graphql query
+ * @param {Object} [queryParameters] - Optional parameters to pass to the query function
+ * @returns {Array} Array of data results from each query
+ */
+export const fetchMetricsForTimePeriods = async (timePeriods, queryFn, queryParameters = {}) => {
+  const promises = timePeriods.map(async (timePeriod) => {
+    const { start, end } = timePeriod;
+    const res = await queryFn(
+      {
+        startDate: start.toISOString(),
+        endDate: end.toISOString(),
+        ...queryParameters,
+      },
+      timePeriod,
+    );
+
+    return res;
+  });
+
+  return Promise.all(promises);
 };

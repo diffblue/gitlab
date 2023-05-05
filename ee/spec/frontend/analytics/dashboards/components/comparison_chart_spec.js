@@ -78,7 +78,10 @@ describe('Comparison chart', () => {
       utils.fetchMetricsData.mockRejectedValueOnce();
       await createWrapper();
 
-      expect(createAlert).toHaveBeenCalledWith({ message: DASHBOARD_LOADING_FAILURE });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: DASHBOARD_LOADING_FAILURE,
+        captureError: true,
+      });
     });
 
     it('will also request the chart data metrics if there is table data', async () => {
@@ -107,7 +110,10 @@ describe('Comparison chart', () => {
         .mockRejectedValueOnce();
       await createWrapper();
 
-      expect(createAlert).toHaveBeenCalledWith({ message: CHART_LOADING_FAILURE });
+      expect(createAlert).toHaveBeenCalledWith({
+        message: CHART_LOADING_FAILURE,
+        captureError: true,
+      });
     });
   });
 

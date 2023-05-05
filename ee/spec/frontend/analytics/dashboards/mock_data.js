@@ -87,9 +87,10 @@ export const MOCK_TABLE_TIME_PERIODS = [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, 
 
 // Generate the chart time periods, starting with the oldest first:
 // 5 months ago -> 4 months ago -> etc.
-export const MOCK_CHART_TIME_PERIODS = [5, 4, 3, 2, 1, 0].map((monthsAgo) => ({
+export const MOCK_CHART_TIME_PERIODS = [5, 4, 3, 2, 1, 0].map((monthsAgo, index) => ({
   end: monthsAgo === 0 ? THIS_MONTH.end : nMonthsBefore(THIS_MONTH.end, monthsAgo),
   start: nMonthsBefore(THIS_MONTH.end, monthsAgo + 1),
+  key: `chart-period-${index}`,
 }));
 
 export const MOCK_DASHBOARD_TABLE_FIELDS = [
