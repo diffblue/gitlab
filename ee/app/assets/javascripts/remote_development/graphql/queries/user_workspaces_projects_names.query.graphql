@@ -1,0 +1,8 @@
+query userWorkspacesProjectsNames($ids: [ID!]) {
+  projects(ids: $ids) {
+    nodes {
+      id
+      nameWithNamespace
+    }
+  }
+}

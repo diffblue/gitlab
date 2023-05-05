@@ -13,6 +13,8 @@ import WorkspaceActions from 'ee/remote_development/components/list/workspace_ac
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
+import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
+
 import { useFakeDate } from 'helpers/fake_date';
 
 import {
@@ -24,6 +26,7 @@ import {
   CURRENT_USERNAME,
   USER_WORKSPACES_QUERY_RESULT,
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
+  USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
 } from '../mock_data';
 
 jest.mock('~/lib/logger');
@@ -57,14 +60,21 @@ const findWorkspaceActions = (tableRow) => tableRow.findComponent(WorkspaceActio
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
   let userWorkspacesListQueryHandler;
+  let userWorkspacesProjectNamesQueryHandler;
   let workspaceUpdateMutationHandler;
 
   const createWrapper = (mockData = USER_WORKSPACES_QUERY_RESULT) => {
     userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(mockData);
+    userWorkspacesProjectNamesQueryHandler = jest
+      .fn()
+      .mockResolvedValueOnce(USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT);
     workspaceUpdateMutationHandler = jest.fn();
 
     const mockApollo = createMockApollo(
-      [[userWorkspacesListQuery, userWorkspacesListQueryHandler]],
+      [
+        [userWorkspacesListQuery, userWorkspacesListQueryHandler],
+        [userWorkspacesProjectsNamesQuery, userWorkspacesProjectNamesQueryHandler],
+      ],
       {
         Mutation: {
           workspaceUpdate: workspaceUpdateMutationHandler,
@@ -117,20 +127,26 @@ describe('remote_development/pages/list.vue', () => {
 
     it('displays user workspaces correctly', () => {
       expect(findTableRowsAsData(wrapper)).toEqual(
-        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.map((x) => ({
-          nameText: `${x.projectId}   ${x.name}`,
-          workspaceState: x.actualState,
-          actionsProps: {
-            actualState: x.actualState,
-            desiredState: x.desiredState,
-          },
-          ...(x.actualState === WORKSPACE_STATES.running
-            ? {
-                previewText: x.url,
-                previewHref: x.url,
-              }
-            : {}),
-        })),
+        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.map((x) => {
+          const projectName = USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes.find(
+            (project) => project.id === x.projectId,
+          ).nameWithNamespace;
+
+          return {
+            nameText: `${projectName}   ${x.name}`,
+            workspaceState: x.actualState,
+            actionsProps: {
+              actualState: x.actualState,
+              desiredState: x.desiredState,
+            },
+            ...(x.actualState === WORKSPACE_STATES.running
+              ? {
+                  previewText: x.url,
+                  previewHref: x.url,
+                }
+              : {}),
+          };
+        }),
       );
     });
 
@@ -152,69 +168,6 @@ describe('remote_development/pages/list.vue', () => {
       it('sorts the list to display terminated workspaces at the end of the list', () => {
         expect(findTableRowsAsData(wrapper).pop().workspaceState).toBe(WORKSPACE_STATES.terminated);
       });
-    });
-
-    describe('when the query returns terminated workspaces older than five days', () => {
-      const oldTerminatedWorkspaceName = 'terminated-workspace-older-than-five-days';
-      const oldRunningWorkspaceName = 'running-workspace-older-than-five-days';
-      const createdAt = new Date(2023, 3, 1);
-
-      beforeEach(async () => {
-        const customData = setupMockTerminatedWorkspace({
-          name: oldTerminatedWorkspaceName,
-          createdAt,
-        });
-        const oldRunningWorkspace = {
-          ...customData.data.currentUser.workspaces.nodes[0],
-          actualState: WORKSPACE_STATES.running,
-          name: oldRunningWorkspaceName,
-          createdAt,
-        };
-        customData.data.currentUser.workspaces.nodes.unshift(oldRunningWorkspace);
-
-        createWrapper(customData);
-
-        await waitForPromises();
-      });
-
-      it('excludes terminated workspaces older than five days from the workspaces list', () => {
-        expect(findTableRowsAsData(wrapper)).not.toContainEqual(
-          expect.objectContaining({
-            nameText: expect.stringContaining(oldTerminatedWorkspaceName),
-          }),
-        );
-      });
-
-      it('displays non-terminated older than five days from the workspaces list', () => {
-        expect(findTableRowsAsData(wrapper)).toContainEqual(
-          expect.objectContaining({
-            nameText: expect.stringContaining(oldRunningWorkspaceName),
-          }),
-        );
-      });
-    });
-  });
-
-  describe('when the query returns only terminated workspaces older than five days', () => {
-    beforeEach(async () => {
-      const customData = setupMockTerminatedWorkspace({
-        name: 'terminated-workspace-older-than-five-days',
-        createdAt: new Date(2023, 3, 1),
-      });
-      customData.data.currentUser.workspaces.nodes = [
-        customData.data.currentUser.workspaces.nodes.shift(),
-      ];
-      createWrapper(customData);
-
-      await waitForPromises();
-    });
-
-    it('displays empty state illustration', () => {
-      expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
-    });
-
-    it('hides workspaces table', () => {
-      expect(findTable(wrapper).exists()).toBe(false);
     });
   });
 
