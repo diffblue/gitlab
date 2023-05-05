@@ -3,6 +3,8 @@ import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/alert';
+import { fetchMetricsData } from '~/analytics/shared/utils';
+import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import {
   DASHBOARD_DESCRIPTION_GROUP,
   DASHBOARD_DESCRIPTION_PROJECT,
@@ -11,13 +13,14 @@ import {
   CHART_LOADING_FAILURE,
 } from '../constants';
 import {
-  fetchDoraMetrics,
+  fetchMetricsForTimePeriods,
   hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
   generateSparklineCharts,
   mergeSparklineCharts,
   generateDateRanges,
   generateChartTimePeriods,
+  extractDoraMetrics,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
@@ -57,6 +60,9 @@ export default {
     hasData() {
       return Boolean(this.allData.length);
     },
+    hasTableData() {
+      return Boolean(this.tableData.length);
+    },
     hasChartData() {
       return Boolean(Object.keys(this.chartData).length);
     },
@@ -74,43 +80,48 @@ export default {
       return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
     },
   },
-  mounted() {
-    this.fetchTableData();
+  async mounted() {
+    this.loadingTable = true;
+    try {
+      await this.fetchTableMetrics();
+      if (this.hasTableData) {
+        await this.fetchSparklineMetrics();
+      }
+    } finally {
+      this.loadingTable = false;
+    }
   },
   methods: {
-    fetchTableData() {
-      this.loadingTable = true;
+    async fetchMetrics({ startDate, endDate }, timePeriod) {
+      // request the dora and flow metrics from the REST endpoint
+      const rawData = await fetchMetricsData(METRICS_REQUESTS, this.namespaceRequestPath, {
+        created_after: startDate,
+        created_before: endDate,
+      });
 
-      fetchDoraMetrics({
-        timePeriods: DASHBOARD_TIME_PERIODS,
-        requestPath: this.namespaceRequestPath,
-      })
-        .then((response) => {
-          if (hasDoraMetricValues(response)) {
-            this.tableData = generateDoraTimePeriodComparisonTable(response);
-            this.fetchChartData();
-          }
-        })
-        .catch(() => {
-          createAlert({ message: DASHBOARD_LOADING_FAILURE });
-        })
-        .finally(() => {
-          this.loadingTable = false;
-        });
+      return { ...timePeriod, ...extractDoraMetrics(rawData) };
     },
-    fetchChartData() {
-      fetchDoraMetrics({
-        timePeriods: CHART_TIME_PERIODS,
-        requestPath: this.namespaceRequestPath,
-      })
-        .then((response) => {
-          if (hasDoraMetricValues(response)) {
-            this.chartData = generateSparklineCharts(response);
-          }
-        })
-        .catch(() => {
-          createAlert({ message: CHART_LOADING_FAILURE });
-        });
+    async fetchTableMetrics() {
+      try {
+        const tableData = await fetchMetricsForTimePeriods(
+          DASHBOARD_TIME_PERIODS,
+          this.fetchMetrics,
+        );
+
+        this.tableData = hasDoraMetricValues(tableData)
+          ? generateDoraTimePeriodComparisonTable(tableData)
+          : [];
+      } catch (error) {
+        createAlert({ message: DASHBOARD_LOADING_FAILURE, error, captureError: true });
+      }
+    },
+    async fetchSparklineMetrics() {
+      try {
+        const chartData = await fetchMetricsForTimePeriods(CHART_TIME_PERIODS, this.fetchMetrics);
+        this.chartData = hasDoraMetricValues(chartData) ? generateSparklineCharts(chartData) : {};
+      } catch (error) {
+        createAlert({ message: CHART_LOADING_FAILURE, error, captureError: true });
+      }
     },
   },
   i18n: {
