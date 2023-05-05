@@ -11,6 +11,16 @@ module EE
 
         gon.roadmap_epics_limit = 1000
 
+        if current_user && defined?(Llm)
+          ai_chat = {
+            total_model_token: ::Llm::ExplainCodeService::TOTAL_MODEL_TOKEN_LIMIT,
+            max_response_token: ::Llm::ExplainCodeService::MAX_RESPONSE_TOKENS,
+            input_content_limit: ::Llm::ExplainCodeService::INPUT_CONTENT_LIMIT
+          }
+
+          push_to_gon_attributes('ai', 'chat', ai_chat)
+        end
+
         if ::Gitlab.com?
           gon.subscriptions_url                = ::Gitlab::Routing.url_helpers.subscription_portal_url
           gon.subscriptions_legacy_sign_in_url = ::Gitlab::Routing.url_helpers.subscription_portal_legacy_sign_in_url

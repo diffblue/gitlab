@@ -1,14 +1,13 @@
 import { findLastIndex } from 'lodash';
 import { sprintf, __ } from '~/locale';
-import {
-  TOO_LONG_ERROR_TYPE,
-  i18n,
-  MAX_RESPONSE_TOKENS,
-  TOKENS_THRESHOLD,
-  GENIE_CHAT_MODEL_ROLES,
-} from './constants';
+import { TOO_LONG_ERROR_TYPE, i18n, GENIE_CHAT_MODEL_ROLES } from './constants';
 
 const areMessagesWithinLimit = (messages) => {
+  const MAX_RESPONSE_TOKENS = gon.ai?.chat?.max_response_token;
+  const TOKENS_THRESHOLD = gon.ai?.chat?.input_content_limit;
+
+  if (!MAX_RESPONSE_TOKENS || !TOKENS_THRESHOLD) return true; // delegate dealing with the prompt size to BE
+
   // we use `utils.computeTokens()` below to make it easier to test and mock calls to computeTokens()
   // eslint-disable-next-line no-use-before-define
   return utils.computeTokens(messages) + MAX_RESPONSE_TOKENS < TOKENS_THRESHOLD;
