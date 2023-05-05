@@ -11,6 +11,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
   shared_examples 'finishing onboarding' do
     let_it_be(:url) { '_url_' }
     let_it_be(:onboarding_in_progress) { true }
+    let(:should_check_namespace_plan) { true }
 
     let_it_be(:user) do
       create(:user, onboarding_in_progress: onboarding_in_progress).tap do |record|
@@ -18,8 +19,22 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       end
     end
 
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+    end
+
     context 'when current user onboarding is disabled' do
       let_it_be(:onboarding_in_progress) { false }
+
+      it 'does not finish onboarding' do
+        subject
+
+        expect(user.user_detail.onboarding_step_url).to eq url
+      end
+    end
+
+    context 'when not on SaaS' do
+      let(:should_check_namespace_plan) { false }
 
       it 'does not finish onboarding' do
         subject
@@ -40,7 +55,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       end
     end
 
-    context 'when onboarding and feature flag are enabled' do
+    context 'when onboarding is enabled' do
       it 'finishes onboarding' do
         subject
         user.reload

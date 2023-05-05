@@ -11,8 +11,7 @@ module Onboarding
     private
 
     def onboarding_redirect
-      return unless current_user&.onboarding_in_progress?
-      return unless ::Feature.enabled?(:ensure_onboarding)
+      return unless Onboarding.user_onboarding_in_progress?(current_user)
       return unless valid_for_onboarding_redirect?(current_user.user_detail.onboarding_step_url)
 
       redirect_to current_user.user_detail.onboarding_step_url

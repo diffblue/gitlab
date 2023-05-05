@@ -123,11 +123,13 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
 
       context 'when saving onboarding_step_url' do
         let(:path) { new_users_sign_up_groups_project_path(glm_params) }
+        let(:should_check_namespace_plan) { true }
 
         before do
           allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
             allow(service).to receive(:execute).and_return(ServiceResponse.success)
           end
+          stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
         end
 
         context 'when current user onboarding is disabled' do
@@ -152,13 +154,23 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           end
         end
 
-        context 'when onboarding and feature flag are enabled' do
+        context 'when onboarding and on SaaS' do
           let_it_be(:user) { create(:user, onboarding_in_progress: true) }
 
           it 'stores onboarding url' do
             post_create
 
             expect(user.user_detail.onboarding_step_url).to eq(path)
+          end
+        end
+
+        context 'when not on SaaS' do
+          let(:should_check_namespace_plan) { false }
+
+          it 'does not store onboarding url' do
+            post_create
+
+            expect(user.user_detail.onboarding_step_url).to be_nil
           end
         end
       end

@@ -44,8 +44,9 @@ module EE
       super
 
       custom_confirmation_instructions_service.set_token(save: false)
+
       return if registered_with_invite_email?
-      return unless ::Feature.enabled?(:ensure_onboarding)
+      return unless Onboarding.user_onboarding_enabled?
 
       resource.onboarding_in_progress = true
     end
