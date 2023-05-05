@@ -1,0 +1,21 @@
+---
+key_path: counts.users_with_analytics_dashboard_created_weekly
+description: "Counts number of users who have created a dashboard this week"
+product_section: dev
+product_stage: analyze
+product_group: product_analytics
+value_type: number
+status: active
+milestone: "16.0"
+introduced_by_url:
+time_frame: 7d
+data_source: redis_hll
+data_category: optional
+instrumentation_class: RedisHLLMetric
+distribution:
+- ee
+tier:
+- ultimate
+options:
+  events:
+    - "user_created_analytics_dashboard"

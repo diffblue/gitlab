@@ -6,15 +6,16 @@ RSpec.describe ProductAnalytics::PostPushWorker, feature_category: :product_anal
   include RepoHelpers
 
   let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:user) { create(:user) }
 
   let(:commit) { project.repository.commit }
 
-  subject { described_class.new.perform(project.id, commit.sha) }
+  subject { described_class.new.perform(project.id, commit.sha, user.id) }
 
   shared_examples 'tracks a usage event' do
-    it 'tracks a usage event' do
+    it 'tracks a project usage event' do
       expect(Gitlab::UsageDataCounters::HLLRedisCounter)
-        .to receive(:track_usage_event).with(:project_created_analytics_dashboard, project.id)
+        .to receive(:track_usage_event).twice.with(an_instance_of(String), an_instance_of(Integer))
 
       subject
     end
