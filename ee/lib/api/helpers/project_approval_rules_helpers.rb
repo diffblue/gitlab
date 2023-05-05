@@ -59,6 +59,10 @@ module API
         requires :approval_rule_id, type: Integer, desc: 'The ID of an approval_rule'
       end
 
+      def check_feature_availability
+        forbidden! unless ::License.feature_available?(:admin_merge_request_approvers_rules)
+      end
+
       def authorize_read_project_approval_rule!
         return if can?(current_user, :admin_project, user_project)
 
