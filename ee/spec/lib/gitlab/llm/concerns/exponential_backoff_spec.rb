@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
   let(:success) do
     instance_double(HTTParty::Response,
       code: 200, success?: true, parsed_response: {}, server_error?: false, too_many_requests?: false
@@ -29,7 +29,7 @@ RSpec.describe ::Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :n
         response_caller.call
       end
 
-      include ::Gitlab::Llm::Concerns::ExponentialBackoff
+      include Gitlab::Llm::Concerns::ExponentialBackoff
       retry_methods_with_exponential_backoff :dummy_method
     end
   end

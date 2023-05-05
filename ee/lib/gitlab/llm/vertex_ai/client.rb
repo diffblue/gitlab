@@ -2,9 +2,10 @@
 
 module Gitlab
   module Llm
-    module Tofa
+    module VertexAi
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
+        DEFAULT_TEMPERATURE = 0.5
 
         def initialize(_user, configuration = Configuration.new)
           @configuration = configuration
@@ -27,8 +28,6 @@ module Gitlab
         delegate(
           :access_token,
           :host,
-          :tofa_request_json_keys,
-          :tofa_request_payload,
           :url,
           to: :configuration
         )
@@ -43,11 +42,21 @@ module Gitlab
         end
 
         def default_payload_for(content)
-          json = JSON.parse(tofa_request_payload) # rubocop: disable Gitlab/Json
-          json_keys = tofa_request_json_keys.split(' ')
-          json[json_keys[0]][0][json_keys[1]][0][json_keys[2]] = content
-
-          json
+          {
+            instances: [
+              {
+                messages: [
+                  {
+                    author: "content",
+                    content: content
+                  }
+                ]
+              }
+            ],
+            parameters: {
+              temperature: DEFAULT_TEMPERATURE
+            }
+          }
         end
       end
     end

@@ -12,7 +12,7 @@ module EE
 
         mount ::API::Admin::Search::Zoekt
         mount ::API::Ai::Experimentation::OpenAi
-        mount ::API::Ai::Experimentation::Tofa
+        mount ::API::Ai::Experimentation::VertexAi
         mount ::API::AuditEvents
         mount ::API::ProjectApprovalRules
         mount ::API::StatusChecks
