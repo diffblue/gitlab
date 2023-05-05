@@ -14,15 +14,17 @@ describe('ComplianceReportsApp component', () => {
   const defaultProps = {
     groupPath: 'group-path',
     mergeCommitsCsvExportPath: '/csv',
+    frameworksCsvExportPath: '/framework_report.csv',
   };
 
   const findHeader = () => wrapper.findComponent(ReportHeader);
   const findMergeCommitsExportButton = () => wrapper.findComponent(MergeCommitsExportButton);
+  const findFrameworkExportButton = () => wrapper.findByTestId('framework-export');
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
   const findViolationsTab = () => wrapper.findByTestId('violations-tab');
 
-  const createComponent = (props = {}, mountFn = shallowMount) => {
+  const createComponent = (props = {}, mountFn = shallowMount, mocks = {}) => {
     return extendedWrapper(
       mountFn(ComplianceReportsApp, {
         propsData: {
@@ -33,6 +35,7 @@ describe('ComplianceReportsApp component', () => {
           $route: {
             name: ROUTE_VIOLATIONS,
           },
+          ...mocks,
         },
         stubs: {
           'router-view': stubComponent({}),
@@ -44,7 +47,6 @@ describe('ComplianceReportsApp component', () => {
   describe('violations report', () => {
     beforeEach(() => {
       wrapper = createComponent(defaultProps, mount);
-      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
     });
 
     it('renders the violations report tab', () => {
@@ -63,6 +65,10 @@ describe('ComplianceReportsApp component', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(true);
     });
 
+    it('does not render the framework export button', () => {
+      expect(findFrameworkExportButton().exists()).toBe(false);
+    });
+
     it('does not render the merge commit export button when there is no CSV path', () => {
       wrapper = createComponent({ mergeCommitsCsvExportPath: null }, mount);
       findTabs().vm.$emit('input', TABS.indexOf(ROUTE_VIOLATIONS));
@@ -73,8 +79,11 @@ describe('ComplianceReportsApp component', () => {
 
   describe('frameworks report', () => {
     beforeEach(() => {
-      wrapper = createComponent();
-      findTabs().vm.$emit('input', TABS.indexOf(ROUTE_FRAMEWORKS));
+      wrapper = createComponent(defaultProps, mount, {
+        $route: {
+          name: ROUTE_FRAMEWORKS,
+        },
+      });
     });
 
     it('renders the frameworks report tab', () => {
@@ -91,6 +100,20 @@ describe('ComplianceReportsApp component', () => {
 
     it('does not render the merge commit export button', () => {
       expect(findMergeCommitsExportButton().exists()).toBe(false);
+    });
+
+    it('renders the framework export button', () => {
+      expect(findFrameworkExportButton().exists()).toBe(true);
+    });
+
+    it('does not render the framework export button when there is no CSV path', () => {
+      wrapper = createComponent({ frameworksCsvExportPath: null }, mount, {
+        $route: {
+          name: ROUTE_FRAMEWORKS,
+        },
+      });
+
+      expect(findFrameworkExportButton().exists()).toBe(false);
     });
   });
 });
