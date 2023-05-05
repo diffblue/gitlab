@@ -80,23 +80,5 @@ RSpec.describe 'getting group label information', feature_category: :team_planni
 
       expect(titles).to eq(expected_titles)
     end
-
-    it 'does not generate N+1 queries' do
-      stub_feature_flags(preload_max_access_levels_for_labels_finder: false)
-
-      run_query # warmup
-      recorder_without_flag = Gitlab::WithRequestStore.with_request_store do
-        ActiveRecord::QueryRecorder.new(skip_cached: false) { run_query }.count
-      end
-
-      stub_feature_flags(preload_max_access_levels_for_labels_finder: true)
-
-      run_query # warmup
-      recorder_with_flag = Gitlab::WithRequestStore.with_request_store do
-        ActiveRecord::QueryRecorder.new(skip_cached: false) { run_query }
-      end
-
-      expect(recorder_with_flag).not_to exceed_query_limit(recorder_without_flag)
-    end
   end
 end
