@@ -10,11 +10,19 @@ module EE
         enqueue_elasticsearch_indexing
         enqueue_zoekt_indexing
         enqueue_update_external_pull_requests
+        enqueue_product_analytics_event_metrics
 
         super
       end
 
       private
+
+      def enqueue_product_analytics_event_metrics
+        return unless project.product_analytics_enabled?
+        return unless default_branch?
+
+        ::ProductAnalytics::PostPushWorker.perform_async(project.id, newrev)
+      end
 
       def enqueue_elasticsearch_indexing
         return unless should_index_commits?
