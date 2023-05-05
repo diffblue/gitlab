@@ -2,8 +2,9 @@
 
 module Gitlab
   module Llm
-    module OpenAi
+    module Concerns
       module ExponentialBackoff
+        extend ActiveSupport::Concern
         include ::Gitlab::Llm::Concerns::CircuitBreaker
 
         INITIAL_DELAY = 1.second
