@@ -178,7 +178,9 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
             expect(post_create).to have_gitlab_http_status(:ok)
 
             expect(response.body).to include('Start your Free Ultimate Trial')
-            expect(response.body).to include('Your GitLab Ultimate trial lasts for 30 days')
+            expect(response.body).to include(s_('Trial|Your GitLab Ultimate trial lasts for 30 days, ' \
+                                                'but you can keep your free GitLab account forever. ' \
+                                                'We just need some additional information to activate your trial.'))
           end
         end
 
