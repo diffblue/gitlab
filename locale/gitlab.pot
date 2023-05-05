@@ -39766,9 +39766,6 @@ msgstr ""
 msgid "Search users or groups"
 msgstr ""
 
-msgid "Search your project dependencies for their licenses and apply policies."
-msgstr ""
-
 msgid "Search your projects"
 msgstr ""
 
@@ -40007,9 +40004,6 @@ msgstr ""
 msgid "SecurityConfiguration|By default, all analyzers are applied in order to cover all languages across your project, and only run if the language is detected in the merge request."
 msgstr ""
 
-msgid "SecurityConfiguration|Compliance"
-msgstr ""
-
 msgid "SecurityConfiguration|Configuration guide"
 msgstr ""
 
@@ -40076,7 +40070,7 @@ msgstr ""
 msgid "SecurityConfiguration|Manage profiles for use by DAST scans."
 msgstr ""
 
-msgid "SecurityConfiguration|More scan types, including DAST, Dependency Scanning, Fuzzing, and Licence Compliance"
+msgid "SecurityConfiguration|More scan types, including DAST, Dependency Scanning, Fuzzing"
 msgstr ""
 
 msgid "SecurityConfiguration|Not enabled"

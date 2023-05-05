@@ -3,11 +3,7 @@ import stubChildren from 'helpers/stub_children';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import SecurityConfigurationApp from '~/security_configuration/components/app.vue';
 import UpgradeBanner from 'ee/security_configuration/components/upgrade_banner.vue';
-import {
-  complianceFeaturesMock,
-  securityFeaturesMock,
-  provideMock,
-} from 'jest/security_configuration/mock_data';
+import { securityFeaturesMock, provideMock } from 'jest/security_configuration/mock_data';
 
 describe('~/security_configuration/components/app', () => {
   let wrapper;
@@ -19,7 +15,6 @@ describe('~/security_configuration/components/app', () => {
     wrapper = mountExtended(SecurityConfigurationApp, {
       propsData: {
         augmentedSecurityFeatures: securityFeaturesMock,
-        augmentedComplianceFeatures: complianceFeaturesMock,
         securityTrainingEnabled: true,
         ...propsData,
       },
@@ -43,7 +38,12 @@ describe('~/security_configuration/components/app', () => {
     describe('given at least one unavailable feature', () => {
       beforeEach(() => {
         createComponent({
-          augmentedComplianceFeatures: complianceFeaturesMock.map(makeAvailable(false)),
+          augmentedSecurityFeatures: [
+            {
+              ...securityFeaturesMock[0],
+              available: false,
+            },
+          ],
         });
       });
 
@@ -63,7 +63,6 @@ describe('~/security_configuration/components/app', () => {
     describe('given at least one unavailable feature, but banner is already dismissed', () => {
       beforeEach(() => {
         createComponent({
-          augmentedComplianceFeatures: complianceFeaturesMock.map(makeAvailable(false)),
           shouldShowCallout: false,
         });
       });
@@ -77,7 +76,6 @@ describe('~/security_configuration/components/app', () => {
       beforeEach(() => {
         createComponent({
           augmentedSecurityFeatures: securityFeaturesMock.map(makeAvailable(true)),
-          augmentedComplianceFeatures: complianceFeaturesMock.map(makeAvailable(true)),
         });
       });
 
