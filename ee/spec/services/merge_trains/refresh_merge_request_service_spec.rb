@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :source_code_management do
-  let_it_be(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
+  let(:project) { create(:project, :repository, merge_pipelines_enabled: true, merge_trains_enabled: true) }
   let_it_be(:maintainer) { create(:user) }
 
   let(:service) { described_class.new(project, maintainer, require_recreate: require_recreate) }
@@ -81,6 +81,20 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
         result = subject
         expect(result[:status]).to eq(:success)
         expect(result[:pipeline_created]).to be_falsy
+      end
+    end
+
+    shared_examples_for 'merges the merge request' do
+      specify do
+        expect(merge_request).to receive(:cleanup_refs).with(only: :train)
+        expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
+        expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
+        expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
+          expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true).and_call_original
+        end
+
+        expect { subject }.to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
+        expect(merge_request.state).to eq("merged")
       end
     end
 
@@ -193,11 +207,28 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
         it_behaves_like 'cancels and recreates a pipeline for the merge train'
       end
+
+      context 'when discussion is added and project is set to only merge if all discussions resolved' do
+        before do
+          project.update!(only_allow_merge_if_all_discussions_are_resolved: true)
+        end
+
+        it 'continues with the current pipeline' do
+          create(:discussion_note_on_merge_request, noteable: merge_request, project: project)
+
+          result = subject
+
+          expect(result[:pipeline_created]).to eq(false)
+          expect(result[:status]).to eq(:success)
+          expect(merge_request.merge_status).to eq("can_be_merged")
+          expect(merge_request.merge_params).to eq({ "auto_merge_strategy" => "merge_train" })
+        end
+      end
     end
 
     context 'when pipeline for merge train succeeded' do
-      let(:pipeline) { create(:ci_pipeline, :success, target_sha: previous_ref_sha, source_sha: merge_request.diff_head_sha) }
       let(:previous_ref_sha) { project.repository.commit('refs/heads/master').sha }
+      let(:pipeline) { create(:ci_pipeline, :success, target_sha: previous_ref_sha, source_sha: merge_request.diff_head_sha) }
 
       before do
         merge_request.merge_train_car.refresh_pipeline!(pipeline.id)
@@ -205,18 +236,17 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
         merge_request.save!
       end
 
-      context 'when the merge request is the first queue' do
-        it 'merges the merge request' do
-          expect(merge_request).to receive(:cleanup_refs).with(only: :train)
-          expect(merge_request.merge_train_car).to receive(:start_merge!).and_call_original
-          expect(merge_request.merge_train_car).to receive(:finish_merge!).and_call_original
-          expect_next_instance_of(MergeRequests::MergeService, project: project, current_user: maintainer, params: instance_of(HashWithIndifferentAccess)) do |service|
-            expect(service).to receive(:execute).with(merge_request, skip_discussions_check: true).and_call_original
-          end
-
-          expect { subject }
-            .to change { merge_request.merge_train_car.status_name }.from(:fresh).to(:merged)
+      context 'when a new discussion is added and project only allow merges when all discussions are resolved' do
+        before do
+          project.update!(only_allow_merge_if_all_discussions_are_resolved: true)
+          create(:discussion_note_on_merge_request, noteable: merge_request, project: project)
         end
+
+        it_behaves_like 'merges the merge request'
+      end
+
+      context 'when the merge request is the first queue' do
+        it_behaves_like 'merges the merge request'
 
         context 'when it failed to merge the merge request' do
           before do
@@ -245,7 +275,7 @@ RSpec.describe MergeTrains::RefreshMergeRequestService, feature_category: :sourc
 
       context 'when the merge request is not the first queue' do
         before do
-          allow(merge_request.merge_train_car).to receive(:first_in_train?) { false }
+          allow(merge_request.merge_train_car).to receive(:first_car?).and_return(false)
         end
 
         it 'does not merge the merge request' do
