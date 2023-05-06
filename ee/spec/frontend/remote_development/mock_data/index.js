@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash';
 import { TEST_HOST } from 'helpers/test_constants';
+import { WORKSPACE_DESIRED_STATES, WORKSPACE_STATES } from 'ee/remote_development/constants';
 
 const WORKSPACE = {
   id: 1,
@@ -52,6 +53,12 @@ export const USER_WORKSPACES_QUERY_RESULT = {
             createdAt: '2023-05-01T18:24:34Z',
           },
         ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+        },
       },
     },
   },
@@ -63,12 +70,16 @@ export const USER_WORKSPACES_QUERY_EMPTY_RESULT = {
       id: 1,
       workspaces: {
         nodes: [],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          startCursor: null,
+          endCursor: null,
+        },
       },
     },
   },
 };
-
-export const CURRENT_USERNAME = 'root';
 
 export const SEARCH_PROJECTS_QUERY_RESULT = {
   data: {
@@ -129,6 +140,19 @@ export const WORKSPACE_CREATE_MUTATION_RESULT = {
       workspace: {
         ...cloneDeep(WORKSPACE),
         id: 2,
+      },
+    },
+  },
+};
+
+export const WORKSPACE_UPDATE_MUTATION_RESULT = {
+  data: {
+    workspaceUpdate: {
+      errors: [],
+      workspace: {
+        id: WORKSPACE.id,
+        actualState: WORKSPACE_STATES.running,
+        desiredState: WORKSPACE_DESIRED_STATES.restartRequested,
       },
     },
   },

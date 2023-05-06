@@ -69,6 +69,12 @@ const createApolloProvider = () => {
             generateDummyWorkspace(WORKSPACE_STATES.failed, WORKSPACE_DESIRED_STATES.running),
             generateDummyWorkspace(WORKSPACE_STATES.error, WORKSPACE_DESIRED_STATES.running),
           ],
+          pageInfo: {
+            hasNextPage: true,
+            hasPreviousPage: false,
+            startCursor: null,
+            endCursor: null,
+          },
         },
       },
     },
