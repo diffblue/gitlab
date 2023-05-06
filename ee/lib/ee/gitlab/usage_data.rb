@@ -78,12 +78,6 @@ module EE
         def license_usage_data
           usage_data = super
           license = ::License.current
-          usage_data[:edition] =
-            if license
-              license.edition
-            else
-              'EE Free'
-            end
 
           if license
             usage_data[:license_md5] =
