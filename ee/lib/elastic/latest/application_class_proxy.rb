@@ -320,6 +320,27 @@ module Elastic
         end
       end
 
+      # Useful when performing group searches by traversal_id to prevent
+      # access to projects in the group hierarchy that the user does not have
+      # permission to view.
+      def rejected_project_filter(namespaces, options)
+        current_user = options[:current_user]
+        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
+        return {} if scoped_project_ids == :any
+
+        project_ids = filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
+        rejected_ids = namespaces.flat_map do |namespace|
+          namespace.all_project_ids_except(project_ids)
+        end
+
+        {
+          terms: {
+            _name: context.name,
+            project_id: rejected_ids
+          }
+        }
+      end
+
       # If a project feature(s) is specified, access is dependent on its visibility
       # level being enabled (or private if `include_members_only: true`).
       #
