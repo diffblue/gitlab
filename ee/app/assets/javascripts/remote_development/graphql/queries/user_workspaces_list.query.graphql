@@ -1,7 +1,9 @@
-query userWorkspacesList {
+#import "~/graphql_shared/fragments/page_info.fragment.graphql"
+
+query userWorkspacesList($first: Int, $before: String, $after: String) {
   currentUser {
     id
-    workspaces @client {
+    workspaces(first: $first, before: $before, after: $after) @client {
       nodes {
         id
         name
@@ -13,6 +15,9 @@ query userWorkspacesList {
         devfileRef
         devfilePath
         createdAt
+      }
+      pageInfo {
+        ...PageInfo
       }
     }
   }

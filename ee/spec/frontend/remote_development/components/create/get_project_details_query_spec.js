@@ -27,8 +27,8 @@ describe('remote_development/components/create/get_project_details_query', () =>
 
   const buildMockApollo = () => {
     getProjectDetailsQueryHandler = jest.fn();
-    getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
     getGroupClusterAgentsQueryHandler = jest.fn();
+    getProjectDetailsQueryHandler.mockResolvedValueOnce(GET_PROJECT_DETAILS_QUERY_RESULT);
     getGroupClusterAgentsQueryHandler.mockResolvedValueOnce(GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT);
     mockApollo = createMockApollo([
       [getProjectDetailsQuery, getProjectDetailsQueryHandler],

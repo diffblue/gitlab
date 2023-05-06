@@ -11,6 +11,9 @@ describe('ee/remote_development/init_workspaces_app', () => {
 
   afterEach(() => {
     document.body.innerHTML = '';
+    // Wrapper is not created from mount or shallowMount which is why it isn't auto destroyed
+    // eslint-disable-next-line @gitlab/vtu-no-explicit-wrapper-destroy
+    wrapper.destroy();
   });
 
   describe('initWorkspacesApp - integration', () => {

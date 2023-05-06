@@ -1,29 +1,19 @@
 import { mount } from '@vue/test-utils';
-import { cloneDeep } from 'lodash';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlButton, GlLink, GlTableLite, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import WorkspaceList, { i18n } from 'ee/remote_development/pages/list.vue';
-import WorkspaceActions from 'ee/remote_development/components/list/workspace_actions.vue';
+import WorkspaceList from 'ee/remote_development/pages/list.vue';
 import WorkspaceEmptyState from 'ee/remote_development/components/list/empty_state.vue';
-import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
+import WorkspacesTable from 'ee/remote_development/components/list/workspaces_table.vue';
+import WorkspacesListPagination from 'ee/remote_development/components/list/workspaces_list_pagination.vue';
 import userWorkspacesListQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import userWorkspacesProjectsNamesQuery from 'ee/remote_development/graphql/queries/user_workspaces_projects_names.query.graphql';
-
-import { useFakeDate } from 'helpers/fake_date';
-
+import { ROUTES } from 'ee/remote_development/constants';
+import { populateWorkspacesWithProjectNames } from 'ee/remote_development/services/utils';
 import {
-  WORKSPACE_STATES,
-  WORKSPACE_DESIRED_STATES,
-  ROUTES,
-} from 'ee/remote_development/constants';
-import {
-  CURRENT_USERNAME,
   USER_WORKSPACES_QUERY_RESULT,
   USER_WORKSPACES_QUERY_EMPTY_RESULT,
   USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT,
@@ -35,79 +25,60 @@ Vue.use(VueApollo);
 
 const SVG_PATH = '/assets/illustrations/empty_states/empty_workspaces.svg';
 
-const findAlert = (wrapper) => wrapper.findComponent(GlAlert);
-const findTable = (wrapper) => wrapper.findComponent(GlTableLite);
-const findTableRows = (wrapper) => findTable(wrapper).findAll('tbody tr');
-const findTableRowsAsData = (wrapper) =>
-  findTableRows(wrapper).wrappers.map((x) => {
-    const tds = x.findAll('td');
-    const rowData = {
-      nameText: tds.at(0).text(),
-      workspaceState: tds.at(0).findComponent(WorkspaceStateIndicator).props('workspaceState'),
-      actionsProps: tds.at(2).findComponent(WorkspaceActions).props(),
-    };
-
-    if (tds.at(1).findComponent(GlLink).exists()) {
-      rowData.previewText = tds.at(1).text();
-      rowData.previewHref = tds.at(1).findComponent(GlLink).attributes('href');
-    }
-
-    return rowData;
-  });
-const findNewWorkspaceButton = (wrapper) => wrapper.findComponent(GlButton);
-const findWorkspaceActions = (tableRow) => tableRow.findComponent(WorkspaceActions);
-
 describe('remote_development/pages/list.vue', () => {
   let wrapper;
+  let mockApollo;
   let userWorkspacesListQueryHandler;
   let userWorkspacesProjectNamesQueryHandler;
-  let workspaceUpdateMutationHandler;
 
-  const createWrapper = (mockData = USER_WORKSPACES_QUERY_RESULT) => {
-    userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(mockData);
+  const buildMockApollo = () => {
+    userWorkspacesListQueryHandler = jest.fn().mockResolvedValueOnce(USER_WORKSPACES_QUERY_RESULT);
     userWorkspacesProjectNamesQueryHandler = jest
       .fn()
       .mockResolvedValueOnce(USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT);
-    workspaceUpdateMutationHandler = jest.fn();
 
-    const mockApollo = createMockApollo(
-      [
-        [userWorkspacesListQuery, userWorkspacesListQueryHandler],
-        [userWorkspacesProjectsNamesQuery, userWorkspacesProjectNamesQueryHandler],
-      ],
-      {
-        Mutation: {
-          workspaceUpdate: workspaceUpdateMutationHandler,
-        },
-      },
-    );
-
+    mockApollo = createMockApollo([
+      [userWorkspacesListQuery, userWorkspacesListQueryHandler],
+      [userWorkspacesProjectsNamesQuery, userWorkspacesProjectNamesQueryHandler],
+    ]);
+  };
+  const createWrapper = () => {
     wrapper = mount(WorkspaceList, {
       apolloProvider: mockApollo,
       provide: {
         emptyStateSvgPath: SVG_PATH,
-        currentUsername: CURRENT_USERNAME,
       },
     });
   };
-  const setupMockTerminatedWorkspace = (extraData = {}) => {
-    const customData = cloneDeep(USER_WORKSPACES_QUERY_RESULT);
-    const workspace = cloneDeep(customData.data.currentUser.workspaces.nodes[0]);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findTable = () => wrapper.findComponent(WorkspacesTable);
+  const findPagination = () => wrapper.findComponent(WorkspacesListPagination);
+  const findNewWorkspaceButton = () => wrapper.findComponent(GlButton);
 
-    customData.data.currentUser.workspaces.nodes.unshift({
-      ...workspace,
-      actualState: WORKSPACE_STATES.terminated,
-      ...extraData,
+  beforeEach(() => {
+    buildMockApollo();
+  });
+
+  describe('when no workspaces are available', () => {
+    beforeEach(async () => {
+      userWorkspacesListQueryHandler.mockReset();
+      userWorkspacesListQueryHandler.mockResolvedValueOnce(USER_WORKSPACES_QUERY_EMPTY_RESULT);
+
+      createWrapper();
+      await waitForPromises();
     });
 
-    return customData;
-  };
-  useFakeDate(2023, 4, 1);
+    it('renders empty state when no workspaces are available', () => {
+      expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+    });
 
-  it('shows empty state when no workspaces are available', async () => {
-    createWrapper(USER_WORKSPACES_QUERY_EMPTY_RESULT);
-    await waitForPromises();
-    expect(wrapper.findComponent(WorkspaceEmptyState).exists()).toBe(true);
+    it('does not render the workspaces table', () => {
+      expect(findTable().exists()).toBe(false);
+    });
+
+    it('does not render the workspaces pagination', () => {
+      expect(findPagination().exists()).toBe(false);
+    });
   });
 
   it('shows loading state when workspaces are being fetched', () => {
@@ -117,36 +88,24 @@ describe('remote_development/pages/list.vue', () => {
 
   describe('default (with nodes)', () => {
     beforeEach(async () => {
-      createWrapper(USER_WORKSPACES_QUERY_RESULT);
+      createWrapper();
       await waitForPromises();
     });
 
-    it('shows table when workspaces are available', () => {
-      expect(findTable(wrapper).exists()).toBe(true);
+    it('renders table', () => {
+      expect(findTable().exists()).toBe(true);
     });
 
-    it('displays user workspaces correctly', () => {
-      expect(findTableRowsAsData(wrapper)).toEqual(
-        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes.map((x) => {
-          const projectName = USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes.find(
-            (project) => project.id === x.projectId,
-          ).nameWithNamespace;
+    it('renders pagination', () => {
+      expect(findPagination().exists()).toBe(true);
+    });
 
-          return {
-            nameText: `${projectName}   ${x.name}`,
-            workspaceState: x.actualState,
-            actionsProps: {
-              actualState: x.actualState,
-              desiredState: x.desiredState,
-            },
-            ...(x.actualState === WORKSPACE_STATES.running
-              ? {
-                  previewText: x.url,
-                  previewHref: x.url,
-                }
-              : {}),
-          };
-        }),
+    it('provides workspaces data to the workspaces table', () => {
+      expect(findTable(wrapper).props('workspaces')).toEqual(
+        populateWorkspacesWithProjectNames(
+          USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes,
+          USER_WORKSPACES_PROJECT_NAMES_QUERY_RESULT.data.projects.nodes,
+        ),
       );
     });
 
@@ -158,83 +117,55 @@ describe('remote_development/pages/list.vue', () => {
       expect(findAlert(wrapper).exists()).toBe(false);
     });
 
-    describe('when the query returns terminated workspaces', () => {
-      beforeEach(async () => {
-        createWrapper(setupMockTerminatedWorkspace());
+    describe('when pagination component emits input event', () => {
+      it('refetches workspaces starting at the specified cursor', async () => {
+        const pageVariables = { after: 'end', first: 10 };
+
+        createWrapper();
 
         await waitForPromises();
-      });
 
-      it('sorts the list to display terminated workspaces at the end of the list', () => {
-        expect(findTableRowsAsData(wrapper).pop().workspaceState).toBe(WORKSPACE_STATES.terminated);
+        expect(userWorkspacesListQueryHandler).toHaveBeenCalledTimes(1);
+
+        findPagination().vm.$emit('input', pageVariables);
+
+        await waitForPromises();
+
+        expect(userWorkspacesListQueryHandler).toHaveBeenCalledTimes(2);
+        expect(userWorkspacesListQueryHandler).toHaveBeenLastCalledWith(pageVariables);
       });
     });
   });
 
-  describe('workspace actions is clicked', () => {
-    const TEST_WORKSPACE_IDX = 1;
-    const TEST_DESIRED_STATE = WORKSPACE_DESIRED_STATES.terminated;
+  describe('when workspace table emits updateFailed event', () => {
+    it('displays the error attached to the event', async () => {
+      const error = 'Failed to stop workspace';
 
-    let workspace;
-    let workspaceActions;
-
-    beforeEach(async () => {
-      createWrapper(USER_WORKSPACES_QUERY_RESULT);
-
+      createWrapper();
       await waitForPromises();
 
-      const row = findTableRows(wrapper).at(TEST_WORKSPACE_IDX);
+      findTable().vm.$emit('updateFailed', { error });
 
-      workspace =
-        USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.nodes[TEST_WORKSPACE_IDX];
-      workspaceActions = findWorkspaceActions(row);
-    });
+      await nextTick();
 
-    it(`sets workspace desiredState using the workspaceUpdate mutation`, async () => {
-      workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
-
-      await waitForPromises();
-
-      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith(
-        expect.any(Object),
-        {
-          input: {
-            desiredState: TEST_DESIRED_STATE,
-            id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
-          },
-        },
-        expect.any(Object),
-        expect.any(Object),
-      );
-    });
-
-    describe('when the workspaceUpdate mutation fails', () => {
-      const error = new Error();
-
-      beforeEach(async () => {
-        workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockRejectedValueOnce(error);
-
-        workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
-
-        await waitForPromises();
-      });
-
-      it('shows an alert indicating that the update operation failed', () => {
-        expect(findAlert(wrapper).text()).toContain(i18n.updateWorkspaceFailedMessage);
-      });
-
-      it('logs the error', () => {
-        expect(logError).toHaveBeenCalledWith(error);
-      });
+      expect(findAlert().text()).toBe(error);
     });
   });
 
-  describe('when query fails', () => {
+  describe.each`
+    query                            | queryHandlerFactory
+    ${'userWorkspaces'}              | ${() => userWorkspacesListQueryHandler}
+    ${'userWorkspacesProjectsNames'} | ${() => userWorkspacesProjectNamesQueryHandler}
+  `('when $query query fails', ({ queryHandlerFactory }) => {
     const ERROR = new Error('Something bad!');
 
     beforeEach(async () => {
-      createWrapper(Promise.reject(ERROR));
+      const queryHandler = queryHandlerFactory();
+
+      queryHandler.mockReset();
+      queryHandler.mockRejectedValueOnce(ERROR);
+
+      createWrapper();
       await waitForPromises();
     });
 

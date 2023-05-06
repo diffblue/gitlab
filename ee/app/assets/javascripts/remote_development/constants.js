@@ -42,3 +42,4 @@ export const PROJECT_VISIBILITY = {
 };
 
 export const EXCLUDED_WORKSPACE_AGE_IN_DAYS = 5;
+export const WORKSPACES_LIST_PAGE_SIZE = 10;
