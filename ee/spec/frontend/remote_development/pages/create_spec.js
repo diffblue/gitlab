@@ -77,6 +77,12 @@ describe('remote_development/pages/create.vue', () => {
           ...USER_WORKSPACES_QUERY_RESULT.data.currentUser,
           workspaces: {
             nodes: worksspaces,
+            pageInfo: {
+              endCursor: null,
+              startCursor: null,
+              hasNextPage: false,
+              hasPreviousPage: false,
+            },
           },
         },
       },
