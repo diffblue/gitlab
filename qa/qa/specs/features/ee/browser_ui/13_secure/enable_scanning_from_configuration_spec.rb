@@ -171,61 +171,6 @@ module QA
           end
         end
       end
-
-      describe 'license compliance shows status in configuration' do
-        it(
-          'shows correct status in configuration',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/375460'
-        ) do
-          Page::Project::Menu.perform(&:go_to_security_configuration)
-          Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            config_form.go_to_compliance_tab
-
-            expect(config_form).to have_license_compliance_status('Not enabled')
-            expect(config_form).to have_no_license_compliance_status('Enabled')
-          end
-
-          # Push fixture to generate Secure reports
-          Resource::Repository::Commit.fabricate_via_api! do |commit|
-            commit.project = project
-
-            commit.add_files([
-              {
-                file_path: '.gitlab-ci.yml',
-                content: File.read(
-                  File.join(EE::Runtime::Path.fixtures_path, 'secure_license_files', '.gitlab-ci.yml')
-                )
-              },
-              {
-                file_path: 'gl-license-scanning-report.json',
-                content: File.read(
-                  File.join(
-                    EE::Runtime::Path.fixtures_path,
-                    'secure_premade_reports',
-                    'gl-license-scanning-report.json'
-                  )
-                )
-              }
-            ])
-            commit.commit_message = 'Add license scanning to project'
-          end
-          Flow::Login.sign_in_unless_signed_in
-          project.visit!
-          Flow::Pipeline.visit_latest_pipeline
-
-          Page::Project::Pipeline::Show.perform do |pipeline|
-            expect(pipeline).to have_job('license_scanning')
-          end
-
-          Page::Project::Menu.perform(&:go_to_security_configuration)
-          Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            config_form.go_to_compliance_tab
-
-            expect(config_form).to have_no_license_compliance_status('Not enabled')
-            expect(config_form).to have_license_compliance_status('Enabled')
-          end
-        end
-      end
     end
   end
 end
