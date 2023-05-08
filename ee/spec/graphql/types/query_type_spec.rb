@@ -19,7 +19,8 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
       :subscription_future_entries,
       :vulnerabilities,
       :vulnerabilities_count_by_day,
-      :vulnerability
+      :vulnerability,
+      :instance_external_audit_event_destinations
     ]
 
     all_expected_fields = expected_foss_fields + expected_ee_fields
