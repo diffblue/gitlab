@@ -16,7 +16,7 @@ export const i18n = {
   REQUEST_ERROR: s__('AI|Something went wrong. Please try again later'),
   EXPERIMENT_BADGE: s__('AI|Experiment'),
   EXPLAIN_CODE_PROMPT: s__(
-    'AI|Explain the code from %{filePath} in human understandable language presented in Markdown format. In the response add neither original code snippet nor any title. `%{text}`',
+    'AI|Explain the code from %{filePath} in human understandable language presented in Markdown format. In the response add neither original code snippet nor any title. `%{text}`. If it is not programming code, say "The selected text is not code. I am afraid this feature is for explaining code only. Would you like to ask a different question about the selected text?" and wait for another question.',
   ),
   TOO_LONG_ERROR_MESSAGE: s__(
     'AI|There is too much text in the chat. Please try again with a shorter text.',

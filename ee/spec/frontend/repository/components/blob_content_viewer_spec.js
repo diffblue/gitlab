@@ -15,7 +15,6 @@ import { isLoggedIn } from '~/lib/utils/common_utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
   simpleViewerMock,
-  richViewerMock,
   projectMock,
   userPermissionsMock,
   propsMock,
@@ -145,11 +144,6 @@ describe('Blob content viewer component', () => {
       await prepGonAndLoad();
       expect(findAiGenie().props('containerId')).toBe('fileHolder');
       expect(findAiGenie().props('filePath')).toBe(propsMock.projectPath);
-    });
-
-    it('does not render the AI Genie component if file type is not text', async () => {
-      await createComponent({ blob: { ...richViewerMock } });
-      expect(findAiGenie().exists()).toBe(false);
     });
   });
 
