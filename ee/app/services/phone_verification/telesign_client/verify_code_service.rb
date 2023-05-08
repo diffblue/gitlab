@@ -33,7 +33,7 @@ module PhoneVerification
           code_state = json_response['verify']['code_state']
           code_state == VALID ? verify_success : invalid_code_error(code_state)
         else
-          generic_error
+          telesign_error
         end
 
       rescue StandardError => e

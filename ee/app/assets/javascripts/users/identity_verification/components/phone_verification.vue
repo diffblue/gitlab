@@ -30,7 +30,11 @@ export default {
 </script>
 <template>
   <div>
-    <international-phone-input v-show="stepIndex == 1" @next="goToStepTwo" />
+    <international-phone-input
+      v-show="stepIndex == 1"
+      @next="goToStepTwo"
+      @skip-verification="setVerified"
+    />
     <verify-phone-verification-code
       v-show="stepIndex == 2"
       :latest-phone-number="phoneNumber"

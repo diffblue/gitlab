@@ -79,4 +79,14 @@ describe('Phone Verification component', () => {
       expect(wrapper.emitted('completed')).toHaveLength(1);
     });
   });
+
+  describe('On skip-verification', () => {
+    beforeEach(async () => {
+      await findInternationalPhoneInput().vm.$emit('skip-verification');
+    });
+
+    it('should emit completed event', () => {
+      expect(wrapper.emitted('completed')).toHaveLength(1);
+    });
+  });
 });

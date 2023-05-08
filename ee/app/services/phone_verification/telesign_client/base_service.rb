@@ -16,7 +16,7 @@ module PhoneVerification
       end
 
       def log_telesign_response(event, response, status_code)
-        telesign_response = telesign_error(response) || telesign_status(response) || ''
+        telesign_response = telesign_error_message(response) || telesign_status(response) || ''
 
         ::Gitlab::AppJsonLogger.info(
           class: self.class.name,
@@ -49,6 +49,11 @@ module PhoneVerification
         )
       end
 
+      def telesign_error
+        error_message = s_('PhoneVerification|Something went wrong. Please try again.')
+        error(error_message, :unknown_telesign_error)
+      end
+
       def generic_error
         error_message = s_('PhoneVerification|Something went wrong. Please try again.')
         error(error_message, :internal_server_error)
@@ -68,7 +73,7 @@ module PhoneVerification
 
       private
 
-      def telesign_error(response)
+      def telesign_error_message(response)
         return unless response['errors'].present?
 
         error = response['errors'].first

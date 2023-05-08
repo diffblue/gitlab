@@ -365,7 +365,7 @@ feature_category: :system_access do
         do_request
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(response.body).to eq({ message: service_response.message }.to_json)
+        expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
       end
     end
   end
@@ -389,7 +389,7 @@ feature_category: :system_access do
     it_behaves_like 'it requires an unconfirmed user'
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
-    context 'when sending the code is successful' do
+    context 'when code verification is successful' do
       it 'responds with status 200 OK' do
         do_request
 
@@ -416,7 +416,7 @@ feature_category: :system_access do
       end
     end
 
-    context 'when sending the code is unsuccessful' do
+    context 'when code verification is unsuccessful' do
       let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
 
       it 'logs and tracks the failed attempt' do
@@ -443,7 +443,7 @@ feature_category: :system_access do
         do_request
 
         expect(response).to have_gitlab_http_status(:bad_request)
-        expect(response.body).to eq({ message: service_response.message }.to_json)
+        expect(response.body).to eq({ message: service_response.message, reason: service_response.reason }.to_json)
       end
     end
   end

@@ -121,6 +121,11 @@ export default {
       });
     },
     handleError(error) {
+      if (error.response?.data?.reason === 'unknown_telesign_error') {
+        this.$emit('skip-verification');
+        return;
+      }
+
       this.alert = createAlert({
         message: error.response?.data?.message || this.$options.i18n.I18N_GENERIC_ERROR,
         captureError: true,

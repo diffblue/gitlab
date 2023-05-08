@@ -31,7 +31,7 @@ module PhoneVerification
         when HTTP_SUCCESS then send_success(telesign_reference_xid)
         when HTTP_CLIENT_ERROR then invalid_phone_number_error
         else
-          generic_error
+          telesign_error
         end
 
       rescue URI::InvalidURIError
