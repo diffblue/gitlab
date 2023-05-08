@@ -1,0 +1,9 @@
+---
+name: project_created
+description: Event triggered when a project is created.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374105
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117543
+feature_category: projects
+milestone: '16.0'
+saved_to_database: true
+streamed: true
