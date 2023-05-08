@@ -62,5 +62,17 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
         expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
+
+    context 'when the endpoint is called too many times' do
+      it 'returns too many requests response' do
+        expect(Gitlab::ApplicationRateLimiter).to(
+          receive(:throttled?).with(:ai_action, scope: [current_user]).and_return(true)
+        )
+
+        post api(url, current_user), params: input_params
+
+        expect(response).to have_gitlab_http_status(:too_many_requests)
+      end
+    end
   end
 end
