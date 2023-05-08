@@ -24,8 +24,7 @@ RSpec.describe 'Database schema', feature_category: :database do
   REMOVED_FKS = {
     clusters_applications_helm: %w[cluster_id],
     clusters_applications_knative: %w[cluster_id],
-    clusters_applications_runners: %w[cluster_id],
-    serverless_domain_cluster: %w[clusters_applications_knative_id creator_id pages_domain_id]
+    clusters_applications_runners: %w[cluster_id]
   }.with_indifferent_access.freeze
 
   # List of columns historically missing a FK, don't add more columns
