@@ -45,7 +45,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     end
 
     it_behaves_like 'an API that returns 404 for missing ids', :put do
-      let(:project_id) { Project.maximum(:id) + 100 }
+      let(:project_id) { non_existing_record_id }
     end
   end
 
@@ -123,7 +123,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
     end
 
     it_behaves_like 'an API that returns 404 for missing ids', :get do
-      let(:shard_id) { ::Zoekt::Shard.maximum(:id) + 100 }
+      let(:shard_id) { non_existing_record_id }
     end
   end
 
@@ -154,13 +154,13 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
     context 'with missing shard_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :put do
-        let(:shard_id) { ::Zoekt::Shard.maximum(:id) + 100 }
+        let(:shard_id) { non_existing_record_id }
       end
     end
 
     context 'with missing namespace_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :put do
-        let(:namespace_id) { ::Namespace.maximum(:id) + 100 }
+        let(:namespace_id) { non_existing_record_id }
       end
     end
   end
@@ -185,13 +185,13 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
     context 'with missing shard_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :delete do
-        let(:shard_id) { ::Zoekt::Shard.maximum(:id) + 100 }
+        let(:shard_id) { non_existing_record_id }
       end
     end
 
     context 'with missing namespace_id' do
       it_behaves_like 'an API that returns 404 for missing ids', :delete do
-        let(:namespace_id) { ::Namespace.maximum(:id) + 100 }
+        let(:namespace_id) { non_existing_record_id }
       end
     end
   end
