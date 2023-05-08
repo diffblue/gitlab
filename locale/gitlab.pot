@@ -5606,10 +5606,13 @@ msgstr ""
 msgid "ApprovalRule|Name"
 msgstr ""
 
-msgid "ApprovalRule|Newly detected"
+msgid "ApprovalRule|Needs Triage"
 msgstr ""
 
-msgid "ApprovalRule|Previously detected"
+msgid "ApprovalRule|New"
+msgstr ""
+
+msgid "ApprovalRule|Previously existing"
 msgstr ""
 
 msgid "ApprovalRule|Reduce your time to merge."
@@ -39544,7 +39547,7 @@ msgstr ""
 msgid "ScanResultPolicy|Maximum number of severity-criteria is one"
 msgstr ""
 
-msgid "ScanResultPolicy|Maximum number of status-criteria is one"
+msgid "ScanResultPolicy|Maximum number of status-criteria is two"
 msgstr ""
 
 msgid "ScanResultPolicy|New severity"
