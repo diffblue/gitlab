@@ -13,6 +13,19 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
   let(:shard) { ::Zoekt::Shard.first }
   let(:shard_id) { shard.id }
 
+  shared_examples 'an API that returns 400 when the index_code_with_zoekt feature flag is disabled' do |verb|
+    before do
+      stub_feature_flags(index_code_with_zoekt: false)
+    end
+
+    it 'returns not_found status' do
+      send(verb, api(path, admin, admin_mode: true))
+
+      expect(response).to have_gitlab_http_status(:bad_request)
+      expect(json_response['error']).to eq('index_code_with_zoekt feature flag is not enabled')
+    end
+  end
+
   shared_examples 'an API that returns 404 for missing ids' do |verb|
     it 'returns not_found status' do
       send(verb, api(path, admin, admin_mode: true))
@@ -34,6 +47,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
     it_behaves_like "PUT request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :put
+    it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
 
     it 'triggers indexing for the project' do
       expect(::Zoekt::IndexerWorker).to receive(:perform_async).with(project.id).and_return('the-job-id')
@@ -132,6 +146,7 @@ RSpec.describe API::Admin::Search::Zoekt, :zoekt, feature_category: :global_sear
 
     it_behaves_like "PUT request permissions for admin mode"
     it_behaves_like "an API that returns 401 for unauthenticated requests", :put
+    it_behaves_like "an API that returns 400 when the index_code_with_zoekt feature flag is disabled", :put
 
     it 'creates a Zoekt::IndexedNamespace for this shard and namespace pair' do
       expect do
