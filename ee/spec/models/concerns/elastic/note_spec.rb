@@ -117,18 +117,6 @@ RSpec.describe Note, :elastic, :clean_gitlab_redis_shared_state, feature_categor
       expect(note.__elasticsearch__.as_indexed_json).to eq(expected_hash)
     end
 
-    context 'when internal note migration has not been finished' do
-      before do
-        set_elasticsearch_migration_to(:add_internal_to_notes, including: false)
-      end
-
-      it 'does not include the internal' do
-        note = create(:note_on_issue)
-
-        expect(note.__elasticsearch__.as_indexed_json.keys).not_to include('internal')
-      end
-    end
-
     it 'raises Elastic::Latest::DocumentShouldBeDeletedFromIndexError when noteable is nil' do
       note = create(:note_on_issue)
       allow(note).to receive(:noteable).and_return(nil)

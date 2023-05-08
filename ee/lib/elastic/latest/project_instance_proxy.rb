@@ -39,15 +39,11 @@ module Elastic
         # ES6 is now single-type per index, so we implement our own typing
         data['type'] = 'project'
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_schema_version_to_main_index_mapping)
-          # Schema version. The format is Date.today.strftime('%y_%m')
-          # Please update if you're changing the schema of the document
-          data['schema_version'] = 23_01
-        end
+        # Schema version. The format is Date.today.strftime('%y_%m')
+        # Please update if you're changing the schema of the document
+        data['schema_version'] = 23_01
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_traversal_ids_to_original_index_mapping)
-          data['traversal_ids'] = target.elastic_namespace_ancestry
-        end
+        data['traversal_ids'] = target.elastic_namespace_ancestry
 
         TRACKED_FEATURE_SETTINGS.each do |feature|
           data[feature] = if target.project_feature.present?

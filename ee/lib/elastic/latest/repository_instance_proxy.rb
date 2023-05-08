@@ -12,11 +12,7 @@ module Elastic
         response = elastic_search(query, type: 'commit', options: options, page: page, per: per_page)[:commits][:results]
 
         commits = response.map do |result|
-          if Elastic::DataMigrationService.migration_has_finished?(:migrate_commits_to_separate_index)
-            commit result.dig('_source', 'sha')
-          else
-            commit result.dig('_source', 'commit', 'sha')
-          end
+          commit result.dig('_source', 'sha')
         end.compact
 
         # Before "map" we had a paginated array so we need to recover it

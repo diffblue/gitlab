@@ -207,8 +207,6 @@ module Elastic
       end
 
       def hidden_filter(query_hash)
-        return query_hash unless ::Elastic::DataMigrationService.migration_has_finished?(:backfill_hidden_on_issues)
-
         query_hash[:query][:bool][:filter] << { term: { hidden: { _name: context.name(:non_hidden), value: false } } }
         query_hash
       end
