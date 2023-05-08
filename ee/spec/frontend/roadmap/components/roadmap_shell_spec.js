@@ -108,5 +108,9 @@ describe('RoadmapShell', () => {
     it('renders component container element with class `js-roadmap-shell`', () => {
       expect(wrapper.find('.js-roadmap-shell').exists()).toBe(true);
     });
+
+    it('sets style attribute containing computed height', () => {
+      expect(wrapper.attributes('style')).toBe('height: calc(100vh - 0px);');
+    });
   });
 });

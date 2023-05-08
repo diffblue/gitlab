@@ -14,6 +14,7 @@ $roadmap-gradient-gray: rgba(255, 255, 255, 0.001);
 $scroll-top-gradient: linear-gradient(to bottom, $roadmap-gradient-dark-gray 0%, $roadmap-gradient-gray 100%);
 $scroll-bottom-gradient: linear-gradient(to bottom, $roadmap-gradient-gray 0%, $roadmap-gradient-dark-gray 100%);
 $column-right-gradient: linear-gradient(to right, $roadmap-gradient-dark-gray 0%, $roadmap-gradient-gray 100%);
+$fixed-items-z-index: 20;
 
 @keyframes colorTransitionDetailsCell {
   from {
@@ -37,25 +38,9 @@ html.group-epics-roadmap-html {
   overflow-y: initial;
 }
 
-.with-performance-bar {
-  .group-epics-roadmap-body {
-    $header-size: calc(#{$performance-bar-height} + #{$header-height});
-    height: calc(100% - #{$header-size});
-  }
-}
-
 .group-epics-roadmap-body {
-  height: calc(100% - #{$header-height});
-
   .page-with-contextual-sidebar {
     height: 100%;
-  }
-
-  .group-epics-roadmap {
-    // This size is total of breadcrumb height and computed height of
-    // filters container (70px)
-    $header-size: $top-bar-height + 70px;
-    height: calc(100% - #{$header-size});
   }
 
   .group-epics-roadmap-wrapper,
@@ -126,7 +111,7 @@ html.group-epics-roadmap-html {
   position: sticky;
   position: -webkit-sticky;
   top: 0;
-  z-index: 9;
+  z-index: $fixed-items-z-index;
 
   .timeline-header-blank,
   .timeline-header-item {
@@ -142,7 +127,7 @@ html.group-epics-roadmap-html {
     top: 0;
     left: 0;
     width: $details-cell-width;
-    z-index: 2;
+    z-index: $fixed-items-z-index;
 
     &::after {
       height: $header-item-height;
@@ -224,8 +209,6 @@ html.group-epics-roadmap-html {
   }
 
   &.epics-list-item-empty {
-    height: 100%;
-
     &:hover {
       .epic-details-cell,
       .epic-timeline-cell {
@@ -325,7 +308,7 @@ html.group-epics-roadmap-html {
   position: fixed;
   bottom: 0;
   background: $scroll-bottom-gradient;
-  z-index: 2;
+  z-index: $fixed-items-z-index;
 }
 
 .epic-timeline-cell,
