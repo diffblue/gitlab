@@ -5,6 +5,9 @@ module EE
     module UpdateService
       extend ::Gitlab::Utils::Override
 
+      DEFAULT_BRANCH_CHANGE_AUDIT_TYPE = 'project_default_branch_updated'
+      DEFAULT_BRANCH_CHANGE_AUDIT_MESSAGE = "Default branch changed from %s to %s"
+
       PULL_MIRROR_ATTRIBUTES = %i[
         mirror
         mirror_user_id
@@ -106,12 +109,20 @@ module EE
 
       override :after_default_branch_change
       def after_default_branch_change(previous_default_branch)
-        ::AuditEventService.new(
-          current_user,
-          project,
-          action: :custom,
-          custom_message: "Default branch changed from #{previous_default_branch} to #{project.default_branch}"
-        ).for_project.security_event
+        audit_context = {
+          name: DEFAULT_BRANCH_CHANGE_AUDIT_TYPE,
+          author: current_user,
+          scope: project,
+          target: project,
+          message: format(DEFAULT_BRANCH_CHANGE_AUDIT_MESSAGE, previous_default_branch, project.default_branch),
+          target_details: project.full_path,
+          additional_details: {
+            from: previous_default_branch,
+            to: project.default_branch
+          }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
 
       # A user who enables shared runners must meet the credit card requirement if

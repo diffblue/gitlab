@@ -5,6 +5,9 @@ module EE
     module CreateService
       extend ::Gitlab::Utils::Override
 
+      AUDIT_EVENT_TYPE = 'project_created'
+      AUDIT_EVENT_MESSAGE = 'Added project'
+
       attr_reader :security_policy_target_project_id, :security_policy_target_namespace_id
 
       override :initialize
@@ -159,11 +162,16 @@ module EE
       end
 
       def log_audit_event(project)
-        ::AuditEventService.new(
-          current_user,
-          project,
-          action: :create
-        ).for_project.security_event
+        audit_context = {
+          name: AUDIT_EVENT_TYPE,
+          author: current_user,
+          scope: project,
+          target: project,
+          message: AUDIT_EVENT_MESSAGE,
+          target_details: project.full_path
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
       end
     end
   end
