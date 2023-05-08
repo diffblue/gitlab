@@ -6,7 +6,7 @@ module Gitlab
       COMPLETIONS = {
         explain_vulnerability: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::ExplainVulnerability,
-          prompt_class: ::Gitlab::Llm::OpenAi::Templates::ExplainVulnerability
+          prompt_class: ::Gitlab::Llm::Templates::ExplainVulnerability
         },
         summarize_comments: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes,
