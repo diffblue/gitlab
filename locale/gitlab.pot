@@ -48850,7 +48850,7 @@ msgstr ""
 msgid "Value stream analytics"
 msgstr ""
 
-msgid "ValueStreamAnalyticsStage|We don't have enough data to show this stage."
+msgid "ValueStreamAnalyticsStage|There are 0 items to show in this stage, for these filters, within this time range."
 msgstr ""
 
 msgid "ValueStreamAnalytics|%{stageCount}+ items"
@@ -49817,9 +49817,6 @@ msgid "We couldn't reach the Prometheus server. Either the server no longer exis
 msgstr ""
 
 msgid "We detected potential spam in the %{humanized_resource_name}. Please solve the reCAPTCHA to proceed."
-msgstr ""
-
-msgid "We don't have enough data to show this stage."
 msgstr ""
 
 msgid "We found your token in a public project and have automatically revoked it to protect your account."
