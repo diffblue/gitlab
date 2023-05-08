@@ -104,39 +104,44 @@ export default {
     role="complementary"
     data-testid="chat-component"
   >
-    <header
-      class="gl-drawer-header gl-drawer-header-sticky gl-p-5 gl-display-flex gl-justify-content-start gl-align-items-center gl-z-index-200"
-    >
-      <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
-      <h3 class="gl-my-0">
-        <slot name="title"></slot>
-      </h3>
-      <gl-badge class="gl-mx-4" variant="muted" size="md"
-        >{{ $options.i18n.EXPERIMENT_BADGE }}
-      </gl-badge>
-      <gl-button
-        category="tertiary"
-        variant="default"
-        icon="close"
-        size="small"
-        class="gl-p-0! gl-ml-auto"
-        data-testid="chat-close-button"
-        :aria-label="$options.i18n.GENIE_CHAT_CLOSE_LABEL"
-        @click="hideChat"
-      />
+    <header class="gl-drawer-header gl-drawer-header-sticky gl-z-index-200 gl-p-0!">
+      <div
+        class="drawer-title gl-display-flex gl-justify-content-start gl-align-items-center gl-p-5"
+      >
+        <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
+        <h3 class="gl-my-0">
+          <slot name="title"></slot>
+        </h3>
+        <gl-badge class="gl-mx-4" variant="muted" size="md"
+          >{{ $options.i18n.EXPERIMENT_BADGE }}
+        </gl-badge>
+        <gl-button
+          category="tertiary"
+          variant="default"
+          icon="close"
+          size="small"
+          class="gl-p-0! gl-ml-auto"
+          data-testid="chat-close-button"
+          :aria-label="$options.i18n.GENIE_CHAT_CLOSE_LABEL"
+          @click="hideChat"
+        />
+      </div>
+
+      <slot name="subheader">
+        <gl-alert
+          :dismissible="false"
+          variant="warning"
+          class="gl-font-sm gl-border-t"
+          role="alert"
+          data-testid="chat-legal-warning"
+          primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
+          :primary-button-text="__('Read more')"
+        >
+          <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
+          <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
+        </gl-alert>
+      </slot>
     </header>
-    <gl-alert
-      :dismissible="false"
-      variant="warning"
-      class="gl-font-sm"
-      role="alert"
-      data-testid="chat-legal-warning"
-      primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
-      :primary-button-text="__('Read more')"
-    >
-      <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
-      <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
-    </gl-alert>
 
     <div class="gl-drawer-body gl-drawer-body gl-display-flex gl-flex-direction-column">
       <slot name="hero"></slot>
