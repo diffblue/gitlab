@@ -5,19 +5,21 @@ import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/sto
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import { ANY_OPERATOR, MORE_THAN_OPERATOR } from '../constants';
 import { enforceIntValue } from '../utils';
+import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
-import StatusFilter from './scan_filters/status_filter.vue';
+import StatusFilters from './scan_filters/status_filters.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
+import { SEVERITY, STATUS, NEWLY_DETECTED, PREVIOUSLY_EXISTING } from './scan_filters/constants';
 import NumberRangeSelect from './number_range_select.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
-import { SEVERITY, STATUS, FILTER_POLICY_PROPERTY_MAP } from './scan_filters/constants';
-import { APPROVAL_VULNERABILITY_STATES, getDefaultRule } from './lib';
 
 export default {
   SEVERITY,
   STATUS,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
   scanResultRuleCopy: s__(
     'ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:',
   ),
@@ -29,7 +31,7 @@ export default {
     ScanFilterSelector,
     ScanTypeSelect,
     SeverityFilter,
-    StatusFilter,
+    StatusFilters,
     NumberRangeSelect,
   },
   props: {
@@ -39,16 +41,15 @@ export default {
     },
   },
   data() {
-    const {
-      severity_levels: severityLevels,
-      vulnerability_states: vulnerabilityStates,
-    } = this.initRule;
-
+    const vulnerabilityStateGroups = groupSelectedVulnerabilityStates(
+      this.initRule.vulnerability_states,
+    );
     return {
-      addedFilters: [
-        ...(severityLevels.length ? [SEVERITY] : []),
-        ...(vulnerabilityStates.length ? [STATUS] : []),
-      ],
+      filters: {
+        [SEVERITY]: this.initRule.severity_levels.length ? this.initRule.severity_levels : null,
+        [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
+        [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
+      },
     };
   },
   computed: {
@@ -82,7 +83,10 @@ export default {
       return this.isFilterSelected(this.$options.SEVERITY) || this.severityLevelsToAdd.length > 0;
     },
     isStatusFilterSelected() {
-      return this.isFilterSelected(this.$options.STATUS) || this.vulnerabilityStates.length > 0;
+      return (
+        this.isFilterSelected(this.$options.NEWLY_DETECTED) ||
+        this.isFilterSelected(this.$options.PREVIOUSLY_EXISTING)
+      );
     },
     selectedVulnerabilitiesOperator() {
       return this.vulnerabilitiesAllowed === 0 ? ANY_OPERATOR : MORE_THAN_OPERATOR;
@@ -93,11 +97,14 @@ export default {
       this.$emit('changed', { ...this.initRule, ...value });
     },
     isFilterSelected(filter) {
-      return this.addedFilters.includes(filter);
+      return Boolean(this.filters[filter]);
     },
     selectFilter(filter) {
-      if (!this.isFilterSelected(filter)) {
-        this.addedFilters.push(filter);
+      if (filter === STATUS) {
+        const statusKey = this.filters[NEWLY_DETECTED] ? PREVIOUSLY_EXISTING : NEWLY_DETECTED;
+        this.filters[statusKey] = [];
+      } else {
+        this.filters[filter] = [];
       }
     },
     setScanType(value) {
@@ -105,19 +112,30 @@ export default {
       this.$emit('set-scan-type', rule);
     },
     removeFilter(filter) {
-      this.addedFilters = this.addedFilters.filter((item) => item !== filter);
-      this.triggerChanged({ [FILTER_POLICY_PROPERTY_MAP[filter]]: [] });
+      this.filters[filter] = null;
+      this.emitStatusFilterChanges();
     },
     handleVulnerabilitiesAllowedOperatorChange(value) {
       if (value === ANY_OPERATOR) {
         this.vulnerabilitiesAllowed = 0;
       }
     },
+    setStatus(updatedFilters) {
+      this.filters = updatedFilters;
+      this.emitStatusFilterChanges();
+    },
+    emitStatusFilterChanges() {
+      const states = [
+        ...(this.filters[NEWLY_DETECTED] || []),
+        ...(this.filters[PREVIOUSLY_EXISTING] || []),
+      ];
+
+      this.triggerChanged({ vulnerability_states: states });
+    },
   },
   REPORT_TYPES_DEFAULT_KEYS: Object.keys(REPORT_TYPES_DEFAULT),
   REPORT_TYPES_DEFAULT,
   SEVERITY_LEVELS,
-  APPROVAL_VULNERABILITY_STATES,
   VULNERABILITIES_ALLOWED_OPERATORS: [ANY_OPERATOR, MORE_THAN_OPERATOR],
   i18n: {
     severityLevels: s__('ScanResultPolicy|severity levels'),
@@ -192,17 +210,16 @@ export default {
           @input="triggerChanged({ severity_levels: $event })"
         />
 
-        <status-filter
+        <status-filters
           v-if="isStatusFilterSelected"
-          :selected="vulnerabilityStates"
-          class="gl-bg-white!"
+          :selected="filters"
           @remove="removeFilter"
-          @input="triggerChanged({ vulnerability_states: $event })"
+          @input="setStatus"
         />
 
         <scan-filter-selector
           class="gl-bg-white! gl-w-full"
-          :selected="addedFilters"
+          :selected="filters"
           @select="selectFilter"
         />
       </template>

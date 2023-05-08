@@ -5,6 +5,8 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   SEVERITY,
   STATUS,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
 describe('ScanFilterSelector', () => {
@@ -33,18 +35,19 @@ describe('ScanFilterSelector', () => {
     expect(wrapper.emitted('select')).toEqual([[filter]]);
   });
 
-  it.each([SEVERITY, STATUS])(
-    'should disable selected filter and not emit events',
-    async (filter) => {
-      createComponent({ selected: [filter] });
+  it.each`
+    filter      | selected
+    ${SEVERITY} | ${{ [SEVERITY]: [] }}
+    ${STATUS}   | ${{ [NEWLY_DETECTED]: [], [PREVIOUSLY_EXISTING]: [] }}
+  `('should disable selected filter and not emit events', async ({ filter, selected }) => {
+    createComponent({ selected });
 
-      expect(findDisabledBadge().exists()).toBe(true);
+    expect(findDisabledBadge().exists()).toBe(true);
 
-      await findListBox().vm.$emit('select', filter);
+    await findListBox().vm.$emit('select', filter);
 
-      expect(wrapper.emitted('select')).toBeUndefined();
-    },
-  );
+    expect(wrapper.emitted('select')).toBeUndefined();
+  });
 
   it('can render custom options', () => {
     const customOption = { value: 'value', text: 'text' };

@@ -4,7 +4,7 @@ import BaseLayoutComponent from 'ee/security_orchestration/components/policy_edi
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
-import { APPROVAL_VULNERABILITY_STATES } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
+import { APPROVAL_VULNERABILITY_STATE_GROUPS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
 describe('FilterSpec', () => {
   let wrapper;
@@ -18,7 +18,7 @@ describe('FilterSpec', () => {
     },
     {
       component: StatusFilter,
-      filterOptions: APPROVAL_VULNERABILITY_STATES,
+      filterOptions: APPROVAL_VULNERABILITY_STATE_GROUPS,
     },
   ];
 

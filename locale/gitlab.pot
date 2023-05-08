@@ -5606,10 +5606,13 @@ msgstr ""
 msgid "ApprovalRule|Name"
 msgstr ""
 
-msgid "ApprovalRule|Newly detected"
+msgid "ApprovalRule|Needs Triage"
 msgstr ""
 
-msgid "ApprovalRule|Previously detected"
+msgid "ApprovalRule|New"
+msgstr ""
+
+msgid "ApprovalRule|Previously existing"
 msgstr ""
 
 msgid "ApprovalRule|Reduce your time to merge."
@@ -17025,13 +17028,25 @@ msgstr ""
 msgid "Environment|Cluster IP"
 msgstr ""
 
+msgid "Environment|CronJobs"
+msgstr ""
+
+msgid "Environment|DaemonSets"
+msgstr ""
+
 msgid "Environment|Deployment tier"
+msgstr ""
+
+msgid "Environment|Deployments"
 msgstr ""
 
 msgid "Environment|External IP"
 msgstr ""
 
 msgid "Environment|Failed"
+msgstr ""
+
+msgid "Environment|Jobs"
 msgstr ""
 
 msgid "Environment|Kubernetes overview"
@@ -17046,13 +17061,22 @@ msgstr ""
 msgid "Environment|Ports"
 msgstr ""
 
+msgid "Environment|ReplicaSets"
+msgstr ""
+
 msgid "Environment|Running"
 msgstr ""
 
 msgid "Environment|Services"
 msgstr ""
 
+msgid "Environment|StatefulSets"
+msgstr ""
+
 msgid "Environment|Succeeded"
+msgstr ""
+
+msgid "Environment|Summary"
 msgstr ""
 
 msgid "Epic"
@@ -39523,7 +39547,7 @@ msgstr ""
 msgid "ScanResultPolicy|Maximum number of severity-criteria is one"
 msgstr ""
 
-msgid "ScanResultPolicy|Maximum number of status-criteria is one"
+msgid "ScanResultPolicy|Maximum number of status-criteria is two"
 msgstr ""
 
 msgid "ScanResultPolicy|New severity"

@@ -55,7 +55,6 @@ export default {
   licenseStatuses: LICENSE_STATES,
   data() {
     return {
-      addedFilters: [],
       searchTerm: '',
     };
   },
@@ -200,7 +199,6 @@ export default {
           :tooltip-title="$options.i18n.tooltipFilterDisabledTitle"
           class="gl-bg-white! gl-w-full"
           :items="$options.FILTERS_ITEMS"
-          :selected="addedFilters"
         />
       </template>
     </base-layout-component>

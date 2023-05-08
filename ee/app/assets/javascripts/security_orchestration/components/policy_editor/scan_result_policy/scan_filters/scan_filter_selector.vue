@@ -2,7 +2,14 @@
 import { GlCollapsibleListbox, GlBadge, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
-import { FILTERS, TOOLTIPS } from './constants';
+import {
+  FILTERS,
+  TOOLTIPS,
+  STATUS,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
+  SEVERITY,
+} from './constants';
 
 export default {
   FILTERS,
@@ -28,9 +35,9 @@ export default {
       default: false,
     },
     selected: {
-      type: Array,
+      type: Object,
       required: false,
-      default: () => [],
+      default: () => ({}),
     },
     items: {
       type: Array,
@@ -50,7 +57,11 @@ export default {
   },
   methods: {
     filterSelected(filter) {
-      return this.selected.includes(filter);
+      if (filter === STATUS) {
+        return Boolean(this.selected[NEWLY_DETECTED] && this.selected[PREVIOUSLY_EXISTING]);
+      }
+
+      return Boolean(this.selected[SEVERITY]);
     },
     selectFilter(filter) {
       if (this.filterSelected(filter)) {
