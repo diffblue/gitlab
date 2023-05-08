@@ -12,7 +12,7 @@ You can use custom domains:
 
 - With GitLab Pages.
 - To [bypass user email confirmation for SAML- or SCIM-provisioned users](../../../group/saml_sso/index.md#bypass-user-email-confirmation-with-verified-domains).
-  When using custom domains this way, you use the GitLab Pages feature but can skip the [requirements](#requirements).
+  When using custom domains this way, you use the GitLab Pages feature but can skip the [prerequisites](#prerequisites).
 
 To use one or more custom domain names:
 
@@ -23,7 +23,7 @@ To use one or more custom domain names:
 
 To set up Pages with a custom domain name, read the requirements and steps below.
 
-### Requirements
+### Prerequisites
 
 - A GitLab Pages website up and running, served under the default Pages domain
   (`*.gitlab.io`, for GitLab.com).
