@@ -70,7 +70,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for burndown charts', :js, feature_category: :planning_analytics do
+  describe 'for burndown charts', :js, feature_category: :team_planning do
     before do
       stub_application_setting(check_namespace_plan: true)
       allow(Gitlab).to receive(:com?).and_return(true)

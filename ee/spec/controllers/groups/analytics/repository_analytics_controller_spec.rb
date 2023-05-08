@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::RepositoryAnalyticsController, feature_category: :planning_analytics do
+RSpec.describe Groups::Analytics::RepositoryAnalyticsController, feature_category: :team_planning do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:feature_name) { :group_repository_analytics }
