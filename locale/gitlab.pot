@@ -15930,9 +15930,6 @@ msgstr ""
 msgid "Download artifacts"
 msgstr ""
 
-msgid "Download as CSV"
-msgstr ""
-
 msgid "Download codes"
 msgstr ""
 
@@ -28748,6 +28745,9 @@ msgid "MlExperimentTracking|Deleting this experiment will also delete its candid
 msgstr ""
 
 msgid "MlExperimentTracking|Details"
+msgstr ""
+
+msgid "MlExperimentTracking|Download as CSV"
 msgstr ""
 
 msgid "MlExperimentTracking|Experiment"
