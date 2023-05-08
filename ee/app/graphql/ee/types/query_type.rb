@@ -78,6 +78,12 @@ module EE
               alpha: { milestone: '15.11' },
               description: 'CI Catalog resources visible to the current user',
               resolver: ::Resolvers::Ci::Catalog::ResourcesResolver
+
+        field :instance_external_audit_event_destinations,
+              ::Types::AuditEvents::InstanceExternalAuditEventDestinationType.connection_type,
+              null: true,
+              description: 'Instance level external audit event destinations.',
+              resolver: ::Resolvers::AuditEvents::InstanceExternalAuditEventDestinationsResolver
       end
 
       def vulnerability(id:)
