@@ -36,7 +36,12 @@ module Elastic
         types = wiki ? %w[wiki_blob] : %w[commit blob]
         if (wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
           index, rid = if wiki
-                         [::Elastic::Latest::WikiConfig.index_name, "wiki_#{project_id}"]
+                         output = [::Elastic::Latest::WikiConfig.index_name]
+                         output << if ::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+                                     "wiki_project_#{project_id}"
+                                   else
+                                     "wiki_#{project_id}"
+                                   end
                        else
                          [::Elastic::Latest::CommitConfig.index_name, project_id]
                        end
