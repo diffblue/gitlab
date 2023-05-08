@@ -19412,6 +19412,9 @@ msgstr ""
 msgid "Geo|Internal URL (optional)"
 msgstr ""
 
+msgid "Geo|Last event ID"
+msgstr ""
+
 msgid "Geo|Last event ID from primary"
 msgstr ""
 
