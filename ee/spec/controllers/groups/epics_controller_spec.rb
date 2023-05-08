@@ -401,7 +401,7 @@ RSpec.describe Groups::EpicsController, feature_category: :portfolio_management 
         group.add_owner(user)
         delete :destroy, params: { group_id: group, id: epic.to_param, destroy_confirm: true }
 
-        expect(response).to have_gitlab_http_status(:found)
+        expect(response).to have_gitlab_http_status(:see_other)
         expect(controller).to set_flash[:notice].to(/The epic was successfully deleted\./)
       end
     end

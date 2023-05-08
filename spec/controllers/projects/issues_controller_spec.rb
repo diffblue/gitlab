@@ -1463,7 +1463,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       it "deletes the issue" do
         delete :destroy, params: { namespace_id: project.namespace, project_id: project, id: issue.iid, destroy_confirm: true }
 
-        expect(response).to have_gitlab_http_status(:found)
+        expect(response).to have_gitlab_http_status(:see_other)
         expect(controller).to set_flash[:notice].to(/The issue was successfully deleted\./)
       end
 
