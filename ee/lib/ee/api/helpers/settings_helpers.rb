@@ -63,6 +63,7 @@ module EE
             optional :git_rate_limit_users_alertlist, type: Array[Integer], desc: 'List of user ids who will be emailed when Git abuse rate limit is exceeded'
             optional :auto_ban_user_on_excessive_projects_download, type: Grape::API::Boolean, desc: 'Ban users from the application when they exceed maximum number of unique projects download in the specified time period'
             optional :openai_api_key, type: String, desc: "OpenAI API key"
+            optional :anthropic_api_key, type: String, desc: "Anthropic API key"
           end
         end
 

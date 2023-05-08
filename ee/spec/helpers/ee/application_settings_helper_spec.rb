@@ -40,6 +40,10 @@ RSpec.describe EE::ApplicationSettingsHelper do
     it 'contains openai_api_key value' do
       expect(visible_attributes).to include(*%i(openai_api_key))
     end
+
+    it 'contains anthropic_api_key value' do
+      expect(visible_attributes).to include(*%i(anthropic_api_key))
+    end
   end
 
   describe '.registration_features_can_be_prompted?' do

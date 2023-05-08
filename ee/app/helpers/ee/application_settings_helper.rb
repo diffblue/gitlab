@@ -76,7 +76,8 @@ module EE
         :telesign_customer_xid,
         :telesign_api_key,
         :openai_api_key,
-        :security_policy_global_group_approvers_enabled
+        :security_policy_global_group_approvers_enabled,
+        :anthropic_api_key
       ].tap do |settings|
         next unless ::Gitlab.com?
 
