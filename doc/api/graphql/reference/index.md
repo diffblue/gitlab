@@ -12038,6 +12038,7 @@ CI/CD variables for a GitLab instance.
 | <a id="cijobrefpath"></a>`refPath` | [`String`](#string) | Path to the ref. |
 | <a id="cijobretried"></a>`retried` | [`Boolean`](#boolean) | Indicates that the job has been retried. |
 | <a id="cijobretryable"></a>`retryable` | [`Boolean!`](#boolean) | Indicates the job can be retried. |
+| <a id="cijobrunner"></a>`runner` | [`CiRunner`](#cirunner) | Runner assigned to execute the job. |
 | <a id="cijobrunnermanager"></a>`runnerManager` **{warning-solid}** | [`CiRunnerManager`](#cirunnermanager) | **Introduced** in 15.11. This feature is an Experiment. It can be changed or removed at any time. Runner manager assigned to the job. |
 | <a id="cijobscheduled"></a>`scheduled` | [`Boolean!`](#boolean) | Indicates the job is scheduled. |
 | <a id="cijobscheduledat"></a>`scheduledAt` | [`Time`](#time) | Schedule for the build. |
