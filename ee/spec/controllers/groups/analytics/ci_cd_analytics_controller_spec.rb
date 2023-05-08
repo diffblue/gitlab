@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::CiCdAnalyticsController, feature_category: :planning_analytics do
+RSpec.describe Groups::Analytics::CiCdAnalyticsController, feature_category: :team_planning do
   let_it_be(:non_member) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:reporter) { create(:user) }

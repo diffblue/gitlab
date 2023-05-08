@@ -4,7 +4,7 @@ class Groups::Analytics::ApplicationController < ApplicationController
   include RoutableActions
   include GracefulTimeoutHandling
 
-  feature_category :planning_analytics
+  feature_category :team_planning
   urgency :low
 
   before_action :load_group

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::ProductivityAnalyticsController, feature_category: :planning_analytics do
+RSpec.describe Groups::Analytics::ProductivityAnalyticsController, feature_category: :team_planning do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create :group }
 
