@@ -17,7 +17,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_created_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CREATED }
     end
 
@@ -29,7 +29,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_title_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TITLE_CHANGED }
     end
 
@@ -41,7 +41,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_description_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_DESCRIPTION_CHANGED }
     end
 
@@ -53,7 +53,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_created_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_CREATED }
     end
 
@@ -65,7 +65,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_updated_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_UPDATED }
     end
 
@@ -77,7 +77,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_note_destroyed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_NOTE_DESTROYED }
     end
 
@@ -89,7 +89,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_emoji_awarded_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_EMOJI_AWARDED }
     end
 
@@ -101,7 +101,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_emoji_removed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_EMOJI_REMOVED }
     end
 
@@ -113,7 +113,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_closed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CLOSED }
     end
 
@@ -125,7 +125,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_reopened_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_REOPENED }
     end
 
@@ -137,7 +137,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_visible_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_VISIBLE }
     end
 
@@ -149,7 +149,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_confidential_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CONFIDENTIAL }
     end
 
@@ -163,7 +163,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_start_date_set_as_fixed_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_START_DATE_SET_AS_FIXED }
         end
 
@@ -175,7 +175,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_fixed_start_date_updated_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_FIXED_START_DATE_UPDATED }
         end
 
@@ -187,7 +187,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_start_date_set_as_inherited_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_START_DATE_SET_AS_INHERITED }
         end
 
@@ -201,7 +201,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_due_date_set_as_fixed_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_DUE_DATE_SET_AS_FIXED }
         end
 
@@ -213,7 +213,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_fixed_due_date_updated_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_FIXED_DUE_DATE_UPDATED }
         end
 
@@ -225,7 +225,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
           described_class.track_epic_due_date_set_as_inherited_action(**params)
         end
 
-        it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+        it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
           let(:action) { described_class::EPIC_DUE_DATE_SET_AS_INHERITED }
         end
 
@@ -239,7 +239,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_ISSUE_ADDED }
     end
 
@@ -251,7 +251,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_labels_changed_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_LABELS }
     end
 
@@ -263,7 +263,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_ISSUE_REMOVED }
     end
 
@@ -275,7 +275,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_issue_moved_from_project(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_ISSUE_MOVED_FROM_PROJECT }
     end
 
@@ -287,7 +287,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_parent_updated_action(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_PARENT_UPDATED }
     end
 
@@ -299,7 +299,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_issue_promoted_to_epic(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::ISSUE_PROMOTED_TO_EPIC }
     end
 
@@ -311,7 +311,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_destroyed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_DESTROYED }
     end
 
@@ -323,7 +323,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_task_checked(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TASK_CHECKED }
     end
 
@@ -335,7 +335,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_task_unchecked(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_TASK_UNCHECKED }
     end
 
@@ -347,7 +347,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_epic_cross_referenced(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_CROSS_REFERENCED }
     end
 
@@ -359,7 +359,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_RELATED_ADDED }
     end
 
@@ -371,7 +371,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_relates_to_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_RELATED_REMOVED }
     end
 
@@ -383,7 +383,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKING_ADDED }
     end
 
@@ -395,7 +395,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_blocks_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKING_REMOVED }
     end
 
@@ -407,7 +407,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_added(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKED_ADDED }
     end
 
@@ -419,7 +419,7 @@ RSpec.describe Gitlab::UsageDataCounters::EpicActivityUniqueCounter, :snowplow, 
       described_class.track_linked_epic_with_type_is_blocked_by_removed(**params)
     end
 
-    it_behaves_like 'a daily tracked issuable snowplow and service ping events with namespace' do
+    it_behaves_like 'tracked issuable snowplow and service ping events with namespace' do
       let(:action) { described_class::EPIC_BLOCKED_REMOVED }
     end
 
