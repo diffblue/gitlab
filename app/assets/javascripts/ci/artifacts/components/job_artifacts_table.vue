@@ -9,6 +9,7 @@ import {
   GlIcon,
   GlPagination,
   GlFormCheckbox,
+  GlTooltipDirective,
 } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { getIdFromGraphQLId, convertToGraphQLId } from '~/graphql_shared/utils';
@@ -43,6 +44,7 @@ import {
   I18N_BULK_DELETE_PARTIAL_ERROR,
   I18N_BULK_DELETE_CONFIRMATION_TOAST,
   SELECTED_ARTIFACTS_MAX_COUNT,
+  I18N_BULK_DELETE_MAX_SELECTED,
 } from '../constants';
 import JobCheckbox from './job_checkbox.vue';
 import ArtifactsBulkDelete from './artifacts_bulk_delete.vue';
@@ -77,6 +79,9 @@ export default {
     BulkDeleteModal,
     ArtifactsTableRowDetails,
     FeedbackBanner,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['projectId', 'projectPath', 'canDestroyArtifacts'],
@@ -178,6 +183,11 @@ export default {
         ),
       );
     },
+    selectAllTooltipText() {
+      return this.isSelectedArtifactsLimitReached && !this.isAnyVisibleArtifactSelected
+        ? I18N_BULK_DELETE_MAX_SELECTED
+        : '';
+    },
   },
   methods: {
     refetchArtifacts() {
@@ -219,11 +229,11 @@ export default {
       }
     },
     selectArtifact(artifactNode, checked) {
-      const isInArray = this.selectedArtifacts.includes(artifactNode.id);
+      const isSelected = this.selectedArtifacts.includes(artifactNode.id);
 
-      if (checked && !isInArray && !this.isSelectedArtifactsLimitReached) {
+      if (checked && !isSelected && !this.isSelectedArtifactsLimitReached) {
         this.selectedArtifacts.push(artifactNode.id);
-      } else if (isInArray) {
+      } else if (isSelected) {
         this.selectedArtifacts.splice(this.selectedArtifacts.indexOf(artifactNode.id), 1);
       }
     },
@@ -388,8 +398,11 @@ export default {
       </template>
       <template v-if="canBulkDestroyArtifacts" #head(checkbox)>
         <gl-form-checkbox
+          v-gl-tooltip.right
+          :title="selectAllTooltipText"
           :checked="isAnyVisibleArtifactSelected"
           :indeterminate="isAnyVisibleArtifactSelected && !areAllVisibleArtifactsSelected"
+          :disabled="isSelectedArtifactsLimitReached && !isAnyVisibleArtifactSelected"
           @change="handleSelectAllChecked"
         />
       </template>
