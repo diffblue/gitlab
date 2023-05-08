@@ -23,7 +23,7 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
       ultimate_group.add_developer(current_user)
     end
 
-    it_behaves_like 'delegates AI request to Workhorse' do
+    it_behaves_like 'delegates AI request to Workhorse', :openai_experimentation do
       let(:expected_params) do
         expected_content = <<~PROMPT
         Provide the appropriate git commands for: list 10 commit titles.

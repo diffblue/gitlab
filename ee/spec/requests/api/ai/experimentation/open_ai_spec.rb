@@ -40,7 +40,7 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   describe 'POST /ai/experimentation/openai/completions' do
-    it_behaves_like 'delegates AI request to Workhorse' do
+    it_behaves_like 'delegates AI request to Workhorse', :openai_experimentation do
       let(:input_params) { { prompt: 'test', model: 'text-davinci-003' } }
       let(:url) { '/ai/experimentation/openai/completions' }
       let(:expected_params) do
@@ -61,7 +61,7 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   describe 'POST /ai/experimentation/openai/embeddings' do
-    it_behaves_like 'delegates AI request to Workhorse' do
+    it_behaves_like 'delegates AI request to Workhorse', :openai_experimentation do
       let(:input_params) { { input: 'test', model: 'text-davinci-003' } }
       let(:url) { '/ai/experimentation/openai/embeddings' }
       let(:expected_params) do
@@ -75,7 +75,7 @@ RSpec.describe API::Ai::Experimentation::OpenAi, feature_category: :not_owned do
   end
 
   describe 'POST /ai/experimentation/openai/chat/completions' do
-    it_behaves_like 'delegates AI request to Workhorse' do
+    it_behaves_like 'delegates AI request to Workhorse', :openai_experimentation do
       let(:messages) do
         [
           { role: "system", content: "You are a helpful assistant." },
