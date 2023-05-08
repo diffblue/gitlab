@@ -307,6 +307,25 @@ export const generateDashboardTableFields = (now) => {
 };
 
 /**
+ * Takes an array of time series vulnerability counts returned from the
+ * Query.vulnerabilitesCountByDay graphql request. The data is aggregated
+ * returning an object with the total counts for `critical` and `high` vulnerabilities.
+ *
+ * @param {Array} An array of time series vulnerability counts
+ * @returns {Object} an object containing the total critical and high vulnerabilities
+ */
+export const aggregateVulnerabilities = (data) =>
+  data.reduce(
+    (acc, { critical, high }) => {
+      return {
+        critical: acc.critical + critical,
+        high: acc.high + high,
+      };
+    },
+    { critical: 0, high: 0 },
+  );
+
+/**
  * Takes an array of timePeriods, a query function to execute and query parameters
  * and will execute the queries, returning an array of data in order.
  *

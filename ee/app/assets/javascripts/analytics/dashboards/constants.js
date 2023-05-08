@@ -1,6 +1,6 @@
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { KEY_METRICS, DORA_METRICS } from '~/analytics/shared/constants';
+import { KEY_METRICS, DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 
 export const UNITS = {
   COUNT: 'COUNT',
@@ -45,6 +45,16 @@ export const TABLE_METRICS = {
   },
   [KEY_METRICS.DEPLOYS]: {
     label: s__('DORA4Metrics|Deploys'),
+    units: UNITS.COUNT,
+  },
+  [VULNERABILITY_METRICS.CRITICAL]: {
+    label: s__('DORA4Metrics|Critical Vulnerabilities'),
+    invertTrendColor: true,
+    units: UNITS.COUNT,
+  },
+  [VULNERABILITY_METRICS.HIGH]: {
+    label: s__('DORA4Metrics|High Vulnerabilities'),
+    invertTrendColor: true,
     units: UNITS.COUNT,
   },
 };

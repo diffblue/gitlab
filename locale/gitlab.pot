@@ -13446,6 +13446,9 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
+msgid "DORA4Metrics|Critical Vulnerabilities"
+msgstr ""
+
 msgid "DORA4Metrics|Cycle time"
 msgstr ""
 
@@ -13474,6 +13477,9 @@ msgid "DORA4Metrics|Forecast"
 msgstr ""
 
 msgid "DORA4Metrics|Go to docs"
+msgstr ""
+
+msgid "DORA4Metrics|High Vulnerabilities"
 msgstr ""
 
 msgid "DORA4Metrics|Lead Time for Changes"
@@ -48938,6 +48944,12 @@ msgid "ValueStreamAnalytics|The time to successfully deliver a commit into produ
 msgstr ""
 
 msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Total Critical vulnerabilities."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Total High vulnerabilities."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Total number of deploys to production."
