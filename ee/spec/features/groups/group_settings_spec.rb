@@ -635,8 +635,8 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
         end
 
         it 'shows correct helper text' do
-          expect(page).to have_content 'When the number of active users exceeds this number, additional users must be approved by an owner'
-          expect(page).not_to have_content 'Increasing the user cap will not automatically approve pending users'
+          expect(page).to have_content 'After the instance reaches the user cap, any user who is added or requests access must be approved by an administrator'
+          expect(page).not_to have_content 'Increasing the user cap does not automatically approve pending users'
         end
 
         context 'should show confirmation modal' do
@@ -680,7 +680,7 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
         end
 
         it 'shows correct helper text' do
-          expect(page).to have_content 'Increasing the user cap will not automatically approve pending users'
+          expect(page).to have_content 'Increasing the user cap does not automatically approve pending users'
         end
 
         context 'should not show confirmation modal' do
