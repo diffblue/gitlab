@@ -1,5 +1,3 @@
-import { s__ } from '~/locale';
-
 export { createPolicyObject, fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
 export {
@@ -19,6 +17,7 @@ export {
   APPROVER_TYPE_LIST_ITEMS,
 } from './actions';
 export * from './humanize';
+export * from './vulnerability_states';
 
 export const DEFAULT_SCAN_RESULT_POLICY = `type: scan_result_policy
 name: ''
@@ -43,11 +42,3 @@ actions:
   - type: require_approval
     approvals_required: 1
 `;
-
-export const APPROVAL_VULNERABILITY_STATES = {
-  newly_detected: s__('ApprovalRule|Newly detected'),
-  detected: s__('ApprovalRule|Previously detected'),
-  confirmed: s__('ApprovalRule|Confirmed'),
-  dismissed: s__('ApprovalRule|Dismissed'),
-  resolved: s__('ApprovalRule|Resolved'),
-};

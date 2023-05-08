@@ -91,7 +91,6 @@ export default {
     selectPolicyListboxHeader: s__('PolicyRuleMultiSelect|Select %{itemTypeName}'),
     allSelectedLabel: s__('PolicyRuleMultiSelect|All %{itemTypeName}'),
   },
-  ALL_KEY: 'all',
 };
 </script>
 

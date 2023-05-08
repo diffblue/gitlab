@@ -17,6 +17,8 @@ import { getDefaultRule } from 'ee/security_orchestration/components/policy_edit
 import {
   SEVERITY,
   STATUS,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 import {
   ANY_OPERATOR,
@@ -62,6 +64,7 @@ describe('SecurityScanRuleBuilder', () => {
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
   const findScanFilterSelector = () => wrapper.findComponent(ScanFilterSelector);
   const findStatusFilter = () => wrapper.findComponent(StatusFilter);
+  const findAllStatusFilters = () => wrapper.findAllComponents(StatusFilter);
   const findSeverityFilter = () => wrapper.findComponent(SeverityFilter);
   const findScanTypeSelect = () => wrapper.findComponent(ScanTypeSelect);
 
@@ -174,6 +177,18 @@ describe('SecurityScanRuleBuilder', () => {
     expect(currentComponent().exists()).toBe(true);
   });
 
+  it('can add second status filter', async () => {
+    factory({ initRule: UPDATED_RULE });
+
+    await findScanFilterSelector().vm.$emit('select', STATUS);
+
+    const statusFilters = findAllStatusFilters();
+
+    expect(statusFilters).toHaveLength(2);
+    expect(statusFilters.at(0).props('filter')).toEqual(NEWLY_DETECTED);
+    expect(statusFilters.at(1).props('filter')).toEqual(PREVIOUSLY_EXISTING);
+  });
+
   it('renders filters for exiting rule', () => {
     factory({ initRule: UPDATED_RULE });
 
@@ -184,7 +199,8 @@ describe('SecurityScanRuleBuilder', () => {
   it.each`
     currentComponent      | selectedFilter
     ${findSeverityFilter} | ${SEVERITY}
-    ${findStatusFilter}   | ${STATUS}
+    ${findStatusFilter}   | ${NEWLY_DETECTED}
+    ${findStatusFilter}   | ${PREVIOUSLY_EXISTING}
   `('removes existing filters', async ({ currentComponent, selectedFilter }) => {
     factory();
     await findScanFilterSelector().vm.$emit('select', selectedFilter);
