@@ -14,5 +14,10 @@ module FeatureFlagIssues
     def serializer
       LinkedFeatureFlagIssueSerializer
     end
+
+    override :preload_for_collection
+    def preload_for_collection
+      super + [:work_item_type, :namespace]
+    end
   end
 end

@@ -34,7 +34,7 @@ RSpec.describe "Converts a work item to a new type", feature_category: :team_pla
       end.not_to change { work_item.reload.work_item_type }
 
       expect(response).to have_gitlab_http_status(:success)
-      expect(work_item.reload.issue_type).to eq('key_result')
+      expect(work_item.reload.work_item_type.base_type).to eq('key_result')
       expect(work_item.start_date).to be_present
       expect(work_item.due_date).to be_present
       expect(graphql_errors).to include(
@@ -56,7 +56,6 @@ RSpec.describe "Converts a work item to a new type", feature_category: :team_pla
       end.to change { work_item.reload.work_item_type }.to(new_type)
 
       expect(response).to have_gitlab_http_status(:success)
-      expect(work_item.reload.issue_type).to eq('objective')
       expect(work_item.reload.work_item_type.base_type).to eq('objective')
       expect(work_item.start_date).to be_nil
       expect(work_item.due_date).to be_nil
