@@ -14,10 +14,12 @@ import {
   DEFAULT_DEVFILE_PATH,
   ROUTES,
   PROJECT_VISIBILITY,
+  WORKSPACES_LIST_PAGE_SIZE,
 } from 'ee/remote_development/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { logError } from '~/lib/logger';
 import { createAlert } from '~/alert';
+import workspaceCreateMutation from 'ee/remote_development/graphql/mutations/workspace_create.mutation.graphql';
 import userWorkspacesQuery from 'ee/remote_development/graphql/queries/user_workspaces_list.query.graphql';
 import {
   GET_PROJECT_DETAILS_QUERY_RESULT,
@@ -51,38 +53,39 @@ describe('remote_development/pages/create.vue', () => {
 
   const buildMockApollo = () => {
     workspaceCreateMutationHandler = jest.fn();
-    workspaceCreateMutationHandler.mockResolvedValueOnce(
-      WORKSPACE_CREATE_MUTATION_RESULT.data.workspaceCreate,
-    );
-    mockApollo = createMockApollo([], {
-      Mutation: {
-        workspaceCreate: workspaceCreateMutationHandler,
-      },
-    });
+    workspaceCreateMutationHandler.mockResolvedValueOnce(WORKSPACE_CREATE_MUTATION_RESULT);
+    mockApollo = createMockApollo([[workspaceCreateMutation, workspaceCreateMutationHandler]]);
   };
 
   const readCachedWorkspaces = () => {
     const apolloClient = mockApollo.clients.defaultClient;
-    const result = apolloClient.readQuery({ query: userWorkspacesQuery });
+    const result = apolloClient.readQuery({
+      query: userWorkspacesQuery,
+      variables: {
+        before: null,
+        after: null,
+        first: WORKSPACES_LIST_PAGE_SIZE,
+      },
+    });
 
     return result?.currentUser.workspaces.nodes;
   };
 
-  const writeCachedWorkspaces = (worksspaces) => {
+  const writeCachedWorkspaces = (workspaces) => {
     const apolloClient = mockApollo.clients.defaultClient;
     apolloClient.writeQuery({
       query: userWorkspacesQuery,
+      variables: {
+        before: null,
+        after: null,
+        first: WORKSPACES_LIST_PAGE_SIZE,
+      },
       data: {
         currentUser: {
           ...USER_WORKSPACES_QUERY_RESULT.data.currentUser,
           workspaces: {
-            nodes: worksspaces,
-            pageInfo: {
-              endCursor: null,
-              startCursor: null,
-              hasNextPage: false,
-              hasPreviousPage: false,
-            },
+            nodes: workspaces,
+            pageInfo: USER_WORKSPACES_QUERY_RESULT.data.currentUser.workspaces.pageInfo,
           },
         },
       },
@@ -284,22 +287,17 @@ describe('remote_development/pages/create.vue', () => {
         await nextTick();
         await submitCreateWorkspaceForm();
 
-        expect(workspaceCreateMutationHandler).toHaveBeenCalledWith(
-          expect.any(Object),
-          {
-            input: {
-              clusterAgentId: selectedClusterAgentIDFixture,
-              projectId: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
-              editor: DEFAULT_EDITOR,
-              desiredState: DEFAULT_DESIRED_STATE,
-              devfilePath: DEFAULT_DEVFILE_PATH,
-              maxHoursBeforeTermination,
-              devfileRef: rootRefFixture,
-            },
+        expect(workspaceCreateMutationHandler).toHaveBeenCalledWith({
+          input: {
+            clusterAgentId: selectedClusterAgentIDFixture,
+            projectId: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
+            editor: DEFAULT_EDITOR,
+            desiredState: DEFAULT_DESIRED_STATE,
+            devfilePath: DEFAULT_DEVFILE_PATH,
+            maxHoursBeforeTermination,
+            devfileRef: rootRefFixture,
           },
-          expect.any(Object),
-          expect.any(Object),
-        );
+        });
       });
 
       it('sets Create Workspace button as loading', async () => {
@@ -346,9 +344,7 @@ describe('remote_development/pages/create.vue', () => {
           customMutationResponse.data.workspaceCreate.errors.push(error);
 
           workspaceCreateMutationHandler.mockReset();
-          workspaceCreateMutationHandler.mockResolvedValueOnce(
-            customMutationResponse.data.workspaceCreate,
-          );
+          workspaceCreateMutationHandler.mockResolvedValueOnce(customMutationResponse);
 
           await submitCreateWorkspaceForm();
           await waitForPromises();

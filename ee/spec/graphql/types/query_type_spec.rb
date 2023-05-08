@@ -20,6 +20,8 @@ RSpec.describe GitlabSchema.types['Query'], feature_category: :shared do
       :vulnerabilities,
       :vulnerabilities_count_by_day,
       :vulnerability,
+      :workspace,
+      :workspaces,
       :instance_external_audit_event_destinations
     ]
 

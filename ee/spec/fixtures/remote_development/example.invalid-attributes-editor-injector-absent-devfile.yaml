@@ -1,0 +1,6 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: tooling-container
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo

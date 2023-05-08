@@ -161,6 +161,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     vulnerabilities_finding_identifier
     wiki_page
     wiki_page_meta
+    workspace
   ].to_set.freeze
 
   # Some factories and their corresponding models are based on

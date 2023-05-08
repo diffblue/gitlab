@@ -1,0 +1,11 @@
+---
+schemaVersion: 2.2.0
+parent:
+  id: go
+  registryUrl: 'https://registry.devfile.io'
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo

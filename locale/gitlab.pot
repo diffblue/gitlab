@@ -23647,6 +23647,9 @@ msgstr ""
 msgid "Inherited:"
 msgstr ""
 
+msgid "Inheriting from parent is not yet supported"
+msgstr ""
+
 msgid "Initial default branch name"
 msgstr ""
 
@@ -29676,6 +29679,12 @@ msgid "No commits present here"
 msgstr ""
 
 msgid "No committers"
+msgstr ""
+
+msgid "No component has 'gl/inject-editor' attribute"
+msgstr ""
+
+msgid "No components present in the devfile"
 msgstr ""
 
 msgid "No confirmation email received? Check your spam folder or %{request_link_start}request new confirmation email%{request_link_end}."
@@ -53026,6 +53035,12 @@ msgstr ""
 msgid "for %{ref}"
 msgstr ""
 
+msgid "for Workspace is required to be public"
+msgstr ""
+
+msgid "for Workspace must have an associated RemoteDevelopmentAgentConfig"
+msgstr ""
+
 msgid "for this project"
 msgstr ""
 
@@ -53171,6 +53186,9 @@ msgid "is an invalid IP address range"
 msgstr ""
 
 msgid "is blocked by"
+msgstr ""
+
+msgid "is currently immutable, and cannot be updated. Create a new agent instead."
 msgstr ""
 
 msgid "is forbidden by a top-level group"

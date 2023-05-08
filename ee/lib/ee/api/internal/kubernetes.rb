@@ -5,9 +5,49 @@ module EE
       module Kubernetes
         extend ActiveSupport::Concern
         prepended do
+          helpers do
+            def update_configuration(agent:, config:)
+              super(agent: agent, config: config)
+
+              if ::Feature.enabled?(:remote_development_feature_flag) &&
+                ::License.feature_available?(:remote_development) # rubocop:disable Layout/MultilineOperationIndentation - Currently can't override default RubyMine formatting
+
+                ::RemoteDevelopment::AgentConfig::UpdateService.new.execute(agent: agent, config: config)
+              end
+
+              true
+            end
+          end
+
           namespace 'internal' do
             namespace 'kubernetes' do
               before { check_agent_token }
+
+              namespace 'modules/remote_development' do
+                desc 'POST remote development work request' do
+                  detail 'Remote development work request'
+                end
+
+                route_setting :authentication, cluster_agent_token_allowed: true
+                post '/reconcile', feature_category: :remote_development do
+                  unless ::Feature.enabled?(:remote_development_feature_flag)
+                    forbidden!("'remote_development_feature_flag' feature flag is disabled")
+                  end
+
+                  unless ::License.feature_available?(:remote_development)
+                    forbidden!('"remote_development" licensed feature is not available')
+                  end
+
+                  service = ::RemoteDevelopment::Workspaces::ReconcileService.new
+                  service_response = service.execute(agent: agent, params: params)
+
+                  if service_response.success?
+                    service_response.payload
+                  else
+                    render_api_error!({ error: service_response.message }, service_response.http_status)
+                  end
+                end
+              end
 
               namespace 'modules/starboard_vulnerability' do
                 desc 'PUT starboard vulnerability' do

@@ -770,6 +770,42 @@ Returns [`WorkItem`](#workitem).
 | ---- | ---- | ----------- |
 | <a id="queryworkitemid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
 
+### `Query.workspace`
+
+Find a workspace.
+
+WARNING:
+**Introduced** in 16.0.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`Workspace`](#workspace).
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryworkspaceid"></a>`id` | [`RemoteDevelopmentWorkspaceID!`](#remotedevelopmentworkspaceid) | Find a workspace by its ID. |
+
+### `Query.workspaces`
+
+Find workspaces owned by the current user by their IDs.
+
+WARNING:
+**Introduced** in 16.0.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+
 ## `Mutation` type
 
 The `Mutation` type contains all the mutations you can execute.
@@ -6836,6 +6872,59 @@ Input type: `WorkItemUpdateTaskInput`
 | <a id="mutationworkitemupdatetasktask"></a>`task` | [`WorkItem`](#workitem) | Updated task. |
 | <a id="mutationworkitemupdatetaskworkitem"></a>`workItem` | [`WorkItem`](#workitem) | Updated work item. |
 
+### `Mutation.workspaceCreate`
+
+WARNING:
+**Introduced** in 16.0.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `WorkspaceCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationworkspacecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationworkspacecreateclusteragentid"></a>`clusterAgentId` | [`ClustersAgentID!`](#clustersagentid) | ID of the cluster agent the created workspace will be associated with. |
+| <a id="mutationworkspacecreatedesiredstate"></a>`desiredState` | [`String!`](#string) | Desired state of the created workspace. |
+| <a id="mutationworkspacecreatedevfilepath"></a>`devfilePath` | [`String!`](#string) | Project repo git path containing the devfile used to configure the workspace. |
+| <a id="mutationworkspacecreatedevfileref"></a>`devfileRef` | [`String!`](#string) | Project repo git ref containing the devfile used to configure the workspace. |
+| <a id="mutationworkspacecreateeditor"></a>`editor` | [`String!`](#string) | Editor to inject into the created workspace. Must match a configured template. |
+| <a id="mutationworkspacecreatemaxhoursbeforetermination"></a>`maxHoursBeforeTermination` | [`Int!`](#int) | Maximum hours the workspace can exist before it is automatically terminated. |
+| <a id="mutationworkspacecreateprojectid"></a>`projectId` | [`ProjectID!`](#projectid) | ID of the project that will provide the Devfile for the created workspace. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationworkspacecreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationworkspacecreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationworkspacecreateworkspace"></a>`workspace` | [`Workspace`](#workspace) | Created workspace. |
+
+### `Mutation.workspaceUpdate`
+
+WARNING:
+**Introduced** in 16.0.
+This feature is an Experiment. It can be changed or removed at any time.
+
+Input type: `WorkspaceUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationworkspaceupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationworkspaceupdatedesiredstate"></a>`desiredState` | [`String!`](#string) | Desired state of the created workspace. |
+| <a id="mutationworkspaceupdateid"></a>`id` | [`RemoteDevelopmentWorkspaceID!`](#remotedevelopmentworkspaceid) | Global ID of the workspace. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationworkspaceupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationworkspaceupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationworkspaceupdateworkspace"></a>`workspace` | [`Workspace`](#workspace) | Created workspace. |
+
 ## Connections
 
 Some types in our schema are `Connection` types - they represent a paginated
@@ -11132,6 +11221,29 @@ The edge type for [`WorkItemType`](#workitemtype).
 | ---- | ---- | ----------- |
 | <a id="workitemtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="workitemtypeedgenode"></a>`node` | [`WorkItemType`](#workitemtype) | The item at the end of the edge. |
+
+#### `WorkspaceConnection`
+
+The connection type for [`Workspace`](#workspace).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workspaceconnectionedges"></a>`edges` | [`[WorkspaceEdge]`](#workspaceedge) | A list of edges. |
+| <a id="workspaceconnectionnodes"></a>`nodes` | [`[Workspace]`](#workspace) | A list of nodes. |
+| <a id="workspaceconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `WorkspaceEdge`
+
+The edge type for [`Workspace`](#workspace).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workspaceedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="workspaceedgenode"></a>`node` | [`Workspace`](#workspace) | The item at the end of the edge. |
 
 ## Object types
 
@@ -16766,6 +16878,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestassigneetodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="mergerequestassigneetodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
 
+##### `MergeRequestAssignee.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestassigneeworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+
 ### `MergeRequestAuthor`
 
 The author of the merge request.
@@ -17015,6 +17143,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestauthortodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestauthortodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="mergerequestauthortodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
+
+##### `MergeRequestAuthor.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestauthorworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
 
 ### `MergeRequestDiffRegistry`
 
@@ -17285,6 +17429,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestparticipanttodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="mergerequestparticipanttodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
 
+##### `MergeRequestParticipant.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestparticipantworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+
 ### `MergeRequestPermissions`
 
 Check permissions for the current user on a merge request.
@@ -17553,6 +17713,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="mergerequestreviewertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="mergerequestreviewertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="mergerequestreviewertodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
+
+##### `MergeRequestReviewer.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mergerequestreviewerworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
 
 ### `Metadata`
 
@@ -21968,6 +22144,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="usercoretodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="usercoretodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
 
+##### `UserCore.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="usercoreworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
+
 ### `UserMergeRequestInteraction`
 
 Information about a merge request given a specific user.
@@ -22952,6 +23144,35 @@ Represents a weight widget.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetweighttype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 | <a id="workitemwidgetweightweight"></a>`weight` | [`Int`](#int) | Weight of the work item. |
+
+### `Workspace`
+
+Represents a remote development workspace.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workspaceactualstate"></a>`actualState` | [`String!`](#string) | Actual state of the workspace. |
+| <a id="workspaceclusteragent"></a>`clusterAgent` | [`ClusterAgent!`](#clusteragent) | Kubernetes Agent associated with the workspace. |
+| <a id="workspacecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of workspace creation. |
+| <a id="workspacedeploymentresourceversion"></a>`deploymentResourceVersion` | [`Int`](#int) | ResourceVersion of the Deployment resource for the workspace. |
+| <a id="workspacedesiredstate"></a>`desiredState` | [`String!`](#string) | Desired state of the workspace. |
+| <a id="workspacedesiredstateupdatedat"></a>`desiredStateUpdatedAt` | [`Time!`](#time) | Timestamp of last update to desired state. |
+| <a id="workspacedevfile"></a>`devfile` | [`String!`](#string) | Source YAML of the devfile used to configure the workspace. |
+| <a id="workspacedevfilepath"></a>`devfilePath` | [`String!`](#string) | Project repo git path containing the devfile used to configure the workspace. |
+| <a id="workspacedevfileref"></a>`devfileRef` | [`String!`](#string) | Project repo git ref containing the devfile used to configure the workspace. |
+| <a id="workspaceeditor"></a>`editor` | [`String!`](#string) | Editor used to configure the workspace. Must match a configured template. |
+| <a id="workspaceid"></a>`id` | [`RemoteDevelopmentWorkspaceID!`](#remotedevelopmentworkspaceid) | Global ID of the workspace. |
+| <a id="workspacemaxhoursbeforetermination"></a>`maxHoursBeforeTermination` | [`Int!`](#int) | Maximum hours the workspace can exist before it is automatically terminated. |
+| <a id="workspacename"></a>`name` | [`String!`](#string) | Name of the workspace in Kubernetes. |
+| <a id="workspacenamespace"></a>`namespace` | [`String!`](#string) | Namespace of the workspace in Kubernetes. |
+| <a id="workspaceprocesseddevfile"></a>`processedDevfile` | [`String!`](#string) | Processed YAML of the devfile used to configure the workspace. |
+| <a id="workspaceprojectid"></a>`projectId` | [`ID!`](#id) | ID of the Project providing the Devfile for the workspace. |
+| <a id="workspacerespondedtoagentat"></a>`respondedToAgentAt` | [`Time`](#time) | Timestamp of last response sent to GA4K for the workspace. |
+| <a id="workspaceupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of last update to any mutable workspace property. |
+| <a id="workspaceurl"></a>`url` | [`String!`](#string) | URL of the workspace. |
+| <a id="workspaceuser"></a>`user` | [`UserCore!`](#usercore) | Owner of the workspace. |
 
 ### `X509Certificate`
 
@@ -25889,6 +26110,12 @@ A `ReleasesLinkID` is a global ID. It is encoded as a string.
 
 An example `ReleasesLinkID` is: `"gid://gitlab/Releases::Link/1"`.
 
+### `RemoteDevelopmentWorkspaceID`
+
+A `RemoteDevelopmentWorkspaceID` is a global ID. It is encoded as a string.
+
+An example `RemoteDevelopmentWorkspaceID` is: `"gid://gitlab/RemoteDevelopment::Workspace/1"`.
+
 ### `SecurityTrainingProviderID`
 
 A `SecurityTrainingProviderID` is a global ID. It is encoded as a string.
@@ -26683,6 +26910,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="usertodosprojectid"></a>`projectId` | [`[ID!]`](#id) | ID of a project. |
 | <a id="usertodosstate"></a>`state` | [`[TodoStateEnum!]`](#todostateenum) | State of the todo. |
 | <a id="usertodostype"></a>`type` | [`[TodoTargetEnum!]`](#todotargetenum) | Type of the todo. |
+
+###### `User.workspaces`
+
+Workspaces owned by the current user.
+
+Returns [`WorkspaceConnection`](#workspaceconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+####### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="userworkspacesids"></a>`ids` | [`[RemoteDevelopmentWorkspaceID!]`](#remotedevelopmentworkspaceid) | Array of global workspace IDs. For example, `["gid://gitlab/RemoteDevelopment::Workspace/1"]`. |
 
 #### `WorkItemWidget`
 

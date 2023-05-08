@@ -93,6 +93,8 @@ module EE
 
       has_many :namespace_bans, class_name: 'Namespaces::NamespaceBan'
 
+      has_many :workspaces, class_name: 'RemoteDevelopment::Workspace', inverse_of: :user
+
       has_many :dependency_list_exports, class_name: 'Dependencies::DependencyListExport', inverse_of: :author
 
       scope :not_managed, ->(group: nil) {

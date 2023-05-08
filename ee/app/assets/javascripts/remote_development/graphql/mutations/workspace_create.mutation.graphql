@@ -1,5 +1,5 @@
 mutation workspaceCreate($input: WorkspaceCreateInput!) {
-  workspaceCreate(input: $input) @client {
+  workspaceCreate(input: $input) {
     workspace {
       id
       name
