@@ -12,6 +12,7 @@ module API
         before do
           authenticate!
           check_feature_enabled!
+          check_rate_limit!(:ai_action, scope: [current_user])
         end
 
         namespace 'ai/llm' do
