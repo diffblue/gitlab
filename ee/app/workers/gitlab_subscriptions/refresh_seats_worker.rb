@@ -43,7 +43,7 @@ module GitlabSubscriptions
           .lock('FOR UPDATE SKIP LOCKED')
           .first
 
-        break unless subscription
+        next unless subscription
 
         # Update the last_seat_refresh_at so the same subscription isn't picked up in parallel
         subscription.update_column(:last_seat_refresh_at, Time.current)
