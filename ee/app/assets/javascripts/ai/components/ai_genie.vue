@@ -119,7 +119,7 @@ export default {
       if (!this.container) {
         throw new Error(this.$options.i18n.GENIE_NO_CONTAINER_ERROR);
       }
-      this.snippetLanguage = this.container.querySelector('[lang]')?.lang;
+      this.snippetLanguage = this.container.querySelector('[lang]')?.lang || this.snippetLanguage;
       const selection = window.getSelection();
       if (this.isWithinContainer(selection)) {
         this.setPosition(selection);
