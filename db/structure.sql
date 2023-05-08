@@ -22538,18 +22538,6 @@ CREATE SEQUENCE sentry_issues_id_seq
 
 ALTER SEQUENCE sentry_issues_id_seq OWNED BY sentry_issues.id;
 
-CREATE TABLE serverless_domain_cluster (
-    uuid character varying(14) NOT NULL,
-    pages_domain_id bigint NOT NULL,
-    clusters_applications_knative_id bigint NOT NULL,
-    creator_id bigint,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    encrypted_key text,
-    encrypted_key_iv character varying(255),
-    certificate text
-);
-
 CREATE TABLE service_desk_custom_email_credentials (
     project_id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -28134,9 +28122,6 @@ ALTER TABLE ONLY sentry_issues
 ALTER TABLE ONLY sprints
     ADD CONSTRAINT sequence_is_unique_per_iterations_cadence_id UNIQUE (iterations_cadence_id, sequence) DEFERRABLE INITIALLY DEFERRED;
 
-ALTER TABLE ONLY serverless_domain_cluster
-    ADD CONSTRAINT serverless_domain_cluster_pkey PRIMARY KEY (uuid);
-
 ALTER TABLE ONLY service_desk_custom_email_credentials
     ADD CONSTRAINT service_desk_custom_email_credentials_pkey PRIMARY KEY (project_id);
 
@@ -29639,8 +29624,6 @@ CREATE INDEX idx_repository_states_outdated_checksums ON project_repository_stat
 CREATE UNIQUE INDEX idx_security_scans_on_build_and_scan_type ON security_scans USING btree (build_id, scan_type);
 
 CREATE INDEX idx_security_scans_on_scan_type ON security_scans USING btree (scan_type);
-
-CREATE UNIQUE INDEX idx_serverless_domain_cluster_on_clusters_applications_knative ON serverless_domain_cluster USING btree (clusters_applications_knative_id);
 
 CREATE UNIQUE INDEX idx_software_license_policies_unique_on_project_and_scan_policy ON software_license_policies USING btree (project_id, software_license_id, scan_result_policy_id);
 
@@ -32481,10 +32464,6 @@ CREATE UNIQUE INDEX index_sent_notifications_on_reply_key ON sent_notifications 
 CREATE UNIQUE INDEX index_sentry_issues_on_issue_id ON sentry_issues USING btree (issue_id);
 
 CREATE INDEX index_sentry_issues_on_sentry_issue_identifier ON sentry_issues USING btree (sentry_issue_identifier);
-
-CREATE INDEX index_serverless_domain_cluster_on_creator_id ON serverless_domain_cluster USING btree (creator_id);
-
-CREATE INDEX index_serverless_domain_cluster_on_pages_domain_id ON serverless_domain_cluster USING btree (pages_domain_id);
 
 CREATE INDEX index_service_desk_custom_email_verifications_on_triggerer_id ON service_desk_custom_email_verifications USING btree (triggerer_id);
 
