@@ -44,6 +44,7 @@ module Elastic
           response = client.delete_by_query(
             index: index,
             routing: es_parent,
+            conflicts: 'proceed',
             body: {
               query: {
                 bool: {
@@ -64,6 +65,7 @@ module Elastic
         client.delete_by_query(
           index: index_name,
           routing: es_parent,
+          conflicts: 'proceed',
           body: {
             query: {
               bool: {
