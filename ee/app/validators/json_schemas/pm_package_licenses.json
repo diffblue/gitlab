@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "A tuple representing the compressed list of licenses for a package.",
+  "type": "array",
+  "minItems": 3,
+  "maxItems": 3,
+  "items": [
+    {
+      "$ref": "#/definitions/default_licenses"
+    },
+    {
+      "$ref": "#/definitions/highest_version"
+    },
+    {
+      "$ref": "#/definitions/non_default_licenses"
+    }
+  ],
+  "definitions": {
+    "default_licenses": {
+      "type": "array",
+      "description": "List of default licenses for a package.",
+      "$ref": "#/definitions/license_ids"
+    },
+    "highest_version": {
+      "description": "The highest version of a package ingested.",
+      "$ref": "#/definitions/version"
+    },
+    "non_default_licenses": {
+      "type": "array",
+      "description": "List of tuples representing licenses and corresponding versions that are not the default for a package.",
+      "minItems": 0,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/definitions/licenses_versions_tuple"
+      }
+    },
+    "spdx_identifier": {
+      "type": "integer",
+      "description": "The spdx identifier of a license"
+    },
+    "version": {
+      "type": "string",
+      "description": "Represents a package version",
+      "minLength": 1,
+      "maxLength": 255
+    },
+    "licenses_versions_tuple": {
+      "type": "array",
+      "description": "A tuple representing the set of licenses and corresponding versions for a package.",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": [
+        {
+          "$ref": "#/definitions/license_ids"
+        },
+        {
+          "$ref": "#/definitions/versions"
+        }
+      ]
+    },
+    "license_ids": {
+      "type": "array",
+      "description": "List of spdx_identifiers.",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "$ref": "#/definitions/spdx_identifier"
+      }
+    },
+    "versions": {
+      "type": "array",
+      "description": "List of versions.",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "$ref": "#/definitions/version"
+      }
+    }
+  }
+}
