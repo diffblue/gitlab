@@ -32,45 +32,8 @@ RSpec.describe Ci::BatchResetMinutesWorker, feature_category: :continuous_integr
       create(:namespace_statistics, namespace: last_namespace, shared_runners_seconds: 90.minutes)
     end
 
-    it 'delegates to Ci::Minutes::BatchResetService' do
-      expect_next_instance_of(Ci::Minutes::BatchResetService) do |service|
-        expect(service)
-          .to receive(:execute!)
-          .with(ids_range: ((first_namespace.id)..(last_namespace.id)))
-      end
-
-      worker.perform(first_namespace.id, last_namespace.id)
-    end
-
-    it_behaves_like 'an idempotent worker' do
-      let(:job_args) { [first_namespace.id, last_namespace.id] }
-
-      shared_examples 'resets CI minutes and notification' do
-        it 'resets CI minutes used and notification data' do
-          subject
-
-          namespace.reset
-
-          expect(namespace.namespace_statistics.shared_runners_seconds).to eq 0
-
-          expect(namespace.last_ci_minutes_notification_at).to be_nil
-          expect(namespace.last_ci_minutes_usage_notification_level).to be_nil
-        end
-      end
-
-      it_behaves_like 'resets CI minutes and notification' do
-        let(:namespace) { first_namespace }
-      end
-
-      it_behaves_like 'resets CI minutes and notification' do
-        let(:namespace) { last_namespace }
-      end
-
-      it 'does not recalculate purchased minutes for the namespace exceeding the monthly minutes' do
-        subject
-
-        expect(first_namespace.reset.extra_shared_runners_minutes_limit).to eq 50
-      end
+    it 'does nothing and will be removed in the next release' do
+      expect { worker.perform(first_namespace.id, last_namespace.id) }.not_to raise_error
     end
   end
 end

@@ -83,11 +83,6 @@ module EE
         where("EXISTS (?)", matcher)
       end
 
-      scope :without_last_ci_minutes_notification, -> do
-        where.not(last_ci_minutes_notification_at: nil)
-          .or(where.not(last_ci_minutes_usage_notification_level: nil))
-      end
-
       delegate :additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
