@@ -233,7 +233,8 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
       end
 
       after do
-        Elastic::DataMigrationService.mark_all_as_completed! # rubocop: disable RSpec/DescribedClass
+        # reset migration index to prevent flakiness
+        described_class.mark_all_as_completed!
       end
 
       it 'returns true' do
@@ -258,7 +259,8 @@ RSpec.describe Elastic::DataMigrationService, :elastic, :clean_gitlab_redis_shar
     end
 
     after do
-      Elastic::DataMigrationService.mark_all_as_completed! # rubocop: disable RSpec/DescribedClass
+      # reset migration index to prevent flakiness
+      described_class.mark_all_as_completed!
     end
 
     it 'returns only pending migrations' do
