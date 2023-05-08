@@ -11829,6 +11829,8 @@ CREATE TABLE application_settings (
     encrypted_tofa_access_token_expires_in bytea,
     encrypted_tofa_access_token_expires_in_iv bytea,
     remember_me_enabled boolean DEFAULT true NOT NULL,
+    encrypted_anthropic_api_key bytea,
+    encrypted_anthropic_api_key_iv bytea,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
