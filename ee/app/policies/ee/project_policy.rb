@@ -266,6 +266,7 @@ module EE
         enable :admin_feature_flags_issue_links
         enable :read_project_audit_events
         enable :read_product_analytics
+        enable :create_workspace
       end
 
       rule { can?(:reporter_access) & iterations_available }.policy do

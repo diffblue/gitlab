@@ -71,7 +71,20 @@ module EE
                 required: true,
                 description: 'Global ID of the Vulnerability.'
               end
-
+        field :workspace, ::Types::RemoteDevelopment::WorkspaceType,
+              null: true,
+              alpha: { milestone: '16.0' },
+              description: 'Find a workspace.' do
+                argument :id, ::Types::GlobalIDType[::RemoteDevelopment::Workspace],
+                required: true,
+                description: 'Find a workspace by its ID.'
+              end
+        field :workspaces,
+              ::Types::RemoteDevelopment::WorkspaceType.connection_type,
+              null: true,
+              alpha: { milestone: '16.0' },
+              resolver: ::Resolvers::RemoteDevelopment::WorkspacesResolver,
+              description: 'Find workspaces owned by the current user by their IDs.'
         field :ci_catalog_resources,
               ::Types::Ci::Catalog::ResourceType.connection_type,
               null: true,
@@ -91,6 +104,26 @@ module EE
       end
 
       def iteration(id:)
+        ::GitlabSchema.find_by_gid(id)
+      end
+
+      def workspace(id:)
+        unless ::Feature.enabled?(:remote_development_feature_flag)
+          # TODO: Could have `included Gitlab::Graphql::Authorize::AuthorizeResource` and then use
+          #       raise_resource_not_available_error!, but didn't want to take the risk to mix that into
+          #       the root query type
+          raise ::Gitlab::Graphql::Errors::ResourceNotAvailable,
+            "'remote_development_feature_flag' feature flag is disabled"
+        end
+
+        unless License.feature_available?(:remote_development)
+          # TODO: Could have `included Gitlab::Graphql::Authorize::AuthorizeResource` and then use
+          #       raise_resource_not_available_error!, but didn't want to take the risk to mix that into
+          #       the root query type
+          raise ::Gitlab::Graphql::Errors::ResourceNotAvailable,
+            "'remote_development' licensed feature is not available"
+        end
+
         ::GitlabSchema.find_by_gid(id)
       end
 

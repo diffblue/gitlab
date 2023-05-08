@@ -2676,4 +2676,18 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_allowed(:read_project_runners) }
     end
   end
+
+  describe 'workspace creation' do
+    context 'with no user' do
+      let(:current_user) { nil }
+
+      it { is_expected.to be_disallowed(:create_workspace) }
+    end
+
+    context 'with an authorized user' do
+      let(:current_user) { developer }
+
+      it { is_expected.to be_allowed(:create_workspace) }
+    end
+  end
 end

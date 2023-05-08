@@ -100,6 +100,8 @@ module EE
         mount_mutation ::Mutations::AuditEvents::ExternalAuditEventDestinations::Update
         mount_mutation ::Mutations::Ci::NamespaceCiCdSettingsUpdate
         mount_mutation ::Mutations::Ci::Catalog::Resources::Create, alpha: { milestone: '15.11' }
+        mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Create, alpha: { milestone: '16.0' }
+        mount_mutation ::Mutations::RemoteDevelopment::Workspaces::Update, alpha: { milestone: '16.0' }
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Destroy
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Create
         mount_mutation ::Mutations::AuditEvents::Streaming::Headers::Update

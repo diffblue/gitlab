@@ -64,6 +64,140 @@ RSpec.describe API::Internal::Kubernetes, feature_category: :deployment_manageme
     end
   end
 
+  describe 'POST /internal/kubernetes/modules/remote_development/reconcile' do
+    let(:method) { :post }
+    let(:api_url) { '/internal/kubernetes/modules/remote_development/reconcile' }
+
+    before do
+      stub_licensed_features(remote_development: true)
+      allow_next_instance_of(::RemoteDevelopment::Workspaces::ReconcileService) do |service|
+        allow(service).to receive(:execute).and_return(service_response)
+      end
+    end
+
+    include_examples 'authorization'
+    include_examples 'agent authentication'
+
+    context 'when service response is successful' do
+      let(:service_response) { ServiceResponse.success(payload: {}) }
+
+      it 'returns service response with payload' do
+        send_request(params: {})
+
+        expect(response).to have_gitlab_http_status(:created)
+      end
+    end
+
+    context 'when service response is not successful' do
+      let(:service_response) { ServiceResponse.error(message: 'error', reason: :not_found) }
+
+      it 'returns service response with error' do
+        send_request(params: {})
+
+        expect(response).to have_gitlab_http_status(:internal_server_error)
+      end
+    end
+
+    context 'when remote_development feature is unlicensed' do
+      let(:service_response) { ServiceResponse.success(payload: {}) }
+
+      before do
+        stub_licensed_features(remote_development: false)
+      end
+
+      it 'returns service response with payload' do
+        send_request(params: {})
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when remote_development_feature_flag feature flag is disabled' do
+      let(:service_response) { ServiceResponse.success(payload: {}) }
+
+      before do
+        stub_feature_flags(remote_development_feature_flag: false)
+      end
+
+      it 'returns service response with payload' do
+        send_request(params: {})
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
+
+  describe 'POST /internal/kubernetes/agent_configuration' do
+    def send_request(headers: {}, params: {})
+      post api('/internal/kubernetes/agent_configuration'), params: params, headers: headers.reverse_merge(jwt_auth_headers)
+    end
+
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:agent) { create(:cluster_agent, project: project) }
+    let_it_be(:config) do
+      {
+        ci_access: {
+          groups: [
+            { id: group.full_path, default_namespace: 'production' }
+          ],
+          projects: [
+            { id: project.full_path, default_namespace: 'staging' }
+          ]
+        }
+      }
+    end
+
+    include_examples 'authorization'
+
+    context 'when remote development is configured' do
+      let(:dns_zone) { 'workspaces.localdev.me' }
+      let(:config) do
+        {
+          remote_development: {
+            enabled: true,
+            dns_zone: dns_zone
+          }
+        }
+      end
+
+      before do
+        stub_licensed_features(remote_development: true)
+      end
+
+      it 'creates the remote dev configuration' do
+        send_request(params: { agent_id: agent.id, agent_config: config })
+        expect(response).to have_gitlab_http_status(:no_content)
+        expect(agent.reload.remote_development_agent_config).to be_enabled
+        expect(agent.reload.remote_development_agent_config.dns_zone).to eq(dns_zone)
+      end
+
+      context 'when remote_development feature is unlicensed' do
+        before do
+          stub_licensed_features(remote_development: false)
+        end
+
+        it 'creates the remote dev configuration' do
+          send_request(params: { agent_id: agent.id, agent_config: config })
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(agent.reload.remote_development_agent_config).to be_nil
+        end
+      end
+
+      context 'when remote_development_feature_flag feature flag is disabled' do
+        before do
+          stub_feature_flags(remote_development_feature_flag: false)
+        end
+
+        it 'creates the remote dev configuration' do
+          send_request(params: { agent_id: agent.id, agent_config: config })
+          expect(response).to have_gitlab_http_status(:no_content)
+          expect(agent.reload.remote_development_agent_config).to be_nil
+        end
+      end
+    end
+  end
+
   describe 'PUT /internal/kubernetes/modules/starboard_vulnerability' do
     let(:method) { :put }
     let(:api_url) { '/internal/kubernetes/modules/starboard_vulnerability' }

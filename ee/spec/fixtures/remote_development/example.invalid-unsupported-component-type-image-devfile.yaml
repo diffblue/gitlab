@@ -1,0 +1,15 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    image:
+      imageName: python-image:latest
+      autoBuild: true
+      dockerfile:
+        uri: docker/Dockerfile
+        args:
+          - 'MY_ENV=/home/path'
+        buildContext: .
+        rootRequired: false

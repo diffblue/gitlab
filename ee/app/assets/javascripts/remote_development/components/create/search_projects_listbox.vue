@@ -18,9 +18,8 @@ export const i18n = {
 
 export const PROJECTS_MAX_LIMIT = 20;
 
-/* TODO: Consider creating a follow-up issue to convert this into a
- * vue_shared reusable component.
- * Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/407360
+/* TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/407360
+         Convert this into a vue_shared reusable component.
  */
 export default {
   components: {
