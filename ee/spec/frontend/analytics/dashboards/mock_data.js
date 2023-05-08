@@ -9,6 +9,8 @@ const mockMetrics = ([
   cycleTime,
   issues,
   deploys,
+  vulnerabilityCritical,
+  vulnerabilityHigh,
 ]) => ({
   lead_time_for_changes: {
     value: leadTimeForChanges,
@@ -49,6 +51,16 @@ const mockMetrics = ([
     value: deploys,
     label: 'Deploys',
     identifier: 'deploys',
+  },
+  vulnerability_critical: {
+    value: vulnerabilityCritical,
+    label: 'Critical Vulnerabilities',
+    identifier: 'vulnerability_critical',
+  },
+  vulnerability_high: {
+    value: vulnerabilityHigh,
+    label: 'High Vulnerabilities',
+    identifier: 'vulnerability_high',
   },
 });
 
@@ -110,25 +122,25 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
   },
 ];
 
-export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8]);
+export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8, 3, 0]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 16]);
+export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 16, 0, 3]);
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 8]);
+export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 8, 2, 0]);
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
-export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 16]);
+export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 16, 0, 0]);
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
 export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i) => ({
   ...timePeriod,
-  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i]),
+  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i, i % 4, i % 2]),
 }));
 
 export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
@@ -291,6 +303,44 @@ export const mockComparativeTableData = [
       value: 8,
     },
   },
+  {
+    metric: {
+      identifier: 'vulnerability_critical',
+      value: 'Critical Vulnerabilities',
+    },
+    invertTrendColor: true,
+    lastMonth: {
+      change: 0,
+      value: 0,
+    },
+    thisMonth: {
+      change: 0,
+      value: 3,
+    },
+    twoMonthsAgo: {
+      change: 0,
+      value: 2,
+    },
+  },
+  {
+    metric: {
+      identifier: 'vulnerability_high',
+      value: 'High Vulnerabilities',
+    },
+    invertTrendColor: true,
+    lastMonth: {
+      change: 0,
+      value: 3,
+    },
+    thisMonth: {
+      change: 0,
+      value: 0,
+    },
+    twoMonthsAgo: {
+      change: 0,
+      value: 0,
+    },
+  },
 ];
 
 export const mockSubsetChartData = {
@@ -349,6 +399,20 @@ export const mockSubsetChartData = {
       [expect.anything(), 99],
     ],
     tooltipLabel: 'days',
+  },
+  vulnerability_critical: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
+  },
+  vulnerability_high: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
   },
 };
 
@@ -440,6 +504,28 @@ export const mockChartData = {
       [expect.anything(), 16],
       [expect.anything(), 25],
     ],
+  },
+  vulnerability_critical: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+      [expect.anything(), 2],
+      [expect.anything(), 3],
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+    ],
+    tooltipLabel: undefined,
+  },
+  vulnerability_high: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+    ],
+    tooltipLabel: undefined,
   },
 };
 

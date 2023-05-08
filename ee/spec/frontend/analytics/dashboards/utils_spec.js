@@ -1,3 +1,4 @@
+import { VULNERABILITY_CRITICAL_TYPE, VULNERABILITY_HIGH_TYPE } from '~/analytics/shared/constants';
 import { UNITS } from 'ee/analytics/dashboards/constants';
 import {
   percentChange,
@@ -170,6 +171,8 @@ describe('Analytics Dashboards utils', () => {
         CYCLE_TIME_METRIC_TYPE,
         ISSUES_METRIC_TYPE,
         DEPLOYS_METRIC_TYPE,
+        VULNERABILITY_CRITICAL_TYPE,
+        VULNERABILITY_HIGH_TYPE,
       ]);
     });
 

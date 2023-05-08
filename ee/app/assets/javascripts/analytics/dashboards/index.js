@@ -1,4 +1,6 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import createDefaultClient from '~/lib/graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import DashboardsApp from './components/app.vue';
 
@@ -12,6 +14,12 @@ const buildNamespaces = ({ groupFullPath, groupName, jsonString = '' }) => {
     },
   ].concat(namespaces);
 };
+
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
@@ -28,6 +36,7 @@ export default () => {
   return new Vue({
     el,
     name: 'DashboardsApp',
+    apolloProvider,
     render: (createElement) =>
       createElement(DashboardsApp, {
         props: { chartConfigs, pointerProject },

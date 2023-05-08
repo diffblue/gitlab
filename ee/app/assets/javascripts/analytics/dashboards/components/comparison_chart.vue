@@ -3,8 +3,11 @@ import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/alert';
-import { fetchMetricsData } from '~/analytics/shared/utils';
+import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
+import { fetchMetricsData, toYmd } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
+import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
+import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
 import {
   DASHBOARD_DESCRIPTION_GROUP,
   DASHBOARD_DESCRIPTION_PROJECT,
@@ -21,6 +24,7 @@ import {
   generateDateRanges,
   generateChartTimePeriods,
   extractDoraMetrics,
+  aggregateVulnerabilities,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
@@ -79,6 +83,12 @@ export default {
     namespaceRequestPath() {
       return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
     },
+    defaultQueryParams() {
+      return {
+        isProject: this.isProject,
+        fullPath: this.requestPath,
+      };
+    },
   },
   async mounted() {
     this.loadingTable = true;
@@ -92,6 +102,23 @@ export default {
     }
   },
   methods: {
+    async fetchVulnerabilitiesQuery({ isProject, ...variables }) {
+      const result = await this.$apollo.query({
+        query: isProject ? ProjectVulnerabilitiesQuery : GroupVulnerabilitiesQuery,
+        variables,
+      });
+
+      if (result.data?.namespace) {
+        const {
+          namespace: {
+            vulnerabilitiesCountByDay: { nodes },
+          },
+        } = result.data;
+        return nodes;
+      }
+
+      return [];
+    },
     async fetchMetrics({ startDate, endDate }, timePeriod) {
       // request the dora and flow metrics from the REST endpoint
       const rawData = await fetchMetricsData(METRICS_REQUESTS, this.namespaceRequestPath, {
@@ -99,7 +126,19 @@ export default {
         created_before: endDate,
       });
 
-      return { ...timePeriod, ...extractDoraMetrics(rawData) };
+      // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
+      const vulnerabilities = await this.fetchVulnerabilitiesQuery({
+        ...this.defaultQueryParams,
+        startDate: toYmd(startDate),
+        endDate: toYmd(endDate),
+      });
+
+      const aggregated = aggregateVulnerabilities(vulnerabilities);
+      const vulns = {
+        [VULNERABILITY_METRICS.CRITICAL]: { value: aggregated.critical },
+        [VULNERABILITY_METRICS.HIGH]: { value: aggregated.high },
+      };
+      return { ...timePeriod, ...extractDoraMetrics(rawData), ...vulns };
     },
     async fetchTableMetrics() {
       try {
