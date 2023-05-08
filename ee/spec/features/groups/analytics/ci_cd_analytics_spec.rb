@@ -64,7 +64,7 @@ RSpec.describe 'Group CI/CD Analytics', :js, feature_category: :value_stream_man
       click_link('Deployment frequency')
     end
 
-    it 'can toggle data forecasting' do
+    it 'can toggle data forecasting', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/410102' do
       expect(page).to have_css(forecast_toggle_selector)
       expect(toggle[:class].include?('is-checked')).to be(false)
 
