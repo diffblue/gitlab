@@ -73,16 +73,18 @@ RSpec.describe Elastic::ApplicationVersionedSearch, feature_category: :global_se
 
     context 'when depends_on_finished_migration migration is not finished' do
       it 'returns an empty array' do
-        klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: :backfill_project_permissions_in_blobs
-        set_elasticsearch_migration_to :backfill_project_permissions_in_blobs, including: false
+        last_migration = Elastic::DataMigrationService.migrations.last.name_for_key.to_sym
+        klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: last_migration
+        set_elasticsearch_migration_to last_migration, including: false
         expect(klass.new.associations_needing_elasticsearch_update(['title'])).to match_array []
       end
     end
 
     context 'when depends_on_finished_migration migration is finished' do
       it 'returns an array with widgets' do
-        klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: :backfill_project_permissions_in_blobs
-        set_elasticsearch_migration_to :backfill_project_permissions_in_blobs, including: true
+        last_migration = Elastic::DataMigrationService.migrations.last.name_for_key.to_sym
+        klass.elastic_index_dependant_association :widgets, on_change: :title, depends_on_finished_migration: last_migration
+        set_elasticsearch_migration_to last_migration, including: true
         expect(klass.new.associations_needing_elasticsearch_update(['title'])).to match_array ['widgets']
       end
     end
