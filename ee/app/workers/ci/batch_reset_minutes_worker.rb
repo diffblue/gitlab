@@ -10,8 +10,6 @@ module Ci
     feature_category :continuous_integration
     idempotent!
 
-    def perform(from_id, to_id)
-      ::Ci::Minutes::BatchResetService.new.execute!(ids_range: (from_id..to_id))
-    end
+    def perform(from_id, to_id); end
   end
 end
