@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::ScanExecutionPoliciesFinder do
+RSpec.describe Security::ScanExecutionPoliciesFinder, feature_category: :security_policy_management do
   let!(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
   let!(:policy_yaml) do
     build(:orchestration_policy_yaml, scan_execution_policy: [policy])
