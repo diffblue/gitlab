@@ -324,7 +324,9 @@ export default {
       />
     </template>
     <template #reference="{ issuable }">
-      <span class="issuable-reference">{{ epicReference(issuable) }}</span>
+      <span data-testid="issuable-reference" class="issuable-reference">{{
+        epicReference(issuable)
+      }}</span>
     </template>
     <template #timeframe="{ issuable }">
       <gl-icon v-if="hasDateSet(issuable)" name="calendar" />
