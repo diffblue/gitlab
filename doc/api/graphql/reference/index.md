@@ -6417,6 +6417,7 @@ Input type: `UserPreferencesUpdateInput`
 | ---- | ---- | ----------- |
 | <a id="mutationuserpreferencesupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationuserpreferencesupdateissuessort"></a>`issuesSort` | [`IssueSort`](#issuesort) | Sort order for issue lists. |
+| <a id="mutationuserpreferencesupdatevisibilitypipelineidtype"></a>`visibilityPipelineIdType` | [`VisibilityPipelineIdType`](#visibilitypipelineidtype) | Determines whether the pipeline list shows ID or IID. |
 
 #### Fields
 
@@ -21999,6 +22000,7 @@ fields relate to interactions between the two entities.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="userpreferencesissuessort"></a>`issuesSort` | [`IssueSort`](#issuesort) | Sort order for issue lists. |
+| <a id="userpreferencesvisibilitypipelineidtype"></a>`visibilityPipelineIdType` | [`VisibilityPipelineIdType`](#visibilitypipelineidtype) | Determines whether the pipeline list shows ID or IID. |
 
 ### `UserStatus`
 
@@ -25090,6 +25092,15 @@ Verification status of a GPG or X.509 signature for a commit.
 | <a id="visibilitylevelsenuminternal"></a>`internal` | Internal visibility level. |
 | <a id="visibilitylevelsenumprivate"></a>`private` | Private visibility level. |
 | <a id="visibilitylevelsenumpublic"></a>`public` | Public visibility level. |
+
+### `VisibilityPipelineIdType`
+
+Determines whether the pipeline list shows ID or IID.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="visibilitypipelineidtypeid"></a>`ID` | Display pipeline ID. |
+| <a id="visibilitypipelineidtypeiid"></a>`IID` | Display pipeline IID. |
 
 ### `VisibilityScopesEnum`
 
