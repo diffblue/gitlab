@@ -8,9 +8,6 @@ import {
 
 export const selectedPlanText = (state, getters) => getters.selectedPlanDetails.text;
 
-export const selectedPlanPrice = (state, getters) =>
-  getters.selectedPlanDetails.pricePerUserPerYear;
-
 export const selectedPlanDetails = (state) =>
   state.availablePlans.find((plan) => plan.value === state.selectedPlan);
 

@@ -6,7 +6,6 @@ const parsePlanData = (planData) =>
   JSON.parse(planData).map((plan) => ({
     value: plan.id,
     text: capitalizeFirstCharacter(plan.name),
-    pricePerUserPerYear: plan.price_per_year,
     code: plan.code,
     isEligibleToUsePromoCode: plan.eligible_to_use_promo_code,
     promotionalOfferText: plan.promotional_offer_text,

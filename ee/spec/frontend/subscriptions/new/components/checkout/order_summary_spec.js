@@ -108,10 +108,7 @@ describe('Order Summary', () => {
 
   const invoicePreviewQuerySpy = jest.fn().mockResolvedValue(mockInvoicePreviewUltimate);
 
-  const createComponent = (
-    invoicePreviewSpy = invoicePreviewQuerySpy,
-    useInvoicePreviewApiInSaasPurchase = true,
-  ) => {
+  const createComponent = (invoicePreviewSpy = invoicePreviewQuerySpy) => {
     const mockCustomersDotClient = createMockClient([[invoicePreviewQuery, invoicePreviewSpy]]);
     const mockApollo = new VueApollo({
       defaultClient: mockCustomersDotClient,
@@ -122,9 +119,6 @@ describe('Order Summary', () => {
     wrapper = mountExtended(Component, {
       apolloProvider: mockApollo,
       store,
-      provide: {
-        glFeatures: { useInvoicePreviewApiInSaasPurchase },
-      },
     });
     return waitForPromises();
   };
@@ -132,7 +126,6 @@ describe('Order Summary', () => {
   beforeEach(() => {
     initialiseStore();
     trackingSpy = mockTracking(undefined, undefined, jest.spyOn);
-    gon.features = { useInvoicePreviewApiInSaasPurchase: true };
   });
 
   afterEach(() => {
@@ -522,13 +515,6 @@ describe('Order Summary', () => {
       expect(findPromoCodeInput().exists()).toBe(true);
     });
 
-    it('doesnt show promo code input when useInvoicePreviewApiInSaasPurchase ff is off even when eligible', async () => {
-      await createComponent(null, false);
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
-
-      expect(findPromoCodeInput().exists()).toBe(false);
-    });
-
     it('doesnt show promo code input if not eligible', async () => {
       await createComponent();
       await store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
@@ -791,82 +777,6 @@ describe('Order Summary', () => {
       await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
 
       expect(findPromotionalOfferText().exists()).toBe(false);
-    });
-  });
-
-  describe('when use_invoice_preview_api_in_saas_purchase feature flag is disabled', () => {
-    beforeEach(async () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: false };
-      await store.commit(types.UPDATE_SELECTED_GROUP, 132);
-      return createComponent(null, false);
-    });
-
-    it('displays the chosen plan', () => {
-      expect(selectedPlan()).toContain('Gold plan');
-    });
-
-    it('displays the correct formatted amount price per user', () => {
-      expect(perUserPriceInfo()).toBe('$1,188 per user per year');
-    });
-
-    it('displays the correct formatted total amount', () => {
-      expect(totalPriceToBeCharged()).toBe('$1,188');
-    });
-
-    it('does not call invoice preview API', () => {
-      expect(invoicePreviewQuerySpy).not.toHaveBeenCalled();
-    });
-
-    describe('when changing plan', () => {
-      beforeEach(() => {
-        store.commit(types.UPDATE_SELECTED_PLAN, 'firstPlanId');
-      });
-
-      it('displays the chosen plan', () => {
-        expect(selectedPlan()).toContain('Bronze plan');
-      });
-
-      it('displays the correct formatted amount price per user', () => {
-        expect(perUserPriceInfo()).toBe('$48 per user per year');
-      });
-
-      it('displays the correct formatted total amount', () => {
-        expect(totalPriceToBeCharged()).toBe('$48');
-      });
-
-      it('does not call invoice preview API', () => {
-        expect(invoicePreviewQuerySpy).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('when changing users', () => {
-      beforeEach(() => {
-        store.commit(types.UPDATE_NUMBER_OF_USERS, 3);
-      });
-
-      it('displays the chosen plan', () => {
-        expect(selectedPlan()).toContain('Gold plan');
-      });
-
-      it('displays the correct number of users', () => {
-        expect(numberOfUsers()).toBe('(x3)');
-      });
-
-      it('displays the correct formatted amount price per user', () => {
-        expect(perUserPriceInfo()).toBe('$1,188 per user per year');
-      });
-
-      it('displays the correct multiplied formatted amount of the chosen plan', () => {
-        expect(totalOriginalPrice()).toBe('$3,564');
-      });
-
-      it('displays the correct formatted total amount', () => {
-        expect(totalPriceToBeCharged()).toBe('$3,564');
-      });
-
-      it('calls invoice preview API with appropriate params', () => {
-        expect(invoicePreviewQuerySpy).not.toHaveBeenCalled();
-      });
     });
   });
 });

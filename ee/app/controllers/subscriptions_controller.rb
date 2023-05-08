@@ -21,7 +21,6 @@ class SubscriptionsController < ApplicationController
 
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
-    push_frontend_feature_flag(:use_invoice_preview_api_in_saas_purchase)
   end
 
   feature_category :purchase

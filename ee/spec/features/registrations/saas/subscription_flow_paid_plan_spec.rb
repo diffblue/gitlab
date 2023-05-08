@@ -6,50 +6,25 @@ RSpec.describe 'Subscription flow for paid plan', :js, :saas_registration,
 feature_category: :onboarding do
   include SubscriptionPortalHelpers
 
-  context 'when use_invoice_preview_api_in_saas_purchase feature flag is enabled' do
-    it 'registers the user and sends them back to subscription checkout' do
-      stub_feature_flags(use_invoice_preview_api_in_saas_purchase: true)
+  it 'registers the user and sends them back to subscription checkout' do
+    stub_signing_key
 
-      stub_signing_key
+    stub_invoice_preview
 
-      stub_invoice_preview
+    registers_from_subscription
 
-      registers_from_subscription
+    expect_to_see_account_confirmation_page
 
-      expect_to_see_account_confirmation_page
+    confirm_account
 
-      confirm_account
+    user_signs_in
 
-      user_signs_in
+    expect_to_see_welcome_form
 
-      expect_to_see_welcome_form
+    fills_in_welcome_form
+    click_on 'Continue'
 
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      expect_to_see_checkout_form
-    end
-  end
-
-  context 'when use_invoice_preview_api_in_saas_purchase feature flag is disabled' do
-    it 'registers the user and sends them back to subscription checkout' do
-      stub_feature_flags(use_invoice_preview_api_in_saas_purchase: false)
-
-      registers_from_subscription
-
-      expect_to_see_account_confirmation_page
-
-      confirm_account
-
-      user_signs_in
-
-      expect_to_see_welcome_form
-
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      expect_to_see_checkout_form
-    end
+    expect_to_see_checkout_form
   end
 
   def registers_from_subscription

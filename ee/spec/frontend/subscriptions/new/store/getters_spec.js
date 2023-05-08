@@ -71,26 +71,18 @@ describe('Subscriptions Getters', () => {
   describe('totalExVat', () => {
     it('returns the total value excluding vat', () => {
       expect(
-        getters.totalExVat(
-          { numberOfUsers: 5 },
-          { chargeItem: mockChargeItem, showAmount: true, selectedPlanPrice: 10 },
-        ),
+        getters.totalExVat({ numberOfUsers: 5 }, { chargeItem: mockChargeItem, showAmount: true }),
       ).toBe(48);
     });
 
     it('returns 0 if showAmount is false', () => {
       expect(
-        getters.totalExVat(
-          { numberOfUsers: 5 },
-          { chargeItem: mockChargeItem, showAmount: false, selectedPlanPrice: 10 },
-        ),
+        getters.totalExVat({ numberOfUsers: 5 }, { chargeItem: mockChargeItem, showAmount: false }),
       ).toBe(0);
     });
 
     it(`returns 0 if charge item doesn't exist`, () => {
-      expect(
-        getters.totalExVat({ numberOfUsers: 5 }, { showAmount: true, selectedPlanPrice: 10 }),
-      ).toBe(0);
+      expect(getters.totalExVat({ numberOfUsers: 5 }, { showAmount: true })).toBe(0);
     });
   });
 
@@ -125,31 +117,19 @@ describe('Subscriptions Getters', () => {
       expect(getters.showAmount({}, { usersPresent: false })).toBe(false);
     });
 
-    it('returns true if users are present and not using invoice preview api', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: false };
-
-      expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(true);
-    });
-
-    it('returns false if users are present when using invoice preview api and when loading', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
-
+    it('returns false if users are present and when loading invoice preview', () => {
       expect(getters.showAmount({ isInvoicePreviewLoading: true }, { usersPresent: true })).toBe(
         false,
       );
     });
 
-    it('returns false if users are present when using invoice preview api and invoice preview is not valid', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
-
+    it('returns false if users are present when invoice preview is not valid', () => {
       expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: false })).toBe(
         false,
       );
     });
 
-    it('returns true if users are present when using invoice preview api and invoice preview is valid', () => {
-      gon.features = { useInvoicePreviewApiInSaasPurchase: true };
-
+    it('returns true if users are present and has valid price details', () => {
       expect(getters.showAmount({}, { usersPresent: true, hasValidPriceDetails: true })).toBe(true);
     });
   });

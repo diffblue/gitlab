@@ -58,21 +58,18 @@ describe('projectsSelector default state', () => {
         {
           value: 'firstPlanId',
           text: 'Bronze Plan',
-          pricePerUserPerYear: 48,
           code: 'bronze',
           isEligibleToUsePromoCode: false,
         },
         {
           value: 'secondPlanId',
           text: 'Premium Plan',
-          pricePerUserPerYear: 228,
           code: 'premium',
           isEligibleToUsePromoCode: true,
         },
         {
           value: 'thirdPlanId',
           text: 'Ultimate Plan',
-          pricePerUserPerYear: 350,
           code: 'ultimate',
           isEligibleToUsePromoCode: false,
         },
