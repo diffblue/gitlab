@@ -33,7 +33,7 @@ To set up Pages with a custom domain name, read the requirements and steps below
     there are multiple DNS records on that name, you must use an `ALIAS` record.
   - A DNS `TXT` record to verify your domain's ownership.
 - Set either `external_http` or `external_https` in `/etc/gitlab/gitlab.rb` to the IP and port of
-  your [Pages Daemon](../../../../administration/pages/index.md#overview).
+  your [Pages daemon](../../../../administration/pages/index.md#the-gitlab-pages-daemon).
   If you don't have IPv6, you can omit the IPv6 address.
 
   Example:

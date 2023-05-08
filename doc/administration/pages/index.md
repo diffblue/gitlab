@@ -14,7 +14,7 @@ This guide is for Omnibus GitLab installations. If you have installed
 GitLab from source, see
 [GitLab Pages administration for source installations](source.md).
 
-## Overview
+## The GitLab Pages daemon
 
 GitLab Pages makes use of the [GitLab Pages daemon](https://gitlab.com/gitlab-org/gitlab-pages), a basic HTTP server
 written in Go that can listen on an external IP address and provide support for
