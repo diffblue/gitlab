@@ -189,9 +189,12 @@ describe('International Phone input component', () => {
 
     describe('when request is unsuccessful', () => {
       const errorMessage = 'Invalid phone number';
+      const reason = 'bad_request';
 
       beforeEach(() => {
-        axiosMock.onPost(SEND_CODE_PATH).reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage });
+        axiosMock
+          .onPost(SEND_CODE_PATH)
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
 
         enterPhoneNumber('555');
         submitForm();
@@ -204,6 +207,25 @@ describe('International Phone input component', () => {
           captureError: true,
           error: expect.any(Error),
         });
+      });
+    });
+
+    describe('when TeleSign is down', () => {
+      const errorMessage = 'Something went wrong';
+      const reason = 'unknown_telesign_error';
+
+      beforeEach(() => {
+        axiosMock
+          .onPost(SEND_CODE_PATH)
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
+
+        enterPhoneNumber('555');
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('emits the skip-verification event', () => {
+        expect(wrapper.emitted('skip-verification')).toHaveLength(1);
       });
     });
   });

@@ -233,9 +233,12 @@ export default {
     >
       {{ submitButtonText }}
     </gl-button>
-    <gl-form-text v-if="automaticTrial" data-testid="automatic_trial_description_text">{{
-      $options.i18n.automaticTrialDescription
-    }}</gl-form-text>
+    <gl-form-text
+      v-if="automaticTrial"
+      data-testid="automatic_trial_description_text"
+      class="gl-mt-3 gl-text-gray-500"
+      >{{ $options.i18n.automaticTrialDescription }}</gl-form-text
+    >
   </gl-form>
 </template>
 

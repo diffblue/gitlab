@@ -22,13 +22,9 @@ module Elastic
 
         # We're migrating the `confidential` Note column to `internal` and therefore write to both attributes.
         # https://gitlab.com/groups/gitlab-org/-/epics/9634
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_internal_to_notes)
-          data['internal'] = safely_read_attribute_for_elasticsearch(:internal)
-        end
+        data['internal'] = safely_read_attribute_for_elasticsearch(:internal)
 
-        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_notes)
-          data['hashed_root_namespace_id'] = target&.project&.namespace&.hashed_root_namespace_id
-        end
+        data['hashed_root_namespace_id'] = target&.project&.namespace&.hashed_root_namespace_id
 
         if noteable.is_a?(Issue)
           data['issue'] = {

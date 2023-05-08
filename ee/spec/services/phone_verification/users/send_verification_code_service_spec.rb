@@ -8,7 +8,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
 
   subject(:service) { described_class.new(user, params) }
 
-  describe '#execute', :aggregate_failures do
+  describe '#execute' do
     before do
       allow_next_instance_of(PhoneVerification::TelesignClient::RiskScoreService) do |instance|
         allow(instance).to receive(:execute).and_return(risk_service_response)
@@ -17,12 +17,15 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
       allow_next_instance_of(PhoneVerification::TelesignClient::SendVerificationCodeService) do |instance|
         allow(instance).to receive(:execute).and_return(send_verification_code_response)
       end
+
+      allow(Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+        .with(:phone_verification_send_code, scope: user).and_return(false)
     end
 
     context 'when params are invalid' do
       let(:params) { { country: 'US', international_dial_code: 1 } }
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -40,7 +43,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         .with(:phone_verification_send_code, scope: user).and_return(true)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -65,7 +68,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         }
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -83,7 +86,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.error(message: 'Downstream error message', reason: :invalid_phone_number)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -100,13 +103,63 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.error(message: 'Downstream error message', reason: :bad_request)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_error
         expect(response.message).to eq('Downstream error message')
         expect(response.reason).to eq(:bad_request)
+      end
+    end
+
+    context 'when there is a TeleSign error in getting the risk score' do
+      let_it_be(:risk_service_response) do
+        ServiceResponse.error(message: 'Downstream error message', reason: :unknown_telesign_error)
+      end
+
+      it 'returns an error', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message).to eq('Downstream error message')
+        expect(response.reason).to eq(:unknown_telesign_error)
+      end
+
+      it 'force verifies the user', :aggregate_failures, :freeze_time do
+        service.execute
+        record = user.phone_number_validation
+
+        expect(record.validated_at).to eq(Time.now.utc)
+        expect(record.risk_score).to eq(0)
+        expect(record.telesign_reference_xid).to eq('unknown_telesign_error')
+      end
+    end
+
+    context 'when there is a TeleSign error in sending the verification code' do
+      let_it_be(:risk_service_response) { ServiceResponse.success }
+
+      let_it_be(:send_verification_code_response) do
+        ServiceResponse.error(message: 'Downstream error message', reason: :unknown_telesign_error)
+      end
+
+      it 'returns an error', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message).to eq('Downstream error message')
+        expect(response.reason).to eq(:unknown_telesign_error)
+      end
+
+      it 'force verifies the user', :aggregate_failures, :freeze_time do
+        service.execute
+        record = user.phone_number_validation
+
+        expect(record.validated_at).to eq(Time.now.utc)
+        expect(record.risk_score).to eq(0)
+        expect(record.telesign_reference_xid).to eq('unknown_telesign_error')
       end
     end
 
@@ -117,7 +170,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.error(message: 'Downstream error message', reason: :internal_server_error)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -137,7 +190,7 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         end
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -167,14 +220,14 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         ServiceResponse.success(payload: { telesign_reference_xid: telesign_reference_xid })
       end
 
-      it 'returns a success response' do
+      it 'returns a success response', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
         expect(response).to be_success
       end
 
-      it 'saves the risk score, telesign_reference_xid and increases verification attempts' do
+      it 'saves the risk score, telesign_reference_xid and increases verification attempts', :aggregate_failures do
         service.execute
         record = user.phone_number_validation
 

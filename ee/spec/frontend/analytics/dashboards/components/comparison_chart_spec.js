@@ -1,4 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { createAlert } from '~/alert';
 import {
   DASHBOARD_LOADING_FAILURE,
@@ -6,7 +8,10 @@ import {
 } from 'ee/analytics/dashboards/constants';
 import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart.vue';
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
+import GroupVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/group_vulnerabilities.query.graphql';
+import ProjectVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/project_vulnerabilities.query.graphql';
 import * as utils from '~/analytics/shared/utils';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   MOCK_TABLE_TIME_PERIODS,
@@ -21,13 +26,46 @@ import {
 const mockProps = { name: 'Exec group', requestPath: 'exec-group', isProject: false };
 
 jest.mock('~/alert');
-jest.mock('~/analytics/shared/utils');
+jest.mock('~/analytics/shared/utils', () => ({
+  fetchMetricsData: jest.fn(),
+  toYmd: jest.requireActual('~/analytics/shared/utils').toYmd,
+}));
+
+Vue.use(VueApollo);
 
 describe('Comparison chart', () => {
   let wrapper;
 
+  const vulnerabilitiesCountByDayResponse = {
+    vulnerabilitiesCountByDay: {
+      nodes: [
+        { date: '2020-05-18', critical: 5, high: 4, medium: 3, low: 2 },
+        { date: '2020-05-19', critical: 6, high: 5, medium: 4, low: 3 },
+        { date: '2020-05-20', critical: 7, high: 6, medium: 5, low: 4 },
+      ],
+    },
+  };
+
+  const groupRequestHandler = jest.fn().mockResolvedValue({
+    data: { namespace: { id: 'group', ...vulnerabilitiesCountByDayResponse } },
+  });
+
+  const projectRequestHandler = jest.fn().mockResolvedValue({
+    data: { namespace: { id: 'project', ...vulnerabilitiesCountByDayResponse } },
+  });
+
+  const createMockApolloProvider = () => {
+    Vue.use(VueApollo);
+
+    return createMockApollo([
+      [GroupVulnerabilitiesQuery, groupRequestHandler],
+      [ProjectVulnerabilitiesQuery, projectRequestHandler],
+    ]);
+  };
+
   const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMount(ComparisonChart, {
+      apolloProvider: createMockApolloProvider(),
       propsData: {
         ...mockProps,
         ...props,
@@ -57,6 +95,19 @@ describe('Comparison chart', () => {
     );
   };
 
+  const expectVulnerabilityRequest = (handler, { start, end }, fullPath = '') => {
+    expect(handler).toHaveBeenCalledWith({
+      fullPath,
+      startDate: utils.toYmd(start),
+      endDate: utils.toYmd(end),
+    });
+  };
+
+  afterEach(() => {
+    groupRequestHandler.mockClear();
+    projectRequestHandler.mockClear();
+  });
+
   describe('data requests', () => {
     it('will request the metrics for the table data', async () => {
       utils.fetchMetricsData.mockReturnValueOnce({});
@@ -72,6 +123,16 @@ describe('Comparison chart', () => {
           'groups/exec-group',
         ),
       );
+    });
+
+    it('will request vulnerability metrics for the table data', async () => {
+      utils.fetchMetricsData.mockReturnValueOnce({});
+      await createWrapper();
+
+      expect(groupRequestHandler).toHaveBeenCalledTimes(MOCK_TABLE_TIME_PERIODS.length);
+      MOCK_TABLE_TIME_PERIODS.forEach((timePeriod) => {
+        expectVulnerabilityRequest(groupRequestHandler, timePeriod, 'exec-group');
+      });
     });
 
     it('will show an alert if the table data failed to load', async () => {
@@ -99,6 +160,28 @@ describe('Comparison chart', () => {
           'groups/exec-group',
         ),
       );
+    });
+
+    it('will request the chart vulnerability metrics if there is table data', async () => {
+      utils.fetchMetricsData.mockReturnValue(mockMonthToDateApiResponse);
+      await createWrapper();
+
+      const timePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
+
+      expect(groupRequestHandler).toHaveBeenCalledTimes(timePeriods.length);
+      timePeriods.forEach((timePeriod) => {
+        expectVulnerabilityRequest(groupRequestHandler, timePeriod, 'exec-group');
+      });
+    });
+
+    it('will request the vulnerability metrics', async () => {
+      utils.fetchMetricsData.mockReturnValueOnce({});
+      await createWrapper();
+
+      expect(groupRequestHandler).toHaveBeenCalledTimes(MOCK_TABLE_TIME_PERIODS.length);
+      MOCK_TABLE_TIME_PERIODS.forEach((timePeriod) => {
+        expectVulnerabilityRequest(groupRequestHandler, timePeriod, 'exec-group');
+      });
     });
 
     it('will show an alert if the chart data failed to load', async () => {
@@ -180,6 +263,16 @@ describe('Comparison chart', () => {
           fakeProjectPath,
         ),
       );
+    });
+
+    it('will request project vulnerability metrics', () => {
+      const timePeriods = [...MOCK_TABLE_TIME_PERIODS, ...MOCK_CHART_TIME_PERIODS];
+
+      expect(groupRequestHandler).toHaveBeenCalledTimes(0);
+      expect(projectRequestHandler).toHaveBeenCalledTimes(timePeriods.length);
+      timePeriods.forEach((timePeriod) => {
+        expectVulnerabilityRequest(projectRequestHandler, timePeriod, fakeProjectPath);
+      });
     });
   });
 });

@@ -10,7 +10,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
 
   subject(:service) { described_class.new(user, params) }
 
-  describe '#execute', :aggregate_failures do
+  describe '#execute' do
     before do
       allow_next_instance_of(PhoneVerification::TelesignClient::VerifyCodeService) do |instance|
         allow(instance).to receive(:execute).and_return(verify_response)
@@ -23,7 +23,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
     context 'when params are invalid' do
       let(:params) { { verification_code: '' } }
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -39,7 +39,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
         .with(:phone_verification_verify_code, scope: user).and_return(true)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -57,7 +57,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
         ServiceResponse.error(message: 'Downstream error message', reason: :bad_request)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -67,12 +67,34 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
       end
     end
 
+    context 'when there is a TeleSign error in sending the verification code' do
+      let_it_be(:verify_response) do
+        ServiceResponse.error(message: 'Downstream error message', reason: :unknown_telesign_error)
+      end
+
+      it 'returns an error', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message).to eq('Downstream error message')
+        expect(response.reason).to eq(:unknown_telesign_error)
+      end
+
+      it 'force verifies the user', :aggregate_failures, :freeze_time do
+        service.execute
+
+        expect(record.reload.validated_at).to eq(Time.now.utc)
+        expect(record.reload.telesign_reference_xid).to eq('unknown_telesign_error')
+      end
+    end
+
     context 'when there is a server error in sending the verification code' do
       let_it_be(:verify_response) do
         ServiceResponse.error(message: 'Downstream error message', reason: :internal_server_error)
       end
 
-      it 'returns an error' do
+      it 'returns an error', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -92,7 +114,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
         end
       end
 
-      it 'returns an error ServiceResponse' do
+      it 'returns an error ServiceResponse', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)
@@ -120,7 +142,7 @@ RSpec.describe PhoneVerification::Users::VerifyCodeService, feature_category: :s
         expect(record.reload.validated_at).to eq(Time.now.utc)
       end
 
-      it 'returns a success response' do
+      it 'returns a success response', :aggregate_failures do
         response = service.execute
 
         expect(response).to be_a(ServiceResponse)

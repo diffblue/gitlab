@@ -8,6 +8,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_WORKSPACE } from '~/graphql_shared/constants';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import workspaceUpdateMutation from 'ee/remote_development/graphql/mutations/workspace_update.mutation.graphql';
 import WorkspacesTable, { i18n } from 'ee/remote_development/components/list/workspaces_table.vue';
 import WorkspaceActions from 'ee/remote_development/components/list/workspace_actions.vue';
 import WorkspaceStateIndicator from 'ee/remote_development/components/list/workspace_state_indicator.vue';
@@ -58,11 +59,9 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
     workspaceUpdateMutationHandler = jest.fn();
     workspaceUpdateMutationHandler.mockResolvedValueOnce(WORKSPACE_UPDATE_MUTATION_RESULT);
 
-    const mockApollo = createMockApollo([], {
-      Mutation: {
-        workspaceUpdate: workspaceUpdateMutationHandler,
-      },
-    });
+    const mockApollo = createMockApollo([
+      [workspaceUpdateMutation, workspaceUpdateMutationHandler],
+    ]);
 
     wrapper = mount(WorkspacesTable, {
       apolloProvider: mockApollo,
@@ -153,17 +152,12 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
 
       await waitForPromises();
 
-      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith(
-        expect.any(Object),
-        {
-          input: {
-            desiredState: TEST_DESIRED_STATE,
-            id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
-          },
+      expect(workspaceUpdateMutationHandler).toHaveBeenCalledWith({
+        input: {
+          desiredState: TEST_DESIRED_STATE,
+          id: convertToGraphQLId(TYPE_WORKSPACE, workspace.id),
         },
-        expect.any(Object),
-        expect.any(Object),
-      );
+      });
     });
 
     describe('when the workspaceUpdate mutation returns an error response', () => {
@@ -175,7 +169,7 @@ describe('remote_development/components/list/workspaces_table.vue', () => {
         errorResponse.data.workspaceUpdate.errors = [errorMessage];
 
         workspaceUpdateMutationHandler.mockReset();
-        workspaceUpdateMutationHandler.mockResolvedValueOnce(errorResponse.data.workspaceUpdate);
+        workspaceUpdateMutationHandler.mockResolvedValueOnce(errorResponse);
 
         workspaceActions.vm.$emit('click', TEST_DESIRED_STATE);
 

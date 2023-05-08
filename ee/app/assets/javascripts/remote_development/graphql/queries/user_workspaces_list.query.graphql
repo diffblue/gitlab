@@ -3,7 +3,7 @@
 query userWorkspacesList($first: Int, $before: String, $after: String) {
   currentUser {
     id
-    workspaces(first: $first, before: $before, after: $after) @client {
+    workspaces(first: $first, before: $before, after: $after) {
       nodes {
         id
         name

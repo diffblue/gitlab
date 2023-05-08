@@ -83,5 +83,6 @@ export default {
     :aria-label="iconLabel"
     class="workspace-state-indicator"
     :class="iconClass"
+    data-testid="workspace-state-indicator"
   />
 </template>

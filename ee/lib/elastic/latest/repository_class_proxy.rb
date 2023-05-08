@@ -25,11 +25,7 @@ module Elastic
       private
 
       def prepare_commit(raw_result)
-        source = if Elastic::DataMigrationService.migration_has_finished?(:migrate_commits_to_separate_index)
-                   raw_result['_source']
-                 else
-                   raw_result['_source']['commit']
-                 end
+        source = raw_result['_source']
 
         {
           id: source['sha'],

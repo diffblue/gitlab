@@ -211,7 +211,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js, feature_cat
         it 'displays an empty state' do
           element = page.find('.empty-state')
 
-          expect(element).to have_content(_("We don't have enough data to show this stage."))
+          expect(element).to have_content(_("There are 0 items to show in this stage, for these filters, within this time range."))
           expect(element.find('.svg-content img')['src']).to have_content('illustrations/analytics/cycle-analytics-empty-chart')
         end
       end

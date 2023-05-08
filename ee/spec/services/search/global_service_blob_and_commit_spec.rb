@@ -28,17 +28,6 @@ RSpec.describe Search::GlobalService, '#visibility', feature_category: :global_s
         project.repository.index_commits_and_blobs
       end
 
-      context 'when populate_commit_permissions_in_main_index migration has not been completed' do
-        before do
-          set_elasticsearch_migration_to(:populate_commit_permissions_in_main_index, including: false)
-        end
-
-        it_behaves_like 'search respects visibility' do
-          let(:scope) { 'commits' }
-          let(:search) { 'initial' }
-        end
-      end
-
       it_behaves_like 'search respects visibility' do
         let(:scope) { 'commits' }
         let(:search) { 'initial' }

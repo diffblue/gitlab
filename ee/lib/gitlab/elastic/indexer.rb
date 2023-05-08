@@ -227,12 +227,9 @@ module Gitlab
 
       def elasticsearch_config(target)
         config = Gitlab::CurrentSettings.elasticsearch_config.merge(
-          index_name: target.index_name
+          index_name: target.index_name,
+          index_name_commits: ::Elastic::Latest::CommitConfig.index_name
         )
-
-        if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_commits_to_separate_index)
-          config[:index_name_commits] = ::Elastic::Latest::CommitConfig.index_name
-        end
 
         if ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
           config[:index_name_wikis] = ::Elastic::Latest::WikiConfig.index_name

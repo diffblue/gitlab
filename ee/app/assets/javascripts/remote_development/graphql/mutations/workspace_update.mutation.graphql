@@ -1,5 +1,5 @@
-mutation updateWorkspace($input: WorkspaceUpdateInput!) {
-  workspaceUpdate(input: $input) @client {
+mutation workspaceUpdate($input: WorkspaceUpdateInput!) {
+  workspaceUpdate(input: $input) {
     workspace {
       id
       actualState

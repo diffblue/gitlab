@@ -80,7 +80,6 @@ export default {
       isCreatingWorkspace: false,
       clusterAgents: [],
       hasDevFile: null,
-      groupPath: null,
       projectId: null,
       rootRef: null,
       maxHoursBeforeTermination: DEFAULT_MAX_HOURS_BEFORE_TERMINATION,

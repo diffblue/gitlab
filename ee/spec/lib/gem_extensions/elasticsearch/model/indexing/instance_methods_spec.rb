@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe GemExtensions::Elasticsearch::Model::Indexing::InstanceMethods do
+RSpec.describe GemExtensions::Elasticsearch::Model::Indexing::InstanceMethods,
+  feature_category: :global_search do
   describe '#index_document' do
-    let(:project) { Project.new(id: 1) }
+    let_it_be(:project) { create(:project) }
 
     it 'overrides _id' do
       proxy = Elastic::Latest::ProjectInstanceProxy.new(project)
@@ -12,7 +13,7 @@ RSpec.describe GemExtensions::Elasticsearch::Model::Indexing::InstanceMethods do
       expect(proxy.client).to receive(:index).with(
         {
           index: 'gitlab-test',
-          id: 'project_1',
+          id: "project_#{project.id}",
           body: proxy.as_indexed_json
         }
       )

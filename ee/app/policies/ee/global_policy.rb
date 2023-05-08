@@ -52,9 +52,7 @@ module EE
 
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
-      rule { ~anonymous & remote_development_available }.policy do
-        enable :read_workspace
-      end
+      rule { ~anonymous & remote_development_available }.enable :read_workspace
 
       rule { admin & instance_devops_adoption_available }.policy do
         enable :manage_devops_adoption_namespaces
