@@ -25,7 +25,6 @@ RSpec.describe 'Database schema', feature_category: :database do
     clusters_applications_helm: %w[cluster_id],
     clusters_applications_ingress: %w[cluster_id],
     clusters_applications_knative: %w[cluster_id],
-    clusters_applications_prometheus: %w[cluster_id],
     clusters_applications_runners: %w[cluster_id],
     serverless_domain_cluster: %w[clusters_applications_knative_id creator_id pages_domain_id]
   }.with_indifferent_access.freeze

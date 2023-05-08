@@ -14402,29 +14402,6 @@ CREATE SEQUENCE clusters_applications_knative_id_seq
 
 ALTER SEQUENCE clusters_applications_knative_id_seq OWNED BY clusters_applications_knative.id;
 
-CREATE TABLE clusters_applications_prometheus (
-    id integer NOT NULL,
-    cluster_id integer NOT NULL,
-    status integer NOT NULL,
-    version character varying NOT NULL,
-    status_reason text,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    last_update_started_at timestamp with time zone,
-    encrypted_alert_manager_token character varying,
-    encrypted_alert_manager_token_iv character varying,
-    healthy boolean
-);
-
-CREATE SEQUENCE clusters_applications_prometheus_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE clusters_applications_prometheus_id_seq OWNED BY clusters_applications_prometheus.id;
-
 CREATE TABLE clusters_applications_runners (
     id integer NOT NULL,
     cluster_id integer NOT NULL,
@@ -24998,8 +24975,6 @@ ALTER TABLE ONLY clusters_applications_ingress ALTER COLUMN id SET DEFAULT nextv
 
 ALTER TABLE ONLY clusters_applications_knative ALTER COLUMN id SET DEFAULT nextval('clusters_applications_knative_id_seq'::regclass);
 
-ALTER TABLE ONLY clusters_applications_prometheus ALTER COLUMN id SET DEFAULT nextval('clusters_applications_prometheus_id_seq'::regclass);
-
 ALTER TABLE ONLY clusters_applications_runners ALTER COLUMN id SET DEFAULT nextval('clusters_applications_runners_id_seq'::regclass);
 
 ALTER TABLE ONLY clusters_kubernetes_namespaces ALTER COLUMN id SET DEFAULT nextval('clusters_kubernetes_namespaces_id_seq'::regclass);
@@ -26903,9 +26878,6 @@ ALTER TABLE ONLY clusters_applications_ingress
 
 ALTER TABLE ONLY clusters_applications_knative
     ADD CONSTRAINT clusters_applications_knative_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY clusters_applications_prometheus
-    ADD CONSTRAINT clusters_applications_prometheus_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY clusters_applications_runners
     ADD CONSTRAINT clusters_applications_runners_pkey PRIMARY KEY (id);
@@ -30328,8 +30300,6 @@ CREATE UNIQUE INDEX index_clusters_applications_helm_on_cluster_id ON clusters_a
 CREATE UNIQUE INDEX index_clusters_applications_ingress_on_cluster_id ON clusters_applications_ingress USING btree (cluster_id);
 
 CREATE UNIQUE INDEX index_clusters_applications_knative_on_cluster_id ON clusters_applications_knative USING btree (cluster_id);
-
-CREATE UNIQUE INDEX index_clusters_applications_prometheus_on_cluster_id ON clusters_applications_prometheus USING btree (cluster_id);
 
 CREATE UNIQUE INDEX index_clusters_applications_runners_on_cluster_id ON clusters_applications_runners USING btree (cluster_id);
 
