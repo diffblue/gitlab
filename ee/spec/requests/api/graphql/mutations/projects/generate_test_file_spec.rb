@@ -2,11 +2,11 @@
 
 require "spec_helper"
 
-RSpec.describe 'AiAction for Generate Test File', feature_category: :code_review_workflow do
+RSpec.describe 'AiAction for Generate Test File', :saas, feature_category: :code_review_workflow do
   include GraphqlHelpers
   include Graphql::Subscriptions::Notes::Helper
 
-  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:group) { create(:group_with_plan, :public, plan: :ultimate_plan) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:current_user) { create(:user, developer_projects: [project]) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }
@@ -23,8 +23,9 @@ RSpec.describe 'AiAction for Generate Test File', feature_category: :code_review
   end
 
   before do
-    stub_licensed_features(generate_test_file: true)
-    group.namespace_settings.update!(third_party_ai_features_enabled: true)
+    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_licensed_features(generate_test_file: true, ai_features: true)
+    group.namespace_settings.update!(third_party_ai_features_enabled: true, experiment_features_enabled: true)
   end
 
   it 'successfully performs an explain code request' do
@@ -62,6 +63,30 @@ RSpec.describe 'AiAction for Generate Test File', feature_category: :code_review
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect(fresh_response_data['errors'][0]['message']).to eq("`openai_experimentation` feature flag is disabled.")
+    end
+  end
+
+  context 'when third_party_ai_features_enabled disabled' do
+    before do
+      group.namespace_settings.update!(third_party_ai_features_enabled: false)
+    end
+
+    it 'returns nil' do
+      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+
+      post_graphql_mutation(mutation, current_user: current_user)
+    end
+  end
+
+  context 'when experiment_features_enabled disabled' do
+    before do
+      group.namespace_settings.update!(experiment_features_enabled: false)
+    end
+
+    it 'returns nil' do
+      expect(Llm::CompletionWorker).not_to receive(:perform_async)
+
+      post_graphql_mutation(mutation, current_user: current_user)
     end
   end
 end
