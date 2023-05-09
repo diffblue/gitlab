@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category: :code_review_workflow do
   let_it_be(:user) { create(:user) }
-  let_it_be(:merge_request) { create(:merge_request) }
-  let_it_be(:project) { merge_request.project }
+  let(:project)       { create(:project, :with_namespace_settings, :repository, :public) }
+  let(:merge_request) { create(:merge_request, source_project: project) }
   let(:example_llm_response) do
     {
       "id" => "chatcmpl-72mX77BBH9Hgj196u7BDhKyCTiXxL",
@@ -25,6 +25,11 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestWorker, feature_category
   let(:response_double) { instance_double(HTTParty::Response, parsed_response: example_llm_response) }
 
   subject(:worker) { described_class.new }
+
+  before do
+    merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
+    merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
+  end
 
   context "when provided an invalid merge_request_id" do
     it "returns nil" do

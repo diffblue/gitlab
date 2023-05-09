@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe MergeRequests::Llm::SummarizeMergeRequestService, feature_category: :code_review_workflow do
   let_it_be(:user)          { create(:user) }
-  let_it_be(:merge_request) { create(:merge_request) }
-  let_it_be(:project)       { merge_request.project }
+  let_it_be(:project)       { create(:project, :with_namespace_settings, :repository, :public) }
+  let_it_be(:merge_request) { create(:merge_request, source_project: project) }
 
   let_it_be(:merge_request_2) { create(:merge_request) }
   let_it_be(:project_2)       { merge_request_2.project }
@@ -35,6 +35,9 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestService, feature_categor
   describe "#execute" do
     before do
       project.add_developer(user)
+
+      merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, true)
+      merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, true)
     end
 
     context "when the user does not have read access to the MR" do
@@ -46,15 +49,41 @@ RSpec.describe MergeRequests::Llm::SummarizeMergeRequestService, feature_categor
       end
     end
 
-    context "when #enabled? is false" do
-      before do
-        allow(service).to receive(:enabled?).and_return(false)
+    context "when the feature is not enabled" do
+      context 'when the openai_experimentation flag is false' do
+        before do
+          stub_feature_flags(openai_experimentation: false)
+        end
+
+        it "returns without attempting to summarize" do
+          expect(service).not_to receive(:llm_client)
+
+          service.execute
+        end
       end
 
-      it "returns without attempting to summarize" do
-        expect(service).not_to receive(:llm_client)
+      context 'when the project experiment_features_allowed is false' do
+        before do
+          merge_request.project.namespace.namespace_settings.update_attribute(:experiment_features_enabled, false)
+        end
 
-        service.execute
+        it "returns without attempting to summarize" do
+          expect(service).not_to receive(:llm_client)
+
+          service.execute
+        end
+      end
+
+      context 'when the project third_party_ai_features_enabled is false' do
+        before do
+          merge_request.project.namespace.namespace_settings.update_attribute(:third_party_ai_features_enabled, false)
+        end
+
+        it "returns without attempting to summarize" do
+          expect(service).not_to receive(:llm_client)
+
+          service.execute
+        end
       end
     end
 

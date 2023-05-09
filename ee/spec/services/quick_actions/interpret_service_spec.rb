@@ -484,6 +484,10 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       context "when :openai_experimentation feature flag is enabled" do
         before do
           stub_feature_flags(openai_experimentation: true)
+
+          allow_next_instance_of(::MergeRequests::Llm::SummarizeMergeRequestService) do |service|
+            allow(service).to receive(:enabled?).and_return(true)
+          end
         end
 
         context "when summarize_mr_changes is disabled" do
