@@ -7,6 +7,8 @@ RSpec.describe 'New project', :js, feature_category: :projects do
   let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
 
   before do
+    stub_application_setting(import_sources: Gitlab::ImportSources.values)
+
     sign_in(user)
   end
 

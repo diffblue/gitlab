@@ -18,6 +18,7 @@ RSpec.describe API::ProjectImport, feature_category: :importers do
   before do
     enable_external_authorization_service_check
     stub_licensed_features(external_authorization_service_api_management: true)
+    stub_application_setting(import_sources: ['gitlab_project'])
 
     namespace.add_owner(user)
   end

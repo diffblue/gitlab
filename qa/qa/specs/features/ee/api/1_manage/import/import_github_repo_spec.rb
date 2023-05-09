@@ -10,6 +10,10 @@ module QA
       include_context 'with github import'
 
       context "when imported via api" do
+        before do
+          QA::Support::Helpers::ImportSource.enable('github')
+        end
+
         it 'imports repo push rules', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/379494' do
           expect_project_import_finished_successfully
 

@@ -195,6 +195,7 @@ RSpec.describe ProjectsController do
     context 'with licensed repository mirrors' do
       before do
         stub_licensed_features(repository_mirrors: true)
+        stub_application_setting(import_sources: ['git'])
       end
 
       it 'has mirror enabled in new project' do
@@ -209,6 +210,7 @@ RSpec.describe ProjectsController do
     context 'with unlicensed repository mirrors' do
       before do
         stub_licensed_features(repository_mirrors: false)
+        stub_application_setting(import_sources: ['git'])
       end
 
       it 'has mirror disabled in new project' do

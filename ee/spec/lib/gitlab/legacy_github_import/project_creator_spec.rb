@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::LegacyGithubImport::ProjectCreator do
+RSpec.describe Gitlab::LegacyGithubImport::ProjectCreator, feature_category: :importers do
   let(:user) { create(:user) }
   let(:namespace) { create(:group) }
 
@@ -25,6 +25,7 @@ RSpec.describe Gitlab::LegacyGithubImport::ProjectCreator do
   before do
     namespace.add_owner(user)
     stub_licensed_features(ci_cd_projects: true)
+    stub_application_setting(import_sources: %w[github])
 
     allow_any_instance_of(EE::Project).to receive(:add_import_job)
     allow_any_instance_of(CiCd::SetupProject).to receive(:setup_external_service)

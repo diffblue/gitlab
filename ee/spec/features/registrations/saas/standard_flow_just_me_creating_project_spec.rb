@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Standard flow for user picking just me and creating a project', :js, :saas_registration,
 feature_category: :onboarding do
   it 'registers the user and creates a group and project reaching onboarding' do
+    stub_application_setting(import_sources: %w[github gitlab_project])
+
     user_signs_up
 
     expect_to_see_account_confirmation_page
