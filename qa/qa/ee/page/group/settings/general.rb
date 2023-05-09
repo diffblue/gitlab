@@ -72,9 +72,7 @@ module QA
 
               # GitLab UI Token Selector (https://gitlab-org.gitlab.io/gitlab-ui/?path=/story/base-token-selector--default)
               # `data-qa-*` can only be added to the wrapper so custom selector used to find token close buttons and text input
-              find_element(:ip_restriction_field).all('[data-testid="close-icon"]', minimum: 0).each do |el|
-                el.click
-              end
+              find_element(:ip_restriction_field).all('[data-testid="close-icon"]', minimum: 0).each(&:click)
 
               ip_restriction_field_input = find_element(:ip_restriction_field).find('input[type="text"]')
               ip_restriction_field_input.set ip_address
@@ -110,19 +108,20 @@ module QA
               find_element(:repository_size_limit_field).set limit
             end
 
+            # Set group's user cap limit if feature flag is enabled
+            #
             # @param limit [Integer, String] integer >=1, empty string removes the limit
             def set_saas_user_cap_limit(limit)
-              retry_on_exception(max_attempts: 10, reload: true, sleep_interval: 3) do
+              # Need to wait for the input field to appear after the toggle is enabled
+              Support::Retrier.retry_until(
+                max_attempts: 10, retry_on_exception: true, reload_page: page, sleep_interval: 2
+              ) do
                 expand_content(:permission_lfs_2fa_content)
-                find_element(:user_cap_limit_field, wait: 3)
-              end
-
-              retry_on_exception(reload: true, sleep_interval: 3) do
-                find_element(:user_cap_limit_field).set limit
+                find_element(:user_cap_limit_field, wait: 1).set limit
                 click_element(:save_permissions_changes_button)
                 wait_for_requests
 
-                find_element(:user_cap_limit_field).value == limit.to_s
+                page.text.match?(/was successfully updated/i)
               end
             end
 
