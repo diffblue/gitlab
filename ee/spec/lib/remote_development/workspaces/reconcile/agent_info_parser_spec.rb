@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
+  let(:user) { create(:user) }
   let(:workspace) { create(:workspace) }
 
   let(:workspace_agent_info) do
@@ -17,7 +18,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::AgentInfoParser, featur
       resource_version: '1',
       previous_actual_state: previous_actual_state,
       current_actual_state: current_actual_state,
-      workspace_exists: false
+      workspace_exists: false,
+      user_name: user.name,
+      user_email: user.email
     )
   end
 

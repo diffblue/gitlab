@@ -16,6 +16,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     current_actual_state:,
     # NOTE: workspace_exists is whether the workspace exists in the cluster at the time of the current_actual_state.
     workspace_exists:,
+    user_name:,
+    user_email:,
     dns_zone: 'workspaces.localdev.me'
   )
     # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/409787
@@ -314,6 +316,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 if [ ! -d '/projects/test-project' ];
                 then
                   git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
+                  cd /projects/test-project;
+                  git config user.name "${GIT_AUTHOR_NAME}";
+                  git config user.email "${GIT_AUTHOR_EMAIL}";
                 fi
               command: ["/bin/sh", "-c"]
               env:
@@ -321,6 +326,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GIT_AUTHOR_NAME
+                value: #{user_name}
+              - name: GIT_AUTHOR_EMAIL
+                value: #{user_email}
               image: alpine/git:2.36.3
               imagePullPolicy: Always
               name: gl-cloner-injector-gl-cloner-injector-command-1
@@ -400,6 +409,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
     }.compact
   end
 
+  # rubocop:disable Metrics/ParameterLists
   def create_config_to_apply(
     workspace_id:,
     workspace_name:,
@@ -407,6 +417,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
     agent_id:,
     owning_inventory:,
     started:,
+    user_name:,
+    user_email:,
     include_inventory: true,
     dns_zone: 'workspaces.localdev.me'
   )
@@ -492,6 +504,9 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 if [ ! -d '/projects/test-project' ];
                 then
                   git clone --branch master #{root_url}test-group/test-project.git /projects/test-project;
+                  cd /projects/test-project;
+                  git config user.name "${GIT_AUTHOR_NAME}";
+                  git config user.email "${GIT_AUTHOR_EMAIL}";
                 fi
               command: ["/bin/sh", "-c"]
               env:
@@ -499,6 +514,10 @@ RSpec.shared_context 'with remote development shared fixtures' do
                 value: "/projects"
               - name: PROJECT_SOURCE
                 value: "/projects"
+              - name: GIT_AUTHOR_NAME
+                value: #{user_name}
+              - name: GIT_AUTHOR_EMAIL
+                value: #{user_email}
               image: alpine/git:2.36.3
               imagePullPolicy: Always
               name: gl-cloner-injector-gl-cloner-injector-command-1
@@ -606,6 +625,7 @@ RSpec.shared_context 'with remote development shared fixtures' do
       YAML.dump(resource)
     end.join
   end
+  # rubocop:enable Metrics/ParameterLists
 
   def get_workspace_host_template(workspace_name, dns_zone)
     "\"{{.port}}-#{workspace_name}.#{dns_zone}\""
