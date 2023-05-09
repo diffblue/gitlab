@@ -24,11 +24,6 @@ RSpec.describe Admin::ApplicationSettingsController do
         geo_status_timeout: 30,
         check_namespace_plan: true,
         authorized_keys_enabled: true,
-        slack_app_enabled: true,
-        slack_app_id: 'slack_app_id',
-        slack_app_secret: 'slack_app_secret',
-        slack_app_signing_secret: 'slack_app_signing_secret',
-        slack_app_verification_token: 'slack_app_verification_token',
         allow_group_owners_to_manage_ldap: false,
         lock_memberships_to_ldap: true,
         geo_node_allowed_ips: '0.0.0.0/0, ::/0'

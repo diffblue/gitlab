@@ -193,18 +193,6 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  it 'enable Slack application', feature_category: :integrations do
-    allow(Gitlab).to receive(:com?).and_return(true)
-    visit general_admin_application_settings_path
-
-    page.within('.as-slack') do
-      check 'Enable Slack application'
-      click_button 'Save changes'
-    end
-
-    expect(page).to have_content 'Application settings saved successfully'
-  end
-
   context 'Templates page', feature_category: :importers do
     before do
       visit templates_admin_application_settings_path
