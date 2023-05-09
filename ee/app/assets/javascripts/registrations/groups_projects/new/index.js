@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import Vue from 'vue';
 import GlFieldErrors from '~/gl_field_errors';
 import { parseBoolean } from '~/lib/utils/common_utils';
@@ -19,18 +18,6 @@ const importButtonsSubmit = () => {
   };
 
   buttons.forEach((button) => button.addEventListener('click', clickHandler));
-};
-
-const setAutofocus = () => {
-  const setInputfocus = () => {
-    document
-      .querySelector('.js-group-project-tab-contents .tab-pane.active .js-group-name-field')
-      ?.focus();
-  };
-
-  setInputfocus();
-
-  $('.js-group-project-tabs').on('shown.bs.tab', setInputfocus);
 };
 
 const mountGroupProjectFields = (el, store) => {
@@ -72,6 +59,5 @@ const mountCreateImportGroupProjectFields = () => {
 export default () => {
   importButtonsSubmit();
   bindHowToImport();
-  setAutofocus();
   mountCreateImportGroupProjectFields();
 };
