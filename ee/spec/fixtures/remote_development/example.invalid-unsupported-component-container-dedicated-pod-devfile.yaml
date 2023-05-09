@@ -6,11 +6,4 @@ components:
       gl/inject-editor: true
     container:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
-commands:
-  - id: example
-    apply:
-      component: example
-events:
-  preStart:
-    - example
-    - gl-example
+      dedicatedPod: true

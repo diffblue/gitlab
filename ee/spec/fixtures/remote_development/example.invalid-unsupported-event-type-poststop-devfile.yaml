@@ -8,11 +8,8 @@ components:
       image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
 commands:
   - id: example
-    exec:
+    apply:
       component: example
-      commandLine: mvn clean
-      workingDir: /projects/spring-petclinic
 events:
-  postStart:
+  postStop:
     - example
-    - gl-example
