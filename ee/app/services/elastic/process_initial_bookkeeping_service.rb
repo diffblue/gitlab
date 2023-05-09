@@ -28,7 +28,12 @@ module Elastic
           maintain_indexed_associations(project, INDEXED_PROJECT_ASSOCIATIONS)
 
           ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
-          ElasticCommitIndexerWorker.perform_async(project.id, true)
+
+          if Feature.enabled?(:separate_elastic_wiki_indexer_for_project)
+            ElasticWikiIndexerWorker.perform_async project.id, project.class.name
+          else
+            ElasticCommitIndexerWorker.perform_async project.id, true
+          end
         end
       end
     end
