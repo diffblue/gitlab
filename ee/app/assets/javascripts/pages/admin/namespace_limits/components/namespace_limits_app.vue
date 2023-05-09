@@ -1,11 +1,13 @@
 <script>
 /* eslint-disable @gitlab/vue-require-i18n-strings */
 import { GlLink } from '@gitlab/ui';
+import ExcludedNamespaces from './excluded_namespaces.vue';
 
 export default {
   name: 'NamespaceLimitsApp',
   components: {
     GlLink,
+    ExcludedNamespaces,
   },
 };
 </script>
@@ -49,8 +51,6 @@ export default {
     </div>
     <hr />
     <h2>Excluded namespaces</h2>
-    <div class="gl-bg-gray-10 gl-p-5 gl-border-1 gl-border-solid gl-border-blue-200">
-      <p>Placeholder for excluded namespaces component</p>
-    </div>
+    <excluded-namespaces />
   </div>
 </template>
