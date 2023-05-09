@@ -5079,6 +5079,9 @@ msgstr ""
 msgid "Analytics|Browser Family"
 msgstr ""
 
+msgid "Analytics|Cancel"
+msgstr ""
+
 msgid "Analytics|Choose a chart type on the right"
 msgstr ""
 
@@ -5092,6 +5095,9 @@ msgid "Analytics|Column Chart"
 msgstr ""
 
 msgid "Analytics|Configure Dashboard Project"
+msgstr ""
+
+msgid "Analytics|Create dashboard %{dashboardId}"
 msgstr ""
 
 msgid "Analytics|Custom dashboards"
@@ -5118,7 +5124,7 @@ msgstr ""
 msgid "Analytics|Edit"
 msgstr ""
 
-msgid "Analytics|Error while saving Dashboard!"
+msgid "Analytics|Error while saving dashboard"
 msgstr ""
 
 msgid "Analytics|Host"
@@ -5131,6 +5137,9 @@ msgid "Analytics|Line Chart"
 msgstr ""
 
 msgid "Analytics|New Analytics Visualization Title"
+msgstr ""
+
+msgid "Analytics|New dashboard"
 msgstr ""
 
 msgid "Analytics|No dashboard matches the specified URL path."
@@ -34019,9 +34028,6 @@ msgid "ProductAnalytics|Average duration in minutes"
 msgstr ""
 
 msgid "ProductAnalytics|Back to dashboards"
-msgstr ""
-
-msgid "ProductAnalytics|Cancel Edit"
 msgstr ""
 
 msgid "ProductAnalytics|Click Events"

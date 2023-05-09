@@ -226,6 +226,26 @@ RSpec.shared_examples 'product analytics dashboards' do
             end
 
             it_behaves_like 'renders the product analytics dashboards'
+
+            context 'and custom dashboards is not configured' do
+              it 'does not render the new dashboard button' do
+                visit_page
+
+                expect(page).not_to have_content(s_('Analytics|New dashboard'))
+              end
+            end
+
+            context 'and custom dashboards is configured' do
+              before do
+                create(:analytics_dashboards_pointer, :project_based, project: project)
+
+                visit_page
+              end
+
+              it 'renders the new dashboard button' do
+                expect(page).to have_content(s_('Analytics|New dashboard'))
+              end
+            end
           end
         end
       end

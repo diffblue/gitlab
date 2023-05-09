@@ -12,6 +12,8 @@ import {
   getProductAnalyticsVisualization,
   CUSTOM_DASHBOARDS_PATH,
   PRODUCT_ANALYTICS_VISUALIZATIONS_PATH,
+  CREATE_FILE_ACTION,
+  UPDATE_FILE_ACTION,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
@@ -71,16 +73,26 @@ describe('AnalyticsDashboard', () => {
       jest.spyOn(service, 'commit').mockResolvedValue({ data: {} });
     });
 
-    it('save an existing dashboard', async () => {
+    it.each`
+      isNewFile | action
+      ${true}   | ${CREATE_FILE_ACTION}
+      ${false}  | ${UPDATE_FILE_ACTION}
+    `('$action(s) a dashboard when isNewFile is "$isNewFile"', async ({ isNewFile, action }) => {
       const dashboardId = 'abc';
-      await saveCustomDashboard(dashboardId, { id: 'test' }, TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      await saveCustomDashboard({
+        dashboardId,
+        dashboardObject: { id: 'test' },
+        projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        isNewFile,
+      });
 
       const callPayload = {
         branch: 'main',
-        commit_message: 'Updating dashboard abc',
+        commit_message: isNewFile ? 'Create dashboard abc' : 'Updating dashboard abc',
         actions: [
           {
-            action: 'update',
+            action,
             file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}.yml`,
             previous_path: undefined,
             content: 'id: test\n',

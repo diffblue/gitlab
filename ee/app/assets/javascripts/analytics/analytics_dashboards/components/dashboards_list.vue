@@ -11,6 +11,7 @@ import {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
+  I18N_DASHBOARD_LIST_NEW_DASHBOARD,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
@@ -110,6 +111,7 @@ export default {
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
+  I18N_DASHBOARD_LIST_NEW_DASHBOARD,
   I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER,
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
@@ -138,6 +140,13 @@ export default {
         <gl-button to="visualization-designer" data-testid="visualization-designer-button">
           {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
         </gl-button>
+        <router-link
+          v-if="customDashboardsProject"
+          to="/new"
+          class="btn btn-confirm btn-md gl-button"
+        >
+          {{ $options.I18N_DASHBOARD_LIST_NEW_DASHBOARD }}
+        </router-link>
       </div>
     </header>
     <gl-alert
