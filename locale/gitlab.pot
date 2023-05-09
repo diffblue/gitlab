@@ -22783,6 +22783,9 @@ msgstr ""
 msgid "Importing..."
 msgstr ""
 
+msgid "Import|An error occurred while fetching import details."
+msgstr ""
+
 msgid "Import|GitHub import details"
 msgstr ""
 
