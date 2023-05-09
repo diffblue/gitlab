@@ -110,7 +110,7 @@ exports[`Learn GitLab renders correctly 1`] = `
                   role="img"
                 >
                   <use
-                    href="#check-circle-filled"
+                    href="file-mock#check-circle-filled"
                   />
                 </svg>
                 
@@ -187,7 +187,7 @@ exports[`Learn GitLab renders correctly 1`] = `
                   role="img"
                 >
                   <use
-                    href="#check-circle-filled"
+                    href="file-mock#check-circle-filled"
                   />
                 </svg>
                 
@@ -213,7 +213,7 @@ exports[`Learn GitLab renders correctly 1`] = `
                   role="img"
                 >
                   <use
-                    href="#check-circle-filled"
+                    href="file-mock#check-circle-filled"
                   />
                 </svg>
                 

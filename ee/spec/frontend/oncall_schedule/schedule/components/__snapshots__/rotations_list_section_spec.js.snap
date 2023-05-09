@@ -39,7 +39,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
               role="img"
             >
               <use
-                href="#pencil"
+                href="file-mock#pencil"
               />
             </svg>
               
@@ -61,7 +61,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
               role="img"
             >
               <use
-                href="#remove"
+                href="file-mock#remove"
               />
             </svg>
               
