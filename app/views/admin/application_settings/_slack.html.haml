@@ -1,4 +1,4 @@
-- return unless Gitlab.com?
+- return unless Gitlab.dev_or_test_env? || Gitlab.com?
 
 - expanded = integration_expanded?('slack_app_')
 %section.settings.as-slack.no-animate#js-slack-settings{ class: ('expanded' if expanded) }

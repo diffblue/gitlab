@@ -8,12 +8,6 @@ RSpec.describe EE::ApplicationSettingsHelper do
       expect(visible_attributes).to include(*%i(max_personal_access_token_lifetime))
     end
 
-    it 'contains slack app parameters' do
-      params = %i(slack_app_enabled slack_app_id slack_app_secret slack_app_signing_secret slack_app_verification_token)
-
-      expect(helper.visible_attributes).to include(*params)
-    end
-
     context 'with dashboard limits' do
       let(:params) do
         %i[dashboard_limit_enabled dashboard_limit dashboard_notification_limit dashboard_notification_limit
