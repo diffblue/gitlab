@@ -57,10 +57,15 @@ module Elastic
         return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
 
         current_user = options[:current_user]
-        traversal_ids = Namespace.find(authorized_namespace_ids(current_user, options))
-                                      .map(&:elastic_namespace_ancestry)
+        namespaces = Namespace.find(authorized_namespace_ids(current_user, options))
+        traversal_ids = namespaces.map(&:elastic_namespace_ancestry)
 
         return project_ids_filter(query_hash, options) if traversal_ids.blank?
+
+        context.name(:reject_projects) do
+          query_hash[:query][:bool][:must_not] ||= []
+          query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
+        end
 
         context.name(:namespace) do
           query_hash[:query][:bool][:filter] ||= []
@@ -280,7 +285,7 @@ module Elastic
           query_hash[:sort] = [:_score]
         end
 
-        if options[:features].eql? 'wiki'
+        if options[:features].eql?('wiki')
           options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
         end
 
