@@ -47,7 +47,6 @@ module Resolvers
     type Types::IterationType.connection_type, null: true
 
     def resolve(**args)
-      validate_timeframe_params!(args)
       validate_search_params!(args)
 
       authorize!
