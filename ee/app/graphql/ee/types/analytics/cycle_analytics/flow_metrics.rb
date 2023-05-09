@@ -26,6 +26,12 @@ module EE
                   null: true,
                   description: 'Median time from first commit to issue closed',
                   resolver: ::Resolvers::Analytics::CycleAnalytics::CycleTimeResolver[context]
+
+                field :issues_completed_count,
+                  ::Types::Analytics::CycleAnalytics::MetricType,
+                  null: true,
+                  description: 'Number of open issues closed (completed) in the given period. Maximum value is 10,001.',
+                  resolver: ::Resolvers::Analytics::CycleAnalytics::IssuesCompletedResolver[context]
               end
 
               klass
