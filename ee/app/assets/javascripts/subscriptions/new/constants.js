@@ -25,4 +25,9 @@ export const PROMO_CODE_SUCCESS_MESSAGE = s__(
 export const PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE = s__(
   'Checkout|Add active users before adding a coupon.',
 );
+
+export const PROMO_CODE_OFFER_TEXT = s__(
+  'Checkout|Pricing reflective of %{linkStart}limited-time offer%{linkEnd}.',
+);
+
 export const PROMO_CODE_TERMS_LINK = 'https://about.gitlab.com/pricing/terms/';

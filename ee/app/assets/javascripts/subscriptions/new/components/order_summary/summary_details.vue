@@ -3,6 +3,7 @@ import { GlAlert, GlLink, GlSprintf, GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
+import { PROMO_CODE_OFFER_TEXT, PROMO_CODE_TERMS_LINK } from 'ee/subscriptions/new/constants';
 import formattingMixins from '../../formatting_mixins';
 
 export default {
@@ -13,6 +14,8 @@ export default {
     GlLoadingIcon,
   },
   mixins: [formattingMixins, Tracking.mixin()],
+  PROMO_CODE_OFFER_TEXT,
+  PROMO_CODE_TERMS_LINK,
   computed: {
     ...mapState(['startDate', 'taxRate', 'numberOfUsers', 'isInvoicePreviewLoading']),
     ...mapGetters([
@@ -88,7 +91,11 @@ export default {
       :dismissible="false"
       class="gl-mt-5"
     >
-      {{ promotionalOfferText }}
+      <gl-sprintf :message="$options.PROMO_CODE_OFFER_TEXT">
+        <template #link="{ content }">
+          <gl-link :href="$options.PROMO_CODE_TERMS_LINK" target="_blank">{{ content }}</gl-link>
+        </template>
+      </gl-sprintf>
     </gl-alert>
     <slot name="promo-code"></slot>
     <div>

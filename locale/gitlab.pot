@@ -9247,6 +9247,9 @@ msgstr ""
 msgid "Checkout|Payment method"
 msgstr ""
 
+msgid "Checkout|Pricing reflective of %{linkStart}limited-time offer%{linkEnd}."
+msgstr ""
+
 msgid "Checkout|Purchase details"
 msgstr ""
 
