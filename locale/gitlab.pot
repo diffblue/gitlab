@@ -30013,9 +30013,6 @@ msgstr ""
 msgid "Normal text"
 msgstr ""
 
-msgid "NorthstarNavigation|Beta"
-msgstr ""
-
 msgid "NorthstarNavigation|Could not update the new navigation preference. Please try again later."
 msgstr ""
 
