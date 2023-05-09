@@ -17,7 +17,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
         role="img"
       >
         <use
-          href="#brand-zoom"
+          href="file-mock#brand-zoom"
         />
       </svg>
        
@@ -47,7 +47,7 @@ exports[`ResourceLinkItem template matches the snapshot 1`] = `
       role="img"
     >
       <use
-        href="#close"
+        href="file-mock#close"
       />
     </svg>
       

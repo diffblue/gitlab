@@ -22,6 +22,7 @@ module ProductAnalytics
 
       if response.success?
         update_instrumentation_key(Gitlab::Json.parse(response.body)['app_id'])
+        track_success
       else
         Gitlab::ErrorTracking.track_and_raise_for_dev_exception(
           RuntimeError.new(response.body),
@@ -36,6 +37,13 @@ module ProductAnalytics
 
     def update_instrumentation_key(key)
       @project.project_setting.update!(product_analytics_instrumentation_key: key)
+    end
+
+    def track_success
+      Gitlab::UsageDataCounters::HLLRedisCounter.track_usage_event(
+        'project_initialized_product_analytics',
+        @project.id
+      )
     end
   end
 end

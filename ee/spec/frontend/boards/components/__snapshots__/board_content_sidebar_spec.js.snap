@@ -138,7 +138,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
               role="img"
             >
               <use
-                href="#severity-unknown"
+                href="file-mock#severity-unknown"
               />
             </svg>
              
@@ -167,7 +167,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
               role="img"
             >
               <use
-                href="#severity-unknown"
+                href="file-mock#severity-unknown"
               />
             </svg>
              
@@ -216,7 +216,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
               role="img"
             >
               <use
-                href="#chevron-down"
+                href="file-mock#chevron-down"
               />
             </svg>
           </button>
@@ -266,7 +266,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       role="img"
                     >
                       <use
-                        href="#mobile-issue-close"
+                        href="file-mock#mobile-issue-close"
                       />
                     </svg>
                      
@@ -290,7 +290,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             role="img"
                           >
                             <use
-                              href="#severity-critical"
+                              href="file-mock#severity-critical"
                             />
                           </svg>
                            
@@ -327,7 +327,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       role="img"
                     >
                       <use
-                        href="#mobile-issue-close"
+                        href="file-mock#mobile-issue-close"
                       />
                     </svg>
                      
@@ -351,7 +351,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             role="img"
                           >
                             <use
-                              href="#severity-high"
+                              href="file-mock#severity-high"
                             />
                           </svg>
                            
@@ -388,7 +388,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       role="img"
                     >
                       <use
-                        href="#mobile-issue-close"
+                        href="file-mock#mobile-issue-close"
                       />
                     </svg>
                      
@@ -412,7 +412,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             role="img"
                           >
                             <use
-                              href="#severity-medium"
+                              href="file-mock#severity-medium"
                             />
                           </svg>
                            
@@ -449,7 +449,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       role="img"
                     >
                       <use
-                        href="#mobile-issue-close"
+                        href="file-mock#mobile-issue-close"
                       />
                     </svg>
                      
@@ -473,7 +473,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             role="img"
                           >
                             <use
-                              href="#severity-low"
+                              href="file-mock#severity-low"
                             />
                           </svg>
                            
@@ -510,7 +510,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                       role="img"
                     >
                       <use
-                        href="#mobile-issue-close"
+                        href="file-mock#mobile-issue-close"
                       />
                     </svg>
                      
@@ -534,7 +534,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                             role="img"
                           >
                             <use
-                              href="#severity-unknown"
+                              href="file-mock#severity-unknown"
                             />
                           </svg>
                            

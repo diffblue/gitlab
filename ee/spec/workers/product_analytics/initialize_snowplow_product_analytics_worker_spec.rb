@@ -34,6 +34,13 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
       expect { subject }
         .to change { project.reload.project_setting.product_analytics_instrumentation_key }.from(nil).to(app_id)
     end
+
+    it 'tracks the success' do
+      expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+        .to receive(:track_usage_event).with('project_initialized_product_analytics', project.id)
+
+      subject
+    end
   end
 
   context 'when response is unsuccessful' do

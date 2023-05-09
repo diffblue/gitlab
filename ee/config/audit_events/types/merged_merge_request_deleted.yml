@@ -1,0 +1,9 @@
+---
+name: merged_merge_request_deleted
+description:  Audit event triggered when a merged merge request is deleted
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/408288
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/118793
+milestone: '16.0'
+feature_category: source_code_management
+saved_to_database: false
+streamed: true
