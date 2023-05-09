@@ -135,25 +135,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
                          'blob:match:search_terms')
   end
 
-  context 'when backfilling migration is incomplete' do
-    let_it_be(:user) { create(:user) }
-
-    before do
-      set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: false)
-    end
-
-    it 'does not use the traversal_id filter' do
-      expect(Namespace).not_to receive(:find)
-      subject.elastic_search_as_found_blob('*', options: { current_user: user, group_ids: [1] })
-    end
-  end
-
   context 'when backfilling migration is complete' do
     let_it_be(:user) { create(:user) }
-
-    before do
-      set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: true)
-    end
 
     it 'does not use the traversal_id filter when project_ids are passed' do
       expect(Namespace).not_to receive(:find)

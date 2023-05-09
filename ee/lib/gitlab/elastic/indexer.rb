@@ -117,10 +117,6 @@ module Gitlab
         end
       end
 
-      def traversal_id_migration_applied?
-        ::Elastic::DataMigrationService.migration_has_finished?(:add_traversal_ids_to_original_index_mapping)
-      end
-
       # Remove all indexed data for commits and blobs for a project.
       #
       # @return: whether the index has been purged
@@ -176,7 +172,7 @@ module Gitlab
                      end
                    end
 
-        command << "--traversal-ids=#{project.namespace_ancestry}" if traversal_id_migration_applied?
+        command << "--traversal-ids=#{project.namespace_ancestry}"
 
         command << repository_path
       end

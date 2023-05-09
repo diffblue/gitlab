@@ -37,17 +37,6 @@ RSpec.describe Search::GlobalService, '#visibility', feature_category: :global_s
         let(:scope) { 'blobs' }
         let(:search) { '.gitmodules' }
       end
-
-      context 'when backfill_traversal_ids_to_blobs_and_wiki_blobs migration has not been completed' do
-        before do
-          set_elasticsearch_migration_to(:backfill_traversal_ids_to_blobs_and_wiki_blobs, including: false)
-        end
-
-        it_behaves_like 'search respects visibility' do
-          let(:scope) { 'blobs' }
-          let(:search) { '.gitmodules' }
-        end
-      end
     end
   end
 end
