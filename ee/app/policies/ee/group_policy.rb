@@ -8,6 +8,7 @@ module EE
     prepended do
       include CrudPolicyHelpers
 
+      condition(:group_member, scope: :subject) { @user && @user.is_a?(User) && @subject.member?(@user) }
       condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
       condition(:saml_group_links_enabled, scope: :subject) do
         @subject.root_ancestor.saml_group_links_enabled?
@@ -88,7 +89,7 @@ module EE
       end
 
       condition(:needs_new_sso_session, scope: :subject) do
-        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(@subject, user: @user)
+        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(@subject, user: @user) && (@subject.private? || group_member?)
       end
 
       condition(:no_active_sso_session, scope: :subject) do

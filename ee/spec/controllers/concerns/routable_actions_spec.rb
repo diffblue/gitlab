@@ -178,15 +178,11 @@ RSpec.describe RoutableActions, feature_category: :system_access do
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | 'SSO Enforced'
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | true  | nil   | 'SSO Enforced'
 
-        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-        ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
-        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-        ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
         ref(:project)    | 'public'  | true  | ref(:non_member)              | nil   | nil   | 'SSO Not enforced'
-        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-        ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
-        # SSO should not be enforced. It will be fixed by https://gitlab.com/gitlab-org/gitlab/-/issues/386920
-        ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
         ref(:project)    | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | 'SSO Not enforced'
       end
 
