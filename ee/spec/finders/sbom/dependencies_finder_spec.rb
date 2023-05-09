@@ -78,6 +78,20 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
       end
     end
 
+    context 'when filtered by package name npm' do
+      let_it_be(:params) do
+        {
+          package_managers: %w[npm]
+        }
+      end
+
+      it 'returns only records with packagers related to npm' do
+        packagers = dependencies.map(&:packager)
+
+        expect(packagers).to eq(%w[npm])
+      end
+    end
+
     context 'when params is invalid' do
       let_it_be(:params) do
         {

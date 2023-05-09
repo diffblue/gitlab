@@ -49,7 +49,6 @@ describe('WorkItemHealthStatus component', () => {
     healthStatus,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
     mountFn = shallowMount,
-    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = mountFn(WorkItemHealthStatus, {
       apolloProvider: createMockApollo([
@@ -61,11 +60,11 @@ describe('WorkItemHealthStatus component', () => {
         canUpdate,
         healthStatus,
         workItemId,
+        workItemIid: '1',
         workItemType,
-        queryVariables,
-        fullPath: 'test-project-path',
       },
       provide: {
+        fullPath: 'test-project-path',
         hasIssuableHealthStatusFeature,
       },
     });

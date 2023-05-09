@@ -31,6 +31,10 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
     graphql_query_for(:project, variables, nodes)
   end
 
+  def package_manager_enum(value)
+    Types::Sbom::PackageManagerEnum.values.find { |_, custom_value| custom_value.value == value }.first
+  end
+
   before do
     stub_licensed_features(dependency_scanning: true)
   end
@@ -46,7 +50,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
         'id' => occurrence.to_gid.to_s,
         'name' => occurrence.name,
         'version' => occurrence.version,
-        'packager' => occurrence.packager,
+        'packager' => package_manager_enum(occurrence.packager),
         'location' => {
           'blobPath' => "/#{project.full_path}/-/blob/#{occurrence.commit_sha}/#{occurrence.source.input_file_path}",
           'path' => occurrence.source.input_file_path
@@ -112,7 +116,7 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
           'id' => occurrence.to_gid.to_s,
           'name' => occurrence.name,
           'version' => nil,
-          'packager' => occurrence.packager,
+          'packager' => package_manager_enum(occurrence.packager),
           'location' => {
             'blobPath' => "/#{project.full_path}/-/blob/#{occurrence.commit_sha}/#{occurrence.source.input_file_path}",
             'path' => occurrence.source.input_file_path
@@ -143,6 +147,20 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       names = result.pluck('name')
 
       expect(names).to eq(names.sort.reverse)
+    end
+  end
+
+  context 'with package_managers as an argument' do
+    let!(:occurrence) { create(:sbom_occurrence, project: project, packager_name: 'bundler') }
+    let(:query) { pagination_query({ package_managers: [:BUNDLER] }) }
+
+    it 'filters records based on the package manager name' do
+      subject
+
+      result = graphql_data_at(:project, :dependencies, :nodes)
+      packagers = result.pluck('packager')
+
+      expect(packagers).to eq([package_manager_enum(occurrence.packager)])
     end
   end
 end

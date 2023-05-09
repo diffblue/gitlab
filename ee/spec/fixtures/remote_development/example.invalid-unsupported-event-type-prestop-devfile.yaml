@@ -1,0 +1,17 @@
+---
+schemaVersion: 2.2.0
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
+commands:
+  - id: example
+    exec:
+      component: example
+      commandLine: mvn clean
+      workingDir: /projects/spring-petclinic
+events:
+  preStop:
+    - example

@@ -29,6 +29,10 @@ module Sbom
       joins(:source).order(Arel.sql("sbom_sources.source->'package_manager'->'name' #{sort_direction}"))
     end
 
+    scope :filter_by_package_managers, ->(package_managers) do
+      joins(:source).where("sbom_sources.source->'package_manager'->>'name' IN (?)", package_managers)
+    end
+
     def location
       {
         blob_path: input_file_blob_path,

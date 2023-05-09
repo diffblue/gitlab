@@ -77,9 +77,9 @@ describe('WorkItemIteration component', () => {
   const createComponent = ({
     canUpdate = true,
     iteration = mockIterationWidgetResponse,
+    workItemIid = '1',
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
-    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = shallowMountExtended(WorkItemIteration, {
       apolloProvider: createMockApollo([
@@ -92,11 +92,11 @@ describe('WorkItemIteration component', () => {
         canUpdate,
         iteration,
         workItemId,
+        workItemIid,
         workItemType,
-        queryVariables,
-        fullPath: 'test-project-path',
       },
       provide: {
+        fullPath: 'test-project-path',
         hasIterationsFeature: true,
       },
       stubs: { GlDropdown, GlSearchBoxByType },
@@ -260,8 +260,8 @@ describe('WorkItemIteration component', () => {
     expect(workItemQueryHandler).toHaveBeenCalled();
   });
 
-  it('skips calling the work item query when missing queryVariables', async () => {
-    createComponent({ queryVariables: {} });
+  it('skips calling the work item query when missing workItemIid', async () => {
+    createComponent({ workItemIid: null });
     await waitForPromises();
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();

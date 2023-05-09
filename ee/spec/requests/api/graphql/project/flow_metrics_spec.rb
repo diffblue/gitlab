@@ -61,4 +61,16 @@ RSpec.describe 'getting project flow metrics', feature_category: :value_stream_m
       end
     end
   end
+
+  it_behaves_like 'value stream analytics flow metrics issuesCompleted examples' do
+    context 'when cycle analytics is not licensed' do
+      before do
+        stub_licensed_features(cycle_analytics_for_projects: false)
+      end
+
+      it 'returns nil' do
+        expect(result).to eq(nil)
+      end
+    end
+  end
 end

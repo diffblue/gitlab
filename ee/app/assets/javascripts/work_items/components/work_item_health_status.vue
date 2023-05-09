@@ -34,7 +34,7 @@ export default {
     GlBadge,
   },
   mixins: [Tracking.mixin()],
-  inject: ['hasIssuableHealthStatusFeature'],
+  inject: ['fullPath', 'hasIssuableHealthStatusFeature'],
   props: {
     healthStatus: {
       type: String,
@@ -50,15 +50,11 @@ export default {
       type: String,
       required: true,
     },
-    workItemType: {
+    workItemIid: {
       type: String,
       required: true,
     },
-    queryVariables: {
-      type: Object,
-      required: true,
-    },
-    fullPath: {
+    workItemType: {
       type: String,
       required: true,
     },
@@ -99,13 +95,16 @@ export default {
     workItem: {
       query: workItemByIidQuery,
       variables() {
-        return this.queryVariables;
+        return {
+          fullPath: this.fullPath,
+          iid: this.workItemIid,
+        };
       },
       update(data) {
         return data.workspace.workItems.nodes[0];
       },
       skip() {
-        return !this.queryVariables.iid;
+        return !this.workItemIid;
       },
       error() {
         this.$emit('error', i18n.fetchError);
