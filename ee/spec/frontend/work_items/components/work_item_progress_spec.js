@@ -9,11 +9,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { __ } from '~/locale';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import {
-  updateWorkItemMutationResponse,
-  workItemByIidResponseFactory,
-} from 'jest/work_items/mock_data';
+import { updateWorkItemMutationResponse } from 'jest/work_items/mock_data';
 
 describe('WorkItemProgress component', () => {
   Vue.use(VueApollo);
@@ -22,8 +18,6 @@ describe('WorkItemProgress component', () => {
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Objective';
-  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
-  const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const findForm = () => wrapper.findComponent(GlForm);
   const findInput = () => wrapper.findComponent(GlFormInput);
@@ -36,19 +30,14 @@ describe('WorkItemProgress component', () => {
     isEditing = false,
     progress,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
-    queryVariables = { iid: '1' },
   } = {}) => {
     wrapper = mountExtended(WorkItemProgress, {
-      apolloProvider: createMockApollo([
-        [workItemByIidQuery, workItemQueryHandler],
-        [updateWorkItemMutation, mutationHandler],
-      ]),
+      apolloProvider: createMockApollo([[updateWorkItemMutation, mutationHandler]]),
       propsData: {
         canUpdate,
         progress,
         workItemId,
         workItemType,
-        queryVariables,
       },
       provide: {
         hasOkrsFeature,
@@ -236,19 +225,5 @@ describe('WorkItemProgress component', () => {
         });
       });
     });
-  });
-
-  it('calls the work item query', async () => {
-    createComponent();
-    await waitForPromises();
-
-    expect(workItemQueryHandler).toHaveBeenCalled();
-  });
-
-  it('skips calling the work item query when missing queryVariables', async () => {
-    createComponent({ queryVariables: {} });
-    await waitForPromises();
-
-    expect(workItemQueryHandler).not.toHaveBeenCalled();
   });
 });

@@ -46,11 +46,13 @@ describe('WorkItemLabels component', () => {
         [updateWorkItemMutation, updateWorkItemMutationHandler],
         [workItemLabelsSubscription, subscriptionHandler],
       ]),
+      provide: {
+        fullPath: 'test-project-path',
+      },
       propsData: {
         workItemId,
+        workItemIid: '1',
         canUpdate,
-        fullPath: 'test-project-path',
-        queryVariables: { iid: '1' },
       },
     });
   };
