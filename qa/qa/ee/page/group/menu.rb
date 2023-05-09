@@ -53,6 +53,8 @@ module QA
           end
 
           def go_to_ldap_sync_settings
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_settings do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'LDAP Synchronization')
@@ -138,6 +140,8 @@ module QA
           end
 
           def go_to_billing
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_settings do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Billing')
@@ -146,6 +150,8 @@ module QA
           end
 
           def go_to_usage_quotas
+            return super if QA::Runtime::Env.super_sidebar_enabled?
+
             hover_group_settings do
               within_submenu do
                 click_element(:sidebar_menu_item_link, menu_item: 'Usage Quotas')
