@@ -28750,6 +28750,9 @@ msgstr ""
 msgid "MlExperimentTracking|Author"
 msgstr ""
 
+msgid "MlExperimentTracking|CI Job"
+msgstr ""
+
 msgid "MlExperimentTracking|Candidate removed"
 msgstr ""
 
