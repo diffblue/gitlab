@@ -1,3 +1,4 @@
+import { GlLink } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
@@ -15,6 +16,8 @@ import {
   VALIDATION_ERROR_CODE,
   PROMO_CODE_ERROR_ATTRIBUTE,
   INVALID_PROMO_CODE_ERROR_CODE,
+  PROMO_CODE_OFFER_TEXT,
+  PROMO_CODE_TERMS_LINK,
   PROMO_CODE_USER_QUANTITY_ERROR_MESSAGE,
   INVALID_PROMO_CODE_ERROR_MESSAGE,
   PurchaseEvent,
@@ -759,7 +762,18 @@ describe('Order Summary', () => {
       await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
       await waitForPromises();
 
-      expect(findPromotionalOfferText().text()).toBe(promotionalOfferText);
+      expect(findPromotionalOfferText().text()).toMatchInterpolatedText(PROMO_CODE_OFFER_TEXT);
+    });
+
+    it('shows promotional offer link when present', async () => {
+      createComponent();
+
+      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+      await waitForPromises();
+
+      expect(findPromotionalOfferText().findComponent(GlLink).attributes('href')).toEqual(
+        PROMO_CODE_TERMS_LINK,
+      );
     });
 
     it('does not show promotional offer text when not present', async () => {
