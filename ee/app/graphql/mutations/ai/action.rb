@@ -19,6 +19,10 @@ module Mutations
         description: 'Indicates the response format.',
         default_value: :raw
 
+      field :request_id, GraphQL::Types::String,
+        null: true,
+        description: 'ID of the request.'
+
       def ready?(**args)
         raise Gitlab::Graphql::Errors::ArgumentError, MUTUALLY_EXCLUSIVE_ARGUMENTS_ERROR if methods(args).size != 1
 
@@ -35,6 +39,7 @@ module Mutations
         response = Llm::ExecuteMethodService.new(current_user, resource, method, options).execute
 
         {
+          request_id: response[:request_id],
           errors: response.success? ? [] : [response.message]
         }
       end

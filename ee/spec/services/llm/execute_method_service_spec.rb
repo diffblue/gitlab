@@ -8,7 +8,7 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
 
   let(:method) { :summarize_comments }
   let(:resource) { nil }
-  let(:options) { {} }
+  let(:options) { { request_id: 'uuid' } }
 
   subject { described_class.new(user, resource, method, options).execute }
 
@@ -27,7 +27,9 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
           expect_next_instance_of(service_class, user, resource, options) do |instance|
             allow(instance)
               .to receive(:execute)
-              .and_return(instance_double(ServiceResponse, success?: true, error?: false, payload: nil))
+              .and_return(
+                instance_double(ServiceResponse, success?: true, error?: false, payload: { request_id: 'uuid' })
+              )
           end
 
           expect(subject).to be_success
@@ -77,11 +79,13 @@ RSpec.describe Llm::ExecuteMethodService, feature_category: :no_category do # ru
       end
 
       before do
-        allow_next_instance_of(service_class, user, resource, {}) do |instance|
+        allow_next_instance_of(service_class, user, resource, options) do |instance|
           allow(instance)
             .to receive(:execute)
             .and_return(
-              instance_double(ServiceResponse, success?: success, error?: !success, payload: nil, message: nil)
+              instance_double(
+                ServiceResponse, success?: success, error?: !success, payload: { request_id: 'uuid' }, message: nil
+              )
             )
         end
       end

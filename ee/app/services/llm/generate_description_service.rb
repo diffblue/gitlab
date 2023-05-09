@@ -16,8 +16,7 @@ module Llm
     private
 
     def perform
-      ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, :generate_description, options)
-      success
+      perform_async(user, resource, :generate_description, options)
     end
   end
 end

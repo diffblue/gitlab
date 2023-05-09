@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module OpenAi
       module Completions
-        class SummarizeAllOpenNotes
+        class SummarizeAllOpenNotes < Gitlab::Llm::Completions::Base
           TOTAL_MODEL_TOKEN_LIMIT = 4000
 
           # 0.5 + 0.25 = 0.75, leaving a 0.25 buffer for the input token limit
@@ -24,10 +24,6 @@ module Gitlab
           # see https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
           INPUT_CONTENT_LIMIT = INPUT_TOKEN_LIMIT * 4
 
-          def initialize(ai_prompt_class)
-            @ai_prompt_class = ai_prompt_class
-          end
-
           def execute(user, issuable, _ = {})
             return unless user
             return unless issuable
@@ -46,13 +42,10 @@ module Gitlab
               **options
             )
 
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: {})
+            response_options = { request_id: params[:request_id] }
+            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: response_options)
               .execute(Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new)
           end
-
-          private
-
-          attr_reader :ai_prompt_class
         end
       end
     end

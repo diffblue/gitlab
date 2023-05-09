@@ -59,8 +59,8 @@ module Geo
     end
 
     # Called by Gitlab::Geo::Replicator#consume
-    def consume_event_created(**params)
-      consume_event_updated(params)
+    def consume_event_created(...)
+      consume_event_updated(...)
     end
 
     # Called by Gitlab::Geo::Replicator#consume

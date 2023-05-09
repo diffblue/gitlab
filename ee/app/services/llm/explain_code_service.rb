@@ -20,9 +20,7 @@ module Llm
     def perform
       return error('The messages are too big') if messages_are_too_big?
 
-      ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, :explain_code, options)
-
-      success
+      perform_async(user, resource, :explain_code, options)
     end
 
     def messages_are_too_big?
