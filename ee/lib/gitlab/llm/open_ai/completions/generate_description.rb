@@ -4,16 +4,12 @@ module Gitlab
   module Llm
     module OpenAi
       module Completions
-        class GenerateDescription
+        class GenerateDescription < Gitlab::Llm::Completions::Base
           TOTAL_MODEL_TOKEN_LIMIT = 4000
 
           INPUT_TOKEN_LIMIT = (TOTAL_MODEL_TOKEN_LIMIT * 0.5).to_i.freeze
 
           INPUT_CONTENT_LIMIT = INPUT_TOKEN_LIMIT * 4
-
-          def initialize(ai_prompt_class)
-            @ai_prompt_class = ai_prompt_class
-          end
 
           def execute(user, issuable, options)
             return unless user
@@ -45,13 +41,10 @@ module Gitlab
               **options
             )
 
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: {})
+            ::Gitlab::Llm::OpenAi::ResponseService
+              .new(user, issuable, ai_response, options: { request_id: params[:request_id] })
               .execute(Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new)
           end
-
-          private
-
-          attr_reader :ai_prompt_class
         end
       end
     end

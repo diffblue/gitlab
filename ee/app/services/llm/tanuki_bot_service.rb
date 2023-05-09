@@ -9,9 +9,7 @@ module Llm
     private
 
     def perform
-      ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, :tanuki_bot, options)
-
-      success
+      perform_async(user, resource, :tanuki_bot, options)
     end
   end
 end

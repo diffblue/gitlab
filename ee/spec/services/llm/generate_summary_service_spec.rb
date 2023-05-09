@@ -27,7 +27,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
     shared_examples 'issuable with notes' do
       it 'enqueues a new worker' do
         expect(Llm::CompletionWorker).to receive(:perform_async).with(
-          user.id, resource.id, resource.class.name, :summarize_comments
+          user.id, resource.id, resource.class.name, :summarize_comments, { request_id: an_instance_of(String) }
         )
 
         expect(subject).to be_success

@@ -4,11 +4,7 @@ module Gitlab
   module Llm
     module OpenAi
       module Completions
-        class TanukiBot
-          def initialize(ai_prompt_class)
-            @ai_prompt_class = ai_prompt_class
-          end
-
+        class TanukiBot < Gitlab::Llm::Completions::Base
           # After we remove REST API, refactor so that we use methods defined in templates/tanuki_bot.rb, e.g.:
           # initial_prompt = ai_prompt_class.initial_prompt(question)
           def execute(user, resource, options)
@@ -16,14 +12,11 @@ module Gitlab
 
             response = ::Gitlab::Llm::TanukiBot.execute(current_user: user, question: question)
 
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, resource, response, options: {}).execute(
+            response_options = { request_id: params[:request_id] }
+            ::Gitlab::Llm::OpenAi::ResponseService.new(user, resource, response, options: response_options).execute(
               Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot.new
             )
           end
-
-          private
-
-          attr_reader :ai_prompt_class
         end
       end
     end

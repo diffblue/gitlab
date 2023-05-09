@@ -13,6 +13,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
   let(:current_user) { nil }
   let(:subscribe) { get_subscription(resource, current_user) }
   let(:ai_completion_response) { graphql_dig_at(graphql_data(response[:result]), :ai_completion_response) }
+  let(:request_id) { 'uuid' }
 
   before do
     stub_const('GitlabSchema', Graphql::Subscriptions::ActionCable::MockGitlabSchema)
@@ -25,6 +26,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
       data = {
         id: SecureRandom.uuid,
         model_name: resource.class.name,
+        request_id: request_id,
         response_body: "Some AI response",
         errors: []
       }
@@ -52,6 +54,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
 
     it 'receives data' do
       expect(ai_completion_response['responseBody']).to eq("Some AI response")
+      expect(ai_completion_response['requestId']).to eq(request_id)
       expect(ai_completion_response['errors']).to eq([])
     end
   end
@@ -70,6 +73,7 @@ RSpec.describe 'Subscriptions::AiCompletionResponse', feature_category: :not_own
       subscription {
         aiCompletionResponse(userId:\"#{user&.to_gid}\", resourceId: \"#{resource.to_gid}\") {
           responseBody
+          requestId
           errors
         }
       }

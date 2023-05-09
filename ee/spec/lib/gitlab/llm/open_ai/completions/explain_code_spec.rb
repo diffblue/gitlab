@@ -38,7 +38,9 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
     }.to_json
   end
 
-  subject(:explain_code) { described_class.new(template_class).execute(user, project, options) }
+  let(:params) { { request_id: 'uuid' } }
+
+  subject(:explain_code) { described_class.new(template_class, params).execute(user, project, options) }
 
   describe "#execute" do
     it 'performs an openai request' do
@@ -46,7 +48,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 
-      params = [user, project, ai_response, { options: {} }]
+      params = [user, project, ai_response, { options: { request_id: 'uuid' } }]
       response_service = double
 
       expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).with(*params).and_return(response_service)

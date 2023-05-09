@@ -7,6 +7,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
   let_it_be(:project) { create(:project, :public) }
 
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::GenerateDescription }
+  let(:uuid) { 'uuid' }
   let(:ai_options) do
     {
       messages: [
@@ -43,7 +44,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
         expect(instance).to receive(:chat).with(content: nil, **ai_options).and_return(ai_response)
       end
 
-      params = [user, issuable, ai_response, { options: {} }]
+      params = [user, issuable, ai_response, { options: { request_id: uuid } }]
       response_service = double
 
       expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).with(*params).and_return(response_service)
@@ -53,7 +54,9 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateDescription, feature_ca
     end
   end
 
-  subject(:generate_description) { described_class.new(template_class).execute(user, issuable, ai_options) }
+  subject(:generate_description) do
+    described_class.new(template_class, { request_id: uuid }).execute(user, issuable, ai_options)
+  end
 
   describe "#execute" do
     context 'with invalid params' do

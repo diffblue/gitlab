@@ -7,7 +7,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
   let(:response_body) { 'Some response' }
-  let(:options) { {} }
+  let(:options) { { request_id: 'uuid' } }
 
   let(:ai_response_json) do
     '{
@@ -40,6 +40,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
         id: uuid,
         model_name: resource.class.name,
         response_body: response_body,
+        request_id: 'uuid',
         errors: []
 
       }
@@ -50,7 +51,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
   end
 
   shared_examples 'with a markup format option' do
-    let(:options) { { markup_format: :html } }
+    let(:options) { { markup_format: :html, request_id: 'uuid' } }
 
     it_behaves_like 'triggers ai completion subscription' do
       let(:response_body) { '<p data-sourcepos="1:1-1:13" dir="auto">Some response</p>' }
