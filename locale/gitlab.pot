@@ -48125,6 +48125,9 @@ msgstr ""
 msgid "UsageQuota|Pending Members"
 msgstr ""
 
+msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
+msgstr ""
+
 msgid "UsageQuota|Pipeline artifacts created by CI/CD."
 msgstr ""
 
@@ -48201,6 +48204,9 @@ msgid "UsageQuota|Transfer data used"
 msgstr ""
 
 msgid "UsageQuota|Transfer data used by month"
+msgstr ""
+
+msgid "UsageQuota|Transfer type"
 msgstr ""
 
 msgid "UsageQuota|Transfer usage breakout"

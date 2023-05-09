@@ -164,42 +164,6 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
         end
       end
 
-      context 'when traversal_ids migration is not applied' do
-        before do
-          set_elasticsearch_migration_to(:add_traversal_ids_to_original_index_mapping, including: false)
-        end
-
-        it 'runs the indexer with the right flags without --traversal-ids flag' do
-          gitaly_connection_data = {
-            storage: project.repository_storage,
-            limit_file_size: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes
-          }.merge(Gitlab::GitalyClient.connection_data(project.repository_storage))
-          expect_popen.with(
-            [
-              TestEnv.indexer_bin_path,
-              "--timeout=#{described_class.timeout}s",
-              "--visibility-level=#{project.visibility_level}",
-              "--project-id=#{project.id}",
-              '--search-curation',
-              "--from-sha=#{expected_from_sha}",
-              "--to-sha=#{to_sha}",
-              "--full-path=#{project.full_path}",
-              "--repository-access-level=#{project.repository_access_level}",
-              "#{project.repository.disk_path}.git"
-            ],
-            nil,
-            hash_including(
-              'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
-              'ELASTIC_CONNECTION_INFO' => elasticsearch_config.except(:index_name_wikis).to_json,
-              'RAILS_ENV' => Rails.env,
-              'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id
-            )
-          ).and_return(popen_success)
-
-          indexer.run
-        end
-      end
-
       context 'when add_hashed_root_namespace_id_to_commits migration is not complete' do
         before do
           set_elasticsearch_migration_to(:add_hashed_root_namespace_id_to_commits, including: false)

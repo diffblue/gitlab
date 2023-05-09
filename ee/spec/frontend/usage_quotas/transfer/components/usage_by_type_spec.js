@@ -1,5 +1,5 @@
-import { GlSkeletonLoader } from '@gitlab/ui';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { GlSkeletonLoader, GlTableLite, GlIcon, GlLink } from '@gitlab/ui';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import UsageByType from 'ee/usage_quotas/transfer/components/usage_by_type.vue';
 import {
   EGRESS_TYPE_ARTIFACTS,
@@ -24,10 +24,12 @@ describe('UsageByType', () => {
   };
 
   const createComponent = ({ propsData = {} } = {}) => {
-    wrapper = shallowMountExtended(UsageByType, {
+    wrapper = mountExtended(UsageByType, {
       propsData: { ...defaultPropsData, ...propsData },
     });
   };
+
+  const findTable = () => wrapper.findComponent(GlTableLite);
 
   describe('when `loading` prop is `true`', () => {
     beforeEach(() => {
@@ -40,6 +42,10 @@ describe('UsageByType', () => {
 
     it('renders `GlSkeletonLoader` component', () => {
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
+    });
+
+    it('renders 4 rows of `GlSkeletonLoader` component', () => {
+      expect(findTable().findAllComponents(GlSkeletonLoader)).toHaveLength(8);
     });
   });
 
@@ -128,6 +134,65 @@ describe('UsageByType', () => {
         expect(
           wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_REPOSITORY).exists(),
         ).toBe(false);
+      });
+    });
+
+    describe('egress type table', () => {
+      describe('Transfer type column', () => {
+        describe.each`
+          rowIndex | expectedIcon                 | expectedLabelAndDescription                                                          | expectedHelpPath
+          ${0}     | ${'disk'}                    | ${'Artifacts Pipeline artifacts and job artifacts, created with CI/CD.'}             | ${'/help/ci/caching/index#artifacts'}
+          ${1}     | ${'infrastructure-registry'} | ${'Repository Git repository.'}                                                      | ${'/help/user/project/repository/reducing_the_repo_size_using_git'}
+          ${2}     | ${'package'}                 | ${'Packages Code packages and container images.'}                                    | ${'/help/user/packages/package_registry/index'}
+          ${3}     | ${'disk'}                    | ${'Registry Gitlab-integrated Docker Container Registry for storing Docker Images.'} | ${'/help/user/packages/container_registry/reduce_container_registry_storage'}
+        `(
+          'row index $rowIndex',
+          ({ rowIndex, expectedIcon, expectedLabelAndDescription, expectedHelpPath }) => {
+            let cell;
+
+            beforeEach(() => {
+              createComponent();
+
+              cell = wrapper.findAllByTestId('transfer-type-column').at(rowIndex);
+            });
+
+            it('renders icon', () => {
+              expect(cell.findComponent(GlIcon).props('name')).toEqual(expectedIcon);
+            });
+
+            it('renders label and description', () => {
+              expect(cell.text()).toMatchInterpolatedText(expectedLabelAndDescription);
+            });
+
+            it('renders help link', () => {
+              expect(cell.findComponent(GlLink).attributes('href')).toBe(expectedHelpPath);
+            });
+          },
+        );
+      });
+
+      describe('Usage column', () => {
+        describe.each`
+          rowIndex | expectedUsage
+          ${0}     | ${'3.84 MiB'}
+          ${1}     | ${'3.12 MiB'}
+          ${2}     | ${'3.91 MiB'}
+          ${3}     | ${'2.65 MiB'}
+        `('row index $rowIndex', ({ rowIndex, expectedUsage }) => {
+          let cell;
+
+          beforeEach(() => {
+            createComponent();
+
+            cell = wrapper.findAllByTestId('usage-column').at(rowIndex);
+          });
+
+          it('renders usage', () => {
+            createComponent();
+
+            expect(cell.text()).toBe(expectedUsage);
+          });
+        });
       });
     });
   });

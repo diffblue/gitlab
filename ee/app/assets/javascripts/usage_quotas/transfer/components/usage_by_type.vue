@@ -1,8 +1,10 @@
 <script>
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite, GlLink, GlIcon } from '@gitlab/ui';
+import { range } from 'lodash';
 import { s__, __ } from '~/locale';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { roundOffFloat } from '~/lib/utils/common_utils';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import {
   EGRESS_TYPE_ARTIFACTS,
   EGRESS_TYPE_REPOSITORY,
@@ -19,7 +21,21 @@ export default {
       'UsageQuota|Includes project artifacts, repositories, packages, and container registries.',
     ),
   },
-  components: { GlSkeletonLoader },
+  fields: [
+    {
+      key: 'transferType',
+      label: s__('UsageQuota|Transfer type'),
+      tdClass: ['gl-w-full gl-overflow-wrap-anywhere'],
+      thClass: ['gl-w-full'],
+    },
+    {
+      key: 'dataUsed',
+      label: s__('UsageQuota|Transfer data used'),
+      tdClass: ['gl-white-space-nowrap gl-vertical-align-middle!'],
+      thClass: ['gl-white-space-nowrap'],
+    },
+  ],
+  components: { GlSkeletonLoader, GlTableLite, GlLink, GlIcon },
   props: {
     egressNodes: {
       type: Array,
@@ -49,6 +65,11 @@ export default {
         {
           type: EGRESS_TYPE_ARTIFACTS,
           label: __('Artifacts'),
+          description: s__('UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD.'),
+          icon: 'disk',
+          helpPath: helpPagePath('ci/caching/index', {
+            anchor: 'artifacts',
+          }),
           percentage: this.calculatePercentage(EGRESS_TYPE_ARTIFACTS),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_ARTIFACTS]),
           cssClasses: 'gl-bg-data-viz-blue-500',
@@ -56,6 +77,9 @@ export default {
         {
           type: EGRESS_TYPE_REPOSITORY,
           label: __('Repository'),
+          description: s__('UsageQuota|Git repository.'),
+          icon: 'infrastructure-registry',
+          helpPath: helpPagePath('user/project/repository/reducing_the_repo_size_using_git'),
           percentage: this.calculatePercentage(EGRESS_TYPE_REPOSITORY),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REPOSITORY]),
           cssClasses: 'gl-bg-data-viz-orange-500',
@@ -63,6 +87,9 @@ export default {
         {
           type: EGRESS_TYPE_PACKAGES,
           label: __('Packages'),
+          description: s__('UsageQuota|Code packages and container images.'),
+          icon: 'package',
+          helpPath: helpPagePath('user/packages/package_registry/index'),
           percentage: this.calculatePercentage(EGRESS_TYPE_PACKAGES),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_PACKAGES]),
           cssClasses: 'gl-bg-data-viz-aqua-500',
@@ -70,6 +97,13 @@ export default {
         {
           type: EGRESS_TYPE_REGISTRY,
           label: s__('UsageQuota|Registry'),
+          description: s__(
+            'UsageQuota|Gitlab-integrated Docker Container Registry for storing Docker Images.',
+          ),
+          icon: 'disk',
+          helpPath: helpPagePath(
+            'user/packages/container_registry/reduce_container_registry_storage',
+          ),
           percentage: this.calculatePercentage(EGRESS_TYPE_REGISTRY),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REGISTRY]),
           cssClasses: 'gl-bg-data-viz-green-500',
@@ -78,6 +112,13 @@ export default {
     },
     totalEgressCombinedHumanSize() {
       return numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_TOTAL]);
+    },
+    tableItems() {
+      if (this.loading) {
+        return range(4).map(() => ({}));
+      }
+
+      return this.egressTypeSections;
     },
   },
   methods: {
@@ -165,5 +206,41 @@ export default {
         </div>
       </div>
     </template>
+    <gl-table-lite :fields="$options.fields" :items="tableItems" class="gl-mt-7">
+      <template #cell(transferType)="{ item: { label, description, icon, helpPath } }">
+        <div v-if="loading" class="gl-w-20">
+          <gl-skeleton-loader :width="120" :height="16">
+            <rect x="0" y="0" rx="2" ry="2" width="120" height="16" />
+          </gl-skeleton-loader>
+        </div>
+        <div
+          v-else
+          class="gl-display-flex gl-flex-direction-row"
+          data-testid="transfer-type-column"
+        >
+          <gl-icon :name="icon" class="gl-mr-4 gl-flex-shrink-0" />
+          <div>
+            <p class="gl-font-weight-bold gl-mb-0">
+              {{ label }}
+              <gl-link :href="helpPath" target="_blank">
+                <gl-icon name="question-o" :size="12" />
+              </gl-link>
+            </p>
+            <p class="gl-mb-0">
+              {{ description }}
+            </p>
+          </div>
+        </div>
+      </template>
+
+      <template #cell(dataUsed)="{ item: { humanSize } }">
+        <div v-if="loading" class="gl-w-12">
+          <gl-skeleton-loader :width="80" :height="16">
+            <rect x="0" y="0" rx="2" ry="2" width="80" height="16" />
+          </gl-skeleton-loader>
+        </div>
+        <span v-else data-testid="usage-column">{{ humanSize }}</span>
+      </template>
+    </gl-table-lite>
   </div>
 </template>

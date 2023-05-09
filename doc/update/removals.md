@@ -128,6 +128,14 @@ Review the details carefully before upgrading.
 
 From GitLab 15.9, all Release links are external. The `external` field of the `ReleaseAssetLink` type was deprecated in 15.9, and removed in GitLab 16.0.
 
+### Removed `external` field from Releases and Release link APIs
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+From GitLab 15.9, all Release links are external. The `external` field in the Releases and Release link APIs was deprecated in 15.9, and removed in GitLab 16.0.
+
 ### Use of `id` field in vulnerabilityFindingDismiss mutation
 
 WARNING:

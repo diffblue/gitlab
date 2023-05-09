@@ -16,6 +16,14 @@ module QA
               def go_to_ldap_sync_settings
                 open_settings_submenu('LDAP Synchronization')
               end
+
+              def go_to_billing
+                open_settings_submenu('Billing')
+              end
+
+              def go_to_usage_quotas
+                open_settings_submenu('Usage Quotas')
+              end
             end
           end
         end
