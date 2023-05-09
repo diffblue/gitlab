@@ -11,6 +11,10 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
   let_it_be(:approver) { create(:user) }
   let_it_be(:other_approver) { create(:user) }
 
+  before do
+    stub_licensed_features(admin_merge_request_approvers_rules: true)
+  end
+
   describe 'GET /projects/:id/approval_rules/:approval_rule_id' do
     let_it_be(:private_project) { create(:project, :private, creator: user, namespace: user.namespace) }
 
@@ -37,6 +41,18 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
         get api(url, user2)
 
         expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when license is missing' do
+      before do
+        stub_licensed_features(admin_merge_request_approvers_rules: false)
+      end
+
+      it 'returns 403 error' do
+        get api(url, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end
@@ -141,6 +157,18 @@ RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category:
 
           expect(response).to have_gitlab_http_status(:ok)
         end
+      end
+    end
+
+    context 'when license is missing' do
+      before do
+        stub_licensed_features(admin_merge_request_approvers_rules: false)
+      end
+
+      it 'returns 403 error' do
+        get api(url, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end
