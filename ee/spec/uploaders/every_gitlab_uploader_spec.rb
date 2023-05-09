@@ -61,7 +61,8 @@ RSpec.describe 'Every GitLab uploader' do
         Packages::Composer::CacheUploader => "Might not be needed, see https://gitlab.com/gitlab-org/gitlab/-/issues/328491#note_600822092.",
         Packages::Debian::ComponentFileUploader => "This feature is not yet released. We do want to replicate this, see https://gitlab.com/gitlab-org/gitlab/-/issues/333611.",
         Packages::Debian::DistributionReleaseFileUploader => "This feature is not yet released. We do want to replicate this, see https://gitlab.com/gitlab-org/gitlab/-/issues/333615.",
-        Packages::Rpm::RepositoryFileUploader => "This feature is not yet releasd. We do want to replicate this, see https://gitlab.com/gitlab-org/gitlab/-/issues/379055."
+        Packages::Rpm::RepositoryFileUploader => "This feature is not yet released. We do want to replicate this, see https://gitlab.com/gitlab-org/gitlab/-/issues/379055.",
+        Packages::Npm::MetadataCacheUploader => "This feature is not yet released. We do want to replicate this, see https://gitlab.com/gitlab-org/gitlab/-/issues/408278."
       }.key?(uploader)
     end
     # rubocop:enable Layout/LineLength
