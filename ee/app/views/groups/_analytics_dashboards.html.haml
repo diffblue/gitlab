@@ -1,16 +1,10 @@
-- return unless can?(current_user, :read_group_analytics_dashboards, @group)
+.sub-section
+  %h4.warning-title= s_('GroupSettings|Analytics Dashboards')
+  %p
+    = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files.')
+    = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard.md'))
 
-%section.settings.analytics-dashboards-settings.no-animate{ class: ('expanded' if expanded) }
-  .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-      = s_('GroupSettings|Analytics Dashboards')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded ? _('Collapse') : _('Expand')
-    %p
-      = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files.')
-      = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard.md'))
-
-  .settings-content
+  .analytics-dashboards-settings.settings-content
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
 

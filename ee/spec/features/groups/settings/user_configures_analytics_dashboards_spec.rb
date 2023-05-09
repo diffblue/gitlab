@@ -34,8 +34,6 @@ RSpec.describe 'Groups > Settings > Analytics Dashboards', :js, feature_category
     end
 
     it 'allows to select a project in a subgroup for the Analytics Dashboards config' do
-      expect(page).to have_content 'Analytics Dashboards'
-
       page.within '.analytics-dashboards-settings form' do
         select_from_listbox(project.full_name, from: 'Search for project')
 

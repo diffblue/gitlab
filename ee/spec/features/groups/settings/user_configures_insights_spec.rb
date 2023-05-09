@@ -22,7 +22,7 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
     end
 
     it 'does not show the Insight config' do
-      expect(page).not_to have_content 'Insights'
+      expect(page).not_to have_content s_('GroupSettings|Configure analytics features for this group')
     end
   end
 
@@ -34,12 +34,10 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
     end
 
     it 'allows to select a project in a subgroup for the Insights config' do
-      expect(page).to have_content 'Insights'
-
       page.within '.insights-settings form' do
-        select_from_listbox(project.full_name, from: "Search for project")
+        select_from_listbox(project.full_name, from: s_('ProjectSelect|Search for project'))
 
-        click_button 'Save changes'
+        click_button _('Save changes')
 
         expect(page).to have_content(project.full_name)
       end
