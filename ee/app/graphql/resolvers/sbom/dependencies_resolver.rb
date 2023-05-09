@@ -22,6 +22,10 @@ module Resolvers
         required: false,
         description: 'Sort dependencies by given criteria.'
 
+      argument :package_managers, [Types::Sbom::PackageManagerEnum],
+        required: false,
+        description: 'Filter dependencies by package managers.'
+
       alias_method :project, :object
 
       def resolve_with_lookahead(**args)
@@ -48,9 +52,8 @@ module Resolvers
       end
 
       def mapped_params(params)
-        return SORT_TO_PARAMS_MAP.fetch(params[:sort], {}) if params[:sort]
-
-        {}
+        sort_params = SORT_TO_PARAMS_MAP.fetch(params[:sort], {})
+        params.merge(sort_params)
       end
     end
   end
