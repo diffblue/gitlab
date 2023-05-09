@@ -79,7 +79,13 @@ RSpec.describe Issuable::DestroyService, feature_category: :team_planning do
         let(:issuable_name) { 'MergeRequest' }
         let(:scope) { issuable.project }
 
-        it_behaves_like 'logs delete issuable audit event'
+        it 'calls MergeRequestDestroyAuditor with correct arguments' do
+          expect_next_instance_of(Audit::MergeRequestDestroyAuditor, issuable, user) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          service.execute(issuable)
+        end
       end
     end
   end
