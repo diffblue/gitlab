@@ -639,6 +639,27 @@ We will stop publishing runner images based on the following, end-of-life Alpine
 - Alpine 3.14 (end-of-life on 2023-05-23)
 
 </div>
+
+<div class="deprecation breaking-change" data-milestone="16.1">
+
+### License Compliance CI Template
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.9</span>
+- [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
+</div>
+
+**Update:** We previously announced we would remove the existing License Compliance CI template in GitLab 16.0. However, due to performance issues with the [license scanning of CycloneDX files](https://docs.gitlab.com/ee/user/compliance/license_scanning_of_cyclonedx_files/) we will do this change in 16.1 instead.
+
+The GitLab [License Compliance](https://docs.gitlab.com/ee/user/compliance/license_compliance/) CI template is now deprecated and is scheduled for removal in the GitLab 16.1 release. Users who wish to continue using GitLab for License Compliance should remove the License Compliance template from their CI pipeline and add the [Dependency Scanning template](https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#configuration). The Dependency Scanning template is now capable of gathering the required license information so it is no longer necessary to run a separate License Compliance job. The License Compliance CI template should not be removed prior to verifying that the `license_scanning_sbom_scanner` and `package_metadata_synchronization` flags are enabled for the instance and that the instance has been upgraded to a version that supports [the new method of license scanning](https://docs.gitlab.com/ee/user/compliance/license_scanning_of_cyclonedx_files/).
+
+| CI Pipeline Includes | GitLab <= 15.8 | 15.9 <= GitLab < 16.1 | GitLab >= 16.1 |
+| ------------- | ------------- | ------------- | ------------- |
+| Both DS and LS templates | License data from LS job is used | License data from LS job is used | License data from DS job is used |
+| DS template is included but LS template is not | No license data | License data from DS job is used | License data from DS job is used |
+| LS template is included but DS template is not | License data from LS job is used | License data from LS job is used | No license data |
+
+</div>
 </div>
 
 <div class="milestone-wrapper" data-milestone="16.0">
@@ -1313,25 +1334,6 @@ When subgroups were introduced in GitLab 9.0, a `/-/` delimiter was added to URL
 URLs that do not use the `/-/` delimiter are planned for removal in GitLab 16.0. For the full list of these URLs, along with their replacements, see [issue 28848](https://gitlab.com/gitlab-org/gitlab/-/issues/28848#release-notes).
 
 Update any scripts or bookmarks that reference the legacy URLs. GitLab APIs are not affected by this change.
-
-</div>
-
-<div class="deprecation breaking-change" data-milestone="16.0">
-
-### License Compliance CI Template
-
-<div class="deprecation-notes">
-- Announced in: GitLab <span class="milestone">15.9</span>
-- [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
-</div>
-
-The GitLab [License Compliance](https://docs.gitlab.com/ee/user/compliance/license_compliance/) CI template is now deprecated and is scheduled for removal in the GitLab 16.0 release. Users who wish to continue using GitLab for License Compliance should remove the License Compliance template from their CI pipeline and add the [Dependency Scanning template](https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#configuration). The Dependency Scanning template is now capable of gathering the required license information so it is no longer necessary to run a separate License Compliance job. The License Compliance CI template should not be removed prior to verifying that the `license_scanning_sbom_scanner` and `package_metadata_synchronization` flags are enabled for the instance and that the instance has been upgraded to a version that supports [the new method of license scanning](https://docs.gitlab.com/ee/user/compliance/license_scanning_of_cyclonedx_files/).
-
-| CI Pipeline Includes | GitLab <= 15.8 | 15.9 <= GitLab < 16.0 | GitLab >= 16.0 |
-| ------------- | ------------- | ------------- | ------------- |
-| Both DS and LS templates | License data from LS job is used | License data from LS job is used | License data from DS job is used |
-| DS template is included but LS template is not | No license data | License data from DS job is used | License data from DS job is used |
-| LS template is included but DS template is not | License data from LS job is used | License data from LS job is used | No license data |
 
 </div>
 
