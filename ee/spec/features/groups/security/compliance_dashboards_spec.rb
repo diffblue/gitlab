@@ -115,6 +115,16 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     end
   end
 
+  context 'framework exports' do
+    before do
+      visit group_security_compliance_dashboard_path(group, vueroute: :frameworks)
+    end
+
+    it 'shows an export action' do
+      expect(page).to have_content('Export as CSV')
+    end
+  end
+
   def first_row
     find('tbody tr', match: :first)
   end
