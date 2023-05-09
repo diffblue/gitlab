@@ -1,6 +1,0 @@
-query getProjectJitsuKey($projectPath: ID!) {
-  project(fullPath: $projectPath) {
-    id
-    jitsuKey
-  }
-}

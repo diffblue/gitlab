@@ -4,7 +4,7 @@ import { GlLoadingIcon } from '@gitlab/ui';
 import ProductAnalyticsSetupView from 'ee/product_analytics/onboarding/onboarding_setup.vue';
 import AnalyticsClipboardInput from 'ee/product_analytics/shared/analytics_clipboard_input.vue';
 import OnboardingSetupCollapse from 'ee/product_analytics/onboarding/components/onboarding_setup_collapse.vue';
-import getProjectJitsuKeyQuery from 'ee/product_analytics/graphql/queries/get_project_jitsu_key.query.graphql';
+import getProjectJitsuKeyQuery from 'ee/product_analytics/graphql/queries/get_project_tracking_key.query.graphql';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -13,11 +13,11 @@ import {
   HTML_SCRIPT_SETUP,
 } from 'ee/product_analytics/onboarding/constants';
 import {
-  TEST_JITSU_KEY,
+  TEST_TRACKING_KEY,
   TEST_COLLECTOR_HOST,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import { getJitsuKeyResponse, TEST_PROJECT_FULL_PATH } from '../mock_data';
+import { getTrackingKeyResponse, TEST_PROJECT_FULL_PATH } from '../mock_data';
 
 const { i18n } = ProductAnalyticsSetupView;
 
@@ -30,7 +30,7 @@ describe('ProductAnalyticsSetupView', () => {
   const jitsuKey = 'valid-jitsu-key';
 
   const mockApolloFatalError = jest.fn().mockRejectedValue(fatalError);
-  const mockApolloSuccess = jest.fn().mockResolvedValue(getJitsuKeyResponse(jitsuKey));
+  const mockApolloSuccess = jest.fn().mockResolvedValue(getTrackingKeyResponse(jitsuKey));
 
   const findTitle = () => wrapper.findByTestId('title');
   const findDescription = () => wrapper.findByTestId('description');
@@ -52,7 +52,7 @@ describe('ProductAnalyticsSetupView', () => {
       provide: {
         projectFullPath: TEST_PROJECT_FULL_PATH,
         collectorHost: TEST_COLLECTOR_HOST,
-        jitsuKey: TEST_JITSU_KEY,
+        trackingKey: TEST_TRACKING_KEY,
         ...provide,
       },
     });
@@ -91,7 +91,7 @@ describe('ProductAnalyticsSetupView', () => {
     it.each`
       key                    | index
       ${TEST_COLLECTOR_HOST} | ${0}
-      ${TEST_JITSU_KEY}      | ${1}
+      ${TEST_TRACKING_KEY}   | ${1}
     `('should render key inputs at $index', ({ key, index }) => {
       createWrapper();
 
@@ -122,15 +122,15 @@ describe('ProductAnalyticsSetupView', () => {
     });
   });
 
-  describe('when no jitsuKey is provided', () => {
+  describe('when no trackingKey is provided', () => {
     it('displays the loading icon', () => {
-      createWrapper({}, { jitsuKey: null });
+      createWrapper({}, { trackingKey: null });
 
       expect(findLoadingIcon().exists()).toBe(true);
     });
 
     it('displays the fetched key when the query succeeds', async () => {
-      createWrapper({}, { jitsuKey: null });
+      createWrapper({}, { trackingKey: null });
 
       await waitForPromises();
 
@@ -138,7 +138,7 @@ describe('ProductAnalyticsSetupView', () => {
     });
 
     it('emits an error when the query errors', async () => {
-      createWrapper({}, { jitsuKey: null }, mockApolloFatalError);
+      createWrapper({}, { trackingKey: null }, mockApolloFatalError);
 
       await waitForPromises();
 

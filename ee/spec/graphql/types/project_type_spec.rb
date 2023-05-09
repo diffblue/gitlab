@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['Project'] do
+  using RSpec::Parameterized::TableSyntax
   include GraphqlHelpers
 
   let_it_be(:project) { create(:project) }
@@ -26,6 +27,55 @@ RSpec.describe GitlabSchema.types['Project'] do
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
+  end
+
+  describe 'product analytics' do
+    describe 'tracking_key' do
+      where(
+        :can_read_product_analytics,
+        :snowplow_feature_flag_enabled,
+        :project_jitsu_key,
+        :project_instrumentation_key,
+        :expected
+      ) do
+        false | false | nil | nil | nil
+        false | true | nil | nil | nil
+        true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
+        true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
+        true | true | 'jitsu-key' | nil | 'jitsu-key'
+        true | true | nil | 'snowplow-key' | 'snowplow-key'
+      end
+
+      with_them do
+        let_it_be(:project) { create(:project) }
+
+        before do
+          project.project_setting.update!(jitsu_key: project_jitsu_key)
+          project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
+
+          stub_application_setting(product_analytics_enabled: can_read_product_analytics)
+          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics, product_analytics_snowplow_support: snowplow_feature_flag_enabled)
+          stub_licensed_features(product_analytics: can_read_product_analytics)
+        end
+
+        let(:query) do
+          %(
+            query {
+              project(fullPath: "#{project.full_path}") {
+                trackingKey
+              }
+            }
+          )
+        end
+
+        subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
+
+        it 'returns the expected tracking_key' do
+          tracking_key = subject.dig('data', 'project', 'trackingKey')
+          expect(tracking_key).to eq(expected)
+        end
+      end
+    end
   end
 
   describe 'security_scanners' do

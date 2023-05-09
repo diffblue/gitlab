@@ -1,0 +1,6 @@
+query getProjectTrackingKey($projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    trackingKey
+  }
+}

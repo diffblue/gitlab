@@ -244,10 +244,10 @@ module EE
                 extension ::Gitlab::Graphql::Limit::FieldCallCount, limit: 1
               end
 
-        field :jitsu_key, GraphQL::Types::String,
+        field :tracking_key, GraphQL::Types::String,
               null: true,
-              description: 'Jitsu key assigned to the project.',
-              alpha: { milestone: '15.7' },
+              description: 'Tracking key assigned to the project.',
+              alpha: { milestone: '16.0' },
               authorize: :developer_access
 
         field :dependencies, ::Types::Sbom::DependencyType.connection_type,
@@ -260,8 +260,11 @@ module EE
           description: 'Indicates that committers of the given merge request cannot approve.'
       end
 
-      def jitsu_key
-        object.project_setting.jitsu_key if object.product_analytics_enabled?
+      def tracking_key
+        return unless object.product_analytics_enabled?
+        return object.project_setting.jitsu_key unless ::Feature.enabled?(:product_analytics_snowplow_support)
+
+        object.project_setting.product_analytics_instrumentation_key || object.project_setting.jitsu_key
       end
 
       def api_fuzzing_ci_configuration
