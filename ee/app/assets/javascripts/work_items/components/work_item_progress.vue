@@ -7,12 +7,10 @@ import { __ } from '~/locale';
 import Tracking from '~/tracking';
 import {
   sprintfWorkItem,
-  i18n,
   I18N_WORK_ITEM_ERROR_UPDATING,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 
 export default {
   directives: {
@@ -47,33 +45,12 @@ export default {
       type: String,
       required: true,
     },
-    queryVariables: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
     return {
       isEditing: false,
       localProgress: this.progress,
     };
-  },
-  apollo: {
-    workItem: {
-      query: workItemByIidQuery,
-      variables() {
-        return this.queryVariables;
-      },
-      update(data) {
-        return data.workspace.workItems.nodes[0];
-      },
-      skip() {
-        return !this.queryVariables.iid;
-      },
-      error() {
-        this.$emit('error', i18n.fetchError);
-      },
-    },
   },
   computed: {
     placeholder() {
