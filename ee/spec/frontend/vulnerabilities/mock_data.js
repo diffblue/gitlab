@@ -63,6 +63,13 @@ const createSecurityTrainingUrls = ({ urlOverrides = {}, urls } = {}) =>
       identifier: testIdentifierName,
       ...urlOverrides.second,
     },
+    {
+      name: testProviderName[2],
+      url: testTrainingUrls[2],
+      status: SECURITY_TRAINING_URL_STATUS_COMPLETED,
+      identifier: testIdentifierName,
+      ...urlOverrides.third,
+    },
   ];
 
 export const getSecurityTrainingProjectData = (urlOverrides = {}) => ({
