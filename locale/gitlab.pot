@@ -25187,6 +25187,9 @@ msgstr ""
 msgid "JiraService|An error occurred while fetching issue list"
 msgstr ""
 
+msgid "JiraService|Are you a GitLab administrator?"
+msgstr ""
+
 msgid "JiraService|Automatically transitions Jira issues to the \"Done\" category. %{linkStart}Learn more%{linkEnd}"
 msgstr ""
 
@@ -25299,6 +25302,9 @@ msgid "JiraService|Select issue type"
 msgstr ""
 
 msgid "JiraService|Set a custom final state by using transition IDs. %{linkStart}Learn about transition IDs%{linkEnd}"
+msgstr ""
+
+msgid "JiraService|Setting up this integration is only possible if you're a GitLab administrator."
 msgstr ""
 
 msgid "JiraService|Sign in to GitLab to get started."
