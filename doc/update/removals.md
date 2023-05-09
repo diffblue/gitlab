@@ -114,6 +114,14 @@ In GitLab 15.3, [security report schemas below version 15 were deprecated](https
 The `confidence` attribute on vulnerability findings exists only in schema versions before `15-0-0` and in GitLab prior to 15.4.  To maintain consistency
 between the reports and our public APIs, the `confidence` attribute on any vulnerability-related components of our GraphQL API is now removed.
 
+### vulnerabilityFindingDismiss GraphQL mutation
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The `VulnerabilityFindingDismiss` GraphQL mutation has been removed. This mutation was not used often as the Vulnerability Finding ID was not available to users (this field was [deprecated in 15.3](https://docs.gitlab.com/ee/update/deprecations.html#use-of-id-field-in-vulnerabilityfindingdismiss-mutation)). Instead of `VulnerabilityFindingDismiss`, you should use `VulnerabilityDismiss` to dismiss vulnerabilities in the Vulnerability Report or `SecurityFindingDismiss` for security findings in the CI Pipeline Security tab.
+
 ## Removed in 15.11
 
 ### Exporting and importing projects in JSON format not supported
