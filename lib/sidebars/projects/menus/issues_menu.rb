@@ -132,7 +132,7 @@ module Sidebars
           ::Sidebars::MenuItem.new(
             title: _('Milestones'),
             link: project_milestones_path(context.project),
-            super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::ManageMenu,
+            super_sidebar_parent: ::Sidebars::Projects::SuperSidebarMenus::PlanMenu,
             active_routes: { controller: :milestones },
             item_id: :milestones
           )

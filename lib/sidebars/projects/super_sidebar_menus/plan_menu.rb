@@ -18,6 +18,8 @@ module Sidebars
         def configure_menu_items
           [
             :boards,
+            :milestones,
+            :iterations,
             :project_wiki,
             :service_desk,
             :requirements

@@ -26,7 +26,7 @@ module EE
             ::Sidebars::MenuItem.new(
               title: _('Iterations'),
               link: iterations_link,
-              super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::ManageMenu,
+              super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::PlanMenu,
               active_routes: { path: iterations_paths },
               item_id: :iterations
             )
