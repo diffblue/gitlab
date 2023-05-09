@@ -112,10 +112,6 @@ if Settings.omniauth['sync_email_from_provider']
 end
 
 Settings.omniauth['providers'] ||= []
-Settings.omniauth['cas3'] ||= {}
-Settings.omniauth.cas3['session_duration'] ||= 8.hours
-Settings.omniauth['session_tickets'] ||= {}
-Settings.omniauth.session_tickets['cas3'] = 'ticket'
 
 # Handle backward compatibility with the renamed kerberos_spnego provider
 # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96335#note_1094265436
