@@ -72,13 +72,12 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
             control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get_epics }
             create(:epic, group: epics_group, parent: parent_epic)
 
-            # Executes 3 extra queries to fetch the new group
-            #   SELECT "saml_providers"
+            # Executes 2 extra queries to fetch the new group
             #   SELECT "namespaces"
             #   SELECT "routes"
             # Executes 2 extra queries per the child to fetch its issues and epics
             # See: https://gitlab.com/gitlab-org/gitlab/-/issues/382056
-            expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(5)
+            expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(4)
           end
         end
       end

@@ -22,7 +22,7 @@ module Epics
         Epics::CrossHierarchyChildrenFinder.new(
           current_user,
           { parent: issuable, sort: 'relative_position' }
-        ).execute
+        ).execute(preload: true)
       end
     end
   end

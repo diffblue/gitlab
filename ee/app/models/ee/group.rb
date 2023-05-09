@@ -260,6 +260,19 @@ module EE
         groups.first.use_traversal_ids?
       end
 
+      # Manually preloads saml_providers, which cannot be done in AR, since the
+      # relationship is on the root ancestor.
+      # This is required since the `:read_group` ability depends on `Group.saml_provider`
+      def preload_root_saml_providers(groups)
+        saml_providers = SamlProvider.where(group: groups.map(&:root_ancestor).uniq).index_by(&:group_id)
+
+        return unless saml_providers
+
+        groups.each do |group|
+          group.root_saml_provider = saml_providers[group.root_ancestor.id]
+        end
+      end
+
       private
 
       # Used when all groups that user is fetching epics for belongs to the same hierarchy.
