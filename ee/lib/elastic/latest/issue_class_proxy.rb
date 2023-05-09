@@ -114,24 +114,6 @@ module Elastic
         query_hash
       end
 
-      def rejected_project_filter(namespaces, options)
-        current_user = options[:current_user]
-        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
-        return {} if scoped_project_ids == :any
-
-        project_ids = filter_ids_by_feature(scoped_project_ids, current_user, 'issues')
-        rejected_ids = namespaces.map do |namespace|
-          namespace.all_project_ids_except(project_ids)
-        end.flatten
-
-        {
-          terms: {
-            _name: context.name,
-            project_id: rejected_ids
-          }
-        }
-      end
-
       # Builds an elasticsearch query that will select documents from a
       # set of projects for Group and Project searches, taking user access
       # rules for issues into account. Relies upon super for Global searches
@@ -147,7 +129,7 @@ module Elastic
           query_hash[:query][:bool][:filter] << {
             terms: {
               _name: context.name,
-              project_id: filter_ids_by_feature(scoped_project_ids, current_user, 'issues')
+              project_id: filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
             }
           }
         end
