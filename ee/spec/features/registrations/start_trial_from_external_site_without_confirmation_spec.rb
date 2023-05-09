@@ -10,6 +10,7 @@ RSpec.describe 'Start trial from external site without confirmation', :saas, :js
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
     stub_feature_flags(arkose_labs_signup_challenge: false)
+    stub_application_setting(import_sources: %w[github gitlab_project])
 
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.

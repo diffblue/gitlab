@@ -684,6 +684,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
           headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' }
         }
         stub_full_request("#{import_url}/info/refs?service=git-upload-pack", method: :get).to_return(git_response)
+        stub_application_setting(import_sources: ['git'])
       end
 
       it 'creates new project with pull mirroring set up' do

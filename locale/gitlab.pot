@@ -21401,9 +21401,6 @@ msgstr ""
 msgid "GroupsNew|Connect instance"
 msgstr ""
 
-msgid "GroupsNew|Contact an administrator to enable options for importing your group."
-msgstr ""
-
 msgid "GroupsNew|Create a token with %{code_start}api%{code_end} and %{code_start}read_repository%{code_end} scopes in the %{pat_link_start}user settings%{pat_link_end} of the source GitLab instance. For %{short_living_link_start}security reasons%{short_living_link_end}, set a short expiration date for the token. Keep in mind that large migrations take more time."
 msgstr ""
 
@@ -21444,9 +21441,6 @@ msgid "GroupsNew|New group"
 msgstr ""
 
 msgid "GroupsNew|New subgroup"
-msgstr ""
-
-msgid "GroupsNew|No import options available"
 msgstr ""
 
 msgid "GroupsNew|Not all group items are migrated. %{docs_link_start}What items are migrated%{docs_link_end}?"

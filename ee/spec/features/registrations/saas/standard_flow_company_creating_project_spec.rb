@@ -6,6 +6,8 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 feature_category: :onboarding do
   context 'when opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+      stub_application_setting(import_sources: %w[github gitlab_project])
+
       user_signs_up(glm_params)
 
       expect_to_see_account_confirmation_page
@@ -41,6 +43,7 @@ feature_category: :onboarding do
 
   context 'when user in automatic_trial_registration experiment' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+      stub_application_setting(import_sources: %w[github gitlab_project])
       stub_experiments(automatic_trial_registration: :candidate)
 
       user_signs_up(glm_params)
@@ -81,6 +84,8 @@ feature_category: :onboarding do
 
   context 'when not opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding' do
+      stub_application_setting(import_sources: %w[github gitlab_project])
+
       user_signs_up
 
       expect_to_see_account_confirmation_page
