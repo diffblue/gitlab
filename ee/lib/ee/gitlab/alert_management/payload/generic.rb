@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-# Attribute mapping for alerts via generic alerting integration.
+# Unique identification for alerts via generic alerting integration.
 module EE
   module Gitlab
     module AlertManagement
       module Payload
         module Generic
+          include Mappable
           extend ::Gitlab::Utils::Override
 
           EXCLUDED_PAYLOAD_FINGERPRINT_PARAMS = %w(start_time end_time hosts).freeze
-          CUSTOM_MAPPING_PATH_KEY = 'path'
 
           private
 
@@ -33,20 +33,6 @@ module EE
 
           def generic_alert_fingerprinting_enabled?
             project.feature_available?(:generic_alert_fingerprinting)
-          end
-
-          override :value_for_paths
-          def value_for_paths(paths)
-            custom_mapping_value_for_paths(paths) || super(paths)
-          end
-
-          def custom_mapping_value_for_paths(paths)
-            return unless ::Gitlab::AlertManagement.custom_mapping_available?(project)
-            return unless integration&.active?
-
-            custom_mapping_path = integration.payload_attribute_mapping.dig(*paths.first, CUSTOM_MAPPING_PATH_KEY)
-
-            payload&.dig(*custom_mapping_path) if custom_mapping_path
           end
         end
       end
