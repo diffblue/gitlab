@@ -30,11 +30,11 @@ module Gitlab
         }
       }.freeze
 
-      def self.completion(name)
+      def self.completion(name, params = {})
         return unless COMPLETIONS.key?(name)
 
         service_class, prompt_class = COMPLETIONS[name].values_at(:service_class, :prompt_class)
-        service_class.new(prompt_class)
+        service_class.new(prompt_class, params)
       end
     end
   end

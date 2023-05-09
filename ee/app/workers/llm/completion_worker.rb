@@ -22,7 +22,8 @@ module Llm
       return unless user.can?("read_#{resource.to_ability_name}", resource)
       return unless resource.send_to_ai?
 
-      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym)
+      params = { request_id: options.delete(:request_id) }
+      ai_completion = ::Gitlab::Llm::CompletionsFactory.completion(ai_action_name.to_sym, params)
       ai_completion.execute(user, resource, options) if ai_completion
     end
 

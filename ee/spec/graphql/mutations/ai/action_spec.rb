@@ -6,6 +6,7 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
   let_it_be(:user) { create(:user) }
   let_it_be(:resource, reload: true) { create(:issue) }
   let(:resource_id) { resource.to_gid.to_s }
+  let(:request_id) { 'uuid' }
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
@@ -118,12 +119,11 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
           ) do |svc|
             expect(svc)
               .to receive(:execute)
-              .and_return(
-                instance_double(ServiceResponse, success?: true)
-              )
+              .and_return(ServiceResponse.success(payload: { request_id: request_id }))
           end
 
           expect(subject[:errors]).to be_empty
+          expect(subject[:request_id]).to eq(request_id)
         end
 
         context 'when Llm::ExecuteMethodService errors out' do
@@ -137,12 +137,11 @@ RSpec.describe Mutations::Ai::Action, feature_category: :not_owned do # rubocop:
             ) do |svc|
               expect(svc)
                 .to receive(:execute)
-                .and_return(
-                  instance_double(ServiceResponse, success?: false, message: 'error')
-                )
+                .and_return(ServiceResponse.error(message: 'error'))
             end
 
             expect(subject[:errors]).to eq(['error'])
+            expect(subject[:request_id]).to be_nil
           end
         end
       end

@@ -26,7 +26,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     shared_examples 'issuable' do
       it 'enqueues a new worker' do
         expect(Llm::CompletionWorker).to receive(:perform_async).with(
-          user.id, resource.id, resource.class.name, :generate_description, {}
+          user.id, resource.id, resource.class.name, :generate_description, { request_id: an_instance_of(String) }
         )
 
         expect(subject).to be_success

@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
   end
 
   subject(:generate_test_file) do
-    described_class.new(template_class).execute(user, merge_request, { file_path: 'index.js' })
+    described_class.new(template_class, { request_id: 'uuid' }).execute(user, merge_request, { file_path: 'index.js' })
   end
 
   before do
@@ -68,6 +68,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
           id: uuid,
           model_name: 'MergeRequest',
           response_body: content,
+          request_id: 'uuid',
           errors: []
         }
 

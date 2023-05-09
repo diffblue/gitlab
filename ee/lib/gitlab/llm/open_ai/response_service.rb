@@ -16,6 +16,7 @@ module Gitlab
 
           data = {
             id: SecureRandom.uuid,
+            request_id: options[:request_id],
             model_name: resource.class.name,
             # todo: do we need to sanitize/refine this response in any ways?
             response_body: generate_response_body(response_modifier.execute(ai_response).to_s.strip),

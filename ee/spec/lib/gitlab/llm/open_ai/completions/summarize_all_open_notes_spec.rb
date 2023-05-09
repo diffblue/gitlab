@@ -42,7 +42,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
         expect(instance).to receive(:chat).with(content: nil, **ai_options).and_return(ai_response)
       end
 
-      params = [user, issuable, ai_response, { options: {} }]
+      params = [user, issuable, ai_response, { options: { request_id: 'uuid' } }]
       response_service = double
 
       expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).with(*params).and_return(response_service)
@@ -52,7 +52,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
     end
   end
 
-  subject(:summarize_comments) { described_class.new(template_class).execute(user, issuable) }
+  subject(:summarize_comments) { described_class.new(template_class, { request_id: 'uuid' }).execute(user, issuable) }
 
   describe "#execute" do
     context 'with invalid params' do

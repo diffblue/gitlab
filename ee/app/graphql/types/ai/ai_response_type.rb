@@ -10,6 +10,10 @@ module Types
         null: true,
         description: 'Response body from AI API.'
 
+      field :request_id, GraphQL::Types::String,
+        null: true,
+        description: 'ID of the original request.'
+
       field :errors, [GraphQL::Types::String],
         null: true,
         description: 'Errors return by AI API as response.'

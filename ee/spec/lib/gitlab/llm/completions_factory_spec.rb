@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Llm::CompletionsFactory, feature_category: :no_category d
         completion_class = ::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes
         template_class = ::Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes
 
-        expect(completion_class).to receive(:new).with(template_class).and_call_original
+        expect(completion_class).to receive(:new).with(template_class, {}).and_call_original
 
         completion = described_class.completion(completion_name)
 

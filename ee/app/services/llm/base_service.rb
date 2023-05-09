@@ -30,11 +30,19 @@ module Llm
       raise NotImplementedError
     end
 
+    def perform_async(user, resource, action_name, options)
+      request_id = SecureRandom.uuid
+      options[:request_id] = request_id
+      ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
+
+      success(request_id: request_id)
+    end
+
     def ai_integration_enabled?
       Feature.enabled?(:openai_experimentation)
     end
 
-    def success(data = nil)
+    def success(data = {})
       ServiceResponse.success(payload: data)
     end
 
