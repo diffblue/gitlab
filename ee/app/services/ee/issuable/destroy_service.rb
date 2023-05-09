@@ -32,19 +32,23 @@ module EE
       def log_audit_event(issuable)
         return unless current_user
 
-        issuable_name = issuable.is_a?(Issue) ? issuable.work_item_type.name : issuable.class.name
+        if issuable.is_a?(MergeRequest)
+          ::Audit::MergeRequestDestroyAuditor.new(issuable, current_user).execute
+        else
+          issuable_name = issuable.is_a?(Issue) ? issuable.work_item_type.name : issuable.class.name
 
-        audit_context = {
-          name: "delete_#{issuable.to_ability_name}",
-          stream_only: true,
-          author: current_user,
-          target: issuable,
-          scope: issuable.resource_parent,
-          message: "Removed #{issuable_name}(#{issuable.title} with IID: #{issuable.iid} and ID: #{issuable.id})",
-          target_details: { title: issuable.title, iid: issuable.iid, id: issuable.id, type: issuable_name }
-        }
+          audit_context = {
+            name: "delete_#{issuable.to_ability_name}",
+            stream_only: true,
+            author: current_user,
+            target: issuable,
+            scope: issuable.resource_parent,
+            message: "Removed #{issuable_name}(#{issuable.title} with IID: #{issuable.iid} and ID: #{issuable.id})",
+            target_details: { title: issuable.title, iid: issuable.iid, id: issuable.id, type: issuable_name }
+          }
 
-        ::Gitlab::Audit::Auditor.audit(audit_context)
+          ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
       end
     end
   end
