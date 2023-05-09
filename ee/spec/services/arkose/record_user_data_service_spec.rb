@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Arkose::RecordUserDataService do
+RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resiliency do
   let(:user) { create(:user) }
 
   let(:arkose_verify_response) do
@@ -14,13 +14,14 @@ RSpec.describe Arkose::RecordUserDataService do
 
   describe '#execute' do
     it 'adds new custom attributes to the user' do
-      expect { service.execute }.to change { user.custom_attributes.count }.from(0).to(4)
+      expect { service.execute }.to change { user.custom_attributes.count }.from(0).to(5)
     end
 
     it 'adds arkose data to custom attributes' do
       service.execute
 
       expect(user.custom_attributes.find_by(key: 'arkose_session').value).to eq('22612c147bb418c8.2570749403')
+      expect(user.custom_attributes.find_by(key: 'arkose_device_id').value).to eq('gaFCZkxoGZYW6')
       expect(
         user.custom_attributes.find_by(key: UserCustomAttribute::ARKOSE_RISK_BAND).value
       ).to eq(Arkose::VerifyResponse::RISK_BAND_LOW)

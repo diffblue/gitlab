@@ -60,6 +60,10 @@ module Arkose
       response&.dig('session_details', 'session') || 'Unavailable'
     end
 
+    def device_id
+      response&.dig('session_details', 'device_id')
+    end
+
     def risk_category
       response&.dig('session_risk', 'risk_category') || 'Unavailable'
     end
