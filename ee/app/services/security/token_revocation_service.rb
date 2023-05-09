@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Security
-  # https://docs.gitlab.com/ee/user/application_security/secret_detection/post_processing.html#get-v1revocable_token_types
+  # https://docs.gitlab.com/ee/development/sec/token_revocation_api.html#get-v1revocable_token_types
   GLPAT_KEY_TYPE = 'gitleaks_rule_id_gitlab_personal_access_token'
 
   # Service for alerting revocation service of leaked security tokens
