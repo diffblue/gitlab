@@ -412,7 +412,7 @@ describe('JobArtifactsTable component', () => {
 
       it('does not clear selected artifacts on success', async () => {
         // select job 2 via checkbox
-        findJobCheckbox(2).vm.$emit('input', true);
+        findJobCheckbox(2).vm.$emit('change', true);
 
         // click delete button job 1
         findDeleteButton().vm.$emit('click');
@@ -452,7 +452,7 @@ describe('JobArtifactsTable component', () => {
       await waitForPromises();
 
       // select job 2 via checkbox
-      findJobCheckbox(2).vm.$emit('input', true);
+      findJobCheckbox(2).vm.$emit('change', true);
 
       // click delete button job 1
       findDeleteButton().vm.$emit('click');
@@ -512,14 +512,14 @@ describe('JobArtifactsTable component', () => {
       it('shows selected artifacts when a job is checked', async () => {
         expect(findBulkDeleteContainer().exists()).toBe(false);
 
-        await findJobCheckbox().vm.$emit('input', true);
+        await findJobCheckbox().vm.$emit('change', true);
 
         expect(findBulkDeleteContainer().exists()).toBe(true);
         expect(findBulkDelete().props('selectedArtifacts')).toStrictEqual(selectedArtifacts);
       });
 
       it('disappears when selected artifacts are cleared', async () => {
-        await findJobCheckbox().vm.$emit('input', true);
+        await findJobCheckbox().vm.$emit('change', true);
 
         expect(findBulkDeleteContainer().exists()).toBe(true);
 
@@ -529,7 +529,7 @@ describe('JobArtifactsTable component', () => {
       });
 
       it('shows a modal to confirm bulk delete', async () => {
-        findJobCheckbox().vm.$emit('input', true);
+        findJobCheckbox().vm.$emit('change', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
 
         await nextTick();
@@ -538,7 +538,7 @@ describe('JobArtifactsTable component', () => {
       });
 
       it('deletes the selected artifacts and shows a toast', async () => {
-        findJobCheckbox().vm.$emit('input', true);
+        findJobCheckbox().vm.$emit('change', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
         findBulkDeleteModal().vm.$emit('primary');
 
@@ -555,7 +555,7 @@ describe('JobArtifactsTable component', () => {
       });
 
       it('clears selected artifacts on success', async () => {
-        findJobCheckbox().vm.$emit('input', true);
+        findJobCheckbox().vm.$emit('change', true);
         findBulkDelete().vm.$emit('showBulkDeleteModal');
         findBulkDeleteModal().vm.$emit('primary');
 
@@ -584,7 +584,7 @@ describe('JobArtifactsTable component', () => {
 
         describe('when some artifacts are selected', () => {
           beforeEach(async () => {
-            findJobCheckbox().vm.$emit('input', true);
+            findJobCheckbox().vm.$emit('change', true);
 
             await nextTick();
           });
@@ -606,8 +606,8 @@ describe('JobArtifactsTable component', () => {
 
         describe('when all artifacts are selected', () => {
           beforeEach(async () => {
-            findJobCheckbox(1).vm.$emit('input', true);
-            findJobCheckbox(2).vm.$emit('input', true);
+            findJobCheckbox(1).vm.$emit('change', true);
+            findJobCheckbox(2).vm.$emit('change', true);
 
             await nextTick();
           });
@@ -788,7 +788,7 @@ describe('JobArtifactsTable component', () => {
 
       await waitForPromises();
 
-      findJobCheckbox().vm.$emit('input', true);
+      findJobCheckbox().vm.$emit('change', true);
       findBulkDelete().vm.$emit('showBulkDeleteModal');
       findBulkDeleteModal().vm.$emit('primary');
 
