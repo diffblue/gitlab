@@ -29,7 +29,7 @@ module QA
             sign_up.register_user(user)
           end
 
-          Flow::UserOnboarding.onboard_user
+          Flow::UserOnboarding.onboard_user(wait: 0)
         end
 
         after do
