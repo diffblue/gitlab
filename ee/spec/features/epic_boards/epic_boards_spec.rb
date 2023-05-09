@@ -211,7 +211,7 @@ RSpec.describe 'epic boards', :sidekiq_inline, :js, feature_category: :portfolio
         expect(page).to have_selector(selector, text: label.title, count: 1)
       end
 
-      it 'allows user to delete list from list settings sidebar' do
+      it 'allows user to delete list from list settings sidebar', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/409989' do
         expect(page).to have_content(label.name)
 
         page.within(find('.board:nth-child(2)')) do

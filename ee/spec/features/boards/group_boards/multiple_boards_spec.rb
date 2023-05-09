@@ -32,7 +32,8 @@ RSpec.describe 'Multiple Issue Boards', :js, feature_category: :team_planning do
       expect(page).not_to have_content('Delete board')
     end
 
-    it 'does not show license warning when there is one board created' do
+    it 'does not show license warning when there is one board created',
+      quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/409987' do
       visit boards_path
       wait_for_requests
 

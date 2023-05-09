@@ -28753,6 +28753,9 @@ msgstr ""
 msgid "MlExperimentTracking|Author"
 msgstr ""
 
+msgid "MlExperimentTracking|CI Job"
+msgstr ""
+
 msgid "MlExperimentTracking|Candidate removed"
 msgstr ""
 
@@ -37165,6 +37168,9 @@ msgid "Release title"
 msgstr ""
 
 msgid "Release with tag \"%{tag}\" was not found"
+msgstr ""
+
+msgid "Release:"
 msgstr ""
 
 msgid "ReleaseAssetLinkType|Image"
