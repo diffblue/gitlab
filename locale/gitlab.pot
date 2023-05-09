@@ -37170,6 +37170,9 @@ msgstr ""
 msgid "Release with tag \"%{tag}\" was not found"
 msgstr ""
 
+msgid "Release:"
+msgstr ""
+
 msgid "ReleaseAssetLinkType|Image"
 msgstr ""
 
