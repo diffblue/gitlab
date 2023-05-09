@@ -8,6 +8,17 @@ module API
 
         feature_category :global_search
         urgency :low
+
+        helpers do
+          def ensure_zoekt_indexing_enabled!
+            return if Feature.enabled?(:index_code_with_zoekt)
+
+            error!(
+              'index_code_with_zoekt feature flag is not enabled', 400
+            )
+          end
+        end
+
         before do
           authenticated_as_admin!
         end
@@ -28,6 +39,7 @@ module API
                 desc: 'The id of the project you want to index'
             end
             put do
+              ensure_zoekt_indexing_enabled!
               project = Project.find(params[:project_id])
 
               job_id = project.repository.async_update_zoekt_index
@@ -88,6 +100,7 @@ module API
                     desc: 'The id of the namespace you want to index in this shard'
                 end
                 put do
+                  ensure_zoekt_indexing_enabled!
                   shard = ::Zoekt::Shard.find(params[:shard_id])
                   namespace = Namespace.find(params[:namespace_id])
 

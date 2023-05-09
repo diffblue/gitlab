@@ -15,9 +15,9 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
   describe '#can_view_namespace_catalog?' do
     subject { helper.can_view_namespace_catalog?(project) }
 
-    context 'when FF `ci_private_catalog_beta` is disabled' do
+    context 'when FF `ci_namespace_catalog_experimental` is disabled' do
       before do
-        stub_feature_flags(ci_private_catalog_beta: false)
+        stub_feature_flags(ci_namespace_catalog_experimental: false)
         stub_licensed_features(ci_namespace_catalog: true)
 
         project.add_owner(user)

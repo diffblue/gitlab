@@ -1,16 +1,10 @@
-- return unless @group.insights_available?
+.sub-section
+  %h4.warning-title= _('Insights')
+  %p
+    = s_('GroupSettings|Select the project containing your custom Insights file.')
+    = link_to(s_('GroupSettings|What is Insights?'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer')
 
-%section.settings.insights-settings.no-animate{ class: ('expanded' if expanded) }
-  .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
-      = _('Insights')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded ? _('Collapse') : _('Expand')
-    %p
-      = s_('GroupSettings|Select the project containing your custom Insights file.')
-      = link_to(s_('GroupSettings|What is Insights?'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer')
-
-  .settings-content
+  .insights-settings.settings-content
     = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
 

@@ -1,0 +1,16 @@
+- can_see_analytics_dashboards = can?(current_user, :read_group_analytics_dashboards, @group)
+- can_see_insights = @group.insights_available?
+
+- return unless can_see_analytics_dashboards || can_see_insights
+
+%section.settings.no-animate{ class: ('expanded' if expanded) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only{ role: 'button' }
+      = s_('GroupSettings|Analytics')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p
+      = s_('GroupSettings|Configure analytics features for this group')
+  .settings-content
+    = render 'analytics_dashboards' if can_see_analytics_dashboards
+    = render 'insights' if can_see_insights

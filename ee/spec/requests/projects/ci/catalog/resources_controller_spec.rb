@@ -19,10 +19,10 @@ RSpec.describe Projects::Ci::Catalog::ResourcesController, feature_category: :pi
       end
     end
 
-    context 'with disabled FF `ci_private_catalog_beta`' do
+    context 'with disabled FF `ci_namespace_catalog_experimental`' do
       before do
         stub_licensed_features(ci_namespace_catalog: true)
-        stub_feature_flags(ci_private_catalog_beta: false)
+        stub_feature_flags(ci_namespace_catalog_experimental: false)
         project.add_developer(user)
       end
 

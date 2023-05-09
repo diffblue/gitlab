@@ -23,7 +23,7 @@ RSpec.describe 'Project > Settings > Analytics Dashboards', :js, feature_categor
     end
 
     it 'does not show the Analytics Dashboards config' do
-      expect(project).not_to have_content 'Analytics Dashboards'
+      expect(project).not_to have_content s_('ProjectSettings|Analytics')
     end
   end
 
@@ -35,12 +35,10 @@ RSpec.describe 'Project > Settings > Analytics Dashboards', :js, feature_categor
     end
 
     it 'allows to select a project for the Analytics Dashboards config' do
-      expect(page).to have_content 'Analytics Dashboards'
-
       page.within '.analytics-dashboards-settings form' do
-        select_from_listbox(upper_project.full_name, from: 'Search for project')
+        select_from_listbox(upper_project.full_name, from: s_('ProjectSelect|Search for project'))
 
-        click_button 'Save changes'
+        click_button _('Save changes')
 
         expect(page).to have_content(upper_project.full_name)
       end
