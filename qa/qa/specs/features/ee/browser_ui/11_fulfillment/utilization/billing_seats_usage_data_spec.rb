@@ -59,7 +59,7 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/373506'
         ) do
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            billing.wait_for_subscription('ultimate saas', page: page)
+            billing.wait_for_subscription(ULTIMATE[:name], page: page)
             billing.refresh_subscription_seats
 
             aggregate_failures do
