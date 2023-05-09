@@ -40,7 +40,7 @@ export default {
     collectorHost: {
       type: String,
     },
-    jitsuKey: {
+    trackingKey: {
       type: String,
     },
     features: {

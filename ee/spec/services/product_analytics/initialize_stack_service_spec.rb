@@ -61,6 +61,12 @@ RSpec.describe ProductAnalytics::InitializeStackService, :clean_gitlab_redis_sha
         described_class.new(container: project, current_user: user).execute
       end
 
+      it 'locks the job' do
+        subject
+
+        expect(described_class.new(container: project, current_user: user).send(:locked?)).to eq true
+      end
+
       context 'when project is already initialized for product analytics' do
         before do
           project.project_setting.update!(product_analytics_instrumentation_key: '123')

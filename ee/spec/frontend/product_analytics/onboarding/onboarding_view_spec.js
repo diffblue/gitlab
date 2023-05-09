@@ -14,7 +14,7 @@ import {
   FETCH_ERROR_MESSAGE,
 } from 'ee/product_analytics/onboarding/constants';
 import {
-  TEST_JITSU_KEY,
+  TEST_TRACKING_KEY,
   TEST_COLLECTOR_HOST,
 } from 'ee_jest/analytics/analytics_dashboards/mock_data';
 import { TEST_PROJECT_FULL_PATH } from '../mock_data';
@@ -41,7 +41,7 @@ describe('ProductAnalyticsOnboardingView', () => {
         projectFullPath: TEST_PROJECT_FULL_PATH,
         chartEmptyStateIllustrationPath: TEST_HOST,
         collectorHost: TEST_COLLECTOR_HOST,
-        jitsuKey: TEST_JITSU_KEY,
+        trackingKey: TEST_TRACKING_KEY,
       },
       mocks: {
         $router,

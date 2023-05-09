@@ -63,7 +63,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
             full_path: pointer.target_project.full_path,
             name: pointer.target_project.name
           }.to_json,
-          jitsu_key: user_has_permission ? jitsu_key : nil,
+          tracking_key: user_has_permission ? jitsu_key : nil,
           collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
           chart_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
           dashboard_empty_state_illustration_path: 'illustrations/chart-empty-state.svg',
@@ -71,6 +71,43 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           features: (enabled ? [:product_analytics] : []).to_json,
           router_base: '/-/analytics/dashboards'
         })
+      end
+    end
+
+    describe 'tracking_key' do
+      where(
+        :can_read_product_analytics,
+        :snowplow_feature_flag_enabled,
+        :project_jitsu_key,
+        :project_instrumentation_key,
+        :expected
+      ) do
+        false | false | nil | nil | nil
+        false | true | nil | nil | nil
+        true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
+        true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
+        true | true | 'jitsu-key' | nil | 'jitsu-key'
+        true | true | nil | 'snowplow-key' | 'snowplow-key'
+      end
+
+      with_them do
+        before do
+          project.project_setting.update!(jitsu_key: project_jitsu_key)
+          project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
+
+          stub_application_setting(product_analytics_enabled: can_read_product_analytics)
+          stub_feature_flags(product_analytics_dashboards: can_read_product_analytics,
+            product_analytics_snowplow_support: snowplow_feature_flag_enabled)
+          stub_licensed_features(product_analytics: can_read_product_analytics)
+          allow(helper).to receive(:can?).with(user, :read_product_analytics,
+            project).and_return(can_read_product_analytics)
+        end
+
+        subject(:data) { helper.analytics_dashboards_list_app_data(project) }
+
+        it 'returns the expected tracking_key' do
+          expect(data[:tracking_key]).to eq(expected)
+        end
       end
     end
   end

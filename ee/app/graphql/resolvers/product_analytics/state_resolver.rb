@@ -11,7 +11,7 @@ module Resolvers
 
       def resolve
         return unless Gitlab::CurrentSettings.product_analytics_enabled? && object.product_analytics_enabled?
-        return 'create_instance' unless object.project_setting&.jitsu_key&.present?
+        return 'create_instance' unless tracking_key?
         return 'loading_instance' if initializing?
         return 'waiting_for_events' if no_instance_data?
 
@@ -19,6 +19,11 @@ module Resolvers
       end
 
       private
+
+      def tracking_key?
+        object.project_setting&.product_analytics_instrumentation_key&.present? ||
+          object.project_setting&.jitsu_key&.present?
+      end
 
       def initializing?
         !!Gitlab::Redis::SharedState.with { |redis| redis.get("project:#{object.id}:product_analytics_initializing") }

@@ -20,6 +20,8 @@ module ProductAnalytics
         allow_local_requests: true
       )
 
+      ::ProductAnalytics::InitializeStackService.new(container: @project).unlock!
+
       if response.success?
         update_instrumentation_key(Gitlab::Json.parse(response.body)['app_id'])
         track_success

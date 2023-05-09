@@ -8,7 +8,7 @@ module Analytics
       {
         project_id: project.id,
         dashboard_project: analytics_dashboard_pointer_project(project)&.to_json,
-        jitsu_key: can_read_product_analytics ? project.project_setting.jitsu_key : nil,
+        tracking_key: can_read_product_analytics ? tracking_key(project) : nil,
         collector_host: can_read_product_analytics ? collector_host : nil,
         chart_empty_state_illustration_path: image_path('illustrations/chart-empty-state.svg'),
         dashboard_empty_state_illustration_path: image_path('illustrations/security-dashboard-empty-state.svg'),
@@ -22,6 +22,12 @@ module Analytics
 
     def collector_host
       ::Gitlab::CurrentSettings.product_analytics_data_collector_host
+    end
+
+    def tracking_key(project)
+      return project.project_setting.jitsu_key unless ::Feature.enabled?(:product_analytics_snowplow_support)
+
+      project.project_setting.product_analytics_instrumentation_key || project.project_setting.jitsu_key
     end
 
     def enabled_analytics_features(project)

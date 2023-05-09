@@ -22,6 +22,7 @@ module ProductAnalytics
           return ServiceResponse.error(message: 'Product analytics initialization is already complete')
         end
 
+        lock!
         ::ProductAnalytics::InitializeSnowplowProductAnalyticsWorker.perform_async(container.id)
       else
         if container.project_setting.jitsu_key.present?

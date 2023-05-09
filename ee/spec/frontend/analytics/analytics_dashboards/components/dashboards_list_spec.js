@@ -14,7 +14,7 @@ import { createAlert } from '~/alert';
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import {
   TEST_COLLECTOR_HOST,
-  TEST_JITSU_KEY,
+  TEST_TRACKING_KEY,
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_CUSTOM_DASHBOARDS_LIST,
 } from '../mock_data';
@@ -49,7 +49,7 @@ describe('DashboardsList', () => {
       },
       provide: {
         collectorHost: TEST_COLLECTOR_HOST,
-        jitsuKey: TEST_JITSU_KEY,
+        trackingKey: TEST_TRACKING_KEY,
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
         ...provided,
