@@ -86,6 +86,19 @@ module Users
       render 'devise/sessions/successful_verification'
     end
 
+    def verify_credit_card
+      return render_404 unless json_request? && @user.credit_card_validation.present?
+
+      if check_for_reuse_rate_limited? || @user.credit_card_validation.used_by_banned_user?
+        return render status: :bad_request, json: {
+          message: _('There was a problem with the credit card details you entered. Use a different credit card and ' \
+                     'try again.')
+        }
+      end
+
+      render json: {}
+    end
+
     private
 
     def require_verification_user!
@@ -173,6 +186,10 @@ module Users
       email_verification_code_send_interval = distance_of_time_in_words(interval_in_seconds)
       format(s_("IdentityVerification|You've reached the maximum amount of resends. " \
                 'Wait %{interval} and try again.'), interval: email_verification_code_send_interval)
+    end
+
+    def check_for_reuse_rate_limited?
+      check_rate_limit!(:credit_card_verification_check_for_reuse, scope: request.ip) { true }
     end
 
     def phone_verification_params

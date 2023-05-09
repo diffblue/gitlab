@@ -279,6 +279,14 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
       let!(:credit_card_validation) { create(:credit_card_validation, user: user) }
 
       it { is_expected.to eq true }
+
+      context 'when credit card has been used by a banned user' do
+        before do
+          allow(credit_card_validation).to receive(:used_by_banned_user?).and_return(true)
+        end
+
+        it { is_expected.to eq false }
+      end
     end
   end
 

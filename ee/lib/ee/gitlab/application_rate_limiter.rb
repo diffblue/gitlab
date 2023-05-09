@@ -19,7 +19,8 @@ module EE
             unique_project_downloads_for_namespace: {
               threshold: 0,
               interval: 0
-            }
+            },
+            credit_card_verification_check_for_reuse: { threshold: 10, interval: 1.hour }
           }).freeze
         end
       end

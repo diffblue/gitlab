@@ -71,7 +71,7 @@ module IdentityVerifiable
   end
 
   def credit_card_verified?
-    credit_card_validation.present?
+    credit_card_validation.present? && !credit_card_validation.used_by_banned_user?
   end
 
   def arkose_risk_band
