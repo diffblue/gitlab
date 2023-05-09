@@ -109,7 +109,7 @@ exports[`Environment Header renders name and link to app matches the snapshot 1`
         role="img"
       >
         <use
-          href="#external-link"
+          href="file-mock#external-link"
         />
       </svg>
     </span>

@@ -102,7 +102,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                           role="img"
                         >
                           <use
-                            href="#status-success"
+                            href="file-mock#status-success"
                           />
                         </svg>
                       </div>
@@ -291,7 +291,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
                           role="img"
                         >
                           <use
-                            href="#status-failed"
+                            href="file-mock#status-failed"
                           />
                         </svg>
                       </div>
@@ -466,7 +466,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                           role="img"
                         >
                           <use
-                            href="#status-alert"
+                            href="file-mock#status-alert"
                           />
                         </svg>
                       </div>
