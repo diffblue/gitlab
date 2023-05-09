@@ -50,7 +50,9 @@ export function renderGFM(element) {
   renderSandboxedMermaid(mermaidEls);
   renderJSONTable(tableEls.map((e) => e.parentNode));
   highlightCurrentUser(userEls);
-  renderMetrics(metricsEls);
+  if (!window.gon?.features?.removeMonitorMetrics) {
+    renderMetrics(metricsEls);
+  }
   renderObservability(observabilityEls);
   initPopovers(popoverEls);
 }

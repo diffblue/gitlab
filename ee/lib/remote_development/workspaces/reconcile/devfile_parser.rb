@@ -6,7 +6,7 @@ module RemoteDevelopment
   module Workspaces
     module Reconcile
       class DevfileParser
-        def get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:)
+        def get_all(processed_devfile:, name:, namespace:, replicas:, domain_template:, labels:, annotations:, user:)
           workspace_resources_yaml = Devfile::Parser.get_all(
             processed_devfile,
             name,
@@ -18,7 +18,8 @@ module RemoteDevelopment
             'none'
           )
           workspace_resources = YAML.load_stream(workspace_resources_yaml)
-          set_security_context(workspace_resources: workspace_resources)
+          workspace_resources = set_security_context(workspace_resources: workspace_resources)
+          set_git_configuration(workspace_resources: workspace_resources, user: user)
         end
 
         private
@@ -59,6 +60,30 @@ module RemoteDevelopment
                 'runAsNonRoot' => true,
                 'runAsUser' => RUN_AS_USER
               }
+            end
+          end
+          workspace_resources
+        end
+
+        def set_git_configuration(workspace_resources:, user:)
+          workspace_resources.each do |workspace_resource|
+            next unless workspace_resource.fetch('kind') == 'Deployment'
+
+            # Set git configuration for the `gl-cloner-injector-*`
+            pod_spec = workspace_resource.fetch('spec').fetch('template').fetch('spec')
+            pod_spec.fetch('initContainers').each do |init_container|
+              next unless init_container.fetch('name').starts_with?('gl-cloner-injector-')
+
+              init_container.fetch('env').concat([
+                {
+                  'name' => 'GIT_AUTHOR_NAME',
+                  'value' => user.name
+                },
+                {
+                  'name' => 'GIT_AUTHOR_EMAIL',
+                  'value' => user.email
+                }
+              ])
             end
           end
           workspace_resources

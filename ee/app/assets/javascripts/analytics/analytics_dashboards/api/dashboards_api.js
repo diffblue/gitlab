@@ -8,8 +8,8 @@ export const CUSTOM_DASHBOARDS_PATH = '.gitlab/dashboards/';
 export const PRODUCT_ANALYTICS_VISUALIZATIONS_PATH =
   '.gitlab/dashboards/product_analytics/visualizations/';
 
-const CREATE_FILE_ACTION = 'create';
-const UPDATE_FILE_ACTION = 'update';
+export const CREATE_FILE_ACTION = 'create';
+export const UPDATE_FILE_ACTION = 'update';
 
 // The `cb` parameter is added cache-bust, the API responses are cached by default
 const getFileListFromCustomDashboardProject = async (path, projectInfo) => {
@@ -55,19 +55,24 @@ export async function getCustomDashboard(dashboardId, projectInfo) {
   return getFileFromCustomDashboardProject(CUSTOM_DASHBOARDS_PATH, dashboardId, projectInfo);
 }
 
-export async function saveCustomDashboard(dashboardId, dashboardObject, projectInfo) {
-  const { isNew, ...rest } = dashboardObject;
-  const action = isNew ? CREATE_FILE_ACTION : UPDATE_FILE_ACTION;
+export async function saveCustomDashboard({
+  dashboardId,
+  dashboardObject,
+  projectInfo,
+  isNewFile = false,
+}) {
+  const action = isNewFile ? CREATE_FILE_ACTION : UPDATE_FILE_ACTION;
+  const commitText = isNewFile
+    ? s__('Analytics|Create dashboard %{dashboardId}')
+    : s__('Analytics|Updating dashboard %{dashboardId}');
   const payload = {
     branch: 'main',
-    commit_message: sprintf(s__('Analytics|Updating dashboard %{dashboardId}'), {
-      dashboardId,
-    }),
+    commit_message: sprintf(commitText, { dashboardId }),
     actions: [
       {
         action,
         file_path: `${CUSTOM_DASHBOARDS_PATH}${dashboardId}.yml`,
-        content: stringify(rest, null),
+        content: stringify(dashboardObject, null),
         encoding: 'text',
       },
     ],

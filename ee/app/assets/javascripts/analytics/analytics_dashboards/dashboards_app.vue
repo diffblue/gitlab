@@ -34,6 +34,14 @@ export default {
         component: () => import('ee/product_analytics/onboarding/onboarding_setup.vue'),
       },
       {
+        name: 'dashboard-new',
+        path: '/new',
+        component: AnalyticsDashboard,
+        props: {
+          isNewDashboard: true,
+        },
+      },
+      {
         name: 'dashboard-detail',
         path: '/:id',
         // This is the main action that occurs after the list is shown so we preload it rather than lazy importing

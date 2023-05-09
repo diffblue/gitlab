@@ -21,6 +21,13 @@ module MergeRequests
         response.parsed_response["choices"].first.dig("message", "content")
       end
 
+      def enabled?
+        Feature.enabled?(:openai_experimentation, @user) &&
+          @merge_request.project.experiment_features_enabled? &&
+          @merge_request.project.third_party_ai_features_enabled? &&
+          @merge_request.send_to_ai?
+      end
+
       private
 
       def prompt
@@ -48,10 +55,6 @@ module MergeRequests
         # Ex: @@ -0,0 +1,58 @@\n+# frozen_string_literal: true\n+\n+module MergeRequests\n+
         #
         diffs.map { |diff| diff.sub(GIT_DIFF_PREFIX_REGEX, "") }.join
-      end
-
-      def enabled?
-        Feature.enabled?(:openai_experimentation, @user)
       end
 
       def llm_client

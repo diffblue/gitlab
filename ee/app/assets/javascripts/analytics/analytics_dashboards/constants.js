@@ -5,6 +5,7 @@ export const I18N_DASHBOARD_LIST_DESCRIPTION = s__(
   'Analytics|Dashboards are created by editing the projects dashboard files.',
 );
 export const I18N_DASHBOARD_LIST_LEARN_MORE = __('Learn more.');
+export const I18N_DASHBOARD_LIST_NEW_DASHBOARD = s__('Analytics|New dashboard');
 export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER = s__('Analytics|Visualization Designer');
 export const I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER_CUBEJS_ERROR = s__(
   'Analytics|An error occurred while loading data',
@@ -21,6 +22,9 @@ export const I18N_DASHBOARD_NOT_FOUND_DESCRIPTION = s__(
   'Analytics|No dashboard matches the specified URL path.',
 );
 export const I18N_DASHBOARD_NOT_FOUND_ACTION = s__('Analytics|View available dashboards');
+
+export const I18N_DASHBOARD_SAVED_SUCCESSFULLY = s__('Analytics|Dashboard was saved successfully');
+export const I18N_DASHBOARD_ERROR_WHILE_SAVING = s__('Analytics|Error while saving dashboard');
 
 export const VISUALIZATION_TYPE_FILE = 'yml';
 export const VISUALIZATION_TYPE_BUILT_IN = 'builtin';
@@ -148,3 +152,8 @@ export const ANALYTICS_FIELDS = [
     icon: 'user',
   },
 ];
+
+export const NEW_DASHBOARD = {
+  title: s__('Analytics|New dashboard'),
+  panels: [],
+};

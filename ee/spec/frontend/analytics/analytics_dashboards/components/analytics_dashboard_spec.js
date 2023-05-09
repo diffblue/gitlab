@@ -3,6 +3,7 @@ import {
   HTTP_STATUS_CREATED,
   HTTP_STATUS_FORBIDDEN,
   HTTP_STATUS_NOT_FOUND,
+  HTTP_STATUS_BAD_REQUEST,
 } from '~/lib/utils/http_status';
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -15,6 +16,9 @@ import {
   I18N_DASHBOARD_NOT_FOUND_TITLE,
   I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
   I18N_DASHBOARD_NOT_FOUND_ACTION,
+  I18N_DASHBOARD_SAVED_SUCCESSFULLY,
+  I18N_DASHBOARD_ERROR_WHILE_SAVING,
+  NEW_DASHBOARD,
 } from 'ee/analytics/analytics_dashboards/constants';
 import {
   getCustomDashboard,
@@ -55,14 +59,14 @@ describe('AnalyticsDashboard', () => {
     getProductAnalyticsVisualization.mockImplementation(() => TEST_CUSTOM_DASHBOARD);
   });
 
-  const createWrapper = (data = {}, routeId) => {
+  const createWrapper = ({ props = {}, data = {}, routeId = '' } = {}) => {
     const mocks = {
       $toast: {
         show: showToast,
       },
       $route: {
         params: {
-          id: routeId || '',
+          id: routeId,
         },
       },
       $router: {
@@ -79,6 +83,9 @@ describe('AnalyticsDashboard', () => {
           ...data,
         };
       },
+      propsData: {
+        ...props,
+      },
       stubs: ['router-link', 'router-view'],
       mocks,
       provide: {
@@ -90,9 +97,7 @@ describe('AnalyticsDashboard', () => {
 
   describe('when mounted', () => {
     it('should render with mock dashboard with filter properties', () => {
-      createWrapper({
-        dashboard,
-      });
+      createWrapper({ data: { dashboard } });
 
       expect(getCustomDashboard).toHaveBeenCalledWith('', TEST_CUSTOM_DASHBOARDS_PROJECT);
 
@@ -106,7 +111,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render the loading icon while fetching data', async () => {
-      createWrapper({}, 'dashboard_audience');
+      createWrapper({ routeId: 'dashboard_audience' });
 
       expect(findLoader().exists()).toBe(true);
 
@@ -116,7 +121,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render audience dashboard by id', async () => {
-      createWrapper({}, 'dashboard_audience');
+      createWrapper({ routeId: 'dashboard_audience' });
 
       await waitForPromises();
 
@@ -130,7 +135,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render behavior dashboard by id', async () => {
-      createWrapper({}, 'dashboard_behavior');
+      createWrapper({ routeId: 'dashboard_behavior' });
 
       await waitForPromises();
 
@@ -144,7 +149,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render custom dashboard by id', async () => {
-      createWrapper({}, 'custom_dashboard');
+      createWrapper({ routeId: 'custom_dashboard' });
 
       await waitForPromises();
 
@@ -166,34 +171,37 @@ describe('AnalyticsDashboard', () => {
 
   describe('when saving', () => {
     it('custom dashboard successfully by id', async () => {
-      createWrapper({}, 'custom_dashboard');
+      createWrapper({ routeId: 'custom_dashboard' });
 
       await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
-      expect(saveCustomDashboard).toHaveBeenCalledWith(
-        'custom_dashboard',
-        {},
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
+      expect(saveCustomDashboard).toHaveBeenCalledWith({
+        dashboardId: 'custom_dashboard',
+        dashboardObject: {},
+        projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        isNewFile: false,
+      });
 
       await waitForPromises();
 
-      expect(showToast).toHaveBeenCalledWith('Dashboard was saved successfully');
+      expect(showToast).toHaveBeenCalledWith(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
     });
 
     it('custom dashboard with an error', async () => {
-      createWrapper({}, 'custom_dashboard');
+      createWrapper({ routeId: 'custom_dashboard' });
 
       await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
       await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
-        message: 'Error while saving Dashboard!',
+        message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+        captureError: true,
+        error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
       });
     });
 
     it('custom dashboard with an error thrown', async () => {
-      createWrapper({}, 'custom_dashboard');
+      createWrapper({ routeId: 'custom_dashboard' });
 
       const newError = new Error();
 
@@ -204,9 +212,28 @@ describe('AnalyticsDashboard', () => {
       await waitForPromises();
       expect(createAlert).toHaveBeenCalledWith({
         error: newError,
-        message: 'Error while saving Dashboard!',
-        reportError: true,
+        message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+        captureError: true,
       });
+    });
+
+    it('renders an alert with the server message when a bad request was made', async () => {
+      createWrapper({ routeId: 'custom_dashboard' });
+
+      const message = 'File already exists';
+      const badRequestError = new Error();
+
+      badRequestError.response = {
+        status: HTTP_STATUS_BAD_REQUEST,
+        data: { message },
+      };
+
+      await mockSaveDashboardImplementation(() => {
+        throw badRequestError;
+      });
+
+      await waitForPromises();
+      expect(createAlert).toHaveBeenCalledWith({ message });
     });
   });
 
@@ -229,6 +256,35 @@ describe('AnalyticsDashboard', () => {
         description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
         primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
         primaryButtonLink: TEST_ROUTER_BACK_HREF,
+      });
+    });
+  });
+
+  describe('when a dashboard is new', () => {
+    beforeEach(() => {
+      createWrapper({ props: { isNewDashboard: true } });
+    });
+
+    it('creates a new dashboard and disables the filters', () => {
+      expect(findDashboard().props()).toMatchObject({
+        initialDashboard: {
+          ...NEW_DASHBOARD,
+          default: { ...NEW_DASHBOARD },
+        },
+        defaultFilters: {},
+        showDateRangeFilter: false,
+        syncUrlFilters: false,
+      });
+    });
+
+    it('saves the dashboard as a new file', async () => {
+      await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+      expect(saveCustomDashboard).toHaveBeenCalledWith({
+        dashboardId: 'custom_dashboard',
+        dashboardObject: {},
+        projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+        isNewFile: true,
       });
     });
   });

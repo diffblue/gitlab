@@ -1,6 +1,7 @@
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { RouterLinkStub } from '@vue/test-utils';
+import { GlForm } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import PanelsBase from 'ee/vue_shared/components/customizable_dashboard/panels_base.vue';
@@ -65,9 +66,11 @@ describe('CustomizableDashboard', () => {
   const findSaveButton = () => wrapper.findByTestId('dashboard-save-btn');
   const findCancelEditButton = () => wrapper.findByTestId('dashboard-cancel-edit-btn');
   const findCodeButton = () => wrapper.findByTestId('dashboard-code-btn');
+  const findCodeView = () => wrapper.findByTestId('dashboard-code');
   const findFilters = () => wrapper.findByTestId('dashboard-filters');
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
+  const findForm = () => wrapper.findComponent(GlForm);
 
   describe('when being created an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -205,8 +208,12 @@ describe('CustomizableDashboard', () => {
       findEditButton().vm.$emit('click');
     });
 
+    it('shows the Save button', () => {
+      expect(findSaveButton().attributes('type')).toBe('submit');
+      expect(findSaveButton().props('loading')).toBe(false);
+    });
+
     it('shows Code Button', () => {
-      expect(wrapper.vm.editing).toBe(true);
       expect(findCodeButton().exists()).toBe(true);
     });
 
@@ -222,36 +229,40 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    it('shows title box and sets title in object', () => {
-      const textinput = findDashboardTB();
-      expect(textinput.exists()).toBe(true);
-      expect(textinput.element.value).toBe('Analytics Overview');
-
-      textinput.setValue('New Title');
-      textinput.trigger('input');
-
-      expect(textinput.element.value).toBe('New Title');
+    it('shows an input element with the title as value', () => {
+      expect(findDashboardTB().attributes()).toMatchObject({
+        value: 'Analytics Overview',
+        required: '',
+      });
     });
 
-    it('clicking Save Button will call correctly emit', async () => {
-      jest.spyOn(wrapper.vm, '$emit');
-      await findSaveButton().vm.$emit('click');
-      expect(wrapper.vm.$emit).toHaveBeenCalledWith('save', dashboard.id, dashboard);
+    it('saves the dashboard changes when the form is submitted', async () => {
+      await findDashboardTB().vm.$emit('input', 'New Title');
+
+      await findForm().vm.$emit('submit', new Event('submit'));
+
+      expect(wrapper.emitted('save')).toMatchObject([
+        [
+          'analytics_overview',
+          {
+            ...dashboard,
+            title: 'New Title',
+          },
+        ],
+      ]);
     });
 
     it('clicking Code Button will show code', async () => {
       await findCodeButton().vm.$emit('click');
 
-      expect(wrapper.vm.showCode).toBe(true);
-      expect(wrapper.findByTestId('dashboard-code').exists()).toBe(true);
+      expect(findCodeView().exists()).toBe(true);
     });
 
     it('clicking twice on Code Button will show dashboard', async () => {
       await findCodeButton().vm.$emit('click');
       await findCodeButton().vm.$emit('click');
 
-      expect(wrapper.vm.showCode).toBe(false);
-      expect(wrapper.findByTestId('dashboard-code').exists()).toBe(false);
+      expect(findCodeView().exists()).toBe(false);
     });
 
     it('shows Cancel Edit Button', () => {
@@ -317,6 +328,46 @@ describe('CustomizableDashboard', () => {
           dateRangeLimit,
         });
       });
+    });
+  });
+
+  describe('when a dashboard is new', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({ isNewDashboard: true });
+    });
+
+    it('does not render the cancel button', () => {
+      expect(findCancelEditButton().exists()).toBe(false);
+    });
+
+    it('renders the router link', () => {
+      expect(wrapper.findComponent(RouterLinkStub).exists()).toBe(true);
+    });
+
+    it('reverts to the preview view when saving', async () => {
+      await findCodeButton().vm.$emit('click');
+
+      expect(findCodeView().exists()).toBe(true);
+
+      await findForm().vm.$emit('submit', new Event('submit'));
+
+      expect(findCodeView().exists()).toBe(false);
+    });
+  });
+
+  describe('when saving while editing', () => {
+    beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
+      createWrapper({ isSaving: true });
+
+      findEditButton().vm.$emit('click');
+    });
+
+    it('shows the Save button as loading', () => {
+      expect(findSaveButton().props('loading')).toBe(true);
     });
   });
 });

@@ -22,7 +22,9 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DevfileParser, feature_
           agent_id: workspace.agent.id,
           owning_inventory: owning_inventory,
           started: true,
-          include_inventory: false
+          include_inventory: false,
+          user_name: user.name,
+          user_email: user.email
         )
       )
     end
@@ -43,7 +45,8 @@ RSpec.describe RemoteDevelopment::Workspaces::Reconcile::DevfileParser, feature_
           'config.k8s.io/owning-inventory' => owning_inventory,
           'workspaces.gitlab.com/host-template' => domain_template,
           'workspaces.gitlab.com/id' => workspace.id
-        }
+        },
+        user: user
       )
 
       # noinspection RubyResolve

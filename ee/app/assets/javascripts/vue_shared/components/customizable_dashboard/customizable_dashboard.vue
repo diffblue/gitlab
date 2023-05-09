@@ -1,7 +1,7 @@
 <script>
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
-import { GlButton } from '@gitlab/ui';
+import { GlButton, GlFormInput, GlForm } from '@gitlab/ui';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { slugify } from '~/lib/utils/text_utility';
 import { createAlert } from '~/alert';
@@ -22,6 +22,8 @@ export default {
   components: {
     DateRangeFilter: () => import('./filters/date_range_filter.vue'),
     GlButton,
+    GlFormInput,
+    GlForm,
     PanelsBase,
     UrlSync,
   },
@@ -65,6 +67,11 @@ export default {
       required: false,
       default: false,
     },
+    isNewDashboard: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -72,7 +79,7 @@ export default {
       grid: undefined,
       cssLoaded: false,
       mounted: true,
-      editing: false,
+      editing: this.isNewDashboard,
       showCode: false,
       filters: this.defaultFilters,
     };
@@ -80,9 +87,6 @@ export default {
   computed: {
     loaded() {
       return this.cssLoaded && this.mounted;
-    },
-    showCodeVariant() {
-      return this.showCode ? 'confirm' : 'default';
     },
     showFilters() {
       return this.showDateRangeFilter;
@@ -176,9 +180,15 @@ export default {
         if (this.grid) this.grid.setStatic(false);
       }
     },
-    async saveEdit() {
+    async saveEdit(submitEvent) {
+      submitEvent.preventDefault();
+
       if (!this.dashboard.id) {
-        this.dashboard.id = this.$route?.params.id || slugify(this.dashboard.title, '_');
+        this.dashboard.id = slugify(this.dashboard.title, '_');
+      }
+
+      if (this.isNewDashboard) {
+        this.showCode = false;
       }
 
       // Copying over to our original dashboard object
@@ -240,16 +250,27 @@ export default {
   <div>
     <section class="gl-display-flex gl-align-items-center gl-py-5">
       <h3 v-if="!editing" class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-      <input
-        v-if="editing"
-        v-model="dashboard.title"
-        dir="auto"
-        type="text"
-        :placeholder="s__('Analytics|Dashboard Title')"
-        :aria-label="s__('Analytics|Dashboard Title')"
-        class="form-control gl-mr-4 gl-border-gray-200"
-        data-testid="dashboard-title-tb"
-      />
+      <gl-form v-else class="gl-display-flex flex-fill" @submit="saveEdit">
+        <gl-form-input
+          v-model="dashboard.title"
+          dir="auto"
+          type="text"
+          :placeholder="s__('Analytics|Dashboard Title')"
+          :aria-label="s__('Analytics|Dashboard Title')"
+          class="form-control gl-mr-4 gl-border-gray-200"
+          data-testid="dashboard-title-tb"
+          required
+        />
+        <gl-button
+          :loading="isSaving"
+          class="gl-mr-2"
+          category="primary"
+          variant="confirm"
+          data-testid="dashboard-save-btn"
+          type="submit"
+          >{{ s__('Analytics|Save') }}</gl-button
+        >
+      </gl-form>
       <gl-button
         v-if="!editing && !dashboard.builtin"
         icon="pencil"
@@ -259,18 +280,8 @@ export default {
         >{{ s__('Analytics|Edit') }}</gl-button
       >
       <gl-button
-        v-if="editing"
-        :loading="isSaving"
-        class="gl-mr-2"
-        category="primary"
-        variant="confirm"
-        data-testid="dashboard-save-btn"
-        @click="saveEdit"
-        >{{ s__('Analytics|Save') }}</gl-button
-      >
-      <gl-button
         v-if="editing || dashboard.builtin"
-        :variant="showCodeVariant"
+        :selected="showCode"
         icon="code"
         class="gl-mr-2"
         data-testid="dashboard-code-btn"
@@ -278,14 +289,18 @@ export default {
         >{{ s__('Analytics|Code') }}</gl-button
       >
       <gl-button
-        v-if="editing"
+        v-if="editing && !isNewDashboard"
         class="gl-mr-2"
         category="secondary"
         data-testid="dashboard-cancel-edit-btn"
         @click="cancelEdit"
-        >{{ s__('ProductAnalytics|Cancel Edit') }}</gl-button
+        >{{ s__('Analytics|Cancel') }}</gl-button
       >
-      <router-link v-if="!editing" to="/" class="gl-button btn btn-default btn-md">
+      <router-link
+        v-if="!editing || isNewDashboard"
+        to="/"
+        class="gl-button btn btn-default btn-md"
+      >
         {{ s__('ProductAnalytics|Go back') }}
       </router-link>
     </section>

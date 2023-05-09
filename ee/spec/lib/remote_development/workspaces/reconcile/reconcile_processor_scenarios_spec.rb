@@ -10,6 +10,8 @@ require 'spec_helper'
 RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, 'Partial Update Scenarios', feature_category: :remote_development do
   include_context 'with remote development shared fixtures'
 
+  let_it_be(:user) { create(:user) }
+
   # See following documentation for details on all scenarios:
   #
   # https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/workspace-updates.md
@@ -204,7 +206,9 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Reconcile::ReconcileProcessor, '
                 resource_version: deployment_resource_version_from_agent,
                 current_actual_state: current_actual_state,
                 previous_actual_state: previous_actual_state,
-                workspace_exists: workspace_exists
+                workspace_exists: workspace_exists,
+                user_name: user.name,
+                user_email: user.email
               )
             ]
           else

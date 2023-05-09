@@ -21,8 +21,13 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
     end
 
     context 'APPROVAL_VULNERABILITY_STATES' do
-      it 'contains all vulnerability states' do
-        expect(described_class::APPROVAL_VULNERABILITY_STATES).to include(*::Enums::Vulnerability.vulnerability_states.keys)
+      let_it_be(:vulnerability_states) { Enums::Vulnerability.vulnerability_states }
+      let_it_be(:newly_detected_states) { ApprovalProjectRule::NEWLY_DETECTED_STATES }
+
+      let_it_be(:expected_states) { vulnerability_states.merge(newly_detected_states) }
+
+      it 'contains all vulnerability states and the newly detected states' do
+        expect(described_class::APPROVAL_VULNERABILITY_STATES).to include(*expected_states.keys)
       end
     end
   end

@@ -14,6 +14,8 @@ feature_category: :team_planning do
   let(:issue) { create(:issue, project: project, description: description) }
 
   before do
+    stub_feature_flags(remove_monitor_metrics: false)
+
     clear_host_from_memoized_variables
     stub_gitlab_domain
 
@@ -61,6 +63,20 @@ feature_category: :team_planning do
         .to have_received(:new)
         .with(alert.environment, 'GET', 'query_range', hash_including('start', 'end', 'step'))
         .at_least(:once)
+    end
+
+    context 'with remove_monitor_metrics flag enabled' do
+      before do
+        stub_feature_flags(remove_monitor_metrics: true)
+      end
+
+      it 'does not show embedded metrics' do
+        visit project_issue_path(project, issue)
+
+        expect(page).not_to have_css('div.prometheus-graph')
+        expect(page).not_to have_text(metric.title)
+        expect(page).not_to have_text(metric.y_label)
+      end
     end
 
     # Delete when moving to CE
