@@ -7,8 +7,8 @@ class ApprovalProjectRule < ApplicationRecord
   UNSUPPORTED_SCANNER = 'cluster_image_scanning'
   SUPPORTED_SCANNERS = (::Ci::JobArtifact::SECURITY_REPORT_FILE_TYPES - [UNSUPPORTED_SCANNER]).freeze
   DEFAULT_SEVERITIES = %w[unknown high critical].freeze
-  NEWLY_DETECTED_STATE = { NEWLY_DETECTED.to_sym => 0 }.freeze
-  APPROVAL_VULNERABILITY_STATES = ::Enums::Vulnerability.vulnerability_states.merge(NEWLY_DETECTED_STATE).freeze
+  NEWLY_DETECTED_STATES = { NEWLY_DETECTED.to_sym => 0, NEW_NEEDS_TRIAGE.to_sym => 5, NEW_DISMISSED.to_sym => 6 }.freeze
+  APPROVAL_VULNERABILITY_STATES = ::Enums::Vulnerability.vulnerability_states.merge(NEWLY_DETECTED_STATES).freeze
   APPROVAL_PROJECT_RULE_CREATION_EVENT = 'approval_project_rule_created'
 
   belongs_to :project
