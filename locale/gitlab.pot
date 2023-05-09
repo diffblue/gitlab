@@ -5609,7 +5609,7 @@ msgstr ""
 msgid "ApprovalRule|Name"
 msgstr ""
 
-msgid "ApprovalRule|Needs Triage"
+msgid "ApprovalRule|Needs triage"
 msgstr ""
 
 msgid "ApprovalRule|New"
@@ -40295,6 +40295,9 @@ msgstr ""
 msgid "SecurityOrchestration|Description"
 msgstr ""
 
+msgid "SecurityOrchestration|Details"
+msgstr ""
+
 msgid "SecurityOrchestration|Direct"
 msgstr ""
 
@@ -40587,6 +40590,9 @@ msgid "SecurityOrchestration|Use a scan result policy to create rules that check
 msgstr ""
 
 msgid "SecurityOrchestration|View policy project"
+msgstr ""
+
+msgid "SecurityOrchestration|YAML"
 msgstr ""
 
 msgid "SecurityOrchestration|You don't have any security policies yet"
