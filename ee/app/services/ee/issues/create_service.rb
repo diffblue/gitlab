@@ -21,7 +21,7 @@ module EE
 
       override :transaction_create
       def transaction_create(issue)
-        return super unless issue.requirement?
+        return super unless issue.work_item_type.requirement?
 
         requirement = issue.build_requirement(project: issue.project)
         requirement.requirement_issue = issue

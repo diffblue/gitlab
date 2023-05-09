@@ -27,7 +27,7 @@ module Dora
       end
 
       def process
-        return unless issue.incident? && production_env_id
+        return unless issue.work_item_type&.incident? && production_env_id
 
         schedule_metrics_refresh_job
       end

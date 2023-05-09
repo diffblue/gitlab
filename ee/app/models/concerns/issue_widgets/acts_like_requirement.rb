@@ -35,7 +35,7 @@ module IssueWidgets
     end
 
     def invalidate_if_sync_error
-      return unless requirement? # No need to invalidate if issue_type != requirement
+      return unless work_item_type&.requirement? # No need to invalidate if work_item_type != requirement
       return unless requirement_sync_error
       return unless requirement
 

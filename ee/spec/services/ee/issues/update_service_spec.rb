@@ -263,8 +263,8 @@ RSpec.describe Issues::UpdateService, feature_category: :team_planning do
         shared_examples 'creates an SLA' do
           it do
             expect { update_issue(issue_type: 'incident') }.to change(IssuableSla, :count).by(1)
-            expect(issue.reload).to be_incident
-            expect(issue.reload.issuable_sla).to be_present
+            expect(issue.reload.work_item_type).to be_incident
+            expect(issue.issuable_sla).to be_present
           end
         end
 

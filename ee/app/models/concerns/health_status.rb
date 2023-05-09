@@ -14,7 +14,7 @@ module HealthStatus
 
   override :supports_health_status?
   def supports_health_status?
-    return false if incident?
+    return false if incident_type_issue?
 
     resource_parent&.feature_available?(:issuable_health_status)
   end

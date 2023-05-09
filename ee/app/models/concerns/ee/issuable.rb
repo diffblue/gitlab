@@ -45,15 +45,15 @@ module EE
     end
 
     def supports_sla?
-      incident?
+      incident_type_issue?
     end
 
     def supports_metric_images?
-      incident?
+      incident_type_issue?
     end
 
     def supports_resource_links?
-      incident?
+      incident_type_issue?
     end
 
     override :allows_scoped_labels?
