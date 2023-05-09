@@ -685,7 +685,7 @@ Support for group-level settings for merge request approval rules is tracked in 
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/408158) from GitLab Ultimate to GitLab Premium in 16.0.
 
 WARNING:
-This feature is in [Beta](/ee/policy/alpha-beta-support.md#beta). Code Suggestions use generative AI to suggest code while you're developing. Due to high demand, this feature will have unscheduled downtime and code suggestions in VS Code may be delayed. Code Suggestions may produce [low-quality or incomplete suggestions](../project/repository/code_suggestions.md#model-accuracy-and-quality). Beta users should read about the [known limitations](../project/repository/code_suggestions.md#known-limitations). We look forward to hearing your feedback.
+This feature is in [Beta](../../policy/alpha-beta-support.md#beta). Code Suggestions use generative AI to suggest code while you're developing. Due to high demand, this feature will have unscheduled downtime and code suggestions in VS Code may be delayed. Code Suggestions may produce [low-quality or incomplete suggestions](../project/repository/code_suggestions.md#model-accuracy-and-quality). Beta users should read about the [known limitations](../project/repository/code_suggestions.md#known-limitations). We look forward to hearing your feedback.
 
 This setting enables users in the group to access [Code Suggestions](../project/repository/code_suggestions.md).
 This setting [cascades to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)
@@ -703,9 +703,13 @@ To enable Code Suggestions for a group:
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/404856) in GitLab 16.0.
 
-These are [Experiment features](/ee/policy/alpha-beta-support.md#experiment) and may produce unexpected results (e.g., low-quality, incomplete, failed pipelines, incoherent, insecure code, offensive or insensitive).
+You can give all users in the group access to Experiment features.
 
-This setting enables users in the group to access Experiment features.
+WARNING:
+[Experiment features](../../policy/alpha-beta-support.md#experiment) may produce unexpected results
+(for example, the results might be low-quality, incomplete, incoherent, offensive, or insensitive,
+and might include insecure code or failed pipelines).
+
 This setting [cascades to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)
 that belong to the group.
 
@@ -722,9 +726,10 @@ To enable Experiment features for a group:
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/404856) in GitLab 16.0.
 
 WARNING:
-These Artifical Intelligence (AI) features use [third-party services](../../user/ai_features.md#data-usage) and require transmission of data, including personal data.
+These Artifical Intelligence (AI) features use [third-party services](../ai_features.md#data-usage)
+and require transmission of data, including personal data.
 
-This setting enables users in the group to access third-party AI features.
+You can give all users in the group access to third-party AI features.
 This setting [cascades to all projects](../project/merge_requests/approvals/settings.md#settings-cascading)
 that belong to the group.
 
