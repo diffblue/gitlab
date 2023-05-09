@@ -104,6 +104,14 @@ In GitLab 13.9, we updated the Omnibus GitLab package and GitLab Helm chart 4.9 
 GitLab 16.0, we have removed support for Redis 5. If you are using your own Redis 5.0 instance, you must upgrade it to Redis 6.0 or later before upgrading to GitLab 16.0
 or later.
 
+### Use of `id` field in vulnerabilityFindingDismiss mutation
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+You can use the vulnerabilityFindingDismiss GraphQL mutation to set the status of a vulnerability finding to `Dismissed`. Previously, this mutation used the `id` field to identify findings uniquely. However, this did not work for dismissing findings from the pipeline security tab. Therefore, using the `id` field as an identifier has been dropped in favor of the `uuid` field. Using the 'uuid' field as an identifier allows you to dismiss the finding from the pipeline security tab.
+
 ### Vulnerability confidence field
 
 WARNING:
