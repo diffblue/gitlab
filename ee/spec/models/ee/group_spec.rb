@@ -603,6 +603,37 @@ RSpec.describe Group, feature_category: :subgroups do
     end
   end
 
+  describe '.preload_root_saml_providers' do
+    let_it_be(:group1) { create(:group, saml_provider: create(:saml_provider)) }
+    let_it_be(:group2) { create(:group, saml_provider: create(:saml_provider)) }
+    let_it_be(:subgroup1) do
+      create(:group, :private, parent: group1).tap do |group|
+        group.association(:parent).reset
+      end
+    end
+
+    let_it_be(:subgroup2) do
+      create(:group, :private, parent: group2).tap do |group|
+        group.association(:parent).reset
+      end
+    end
+
+    let(:groups_to_load) { described_class.where(id: [subgroup1.id, subgroup2.id]) }
+
+    it 'sets root_saml_provider for given groups' do
+      # Verify that `parent` is not loaded to prevent skipping the query
+      # in Namespaces::Traversal::Linear#root_ancestor
+      expect(subgroup1.association(:parent)).not_to be_loaded
+      expect(subgroup2.association(:parent)).not_to be_loaded
+
+      described_class.preload_root_saml_providers(groups_to_load)
+
+      expect { groups_to_load.map(&:root_saml_provider) }.not_to exceed_query_limit(0)
+      expect(subgroup1.root_saml_provider).to eq(group1.saml_provider)
+      expect(subgroup2.root_saml_provider).to eq(group2.saml_provider)
+    end
+  end
+
   describe '#vulnerabilities' do
     subject { group.vulnerabilities }
 

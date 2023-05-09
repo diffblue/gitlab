@@ -14,7 +14,7 @@ RSpec.describe Epics::WithAccessCheck do
   let_it_be(:subgroup_child_epic) { create(:epic, group: subgroup, parent: parent_epic) }
   let_it_be(:other_child_epic) { create(:epic, group: other_group, parent: parent_epic) }
 
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
   let(:params) { { parent: parent_epic } }
 
   let(:finder_class) do
@@ -97,6 +97,21 @@ RSpec.describe Epics::WithAccessCheck do
       it 'raises NotImplementedError' do
         expect { DummyFinder.new(user, params).execute }.to raise_error(NotImplementedError)
       end
+    end
+  end
+
+  context "when user is not authenticated" do
+    let(:user) { nil }
+
+    it 'returns only epics with public access' do
+      finder = finder_class.new(user, params)
+
+      expect(finder.execute).to match_array(
+        [
+          group_epic,
+          ancestor_child_epic,
+          subgroup_child_epic
+        ])
     end
   end
 

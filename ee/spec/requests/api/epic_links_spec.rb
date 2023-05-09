@@ -98,11 +98,11 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
 
           control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get_epics }
 
-          create(:epic, parent: epic)
+          create_list(:epic, 2, parent: epic)
 
           # Executes 2 extra `SELECT COUNT(*) FROM "award_emoji"...` per child
           # See https://gitlab.com/gitlab-org/gitlab/-/issues/382164
-          expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(2)
+          expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(4)
         end
       end
     end

@@ -6,10 +6,10 @@ module Epics
     include WithAccessCheck
     extend ::Gitlab::Utils::Override
 
-    def execute
+    def execute(preload: false)
       return Epic.none unless Ability.allowed?(current_user, :read_epic, parent)
 
-      items = filter_and_search(epics_with_read_access)
+      items = filter_and_search(epics_with_read_access(preload: preload))
 
       sort(items)
     end
