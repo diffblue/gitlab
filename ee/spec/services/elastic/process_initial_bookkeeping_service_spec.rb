@@ -7,7 +7,16 @@ RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :glo
   let(:issue) { create(:issue) }
 
   describe '.backfill_projects!' do
-    it 'calls initial project indexing' do
+    it 'calls ElasticCommitIndexerWorker and, ElasticWikiIndexerWorker if feature separate_elastic_wiki_indexer_for_project is enabled' do
+      expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
+      expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
+      expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name)
+
+      described_class.backfill_projects!(project)
+    end
+
+    it 'calls only ElasticCommitIndexerWorker if feature separate_elastic_wiki_indexer_for_project is disabled' do
+      stub_feature_flags(separate_elastic_wiki_indexer_for_project: false)
       expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
       expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
       expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, true)

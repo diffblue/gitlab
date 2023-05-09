@@ -28,7 +28,14 @@ RSpec.describe ProjectWiki, :elastic, :sidekiq_inline, feature_category: :global
     expect(project.wiki.elastic_search('term1 | term2', type: 'wiki_blob')[:wiki_blobs][:total_count]).to eq(2)
   end
 
-  it 'indexes' do
+  it 'indexes using ElasticWikiIndexerWorker if feature_flag separate_elastic_wiki_indexer_for_project is enabled' do
+    expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name)
+
+    project.wiki.index_wiki_blobs
+  end
+
+  it 'indexes using ElasticCommitIndexerWorker if feature_flag separate_elastic_wiki_indexer_for_project is disabled' do
+    stub_feature_flags(separate_elastic_wiki_indexer_for_project: false)
     expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, true)
 
     project.wiki.index_wiki_blobs
