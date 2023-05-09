@@ -1,0 +1,22 @@
+---
+key_path: counts.projects_with_initialized_product_analytics_monthly
+description: "Count of the number of projects that initialized product analytics in the last 28 days"
+product_section: dev
+product_stage: analyze
+product_group: product_analytics
+value_type: number
+status: active
+milestone: "16.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119659
+time_frame: 28d
+data_source: redis_hll
+data_category: optional
+options:
+  events:
+    - "project_initialized_product_analytics"
+instrumentation_class: RedisHLLMetric
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- ultimate
