@@ -6,7 +6,7 @@ RSpec.shared_context 'with project with approval rules' do
   let_it_be(:project) { create(:project, :public, :repository) }
 
   before do
-    stub_licensed_features(multiple_approval_rules: true)
+    stub_licensed_features(multiple_approval_rules: true, admin_merge_request_approvers_rules: true)
 
     [approver, author].each do |member|
       project.add_maintainer(member)

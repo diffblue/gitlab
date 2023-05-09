@@ -11,6 +11,10 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
   let_it_be(:approver) { create(:user) }
   let_it_be(:other_approver) { create(:user) }
 
+  before do
+    stub_licensed_features(admin_merge_request_approvers_rules: true)
+  end
+
   describe 'GET /projects/:id/approval_settings' do
     let(:url) { "/projects/#{project.id}/approval_settings" }
 
@@ -43,6 +47,18 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
         expect(rule['name']).to eq('vulnerability')
       end
 
+      context 'when license is missing' do
+        before do
+          stub_licensed_features(admin_merge_request_approvers_rules: false)
+        end
+
+        it 'returns 403 error' do
+          get api(url, developer)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
       context 'when target_branch is specified' do
         let(:protected_branch) { create(:protected_branch, project: project, name: 'master') }
         let(:another_protected_branch) { create(:protected_branch, project: project, name: 'test') }
@@ -57,7 +73,7 @@ RSpec.describe API::ProjectApprovalSettings, :aggregate_failures, feature_catego
         end
 
         before do
-          stub_licensed_features(multiple_approval_rules: true)
+          stub_licensed_features(admin_merge_request_approvers_rules: true, multiple_approval_rules: true)
           rule.update!(protected_branches: [protected_branch])
         end
 

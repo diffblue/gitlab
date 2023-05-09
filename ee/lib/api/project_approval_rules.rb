@@ -5,6 +5,7 @@ module API
     include PaginationParams
 
     before { authenticate! }
+    before { check_feature_availability }
 
     helpers ::API::Helpers::ProjectApprovalRulesHelpers
 

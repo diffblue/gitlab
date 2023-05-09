@@ -16,7 +16,7 @@ RSpec.describe 'Merge Requests > User resets approvers', :js, feature_category: 
   let!(:rule) { create(:approval_project_rule, project: project, users: project_approvers, approvals_required: 1) }
 
   before do
-    stub_licensed_features(multiple_approval_rules: true)
+    stub_licensed_features(multiple_approval_rules: true, admin_merge_request_approvers_rules: true)
 
     project_approvers.each do |approver|
       project.add_developer(approver)

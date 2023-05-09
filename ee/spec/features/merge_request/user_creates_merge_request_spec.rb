@@ -23,6 +23,7 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
     sign_in(user)
     set_cookie('new-actions-popover-viewed', 'true')
 
+    stub_licensed_features(admin_merge_request_approvers_rules: true)
     create(:approval_project_rule, project: project, users: [approver])
 
     visit(project_new_merge_request_path(project))
