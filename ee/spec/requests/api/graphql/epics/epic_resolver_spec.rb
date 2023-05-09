@@ -109,27 +109,27 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
     let_it_be(:epic3) { create(:epic, group: group, state: :closed, start_date: "2019-08-22", end_date: "2019-08-26") }
     let_it_be(:epic4) { create(:epic, group: group, state: :closed, start_date: "2019-08-10", end_date: "2019-08-12") }
 
-    context 'when start_date and end_date are present' do
+    context "when `start` and `end` are present" do
       it 'returns epics within timeframe' do
-        post_graphql(epics_query_by_hash(group, 'startDate' => '2019-08-13', 'endDate' => '2019-08-21'), current_user: user)
+        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'start' => '2019-08-13', 'end' => '2019-08-21' })}}"), current_user: user)
 
         expect_epics_response([epic1, epic2], node_path: node_path)
       end
     end
 
-    context 'when only start_date is present' do
+    context 'when only start is present' do
       it 'raises error' do
-        post_graphql(epics_query(group, 'startDate', '2019-08-13'), current_user: user)
+        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'start' => '2019-08-13' })}}"), current_user: user)
 
-        expect(graphql_errors).to include(a_hash_including('message' => 'Both startDate and endDate must be present.'))
+        expect(graphql_errors).to include(a_hash_including('message' => "Argument 'end' on InputObject 'Timeframe' is required. Expected type Date!"))
       end
     end
 
-    context 'when only end_date is present' do
+    context 'when only end is present' do
       it 'raises error' do
-        post_graphql(epics_query(group, 'endDate', '2019-08-13'), current_user: user)
+        post_graphql(epics_query_by_hash(group, "timeframe: {#{field_query({ 'end' => '2019-08-21' })}}"), current_user: user)
 
-        expect(graphql_errors).to include(a_hash_including('message' => 'Both startDate and endDate must be present.'))
+        expect(graphql_errors).to include(a_hash_including('message' => "Argument 'start' on InputObject 'Timeframe' is required. Expected type Date!"))
       end
     end
   end
@@ -353,11 +353,11 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
   end
 
   def epics_query(group, field, value)
-    epics_query_by_hash(group, field => value)
+    epics_query_by_hash(group, field_query({ field => value }))
   end
 
   def epics_query_by_hash(group, args = {})
-    field_queries = args.map { |key, value| "#{key}:\"#{value}\"" }.join(',')
+    field_queries = field_query(args)
     field_queries = " ( #{field_queries} ) " if field_queries.present?
 
     <<~QUERY
@@ -372,6 +372,14 @@ RSpec.describe 'getting epics information', feature_category: :portfolio_managem
         }
       }
     QUERY
+  end
+
+  def field_query(args)
+    return args if args.is_a?(String)
+
+    args.map do |key, value|
+      "#{key}:" + (value.is_a?(Hash) ? field_query(value) : "\"#{value}\"")
+    end.join(',')
   end
 
   def expect_epics_response(epics, node_path:)
