@@ -457,7 +457,8 @@ group :test do
 
   gem 'capybara', '~> 3.39'
   gem 'capybara-screenshot', '~> 1.0.26'
-  gem 'selenium-webdriver', '~> 4.9.0'
+  # 4.9.1 drops Ruby 2.7 support. We can upgrade further after we drop Ruby 2.7 support.
+  gem 'selenium-webdriver', '= 4.9.0'
 
   gem 'graphlyte', '~> 1.0.0'
 
