@@ -64,6 +64,22 @@ RSpec.describe Sbom::Occurrence, type: :model, feature_category: :dependency_man
     end
   end
 
+  describe '.filter_by_package_managers' do
+    let_it_be(:occurrence_nuget) { create(:sbom_occurrence, packager_name: 'nuget') }
+    let_it_be(:occurrence_npm) { create(:sbom_occurrence, packager_name: 'npm') }
+    let_it_be(:occurrence_null) { create(:sbom_occurrence, source: nil) }
+
+    it 'returns records filtered by package name' do
+      expect(described_class.filter_by_package_managers(%w[npm])).to eq([occurrence_npm])
+    end
+
+    context 'with empty array' do
+      it 'returns no records' do
+        expect(described_class.filter_by_package_managers([])).to eq([])
+      end
+    end
+  end
+
   describe '#name' do
     let(:component) { build(:sbom_component, name: 'rails') }
     let(:occurrence) { build(:sbom_occurrence, component: component) }

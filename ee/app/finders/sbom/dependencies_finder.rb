@@ -8,7 +8,8 @@ module Sbom
     end
 
     def execute
-      sbom_occurrences = project.sbom_occurrences
+      sbom_occurrences = filtered_collection
+
       case params[:sort_by]
       when 'name'
         sbom_occurrences.order_by_component_name(params[:sort])
@@ -22,5 +23,11 @@ module Sbom
     private
 
     attr_reader :project, :params
+
+    def filtered_collection
+      return project.sbom_occurrences unless params[:package_managers].present?
+
+      project.sbom_occurrences.filter_by_package_managers(params[:package_managers])
+    end
   end
 end
