@@ -103,5 +103,14 @@ module EE
 
       plans.find { |data| data['code'] == 'ultimate' }&.fetch('id', nil)
     end
+
+    def super_sidebar_default_pins(panel_type)
+      case panel_type
+      when 'group'
+        super << :group_epic_list
+      else
+        super
+      end
+    end
   end
 end

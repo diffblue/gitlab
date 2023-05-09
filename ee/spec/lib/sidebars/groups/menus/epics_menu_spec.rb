@@ -42,10 +42,9 @@ RSpec.describe Sidebars::Groups::Menus::EpicsMenu, feature_category: :navigation
     let(:extra_attrs) do
       {
         item_id: :group_epic_list,
-        sprite_icon: 'epic',
         pill_count: menu.pill_count,
         has_pill: menu.has_pill?,
-        super_sidebar_parent: ::Sidebars::StaticMenu
+        super_sidebar_parent: Sidebars::Groups::SuperSidebarMenus::PlanMenu
       }
     end
   end
