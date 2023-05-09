@@ -1,0 +1,17 @@
+---
+schemaVersion: 2.2.0
+starterProjects:
+  - name: example
+    git:
+      checkoutFrom:
+        remote: origin
+        revision: main
+      remotes:
+        origin: https://example.com/path/to/repository
+    subDir: app
+components:
+  - name: example
+    attributes:
+      gl/inject-editor: true
+    container:
+      image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo

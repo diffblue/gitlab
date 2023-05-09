@@ -1319,6 +1319,12 @@ msgstr ""
 msgid "'%{value}' days of inactivity must be greater than or equal to 90"
 msgstr ""
 
+msgid "'projects' is not yet supported"
+msgstr ""
+
+msgid "'starterProjects' is not yet supported"
+msgstr ""
+
 msgid "(%d closed)"
 msgid_plural "(%d closed)"
 msgstr[0] ""
@@ -23674,7 +23680,7 @@ msgstr ""
 msgid "Inherited:"
 msgstr ""
 
-msgid "Inheriting from parent is not yet supported"
+msgid "Inheriting from 'parent' is not yet supported"
 msgstr ""
 
 msgid "Initial default branch name"
