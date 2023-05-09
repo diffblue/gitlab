@@ -68,14 +68,6 @@ RSpec.describe Resolvers::EpicsResolver do
         let!(:epic1) { create(:epic, group: group, state: :closed, start_date: "2019-08-13", end_date: "2019-08-20") }
         let!(:epic2) { create(:epic, group: group, state: :closed, start_date: "2019-08-13", end_date: "2019-08-21") }
 
-        context 'when start_date and end_date are present' do
-          it 'returns epics within timeframe' do
-            epics = resolve_epics(start_date: '2019-08-13', end_date: '2019-08-21')
-
-            expect(epics).to match_array([epic1, epic2])
-          end
-        end
-
         context 'when timeframe start and end are present' do
           it 'returns epics within timeframe' do
             epics = resolve_epics(timeframe: { start: '2019-08-13', end: '2019-08-21' })

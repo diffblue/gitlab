@@ -87,7 +87,6 @@ module Resolvers
     type Types::EpicType, null: true
 
     def ready?(**args)
-      validate_timeframe_params!(args)
       validate_starts_with_iid!(args)
 
       super(**args)
