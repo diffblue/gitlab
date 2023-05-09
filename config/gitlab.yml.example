@@ -127,8 +127,8 @@ production: &base
     # username_changing_enabled: false # default: true - User can change their username/namespace
     ## Default theme ID
     ##   1 - Indigo
-    ##   2 - Dark
-    ##   3 - Light
+    ##   2 - Gray
+    ##   3 - Light Gray
     ##   4 - Blue
     ##   5 - Green
     ##   6 - Light Indigo
@@ -136,6 +136,7 @@ production: &base
     ##   8 - Light Green
     ##   9 - Red
     ##   10 - Light Red
+    ##   11 - Dark Mode (alpha)
     # default_theme: 1 # default: 1
 
     ## Automatic issue closing
