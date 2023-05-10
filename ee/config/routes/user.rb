@@ -10,8 +10,9 @@ scope :users, module: :users do
     post :resend_email_code
     post :send_phone_verification_code
     post :verify_phone_verification_code
-    get :arkose_labs_challenge
     post :verify_arkose_labs_session
+    get :arkose_labs_challenge
+    get :verify_credit_card
     get :success
   end
 end

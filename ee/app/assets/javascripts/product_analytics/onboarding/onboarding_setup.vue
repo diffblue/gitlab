@@ -4,7 +4,7 @@ import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AnalyticsClipboardInput from '../shared/analytics_clipboard_input.vue';
-import getProjectJitsuKeyQuery from '../graphql/queries/get_project_jitsu_key.query.graphql';
+import getProjectTrackingKeyQuery from '../graphql/queries/get_project_tracking_key.query.graphql';
 import OnboardingSetupCollapse from './components/onboarding_setup_collapse.vue';
 
 import {
@@ -28,7 +28,7 @@ export default {
     collectorHost: {
       type: String,
     },
-    jitsuKey: {
+    trackingKey: {
       type: String,
     },
     projectFullPath: {
@@ -44,12 +44,12 @@ export default {
   },
   data() {
     return {
-      apolloJitsuKey: null,
+      apolloTrackingKey: null,
     };
   },
   computed: {
     appIdKey() {
-      return this.jitsuKey ?? this.apolloJitsuKey;
+      return this.trackingKey ?? this.apolloTrackingKey;
     },
     description() {
       if (this.isInitialSetup) {
@@ -67,15 +67,15 @@ export default {
     },
   },
   apollo: {
-    apolloJitsuKey: {
-      query: getProjectJitsuKeyQuery,
+    apolloTrackingKey: {
+      query: getProjectTrackingKeyQuery,
       variables() {
         return {
           projectPath: this.projectFullPath,
         };
       },
       update(data) {
-        return data?.project?.jitsuKey;
+        return data?.project?.trackingKey;
       },
       skip() {
         return this.appIdKey;

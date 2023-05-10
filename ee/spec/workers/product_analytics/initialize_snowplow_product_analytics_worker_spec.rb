@@ -35,6 +35,14 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
         .to change { project.reload.project_setting.product_analytics_instrumentation_key }.from(nil).to(app_id)
     end
 
+    it 'ensures the temporary redis key is deleted' do
+      subject
+
+      expect(
+        Gitlab::Redis::SharedState.with { |redis| redis.get("project:#{project.id}:product_analytics_initializing") }
+      ).to eq(nil)
+    end
+
     it 'tracks the success' do
       expect(Gitlab::UsageDataCounters::HLLRedisCounter)
         .to receive(:track_usage_event).with('project_initialized_product_analytics', project.id)

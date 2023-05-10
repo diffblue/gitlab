@@ -1911,7 +1911,7 @@ DEPENDENCIES
   sassc-rails (~> 2.1.0)
   sd_notify (~> 0.1.0)
   seed-fu (~> 2.3.7)
-  selenium-webdriver (~> 4.9.0)
+  selenium-webdriver (= 4.9.0)
   semver_dialects (~> 1.2.1)
   sentry-rails (~> 5.8.0)
   sentry-raven (~> 3.1)

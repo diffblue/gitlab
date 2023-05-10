@@ -594,4 +594,96 @@ feature_category: :system_access do
       expect(assigns(:redirect_url)).to eq(after_sign_in_path)
     end
   end
+
+  describe 'GET verify_credit_card' do
+    let(:params) { { format: :json } }
+
+    let_it_be(:user) { unconfirmed_user }
+
+    before do
+      stub_session(verification_user_id: user.id)
+    end
+
+    subject(:do_request) { get verify_credit_card_identity_verification_path(params) }
+
+    it_behaves_like 'it requires a valid verification_user_id', 'verify_credit_card'
+
+    context 'when request format is html' do
+      let(:params) { { format: :html } }
+
+      it 'returns 404' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when no credit_card_validation record exist for the user' do
+      let(:params) { { format: :json } }
+
+      it 'returns 404' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when request format is json' do
+      let(:params) { { format: :json } }
+      let(:rate_limited) { false }
+      let(:ip) { '1.2.3.4' }
+
+      let_it_be(:credit_card_validation) { create(:credit_card_validation, user: user) }
+
+      before do
+        allow_next_found_instance_of(::Users::CreditCardValidation) do |cc|
+          allow(cc).to receive(:used_by_banned_user?).and_return(used_by_banned_user)
+        end
+
+        allow_next_instance_of(ActionDispatch::Request) do |request|
+          allow(request).to receive(:ip).and_return(ip)
+        end
+
+        allow_next_instance_of(described_class) do |controller|
+          allow(controller).to receive(:check_rate_limit!)
+            .with(:credit_card_verification_check_for_reuse, scope: ip)
+            .and_return(rate_limited)
+        end
+
+        do_request
+      end
+
+      context 'when the user\'s credit card has not been used by a banned user' do
+        let(:used_by_banned_user) { false }
+
+        it 'returns HTTP status 200 and an empty json', :aggregate_failures do
+          expect(json_response).to be_empty
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      shared_examples 'returns HTTP status 400 and a message' do
+        it 'returns HTTP status 400 and a message', :aggregate_failures do
+          expect(json_response).to include({
+            'message' => 'There was a problem with the credit card details you entered. Use a different credit card ' \
+                         'and try again.'
+          })
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      context 'when rate limited' do
+        let(:rate_limited) { true }
+        let(:used_by_banned_user) { false }
+
+        it_behaves_like 'returns HTTP status 400 and a message'
+      end
+
+      context 'when the user\'s credit card has been used by a banned user' do
+        let(:used_by_banned_user) { true }
+
+        it_behaves_like 'returns HTTP status 400 and a message'
+      end
+    end
+  end
 end

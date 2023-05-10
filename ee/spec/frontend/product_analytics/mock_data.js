@@ -14,11 +14,11 @@ export const createInstanceResponse = (errors = []) => ({
   },
 });
 
-export const getJitsuKeyResponse = (jitsuKey = null) => ({
+export const getTrackingKeyResponse = (trackingKey = null) => ({
   data: {
     project: {
       id: 'gid://gitlab/Project/2',
-      jitsuKey,
+      trackingKey,
     },
   },
 });

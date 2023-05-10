@@ -20,7 +20,7 @@ export default () => {
 
   const {
     dashboardProject: analyticsDashboardPointerJSON = '',
-    jitsuKey,
+    trackingKey,
     projectId,
     projectFullPath,
     collectorHost,
@@ -44,7 +44,7 @@ export default () => {
     router: createRouter(routerBase),
     provide: {
       customDashboardsProject: analyticsDashboardPointer,
-      jitsuKey,
+      trackingKey,
       projectFullPath,
       projectId,
       collectorHost,

@@ -9,7 +9,8 @@ module Users
           verification_state: user.identity_verification_state,
           credit_card: {
             user_id: user.id,
-            form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
+            form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID,
+            verify_credit_card_path: verify_credit_card_identity_verification_path
           },
           phone_number: phone_number_verification_data(user),
           email: email_verification_data(user),

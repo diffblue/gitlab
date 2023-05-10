@@ -6,19 +6,19 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 
-  context 'with jitsuKey' do
+  context 'with trackingKey' do
     let_it_be(:query) do
       %(
       query {
         project(fullPath: "#{project.full_path}") {
-          jitsuKey
+          trackingKey
         }
       }
     )
     end
 
     subject do
-      GitlabSchema.execute(query, context: { current_user: user }).as_json.dig('data', 'project', 'jitsuKey')
+      GitlabSchema.execute(query, context: { current_user: user }).as_json.dig('data', 'project', 'trackingKey')
     end
 
     using RSpec::Parameterized::TableSyntax
