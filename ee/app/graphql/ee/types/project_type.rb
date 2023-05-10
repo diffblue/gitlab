@@ -256,6 +256,13 @@ module EE
               alpha: { milestone: '16.0' },
               authorize: :developer_access
 
+        field :ai_conversations,
+              ::Types::Ai::ProjectConversationsType,
+              resolver: ::Resolvers::Ai::ProjectConversationsResolver,
+              null: true,
+              description: "Ai Chat conversations related to a given project.",
+              alpha: { milestone: '16.0' }
+
         field :dependencies, ::Types::Sbom::DependencyType.connection_type,
               null: true,
               description: 'Software dependencies used by the project.',
