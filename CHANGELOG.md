@@ -1642,6 +1642,10 @@ entry.
 
 - [Update submit buttons to use Pajamas component](gitlab-org/gitlab@4ffb92755e6be3268c78f02e471f5c2a21f437be) ([merge request](gitlab-org/gitlab!114246))
 
+## 15.9.8 (2023-05-10)
+
+No changes.
+
 ## 15.9.7 (2023-05-03)
 
 ### Security (1 change)
