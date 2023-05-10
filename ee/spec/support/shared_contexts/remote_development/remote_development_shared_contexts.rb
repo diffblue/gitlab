@@ -382,6 +382,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
             securityContext:
               runAsNonRoot: true
               runAsUser: 5001
+              fsGroup: 0
+              fsGroupChangePolicy: OnRootMismatch
       status:
       #{status.indent(2)}
     RESOURCES_YAML
@@ -570,6 +572,8 @@ RSpec.shared_context 'with remote development shared fixtures' do
             securityContext:
               runAsNonRoot: true
               runAsUser: 5001
+              fsGroup: 0
+              fsGroupChangePolicy: OnRootMismatch
       status: {}
       ---
       apiVersion: v1

@@ -41,7 +41,9 @@ module RemoteDevelopment
             # Explicitly set security context for the pod
             pod_spec['securityContext'] = {
               'runAsNonRoot' => true,
-              'runAsUser' => RUN_AS_USER
+              'runAsUser' => RUN_AS_USER,
+              'fsGroup' => 0,
+              'fsGroupChangePolicy' => 'OnRootMismatch'
             }
             # Explicitly set security context for all containers
             pod_spec['containers'].each do |container|
