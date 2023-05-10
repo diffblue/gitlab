@@ -854,6 +854,12 @@ entry.
 - [Update header section](gitlab-org/gitlab@cf4ab283267d84fa1c0dc90fefb1b6ddd2617b5c) ([merge request](gitlab-org/gitlab!114102)) **GitLab Enterprise Edition**
 - [Swap merge_request_user_mentions.note_id to bigint](gitlab-org/gitlab@96baed47326db4f0cc9f60b2e74215211effd814) ([merge request](gitlab-org/gitlab!113928))
 
+## 15.10.7 (2023-05-10)
+
+### Fixed (1 change)
+
+- [Backport MR 119319 changes to 15-10-stable-ee](gitlab-org/security/gitlab@6c9e1f2f706b0151b1caa3d5199aa312b23c683a) **GitLab Enterprise Edition**
+
 ## 15.10.6 (2023-05-03)
 
 ### Security (1 change)
