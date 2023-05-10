@@ -33778,13 +33778,13 @@ msgstr ""
 msgid "Preferences|Diff colors"
 msgstr ""
 
-msgid "Preferences|Disable follow users"
-msgstr ""
-
-msgid "Preferences|Disable follow users feature"
-msgstr ""
-
 msgid "Preferences|Enable Gitpod integration"
+msgstr ""
+
+msgid "Preferences|Enable follow users"
+msgstr ""
+
+msgid "Preferences|Enable follow users feature"
 msgstr ""
 
 msgid "Preferences|Enable integrated code intelligence on code views"
@@ -33850,7 +33850,7 @@ msgstr ""
 msgid "Preferences|Time preferences"
 msgstr ""
 
-msgid "Preferences|Turns off the ability to follow or be followed by other users."
+msgid "Preferences|Turns on or off the ability to follow or be followed by other users."
 msgstr ""
 
 msgid "Preferences|Use relative times"
