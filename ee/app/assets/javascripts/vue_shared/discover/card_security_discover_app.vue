@@ -14,8 +14,6 @@ import securityDependencyImageUrl from 'ee_images/promotions/security-dependenci
 import securityScanningImageUrl from 'ee_images/promotions/security-scanning.png';
 import { s__ } from '~/locale';
 import Tracking from '~/tracking';
-import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
-import HandRaiseLeadButton from 'ee/hand_raise_leads/hand_raise_lead/components/hand_raise_lead_button.vue';
 import MovePersonalProjectToGroupModal from 'ee/projects/components/move_personal_project_to_group_modal.vue';
 import { MOVE_PERSONAL_PROJECT_TO_GROUP_MODAL } from 'ee/projects/constants';
 
@@ -31,8 +29,6 @@ export default {
     GlCarouselSlide,
     GlSprintf,
     GlLink,
-    HandRaiseLeadButton,
-    GitlabExperiment,
     MovePersonalProjectToGroupModal,
   },
   mixins: [Tracking.mixin()],
@@ -77,7 +73,6 @@ export default {
         // eslint-disable-next-line @gitlab/require-i18n-strings
         rel: 'noopener noreferrer',
         'data-track-action': 'click_button',
-        'data-track-experiment': 'pql_three_cta_test',
         'data-track-property': this.slide,
       };
     },
@@ -182,12 +177,6 @@ export default {
       </div>
     </div>
     <div class="gl-display-flex gl-flex-direction-row gl-justify-content-center gl-mx-auto">
-      <gitlab-experiment name="pql_three_cta_test">
-        <template #candidate>
-          <hand-raise-lead-button />
-        </template>
-      </gitlab-experiment>
-
       <template v-if="isPersonalProject">
         <gl-button v-gl-modal-directive="$options.modalId" v-bind="upgradeButtonProps">
           {{ $options.i18n.discoverUpgradeLabel }}

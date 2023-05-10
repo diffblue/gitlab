@@ -13,13 +13,13 @@ RSpec.describe Security::ScanExecutionPoliciesFinder, feature_category: :securit
   subject { described_class.new(actor, object, params).execute }
 
   context 'when actor is Clusters::Agent' do
+    let_it_be(:actor) { create(:cluster_agent, project: object) }
+
     before do
       stub_licensed_features(security_orchestration_policies: true)
     end
 
     context 'when agent project has security_orchestration_policy project' do
-      let(:actor) { create(:cluster_agent, project: object) }
-
       it 'returns policy matching the given scan type' do
         is_expected.to match_array([policy.merge(
           {
@@ -28,6 +28,37 @@ RSpec.describe Security::ScanExecutionPoliciesFinder, feature_category: :securit
             namespace: nil,
             inherited: false
           })])
+      end
+    end
+
+    context 'when the security policy project is linked to the group' do
+      let!(:policy_configuration) do
+        create(
+          :security_orchestration_policy_configuration,
+          :namespace,
+          security_policy_management_project: policy_management_project,
+          namespace: group
+        )
+      end
+
+      let(:relationship) { :inherited }
+
+      it 'returns policy matching the given scan type' do
+        is_expected.to match_array([policy.merge(
+          {
+            config: policy_configuration,
+            project: nil,
+            namespace: group,
+            inherited: true
+          })])
+      end
+
+      context 'and object is not a Project' do
+        let(:object) { group }
+
+        it 'returns empty response' do
+          is_expected.to be_empty
+        end
       end
     end
   end

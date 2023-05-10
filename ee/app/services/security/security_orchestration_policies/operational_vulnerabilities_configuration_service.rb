@@ -43,8 +43,12 @@ module Security
       def policies
         strong_memoize(:policies) do
           ::Security::ScanExecutionPoliciesFinder
-            .new(agent, project, action_scan_types: %i[container_scanning cluster_image_scanning])
-            .execute
+            .new(
+              agent,
+              project,
+              action_scan_types: %i[container_scanning cluster_image_scanning],
+              relationship: :inherited
+            ).execute
         end
       end
     end

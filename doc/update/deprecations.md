@@ -2209,6 +2209,26 @@ To avoid confusion and duplication, the `environment_tier` parameter is deprecat
 
 <div class="deprecation breaking-change" data-milestone="16.0">
 
+### `started` iteration state
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">14.8</span>
+- This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/334018).
+</div>
+
+The `started` iteration state in the [iterations GraphQL API](https://https://docs.gitlab.com/ee/api/graphql/reference/index.html#iterationstate)
+and [iterations REST API](https://docs.gitlab.com/ee/api/iterations.html#list-project-iterations) is deprecated.
+
+The GraphQL API version will be removed in GitLab 16.0. This state is being replaced with the `current` state (already available)
+which aligns with the naming for other time-based entities, such as milestones.
+
+We plan to continue to support the `started` state in REST API version until the next v5 REST API version.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="16.0">
+
 ### vulnerabilityFindingDismiss GraphQL mutation
 
 <div class="deprecation-notes">
@@ -3722,20 +3742,6 @@ In GitLab 14.5, we introduced the command `gitlab-ctl promote` to promote any Ge
 </div>
 
 In GitLab 14.5, we introduced the command `gitlab-ctl promote` to promote any Geo secondary node to a primary during a failover. This command replaces `gitlab-ctl promote-to-primary-node` which was only usable for single-node Geo sites. `gitlab-ctl promote-to-primary-node` will continue to function as-is and be available until GitLab 15.0. We recommend that Geo customers begin testing the new `gitlab-ctl promote` command in their staging environments and incorporating the new command in their failover procedures.
-
-</div>
-
-<div class="deprecation breaking-change" data-milestone="15.0">
-
-### `started` iterations API field
-
-<div class="deprecation-notes">
-- Announced in: GitLab <span class="milestone">14.8</span>
-- This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
-- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/334018).
-</div>
-
-The `started` field in the [iterations API](https://docs.gitlab.com/ee/api/iterations.html#list-project-iterations) is being deprecated and will be removed in GitLab 15.0. This field is being replaced with the `current` field (already available) which aligns with the naming for other time-based entities, such as milestones.
 
 </div>
 

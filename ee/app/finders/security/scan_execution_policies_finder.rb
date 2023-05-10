@@ -23,9 +23,15 @@ module Security
     end
 
     def authorized_to_read_policy_configuration?(config)
-      return actor.has_access_to?(policy_configuration.project) if actor.is_a? Clusters::Agent
+      return actor.has_access_to?(project) if actor.is_a?(Clusters::Agent)
 
       super
+    end
+
+    def project
+      return unless object.is_a?(Project)
+
+      object
     end
   end
 end

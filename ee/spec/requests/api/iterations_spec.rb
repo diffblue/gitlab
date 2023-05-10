@@ -58,13 +58,15 @@ RSpec.describe API::Iterations, feature_category: :team_planning do
           expect(json_response.first['id']).to eq(closed_iteration.id)
         end
 
-        # to be removed when `started` state DEPRECATION is removed, planned for milestone 14.6
-        it 'returns `current` state iterations' do
+        # to be removed when `started` state DEPRECATION is removed in new REST API version.
+        # May take a while as there is no planned date for next REST API version
+        it 'returns current iteration' do
           get api(api_path, user), params: { state: 'started' }
 
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response.size).to eq(1)
           expect(json_response.first['id']).to eq(current_iteration.id)
+          expect(json_response.first['state']).to eq(Iteration::STATE_ENUM_MAP[:current])
         end
 
         it 'returns `current` state iterations' do

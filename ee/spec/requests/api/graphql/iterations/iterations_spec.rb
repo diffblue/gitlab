@@ -78,11 +78,12 @@ RSpec.describe 'getting iterations', feature_category: :team_planning do
   end
 
   describe 'query for iterations by state' do
-    context 'with DEPRECATED `started` state' do
-      it 'returns `current` iteration' do
+    context 'with invalid state' do
+      it 'returns empty iterations list' do
         post_graphql(iterations_query(group, "state: started"), current_user: user)
 
-        expect_iterations_response(current_group_iteration)
+        expect(graphql_errors).to include(a_hash_including('message' =>
+          "Argument 'state' on Field 'iterations' has an invalid value (started). Expected type 'IterationState'."))
       end
     end
 

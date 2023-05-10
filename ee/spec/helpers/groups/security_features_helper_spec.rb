@@ -134,8 +134,8 @@ RSpec.describe Groups::SecurityFeaturesHelper do
   describe '#group_security_discover_data' do
     let_it_be(:group) { create(:group) }
 
-    let(:variant) { :control }
     let(:content) { 'discover-group-security' }
+
     let(:expected_group_security_discover_data) do
       {
         group: {
@@ -146,28 +146,15 @@ RSpec.describe Groups::SecurityFeaturesHelper do
           main: new_trial_registration_path(glm_source: 'gitlab.com', glm_content: content),
           secondary: group_billings_path(group.root_ancestor, source: content)
         }
-      }.merge(helper.hand_raise_props(group.root_ancestor, glm_content: content))
+      }
     end
 
     subject(:group_security_discover_data) do
       helper.group_security_discover_data(group)
     end
 
-    before do
-      stub_experiments(pql_three_cta_test: variant)
-    end
-
     it 'builds correct hash' do
       expect(group_security_discover_data).to eq(expected_group_security_discover_data)
-    end
-
-    context 'candidate for pql_three_cta_test' do
-      let(:variant) { :candidate }
-      let(:content) { 'discover-group-security-pqltest' }
-
-      it 'renders a hash with pqltest content' do
-        expect(group_security_discover_data).to eq(expected_group_security_discover_data)
-      end
     end
   end
 end

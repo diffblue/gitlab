@@ -161,7 +161,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     let_it_be(:group1) { create :group }
     let_it_be(:group2) { create :group }
 
-    let(:trialable_group_namespaces) { [] }
+    let(:trial_eligible_namespaces) { [] }
 
     let(:new_optgroup) do
       {
@@ -178,12 +178,12 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     let(:groups_optgroup) do
       {
         text: _('Groups'),
-        options: trialable_group_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+        options: trial_eligible_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
       }
     end
 
     before do
-      allow(helper).to receive(:trialable_group_namespaces).and_return(trialable_group_namespaces)
+      allow(helper).to receive(:trial_eligible_namespaces).and_return(trial_eligible_namespaces)
     end
 
     subject { helper.namespace_options_for_listbox }
@@ -195,7 +195,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     end
 
     context 'when only group namespaces are eligible' do
-      let(:trialable_group_namespaces) { [group1, group2] }
+      let(:trial_eligible_namespaces) { [group1, group2] }
 
       it 'returns the "New" and "Groups" option groups', :aggregate_failures do
         is_expected.to match_array([new_optgroup, groups_optgroup])
@@ -204,7 +204,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     end
 
     context 'when some group namespaces are eligible' do
-      let(:trialable_group_namespaces) { [group2] }
+      let(:trial_eligible_namespaces) { [group2] }
 
       it 'returns the "New", "Groups" option groups', :aggregate_failures do
         is_expected.to match_array([new_optgroup, groups_optgroup])
@@ -215,7 +215,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
 
   describe '#trial_selection_intro_text' do
     before do
-      allow(helper).to receive(:any_trialable_group_namespaces?).and_return(have_group_namespace)
+      allow(helper).to receive(:any_trial_eligible_namespaces?).and_return(have_group_namespace)
     end
 
     subject { helper.trial_selection_intro_text }
@@ -234,7 +234,7 @@ RSpec.describe TrialsHelper, feature_category: :purchase do
     let_it_be(:have_group_namespace) { false }
 
     before do
-      allow(helper).to receive(:any_trialable_group_namespaces?).and_return(have_group_namespace)
+      allow(helper).to receive(:any_trial_eligible_namespaces?).and_return(have_group_namespace)
     end
 
     subject { helper.show_trial_namespace_select? }

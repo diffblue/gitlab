@@ -1307,14 +1307,14 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#manageable_groups_eligible_for_trial', :saas do
+  describe '#manageable_namespaces_eligible_for_trial', :saas do
     let_it_be(:user) { create :user }
     let_it_be(:non_trialed_group_z) { create :group_with_plan, name: 'Zeta', plan: :free_plan }
     let_it_be(:non_trialed_group_a) { create :group_with_plan, name: 'Alpha', plan: :free_plan }
     let_it_be(:trialed_group) { create :group_with_plan, name: 'Omitted', plan: :free_plan, trial_ends_on: Date.today + 1.day }
     let_it_be(:non_trialed_subgroup) { create :group_with_plan, name: 'Sub-group', plan: :free_plan, parent: non_trialed_group_a }
 
-    subject { user.manageable_groups_eligible_for_trial }
+    subject { user.manageable_namespaces_eligible_for_trial }
 
     context 'user with no groups' do
       it { is_expected.to eq [] }

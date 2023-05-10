@@ -6,14 +6,10 @@ RSpec.describe "groups/security/discover/show", type: :view do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
-  let(:pql_three_cta_test_variant) { :control }
   let(:showcase_free_security_features_variant) { :control }
 
   before do
-    stub_experiments(
-      pql_three_cta_test: pql_three_cta_test_variant,
-      showcase_free_security_features: showcase_free_security_features_variant
-    )
+    stub_experiments(showcase_free_security_features: showcase_free_security_features_variant)
     allow(view).to receive(:current_user).and_return(user)
     assign(:group, group)
     render
@@ -21,14 +17,6 @@ RSpec.describe "groups/security/discover/show", type: :view do
 
   it 'renders vue app root with correct link' do
     expect(rendered).to have_selector('#js-security-discover-app[data-link-main="/-/trial_registrations/new?glm_content=discover-group-security&glm_source=gitlab.com"]')
-  end
-
-  context 'candidate for pql_three_cta_test' do
-    let(:pql_three_cta_test_variant) { :candidate }
-
-    it 'renders vue app root with candidate url' do
-      expect(rendered).to have_selector('#js-security-discover-app[data-link-main="/-/trial_registrations/new?glm_content=discover-group-security-pqltest&glm_source=gitlab.com"]')
-    end
   end
 
   context 'candidate for showcase_free_security_features' do

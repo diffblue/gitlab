@@ -32,12 +32,9 @@ class TrialsController < ApplicationController
     if result.success?
       # lead and trial created
       redirect_to trial_success_path(result.payload[:namespace])
-    elsif result.reason == :no_namespace
+    elsif result.reason == :no_single_namespace
       # lead created, but we now need to select namespace and then apply a trial
       redirect_to select_trials_path(params.permit(:namespace_id).merge(glm_tracking_params))
-    elsif result.reason == :not_found
-      # namespace not found/not permitted to create
-      render_404
     elsif result.reason == :lead_failed
       @create_errors = result.errors.to_sentence
 
@@ -54,39 +51,23 @@ class TrialsController < ApplicationController
   def apply
     # We only get to this action after the `create_lead` action has at least been tried, so the lead is captured
     # already.
-    namespace =
-      if find_namespace?
-        current_user.namespaces.find_by_id(params[:namespace_id])
-      elsif can_create_group?
-        name = sanitize(params[:new_group_name])
-        path = Namespace.clean_path(name.parameterize)
-        Groups::CreateService.new(current_user, name: name, path: path).execute
-      end
+    result = GitlabSubscriptions::Trials::CreateService.new(
+      step: GitlabSubscriptions::Trials::CreateService::TRIAL,
+      lead_params: lead_params,
+      trial_params: trial_params,
+      user: current_user
+    ).execute
 
-    return render_404 unless namespace.present?
-
-    if namespace.persisted? # we possibly create a new namespace when we apply the trial due to `select` template form
-      # namespace_id already set if namespace is found, resetting will not hurt and will lend to predictably always
-      # setting as an integer instead of string sometimes and integer other times.
-      params[:namespace_id] = namespace.id
-      # test the indifferent access here...
-      result = GitlabSubscriptions::Trials::ApplyTrialService.new(**apply_trial_params(namespace)).execute
-
-      if result.success?
-        Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: namespace, user: current_user)
-
-        redirect_to trial_success_path(namespace)
-      else
-        # We couldn't apply the trial, so we'll bounce the user to the select form with errors
-        # and give them the option to create a group or try to re-apply the trial on a namespace.
-        # This assumes that the lead was already captured on initial try of `create_lead`.
-        @create_errors = result.errors
-
-        render :select
-      end
+    if result.success?
+      # trial created
+      redirect_to trial_success_path(result.payload[:namespace])
+    elsif result.reason == :not_found
+      # namespace not found/not permitted to create
+      render_404
     else
-      # We didn't successfully create the group, so we get dumped here with form errors.
-      @create_errors = namespace.errors.full_messages.to_sentence
+      # namespace creation or trial failed
+      @create_errors = result.errors.to_sentence
+      params[:namespace_id] = result.payload[:namespace_id]
 
       render :select
     end
@@ -124,27 +105,7 @@ class TrialsController < ApplicationController
   end
 
   def trial_params
-    params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).to_h
-  end
-
-  def apply_trial_params(namespace)
-    gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
-    namespace_params = { namespace: namespace.slice(:id, :name, :path, :kind, :trial_ends_on) }
-
-    {
-      trial_user_information: trial_params.merge(gl_com_params, namespace_params),
-      uid: current_user.id
-    }
-  end
-
-  def find_namespace?
-    params[:namespace_id].present? && params[:namespace_id] != '0'
-  end
-
-  def can_create_group?
-    # Instance admins can disable user's ability to create top level groups.
-    # See https://docs.gitlab.com/ee/user/admin_area/index.html#prevent-a-user-from-creating-groups
-    params[:new_group_name].present? && can?(current_user, :create_group)
+    params.permit(:new_group_name, :namespace_id, :trial_entity, :glm_source, :glm_content).to_h
   end
 
   def discover_group_security_flow?
