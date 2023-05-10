@@ -36,17 +36,10 @@ module API
           end
 
           def default_payload_for(params)
-            tofa_params = params.transform_keys { |name| name.camelize(:lower) }
-            content = tofa_params.delete(:content)
             json = {
               instances: [
                 {
-                  messages: [
-                    {
-                      author: "content",
-                      content: content
-                    }
-                  ]
+                  messages: messages(params)
                 }
               ],
               parameters: {
@@ -54,14 +47,36 @@ module API
               }
             }
 
+            context = params.delete(:context)
+            json[:instances][0][:context] = context if context
+
+            examples = params.delete(:examples)
+            json[:instances][0][:examples] = Gitlab::Json.parse(examples) if examples
+
+            tofa_params = params.transform_keys { |name| name.camelize(:lower) }
             json[:parameters].merge!(tofa_params)
             json
+          rescue JSON::ParserError => error
+            render_api_error!("Failed to parse JSON input: #{error.message}", 400)
           end
 
           def configuration
             @configuration ||= Gitlab::Llm::VertexAi::Configuration.new(
               model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
             )
+          end
+
+          def messages(params)
+            messages_json = params.delete(:messages)
+
+            if messages_json
+              Gitlab::Json.parse(messages_json)
+            else
+              [{
+                author: 'user',
+                content: params.delete(:content)
+              }]
+            end
           end
 
           def tofa_api_token
@@ -82,11 +97,18 @@ module API
         namespace 'ai/experimentation/tofa' do
           desc 'Proxies request to Vertex AI chat endpoint'
           params do
-            requires :content, type: String
+            optional :content, type: String, desc: 'Single message/question to ask'
+            optional :messages, type: String,
+              desc: 'Conversation history provided to the model in a structured alternate-author form.'
+            optional :context, type: String, desc: 'Context shapes how the model responds throughout the conversation.'
+            optional :examples, type: String,
+              desc: 'List of structured messages to the model to learn how to respond to the conversation.'
             optional :temperature, type: Float, values: 0.0..1.0, default: 0.5
             optional :max_output_tokens, type: Integer, values: 1..1024, default: 256
             optional :top_k, type: Integer, values: 1..40, default: 40
             optional :top_p, type: Float, values: 0.0..1.0, default: 0.95
+
+            exactly_one_of :content, :messages
           end
           post 'chat' do
             body vertex_ai_post(

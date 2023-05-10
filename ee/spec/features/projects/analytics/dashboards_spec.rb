@@ -73,5 +73,24 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
         it_behaves_like 'product analytics dashboards'
       end
     end
+
+    context 'with the licensed feature enabled but snowplow disabled' do
+      before do
+        stub_licensed_features(combined_project_analytics_dashboards: true)
+        stub_feature_flags(product_analytics_snowplow_support: false)
+      end
+
+      context 'without access to the project' do
+        it_behaves_like 'renders not found'
+      end
+
+      context 'with access to the project' do
+        before do
+          project.add_guest(user)
+        end
+
+        it_behaves_like 'product analytics dashboards'
+      end
+    end
   end
 end
