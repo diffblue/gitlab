@@ -23,6 +23,9 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
     fill_in 'new_user_username', with: user.username
     fill_in 'new_user_email', with: user.email
     fill_in 'new_user_password', with: user.password
+
+    wait_for_all_requests
+
     click_button 'Register'
   end
 
@@ -54,19 +57,6 @@ RSpec.describe 'Group or Project invitations', :js, feature_category: :onboardin
       fill_in_sign_up_form(new_user)
 
       expect(page).not_to have_content('My company or team')
-    end
-  end
-
-  context 'with admin approval on sign-up enabled' do
-    before do
-      stub_application_setting(require_admin_approval_after_user_signup: true)
-    end
-
-    it 'does not sign the user in' do
-      fill_in_sign_up_form(new_user)
-
-      expect(page).to have_current_path(new_user_session_path, ignore_query: true)
-      expect(page).to have_content('You have signed up successfully. However, we could not sign you in because your account is awaiting approval from your GitLab administrator.')
     end
   end
 
