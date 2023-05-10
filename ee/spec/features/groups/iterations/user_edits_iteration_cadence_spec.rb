@@ -15,16 +15,36 @@ RSpec.describe 'User edits iteration cadence', :js, feature_category: :team_plan
       stub_licensed_features(iterations: true)
     end
 
-    context 'as authorized user' do
+    context 'as authorized user', time_travel_to: '2023-05-04' do
       before do
         sign_in(user)
+
+        allow(Time.zone).to receive(:name).and_return(ActiveSupport::TimeZone["UTC"].name)
+        allow(Time.zone).to receive(:utc_offset).and_return(ActiveSupport::TimeZone["UTC"].utc_offset)
+
+        visit edit_group_iteration_cadence_path(cadence.group, id: cadence.id)
+      end
+
+      it 'displays the configured timezone used to rollover issues' do
+        expect(page.find("[data-testid='cadence-rollover-group']"))
+          .to have_content("Incomplete issues will be added to the next iteration at midnight, [UTC 0] UTC.")
+      end
+
+      context 'when a timezone is other than UTC is used' do
+        before do
+          allow(Time.zone).to receive(:name).and_return(ActiveSupport::TimeZone["Hawaii"].name)
+          allow(Time.zone).to receive(:utc_offset).and_return(ActiveSupport::TimeZone["Hawaii"].utc_offset)
+
+          visit edit_group_iteration_cadence_path(cadence.group, id: cadence.id)
+        end
+
+        it 'displays the configured timezone used to rollover issues' do
+          expect(page.find("[data-testid='cadence-rollover-group']"))
+            .to have_content("Incomplete issues will be added to the next iteration at midnight, [UTC-10] Hawaii.")
+        end
       end
 
       it 'prefills fields and allows updating values' do
-        visit edit_group_iteration_cadence_path(cadence.group, id: cadence.id)
-
-        wait_for_requests
-
         aggregate_failures do
           expect(title_input.value).to eq(cadence.title)
           expect(description_input.value).to eq(cadence.description)
