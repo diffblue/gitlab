@@ -13,6 +13,14 @@ module Mutations
 
           super
         end
+
+        private
+
+        def find_object(destination_gid)
+          GitlabSchema.object_from_id(
+            destination_gid,
+            expected_type: ::AuditEvents::InstanceExternalAuditEventDestination).sync
+        end
       end
     end
   end
