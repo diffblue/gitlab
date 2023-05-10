@@ -28,6 +28,7 @@ export default {
       :title="$options.i18n.title"
       :description="$options.i18n.description"
       :svg-path="emptyStateSvgPath"
+      :svg-height="150"
     >
       <template #actions>
         <gl-button variant="confirm" class="gl-mb-3 gl-mx-2" :to="$options.ROUTES.create">{{

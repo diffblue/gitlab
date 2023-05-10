@@ -1,7 +1,7 @@
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
-import { GlFormSelect, GlForm, GlFormInput } from '@gitlab/ui';
+import { GlBadge, GlFormSelect, GlForm, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
 import SearchProjectsListbox from 'ee/remote_development/components/create/search_projects_listbox.vue';
 import WorkspaceCreate, { i18n } from 'ee/remote_development/pages/create.vue';
 import GetProjectDetailsQuery from 'ee/remote_development/components/create/get_project_details_query.vue';
@@ -97,6 +97,7 @@ describe('remote_development/pages/create.vue', () => {
       apolloProvider: mockApollo,
       stubs: {
         GlFormSelect: GlFormSelectStub,
+        GlSprintf,
       },
       mocks: {
         $router: mockRouter,
@@ -165,12 +166,19 @@ describe('remote_development/pages/create.vue', () => {
       await selectProject();
       await emitGetProjectDetailsQueryResult({ clusterAgents: [] });
     });
+
     it('displays danger alert indicating it', () => {
       expect(findNoAgentsGlAlert().props()).toMatchObject({
         title: i18n.invalidProjectAlert.title,
         variant: 'danger',
         dismissible: false,
       });
+    });
+
+    it('displays a link that navigates to the workspaces documentation', () => {
+      expect(wrapper.findComponent(GlLink).attributes().href).toBe(
+        '/help/user/workspace/index.md#configure-the-gitlab-agent-for-kubernetes',
+      );
     });
 
     it('does not display cluster agents form select group', () => {
@@ -282,7 +290,10 @@ describe('remote_development/pages/create.vue', () => {
       it('submits workspaceCreate mutation', async () => {
         const maxHoursBeforeTermination = 10;
 
-        findMaxHoursBeforeTerminationField().vm.$emit('input', maxHoursBeforeTermination);
+        findMaxHoursBeforeTerminationField().vm.$emit(
+          'input',
+          maxHoursBeforeTermination.toString(),
+        );
 
         await nextTick();
         await submitCreateWorkspaceForm();
@@ -397,6 +408,18 @@ describe('remote_development/pages/create.vue', () => {
 
     it('displays alert indicating that fetching project details failed', () => {
       expect(createAlert).toHaveBeenCalledWith({ message: i18n.fetchProjectDetailsFailedMessage });
+    });
+  });
+
+  describe('fixed elements', () => {
+    beforeEach(async () => {
+      createWrapper();
+
+      await waitForPromises();
+    });
+
+    it('displays a beta badge', () => {
+      expect(wrapper.findComponent(GlBadge).props().variant).toBe('info');
     });
   });
 });

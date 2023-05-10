@@ -7,6 +7,9 @@ import {
   GlFormInput,
   GlFormSelect,
   GlFormInputGroup,
+  GlBadge,
+  GlSprintf,
+  GlLink,
 } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
@@ -30,11 +33,12 @@ export const i18n = {
   subtitle: s__(
     'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace on its own or as part of a project.',
   ),
+  betaBadge: __('Beta'),
   form: {
     devfileProject: s__('Workspaces|Select project'),
     agentId: s__('Workspaces|Select cluster agent'),
     editor: s__('Workspaces|Select default editor'),
-    maxHoursBeforeTermination: s__('Workspaces|Hours before automatic termination'),
+    maxHoursBeforeTermination: s__('Workspaces|Time before automatic termination'),
     maxHoursSuffix: __('hours'),
     help: {
       devfileProjectHelp: s__(
@@ -45,7 +49,7 @@ export const i18n = {
   invalidProjectAlert: {
     title: s__("Workspaces|You can't create a workspace for this project"),
     noAgentsContent: s__(
-      "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group.",
+      "Workspaces|To create a workspace for this project, an administrator must %{linkStart}configure a cluster agent%{linkEnd} for the project's group.",
     ),
     noDevFileContent: s__(
       'Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace.',
@@ -61,15 +65,22 @@ export const i18n = {
   ),
 };
 
+const clusterAgentsHelpPath = helpPagePath('user/workspace/index.md', {
+  anchor: 'configure-the-gitlab-agent-for-kubernetes',
+});
+
 export default {
   components: {
     GlAlert,
+    GlBadge,
     GlButton,
     GlForm,
     GlFormGroup,
     GlFormInputGroup,
     GlFormSelect,
     GlFormInput,
+    GlSprintf,
+    GlLink,
     SearchProjectsListbox,
     GetProjectDetailsQuery,
   },
@@ -99,9 +110,6 @@ export default {
     },
     saveWorkspaceEnabled() {
       return this.selectedProject && this.selectedAgent && this.hasDevFile;
-    },
-    workspacesHelpPath() {
-      return helpPagePath('user/project/remote_development/index', { anchor: 'workspace' });
     },
     selectedProjectFullPath() {
       return this.selectedProject?.fullPath;
@@ -139,7 +147,7 @@ export default {
               desiredState: DEFAULT_DESIRED_STATE,
               devfilePath: DEFAULT_DEVFILE_PATH,
               devfileRef: this.rootRef,
-              maxHoursBeforeTermination: this.maxHoursBeforeTermination,
+              maxHoursBeforeTermination: parseInt(this.maxHoursBeforeTermination, 10),
             },
           },
           update(store, { data }) {
@@ -172,14 +180,18 @@ export default {
   i18n,
   ROUTES,
   PROJECT_VISIBILITY,
+  clusterAgentsHelpPath,
 };
 </script>
 <template>
   <div class="gl-display-flex gl-sm-flex-direction-column">
     <div class="gl-flex-basis-third gl-mr-5">
-      <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
-        {{ $options.i18n.title }}
-      </h2>
+      <div class="gl-display-flex gl-align-items-center">
+        <h2 ref="pageTitle" class="page-title gl-font-size-h-display">
+          {{ $options.i18n.title }}
+        </h2>
+        <gl-badge class="gl-ml-3 gl-mt-2" variant="info">{{ $options.i18n.betaBadge }}</gl-badge>
+      </div>
       <p>
         {{ $options.i18n.subtitle }}
       </p>
@@ -207,7 +219,11 @@ export default {
           variant="danger"
           :dismissible="false"
         >
-          {{ $options.i18n.invalidProjectAlert.noAgentsContent }}
+          <gl-sprintf :message="$options.i18n.invalidProjectAlert.noAgentsContent">
+            <template #link="{ content }">
+              <gl-link :href="$options.clusterAgentsHelpPath">{{ content }}</gl-link>
+            </template>
+          </gl-sprintf>
         </gl-alert>
         <gl-alert
           v-if="displayNoDevFileAlert"

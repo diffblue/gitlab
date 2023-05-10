@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
-import { GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -51,6 +51,7 @@ describe('remote_development/pages/list.vue', () => {
     });
   };
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findHelpLink = () => wrapper.findComponent(GlLink);
   const findTable = () => wrapper.findComponent(WorkspacesTable);
   const findPagination = () => wrapper.findComponent(WorkspacesListPagination);
   const findNewWorkspaceButton = () => wrapper.findComponent(GlButton);
@@ -170,7 +171,7 @@ describe('remote_development/pages/list.vue', () => {
     });
 
     it('does not render table', () => {
-      expect(findTable(wrapper).exists()).toBe(false);
+      expect(findTable().exists()).toBe(false);
     });
 
     it('logs error', () => {
@@ -178,26 +179,37 @@ describe('remote_development/pages/list.vue', () => {
     });
 
     it('shows alert', () => {
-      expect(findAlert(wrapper).text()).toBe(
+      expect(findAlert().text()).toBe(
         'Unable to load current Workspaces. Please try again or contact an administrator.',
       );
     });
 
     it('hides error when alert is dismissed', async () => {
-      findAlert(wrapper).vm.$emit('dismiss');
+      findAlert().vm.$emit('dismiss');
 
       await nextTick();
 
-      expect(findAlert(wrapper).exists()).toBe(false);
+      expect(findAlert().exists()).toBe(false);
     });
   });
 
-  it('displays a link button that navigates to the create workspace page', async () => {
-    createWrapper();
+  describe('fixed elements', () => {
+    beforeEach(async () => {
+      createWrapper();
 
-    await waitForPromises();
+      await waitForPromises();
+    });
+    it('displays a link button that navigates to the create workspace page', () => {
+      expect(findNewWorkspaceButton().attributes().to).toBe(ROUTES.create);
+      expect(findNewWorkspaceButton().text()).toMatch(/New workspace/);
+    });
 
-    expect(findNewWorkspaceButton(wrapper).attributes().to).toBe(ROUTES.create);
-    expect(findNewWorkspaceButton(wrapper).text()).toMatch(/New workspace/);
+    it('displays a beta badge', () => {
+      expect(wrapper.findComponent(GlBadge).props().variant).toBe('info');
+    });
+
+    it('displays a link that navigates to the workspaces help page', () => {
+      expect(findHelpLink().attributes().href).toContain('user/workspace/index.md');
+    });
   });
 });
