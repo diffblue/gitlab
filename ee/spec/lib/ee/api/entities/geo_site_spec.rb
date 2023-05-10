@@ -15,10 +15,6 @@ RSpec.describe EE::API::Entities::GeoSite, feature_category: :geo_replication do
     stub_primary_node
   end
 
-  describe '#clone_protocol' do
-    it { expect(subject[:clone_protocol]).to eq 'http' }
-  end
-
   describe '#web_edit_url' do
     it { expect(subject[:web_edit_url]).to eq Gitlab::Routing.url_helpers.edit_admin_geo_node_url(geo_node) }
   end

@@ -15,7 +15,6 @@
     "selective_sync_shards",
     "selective_sync_namespace_ids",
     "minimum_reverification_interval",
-    "clone_protocol",
     "web_edit_url",
     "_links"
   ],
@@ -92,17 +91,8 @@
     "sync_object_storage": {
       "type": "boolean"
     },
-    "clone_protocol": {
-      "type": "string"
-    },
     "web_edit_url": {
       "type": "string"
-    },
-    "web_geo_projects_url": {
-      "type": [
-        "string",
-        "null"
-      ]
     },
     "web_geo_replication_details_url": {
       "type": [
