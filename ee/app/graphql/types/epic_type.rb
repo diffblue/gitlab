@@ -44,36 +44,30 @@ module Types
     field :start_date, Types::TimeType, null: true, description: 'Start date of the epic.'
 
     field :start_date_fixed, Types::TimeType,
-      null: true, authorize: :admin_epic, description: 'Fixed start date of the epic.'
+      null: true, description: 'Fixed start date of the epic.'
 
     field :start_date_from_inherited_source, Types::TimeType,
-      null: true, authorize: :admin_epic,
-      description: 'Inherited start date of the epic from child epics or milestones.'
+      null: true, description: 'Inherited start date of the epic from child epics or milestones.'
 
     field :start_date_from_milestones, Types::TimeType,
-      null: true, authorize: :admin_epic,
-      description: 'Inherited start date of the epic from milestones.'
+      null: true, description: 'Inherited start date of the epic from milestones.'
 
     field :start_date_is_fixed, GraphQL::Types::Boolean,
-      null: true, method: :start_date_is_fixed?, authorize: :admin_epic,
-      description: 'Indicates if the start date has been manually set.'
+      null: true, method: :start_date_is_fixed?, description: 'Indicates if the start date has been manually set.'
 
     field :due_date, Types::TimeType, null: true, description: 'Due date of the epic.'
 
     field :due_date_fixed, Types::TimeType,
-      null: true, authorize: :admin_epic, description: 'Fixed due date of the epic.'
+      null: true, description: 'Fixed due date of the epic.'
 
     field :due_date_from_inherited_source, Types::TimeType,
-      null: true, authorize: :admin_epic,
-      description: 'Inherited due date of the epic from child epics or milestones.'
+      null: true, description: 'Inherited due date of the epic from child epics or milestones.'
 
     field :due_date_from_milestones, Types::TimeType,
-      null: true, authorize: :admin_epic,
-      description: 'Inherited due date of the epic from milestones.'
+      null: true, description: 'Inherited due date of the epic from milestones.'
 
     field :due_date_is_fixed, GraphQL::Types::Boolean,
-      null: true, method: :due_date_is_fixed?, authorize: :admin_epic,
-      description: 'Indicates if the due date has been manually set.'
+      null: true, method: :due_date_is_fixed?, description: 'Indicates if the due date has been manually set.'
 
     field :downvotes, GraphQL::Types::Int,
       null: false, description: 'Number of downvotes the epic has received.',

@@ -6,8 +6,6 @@ module EE
       class Epic < Grape::Entity
         include ::API::Helpers::RelatedResourcesHelpers
 
-        can_admin_epic = ->(epic, opts) { Ability.allowed?(opts[:user], :admin_epic, epic) }
-
         expose :id, documentation: { type: "integer", example: 123 }
         expose :iid, documentation: { type: "integer", example: 123 }
         expose :color, documentation: { type: "string", example: "#1068bf" }
@@ -24,31 +22,24 @@ module EE
         expose :start_date, documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" }
         expose :start_date_is_fixed?,
           as: :start_date_is_fixed,
-          if: can_admin_epic,
           documentation: { type: "boolean", example: true }
         expose :start_date_fixed,
           :start_date_from_inherited_source,
-          if: can_admin_epic,
           documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" }
         expose :start_date_from_milestones, # @deprecated in favor of start_date_from_inherited_source
-          if: can_admin_epic,
           documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" }
         expose :end_date, documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" } # @deprecated in favor of due_date
         expose :end_date, as: :due_date, documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" }
         expose :due_date_is_fixed?,
           as: :due_date_is_fixed,
-          if: can_admin_epic,
           documentation: { type: "boolean", example: true }
         expose :due_date_fixed,
           :due_date_from_inherited_source,
-          if: can_admin_epic,
           documentation: { type: "boolean", example: true }
         expose :due_date_from_milestones, # @deprecated in favor of due_date_from_inherited_source
-          if: can_admin_epic,
           documentation: { type: "dateTime", example: "2022-01-31T15:10:45.080Z" }
         expose :state, documentation: { type: "string", example: "opened" }
         expose :web_edit_url, # @deprecated
-          if: can_admin_epic,
           documentation: { type: "string", example: "http://gitlab.example.com/groups/test/-/epics/4/edit" }
         expose :web_url, documentation: { type: "string", example: "http://gitlab.example.com/groups/test/-/epics/4" }
         expose :references, documentation: { is_array: true }, with: ::API::Entities::IssuableReferences do |epic|

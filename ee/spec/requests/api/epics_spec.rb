@@ -39,27 +39,19 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
     end
   end
 
-  shared_examples 'can admin epics' do
-    let(:extra_date_fields) { %w[start_date_is_fixed start_date_fixed due_date_is_fixed due_date_fixed] }
-
-    context 'when permission is absent' do
-      it 'returns epic with extra date fields' do
-        get api(url, user), params: params
-
-        expect(Array.wrap(json_response)).to all(exclude(*extra_date_fields))
-      end
+  shared_examples 'response with extra date fields' do
+    let(:extra_date_fields) do
+      %w[
+        start_date_from_milestones start_date_from_inherited_source start_date_fixed
+        start_date_is_fixed due_date_fixed due_date_is_fixed due_date_from_milestones
+        due_date_from_inherited_source
+      ]
     end
 
-    context 'when permission is present' do
-      before do
-        group.add_maintainer(user)
-      end
+    it 'returns epic with extra date fields' do
+      get api(url, user), params: params
 
-      it 'returns epic with extra date fields' do
-        get api(url, user), params: params
-
-        expect(Array.wrap(json_response)).to all(include(*extra_date_fields))
-      end
+      expect(Array.wrap(json_response)).to all(include(*extra_date_fields))
     end
   end
 
@@ -467,7 +459,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         end
       end
 
-      it_behaves_like 'can admin epics'
+      it_behaves_like 'response with extra date fields'
     end
 
     context 'filtering before a specific date' do
@@ -640,7 +632,7 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
         end
       end
 
-      it_behaves_like 'can admin epics'
+      it_behaves_like 'response with extra date fields'
     end
   end
 
