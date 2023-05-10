@@ -341,7 +341,7 @@ module EE
         .any?
     end
 
-    def manageable_groups_eligible_for_trial
+    def manageable_namespaces_eligible_for_trial
       owned_groups.eligible_for_trial.order(:name)
     end
 
