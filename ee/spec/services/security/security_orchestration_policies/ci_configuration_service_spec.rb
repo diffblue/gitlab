@@ -178,7 +178,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService,
           expected_variables = {
             'SECURE_ANALYZERS_PREFIX' => "$CI_TEMPLATE_REGISTRY_HOST/security-products",
             'DS_EXCLUDED_PATHS' => "spec, test, tests, tmp",
-            'DS_MAJOR_VERSION' => 3,
+            'DS_MAJOR_VERSION' => 4,
             'DS_EXCLUDED_ANALYZERS' => "gemnasium-python"
           }
 
