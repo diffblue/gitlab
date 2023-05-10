@@ -71,7 +71,7 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
           license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
 
           expect(license['name']).to eq('MIT')
-          expect(license['url']).to be_empty
+          expect(license['url']).to eq('https://spdx.org/licenses/MIT.html')
         end
       end
 

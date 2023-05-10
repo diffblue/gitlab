@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Ci::Parsers::LicenseCompliance::LicenseScanning do
 
       it { expect(report.licenses[2].id).to be_nil }
       it { expect(report.licenses[2].name).to eql('unknown') }
-      it { expect(report.licenses[2].url).to eql('') }
+      it { expect(report.licenses[2].url).to be_nil }
       it { expect(report.licenses[2].count).to be(1) }
       it { expect(report.licenses[2].dependencies.count).to be(1) }
       it { expect(report.licenses[2].dependencies.map(&:name)).to contain_exactly('d') }
@@ -99,7 +99,7 @@ RSpec.describe Gitlab::Ci::Parsers::LicenseCompliance::LicenseScanning do
 
       it { expect(report.licenses[2].id).to be_nil }
       it { expect(report.licenses[2].name).to eql('unknown') }
-      it { expect(report.licenses[2].url).to eql('') }
+      it { expect(report.licenses[2].url).to be_nil }
       it { expect(report.licenses[2].count).to be(1) }
       it { expect(report.licenses[2].dependencies.count).to be(1) }
       it { expect(report.licenses[2].dependencies.map(&:name)).to contain_exactly('d') }
@@ -160,7 +160,7 @@ RSpec.describe Gitlab::Ci::Parsers::LicenseCompliance::LicenseScanning do
       it 'parses an unknown license' do
         expect(report.licenses[2].id).to be_nil
         expect(report.licenses[2].name).to eql('unknown')
-        expect(report.licenses[2].url).to eql('')
+        expect(report.licenses[2].url).to be_nil
         expect(report.licenses[2].count).to be(1)
         expect(report.licenses[2].dependencies.count).to be(1)
         expect(report.licenses[2].dependencies.map(&:name)).to contain_exactly('d')

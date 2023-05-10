@@ -252,7 +252,7 @@ RSpec.describe Projects::PipelinesController do
           it 'returns MIT license allowed status' do
             payload_mit = payload.find { |l| l['name'] == 'MIT' }
             expect(payload_mit['count']).to eq(scanner.report.licenses.find { |x| x.name == 'MIT' }.count)
-            expect(payload_mit['url']).to be_empty
+            expect(payload_mit['url']).to eq("https://spdx.org/licenses/MIT.html")
             expect(payload_mit['classification']['approval_status']).to eq('allowed')
           end
 
