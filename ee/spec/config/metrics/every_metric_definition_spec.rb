@@ -85,6 +85,28 @@ RSpec.describe 'Every metric definition', feature_category: :service_ping do
     expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
   end
 
+  it 'only uses .yml and .json formats form metric related files in (ee/)config/metrics directory' do
+    metric_definition_format = '.yml'
+    object_schema_format = '.json'
+    allowed_formats = [metric_definition_format, object_schema_format]
+    glob_paths = Gitlab::Usage::MetricDefinition.paths.map do |glob_path|
+      File.join(File.dirname(glob_path), '*.*')
+    end
+
+    files_with_wrong_extensions = glob_paths.each_with_object([]) do |glob_path, array|
+      Dir.glob(glob_path).each do |path|
+        array << path unless allowed_formats.include? File.extname(path)
+      end
+    end
+
+    msg = <<~MSG
+    The only supported file extensions are: #{allowed_formats.join(', ')}.
+    The following files has the wrong extension: #{files_with_wrong_extensions}"
+    MSG
+
+    expect(files_with_wrong_extensions).to be_empty, msg
+  end
+
   describe 'metrics classes' do
     let(:parent_metric_classes) do
       [
