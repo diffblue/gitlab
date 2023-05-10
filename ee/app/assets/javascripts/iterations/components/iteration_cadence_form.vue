@@ -9,12 +9,13 @@ import {
   GlFormInput,
   GlFormSelect,
   GlFormTextarea,
+  GlSprintf,
 } from '@gitlab/ui';
 import { TYPENAME_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { STATUS_ALL } from '~/issues/constants';
 import { s__, __, sprintf } from '~/locale';
-import { getDayName } from '~/lib/utils/datetime_utility';
+import { getDayName, formatTimezone } from '~/lib/utils/datetime_utility';
 import createCadence from '../queries/cadence_create.mutation.graphql';
 import updateCadence from '../queries/cadence_update.mutation.graphql';
 import readCadence from '../queries/iteration_cadence.query.graphql';
@@ -46,7 +47,9 @@ const i18n = Object.freeze({
   rollOver: {
     label: s__('Iterations|Roll over issues'),
     checkboxLabel: s__('Iterations|Enable roll over'),
-    description: s__('Iterations|Move incomplete issues to the next iteration.'),
+    description: s__(
+      'Iterations|Incomplete issues will be added to the next iteration at %{strongStart}midnight, %{timezone}%{strongEnd}.',
+    ),
   },
   upcomingIterations: {
     label: s__('Iterations|Upcoming iterations'),
@@ -95,8 +98,9 @@ export default {
     GlFormInput,
     GlFormSelect,
     GlFormTextarea,
+    GlSprintf,
   },
-  inject: ['fullPath', 'cadencesListPath'],
+  inject: ['fullPath', 'cadencesListPath', 'instanceTimezone'],
   data() {
     return {
       group: {
@@ -130,6 +134,11 @@ export default {
 
       return sprintf(this.i18n.automationStartDate.description, {
         weekday: getDayName(new Date(this.startDate)),
+      });
+    },
+    formattedTimezoneMessage() {
+      return sprintf(this.i18n.rollOver.description, {
+        timezone: formatTimezone(this.instanceTimezone),
       });
     },
     loadingCadence() {
@@ -462,8 +471,15 @@ export default {
           :label="i18n.rollOver.label"
           label-class="gl-font-weight-bold"
           label-for="cadence-rollover-issues"
-          :description="i18n.rollOver.description"
+          data-testid="cadence-rollover-group"
         >
+          <template #description>
+            <gl-sprintf :message="formattedTimezoneMessage">
+              <template #strong="{ content }">
+                <strong>{{ content }}</strong>
+              </template>
+            </gl-sprintf>
+          </template>
           <gl-form-checkbox
             id="cadence-rollover-issues"
             v-model="rollOver"

@@ -62,6 +62,7 @@ export function initCadenceApp({ namespaceType }) {
     labelsFetchPath,
     previewMarkdownPath,
     noIssuesSvgPath,
+    instanceTimezone,
   } = el.dataset;
   const router = createRouter({
     base: cadencesListPath,
@@ -92,6 +93,7 @@ export function initCadenceApp({ namespaceType }) {
       labelsFetchPath,
       previewMarkdownPath,
       noIssuesSvgPath,
+      instanceTimezone: JSON.parse(instanceTimezone || '{}'),
     },
     render(createElement) {
       return createElement(App);

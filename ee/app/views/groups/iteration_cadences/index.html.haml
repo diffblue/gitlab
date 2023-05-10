@@ -11,4 +11,5 @@
   has_scoped_labels_feature: @group.licensed_feature_available?(:scoped_labels).to_s,
   labels_fetch_path: group_labels_path(@group, format: :json, include_ancestor_groups: true),
   preview_markdown_path: preview_markdown_path(@group),
-  no_issues_svg_path: image_path('illustrations/issues.svg') } }
+  no_issues_svg_path: image_path('illustrations/issues.svg'),
+  instance_timezone: { name: Time.zone.name, offset: Time.zone.utc_offset }.to_json } }

@@ -100,6 +100,7 @@ describe('Iteration cadence form', () => {
         provide: {
           fullPath: groupPath,
           cadencesListPath: TEST_HOST,
+          instanceTimezone: { name: 'UTC', offset: 0 },
         },
       }),
     );
@@ -170,6 +171,12 @@ describe('Iteration cadence form', () => {
 
     it('does not show the description text for automation start date', () => {
       expect(findStartDateGroup().text()).not.toContain('Iterations are scheduled to start on');
+    });
+
+    it('displays the rollover message with instance timezone information', () => {
+      expect(findRollOverGroup().text()).toContain(
+        'Incomplete issues will be added to the next iteration at midnight, [UTC 0] UTC.',
+      );
     });
 
     describe('when a new automation start date is selected', () => {
