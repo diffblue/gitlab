@@ -23,14 +23,12 @@ module SoftwareLicensePolicies
     private
 
     def create_software_license_policy
-      policy = SoftwareLicense.create_policy_for!(
+      SoftwareLicense.create_policy_for!(
         project: project,
         name: params[:name].strip,
         classification: params[:approval_status],
         scan_result_policy_read: params[:scan_result_policy_read]
       )
-      RefreshLicenseComplianceChecksWorker.perform_async(project.id)
-      policy
     end
 
     def create_for_scan_result_policy

@@ -40,7 +40,6 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
         let(:result) { subject.execute }
 
         before do
-          allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
           result
         end
 
@@ -51,7 +50,6 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
           expect(result[:software_license_policy]).to be_persisted
           expect(result[:software_license_policy].name).to eq(params[:name])
           expect(result[:software_license_policy].classification).to eq(params[:approval_status])
-          expect(RefreshLicenseComplianceChecksWorker).to have_received(:perform_async).with(project.id)
         end
 
         context 'when name contains whitespaces' do
@@ -97,10 +95,6 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
       end
 
       context 'when is_scan_result_policy is set' do
-        before do
-          allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
-        end
-
         it 'creates software license policy' do
           result = subject.execute(is_scan_result_policy: true)
 
@@ -110,7 +104,6 @@ RSpec.describe SoftwareLicensePolicies::CreateService, feature_category: :securi
           expect(result[:software_license_policy]).to be_persisted
           expect(result[:software_license_policy].name).to eq(params[:name])
           expect(result[:software_license_policy].classification).to eq(params[:approval_status])
-          expect(RefreshLicenseComplianceChecksWorker).not_to have_received(:perform_async)
         end
 
         it 'calls unsafe_create_policy_for' do

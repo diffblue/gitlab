@@ -42,7 +42,6 @@ class SoftwareLicensePolicy < ApplicationRecord
   scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
   scope :unreachable_limit, -> { limit(1_000) }
   scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
-  scope :without_scan_result_policy_read, -> { where(scan_result_policy_id: nil) }
   scope :count_for_software_license, ->(software_license_id) { where(software_license_id: software_license_id).count }
 
   scope :exclusion_allowed, -> do

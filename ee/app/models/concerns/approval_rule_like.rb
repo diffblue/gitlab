@@ -46,7 +46,6 @@ module ApprovalRuleLike
     scope :for_groups, -> (groups) { joins(:groups).where(approval_project_rules_groups: { group_id: groups }) }
     scope :including_scan_result_policy_read, -> { includes(:scan_result_policy_read) }
     scope :with_scan_result_policy_read, -> { where.not(scan_result_policy_id: nil) }
-    scope :without_scan_result_policy_read, -> { where(scan_result_policy_id: nil) }
     scope :for_policy_configuration, -> (configuration_id) do
       where(security_orchestration_policy_configuration_id: configuration_id)
     end

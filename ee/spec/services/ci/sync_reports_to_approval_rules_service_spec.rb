@@ -124,51 +124,6 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute', feature_catego
               .not_to change { report_approver_rule.reload.approvals_required }
           end
         end
-
-        context "license compliance policy" do
-          let!(:license_compliance_rule) { create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 1) }
-
-          context "when a license violates the license compliance policy" do
-            let(:pipeline) { create(:ee_ci_pipeline, :success, :with_cyclonedx_report, project: project, merge_requests_as_head_pipeline: [merge_request]) }
-            let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline).report }
-            let!(:software_license_policy) { create(:software_license_policy, :denied, project: project, software_license: denied_license) }
-            let(:denied_license) { create(:software_license, name: license_name) }
-            let(:license_name) { license_report.license_names[0] }
-
-            before_all do
-              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "MIT")
-            end
-
-            specify { expect { subject }.not_to change { license_compliance_rule.reload.approvals_required } }
-            specify { expect(subject[:status]).to be(:success) }
-          end
-
-          context "when no licenses violate the license compliance policy" do
-            let!(:ci_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
-
-            specify { expect { subject }.to change { license_compliance_rule.reload.approvals_required }.from(1).to(0) }
-            specify { expect(subject[:status]).to be(:success) }
-          end
-
-          context "when an unexpected error occurs" do
-            before do
-              allow(Gitlab::LicenseScanning).to receive(:scanner_for_pipeline).and_raise('heck')
-
-              expect(Gitlab::AppLogger).to receive(:error).with(
-                hash_including(
-                  pipeline: anything,
-                  'exception.class' => anything,
-                  'exception.message' => anything,
-                  'exception.backtrace' => anything,
-                  source: anything
-                )
-              ).and_call_original
-            end
-
-            specify { expect(subject[:status]).to be(:error) }
-            specify { expect(subject[:message]).to eql("Failed to update approval rules") }
-          end
-        end
       end
 
       context 'when pipeline fails' do

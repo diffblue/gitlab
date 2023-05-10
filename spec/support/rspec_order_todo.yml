@@ -1349,7 +1349,6 @@
 - './ee/spec/lib/gitlab/ci/templates/Jobs/browser_performance_testing_gitlab_ci_yaml_spec.rb'
 - './ee/spec/lib/gitlab/ci/templates/Jobs/dast_default_branch_gitlab_ci_yaml_spec.rb'
 - './ee/spec/lib/gitlab/ci/templates/Jobs/load_performance_testing_gitlab_ci_yaml_spec.rb'
-- './ee/spec/lib/gitlab/ci/templates/license_scanning_gitlab_ci_yaml_spec.rb'
 - './ee/spec/lib/gitlab/ci/templates/sast_gitlab_ci_yaml_spec.rb'
 - './ee/spec/lib/gitlab/ci/templates/sast_iac_gitlab_ci_yaml_spec.rb'
 - './ee/spec/lib/gitlab/ci/templates/sast_latest_gitlab_ci_yaml_spec.rb'

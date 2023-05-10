@@ -12,7 +12,7 @@ module SoftwareLicensePolicies
       return success(software_license_policy: software_license_policy) unless params[:approval_status].present?
 
       software_license_policy.update(classification: params[:approval_status])
-      RefreshLicenseComplianceChecksWorker.perform_async(project.id)
+
       success(software_license_policy: software_license_policy)
     rescue ArgumentError => ex
       error(ex.message, 400)
