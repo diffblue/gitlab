@@ -1,0 +1,22 @@
+---
+key_path: analytics_counts_visits.value_streams_dashboard_views_weekly
+description: 'Total number of weekly visits to value stream dashboards page'
+product_section: dev
+product_stage: plan
+product_group: optimize
+value_type: number
+status: active
+milestone: "16.0"
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119807
+time_frame: 7d
+data_source: redis
+data_category: optional
+instrumentation_class: RedisMetric
+options:
+  prefix: value_streams_dashboard
+  event: views
+performance_indicator_type: []
+distribution:
+- ee
+tier:
+- ultimate
