@@ -29,6 +29,8 @@ import {
   mockInvoicePreviewUltimateWithMultipleUsers,
   mockNamespaces,
   mockInvoicePreviewWithDiscount,
+  mockInvoicePreviewWithPromoOffer,
+  mockInvoicePreviewWithoutPromoOffer,
 } from 'ee_jest/subscriptions/mock_data';
 
 jest.mock('~/alert');
@@ -40,8 +42,6 @@ describe('Order Summary', () => {
   let wrapper;
   let trackingSpy;
 
-  const promotionalOfferText = 'Promotional Offer Text';
-
   const availablePlans = [
     { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze plan' },
     {
@@ -50,7 +50,6 @@ describe('Order Summary', () => {
       price_per_year: 228,
       name: 'silver plan',
       eligible_to_use_promo_code: true,
-      promotional_offer_text: promotionalOfferText,
     },
     {
       id: 'thirdPlanId',
@@ -756,19 +755,19 @@ describe('Order Summary', () => {
   });
 
   describe('promotional offer text', () => {
-    it('shows promotional offer text when present', async () => {
-      createComponent();
+    it('shows promotional offer text when showPromotionalOfferText is true in invoice preview response', async () => {
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithPromoOffer);
+      await createComponent(invoicePreviewSpy);
 
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
       await waitForPromises();
 
       expect(findPromotionalOfferText().text()).toMatchInterpolatedText(PROMO_CODE_OFFER_TEXT);
     });
 
     it('shows promotional offer link when present', async () => {
-      createComponent();
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithPromoOffer);
+      await createComponent(invoicePreviewSpy);
 
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
       await waitForPromises();
 
       expect(findPromotionalOfferText().findComponent(GlLink).attributes('href')).toEqual(
@@ -776,19 +775,18 @@ describe('Order Summary', () => {
       );
     });
 
-    it('does not show promotional offer text when not present', async () => {
-      createComponent();
+    it('does not show promotional offer text when showPromotionalOfferText is false in invoice preview response', async () => {
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithoutPromoOffer);
+      await createComponent(invoicePreviewSpy);
 
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'thirdPlanId');
       await waitForPromises();
 
       expect(findPromotionalOfferText().exists()).toBe(false);
     });
 
-    it('does not show promotional offer text when loading', async () => {
-      createComponent();
-
-      await store.commit(types.UPDATE_SELECTED_PLAN, 'secondPlanId');
+    it('does not show promotional offer text when loading', () => {
+      const invoicePreviewSpy = jest.fn().mockResolvedValue(mockInvoicePreviewWithPromoOffer);
+      createComponent(invoicePreviewSpy);
 
       expect(findPromotionalOfferText().exists()).toBe(false);
     });

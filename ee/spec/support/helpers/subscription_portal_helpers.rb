@@ -100,7 +100,7 @@ module SubscriptionPortalHelpers
   end
 
   def invoice_preview_request_body
-    "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1,\"namespaceId\":null},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String, $namespaceId: ID) {\\n  invoicePreview(\\n    planId: $planId\\n    quantity: $quantity\\n    promoCode: $promoCode\\n    namespaceId: $namespaceId\\n  ) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      unitPrice\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
+    "{\"operationName\":\"GetInvoicePreview\",\"variables\":{\"planId\":\"bronze_id\",\"quantity\":1,\"namespaceId\":null},\"query\":\"query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String, $namespaceId: ID) {\\n  invoicePreview(\\n    planId: $planId\\n    quantity: $quantity\\n    promoCode: $promoCode\\n    namespaceId: $namespaceId\\n  ) {\\n    invoice {\\n      amountWithoutTax\\n      __typename\\n    }\\n    invoiceItem {\\n      chargeAmount\\n      processingType\\n      unitPrice\\n      __typename\\n    }\\n    metaData {\\n      showPromotionalOfferText\\n      __typename\\n    }\\n    __typename\\n  }\\n}\\n\"}"
   end
 
   def stubbed_invoice_preview_response_body
@@ -116,7 +116,10 @@ module SubscriptionPortalHelpers
               "processingType": "Charge",
               "unitPrice": 228
             }
-          ]
+          ],
+          metaData: {
+            showPromotionalOfferText: true
+          }
         }
       }
     }.to_json

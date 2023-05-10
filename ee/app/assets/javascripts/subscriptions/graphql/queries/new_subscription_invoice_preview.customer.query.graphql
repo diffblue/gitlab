@@ -13,5 +13,8 @@ query GetInvoicePreview($planId: ID!, $quantity: Int!, $promoCode: String, $name
       processingType
       unitPrice
     }
+    metaData {
+      showPromotionalOfferText
+    }
   }
 }

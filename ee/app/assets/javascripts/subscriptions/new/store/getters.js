@@ -82,8 +82,9 @@ export const isSelectedGroupPresent = (state, getters) => Boolean(getters.select
 export const isEligibleToUsePromoCode = (_, getters) =>
   getters.selectedPlanDetails?.isEligibleToUsePromoCode;
 
-export const promotionalOfferText = (_, getters) =>
-  getters.selectedPlanDetails?.promotionalOfferText;
+export const showPromotionalOfferText = (state) =>
+  !state.isInvoicePreviewLoading &&
+  Boolean(state.invoicePreview?.metaData?.showPromotionalOfferText);
 
 export const selectedGroupData = (state, getters) => {
   if (!getters.isGroupSelected) {
