@@ -7,7 +7,6 @@ FactoryBot.define do
     user
     agent factory: [:ee_cluster_agent, :with_remote_development_agent_config]
 
-    random_string = SecureRandom.alphanumeric(6).downcase
     name { "workspace-#{agent.id}-#{user.id}-#{random_string}" }
 
     add_attribute(:namespace) { "gl-rd-ns-#{agent.id}-#{user.id}-#{random_string}" }
@@ -42,6 +41,7 @@ FactoryBot.define do
     end
 
     transient do
+      random_string { SecureRandom.alphanumeric(6).downcase }
       # noinspection RubyResolve
       skip_realistic_after_create_timestamp_updates { false }
     end
