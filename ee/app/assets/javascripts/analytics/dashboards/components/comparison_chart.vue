@@ -24,7 +24,6 @@ import {
   generateDateRanges,
   generateChartTimePeriods,
   extractDoraMetrics,
-  aggregateVulnerabilities,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
@@ -111,7 +110,7 @@ export default {
       if (result.data?.namespace) {
         const {
           namespace: {
-            vulnerabilitiesCountByDay: { nodes },
+            vulnerabilitiesCountByDay: { nodes = [] },
           },
         } = result.data;
         return nodes;
@@ -127,17 +126,27 @@ export default {
       });
 
       // The vulnerabilities API request takes a date, so the timezone skews it outside the monthly range
+      // The vulnerabilites count returns cumulative data for each day
+      // we only want to use the value of the last day in the time period
+      // so we override the startDate and set it to the same value as the end date
       const vulnerabilities = await this.fetchVulnerabilitiesQuery({
         ...this.defaultQueryParams,
-        startDate: toYmd(startDate),
+        startDate: toYmd(endDate),
         endDate: toYmd(endDate),
       });
 
-      const aggregated = aggregateVulnerabilities(vulnerabilities);
-      const vulns = {
-        [VULNERABILITY_METRICS.CRITICAL]: { value: aggregated.critical },
-        [VULNERABILITY_METRICS.HIGH]: { value: aggregated.high },
-      };
+      const [selectedCount] = vulnerabilities;
+      const vulns =
+        selectedCount?.critical && selectedCount?.high
+          ? {
+              [VULNERABILITY_METRICS.CRITICAL]: { value: selectedCount.critical },
+              [VULNERABILITY_METRICS.HIGH]: { value: selectedCount.high },
+            }
+          : {
+              [VULNERABILITY_METRICS.CRITICAL]: { value: '-' },
+              [VULNERABILITY_METRICS.HIGH]: { value: '-' },
+            };
+
       return { ...timePeriod, ...extractDoraMetrics(rawData), ...vulns };
     },
     async fetchTableMetrics() {

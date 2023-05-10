@@ -48,16 +48,18 @@ export const TABLE_METRICS = {
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.CRITICAL]: {
-    label: s__('DORA4Metrics|Critical Vulnerabilities'),
+    label: s__('DORA4Metrics|Critical Vulnerabilities over time'),
     invertTrendColor: true,
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.HIGH]: {
-    label: s__('DORA4Metrics|High Vulnerabilities'),
+    label: s__('DORA4Metrics|High Vulnerabilities over time'),
     invertTrendColor: true,
     units: UNITS.COUNT,
   },
 };
+
+export const METRICS_WITH_NO_TREND = [VULNERABILITY_METRICS.CRITICAL, VULNERABILITY_METRICS.HIGH];
 
 export const DASHBOARD_TITLE = s__('DORA4Metrics|Value Streams Dashboard');
 export const DASHBOARD_DESCRIPTION = s__(

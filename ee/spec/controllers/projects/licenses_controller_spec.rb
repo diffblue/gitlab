@@ -147,7 +147,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                   'classification' => 'unclassified',
                   'name' => "BSD-3-Clause",
                   'spdx_identifier' => "BSD-3-Clause",
-                  'url' => nil,
+                  'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
                   # TODO: figure out if order is important here
                   'components' => match_array([
                     {
@@ -397,7 +397,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                     "id" => nil,
                     "spdx_identifier" => "BSD-3-Clause",
                     "name" => "BSD-3-Clause",
-                    "url" => nil,
+                    "url" => "https://spdx.org/licenses/BSD-3-Clause.html",
                     "classification" => "unclassified"
                   })
                 end
@@ -407,7 +407,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                     "id" => mit_policy.id,
                     "spdx_identifier" => "MIT",
                     "name" => mit.name,
-                    "url" => nil,
+                    "url" => "https://spdx.org/licenses/MIT.html",
                     "classification" => "denied"
                   })
                 end

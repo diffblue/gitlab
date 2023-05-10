@@ -42,7 +42,7 @@ module Gitlab
               id == 'unknown' ? nil : id
             end
             @name = name
-            @url = url
+            @url = spdx_url(@id, url)
             @dependencies = Set.new
           end
 
@@ -66,6 +66,15 @@ module Gitlab
             super(other) ||
               (id && other.id && id.eql?(other.id)) ||
               (name && other.name && name.casecmp?(other.name))
+          end
+
+          private
+
+          def spdx_url(id, url)
+            return url unless url.blank?
+            return unless id
+
+            "https://spdx.org/licenses/#{id}.html"
           end
         end
       end

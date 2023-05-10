@@ -10,6 +10,7 @@ import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
 import GroupVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/project_vulnerabilities.query.graphql';
+import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import * as utils from '~/analytics/shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -24,6 +25,7 @@ import {
 } from '../mock_data';
 
 const mockProps = { name: 'Exec group', requestPath: 'exec-group', isProject: false };
+const mockLastVulnerabilityCount = { date: '2020-05-20', critical: 7, high: 6, medium: 5, low: 4 };
 
 jest.mock('~/alert');
 jest.mock('~/analytics/shared/utils', () => ({
@@ -38,11 +40,7 @@ describe('Comparison chart', () => {
 
   const vulnerabilitiesCountByDayResponse = {
     vulnerabilitiesCountByDay: {
-      nodes: [
-        { date: '2020-05-18', critical: 5, high: 4, medium: 3, low: 2 },
-        { date: '2020-05-19', critical: 6, high: 5, medium: 4, low: 3 },
-        { date: '2020-05-20', critical: 7, high: 6, medium: 5, low: 4 },
-      ],
+      nodes: [mockLastVulnerabilityCount],
     },
   };
 
@@ -77,6 +75,8 @@ describe('Comparison chart', () => {
 
   const findComparisonTable = () => wrapper.findComponent(ComparisonTable);
   const getTableData = () => findComparisonTable().props('tableData');
+  const getTableDataForMetric = (identifier) =>
+    getTableData().filter(({ metric }) => metric.identifier === identifier)[0];
 
   const expectDataRequests = (params, requestPath = '') => {
     expect(utils.fetchMetricsData).toHaveBeenCalledWith(
@@ -95,10 +95,11 @@ describe('Comparison chart', () => {
     );
   };
 
-  const expectVulnerabilityRequest = (handler, { start, end }, fullPath = '') => {
+  // For the vulnerabilities request we just query for the last date in the time period
+  const expectVulnerabilityRequest = (handler, { end }, fullPath = '') => {
     expect(handler).toHaveBeenCalledWith({
       fullPath,
-      startDate: utils.toYmd(start),
+      startDate: utils.toYmd(end),
       endDate: utils.toYmd(end),
     });
   };
@@ -218,6 +219,23 @@ describe('Comparison chart', () => {
 
       const metricNames = getTableData().map(({ metric }) => metric);
       expect(metricNames).toEqual(mockComparativeTableData.map(({ metric }) => metric));
+    });
+
+    it('selects the final data point in the vulnerability response for display', async () => {
+      utils.fetchMetricsData
+        .mockReturnValueOnce(mockMonthToDateApiResponse)
+        .mockReturnValueOnce(mockPreviousMonthApiResponse)
+        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
+        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
+      await createWrapper();
+
+      const critical = getTableDataForMetric(VULNERABILITY_METRICS.CRITICAL);
+      const high = getTableDataForMetric(VULNERABILITY_METRICS.HIGH);
+
+      ['thisMonth', 'lastMonth', 'twoMonthsAgo'].forEach((timePeriodKey) => {
+        expect(critical[timePeriodKey].value).toBe(mockLastVulnerabilityCount.critical);
+        expect(high[timePeriodKey].value).toBe(mockLastVulnerabilityCount.high);
+      });
     });
 
     it('renders a chart on each row', async () => {

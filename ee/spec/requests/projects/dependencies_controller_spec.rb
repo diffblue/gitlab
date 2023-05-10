@@ -184,9 +184,10 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
             it 'includes license information in response' do
               nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+              url = "http://opensource.org/licenses/mit-license"
 
               expect(nokogiri['licenses'])
-                .to include({ "name" => "MIT", "url" => "http://opensource.org/licenses/mit-license" })
+                .to include({ "name" => "MIT", "url" => url })
             end
           end
 
@@ -195,8 +196,9 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
             it 'includes license information in response' do
               nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
+              url = "https://spdx.org/licenses/BSD-4-Clause.html"
 
-              expect(nokogiri['licenses']).to include({ "name" => "BSD", "url" => "" })
+              expect(nokogiri['licenses']).to include({ "name" => "BSD", "url" => url })
             end
           end
         end
