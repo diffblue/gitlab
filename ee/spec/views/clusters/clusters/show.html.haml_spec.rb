@@ -25,6 +25,7 @@ RSpec.describe 'clusters/clusters/show' do
   end
 
   before do
+    stub_feature_flags(remove_monitor_metrics: false)
     allow(controller).to receive(:current_user).and_return(user)
   end
 
