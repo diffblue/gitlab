@@ -1,13 +1,13 @@
 - return if !Gitlab.com?
 - credit_card_validation = user.credit_card_validation
 = render Pajamas::CardComponent.new(body_options: { class: 'gl-py-0'}) do |c|
-  - c.header do
+  - c.with_header do
     = _('Credit card:')
     - if local_assigns[:link_to_match_page] && credit_card_validation&.holder_name
       .gl-float-right.small
         = link_to card_match_admin_user_path(@user) do
           = _('View card matches')
-  - c.body do
+  - c.with_body do
     %ul.content-list
       %li#credit-card-status
         - if credit_card_validation.nil?

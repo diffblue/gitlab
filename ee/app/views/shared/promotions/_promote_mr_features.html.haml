@@ -1,7 +1,7 @@
 - if show_promotions? && show_callout?('promote_mr_features_dismissed') && !@project.feature_available?(:merge_request_approvers)
   = render Pajamas::BannerComponent.new(banner_options: { class: 'user-callout promotion-callout js-mr-approval-callout gl-mb-6! gl-mx-0', data: { uid: 'promote_mr_features_dismissed' }, id: 'promote_mr_features' },
     close_options: { 'aria-label' => _('Dismiss merge request promotion'), class: 'js-close-callout' }) do |c|
-    - c.title do
+    - c.with_title do
       - if Gitlab::CurrentSettings.should_check_namespace_plan?
         = s_('Promotions|Upgrade your plan to improve merge requests.')
       - else
@@ -12,5 +12,5 @@
           = link_to s_('Promotions|Merge request approvals'), help_page_path('user/project/merge_requests/approvals/index.md'), target: '_blank', rel: 'noopener noreferrer'
           %p
             = s_('Promotions|Set the number of necessary approvals and define a list of approvers needed for every merge request in a project.')
-    - c.primary_action do
+    - c.with_primary_action do
       = render 'shared/promotions/promotion_link_project', location: :mr_features

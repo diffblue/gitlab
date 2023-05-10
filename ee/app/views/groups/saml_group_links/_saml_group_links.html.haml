@@ -1,9 +1,9 @@
 - group_links = group.saml_group_links.load
 
 = render Pajamas::CardComponent.new(body_options: { class: ('gl-py-0' if group_links.any?) }) do |c|
-  - c.header do
+  - c.with_header do
     = s_('GroupSAML|Active SAML Group Links (%{count})') % { count: group_links.size }
-  - c.body do
+  - c.with_body do
     - if group_links.any?
       %ul.content-list
         = render partial: 'saml_group_link', collection: group_links, locals: { group: group }

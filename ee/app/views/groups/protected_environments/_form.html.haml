@@ -1,8 +1,8 @@
 = gitlab_ui_form_for [@group, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
   = render Pajamas::CardComponent.new do |c|
-    - c.header do
+    - c.with_header do
       = s_('ProtectedEnvironment|Protect an environment')
-    - c.body do
+    - c.with_body do
       = form_errors(@protected_environment)
       .form-group
         = f.label :name, s_('ProtectedEnvironment|Environment'), class: 'label-bold gl-display-block'
@@ -15,5 +15,5 @@
           = s_('ProtectedEnvironment|Allowed to deploy')
         .js-allowed-to-deploy-dropdown
 
-    - c.footer do
+    - c.with_footer do
       = f.submit s_('ProtectedEnvironment|Protect'), pajamas_button: true, disabled: true

@@ -16,7 +16,7 @@
             %fieldset.builds-feature
               .gl-form-group.form-group
                 = render Pajamas::CardComponent.new do |c|
-                  - c.body do
+                  - c.with_body do
                     .gl-form.form-check
                       - help_text = s_('AutoRollback|Automatic rollbacks start when a critical alert is triggered. If the last successful deployment fails to roll back automatically, it can still be done manually.')
                       - more_info_link = link_to(_('More information'), help_page_path('ci/environments/index.md', anchor: 'auto-rollback'), target: '_blank', rel: 'noopener noreferrer')
