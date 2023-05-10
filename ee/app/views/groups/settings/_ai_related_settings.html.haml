@@ -1,9 +1,9 @@
 - return unless group.ai_settings_allowed?
 
-- docs_link_url = help_page_path('user/project/repository/code_suggestions') #('user/ai_features')
+- docs_link_url = help_page_path('user/ai_features')
 - docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
 - terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
-- how_is_my_data_used = help_page_path('user/project/repository/code_suggestions') #('user/ai_features', anchor: 'data-usage')
+- how_is_my_data_used = help_page_path('user/ai_features', anchor: 'data-usage')
 - data_used_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: how_is_my_data_used }
 
 %h5
