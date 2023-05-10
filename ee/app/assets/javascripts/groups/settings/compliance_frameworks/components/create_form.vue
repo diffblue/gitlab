@@ -1,13 +1,12 @@
 <script>
 import * as Sentry from '@sentry/browser';
 
-import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { SAVE_ERROR } from '../constants';
 import createComplianceFrameworkMutation from '../graphql/queries/create_compliance_framework.mutation.graphql';
-import { getSubmissionParams, initialiseFormData, isModalsRefactorEnabled } from '../utils';
+import { getSubmissionParams, initialiseFormData } from '../utils';
 import FormStatus from './form_status.vue';
 import SharedForm from './shared_form.vue';
 
@@ -16,7 +15,7 @@ export default {
     FormStatus,
     SharedForm,
   },
-  inject: ['groupEditPath', 'groupPath', 'pipelineConfigurationFullPathEnabled'],
+  inject: ['groupPath', 'pipelineConfigurationFullPathEnabled'],
   data() {
     return {
       errorMessage: '',
@@ -36,9 +35,7 @@ export default {
       Sentry.captureException(error);
     },
     onCancel() {
-      if (isModalsRefactorEnabled()) {
-        this.$emit('cancel');
-      }
+      this.$emit('cancel');
     },
     async onSubmit() {
       this.saving = true;
@@ -57,19 +54,15 @@ export default {
               params,
             },
           },
-          ...(isModalsRefactorEnabled()
-            ? {
-                awaitRefetchQueries: true,
-                refetchQueries: [
-                  {
-                    query: getComplianceFrameworkQuery,
-                    variables: {
-                      fullPath: this.groupPath,
-                    },
-                  },
-                ],
-              }
-            : {}),
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: getComplianceFrameworkQuery,
+              variables: {
+                fullPath: this.groupPath,
+              },
+            },
+          ],
         });
 
         const [error] = data?.createComplianceFramework?.errors || [];
@@ -77,11 +70,6 @@ export default {
         if (error) {
           this.setError(new Error(error), error);
         } else {
-          if (!isModalsRefactorEnabled()) {
-            visitUrl(this.groupEditPath);
-            return;
-          }
-
           this.$emit('success', {
             message: this.$options.i18n.successMessageText,
             framework: data.createComplianceFramework.framework,

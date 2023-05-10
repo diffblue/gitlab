@@ -22,25 +22,17 @@ describe('FrameworkBadge component', () => {
   };
 
   describe('default behavior', () => {
-    describe('when modal refactor feature flag is enabled', () => {
-      beforeEach(() => {
-        window.gon = { features: { manageComplianceFrameworksModalsRefactor: true } };
-        wrapper = createComponent({ framework: complianceFramework });
-      });
+    it('renders edit link', () => {
+      wrapper = createComponent({ framework: complianceFramework });
 
-      it('renders edit link', () => {
-        expect(findEditButton().exists()).toBe(true);
-      });
-
-      it('emits edit event when edit link is clicked', async () => {
-        await findEditButton().vm.$emit('click', new MouseEvent('click'));
-        expect(wrapper.emitted('edit')).toHaveLength(1);
-      });
+      expect(findEditButton().exists()).toBe(true);
     });
 
-    it('does not render edit link without relevant feature flag', () => {
+    it('emits edit event when edit link is clicked', async () => {
       wrapper = createComponent({ framework: complianceFramework });
-      expect(findEditButton().exists()).toBe(false);
+
+      await findEditButton().vm.$emit('click', new MouseEvent('click'));
+      expect(wrapper.emitted('edit')).toHaveLength(1);
     });
 
     it('renders the framework label', () => {

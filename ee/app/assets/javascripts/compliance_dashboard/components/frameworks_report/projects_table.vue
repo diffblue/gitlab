@@ -57,10 +57,6 @@ export default {
       type: String,
       required: true,
     },
-    newGroupComplianceFrameworkPath: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {
@@ -270,7 +266,6 @@ export default {
     <selection-operations
       :selection="selectedRows"
       :root-ancestor-path="rootAncestorPath"
-      :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
       :is-apply-in-progress="isApplyInProgress"
       :default-framework="preselectedFrameworkForBulkOperation"
       @change="applyOperations"
@@ -317,7 +312,6 @@ export default {
         <gl-loading-icon v-if="hasPendingSingleOperation(id)" size="sm" inline />
         <framework-selection-box
           v-else-if="!complianceFrameworks.length"
-          :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
           :root-ancestor-path="rootAncestorPath"
           @select="
             applySingleItemOperation({
