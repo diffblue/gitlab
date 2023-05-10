@@ -96,7 +96,6 @@ RSpec.describe 'SAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
             'Apex'                 | { 'app.cls' => '' }                             | {}                      | %w(pmd-apex-sast)
             'C'                    | { 'app.c' => '' }                               | {}                      | %w(flawfinder-sast)
             'C++'                  | { 'app.cpp' => '' }                             | {}                      | %w(flawfinder-sast)
-            'C#'                   | { 'app.csproj' => '' }                          | {}                      | %w(security-code-scan-sast)
             'C#'                   | { 'app.cs' => '' }                              | {}                      | %w(semgrep-sast)
             'Elixir'               | { 'mix.exs' => '' }                             | {}                      | %w(sobelow-sast)
             'Elixir, nested'       | { 'a/b/mix.exs' => '' }                         | {}                      | %w(sobelow-sast)
@@ -116,12 +115,10 @@ RSpec.describe 'SAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
             'PHP'                  | { 'app.php' => '' }                             | {}                      | %w(phpcs-security-audit-sast)
             'Python'               | { 'app.py' => '' }                              | {}                      | %w(semgrep-sast)
             'Ruby'                 | { 'config/routes.rb' => '' }                    | {}                      | %w(brakeman-sast)
-            'Scala'                | { 'app.scala' => '' }                           | {}                      | %w(spotbugs-sast)
             'Scala'                | { 'app.scala' => '' }                           | {}                      | %w(semgrep-sast)
             'Scala'                | { 'app.sc' => '' }                              | {}                      | %w(semgrep-sast)
             'Typescript'           | { 'app.ts' => '' }                              | {}                      | %w(semgrep-sast)
             'Typescript JSX'       | { 'app.tsx' => '' }                             | {}                      | %w(semgrep-sast)
-            'Visual Basic'         | { 'app.vbproj' => '' }                          | {}                      | %w(security-code-scan-sast)
           end
 
           with_them do
