@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-module MergeRequests
-  module Llm
-    class SummarizeMergeRequestService
+module Llm
+  module MergeRequests
+    class SummarizeDiffService
       GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+,\d+ )@@/
 
       def initialize(merge_request:, user:)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::Llm::SummarizeMergeRequestService, feature_category: :code_review_workflow do
+RSpec.describe Llm::MergeRequests::SummarizeDiffService, feature_category: :code_review_workflow do
   let_it_be(:user)          { create(:user) }
   let_it_be(:project)       { create(:project, :with_namespace_settings, :repository, :public) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project) }

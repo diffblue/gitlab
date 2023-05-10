@@ -24,7 +24,7 @@ module MergeRequests
 
         # If rev is not provided, use the SHA of the current head commit.
         #
-        # Note that MergeRequests::Llm::SummarizeMergeRequestService does not
+        # Note that Llm::MergeRequests::SummarizeDiffService does not
         #   currently support summarizing anything except the most recent diff,
         #   and providing it when calling this worker aids in job deduplication.
         #   We will display the rev at the end of the note in order to identify
@@ -58,7 +58,7 @@ module MergeRequests
       end
 
       def service
-        @_service ||= MergeRequests::Llm::SummarizeMergeRequestService.new(
+        @_service ||= ::Llm::MergeRequests::SummarizeDiffService.new(
           merge_request: @merge_request,
           user: @user
         )
