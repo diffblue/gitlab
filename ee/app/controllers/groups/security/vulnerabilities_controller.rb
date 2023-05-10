@@ -5,6 +5,10 @@ module Groups
     class VulnerabilitiesController < Groups::ApplicationController
       layout 'group'
 
+      before_action do
+        push_frontend_feature_flag(:dismissal_reason, @project)
+      end
+
       feature_category :vulnerability_management
       urgency :low
 

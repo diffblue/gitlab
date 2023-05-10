@@ -1,10 +1,10 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { mapValues, pick } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import pipelineSecurityReportSummaryQuery from 'ee/security_dashboard/graphql/queries/pipeline_security_report_summary.query.graphql';
 import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 import ReportStatusAlert from 'ee/security_dashboard/components/pipeline/report_status_alert.vue';
@@ -14,7 +14,6 @@ import ScanAlerts, {
 } from 'ee/security_dashboard/components/pipeline/scan_alerts.vue';
 import SecurityDashboard from 'ee/security_dashboard/components/pipeline/security_dashboard_vuex.vue';
 import SecurityReportsSummary from 'ee/security_dashboard/components/pipeline/security_reports_summary.vue';
-import PipelineVulnerabilityReport from 'ee/security_dashboard/components/pipeline/pipeline_vulnerability_report.vue';
 import { DOC_PATH_SECURITY_CONFIGURATION } from 'ee/security_dashboard/constants';
 import { HTTP_STATUS_FORBIDDEN, HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 import {
@@ -43,12 +42,12 @@ describe('Pipeline Security Dashboard component', () => {
   let wrapper;
 
   const findSecurityDashboard = () => wrapper.findComponent(SecurityDashboard);
-  const findVulnerabilityReport = () => wrapper.findComponent(PipelineVulnerabilityReport);
+  const findVulnerabilityReport = () => wrapper.findByTestId('pipeline-vulnerability-report');
   const findScanAlerts = () => wrapper.findComponent(ScanAlerts);
   const findReportStatusAlert = () => wrapper.findComponent(ReportStatusAlert);
 
   const factory = ({ stubs, provide, apolloProvider } = {}) => {
-    wrapper = shallowMount(PipelineSecurityDashboard, {
+    wrapper = shallowMountExtended(PipelineSecurityDashboard, {
       apolloProvider,
       store,
       provide: {
@@ -63,7 +62,7 @@ describe('Pipeline Security Dashboard component', () => {
         loadingErrorIllustrations,
         ...provide,
       },
-      stubs,
+      stubs: { PipelineVulnerabilityReport: true, ...stubs },
     });
   };
 

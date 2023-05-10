@@ -40691,6 +40691,12 @@ msgstr ""
 msgid "SecurityReports|Activity"
 msgstr ""
 
+msgid "SecurityReports|Add a comment"
+msgstr ""
+
+msgid "SecurityReports|Add a comment (required)"
+msgstr ""
+
 msgid "SecurityReports|Add a comment or reason for dismissal"
 msgstr ""
 
@@ -40929,6 +40935,9 @@ msgid "SecurityReports|Security scans have run"
 msgstr ""
 
 msgid "SecurityReports|Select a project to add by using the project search field above."
+msgstr ""
+
+msgid "SecurityReports|Set dismissal reason"
 msgstr ""
 
 msgid "SecurityReports|Set status"
