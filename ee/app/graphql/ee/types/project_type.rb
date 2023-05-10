@@ -250,6 +250,12 @@ module EE
               alpha: { milestone: '16.0' },
               authorize: :developer_access
 
+        field :product_analytics_instrumentation_key, GraphQL::Types::String,
+              null: true,
+              description: 'Product Analytics instrumentation key assigned to the project.',
+              alpha: { milestone: '16.0' },
+              authorize: :developer_access
+
         field :dependencies, ::Types::Sbom::DependencyType.connection_type,
               null: true,
               description: 'Software dependencies used by the project.',

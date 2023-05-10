@@ -284,6 +284,7 @@ module EE
                :mirror_branch_regex=,
                :allow_pipeline_trigger_approve_deployment,
                :allow_pipeline_trigger_approve_deployment=,
+               :product_analytics_instrumentation_key,
                to: :project_setting
 
       validates :repository_size_limit,
