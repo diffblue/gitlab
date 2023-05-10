@@ -24,23 +24,17 @@ describe('AdminEmailsForm', () => {
     });
   };
 
-  const findSubjectField = () => wrapper.findByLabelText(AdminEmailsForm.fields.subject.label);
+  const findSubjectField = () => {
+    return wrapper.findByLabelText(AdminEmailsForm.fields.subject.label);
+  };
   const findBodyField = () => wrapper.findByLabelText(AdminEmailsForm.fields.body.label);
-  const findSubjectValidationMessage = () =>
-    wrapper.findByText(AdminEmailsForm.fields.subject.validationMessage);
-  const findBodyValidationMessage = () =>
-    wrapper.findByText(AdminEmailsForm.fields.body.validationMessage);
+  const findSubjectValidationMessage = () => wrapper.findByText('Subject is required.');
+  const findBodyValidationMessage = () => wrapper.findByText('Body is required.');
   const findRecipientsValidationMessage = () =>
-    wrapper.findByText(AdminEmailsForm.fields.recipients.validationMessage);
+    wrapper.findByText('Recipient group or project is required.');
   const submitForm = async () => {
-    const event = {
-      preventDefault: jest.fn(),
-    };
-
-    wrapper.findComponent(GlForm).vm.$emit('submit', event);
+    wrapper.findComponent(GlForm).trigger('submit');
     await nextTick();
-
-    return event;
   };
   const findSubmitButton = () =>
     wrapper.findByRole('button', { name: AdminEmailsForm.i18n.submitButton });
@@ -183,7 +177,7 @@ describe('AdminEmailsForm', () => {
 
           expect(findGlListbox().props('items')).toEqual([]);
           expect(findGlListbox().props('noResultsText')).toBe(
-            AdminEmailsForm.fields.recipients.noResultsMessage,
+            AdminEmailsForm.i18n.noResultsMessage,
           );
         });
       });
@@ -210,12 +204,11 @@ describe('AdminEmailsForm', () => {
     it('renders validation messages', async () => {
       createComponent();
 
-      const event = await submitForm();
+      await submitForm();
 
       expect(findSubjectValidationMessage().exists()).toBe(true);
       expect(findBodyValidationMessage().exists()).toBe(true);
       expect(findRecipientsValidationMessage().exists()).toBe(true);
-      expect(event.preventDefault).toHaveBeenCalled();
     });
   });
 

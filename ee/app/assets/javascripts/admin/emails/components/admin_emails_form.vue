@@ -1,139 +1,66 @@
 <script>
 import {
   GlForm,
-  GlFormGroup,
-  GlFormInput,
   GlFormTextarea,
   GlButton,
   GlCollapsibleListbox,
   GlAlert,
+  GlFormFields,
 } from '@gitlab/ui';
+import { formValidators } from '@gitlab/ui/dist/utils';
 import { debounce } from 'lodash';
 
 import { getGroups, getProjects } from '~/rest_api';
 import { __, s__ } from '~/locale';
-import validation, { initForm } from '~/vue_shared/directives/validation';
 import csrf from '~/lib/utils/csrf';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-
-const feedbackMap = {
-  valueMissing: {
-    isInvalid: (el) => el.validity?.valueMissing,
-  },
-};
 
 export default {
   components: {
     GlForm,
-    GlFormGroup,
-    GlFormInput,
+    GlFormFields,
     GlFormTextarea,
     GlButton,
     GlCollapsibleListbox,
     GlAlert,
   },
-  directives: {
-    validation: validation(feedbackMap),
-  },
   csrf,
   inject: ['adminEmailPath', 'adminEmailsAreCurrentlyRateLimited'],
-  fields: {
-    subject: {
-      label: s__('AdminEmail|Subject'),
-      validationMessage: s__('AdminEmail|Subject is required.'),
-      key: 'subject',
-    },
-    body: {
-      label: s__('AdminEmail|Body'),
-      validationMessage: s__('AdminEmail|Body is required.'),
-      key: 'body',
-    },
-    recipients: {
-      label: s__('AdminEmail|Recipient group or project'),
-      validationMessage: s__('AdminEmail|Recipient group or project is required.'),
-      noResultsMessage: s__('AdminEmail|No groups or projects found.'),
-      loadingMessage: s__('AdminEmail|Loading groups and projects.'),
-      key: 'recipients',
-    },
-  },
   i18n: {
     submitButton: __('Send message'),
     errorMessage: s__(
       'AdminEmail|An error occurred fetching the groups and projects. Please refresh the page to try again.',
     ),
+    noResultsMessage: s__('AdminEmail|No groups or projects found.'),
+    loadingMessage: s__('AdminEmail|Loading groups and projects.'),
   },
   data() {
-    const form = initForm({
-      fields: {
-        subject: {
-          value: '',
-        },
-        body: {
-          value: '',
-        },
-        recipients: {
-          value: null,
-          id: null,
-        },
-      },
-    });
-
     return {
-      form,
       recipientsSearchTerm: '',
       items: [],
       recipientsLoading: false,
       recipientsSearchLoading: false,
       hasError: false,
+      formValues: {},
     };
   },
-
   computed: {
     listboxToggleText() {
-      if (this.form.fields.recipients.value === null) {
+      if (!this.formValues.recipients) {
         return __('Select group or project');
       }
 
       return null;
     },
-    recipientsValue() {
-      return this.form.fields.recipients.value ?? null;
-    },
     recipientsNoResultsText() {
       if (this.recipientsLoading) {
-        return this.$options.fields.recipients.loadingMessage;
+        return this.$options.i18n.loadingMessage;
       }
 
-      return this.$options.fields.recipients.noResultsMessage;
-    },
-  },
-  watch: {
-    'form.fields.recipients.value': async function watchRecipientsValue(value) {
-      if (value === null) {
-        return;
-      }
-
-      // Wait for `v-validation` to update `this.form.fields.recipients.state`
-      await this.$nextTick();
-
-      this.form.fields.recipients.state = null;
+      return this.$options.i18n.noResultsMessage;
     },
   },
   methods: {
-    async handleSubmit(event) {
-      this.form.showValidation = true;
-
-      // Wait for `v-validation` to update `this.form.state`
-      await this.$nextTick();
-
-      if (!this.form.state) {
-        event.preventDefault();
-
-        return;
-      }
-
-      this.form.showValidation = false;
-    },
     async handleListboxSearch(searchTerm) {
       this.recipientsSearchTerm = searchTerm;
 
@@ -184,79 +111,75 @@ export default {
       }
     },
   },
+  fields: {
+    subject: {
+      label: s__('AdminEmail|Subject'),
+      validators: [formValidators.required(s__('AdminEmail|Subject is required.'))],
+      inputAttrs: { name: 'subject' },
+    },
+    body: {
+      label: s__('AdminEmail|Body'),
+      validators: [formValidators.required(s__('AdminEmail|Body is required.'))],
+      inputAttrs: { name: 'body' },
+    },
+    recipients: {
+      label: s__('AdminEmail|Recipient group or project'),
+      validators: [
+        formValidators.required(s__('AdminEmail|Recipient group or project is required.')),
+      ],
+      inputAttrs: { name: 'recipients' },
+    },
+  },
+  formId: 'admin-emails-form',
 };
 </script>
 
 <template>
   <gl-form
+    :id="$options.formId"
+    ref="form"
     class="gl-lg-form-input-xl"
-    novalidate
     :action="adminEmailPath"
     method="post"
-    @submit="handleSubmit"
   >
     <input type="hidden" name="authenticity_token" :value="$options.csrf.token" />
-    <gl-form-group
-      :label="$options.fields.subject.label"
-      :label-for="$options.fields.subject.key"
-      :state="form.fields.subject.state"
-      :invalid-feedback="form.fields.subject.feedback"
+    <gl-form-fields
+      v-model="formValues"
+      :fields="$options.fields"
+      :form-id="$options.formId"
+      @submit="$refs.form.$el.submit()"
     >
-      <gl-form-input
-        :id="$options.fields.subject.key"
-        v-model="form.fields.subject.value"
-        v-validation:[form.showValidation]
-        :validation-message="$options.fields.subject.validationMessage"
-        :state="form.fields.subject.state"
-        :name="$options.fields.subject.key"
-        required
-      />
-    </gl-form-group>
-    <gl-form-group
-      :label="$options.fields.body.label"
-      :label-for="$options.fields.body.key"
-      :state="form.fields.body.state"
-      :invalid-feedback="form.fields.body.feedback"
-    >
-      <gl-form-textarea
-        :id="$options.fields.body.key"
-        v-model="form.fields.body.value"
-        v-validation:[form.showValidation]
-        :validation-message="$options.fields.body.validationMessage"
-        :state="form.fields.body.state"
-        :name="$options.fields.body.key"
-        required
-      />
-    </gl-form-group>
-    <gl-alert v-if="hasError" class="gl-mb-5" variant="danger" :dismissible="false">{{
-      $options.i18n.errorMessage
-    }}</gl-alert>
-    <gl-form-group
-      :label="$options.fields.recipients.label"
-      :state="form.fields.recipients.state"
-      :invalid-feedback="form.fields.recipients.feedback"
-    >
-      <gl-form-input
-        id="recipients"
-        v-validation:[form.showValidation]
-        :validation-message="$options.fields.recipients.validationMessage"
-        class="gl-display-none"
-        name="recipients"
-        :value="recipientsValue"
-        required
-      />
-      <gl-collapsible-listbox
-        v-model="form.fields.recipients.value"
-        searchable
-        :loading="recipientsLoading"
-        :searching="recipientsSearchLoading"
-        :no-results-text="recipientsNoResultsText"
-        :toggle-text="listboxToggleText"
-        :items="items"
-        @shown="handleListboxShown"
-        @search="handleListboxSearch"
-      />
-    </gl-form-group>
+      <template #input(body)="{ id, value, input, blur, validation }">
+        <gl-form-textarea
+          :id="id"
+          :value="value"
+          :state="validation.state"
+          :name="$options.fields.body.inputAttrs.name"
+          @input="input"
+          @blur="blur"
+        />
+      </template>
+      <template #input(recipients)="{ id, value, input, blur }">
+        <gl-alert v-if="hasError" class="gl-mb-5" variant="danger" :dismissible="false">{{
+          $options.i18n.errorMessage
+        }}</gl-alert>
+        <input type="hidden" :name="$options.fields.recipients.inputAttrs.name" :value="value" />
+        <gl-collapsible-listbox
+          :id="id"
+          :selected="value"
+          searchable
+          :loading="recipientsLoading"
+          :searching="recipientsSearchLoading"
+          :no-results-text="recipientsNoResultsText"
+          :toggle-text="listboxToggleText"
+          :items="items"
+          @shown="handleListboxShown"
+          @search="handleListboxSearch"
+          @select="input"
+          @hidden="blur"
+        />
+      </template>
+    </gl-form-fields>
     <gl-button
       class="js-no-auto-disable"
       type="submit"
