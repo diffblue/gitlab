@@ -30,7 +30,7 @@ module Tasks
     private
 
     def info
-      license = Gitlab::UsageData.license_usage_data
+      license = ::Gitlab::UsageData.license_usage_data
       abort("No license has been applied.") unless license[:license_plan]
       puts "Today's Date: #{Date.today}"
       puts "Current User Count: #{license[:active_user_count]}"
@@ -62,7 +62,7 @@ module Tasks
         begin
           ::License.create!(data: File.read(license_file))
           puts "License Added:\n\nFilePath: #{license_file}".color(:green)
-        rescue Gitlab::License::Error, ActiveRecord::RecordInvalid
+        rescue ::Gitlab::License::Error, ActiveRecord::RecordInvalid
           puts "License Invalid:\n\nFilePath: #{license_file}".color(:red)
           raise "License Invalid"
         end
