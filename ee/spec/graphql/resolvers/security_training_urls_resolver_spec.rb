@@ -6,6 +6,10 @@ RSpec.describe Resolvers::SecurityTrainingUrlsResolver do
   include GraphqlHelpers
 
   describe '#resolve' do
+    before do
+      stub_licensed_features(security_dashboard: true)
+    end
+
     subject { resolve(described_class, obj: project, ctx: { current_user: user }) }
 
     let_it_be(:user) { create(:user) }

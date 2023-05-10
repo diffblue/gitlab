@@ -14,6 +14,7 @@ class InstanceSecurityDashboardPolicy < BasePolicy
   rule { ~anonymous }.policy do
     enable :read_instance_security_dashboard
     enable :read_security_resource
+    enable :read_vulnerability
   end
 
   rule { security_dashboard_enabled & can?(:read_instance_security_dashboard) }.policy do

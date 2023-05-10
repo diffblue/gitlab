@@ -5,7 +5,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   ignore_column :download_code, remove_with: '15.9', remove_after: '2023-01-22'
 
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
-  ALL_CUSTOMIZABLE_PERMISSIONS = { read_code: 'Permission to read code' }.freeze
+  ALL_CUSTOMIZABLE_PERMISSIONS = {
+    read_code:
+      { description: 'Permission to read code', minimal_level: Gitlab::Access::GUEST },
+    read_vulnerability:
+      { descripition: 'Permission to read vulnerability', minimal_level: Gitlab::Access::GUEST }
+  }.freeze
   CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
   NON_PERMISSION_COLUMNS = [:id, :namespace_id, :created_at, :updated_at, :base_access_level].freeze
 
@@ -18,6 +23,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :max_count_per_group_hierarchy, on: :create
   validate :validate_namespace_locked, on: :update
   validate :attributes_locked_after_member_associated, on: :update
+  validate :validate_minimal_base_access_level, if: ->(member_role) do
+    Feature.enabled?(:custom_roles_vulnerability, member_role.namespace&.root_ancestor)
+  end
 
   validates_associated :members
 
@@ -61,6 +69,19 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     return unless namespace_id_changed?
 
     errors.add(:namespace, s_("MemberRole|can't be changed"))
+  end
+
+  def validate_minimal_base_access_level
+    ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission, params|
+      min_level = params[:minimal_level]
+      next unless self[permission]
+      next if base_access_level >= min_level
+
+      errors.add(:base_access_level,
+        format(s_("MemberRole|minimal base access level must be %{min_access_level}."),
+          min_access_level: "#{Gitlab::Access.options_with_owner.key(min_level)} (#{min_level})")
+      )
+    end
   end
 
   def attributes_locked_after_member_associated

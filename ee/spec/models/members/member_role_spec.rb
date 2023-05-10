@@ -100,6 +100,32 @@ RSpec.describe MemberRole, feature_category: :system_access do
           expect(member_role.errors[:namespace]).to include(s_("MemberRole|can't be changed"))
         end
       end
+
+      context 'when base_access_level is too low' do
+        context 'when custom_roles_vulnerability FF is enabled' do
+          it 'creates a validation error' do
+            member_role.base_access_level = 5
+            member_role.read_vulnerability = true
+
+            expect(member_role).not_to be_valid
+            expect(member_role.errors[:base_access_level])
+              .to include(s_("MemberRole|minimal base access level must be Guest (10)."))
+          end
+        end
+
+        context 'when custom_roles_vulnerability FF is disabled' do
+          before do
+            stub_feature_flags(custom_roles_vulnerability: false)
+          end
+
+          it 'is valid' do
+            member_role.base_access_level = 5
+            member_role.read_vulnerability = true
+
+            expect(member_role).to be_valid
+          end
+        end
+      end
     end
   end
 
