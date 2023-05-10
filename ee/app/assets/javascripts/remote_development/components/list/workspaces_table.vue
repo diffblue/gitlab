@@ -102,11 +102,11 @@ export default {
 <template>
   <gl-table-lite :items="sortedWorkspaces" :fields="$options.fields">
     <template #cell(name)="{ item }">
-      <div class="gl-display-flex gl-text-gray-500 gl-align-items-center">
+      <div class="gl-display-flex gl-align-items-center">
         <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
         <div class="gl-display-flex gl-flex-direction-column">
-          <span> {{ item.projectName }} </span>
-          <span> {{ item.name }} </span>
+          <span class="gl-text-gray-500 gl-font-sm gl-pb-1"> {{ item.projectName }} </span>
+          <span class="gl-text-black-normal"> {{ item.name }} </span>
         </div>
       </div>
     </template>
@@ -114,6 +114,7 @@ export default {
       <gl-link
         v-if="item.actualState === $options.WORKSPACE_STATES.running"
         :href="item.url"
+        class="workspace-preview-link"
         target="_blank"
         >{{ item.url }}</gl-link
       >

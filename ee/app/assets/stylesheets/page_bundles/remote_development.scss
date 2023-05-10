@@ -1,0 +1,7 @@
+@import 'page_bundles/mixins_and_variables_and_functions';
+
+.workspace-preview-link {
+  @include gl-white-space-normal;
+  display: flex;
+  -webkit-line-clamp: 2;
+}

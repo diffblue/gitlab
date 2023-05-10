@@ -1,7 +1,8 @@
 <script>
-import { GlAlert, GlButton, GlSkeletonLoader } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlButton, GlLink, GlSkeletonLoader } from '@gitlab/ui';
 import { logError } from '~/lib/logger';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { WORKSPACES_LIST_PAGE_SIZE, ROUTES, WORKSPACES_LIST_POLL_INTERVAL } from '../constants';
 import userWorkspacesListQuery from '../graphql/queries/user_workspaces_list.query.graphql';
 import userWorkspacesProjectsNamesQuery from '../graphql/queries/user_workspaces_projects_names.query.graphql';
@@ -12,6 +13,8 @@ import { populateWorkspacesWithProjectNames } from '../services/utils';
 
 export const i18n = {
   updateWorkspaceFailedMessage: s__('Workspaces|Failed to update workspace'),
+  betaBadge: __('Beta'),
+  learnMoreHelpLink: __('Learn more'),
   heading: s__('Workspaces|Workspaces'),
   newWorkspaceButton: s__('Workspaces|New workspace'),
   loadingWorkspacesFailed: s__(
@@ -19,10 +22,14 @@ export const i18n = {
   ),
 };
 
+const workspacesHelpPath = helpPagePath('user/workspace/index.md');
+
 export default {
   components: {
     GlAlert,
     GlButton,
+    GlLink,
+    GlBadge,
     GlSkeletonLoader,
     WorkspaceEmptyState,
     WorkspacesListPagination,
@@ -119,6 +126,7 @@ export default {
   },
   i18n,
   ROUTES,
+  workspacesHelpPath,
 };
 </script>
 <template>
@@ -127,10 +135,18 @@ export default {
       {{ error }}
     </gl-alert>
     <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between">
-      <h2>{{ $options.i18n.heading }}</h2>
-      <gl-button variant="confirm" :to="$options.ROUTES.create">{{
-        $options.i18n.newWorkspaceButton
-      }}</gl-button>
+      <div class="gl-display-flex gl-align-items-center">
+        <h2>{{ $options.i18n.heading }}</h2>
+        <gl-badge class="gl-mt-4 gl-ml-3" variant="info">{{ $options.i18n.betaBadge }}</gl-badge>
+      </div>
+      <div class="gl-display-flex gl-align-items-center">
+        <gl-link class="gl-mr-5 workspace-preview-link" :href="$options.workspacesHelpPath">{{
+          $options.i18n.learnMoreHelpLink
+        }}</gl-link>
+        <gl-button variant="confirm" :to="$options.ROUTES.create">{{
+          $options.i18n.newWorkspaceButton
+        }}</gl-button>
+      </div>
     </div>
     <workspace-empty-state v-if="isEmpty" />
     <template v-else>
