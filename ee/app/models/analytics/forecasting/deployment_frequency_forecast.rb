@@ -5,6 +5,10 @@ module Analytics
     class DeploymentFrequencyForecast < Forecast
       FIT_TIMESPAN = 1.year
 
+      def self.context_class
+        Project
+      end
+
       def source_time_series
         @source_time_series ||= begin
           from = FIT_TIMESPAN.ago.to_date

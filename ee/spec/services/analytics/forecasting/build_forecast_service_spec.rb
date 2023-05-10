@@ -12,10 +12,10 @@ RSpec.describe Analytics::Forecasting::BuildForecastService, feature_category: :
 
   subject(:service) { described_class.new(type: type, context: forecast_context, horizon: horizon) }
 
-  describe '#execute' do
-    subject { service.execute }
+  describe '.validate' do
+    subject { described_class.validate(type: type, context_class: forecast_context.class, horizon: horizon) }
 
-    shared_examples_for 'failure response' do |message|
+    shared_examples_for 'forecast error' do |message|
       it 'returns error' do
         expect(subject[:status]).to eq(:error)
         expect(subject[:message]).to eq(message)
@@ -26,19 +26,50 @@ RSpec.describe Analytics::Forecasting::BuildForecastService, feature_category: :
     context 'when forecast type is not supported' do
       let(:type) { 'something-invalid' }
 
-      it_behaves_like 'failure response', "Unsupported forecast type. Supported types: [\"deployment_frequency\"]"
+      it_behaves_like 'forecast error', "Unsupported forecast type."
     end
 
     context 'when horizon is too big' do
       let(:horizon) { 91 }
 
-      it_behaves_like 'failure response', "Forecast horizon must be 90 days at the most."
+      it_behaves_like 'forecast error', "Forecast horizon must be positive and 90 days at the most."
+    end
+
+    context 'when horizon is negative' do
+      let(:horizon) { -1 }
+
+      it_behaves_like 'forecast error', "Forecast horizon must be positive and 90 days at the most."
     end
 
     context 'when context is not a project' do
       let(:forecast_context) { User.new }
 
-      it_behaves_like 'failure response', "Invalid context. Project is expected."
+      it_behaves_like 'forecast error', "Invalid context type. Project is expected."
+    end
+
+    it 'returns no errors' do
+      expect(subject).to eq nil
+    end
+  end
+
+  describe '#execute' do
+    subject { service.execute }
+
+    it 'calls for validation and returns error' do
+      expect(described_class).to receive(:validate).with(
+        type: type,
+        context_class: forecast_context.class,
+        horizon: horizon).and_return(
+          {
+            message: 'error message',
+            status: :error,
+            http_status: :bad_request
+          }
+        )
+
+      expect(subject[:status]).to eq(:error)
+      expect(subject[:message]).to eq('error message')
+      expect(subject[:http_status]).to eq(:bad_request)
     end
 
     it 'returns deployment frequency forecast for given horizon' do
