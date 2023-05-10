@@ -34,6 +34,7 @@ import {
   approversOutOfSyncV2,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
+  invalidVulnerabilityStates,
   humanizeInvalidBranchesError,
 } from './lib';
 
@@ -255,7 +256,8 @@ export default {
       return (
         invalidApprovers ||
         invalidScanners(this.policy.rules) ||
-        invalidVulnerabilitiesAllowed(this.policy.rules)
+        invalidVulnerabilitiesAllowed(this.policy.rules) ||
+        invalidVulnerabilityStates(this.policy.rules)
       );
     },
     allBranches() {
