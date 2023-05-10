@@ -3,7 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owned do # rubocop: disable  RSpec/InvalidFeatureCategory
-  subject(:configuration) { described_class.new }
+  let(:host) { "example-#{SecureRandom.hex(8)}.com" }
+  let(:url) { "https://#{host}/api" }
+  let(:model_config) { instance_double('Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat', host: host) }
+
+  subject(:configuration) { described_class.new(model_config: model_config) }
+
+  before do
+    stub_application_setting(tofa_url: url)
+    stub_application_setting(tofa_host: host)
+  end
 
   describe '#access_token', :clean_gitlab_redis_cache do
     context 'when the token is cached', :use_clean_rails_redis_caching do
@@ -57,24 +66,33 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
     end
   end
 
-  describe '#host' do
-    let(:host) { "example-#{SecureRandom.hex(8)}.com" }
-
+  describe '#headers' do
     before do
-      stub_application_setting(tofa_host: host)
+      allow(configuration).to receive(:access_token).and_return('123')
     end
 
-    it { expect(configuration.host).to eql(host) }
+    it 'returns headers with text host header replacing host value' do
+      expect(configuration.headers).to eq(
+        {
+          'Accept' => 'application/json',
+          'Authorization' => 'Bearer 123',
+          'Host' => model_config.host,
+          'Content-Type' => 'application/json'
+        }
+      )
+    end
   end
 
-  describe '#url' do
-    let(:host) { "example-#{SecureRandom.hex(8)}.com" }
-    let(:url) { "https://#{host}/api" }
-
-    before do
-      stub_application_setting(tofa_url: url)
+  describe '.default_payload_parameters' do
+    it 'returns the default payload parameters' do
+      expect(described_class.default_payload_parameters).to eq(
+        {
+          temperature: 0.5,
+          maxOutputTokens: 1024,
+          topK: 40,
+          topP: 0.95
+        }
+      )
     end
-
-    it { expect(configuration.url).to eql(url) }
   end
 end
