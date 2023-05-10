@@ -106,7 +106,7 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
   end
 
   condition(:group_runner_registration_allowed, scope: :subject) do
-    Gitlab::CurrentSettings.valid_runner_registrars.include?('group') && @subject.runner_registration_enabled?
+    @subject.runner_registration_enabled?
   end
 
   rule { can?(:read_group) & design_management_enabled }.policy do
