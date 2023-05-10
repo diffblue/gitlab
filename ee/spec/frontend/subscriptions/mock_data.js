@@ -112,6 +112,9 @@ export const mockInvoicePreviewBronze = {
         amountWithoutTax: 48,
       },
       invoiceItem: [mockChargeItem],
+      metaData: {
+        showPromotionalOfferText: false,
+      },
     },
   },
 };
@@ -135,6 +138,9 @@ export const mockInvoicePreviewUltimate = {
           unitPrice: 1188,
         },
       ],
+      metaData: {
+        showPromotionalOfferText: false,
+      },
     },
   },
 };
@@ -153,6 +159,9 @@ export const mockInvoicePreviewWithDiscount = {
         },
         mockDiscountItem,
       ],
+      metaData: {
+        showPromotionalOfferText: false,
+      },
     },
   },
 };
@@ -170,6 +179,37 @@ export const mockInvoicePreviewUltimateWithMultipleUsers = {
           unitPrice: 1188,
         },
       ],
+      metaData: {
+        showPromotionalOfferText: false,
+      },
+    },
+  },
+};
+
+export const mockInvoicePreviewWithPromoOffer = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 48,
+      },
+      invoiceItem: [mockChargeItem],
+      metaData: {
+        showPromotionalOfferText: true,
+      },
+    },
+  },
+};
+
+export const mockInvoicePreviewWithoutPromoOffer = {
+  data: {
+    invoicePreview: {
+      invoice: {
+        amountWithoutTax: 48,
+      },
+      invoiceItem: [mockChargeItem],
+      metaData: {
+        showPromotionalOfferText: false,
+      },
     },
   },
 };
