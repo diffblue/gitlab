@@ -26,22 +26,13 @@ module API
             type: String,
             desc: 'The bucketing interval. One of `all`, `monthly` or `daily`. Default is `daily`'
 
-          optional :environment_tier,
-            type: String,
-            desc: 'The tier of the environment. Default is `production`. Deprecated, please use `environment_tiers`'
-
           optional :environment_tiers,
             type: Array[String],
             desc: 'The tiers of the environments. Default is `production`'
         end
 
         def fetch!(container)
-          # Backwards compatibility until %16.0
           params = declared_params(include_missing: false)
-          if params[:environment_tier]
-            params[:environment_tiers] ||= []
-            params[:environment_tiers] |= [params[:environment_tier]]
-          end
 
           params[:metrics] = [params[:metric]] if params[:metric]
 
