@@ -67,12 +67,28 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
     )
     end
 
+    shared_examples_for 'queries state successfully' do
+      it 'will query state correctly' do
+        expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
+          expect(instance).to receive(:execute).and_return(
+            ServiceResponse.success(
+              message: 'test success',
+              payload: {
+                'results' => [{ 'data' => [{ 'TrackedEvents.count' => 1 }] }]
+              }))
+        end
+
+        expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('COMPLETE')
+      end
+    end
+
     before do
       project.add_developer(user)
 
       stub_application_setting(product_analytics_enabled?: true)
       stub_licensed_features(product_analytics: true)
       stub_feature_flags(product_analytics_dashboards: true)
+      stub_feature_flags(product_analytics_snowplow_support: false)
 
       allow_next_instance_of(ProjectSetting) do |instance|
         allow(instance).to receive(:jitsu_key).and_return('test key')
@@ -88,18 +104,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
                   .as_json
     end
 
-    it 'will query state correctly' do
-      expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
-        expect(instance).to receive(:execute).and_return(
-          ServiceResponse.success(
-            message: 'test success',
-            payload: {
-              'results' => [{ 'data' => [{ 'TrackedEvents.count' => 1 }] }]
-            }))
-      end
-
-      expect(subject.dig('data', 'project', 'productAnalyticsState')).to eq('COMPLETE')
-    end
+    it_behaves_like 'queries state successfully'
 
     it 'will pass through Cube API errors' do
       expect_next_instance_of(::ProductAnalytics::CubeDataQueryService) do |instance|
@@ -131,6 +136,17 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
       end
 
       expect(subject.dig('errors', 0, 'message')).to eq('Error from Cube API: Connection Error')
+    end
+
+    context 'with snowplow enabled' do
+      before do
+        stub_feature_flags(product_analytics_snowplow_support: true)
+        allow_next_instance_of(ProjectSetting) do |instance|
+          allow(instance).to receive(:product_analytics_instrumentation_key).and_return('test key')
+        end
+      end
+
+      it_behaves_like 'queries state successfully'
     end
   end
 end

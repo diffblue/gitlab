@@ -63,6 +63,8 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
     stub_application_setting(product_analytics_enabled?: state != 'disabled')
     allow(project).to receive(:product_analytics_enabled?).and_return(state != 'disabled')
     allow(project.project_setting).to receive(:jitsu_key).and_return(state == 'create_instance' ? nil : 'test key')
+    allow(project.project_setting).to receive(:product_analytics_instrumentation_key)
+                                        .and_return(state == 'create_instance' ? nil : 'test key')
 
     allow_next_instance_of(described_class) do |instance|
       allow(instance).to receive(:initializing?).and_return(state == 'loading_instance')
