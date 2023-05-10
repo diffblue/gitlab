@@ -12,7 +12,7 @@ import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
-import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS } from './constants';
+import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS, METRICS_WITH_NO_TREND } from './constants';
 
 /**
  * Checks if a string representation of a value contains an
@@ -163,13 +163,16 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
       const previous = timePeriods[index + 1][identifier];
       const hasCurrentValue = current && current.value !== '-';
       const hasPreviousValue = previous && previous.value !== '-';
+      const change = !METRICS_WITH_NO_TREND.includes(identifier)
+        ? percentChange({
+            current: hasCurrentValue ? current.value : 0,
+            previous: hasPreviousValue ? previous.value : 0,
+          })
+        : null;
 
       data[timePeriod.key] = {
         value: hasCurrentValue ? formatMetric(current.value, units) : '-',
-        change: percentChange({
-          current: hasCurrentValue ? current.value : 0,
-          previous: hasPreviousValue ? previous.value : 0,
-        }),
+        change,
       };
     });
     return data;
@@ -305,25 +308,6 @@ export const generateDashboardTableFields = (now) => {
     },
   ];
 };
-
-/**
- * Takes an array of time series vulnerability counts returned from the
- * Query.vulnerabilitesCountByDay graphql request. The data is aggregated
- * returning an object with the total counts for `critical` and `high` vulnerabilities.
- *
- * @param {Array} An array of time series vulnerability counts
- * @returns {Object} an object containing the total critical and high vulnerabilities
- */
-export const aggregateVulnerabilities = (data) =>
-  data.reduce(
-    (acc, { critical, high }) => {
-      return {
-        critical: acc.critical + critical,
-        high: acc.high + high,
-      };
-    },
-    { critical: 0, high: 0 },
-  );
 
 /**
  * Takes an array of timePeriods, a query function to execute and query parameters
