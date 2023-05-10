@@ -16,8 +16,10 @@ module Gitlab
         # no-op
       end
 
-      def notify_run(service_name, &block)
-        # no-op
+      def notify_run(_service_name, &_block)
+        # This gets called by Circuitbox::CircuitBreaker#run to actually execute
+        # the block passed.
+        yield
       end
     end
   end
