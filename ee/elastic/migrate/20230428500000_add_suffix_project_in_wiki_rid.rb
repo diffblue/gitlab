@@ -5,7 +5,6 @@ class AddSuffixProjectInWikiRid < Elastic::Migration
 
   pause_indexing!
   batched!
-  batch_size 10_000
   space_requirements!
   throttle_delay 1.minute
 
@@ -90,7 +89,6 @@ class AddSuffixProjectInWikiRid < Elastic::Migration
         slice: { id: slice, max: max_slices }
       },
       wait_for_completion: false,
-      max_docs: batch_size,
       timeout: ELASTIC_TIMEOUT,
       conflicts: 'proceed'
     )
