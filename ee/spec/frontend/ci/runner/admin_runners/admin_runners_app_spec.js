@@ -18,8 +18,6 @@ import {
   staleTimeoutSecs,
   mockRegistrationToken,
   newRunnerPath,
-  emptyStateSvgPath,
-  emptyStateFilteredSvgPath,
 } from 'jest/ci/runner/mock_data';
 import { allRunnersUpgradeStatusData } from '../mock_data';
 
@@ -54,8 +52,6 @@ describe('AdminRunnersApp', () => {
         localMutations,
         onlineContactTimeoutSecs,
         staleTimeoutSecs,
-        emptyStateSvgPath,
-        emptyStateFilteredSvgPath,
         ...provide,
       },
       ...options,
