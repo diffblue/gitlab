@@ -486,8 +486,19 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
     end
   end
 
-  it_behaves_like DescriptionDiffActions do
-    let_it_be(:project)  { create(:project_empty_repo, :public) }
-    let_it_be(:issuable) { create(:issue, project: project) }
+  describe 'DescriptionDiffActions' do
+    let_it_be(:project) { create(:project_empty_repo, :public) }
+
+    context 'when issuable is an issue type issue' do
+      it_behaves_like DescriptionDiffActions do
+        let_it_be(:issuable) { create(:issue, project: project) }
+      end
+    end
+
+    context 'when issuable is a task/work_item' do
+      it_behaves_like DescriptionDiffActions do
+        let_it_be(:issuable) { create(:issue, :task, project: project) }
+      end
+    end
   end
 end
