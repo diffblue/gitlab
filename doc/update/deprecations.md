@@ -315,6 +315,20 @@ Due to low customer usage, Load Performance Testing is deprecated and will be re
 
 <div class="deprecation breaking-change" data-milestone="17.0">
 
+### PipelineSecurityReportFinding projectFingerprint GraphQL field
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">15.1</span>
+- This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/343475).
+</div>
+
+The [`project_fingerprint`](https://gitlab.com/groups/gitlab-org/-/epics/2791) attribute of vulnerability findings is being deprecated in favor of a `uuid` attribute. By using UUIDv5 values to identify findings, we can easily associate any related entity with a finding. The `project_fingerprint` attribute is no longer being used to track findings, and will be removed in GitLab 17.0.
+
+</div>
+
+<div class="deprecation breaking-change" data-milestone="17.0">
+
 ### Queue selector for running Sidekiq is deprecated
 
 <div class="deprecation-notes">
@@ -1641,20 +1655,6 @@ In milestone 16.0, we will remove the `pipelines` attribute from the API respons
 </div>
 
 Previously, the [PipelineSecurityReportFinding GraphQL type was updated](https://gitlab.com/gitlab-org/gitlab/-/issues/335372) to include a new `title` field. This field is an alias for the current `name` field, making the less specific `name` field redundant. The `name` field will be removed from the PipelineSecurityReportFinding type in GitLab 16.0.
-
-</div>
-
-<div class="deprecation breaking-change" data-milestone="16.0">
-
-### PipelineSecurityReportFinding projectFingerprint GraphQL field
-
-<div class="deprecation-notes">
-- Announced in: GitLab <span class="milestone">15.1</span>
-- This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
-- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab/-/issues/343475).
-</div>
-
-The [`project_fingerprint`](https://gitlab.com/groups/gitlab-org/-/epics/2791) attribute of vulnerability findings is being deprecated in favor of a `uuid` attribute. By using UUIDv5 values to identify findings, we can easily associate any related entity with a finding. The `project_fingerprint` attribute is no longer being used to track findings, and will be removed in GitLab 16.0.
 
 </div>
 
