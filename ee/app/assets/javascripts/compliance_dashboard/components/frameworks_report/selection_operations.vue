@@ -26,10 +26,6 @@ export default {
       type: String,
       required: true,
     },
-    newGroupComplianceFrameworkPath: {
-      type: String,
-      required: true,
-    },
     defaultFramework: {
       type: Object,
       required: false,
@@ -162,7 +158,6 @@ export default {
         v-if="selectedOperation === $options.operations.APPLY_OPERATION"
         v-model="selectedFramework"
         :disabled="!hasSelection"
-        :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
         :root-ancestor-path="rootAncestorPath"
         @create="$emit('create')"
       />

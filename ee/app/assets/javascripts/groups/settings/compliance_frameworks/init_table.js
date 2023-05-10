@@ -16,12 +16,10 @@ const createComplianceFrameworksTableApp = (el) => {
   }
 
   const {
-    addFrameworkPath,
-    editFrameworkPath,
+    canAddEdit,
     emptyStateSvgPath,
     graphqlFieldName = null,
     groupPath,
-    groupEditPath,
     pipelineConfigurationFullPathEnabled,
   } = el.dataset;
 
@@ -29,16 +27,14 @@ const createComplianceFrameworksTableApp = (el) => {
     el,
     apolloProvider,
     provide: {
+      canAddEdit,
       graphqlFieldName,
-      groupEditPath,
       groupPath,
       pipelineConfigurationFullPathEnabled: Boolean(pipelineConfigurationFullPathEnabled),
     },
     render(createElement) {
       return createElement(Table, {
         props: {
-          addFrameworkPath,
-          editFrameworkPath,
           emptyStateSvgPath,
         },
       });

@@ -1,8 +1,0 @@
----
-name: manage_compliance_frameworks_modals_refactor
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113637
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/389653
-milestone: '15.11'
-type: development
-group: group::compliance
-default_enabled: false

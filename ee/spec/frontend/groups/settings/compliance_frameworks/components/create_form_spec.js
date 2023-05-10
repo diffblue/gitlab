@@ -11,24 +11,17 @@ import createComplianceFrameworkMutation from 'ee/groups/settings/compliance_fra
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { visitUrl } from '~/lib/utils/url_utility';
-import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
 import { errorCreateResponse, validCreateResponse, validFetchResponse } from '../mock_data';
 
 Vue.use(VueApollo);
 
 jest.mock('~/lib/utils/url_utility');
-jest.mock('ee/groups/settings/compliance_frameworks/utils', () => ({
-  ...jest.requireActual('ee/groups/settings/compliance_frameworks/utils'),
-  isModalsRefactorEnabled: jest.fn(),
-}));
 
 describe('CreateForm', () => {
   let wrapper;
 
   const provideData = {
     groupPath: 'group-1',
-    groupEditPath: 'group-1/edit',
     pipelineConfigurationFullPathEnabled: true,
   };
 
@@ -105,7 +98,7 @@ describe('CreateForm', () => {
       },
     };
 
-    it('passes the error to the form status when saving causes an exception and does not redirect', async () => {
+    it('passes the error to the form status when saving causes an exception', async () => {
       const captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
       wrapper = createComponent([
         [createComplianceFrameworkMutation, createWithNetworkErrors],
@@ -116,12 +109,11 @@ describe('CreateForm', () => {
 
       expect(createWithNetworkErrors).toHaveBeenCalledWith(creationProps);
       expect(findFormStatus().props('loading')).toBe(false);
-      expect(visitUrl).not.toHaveBeenCalled();
       expect(findFormStatus().props('error')).toBe(SAVE_ERROR);
       expect(captureExceptionSpy.mock.calls[0][0].networkError).toStrictEqual(sentryError);
     });
 
-    it('passes the errors to the form status when saving fails and does not redirect', async () => {
+    it('passes the errors to the form status when saving fails', async () => {
       const captureExceptionSpy = jest.spyOn(Sentry, 'captureException');
       wrapper = createComponent([
         [createComplianceFrameworkMutation, createWithErrors],
@@ -132,12 +124,11 @@ describe('CreateForm', () => {
 
       expect(createWithErrors).toHaveBeenCalledWith(creationProps);
       expect(findFormStatus().props('loading')).toBe(false);
-      expect(visitUrl).not.toHaveBeenCalled();
       expect(findFormStatus().props('error')).toBe('Invalid values given');
       expect(captureExceptionSpy).toHaveBeenCalledWith(sentrySaveError);
     });
 
-    it('saves inputted values, redirects and continues to show loading while redirecting', async () => {
+    it('saves inputted values', async () => {
       wrapper = createComponent([
         [createComplianceFrameworkMutation, create],
         [getComplianceFrameworkQuery, refetchFrameworks],
@@ -147,7 +138,6 @@ describe('CreateForm', () => {
 
       expect(create).toHaveBeenCalledWith(creationProps);
       expect(findFormStatus().props('loading')).toBe(true);
-      expect(visitUrl).toHaveBeenCalledWith(provideData.groupEditPath);
     });
   });
 
@@ -156,18 +146,10 @@ describe('CreateForm', () => {
       wrapper = createComponent();
     });
 
-    it('should emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
-      isModalsRefactorEnabled.mockReturnValue(true);
+    it('should emit a cancel event', () => {
       findForm().vm.$emit('cancel');
 
       expect(wrapper.emitted('cancel')).toHaveLength(1);
-    });
-
-    it('should not emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is disabled', () => {
-      isModalsRefactorEnabled.mockReturnValue(false);
-      findForm().vm.$emit('cancel');
-
-      expect(wrapper.emitted('cancel')).toBeUndefined();
     });
   });
 });

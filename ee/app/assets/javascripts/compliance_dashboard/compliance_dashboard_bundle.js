@@ -12,12 +12,11 @@ export default () => {
 
   const {
     basePath,
+    canAddEdit,
     mergeCommitsCsvExportPath,
     frameworksCsvExportPath,
     groupPath,
-    groupEditPath,
     rootAncestorPath,
-    newGroupComplianceFrameworkPath,
     pipelineConfigurationFullPathEnabled,
   } = el.dataset;
 
@@ -30,7 +29,6 @@ export default () => {
 
   const router = createRouter(basePath, {
     mergeCommitsCsvExportPath,
-    newGroupComplianceFrameworkPath,
     groupPath,
     rootAncestorPath,
   });
@@ -42,7 +40,7 @@ export default () => {
     router,
     provide: {
       groupPath,
-      groupEditPath,
+      canAddEdit,
       pipelineConfigurationFullPathEnabled,
     },
     render: (createElement) =>
@@ -50,7 +48,6 @@ export default () => {
         props: {
           mergeCommitsCsvExportPath,
           frameworksCsvExportPath,
-          newGroupComplianceFrameworkPath,
         },
       }),
   });

@@ -38,7 +38,6 @@ describe('FrameworkSelectionBox component', () => {
       apolloProvider,
       propsData: {
         rootAncestorPath: 'group-path',
-        newGroupComplianceFrameworkPath: 'new-framework-path',
         ...props,
       },
     });
@@ -102,28 +101,16 @@ describe('FrameworkSelectionBox component', () => {
     expect(createAlert).toHaveBeenCalled();
   });
 
-  it('has new framework button with href', () => {
+  it('has a new framework button', () => {
     createComponent();
 
-    expect(findNewFrameworkButton().attributes('href')).not.toBeUndefined();
+    expect(findNewFrameworkButton().exists()).toBe(true);
   });
 
-  describe('when modal refactor ff is available', () => {
-    beforeEach(() => {
-      window.gon = { features: { manageComplianceFrameworksModalsRefactor: true } };
-    });
+  it('clicking new framework button emits create event', () => {
+    createComponent();
+    findNewFrameworkButton().vm.$emit('click');
 
-    it('new framework button does not have a href', () => {
-      createComponent();
-
-      expect(findNewFrameworkButton().attributes('href')).toBeUndefined();
-    });
-
-    it('clicking new framework button emits create event', () => {
-      createComponent();
-      findNewFrameworkButton().vm.$emit('click');
-
-      expect(wrapper.emitted('create')).toHaveLength(1);
-    });
+    expect(wrapper.emitted('create')).toHaveLength(1);
   });
 });

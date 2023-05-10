@@ -7,11 +7,7 @@ import { validateHexColor } from '~/lib/utils/color_utils';
 import { s__ } from '~/locale';
 import ColorPicker from '~/vue_shared/components/color_picker/color_picker.vue';
 import { DEBOUNCE_DELAY } from '../constants';
-import {
-  fetchPipelineConfigurationFileExists,
-  isModalsRefactorEnabled,
-  validatePipelineConfirmationFormat,
-} from '../utils';
+import { fetchPipelineConfigurationFileExists, validatePipelineConfirmationFormat } from '../utils';
 
 export default {
   components: {
@@ -23,7 +19,7 @@ export default {
     GlLink,
     GlSprintf,
   },
-  inject: ['groupEditPath', 'pipelineConfigurationFullPathEnabled'],
+  inject: ['pipelineConfigurationFullPathEnabled'],
   props: {
     color: {
       type: String,
@@ -103,9 +99,6 @@ export default {
         anchor: 'example-configuration',
       });
     },
-    isModalsRefactor() {
-      return isModalsRefactorEnabled();
-    },
   },
   async created() {
     if (this.pipelineConfigurationFullPath) {
@@ -127,10 +120,6 @@ export default {
       this.validatePipelineConfigurationPath(path);
     }, DEBOUNCE_DELAY),
     onCancel(event) {
-      if (!isModalsRefactorEnabled()) {
-        return;
-      }
-
       event.preventDefault();
       this.$emit('cancel');
     },
@@ -220,13 +209,9 @@ export default {
     />
 
     <div
-      class="gl-display-flex gl-pt-5 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
-      :class="{
-        'gl-justify-content-end gl-gap-3': isModalsRefactor,
-        'gl-justify-content-space-between gl-flex-direction-row-reverse': !isModalsRefactor,
-      }"
+      class="gl-display-flex gl-pt-5 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100 gl-justify-content-end gl-gap-3"
     >
-      <gl-button :href="groupEditPath" data-testid="cancel-btn" @click="onCancel">{{
+      <gl-button data-testid="cancel-btn" @click="onCancel">{{
         $options.i18n.cancelBtnText
       }}</gl-button>
       <gl-button
