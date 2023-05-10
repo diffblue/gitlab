@@ -16695,13 +16695,13 @@ msgstr ""
 msgid "Enter 2FA for Admin Mode"
 msgstr ""
 
-msgid "Enter Admin Mode"
-msgstr ""
-
 msgid "Enter a name for your comment template"
 msgstr ""
 
 msgid "Enter a number"
+msgstr ""
+
+msgid "Enter admin mode"
 msgstr ""
 
 msgid "Enter an integer number between 0 and 100"
@@ -26364,7 +26364,7 @@ msgstr ""
 msgid "Leave"
 msgstr ""
 
-msgid "Leave Admin Mode"
+msgid "Leave admin mode"
 msgstr ""
 
 msgid "Leave edit mode? All unsaved changes will be lost."
@@ -29316,6 +29316,9 @@ msgstr ""
 msgid "Navigation|Context navigation"
 msgstr ""
 
+msgid "Navigation|Enter admin mode"
+msgstr ""
+
 msgid "Navigation|Explore"
 msgstr ""
 
@@ -29329,6 +29332,9 @@ msgid "Navigation|Groups"
 msgstr ""
 
 msgid "Navigation|Groups you visit often will appear here."
+msgstr ""
+
+msgid "Navigation|Leave admin mode"
 msgstr ""
 
 msgid "Navigation|Manage"
