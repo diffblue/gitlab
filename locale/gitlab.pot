@@ -8676,7 +8676,10 @@ msgstr ""
 msgid "Cancel index deletion"
 msgstr ""
 
-msgid "Cancel running"
+msgid "Cancel pipeline"
+msgstr ""
+
+msgid "Cancel the running pipeline"
 msgstr ""
 
 msgid "Cancel this job"
