@@ -70,6 +70,27 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OperationalVulnerabiliti
             )
           end
         end
+
+        context 'when policy is configured on the group level' do
+          let!(:policy_configuration) do
+            create(
+              :security_orchestration_policy_configuration,
+              :namespace,
+              security_policy_management_project: policy_management_project,
+              namespace: group
+            )
+          end
+
+          context 'when policy is applicable for agent' do
+            let(:policy) { build(:scan_execution_policy, :with_schedule_and_agent, agent: agent) }
+
+            it 'returns matching configuration' do
+              is_expected.to match_array(
+                [{ cadence: '30 2 * * *', namespaces: %w[namespace-a namespace-b], config: policy_configuration }]
+              )
+            end
+          end
+        end
       end
 
       context 'when agent project is different from security_orchestration_policy project' do
