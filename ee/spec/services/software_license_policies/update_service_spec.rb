@@ -42,12 +42,10 @@ RSpec.describe SoftwareLicensePolicies::UpdateService, feature_category: :securi
 
       context 'with a user allowed to admin' do
         it 'updates the software license policy correctly' do
-          allow(RefreshLicenseComplianceChecksWorker).to receive(:perform_async)
           update_software_license_policy(opts)
 
           expect(software_license_policy).to be_valid
           expect(software_license_policy).to be_allowed
-          expect(RefreshLicenseComplianceChecksWorker).to have_received(:perform_async).with(project.id)
         end
       end
 

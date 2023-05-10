@@ -123,12 +123,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
     self.approved_approver_ids = approvers.map(&:id)
   end
 
-  def refresh_required_approvals!(project_approval_rule)
-    return unless report_approver?
-
-    refresh_license_scanning_approvals(project_approval_rule) if license_scanning?
-  end
-
   def self.remove_required_approved(approval_rules)
     where(id: approval_rules).update_all(approvals_required: 0)
   end
@@ -150,16 +144,5 @@ class ApprovalMergeRequestRule < ApplicationRecord
     return if merge_request.project == approval_project_rule.project
 
     errors.add(:approval_project_rule, 'must be for the same project')
-  end
-
-  def refresh_license_scanning_approvals(project_approval_rule)
-    license_report = ::Gitlab::LicenseScanning.scanner_for_project(project, merge_request.source_branch).report
-    return if license_report.blank?
-
-    if license_report.violates?(project.software_license_policies.without_scan_result_policy_read)
-      update!(approvals_required: project_approval_rule.approvals_required)
-    else
-      update!(approvals_required: 0)
-    end
   end
 end

@@ -210,33 +210,6 @@ RSpec.describe MergeRequestWidgetEntity do
         specify { expect(subject_json).to include(:license_scanning) }
       end
     end
-
-    describe '#managed_licenses_path' do
-      let(:managed_licenses_path) { expose_path(api_v4_projects_managed_licenses_path(id: project.id)) }
-
-      before do
-        create(:ee_ci_build, :license_scanning, pipeline: pipeline)
-      end
-
-      it 'is a path for target project' do
-        expect(subject.as_json[:license_scanning][:managed_licenses_path]).to eq(managed_licenses_path)
-      end
-
-      context 'with fork' do
-        let(:source_project) { fork_project(project, user, repository: true) }
-        let(:fork_merge_request) { create(:merge_request, source_project: source_project, target_project: project) }
-        let(:subject_json) { described_class.new(fork_merge_request, current_user: user, request: request).as_json }
-
-        before do
-          allow(fork_merge_request).to receive_messages(head_pipeline: pipeline)
-          stub_licensed_features(license_scanning: true)
-        end
-
-        it 'is a path for target project' do
-          expect(subject_json[:license_scanning][:managed_licenses_path]).to eq(managed_licenses_path)
-        end
-      end
-    end
   end
 
   it 'has vulnerability feedback paths' do

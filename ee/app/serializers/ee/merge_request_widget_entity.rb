@@ -44,10 +44,6 @@ module EE
       end
 
       expose :license_scanning, if: -> (mr, _) { can?(current_user, :read_licenses, mr.target_project) } do
-        expose :managed_licenses_path do |merge_request|
-          expose_path(api_v4_projects_managed_licenses_path(id: merge_request.target_project.id))
-        end
-
         expose :can_manage_licenses do |merge_request|
           can?(current_user, :admin_software_license_policy, merge_request)
         end
