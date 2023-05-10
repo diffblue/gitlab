@@ -462,6 +462,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:open_ai_clear_conversations
+  :worker_name: OpenAi::ClearConversationsWorker
+  :feature_category: :not_owned
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:package_metadata_sync
   :worker_name: PackageMetadata::SyncWorker
   :feature_category: :software_composition_analysis
