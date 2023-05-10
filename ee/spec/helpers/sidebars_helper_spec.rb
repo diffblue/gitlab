@@ -10,6 +10,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
     let_it_be(:user) { build(:user) }
     let_it_be(:panel) { {} }
     let_it_be(:panel_type) { 'project' }
+    let(:current_user_mode) { Gitlab::Auth::CurrentUserMode.new(user) }
 
     before do
       allow(helper).to receive(:current_user) { user }
@@ -17,6 +18,7 @@ RSpec.describe ::SidebarsHelper, feature_category: :navigation do
       allow(helper).to receive(:current_user_menu?).and_return(true)
       allow(helper).to receive(:can?).and_return(true)
       allow(helper).to receive(:show_buy_pipeline_with_subtext?).and_return(true)
+      allow(helper).to receive(:current_user_mode).and_return(current_user_mode)
       allow(panel).to receive(:super_sidebar_menu_items).and_return(nil)
       allow(panel).to receive(:super_sidebar_context_header).and_return(nil)
       allow(user).to receive(:assigned_open_issues_count).and_return(1)

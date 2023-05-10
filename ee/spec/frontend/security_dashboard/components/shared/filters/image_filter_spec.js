@@ -1,10 +1,8 @@
-import { GlDropdown, GlTruncate } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
+import { GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import ImageFilter from 'ee/security_dashboard/components/shared/filters/image_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -46,32 +44,21 @@ describe('ImageFilter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
-  const findDropdownItem = (name) => wrapper.findByTestId(name);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findListboxItem = (name) => wrapper.findByTestId(`listbox-item-${name}`);
 
-  const clickDropdownItem = async (name) => {
-    findDropdownItem(name).vm.$emit('click');
-    await nextTick();
+  const clickListboxItem = (name) => {
+    return findListboxItem(name).trigger('click');
   };
 
   const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems).toEqual(ids);
+    expect(findListbox().props('selected')).toEqual(ids);
   };
 
-  const expectDropdownItem = (name) => {
-    const item = findDropdownItem(name);
+  const expectListboxItem = (value, name) => {
+    const item = findListboxItem(value);
     const truncate = item.findComponent(GlTruncate);
 
-    expect(item.props()).toMatchObject({
-      isChecked: false,
-      tooltip: name,
-    });
-
-    expect(truncate.attributes('title')).toBe('');
     expect(truncate.props()).toMatchObject({ text: name, position: 'middle' });
   };
 
@@ -94,8 +81,7 @@ describe('ImageFilter component', () => {
         ${[]}              | ${[ALL_ID]}
         ${[mockImages[0]]} | ${[mockImages[0]]}
       `('restores selected items - $emitted', async ({ emitted, expected }) => {
-        findQuerystringSync().vm.$emit('input', emitted);
-        await nextTick();
+        await findQuerystringSync().vm.$emit('input', emitted);
 
         expectSelectedItems(expected);
       });
@@ -107,26 +93,36 @@ describe('ImageFilter component', () => {
       });
 
       it('shows the dropdown with correct header text', () => {
-        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(ImageFilter.i18n.label);
+        expect(findListbox().props('headerText')).toBe(ImageFilter.i18n.label);
       });
 
-      it('shows the DropdownButtonText component with the correct props', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
-          items: [ImageFilter.i18n.allItemsText],
-          name: ImageFilter.i18n.label,
-        });
+      it('passes the placeholder toggle text when no items are selected', () => {
+        expect(findListbox().props('toggleText')).toBe(ImageFilter.i18n.allItemsText);
+      });
+
+      it(`passes '${mockImages[0]}' when only ${mockImages[0]} is selected`, async () => {
+        await clickListboxItem(mockImages[0]);
+
+        expect(findListbox().props('toggleText')).toBe(mockImages[0]);
+      });
+
+      it(`passes '${mockImages[0]} +1 more' when ${mockImages[0]} and another image is selected`, async () => {
+        await clickListboxItem(mockImages[0]);
+        await clickListboxItem(mockImages[1]);
+
+        expect(findListbox().props('toggleText')).toBe(`${mockImages[0]} +1 more`);
       });
     });
 
     describe('filter-changed event', () => {
       it('emits filter-changed event when selected item is changed', async () => {
         const images = [];
-        await clickDropdownItem(ALL_ID);
+        await clickListboxItem(ALL_ID);
 
         expect(wrapper.emitted('filter-changed')[0][0].image).toEqual([]);
 
         for await (const image of mockImages) {
-          await clickDropdownItem(image);
+          await clickListboxItem(image);
           images.push(image);
 
           expect(wrapper.emitted('filter-changed')[images.length][0].image).toEqual(images);
@@ -136,16 +132,16 @@ describe('ImageFilter component', () => {
 
     describe('dropdown items', () => {
       it('populates all dropdown items with correct text', () => {
-        expect(findDropdownItems()).toHaveLength(mockImages.length + 1);
-        expect(findDropdownItem(ALL_ID).text()).toBe(ImageFilter.i18n.allItemsText);
-        mockImages.forEach((image) => expectDropdownItem(image));
+        expect(findListbox().props('items')).toHaveLength(mockImages.length + 1);
+        expectListboxItem(ALL_ID, ImageFilter.i18n.allItemsText);
+        mockImages.forEach((image) => expectListboxItem(image, image));
       });
 
       it('allows multiple items to be selected', async () => {
         const images = [];
 
         for await (const image of mockImages) {
-          await clickDropdownItem(image);
+          await clickListboxItem(image);
           images.push(image);
 
           expectSelectedItems(images);
@@ -154,11 +150,11 @@ describe('ImageFilter component', () => {
 
       it('toggles the item selection when clicked on', async () => {
         for await (const image of mockImages) {
-          await clickDropdownItem(image);
+          await clickListboxItem(image);
 
           expectSelectedItems([image]);
 
-          await clickDropdownItem(image);
+          await clickListboxItem(image);
 
           expectSelectedItems([ALL_ID]);
         }
@@ -169,15 +165,15 @@ describe('ImageFilter component', () => {
       });
 
       it('selects ALL item and deselects everything else when it is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
+        await clickListboxItem(ALL_ID);
+        await clickListboxItem(ALL_ID); // Click again to verify that it doesn't toggle.
 
         expectSelectedItems([ALL_ID]);
       });
 
       it('deselects the ALL item when another item is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(mockImages[0]);
+        await clickListboxItem(ALL_ID);
+        await clickListboxItem(mockImages[0]);
 
         expectSelectedItems([mockImages[0]]);
       });
@@ -186,6 +182,10 @@ describe('ImageFilter component', () => {
 
   describe('agent page', () => {
     const agentName = 'test-agent-name';
+
+    const agentMockImages = agentVulnerabilityImages.data.project.clusterAgent.vulnerabilityImages.nodes.map(
+      ({ name }) => name,
+    );
 
     beforeEach(async () => {
       createWrapper({ provide: { agentName } });
@@ -202,9 +202,9 @@ describe('ImageFilter component', () => {
     });
 
     it('populates all dropdown items with correct text', () => {
-      expect(findDropdownItems()).toHaveLength(mockImages.length + 1);
-      expect(findDropdownItem(ALL_ID).text()).toBe(ImageFilter.i18n.allItemsText);
-      mockImages.forEach((image) => expectDropdownItem(image));
+      expect(findListbox().props('items')).toHaveLength(agentMockImages.length + 1);
+      expectListboxItem(ALL_ID, ImageFilter.i18n.allItemsText);
+      agentMockImages.forEach((image) => expectListboxItem(image, image));
     });
   });
 

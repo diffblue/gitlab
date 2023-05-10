@@ -1,25 +1,20 @@
 <script>
-import { GlDropdown, GlTruncate, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
-import { xor } from 'lodash';
+import { GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
-import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
-import DropdownButtonText from './dropdown_button_text.vue';
 import { ALL_ID } from './constants';
+import { getSelectedOptionsText } from './utils';
 
 export default {
   components: {
-    FilterItem,
-    GlDropdown,
+    GlCollapsibleListbox,
     GlTruncate,
     QuerystringSync,
-    DropdownButtonText,
   },
-  directives: { GlTooltip },
   apollo: {
     images: {
       query() {
@@ -36,7 +31,7 @@ export default {
           ? data.project?.clusterAgent?.vulnerabilityImages
           : data.project?.vulnerabilityImages;
 
-        return vulnerabilityImages.nodes.map(({ name }) => name);
+        return vulnerabilityImages.nodes.map(({ name }) => ({ text: name, value: name, id: name }));
       },
       error() {
         createAlert({ message: this.$options.i18n.loadingError });
@@ -57,12 +52,27 @@ export default {
     isAgentDashboard() {
       return this.dashboardType === DASHBOARD_TYPES.PROJECT && Boolean(this.agentName);
     },
+    toggleText() {
+      return getSelectedOptionsText(this.images, this.selected, this.$options.i18n.allItemsText);
+    },
     selectedItemNames() {
       // Return the selected items, or all items if nothing is selected.
       return this.selected.length ? this.selected : [this.$options.i18n.allItemsText];
     },
     isLoading() {
       return this.$apollo.queries.images.loading;
+    },
+    items() {
+      return [
+        {
+          text: this.$options.i18n.allItemsText,
+          value: ALL_ID,
+        },
+        ...this.images,
+      ];
+    },
+    selectedItems() {
+      return !this.selected.length ? [ALL_ID] : this.selected;
     },
   },
   watch: {
@@ -71,11 +81,12 @@ export default {
     },
   },
   methods: {
-    deselectAll() {
-      this.selected = [];
-    },
-    toggleSelected(id) {
-      this.selected = xor(this.selected, [id]);
+    handleSelect(selected) {
+      if (selected?.at(-1) === ALL_ID) {
+        this.selected = [];
+      } else {
+        this.selected = selected.filter((value) => value !== ALL_ID);
+      }
     },
   },
   i18n: {
@@ -91,34 +102,20 @@ export default {
   <div>
     <querystring-sync v-model="selected" querystring-key="image" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
-    <gl-dropdown
+    <gl-collapsible-listbox
+      :selected="selectedItems"
+      :items="items"
+      :toggle-text="toggleText"
       :header-text="$options.i18n.label"
       :loading="isLoading"
+      fluid-width
+      multiple
       block
-      toggle-class="gl-mb-0"
+      @select="handleSelect"
     >
-      <template #button-text>
-        <dropdown-button-text :items="selectedItemNames" :name="$options.i18n.label" />
+      <template #list-item="{ item }">
+        <gl-truncate position="middle" :text="item.text" />
       </template>
-
-      <filter-item
-        :is-checked="!selected.length"
-        :text="$options.i18n.allItemsText"
-        :data-testid="$options.ALL_ID"
-        @click="deselectAll"
-      />
-
-      <filter-item
-        v-for="image in images"
-        :key="image"
-        :tooltip="image"
-        :data-testid="image"
-        :is-checked="selected.includes(image)"
-        @click="toggleSelected(image)"
-      >
-        <!-- Empty title to prevent the native browser tooltip from showing at the same time as our own tooltip -->
-        <gl-truncate position="middle" :text="image" title="" />
-      </filter-item>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
   </div>
 </template>

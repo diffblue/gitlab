@@ -50,7 +50,7 @@ module API
                 }
               ],
               parameters: {
-                temperature: ::Gitlab::Llm::VertexAi::Client::DEFAULT_TEMPERATURE
+                temperature: ::Gitlab::Llm::VertexAi::Configuration::DEFAULT_TEMPERATURE
               }
             }
 
@@ -59,7 +59,9 @@ module API
           end
 
           def configuration
-            @configuration ||= Gitlab::Llm::VertexAi::Configuration.new
+            @configuration ||= Gitlab::Llm::VertexAi::Configuration.new(
+              model_config: ::Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat.new
+            )
           end
 
           def tofa_api_token
