@@ -5,9 +5,14 @@ require 'spec_helper'
 RSpec.describe RemoteDevelopment::AgentConfig::UpdateService, feature_category: :remote_development do
   let(:agent) { instance_double(Clusters::Agent) }
   let(:config) { instance_double(Hash) }
+  let(:licensed) { true }
 
   subject do
     described_class.new.execute(agent: agent, config: config)
+  end
+
+  before do
+    allow(License).to receive(:feature_available?).with(:remote_development) { licensed }
   end
 
   context 'when update is successful' do
@@ -30,6 +35,18 @@ RSpec.describe RemoteDevelopment::AgentConfig::UpdateService, feature_category: 
       allow_next_instance_of(RemoteDevelopment::AgentConfig::UpdateProcessor) do |processor|
         expect(processor).to receive(:process).with(agent: agent, config: config).and_return([nil, error])
       end
+      expect(subject).to be false
+    end
+  end
+
+  context 'when unlicensed' do
+    let(:licensed) { false }
+
+    it 'returns false' do
+      allow_next_instance_of(RemoteDevelopment::AgentConfig::UpdateProcessor) do |processor|
+        expect(processor).not_to receive(:process)
+      end
+
       expect(subject).to be false
     end
   end

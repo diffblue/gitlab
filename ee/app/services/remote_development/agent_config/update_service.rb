@@ -8,7 +8,11 @@ module RemoteDevelopment
         #       additional authorization checks here.
         #       See https://gitlab.com/gitlab-org/gitlab/-/issues/409038
 
-        payload, error = RemoteDevelopment::AgentConfig::UpdateProcessor.new.process(agent: agent, config: config)
+        if License.feature_available?(:remote_development)
+          payload, error = RemoteDevelopment::AgentConfig::UpdateProcessor.new.process(agent: agent, config: config)
+        else
+          error = "'remote_development' licensed feature is not available"
+        end
 
         # TODO: https://gitlab.com/groups/gitlab-org/-/epics/10461
         #       The other existing service called from the `internal/kubernetes/agent_configuration` API endpoint
