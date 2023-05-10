@@ -10,7 +10,7 @@ module Gitlab
     def self.gitlab_com_group_member?(user)
       return false unless user.is_a?(::User)
 
-      Gitlab.com? && gitlab_com_user_ids.include?(user.id)
+      Gitlab.com_except_jh? && gitlab_com_user_ids.include?(user.id)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
@@ -18,7 +18,6 @@ module Gitlab
       l1_cache_backend.fetch(ALLOWED_USER_IDS_KEY, expires_in: EXPIRY_TIME_L1_CACHE) do
         l2_cache_backend.fetch(ALLOWED_USER_IDS_KEY, expires_in: EXPIRY_TIME_L2_CACHE) do
           group = Group.find_by(path: GITLAB_COM_GROUP, parent_id: nil)
-
           if group
             group.members.pluck_user_ids.to_set
           else

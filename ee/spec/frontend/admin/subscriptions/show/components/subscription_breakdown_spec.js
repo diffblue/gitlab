@@ -132,7 +132,7 @@ describe('Subscription Breakdown', () => {
     axiosMock.restore();
   });
 
-  describe('with subscription data', () => {
+  describe('with cloud-enabled subscription data', () => {
     beforeEach(() => {
       createComponent();
     });
@@ -186,8 +186,8 @@ describe('Subscription Breakdown', () => {
       expect(findSubscriptionActivationModal().props('visible')).toBe(true);
     });
 
-    it('presents a subscription activation banner', () => {
-      expect(findSubscriptionActivationBanner().exists()).toBe(true);
+    it('does not present a subscription activation banner', () => {
+      expect(findSubscriptionActivationBanner().exists()).toBe(false);
     });
 
     describe('footer buttons', () => {

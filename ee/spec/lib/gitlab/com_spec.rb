@@ -13,6 +13,7 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
 
     before do
       allow(Gitlab).to receive(:com?).and_return(true)
+      allow(Gitlab).to receive(:jh?).and_return(false)
     end
 
     context 'when user is a gitlab team member' do
@@ -26,6 +27,22 @@ RSpec.describe Gitlab::Com, feature_category: :shared do
         end
 
         it_behaves_like 'allowed user IDs are cached'
+      end
+
+      context 'when not on Gitlab.com' do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(false)
+        end
+
+        it { is_expected.to be false }
+      end
+
+      context 'when on JiHu' do
+        before do
+          allow(Gitlab).to receive(:jh?).and_return(true)
+        end
+
+        it { is_expected.to be false }
       end
     end
 
