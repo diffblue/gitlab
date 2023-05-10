@@ -25078,6 +25078,7 @@ Project member relation.
 | <a id="projectmemberrelationdirect"></a>`DIRECT` | Direct members. |
 | <a id="projectmemberrelationinherited"></a>`INHERITED` | Inherited members. |
 | <a id="projectmemberrelationinvited_groups"></a>`INVITED_GROUPS` | Invited Groups members. |
+| <a id="projectmemberrelationshared_into_ancestors"></a>`SHARED_INTO_ANCESTORS` | Shared Into Ancestors members. |
 
 ### `RegistryState`
 
