@@ -52,38 +52,6 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
       end
     end
 
-    context "with default license-check rule" do
-      let_it_be(:license_compliance_rule) do
-        create(:report_approver_rule, :license_scanning, merge_request: merge_request, approvals_required: 1)
-      end
-
-      context "when a license violates the license compliance policy" do
-        let!(:software_license_policy) do
-          create(:software_license_policy, :denied, project: project, software_license: denied_license)
-        end
-
-        let(:denied_license) { create(:software_license, name: license_report.license_names[0]) }
-
-        it 'requires approval' do
-          expect { execute }.not_to change { license_compliance_rule.reload.approvals_required }
-        end
-
-        it 'calls report' do
-          allow_any_instance_of(Gitlab::Ci::Reports::LicenseScanning::Report) do |instance|
-            expect(instance).to receive(:violates?)
-          end
-
-          execute
-        end
-      end
-
-      context "when no licenses violate the license compliance policy" do
-        it 'does not require approval' do
-          expect { execute }.to change { license_compliance_rule.reload.approvals_required }.from(1).to(0)
-        end
-      end
-    end
-
     context 'with license_finding security policy' do
       let(:license_states) { ['newly_detected'] }
       let(:match_on_inclusion) { true }

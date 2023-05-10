@@ -18,7 +18,6 @@ module Security
 
       merge_requests = pipeline.merge_requests_as_head_pipeline
 
-      sync_license_check_rule(merge_requests)
       sync_license_finding_rules(merge_requests)
     end
 
@@ -27,19 +26,6 @@ module Security
     attr_reader :pipeline, :scanner
 
     delegate :project, to: :pipeline
-
-    def sync_license_check_rule(merge_requests)
-      license_approval_rules = ApprovalMergeRequestRule
-        .report_approver
-        .license_scanning
-        .without_scan_result_policy_read
-        .for_unmerged_merge_requests(merge_requests)
-
-      return if license_approval_rules.empty?
-      return if report.violates?(project.software_license_policies.without_scan_result_policy_read)
-
-      license_approval_rules.update_all(approvals_required: 0)
-    end
 
     def sync_license_finding_rules(merge_requests)
       merge_requests.each do |merge_request|
