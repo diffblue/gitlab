@@ -1955,7 +1955,11 @@ You can use the vulnerabilityFindingDismiss GraphQL mutation to set the status o
 - [Breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/)
 </div>
 
-Using third-party container registries is deprecated in GitLab 15.8 and the end of support is scheduled for GitLab 16.0. Supporting both GitLab's Container Registry and third-party container registries is challenging for maintenance, code quality, and backward compatibility. This hinders our ability to stay [efficient](https://about.gitlab.com/handbook/values/#efficiency).
+Using third-party container registries with GitLab as an auth endpoint is deprecated in GitLab 15.8 and the [end of support](https://docs.gitlab.com/ee/development/deprecation_guidelines/#terminology) is scheduled for GitLab 16.0. This impacts self-managed customers that have connected their external registry to the GitLab user interface to find, view, and delete container images.
+
+Supporting both GitLab's Container Registry as well as third-party container registries is challenging for maintenance, code quality, and backward compatibility. This hinders our ability to stay [efficient](https://about.gitlab.com/handbook/values/#efficiency). As a result we will not support this functionality moving forward.
+
+This change will not impact your ability to pull and push container images to external registries using pipelines.
 
 Since we released the new [GitLab Container Registry](https://gitlab.com/groups/gitlab-org/-/epics/5523) version for GitLab.com, we've started to implement additional features that are not available in third-party container registries. These new features have allowed us to achieve significant performance improvements, such as [cleanup policies](https://gitlab.com/groups/gitlab-org/-/epics/8379). We are focusing on delivering [new features](https://gitlab.com/groups/gitlab-org/-/epics/5136), most of which will require functionalities only available on the GitLab Container Registry. This deprecation allows us to reduce fragmentation and user frustration in the long term by focusing on delivering a more robust integrated registry experience and feature set.
 
