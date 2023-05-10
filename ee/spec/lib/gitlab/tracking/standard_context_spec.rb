@@ -18,7 +18,9 @@ RSpec.describe Gitlab::Tracking::StandardContext do
       end
 
       context 'when namespace is available', :saas do
-        subject { described_class.new(namespace: create(:namespace_with_plan, plan: plan)) }
+        let(:namespace) { create(:namespace_with_plan, plan: plan) }
+
+        subject { described_class.new(namespace_id: namespace.id, plan_name: namespace.actual_plan_name) }
 
         it 'contains plan name' do
           expect(snowplow_context.to_json.dig(:data, :plan)).to eq(Plan::ULTIMATE)
