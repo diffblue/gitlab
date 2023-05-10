@@ -142,8 +142,11 @@ export const mockRequirementsCount = {
 };
 
 export const mockPageInfo = {
+  __typename: 'PageInfo',
   startCursor: 'eyJpZCI6IjI1IiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzI6MTQgVVRDIn0',
   endCursor: 'eyJpZCI6IjIxIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzE6MTUgVVRDIn0',
+  hasNextPage: true,
+  hasPreviousPage: false,
 };
 
 export const mockFilters = [
@@ -281,6 +284,28 @@ export const mockUpdateRequirementTitle = {
         title: 'edited title',
       },
       __typename: 'UpdateRequirementPayload',
+    },
+  },
+};
+
+export const mockExportRequirement = {
+  data: {
+    exportRequirements: {
+      errors: [],
+      __typename: 'ExportRequirements',
+    },
+  },
+};
+
+export const mockCreateRequirement = {
+  data: {
+    createRequirement: {
+      clientMutationId: '1',
+      errors: [],
+      requirement: {
+        id: '1',
+        iid: '1',
+      },
     },
   },
 };
