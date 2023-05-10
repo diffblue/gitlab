@@ -215,6 +215,20 @@ RSpec.describe ApprovalWrappedRule do
           expect(subject.allow_merge_when_invalid?).to eq(true)
         end
       end
+
+      context 'when project is a policy management project' do
+        before do
+          create(:security_orchestration_policy_configuration, security_policy_management_project: merge_request.project)
+        end
+
+        let(:rule) do
+          create(:report_approver_rule, :scan_finding)
+        end
+
+        it 'returns true' do
+          expect(subject.allow_merge_when_invalid?).to eq(true)
+        end
+      end
     end
   end
 
