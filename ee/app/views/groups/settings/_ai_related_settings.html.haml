@@ -1,6 +1,6 @@
 - return unless group.ai_settings_allowed?
 
-- docs_link_url = help_page_path('user/ai_features')
+- docs_link_url = help_page_path('policy/alpha-beta-support', anchor: 'experiment')
 - docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
 - terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
 - how_is_my_data_used = help_page_path('user/ai_features', anchor: 'data-usage')
@@ -10,12 +10,12 @@
   = s_('AI|Experiment features')
 
 %p
-  = s_('AI|These features could cause performance and stability issues and may change over time.')
-  = s_('AI| %{link_start}What are experiment features?%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
+  = s_('AI|These features can cause performance and stability issues and may change over time.')
+  = s_('AI| %{link_start}What are Experiment features?%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
 
 .form-group.gl-mb-3
   = f.gitlab_ui_checkbox_component :experiment_features_enabled,
-    s_('AI|Use experiment features'),
+    s_('AI|Use Experiment features'),
     help_text: s_('AI|Enabling these features is your acceptance of the %{link_start}GitLab Testing Agreement%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe }
 
 %h5

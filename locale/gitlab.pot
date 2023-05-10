@@ -1865,7 +1865,7 @@ msgstr ""
 msgid "AI| %{link_start}How is my data used?%{link_end}"
 msgstr ""
 
-msgid "AI| %{link_start}What are experiment features?%{link_end}"
+msgid "AI| %{link_start}What are Experiment features?%{link_end}"
 msgstr ""
 
 msgid "AI|Autocomplete"
@@ -1913,7 +1913,7 @@ msgstr ""
 msgid "AI|There is too much text in the chat. Please try again with a shorter text."
 msgstr ""
 
-msgid "AI|These features could cause performance and stability issues and may change over time."
+msgid "AI|These features can cause performance and stability issues and may change over time."
 msgstr ""
 
 msgid "AI|Third-party AI services"
@@ -1922,7 +1922,7 @@ msgstr ""
 msgid "AI|Unhelpful"
 msgstr ""
 
-msgid "AI|Use experiment features"
+msgid "AI|Use Experiment features"
 msgstr ""
 
 msgid "AI|Use third-party AI services"
