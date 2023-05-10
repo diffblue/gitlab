@@ -84,6 +84,8 @@ export default {
     editButtonTooltipMessage: s__(
       'SecurityOrchestration|This policy is inherited from the %{linkStart}namespace%{linkEnd} and must be edited there',
     ),
+    tabDetails: s__('SecurityOrchestration|Details'),
+    tabYaml: s__('SecurityOrchestration|YAML'),
   },
 };
 </script>
@@ -130,7 +132,7 @@ export default {
       </gl-tooltip>
     </template>
     <gl-tabs v-if="policy" class="gl-p-0!" justified content-class="gl-py-0" lazy>
-      <gl-tab title="Details" class="gl-mt-5 gl-ml-6 gl-mr-3">
+      <gl-tab :title="$options.i18n.tabDetails" class="gl-mt-5 gl-ml-6 gl-mr-3">
         <component :is="policyComponent" v-if="policyComponent" :policy="policy" />
         <div v-else>
           <h5>{{ s__('SecurityOrchestration|Policy definition') }}</h5>
@@ -145,7 +147,7 @@ export default {
           />
         </div>
       </gl-tab>
-      <gl-tab v-if="policyComponent" title="Yaml">
+      <gl-tab v-if="policyComponent" :title="$options.i18n.tabYaml">
         <policy-yaml-editor
           class="gl-h-100vh"
           :value="policyYaml"

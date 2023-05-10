@@ -36,11 +36,11 @@ export const APPROVAL_VULNERABILITY_STATE_GROUPS = {
 
 export const APPROVAL_VULNERABILITY_STATES = {
   [NEWLY_DETECTED]: {
-    new_needs_triage: s__('ApprovalRule|Needs Triage'),
+    new_needs_triage: s__('ApprovalRule|Needs triage'),
     new_dismissed: s__('ApprovalRule|Dismissed'),
   },
   [PREVIOUSLY_EXISTING]: {
-    detected: s__('ApprovalRule|Needs Triage'),
+    detected: s__('ApprovalRule|Needs triage'),
     confirmed: s__('ApprovalRule|Confirmed'),
     dismissed: s__('ApprovalRule|Dismissed'),
     resolved: s__('ApprovalRule|Resolved'),
