@@ -247,7 +247,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
               variables: {
                 GIT_DEPTH: '50',
                 SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
-                SECRETS_ANALYZER_VERSION: '4',
+                SECRETS_ANALYZER_VERSION: '5',
                 SECRET_DETECTION_IMAGE_SUFFIX: '',
                 SECRET_DETECTION_EXCLUDED_PATHS: '',
                 SECRET_DETECTION_HISTORIC_SCAN: 'false'
