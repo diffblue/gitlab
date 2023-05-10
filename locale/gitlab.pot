@@ -45049,9 +45049,6 @@ msgstr ""
 msgid "The name of the Jenkins project. Copy the name from the end of the URL to the project."
 msgstr ""
 
-msgid "The new Web IDE"
-msgstr ""
-
 msgid "The number of changes to fetch from GitLab when cloning a repository. Lower values can speed up pipeline execution. Set to %{code_open}0%{code_close} or blank to fetch all branches and tags for each job"
 msgstr ""
 
@@ -47366,9 +47363,6 @@ msgstr ""
 msgid "Try grouping with different labels"
 msgstr ""
 
-msgid "Try it out now"
-msgstr ""
-
 msgid "Try out GitLab Pipelines"
 msgstr ""
 
@@ -48908,9 +48902,6 @@ msgid "Using required encryption strategy when encrypted field is missing!"
 msgstr ""
 
 msgid "Using the %{codeStart}needs%{codeEnd} keyword makes jobs run before their stage is reached. Jobs run as soon as their %{codeStart}needs%{codeEnd} relationships are met, which speeds up your pipelines."
-msgstr ""
-
-msgid "VS Code in your browser. View code and make changes from the same UI as in your local IDE."
 msgstr ""
 
 msgid "Validate"
