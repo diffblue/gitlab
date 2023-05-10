@@ -112,6 +112,8 @@ module EE
         mount_mutation ::Mutations::MergeRequests::UpdateApprovalRule
         mount_mutation ::Mutations::Ai::Action, alpha: { milestone: '15.11' }
         mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Create
+        mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Destroy
+        mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Update
 
         prepend(Types::DeprecatedMutations)
       end

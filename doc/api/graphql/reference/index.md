@@ -3563,6 +3563,44 @@ Input type: `InstanceExternalAuditEventDestinationCreateInput`
 | <a id="mutationinstanceexternalauditeventdestinationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationinstanceexternalauditeventdestinationcreateinstanceexternalauditeventdestination"></a>`instanceExternalAuditEventDestination` | [`InstanceExternalAuditEventDestination`](#instanceexternalauditeventdestination) | Destination created. |
 
+### `Mutation.instanceExternalAuditEventDestinationDestroy`
+
+Input type: `InstanceExternalAuditEventDestinationDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceexternalauditeventdestinationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceexternalauditeventdestinationdestroyid"></a>`id` | [`AuditEventsInstanceExternalAuditEventDestinationID!`](#auditeventsinstanceexternalauditeventdestinationid) | ID of the external instance audit event destination to destroy. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceexternalauditeventdestinationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceexternalauditeventdestinationdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
+### `Mutation.instanceExternalAuditEventDestinationUpdate`
+
+Input type: `InstanceExternalAuditEventDestinationUpdateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceexternalauditeventdestinationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceexternalauditeventdestinationupdatedestinationurl"></a>`destinationUrl` | [`String`](#string) | Destination URL to change. |
+| <a id="mutationinstanceexternalauditeventdestinationupdateid"></a>`id` | [`AuditEventsInstanceExternalAuditEventDestinationID!`](#auditeventsinstanceexternalauditeventdestinationid) | ID of the external instance audit event destination to update. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationinstanceexternalauditeventdestinationupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationinstanceexternalauditeventdestinationupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationinstanceexternalauditeventdestinationupdateinstanceexternalauditeventdestination"></a>`instanceExternalAuditEventDestination` | [`InstanceExternalAuditEventDestination`](#instanceexternalauditeventdestination) | Updated destination. |
+
 ### `Mutation.issuableResourceLinkCreate`
 
 Input type: `IssuableResourceLinkCreateInput`
@@ -25699,6 +25737,12 @@ An example `AppSecFuzzingCoverageCorpusID` is: `"gid://gitlab/AppSec::Fuzzing::C
 A `AuditEventsExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
 
 An example `AuditEventsExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::ExternalAuditEventDestination/1"`.
+
+### `AuditEventsInstanceExternalAuditEventDestinationID`
+
+A `AuditEventsInstanceExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
+
+An example `AuditEventsInstanceExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/1"`.
 
 ### `AuditEventsStreamingHeaderID`
 
