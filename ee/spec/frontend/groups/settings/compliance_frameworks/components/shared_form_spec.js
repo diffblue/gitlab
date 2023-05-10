@@ -14,7 +14,6 @@ describe('SharedForm', () => {
     submitButtonText: 'Save changes',
   };
   const defaultProvideData = {
-    groupEditPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
   };
 
@@ -242,22 +241,12 @@ describe('SharedForm', () => {
   });
 
   describe('on cancelling', () => {
-    it('should emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
-      jest.spyOn(Utils, 'isModalsRefactorEnabled').mockReturnValue(true);
+    it('should emit a cancel event', () => {
       wrapper = createComponent();
 
       findCancelBtn().vm.$emit('click', new MouseEvent('click'));
 
       expect(wrapper.emitted('cancel')).toHaveLength(1);
-    });
-
-    it('should not emit a cancel event when the "manageComplianceFrameworksModalsRefactor" feature flag is disabled', () => {
-      jest.spyOn(Utils, 'isModalsRefactorEnabled').mockReturnValue(false);
-      wrapper = createComponent();
-
-      findCancelBtn().vm.$emit('click', new MouseEvent('click'));
-
-      expect(wrapper.emitted('cancel')).toBeUndefined();
     });
   });
 });

@@ -19,7 +19,6 @@ module EE
 
       before_action do
         push_frontend_feature_flag(:saas_user_caps_auto_approve_pending_users_on_cap_increase, @group)
-        push_frontend_feature_flag(:manage_compliance_frameworks_modals_refactor, @group)
       end
 
       before_action only: :show do

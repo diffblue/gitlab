@@ -762,6 +762,7 @@ export default {
     />
     <ul
       v-if="!requirementsListLoading && !requirementsListEmpty"
+      data-testid="requirements-list"
       class="content-list issuable-list issues-list requirements-list"
     >
       <requirement-item

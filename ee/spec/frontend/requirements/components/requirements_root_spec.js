@@ -1,14 +1,14 @@
-import { GlPagination, GlBadge } from '@gitlab/ui';
+import { GlPagination } from '@gitlab/ui';
 import { defaultDataIdFromObject } from '@apollo/client/core';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import RequirementItem from 'ee/requirements/components/requirement_item.vue';
 import RequirementStatusBadge from 'ee/requirements/components/requirement_status_badge.vue';
 import RequirementsEmptyState from 'ee/requirements/components/requirements_empty_state.vue';
 import RequirementsLoading from 'ee/requirements/components/requirements_loading.vue';
 import RequirementsRoot from 'ee/requirements/components/requirements_root.vue';
+import RequirementForm from 'ee/requirements/components/requirement_form.vue';
 import RequirementsTabs from 'ee/requirements/components/requirements_tabs.vue';
 
 import { filterState, STATE_FAILED } from 'ee/requirements/constants';
@@ -20,9 +20,11 @@ import projectRequirementsCount from 'ee/requirements/queries/project_requiremen
 import updateRequirement from 'ee/requirements/queries/update_requirement.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 
+import ExportRequirementsModal from 'ee/requirements/components/export_requirements_modal.vue';
+
 import { TEST_HOST } from 'helpers/test_constants';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
 import { queryToObject } from '~/lib/utils/url_utility';
@@ -44,8 +46,9 @@ import {
   mockProjectRequirementCounts,
   mockProjectRequirements,
   mockUpdateRequirementTitle,
-  mockUpdateRequirementToFailed,
   mockProjectRequirementPassed,
+  mockExportRequirement,
+  mockCreateRequirement,
 } from '../mock_data';
 
 jest.mock('~/alert');
@@ -53,11 +56,7 @@ jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
 }));
 
-const $toast = {
-  show: jest.fn(),
-};
-
-const localVue = createLocalVue();
+const showToast = jest.fn();
 
 const defaultProps = {
   projectPath: 'gitlab-org/gitlab-shell',
@@ -71,42 +70,54 @@ const defaultProps = {
   currentUserEmail: 'admin@example.com',
 };
 
-const createComponent = ({ props = {}, loading = false } = {}) =>
-  extendedWrapper(
-    shallowMount(RequirementsRoot, {
-      propsData: {
-        ...defaultProps,
-        ...props,
-      },
-      mocks: {
-        $apollo: {
-          queries: {
+let wrapper;
+let requestHandlers;
+
+const buildHandlers = ({ nodes, opened = 1, archived = 0, pageInfo } = {}) => {
+  let mockProjectRequirementsData = { ...mockProjectRequirements };
+  if (nodes) {
+    mockProjectRequirementsData = {
+      ...mockProjectRequirements,
+      ...{
+        data: {
+          project: {
             requirements: {
-              loading,
-              list: [],
-              pageInfo: {},
-              refetch: jest.fn(),
-            },
-            requirementsCount: {
-              ...defaultProps.initialRequirementsCount,
-              refetch: jest.fn(),
+              nodes,
             },
           },
-          mutate: jest.fn(),
         },
-        $toast,
       },
-    }),
-  );
+    };
+  }
 
-const createComponentWithApollo = ({ props = {}, requestHandlers = [] } = {}) => {
-  localVue.use(VueApollo);
+  if (pageInfo) {
+    mockProjectRequirements.data.project.requirements.pageInfo = pageInfo;
+  }
 
-  const mockApollo = createMockApollo(
+  mockProjectRequirementCounts.data.project.requirementStatesCount.opened = opened;
+  mockProjectRequirementCounts.data.project.requirementStatesCount.archived = archived;
+
+  return {
+    projectRequirements: jest.fn().mockResolvedValue(mockProjectRequirementsData),
+    projectRequirementsCount: jest.fn().mockResolvedValue(mockProjectRequirementCounts),
+    createRequirement: jest.fn().mockResolvedValue(mockCreateRequirement),
+    updateRequirement: jest.fn().mockResolvedValue(mockUpdateRequirementTitle),
+    exportRequirement: jest.fn().mockResolvedValue(mockExportRequirement),
+  };
+};
+
+const createMockApolloProvider = (handlers) => {
+  Vue.use(VueApollo);
+
+  requestHandlers = handlers;
+
+  return createMockApollo(
     [
-      [projectRequirements, jest.fn().mockResolvedValue(mockProjectRequirements)],
-      [projectRequirementsCount, jest.fn().mockResolvedValue(mockProjectRequirementCounts)],
-      ...requestHandlers,
+      [projectRequirements, handlers.projectRequirements],
+      [projectRequirementsCount, handlers.projectRequirementsCount],
+      [createRequirement, handlers.createRequirement],
+      [updateRequirement, handlers.updateRequirement],
+      [exportRequirement, handlers.exportRequirement],
     ],
     {},
     {
@@ -115,37 +126,42 @@ const createComponentWithApollo = ({ props = {}, requestHandlers = [] } = {}) =>
         object.__typename === 'Requirement' ? object.iid : defaultDataIdFromObject(object),
     },
   );
+};
 
-  return extendedWrapper(
-    shallowMount(RequirementsRoot, {
-      localVue,
-      apolloProvider: mockApollo,
-      propsData: {
-        ...defaultProps,
-        initialRequirementsCount: mockInitialRequirementCounts,
-        ...props,
+const createComponentWithApollo = ({ props = {}, handlers = buildHandlers() } = {}) => {
+  wrapper = shallowMountExtended(RequirementsRoot, {
+    apolloProvider: createMockApolloProvider(handlers),
+    propsData: {
+      ...defaultProps,
+      initialRequirementsCount: mockInitialRequirementCounts,
+      ...props,
+    },
+    mocks: {
+      $toast: {
+        show: showToast,
       },
-      mocks: {
-        $toast,
-      },
-      stubs: {
-        RequirementItem,
-        RequirementStatusBadge,
-        GlBadge,
-      },
-    }),
-  );
+    },
+    stubs: {
+      RequirementItem,
+      RequirementStatusBadge,
+    },
+  });
 };
 
 describe('RequirementsRoot', () => {
-  let wrapper;
   let trackingSpy;
 
   const findRequirementEditForm = () => wrapper.findByTestId('edit-form');
-  const findBadge = () => wrapper.findComponent(GlBadge);
+  const findRequirementsList = () => wrapper.findByTestId('requirements-list');
+  const findExportRequirementsModal = () => wrapper.findComponent(ExportRequirementsModal);
+  const findRequirementsTabs = () => wrapper.findComponent(RequirementsTabs);
+  const findRequirementsEmptyState = () => wrapper.findComponent(RequirementsEmptyState);
+  const findGlPagination = () => wrapper.findComponent(GlPagination);
+  const findFilteredSearchBarRoot = () => wrapper.findComponent(FilteredSearchBarRoot);
+  const findRequirementForm = () => wrapper.findComponent(RequirementForm);
 
   beforeEach(() => {
-    wrapper = createComponent();
+    createComponentWithApollo();
     trackingSpy = mockTracking('_category_', wrapper.element, jest.spyOn);
     trackingSpy.mockImplementation(() => {});
   });
@@ -156,246 +172,209 @@ describe('RequirementsRoot', () => {
 
   describe('computed', () => {
     describe('requirementsListEmpty', () => {
-      it('returns `false` when `$apollo.queries.requirements.loading` is true', () => {
-        const wrapperLoading = createComponent({ loading: true });
-
-        expect(wrapperLoading.vm.requirementsListEmpty).toBe(false);
-
-        wrapperLoading.destroy();
+      it('does not show requirement list while loading', () => {
+        createComponentWithApollo();
+        expect(findRequirementsList().exists()).toBe(false);
       });
 
-      it('returns `true` when `requirements.list` is empty', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          requirements: {
-            list: [],
-          },
-        });
+      it('does not show empty requirement list', async () => {
+        createComponentWithApollo({ handlers: buildHandlers({ nodes: [] }) });
+        await waitForPromises();
 
-        await nextTick();
-        expect(wrapper.vm.requirementsListEmpty).toBe(true);
+        expect(findRequirementsList().exists()).toBe(false);
       });
 
-      it('returns `true` when `requirementsCount` for current filterBy value is 0', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          filterBy: filterState.opened,
-          requirementsCount: {
-            OPENED: 0,
+      it('does not show when filterBy value is 0', async () => {
+        createComponentWithApollo({
+          props: {
+            initialFilterBy: filterState.opened,
           },
+          handlers: buildHandlers({ nodes: [], opened: 0 }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.requirementsListEmpty).toBe(true);
+        await waitForPromises();
+
+        expect(findRequirementsList().exists()).toBe(false);
       });
     });
 
     describe('totalRequirementsForCurrentTab', () => {
-      it('returns number representing total requirements for current tab', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          filterBy: filterState.opened,
-          requirementsCount: {
-            OPENED: mockRequirementsCount.OPENED,
+      it('displays total requirements for current tab', async () => {
+        createComponentWithApollo({
+          props: {
+            initialFilterBy: filterState.opened,
           },
+          handlers: buildHandlers({ opened: mockRequirementsCount.OPENED }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.totalRequirementsForCurrentTab).toBe(mockRequirementsCount.OPENED);
+        await waitForPromises();
+
+        expect(findExportRequirementsModal().props('requirementCount')).toBe(
+          mockRequirementsCount.OPENED,
+        );
       });
     });
 
     describe('showEmptyState', () => {
-      it('returns `false` when `showRequirementCreateDrawer` is true', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          showRequirementCreateDrawer: true,
-        });
-
-        await nextTick();
-        expect(wrapper.vm.showEmptyState).toBe(false);
+      it('does not show empty state when create form is visible', () => {
+        findRequirementsTabs().vm.$emit('click-new-requirement');
+        expect(findRequirementsEmptyState().exists()).toBe(false);
       });
     });
 
-    describe('showPaginationControls', () => {
-      it('returns `true` when totalRequirements is more than default page size', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          requirements: {
-            list: mockRequirementsOpen,
-            pageInfo: mockPageInfo,
-          },
-          requirementsCount: mockRequirementsCount,
+    describe('Pagination', () => {
+      it('renders pagination for multiple pages', async () => {
+        createComponentWithApollo({
+          handlers: buildHandlers({ pageInfo: mockPageInfo }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.showPaginationControls).toBe(true);
+        await waitForPromises();
+        expect(findGlPagination().exists()).toBe(true);
       });
 
-      it('returns `false` when totalRequirements is less than default page size', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          requirements: {
-            list: [mockRequirementsOpen[0]],
+      it('does not display pagination for one page', () => {
+        createComponentWithApollo({
+          handlers: buildHandlers({
+            nodes: mockProjectRequirements.data.project.requirements.nodes[0],
             pageInfo: mockPageInfo,
-          },
-          requirementsCount: {
-            ...mockRequirementsCount,
-            OPENED: 1,
-          },
+            opened: 1,
+            archived: mockRequirementsCount.ARCHIVED,
+          }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.showPaginationControls).toBe(false);
+        expect(findGlPagination().exists()).toBe(false);
       });
 
       it.each`
-        hasPreviousPage | hasNextPage  | isVisible
-        ${true}         | ${undefined} | ${true}
-        ${undefined}    | ${true}      | ${true}
-        ${false}        | ${undefined} | ${false}
-        ${undefined}    | ${false}     | ${false}
-        ${false}        | ${false}     | ${false}
-        ${true}         | ${true}      | ${true}
+        hasPreviousPage | hasNextPage | isVisible
+        ${true}         | ${false}    | ${true}
+        ${false}        | ${true}     | ${true}
+        ${false}        | ${false}    | ${false}
+        ${false}        | ${false}    | ${false}
+        ${false}        | ${false}    | ${false}
+        ${true}         | ${true}     | ${true}
       `(
-        'returns $isVisible when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `requirements.pageInfo`',
+        'renders next previous pagination buttons on condition',
         async ({ hasPreviousPage, hasNextPage, isVisible }) => {
-          // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-          // eslint-disable-next-line no-restricted-syntax
-          wrapper.setData({
-            requirements: {
+          createComponentWithApollo({
+            handlers: buildHandlers({
               pageInfo: {
+                ...mockPageInfo,
                 hasPreviousPage,
                 hasNextPage,
               },
-            },
+            }),
           });
 
-          await nextTick();
-          expect(wrapper.vm.showPaginationControls).toBe(isVisible);
+          await waitForPromises();
+
+          expect(findGlPagination().exists()).toBe(isVisible);
         },
       );
     });
 
     describe('prevPage', () => {
-      it('returns number representing previous page based on currentPage value', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          currentPage: 3,
+      it('renders correct previous button', async () => {
+        createComponentWithApollo({
+          props: { page: 3 },
+          handlers: buildHandlers({ pageInfo: mockPageInfo }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.prevPage).toBe(2);
+        await waitForPromises();
+        expect(findGlPagination().props('prevPage')).toBe(2);
       });
     });
 
     describe('nextPage', () => {
-      it('returns number representing next page based on currentPage value', () => {
-        expect(wrapper.vm.nextPage).toBe(2);
-      });
-
-      it('returns `null` when currentPage is already last page', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          currentPage: 2,
+      it('renders correct next button', async () => {
+        createComponentWithApollo({
+          props: { page: 1 },
+          handlers: buildHandlers({
+            opened: 20,
+            pageInfo: {
+              ...mockPageInfo,
+              hasNextPage: true,
+            },
+          }),
         });
 
-        await nextTick();
-        expect(wrapper.vm.nextPage).toBeNull();
+        await waitForPromises();
+
+        expect(findGlPagination().props('nextPage')).toBe(2);
+      });
+
+      it('does not render next page if current page is last one', async () => {
+        createComponentWithApollo({
+          props: { page: 2 },
+          handlers: buildHandlers({ pageInfo: mockPageInfo }),
+        });
+
+        await waitForPromises();
+
+        expect(findGlPagination().props('nextPage')).toEqual(null);
       });
     });
   });
 
   describe('methods', () => {
-    const mockUpdateMutationResult = {
-      data: {
-        updateRequirement: {
-          errors: [],
-          requirement: {
-            iid: '1',
-            title: 'foo',
+    describe('FilteredSearchBar', () => {
+      it('renders search bar based on parameters', () => {
+        createComponentWithApollo({
+          props: {
+            initialAuthorUsernames: ['root', 'john.doe'],
+            initialStatus: 'satisfied',
+            initialTextSearch: 'foo',
           },
-        },
-      },
-    };
-
-    const mockExportRequirementsMutationResult = {
-      data: {
-        exportRequirements: {
-          errors: [],
-        },
-      },
-    };
-
-    describe('getFilteredSearchValue', () => {
-      it('returns array containing applied filter search values', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          authorUsernames: ['root', 'john.doe'],
-          status: 'satisfied',
-          textSearch: 'foo',
         });
 
-        await nextTick();
-        expect(wrapper.vm.getFilteredSearchValue()).toEqual(mockFilters);
+        expect(findFilteredSearchBarRoot().props('initialFilterValue')).toEqual(mockFilters);
       });
     });
 
     describe('updateUrl', () => {
-      it('updates window URL based on presence of props for filtered search and sort criteria', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          filterBy: filterState.all,
-          currentPage: 2,
-          nextPageCursor: mockPageInfo.endCursor,
-          authorUsernames: ['root', 'john.doe'],
-          textSearch: 'foo',
-          sortBy: 'updated_asc',
+      it('updates window URL based on search criteria', () => {
+        createComponentWithApollo({
+          props: {
+            initialFilterBy: filterState.all,
+            page: 2,
+            initialAuthorUsernames: ['root', 'john.doe'],
+            initialTextSearch: 'foo',
+            initialSortBy: 'updated_asc',
+            next: mockPageInfo.endCursor,
+          },
+          handlers: buildHandlers({
+            pageInfo: mockPageInfo,
+          }),
         });
 
-        await nextTick();
-        wrapper.vm.updateUrl();
+        findFilteredSearchBarRoot().vm.$emit('onSort', 'created_desc');
 
         expect(global.window.location.href).toBe(
-          `${TEST_HOST}/?page=2&next=${mockPageInfo.endCursor}&state=all&search=foo&sort=updated_asc&author_username%5B%5D=root&author_username%5B%5D=john.doe`,
+          `${TEST_HOST}/?page=1&state=all&search=foo&sort=created_desc&author_username%5B%5D=root&author_username%5B%5D=john.doe`,
         );
       });
     });
 
     describe('exportCsv', () => {
-      it('calls `$apollo.mutate` with `exportRequirement` mutation and variables', () => {
-        jest
-          .spyOn(wrapper.vm.$apollo, 'mutate')
-          .mockResolvedValue(mockExportRequirementsMutationResult);
+      it('exports csv with graphql', () => {
+        findExportRequirementsModal().vm.$emit('export');
 
-        wrapper.vm.exportCsv();
-
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: exportRequirement,
-            variables: {
-              projectPath: wrapper.vm.projectPath,
-              state: wrapper.vm.filterBy,
-              authorUsername: wrapper.vm.authorUsernames,
-              search: wrapper.vm.textSearch,
-              sortBy: wrapper.vm.sortBy,
-            },
-          }),
-        );
+        expect(requestHandlers.exportRequirement).toHaveBeenCalledWith({
+          projectPath: 'gitlab-org/gitlab-shell',
+          state: 'OPENED',
+          authorUsername: [],
+          search: '',
+          sortBy: 'created_desc',
+        });
       });
 
-      it('calls `createAlert` when request fails', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue(new Error({}));
+      it('shows alert on failed requests', () => {
+        createComponentWithApollo({
+          handlers: {
+            ...buildHandlers(),
+            exportRequirement: jest.fn().mockRejectedValue(new Error({})),
+          },
+        });
 
         return wrapper.vm.exportCsv().catch(() => {
           expect(createAlert).toHaveBeenCalledWith(
@@ -409,94 +388,71 @@ describe('RequirementsRoot', () => {
     });
 
     describe('updateRequirement', () => {
-      it('calls `$apollo.mutate` with `updateRequirement` mutation and variables containing `projectPath` & `iid`', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockUpdateMutationResult);
-
-        wrapper.vm.updateRequirement({
+      it('updateRequirement with graphql mutation and variables', () => {
+        findRequirementEditForm().vm.$emit('save', {
           iid: '1',
         });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: updateRequirement,
-            variables: {
-              updateRequirementInput: {
-                projectPath: 'gitlab-org/gitlab-shell',
-                iid: '1',
-              },
-            },
-          }),
-        );
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
+          updateRequirementInput: {
+            projectPath: 'gitlab-org/gitlab-shell',
+            iid: '1',
+          },
+        });
       });
 
-      it('calls `$apollo.mutate` with variables containing `title` when it is included in object param', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockUpdateMutationResult);
-
-        wrapper.vm.updateRequirement({
+      it('updateRequirement with graphql mutation and variables when it is included in object param', () => {
+        findRequirementEditForm().vm.$emit('save', {
           iid: '1',
           title: 'foo',
         });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: updateRequirement,
-            variables: {
-              updateRequirementInput: {
-                projectPath: 'gitlab-org/gitlab-shell',
-                iid: '1',
-                title: 'foo',
-              },
-            },
-          }),
-        );
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
+          updateRequirementInput: {
+            projectPath: 'gitlab-org/gitlab-shell',
+            iid: '1',
+            title: 'foo',
+          },
+        });
       });
 
-      it('calls `$apollo.mutate` with variables containing `description` when it is included in object param', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockUpdateMutationResult);
-
-        wrapper.vm.updateRequirement({
+      it('updateRequirement with graphql mutation and variables containing `description` when it is included in object param', () => {
+        findRequirementEditForm().vm.$emit('save', {
           iid: '1',
           description: '_foo_',
         });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: updateRequirement,
-            variables: {
-              updateRequirementInput: {
-                projectPath: 'gitlab-org/gitlab-shell',
-                iid: '1',
-                description: '_foo_',
-              },
-            },
-          }),
-        );
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
+          updateRequirementInput: {
+            projectPath: 'gitlab-org/gitlab-shell',
+            iid: '1',
+            description: '_foo_',
+          },
+        });
       });
 
-      it('calls `$apollo.mutate` with variables containing `state` when it is included in object param', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockUpdateMutationResult);
-
-        wrapper.vm.updateRequirement({
+      it('updateRequirement with graphql mutation and variables containing `state` when it is included in object param', () => {
+        findRequirementEditForm().vm.$emit('save', {
           iid: '1',
           state: filterState.opened,
         });
 
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: updateRequirement,
-            variables: {
-              updateRequirementInput: {
-                projectPath: 'gitlab-org/gitlab-shell',
-                iid: '1',
-                state: filterState.opened,
-              },
-            },
-          }),
-        );
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
+          updateRequirementInput: {
+            projectPath: 'gitlab-org/gitlab-shell',
+            iid: '1',
+            state: filterState.opened,
+          },
+        });
       });
 
-      it('calls `createAlert` with provided `errorFlashMessage` param when request fails', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue(new Error({}));
+      it('shows alert when request fails', () => {
+        createComponentWithApollo({
+          handlers: {
+            ...buildHandlers(),
+            updateRequirement: jest.fn().mockRejectedValue(new Error({})),
+          },
+        });
 
         return wrapper.vm
           .updateRequirement(
@@ -517,119 +473,71 @@ describe('RequirementsRoot', () => {
     });
 
     describe('handleNewRequirementClick', () => {
-      it('sets `showRequirementCreateDrawer` prop to `true`', () => {
-        wrapper.vm.handleNewRequirementClick();
+      it('renders create drawer', async () => {
+        await findRequirementsTabs().vm.$emit('click-new-requirement');
 
-        expect(wrapper.vm.showRequirementCreateDrawer).toBe(true);
+        expect(findRequirementsTabs().props('showCreateForm')).toBe(true);
       });
     });
 
     describe('handleShowRequirementClick', () => {
-      it('sets `showRequirementViewDrawer` prop to `true`', () => {
-        wrapper.vm.handleShowRequirementClick(mockRequirementsOpen[0]);
+      it('renders create requirement drawer', async () => {
+        await waitForPromises();
 
-        expect(wrapper.vm.showRequirementViewDrawer).toBe(true);
-        expect(wrapper.vm.editedRequirement).toBe(mockRequirementsOpen[0]);
-      });
-    });
+        await findRequirementsList()
+          .findAllComponents(RequirementItem)
+          .at(0)
+          .vm.$emit('show-click', mockRequirementsOpen[0]);
 
-    describe('handleEditRequirementClick', () => {
-      it('sets `showRequirementViewDrawer` prop to `true` and `editedRequirement` to value of passed param', () => {
-        wrapper.vm.handleEditRequirementClick(mockRequirementsOpen[0]);
-
-        expect(wrapper.vm.showRequirementViewDrawer).toBe(true);
-        expect(wrapper.vm.editedRequirement).toBe(mockRequirementsOpen[0]);
+        expect(findRequirementEditForm().props('drawerOpen')).toBe(true);
+        expect(findRequirementEditForm().props('requirement')).toEqual(mockRequirementsOpen[0]);
       });
     });
 
     describe('handleNewRequirementSave', () => {
-      const mockMutationResult = {
-        data: {
-          createRequirement: {
-            errors: [],
-            requirement: {
-              iid: '1',
-            },
-          },
-        },
-      };
+      it('sets `createRequirementRequestActive` prop to `true`', async () => {
+        findRequirementForm().vm.$emit('save', { title: 'foo', description: '_bar_' });
+        await nextTick();
 
-      it('sets `createRequirementRequestActive` prop to `true`', () => {
-        jest
-          .spyOn(wrapper.vm.$apollo, 'mutate')
-          .mockReturnValue(Promise.resolve(mockMutationResult));
-
-        wrapper.vm.handleNewRequirementSave({
-          title: 'foo',
-          description: '_bar_',
-        });
-
-        expect(wrapper.vm.createRequirementRequestActive).toBe(true);
+        expect(findRequirementForm().props('requirementRequestActive')).toBe(true);
       });
 
       it('calls `$apollo.mutate` with createRequirement mutation and `projectPath` & `title` as variables', () => {
-        jest
-          .spyOn(wrapper.vm.$apollo, 'mutate')
-          .mockReturnValue(Promise.resolve(mockMutationResult));
+        findRequirementForm().vm.$emit('save', { title: 'foo', description: '_bar_' });
 
-        wrapper.vm.handleNewRequirementSave({
-          title: 'foo',
-          description: '_bar_',
+        expect(requestHandlers.createRequirement).toHaveBeenCalledWith({
+          createRequirementInput: {
+            projectPath: 'gitlab-org/gitlab-shell',
+            title: 'foo',
+            description: '_bar_',
+          },
         });
-
-        expect(wrapper.vm.$apollo.mutate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            mutation: createRequirement,
-            variables: {
-              createRequirementInput: {
-                projectPath: 'gitlab-org/gitlab-shell',
-                title: 'foo',
-                description: '_bar_',
-              },
-            },
-          }),
-        );
       });
 
-      it('sets `showRequirementCreateDrawer` and `createRequirementRequestActive` props to `false` and refetches requirements count and list when request is successful', () => {
-        jest
-          .spyOn(wrapper.vm.$apollo, 'mutate')
-          .mockReturnValue(Promise.resolve(mockMutationResult));
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.requirementsCount, 'refetch')
-          .mockImplementation(jest.fn());
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.requirements, 'refetch')
-          .mockImplementation(jest.fn());
+      it('sets `showRequirementCreateDrawer` and `createRequirementRequestActive` props to `false` and refetches requirements count and list when request is successful', async () => {
+        findRequirementForm().vm.$emit('save', { title: 'foo', description: '_bar_' });
+        await waitForPromises();
 
-        return wrapper.vm
-          .handleNewRequirementSave({
-            title: 'foo',
-            description: '_bar_',
-          })
-          .then(() => {
-            expect(wrapper.vm.$apollo.queries.requirementsCount.refetch).toHaveBeenCalled();
-            expect(wrapper.vm.$apollo.queries.requirements.refetch).toHaveBeenCalled();
-            expect(wrapper.vm.showRequirementCreateDrawer).toBe(false);
-            expect(wrapper.vm.createRequirementRequestActive).toBe(false);
-          });
+        expect(requestHandlers.projectRequirementsCount).toHaveBeenCalled();
+        expect(requestHandlers.projectRequirements).toHaveBeenCalled();
+        expect(findRequirementsTabs().props('showCreateForm')).toBe(false);
+        expect(findRequirementForm().props('requirementRequestActive')).toBe(false);
       });
 
-      it('calls `$toast.show` with string "Requirement added successfully" when request is successful', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockResolvedValue(mockMutationResult);
+      it('calls `$toast.show` with string "Requirement added successfully" when request is successful', async () => {
+        findRequirementForm().vm.$emit('save', { title: 'foo', description: '_bar_' });
+        await waitForPromises();
 
-        return wrapper.vm
-          .handleNewRequirementSave({
-            title: 'foo',
-            description: '_bar_',
-          })
-          .then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith('Requirement REQ-1 has been added');
-          });
+        expect(showToast).toHaveBeenCalledWith('Requirement REQ-1 has been added');
       });
 
       it('sets `createRequirementRequestActive` prop to `false` and calls `createAlert` when `$apollo.mutate` request fails', () => {
-        jest.spyOn(wrapper.vm.$apollo, 'mutate').mockReturnValue(Promise.reject(new Error()));
+        createComponentWithApollo({
+          handlers: {
+            ...buildHandlers(),
+            createRequirement: jest.fn().mockRejectedValue(new Error()),
+          },
+        });
 
         return wrapper.vm
           .handleNewRequirementSave({
@@ -642,224 +550,230 @@ describe('RequirementsRoot', () => {
               captureError: true,
               parent: expect.any(Object),
             });
-            expect(wrapper.vm.createRequirementRequestActive).toBe(false);
+            expect(findRequirementForm().props('requirementRequestActive')).toBe(false);
           });
       });
     });
 
-    describe('handleUpdateRequirementSave', () => {
-      it('sets `createRequirementRequestActive` prop to `true`', () => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockResolvedValue(mockUpdateMutationResult);
+    describe('RequirementEditForm', () => {
+      it('renders RequirementEditForm', async () => {
+        findRequirementEditForm().vm.$emit('save', { title: 'foo' });
+        await nextTick();
 
-        wrapper.vm.handleUpdateRequirementSave({
-          title: 'foo',
-        });
-
-        expect(wrapper.vm.createRequirementRequestActive).toBe(true);
+        expect(findRequirementEditForm().props('requirementRequestActive')).toBe(true);
       });
 
-      it('calls `updateRequirement` with object containing `iid`, `title` & `errorFlashMessage` props', () => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockResolvedValue(mockUpdateMutationResult);
-
-        wrapper.vm.handleUpdateRequirementSave({
+      it('updates requirement` with object containing `iid`, `title`', async () => {
+        findRequirementEditForm().vm.$emit('save', {
           iid: '1',
           title: 'foo',
         });
+        await waitForPromises();
 
-        expect(wrapper.vm.updateRequirement).toHaveBeenCalledWith(
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith(
           expect.objectContaining({
-            iid: '1',
-            title: 'foo',
-          }),
-          expect.objectContaining({
-            errorFlashMessage: 'Something went wrong while updating a requirement.',
+            updateRequirementInput: {
+              iid: '1',
+              title: 'foo',
+              projectPath: 'gitlab-org/gitlab-shell',
+            },
           }),
         );
       });
 
-      it('sets `showRequirementViewDrawer` to `true`, `editedRequirement` to `null` and `createRequirementRequestActive` prop to `false` when request is successful', () => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockResolvedValue(mockUpdateMutationResult);
+      it('disables edit mode and active mode after update', async () => {
+        findRequirementEditForm().vm.$emit('save', {
+          iid: '1',
+          title: 'foo',
+        });
+        await waitForPromises();
 
-        return wrapper.vm
-          .handleUpdateRequirementSave({
-            iid: '1',
-            title: 'foo',
-          })
-          .then(() => {
-            expect(wrapper.vm.enableRequirementEdit).toBe(false);
-            expect(wrapper.vm.editedRequirement).toEqual(
-              mockUpdateMutationResult.data.updateRequirement.requirement,
-            );
-            expect(wrapper.vm.createRequirementRequestActive).toBe(false);
-          });
+        expect(findRequirementEditForm().props('enableRequirementEdit')).toBe(false);
+        expect(findRequirementEditForm().props('requirementRequestActive')).toBe(false);
       });
 
-      it('calls `$toast.show` with string "Requirement updated successfully" when request is successful', () => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockResolvedValue(mockUpdateMutationResult);
+      it('calls `$toast.show` with string "Requirement updated successfully" when request is successful', async () => {
+        findRequirementEditForm().vm.$emit('save', {
+          iid: '1',
+          title: 'foo',
+        });
+        await waitForPromises();
 
-        return wrapper.vm
-          .handleUpdateRequirementSave({
-            iid: '1',
-            title: 'foo',
-          })
-          .then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(
-              'Requirement REQ-1 has been updated',
-            );
-          });
+        expect(showToast).toHaveBeenCalledWith('Requirement REQ-1 has been updated');
       });
 
-      it('sets `createRequirementRequestActive` prop to `false` when request fails', () => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockRejectedValue(new Error());
+      it('disables active mode when request fails', () => {
+        createComponentWithApollo({
+          handlers: {
+            ...buildHandlers(),
+            updateRequirement: jest.fn().mockRejectedValue(new Error()),
+          },
+        });
 
         return wrapper.vm
           .handleUpdateRequirementSave({
             title: 'foo',
           })
           .catch(() => {
-            expect(wrapper.vm.createRequirementRequestActive).toBe(false);
+            expect(findRequirementEditForm().props('requirementRequestActive')).toBe(false);
           });
       });
     });
 
-    describe('handleNewRequirementCancel', () => {
-      it('sets `showRequirementCreateDrawer` prop to `false`', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          showRequirementCreateDrawer: true,
-        });
+    describe('Cancel new requirement', () => {
+      it('closes requirement drawer', async () => {
+        findRequirementsTabs().vm.$emit('click-new-requirement');
+        await nextTick();
 
-        wrapper.vm.handleNewRequirementCancel();
+        findRequirementForm().vm.$emit('drawer-close');
+        await nextTick();
 
-        expect(wrapper.vm.showRequirementCreateDrawer).toBe(false);
+        expect(findRequirementForm().props('drawerOpen')).toBe(false);
       });
     });
 
-    describe('handleRequirementStateChange', () => {
-      beforeEach(() => {
-        jest.spyOn(wrapper.vm, 'updateRequirement').mockResolvedValue(mockUpdateMutationResult);
+    describe('RequirementStateChange', () => {
+      it('changes active state value to `iid` provided within object param', async () => {
+        await waitForPromises();
+
+        findRequirementsList()
+          .findAllComponents(RequirementItem)
+          .at(0)
+          .vm.$emit('archiveClick', { iid: '1' });
+        await nextTick();
+
+        expect(
+          findRequirementsList()
+            .findAllComponents(RequirementItem)
+            .at(0)
+            .props('stateChangeRequestActive'),
+        ).toBe(true);
       });
 
-      it('sets `stateChangeRequestActiveFor` value to `iid` provided within object param', () => {
-        wrapper.vm.handleRequirementStateChange({
+      it('updates requirement with object containing params and errorFlashMessage when `params.state` is "OPENED"', async () => {
+        await waitForPromises();
+
+        findRequirementsList()
+          .findAllComponents(RequirementItem)
+          .at(0)
+          .vm.$emit('archiveClick', { iid: '1', state: filterState.opened });
+        await waitForPromises();
+
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith(
+          expect.objectContaining({
+            updateRequirementInput: {
+              iid: '1',
+              state: filterState.opened,
+              projectPath: 'gitlab-org/gitlab-shell',
+            },
+          }),
+        );
+      });
+
+      it('updates requirement with object containing params and errorFlashMessage when `params.state` is "ARCHIVED"', async () => {
+        await waitForPromises();
+
+        findRequirementsList().findAllComponents(RequirementItem).at(0).vm.$emit('archiveClick', {
           iid: '1',
+          state: filterState.archived,
+        });
+        await waitForPromises();
+
+        expect(requestHandlers.updateRequirement).toHaveBeenCalledWith(
+          expect.objectContaining({
+            updateRequirementInput: {
+              iid: '1',
+              state: filterState.archived,
+              projectPath: 'gitlab-org/gitlab-shell',
+            },
+          }),
+        );
+      });
+
+      it('disables active state', async () => {
+        await waitForPromises();
+
+        findRequirementsList().findAllComponents(RequirementItem).at(0).vm.$emit('archiveClick', {
+          iid: '1',
+          state: filterState.opened,
+        });
+        await waitForPromises();
+
+        expect(
+          findRequirementsList()
+            .findAllComponents(RequirementItem)
+            .at(0)
+            .props('stateChangeRequestActive'),
+        ).toBe(false);
+      });
+
+      it('refetches requirementsCount query when request is successful', async () => {
+        await waitForPromises();
+
+        findRequirementsList().findAllComponents(RequirementItem).at(0).vm.$emit('archiveClick', {
+          iid: '1',
+          state: filterState.opened,
         });
 
-        expect(wrapper.vm.stateChangeRequestActiveFor).toBe('1');
+        expect(requestHandlers.projectRequirementsCount).toHaveBeenCalled();
       });
 
-      it('calls `updateRequirement` with object containing params and errorFlashMessage when `params.state` is "OPENED"', () => {
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.opened,
-          })
-          .then(() => {
-            expect(wrapper.vm.updateRequirement).toHaveBeenCalledWith(
-              expect.objectContaining({
-                iid: '1',
-                state: filterState.opened,
-              }),
-              expect.objectContaining({
-                errorFlashMessage: 'Something went wrong while reopening a requirement.',
-              }),
-            );
-          });
+      it('calls `$toast.show` with string "Requirement has been reopened" when `params.state` is "OPENED" and request is successful', async () => {
+        await waitForPromises();
+
+        findRequirementsList().findAllComponents(RequirementItem).at(0).vm.$emit('archiveClick', {
+          iid: '1',
+          state: filterState.opened,
+        });
+        await waitForPromises();
+
+        expect(showToast).toHaveBeenCalledWith('Requirement REQ-1 has been reopened');
       });
 
-      it('calls `updateRequirement` with object containing params and errorFlashMessage when `params.state` is "ARCHIVED"', () => {
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.archived,
-          })
-          .then(() => {
-            expect(wrapper.vm.updateRequirement).toHaveBeenCalledWith(
-              expect.objectContaining({
-                iid: '1',
-                state: filterState.archived,
-              }),
-              expect.objectContaining({
-                errorFlashMessage: 'Something went wrong while archiving a requirement.',
-              }),
-            );
-          });
-      });
+      it('calls `$toast.show` with string "Requirement has been archived" when `params.state` is "ARCHIVED" and request is successful', async () => {
+        await waitForPromises();
 
-      it('sets `stateChangeRequestActiveFor` to 0', () => {
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.opened,
-          })
-          .then(() => {
-            expect(wrapper.vm.stateChangeRequestActiveFor).toBe(0);
-          });
-      });
+        findRequirementsList().findAllComponents(RequirementItem).at(0).vm.$emit('archiveClick', {
+          iid: '1',
+          state: filterState.archived,
+        });
+        await waitForPromises();
 
-      it('refetches requirementsCount query when request is successful', () => {
-        jest
-          .spyOn(wrapper.vm.$apollo.queries.requirementsCount, 'refetch')
-          .mockImplementation(jest.fn());
-
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.opened,
-          })
-          .then(() => {
-            expect(wrapper.vm.$apollo.queries.requirementsCount.refetch).toHaveBeenCalled();
-          });
-      });
-
-      it('calls `$toast.show` with string "Requirement has been reopened" when `params.state` is "OPENED" and request is successful', () => {
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.opened,
-          })
-          .then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(
-              'Requirement REQ-1 has been reopened',
-            );
-          });
-      });
-
-      it('calls `$toast.show` with string "Requirement has been archived" when `params.state` is "ARCHIVED" and request is successful', () => {
-        return wrapper.vm
-          .handleRequirementStateChange({
-            iid: '1',
-            state: filterState.archived,
-          })
-          .then(() => {
-            expect(wrapper.vm.$toast.show).toHaveBeenCalledWith(
-              'Requirement REQ-1 has been archived',
-            );
-          });
+        expect(showToast).toHaveBeenCalledWith('Requirement REQ-1 has been archived');
       });
     });
 
-    describe('handleUpdateRequirementDrawerClose', () => {
-      it('sets `enableRequirementEdit` & `showRequirementViewDrawer` to false and `editedRequirement` to `null`', () => {
-        wrapper.vm.handleUpdateRequirementDrawerClose();
+    describe('UpdateRequirementDrawerClose', () => {
+      it('closes drawer and disables active state', () => {
+        findRequirementEditForm().vm.$emit('drawer-close');
 
-        expect(wrapper.vm.enableRequirementEdit).toBe(false);
-        expect(wrapper.vm.showRequirementViewDrawer).toBe(false);
-        expect(wrapper.vm.editedRequirement).toBe(null);
+        expect(findRequirementEditForm().props('enableRequirementEdit')).toBe(false);
+        expect(findRequirementEditForm().props('drawerOpen')).toBe(false);
+        expect(findRequirementEditForm().props('requirement')).toBe(null);
       });
     });
 
     describe('handleFilterRequirements', () => {
-      it('updates props tied to requirements Graph query', () => {
-        wrapper.vm.handleFilterRequirements(mockFilters);
+      it('updates props tied to requirements Graph query', async () => {
+        createComponentWithApollo({
+          handlers: buildHandlers({ pageInfo: mockPageInfo }),
+        });
+        await waitForPromises();
 
-        expect(wrapper.vm.authorUsernames).toEqual(['root', 'john.doe']);
-        expect(wrapper.vm.status).toBe('satisfied');
-        expect(wrapper.vm.textSearch).toBe('foo');
-        expect(wrapper.vm.currentPage).toBe(1);
-        expect(wrapper.vm.prevPageCursor).toBe('');
-        expect(wrapper.vm.nextPageCursor).toBe('');
+        findFilteredSearchBarRoot().vm.$emit('onFilter', mockFilters);
+        await nextTick();
+
+        const [author1, author2, status, search] = findFilteredSearchBarRoot().props(
+          'initialFilterValue',
+        );
+
+        expect(author1).toEqual({ type: 'author', value: { data: 'root' } });
+        expect(author2).toEqual({ type: 'author', value: { data: 'john.doe' } });
+        expect(status).toEqual({ type: 'status', value: { data: 'satisfied' } });
+        expect(search).toEqual({ type: 'filtered-search-term', value: { data: 'foo' } });
+
+        expect(findGlPagination().props('value')).toBe(1);
+        expect(findGlPagination().props('nextPage')).toEqual(null);
         expect(global.window.location.href).toBe(
           `${TEST_HOST}/?page=1&state=opened&search=foo&sort=created_desc&author_username%5B%5D=root&author_username%5B%5D=john.doe&status=satisfied`,
         );
@@ -874,31 +788,42 @@ describe('RequirementsRoot', () => {
       });
 
       it('updates props `textSearch` and `authorUsernames` with empty values when passed filters param is empty', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          authorUsernames: ['root'],
-          status: 'satisfied',
-          textSearch: 'foo',
+        createComponentWithApollo({
+          props: {
+            initialAuthorUsernames: ['root', 'john.doe'],
+            initialStatus: 'satisfied',
+            initialTextSearch: 'foo',
+          },
         });
 
-        wrapper.vm.handleFilterRequirements([]);
+        findFilteredSearchBarRoot().vm.$emit('onFilter', []);
 
-        expect(wrapper.vm.authorUsernames).toEqual([]);
-        expect(wrapper.vm.status).toBe('');
-        expect(wrapper.vm.textSearch).toBe('');
+        const [author1, author2, status, search] = findFilteredSearchBarRoot().props(
+          'initialFilterValue',
+        );
+
+        expect(author1).toEqual({ type: 'author', value: { data: 'root' } });
+        expect(author2).toEqual({ type: 'author', value: { data: 'john.doe' } });
+        expect(status).toEqual({ type: 'status', value: { data: 'satisfied' } });
+        expect(search).toEqual({ type: 'filtered-search-term', value: { data: 'foo' } });
+
         expect(trackingSpy).not.toHaveBeenCalled();
       });
     });
 
     describe('handleSortRequirements', () => {
-      it('updates props tied to requirements Graph query', () => {
-        wrapper.vm.handleSortRequirements('updated_desc');
+      it('updates props tied to requirements Graph query', async () => {
+        createComponentWithApollo({
+          handlers: buildHandlers({ pageInfo: mockPageInfo }),
+        });
+        await waitForPromises();
 
-        expect(wrapper.vm.sortBy).toBe('updated_desc');
-        expect(wrapper.vm.currentPage).toBe(1);
-        expect(wrapper.vm.prevPageCursor).toBe('');
-        expect(wrapper.vm.nextPageCursor).toBe('');
+        findFilteredSearchBarRoot().vm.$emit('onSort', 'updated_desc');
+        await nextTick();
+
+        expect(findFilteredSearchBarRoot().props('initialSortBy')).toBe('updated_desc');
+        expect(findGlPagination().props('value')).toBe(1);
+        expect(findGlPagination().props('nextPage')).toEqual(null);
         expect(global.window.location.href).toBe(
           `${TEST_HOST}/?page=1&state=opened&sort=updated_desc`,
         );
@@ -906,22 +831,21 @@ describe('RequirementsRoot', () => {
     });
 
     describe('handlePageChange', () => {
-      it('sets data prop `prevPageCursor` to empty string and `nextPageCursor` to `requirements.pageInfo.endCursor` when provided page param is greater than currentPage', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          requirements: {
-            list: mockRequirementsOpen,
-            pageInfo: mockPageInfo,
+      it('updates pagination based on selected next page', async () => {
+        createComponentWithApollo({
+          props: {
+            page: 1,
           },
-          currentPage: 1,
-          requirementsCount: mockRequirementsCount,
+          handlers: buildHandlers({
+            pageInfo: mockPageInfo,
+          }),
         });
 
-        wrapper.vm.handlePageChange(2);
+        await waitForPromises();
 
-        expect(wrapper.vm.prevPageCursor).toBe('');
-        expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
+        findGlPagination().vm.$emit('input', 2);
+        await nextTick();
+
         expect(queryToObject(window.location.search)).toEqual({
           page: '2',
           state: 'opened',
@@ -933,22 +857,21 @@ describe('RequirementsRoot', () => {
         });
       });
 
-      it('sets data prop `nextPageCursor` to empty string and `prevPageCursor` to `requirements.pageInfo.startCursor` when provided page param is less than currentPage', () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          requirements: {
-            list: mockRequirementsOpen,
-            pageInfo: mockPageInfo,
+      it('updates pagination based on selected page', async () => {
+        createComponentWithApollo({
+          props: {
+            page: 1,
           },
-          currentPage: 2,
-          requirementsCount: mockRequirementsCount,
+          handlers: buildHandlers({
+            pageInfo: mockPageInfo,
+          }),
         });
 
-        wrapper.vm.handlePageChange(1);
+        await waitForPromises();
 
-        expect(wrapper.vm.prevPageCursor).toBe(mockPageInfo.startCursor);
-        expect(wrapper.vm.nextPageCursor).toBe('');
+        findGlPagination().vm.$emit('input', 1);
+        await nextTick();
+
         expect(queryToObject(window.location.search)).toEqual({
           page: '1',
           state: 'opened',
@@ -968,45 +891,32 @@ describe('RequirementsRoot', () => {
     });
 
     it('renders requirements-tabs component', () => {
-      expect(wrapper.findComponent(RequirementsTabs).exists()).toBe(true);
+      expect(findRequirementsTabs().exists()).toBe(true);
     });
 
     it('renders filtered-search-bar component', () => {
-      expect(wrapper.findComponent(FilteredSearchBarRoot).exists()).toBe(true);
-      expect(wrapper.findComponent(FilteredSearchBarRoot).props('searchInputPlaceholder')).toBe(
+      expect(findFilteredSearchBarRoot().exists()).toBe(true);
+      expect(findFilteredSearchBarRoot().props('searchInputPlaceholder')).toBe(
         'Search requirements',
       );
-      expect(wrapper.findComponent(FilteredSearchBarRoot).props('tokens')).toEqual([
+      expect(findFilteredSearchBarRoot().props('tokens')).toEqual([
         mockAuthorToken,
         mockStatusToken,
       ]);
-      expect(wrapper.findComponent(FilteredSearchBarRoot).props('recentSearchesStorageKey')).toBe(
-        'requirements',
-      );
+      expect(findFilteredSearchBarRoot().props('recentSearchesStorageKey')).toBe('requirements');
     });
 
     it('renders empty state when query results are empty', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        requirements: {
-          list: [],
-        },
-        requirementsCount: {
-          OPENED: 0,
-        },
+      createComponentWithApollo({
+        handlers: buildHandlers({ nodes: [], opened: 0 }),
       });
+      await waitForPromises();
 
-      await nextTick();
-      expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(true);
+      expect(findRequirementsEmptyState().exists()).toBe(true);
     });
 
     it('renders requirements-loading component when query results are still being loaded', () => {
-      const wrapperLoading = createComponent({ loading: true });
-
-      expect(wrapperLoading.findComponent(RequirementsLoading).isVisible()).toBe(true);
-
-      wrapperLoading.destroy();
+      expect(wrapper.findComponent(RequirementsLoading).isVisible()).toBe(true);
     });
 
     it('renders requirement-create-form component', () => {
@@ -1018,61 +928,43 @@ describe('RequirementsRoot', () => {
     });
 
     it('does not render requirement-empty-state component when `showRequirementCreateDrawer` prop is `true`', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        showRequirementCreateDrawer: true,
+      createComponentWithApollo({
+        handlers: buildHandlers({ nodes: [] }),
       });
+      await waitForPromises();
+
+      findRequirementsTabs().vm.$emit('click-new-requirement');
 
       await nextTick();
-      expect(wrapper.findComponent(RequirementsEmptyState).exists()).toBe(false);
+      expect(findRequirementsEmptyState().exists()).toBe(false);
     });
 
     it('renders requirement items for all the requirements', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        requirements: {
-          list: mockRequirementsOpen,
-          pageInfo: mockPageInfo,
-        },
-        requirementsCount: mockRequirementsCount,
+      createComponentWithApollo({
+        handlers: buildHandlers({ pageInfo: mockPageInfo }),
       });
-
-      await nextTick();
-      const itemsContainer = wrapper.find('ul.requirements-list');
-
-      expect(itemsContainer.exists()).toBe(true);
-      expect(itemsContainer.findAllComponents(RequirementItem)).toHaveLength(
-        mockRequirementsOpen.length,
-      );
+      await waitForPromises();
+      expect(findRequirementsList().exists()).toBe(true);
+      expect(findRequirementsList().findAllComponents(RequirementItem)).toHaveLength(1);
     });
 
     it('renders pagination controls', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        requirements: {
-          list: mockRequirementsOpen,
-          pageInfo: mockPageInfo,
-        },
-        requirementsCount: mockRequirementsCount,
+      createComponentWithApollo({
+        handlers: buildHandlers({ pageInfo: mockPageInfo }),
       });
+      await waitForPromises();
 
-      await nextTick();
-      const pagination = wrapper.findComponent(GlPagination);
+      const pagination = findGlPagination();
 
       expect(pagination.exists()).toBe(true);
       expect(pagination.props('value')).toBe(1);
-      expect(pagination.props('perPage')).toBe(2); // We're mocking this page size
+      expect(pagination.props('perPage')).toBe(2);
       expect(pagination.props('align')).toBe('center');
     });
   });
 
   describe('with apollo mock', () => {
     describe('when requirement is edited', () => {
-      let updateRequirementSpy;
-
       describe('when user changes the requirement\'s status to "FAILED" from "SUCCESS"', () => {
         const editRequirementToFailed = () => {
           findRequirementEditForm().vm.$emit('save', {
@@ -1083,18 +975,10 @@ describe('RequirementsRoot', () => {
           });
         };
 
-        beforeEach(() => {
-          updateRequirementSpy = jest.fn().mockResolvedValue(mockUpdateRequirementToFailed);
-
-          wrapper = createComponentWithApollo({
-            requestHandlers: [[updateRequirement, updateRequirementSpy]],
-          });
-        });
-
         it('calls `updateRequirement` mutation with correct parameters', () => {
           editRequirementToFailed();
 
-          expect(updateRequirementSpy).toHaveBeenCalledWith({
+          expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
             updateRequirementInput: {
               projectPath: 'gitlab-org/gitlab-shell',
               iid: mockProjectRequirementPassed.iid,
@@ -1102,16 +986,6 @@ describe('RequirementsRoot', () => {
               title: mockProjectRequirementPassed.title,
             },
           });
-        });
-
-        it('renders a failed badge after the update', async () => {
-          await nextTick();
-          expect(findBadge().props('icon')).toBe('status-success');
-
-          editRequirementToFailed();
-          await waitForPromises();
-
-          expect(findBadge().props('icon')).toBe('status-failed');
         });
       });
 
@@ -1126,17 +1000,13 @@ describe('RequirementsRoot', () => {
         };
 
         beforeEach(() => {
-          updateRequirementSpy = jest.fn().mockResolvedValue(mockUpdateRequirementTitle);
-
-          wrapper = createComponentWithApollo({
-            requestHandlers: [[updateRequirement, updateRequirementSpy]],
-          });
+          createComponentWithApollo();
         });
 
         it('calls `updateRequirement` mutation with correct parameters without `lastTestReport`', () => {
           editRequirementTitle();
 
-          expect(updateRequirementSpy).toHaveBeenCalledWith({
+          expect(requestHandlers.updateRequirement).toHaveBeenCalledWith({
             updateRequirementInput: {
               projectPath: 'gitlab-org/gitlab-shell',
               iid: mockProjectRequirementPassed.iid,

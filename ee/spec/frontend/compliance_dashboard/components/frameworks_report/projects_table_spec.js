@@ -33,7 +33,6 @@ describe('ProjectsTable component', () => {
 
   const groupPath = 'group-path';
   const rootAncestorPath = 'root-ancestor-path';
-  const newGroupComplianceFrameworkPath = 'new-framework-path';
 
   const COMPLIANCE_FRAMEWORK_COLUMN_IDX = 3;
   const ROW_WITH_FRAMEWORK_IDX = 0;
@@ -73,7 +72,6 @@ describe('ProjectsTable component', () => {
       propsData: {
         groupPath,
         rootAncestorPath,
-        newGroupComplianceFrameworkPath,
         ...props,
       },
       stubs: {

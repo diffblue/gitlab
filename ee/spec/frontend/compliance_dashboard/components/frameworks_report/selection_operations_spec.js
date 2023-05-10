@@ -30,7 +30,6 @@ describe('SelectionOperations component', () => {
     wrapper = mount(SelectionOperations, {
       propsData: {
         rootAncestorPath: 'group-path',
-        newGroupComplianceFrameworkPath: 'new-framework-path',
         ...props,
       },
       stubs: {

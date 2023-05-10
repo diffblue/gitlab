@@ -1,7 +1,6 @@
 <script>
 import { GlBadge, GlButton, GlLabel, GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
 
 import { FRAMEWORK_BADGE_SIZE_MD, FRAMEWORK_BADGE_SIZES } from '../../constants';
 
@@ -36,7 +35,6 @@ export default {
     },
   },
   computed: {
-    isModalsRefactorEnabled,
     showDefaultBadge() {
       return this.showDefault && this.framework.default;
     },
@@ -59,7 +57,6 @@ export default {
       <p v-if="framework.description" class="gl-text-left">{{ framework.description }}</p>
       <div class="gl-text-left">
         <gl-button
-          v-if="isModalsRefactorEnabled"
           category="tertiary"
           variant="confirm"
           class="gl-font-sm"

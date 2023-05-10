@@ -4,7 +4,7 @@ module QA
   include QA::Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
-                 product_group: :billing_and_subscription_management do
+    product_group: :billing_and_subscription_management do
     describe 'Seat overage modal' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:hash) { SecureRandom.hex(8) }
@@ -84,7 +84,9 @@ module QA
       context 'with ultimate plan' do
         before do
           Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
-          wait_until_subscripton_upgraded?
+          Gitlab::Page::Group::Settings::Billing.perform do |billing|
+            billing.wait_for_subscription(ULTIMATE[:name], page: page)
+          end
           group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
           group.visit!
         end
@@ -98,7 +100,7 @@ module QA
           end
 
           it 'does not show overage modal when inviting a member as a guest',
-             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387616' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387616' do
             invite_member(user1.username, 'Guest')
 
             check_if_overage_modal_absent
@@ -109,7 +111,7 @@ module QA
 
         context 'for group invite' do
           it 'does not show overage modal when inviting a group which does not increase seats owed',
-             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387614' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387614' do
             member_group.add_member(group_owner, Resource::Members::AccessLevel::DEVELOPER)
             invite_group(member_group.path, 'Developer')
 
@@ -118,7 +120,7 @@ module QA
           end
 
           context 'when inviting a group with developer role which increases seats owed',
-             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387613' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/387613' do
             it_behaves_like 'overage for group invite', 'Developer'
           end
         end
@@ -127,32 +129,25 @@ module QA
       context 'with premium plan' do
         before do
           Flow::Purchase.upgrade_subscription(plan: PREMIUM)
-          wait_until_subscripton_upgraded?(plan: "Premium")
+          Gitlab::Page::Group::Settings::Billing.perform do |billing|
+            billing.wait_for_subscription(PREMIUM[:name], page: page)
+          end
           group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
           group.visit!
         end
 
         context 'for member invite' do
           context 'when guest role is added',
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388303' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388303' do
             it_behaves_like 'overage for member invite', 'Guest'
           end
         end
 
         context 'for group invite' do
           context 'when inviting a group with Guest role which increases seats owed',
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388306' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/388306' do
             it_behaves_like 'overage for group invite', 'Guest'
           end
-        end
-      end
-
-      def wait_until_subscripton_upgraded?(plan: "Ultimate")
-        Gitlab::Page::Group::Settings::Billing.perform do |billing|
-          expect do
-            billing.billing_plan_header
-          end.to eventually_include("#{group.path} is currently using the #{plan} SaaS Plan")
-                   .within(max_duration: 120, max_attempts: 30, sleep_interval: 2, reload_page: page)
         end
       end
 
@@ -185,7 +180,7 @@ module QA
       end
 
       def find_shared_group(member_group)
-        group.reload!.shared_with_groups.find { |grp| grp[:group_name] == member_group.name }
+        group.reload!.shared_with_groups.find { |grp| grp[:group_full_path] == member_group.path }
       end
     end
   end

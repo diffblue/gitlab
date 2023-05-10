@@ -66,14 +66,12 @@ describe('Table', () => {
     updateMockResolver,
     props = {},
     mountFn = shallowMount,
-    glFeatures = {},
+    provide = {},
   ) {
     return extendedWrapper(
       mountFn(Table, {
         apolloProvider: createMockApolloProvider(fetchMockResolver, updateMockResolver),
         propsData: {
-          addFrameworkPath: 'group/framework/new',
-          editFrameworkPath: 'group/framework/id/edit',
           emptyStateSvgPath: 'dir/image.svg',
           ...props,
         },
@@ -94,11 +92,11 @@ describe('Table', () => {
           },
         },
         provide: {
-          groupEditPath: '/groups/group-1/-/edit#js-compliance-frameworks-settings',
+          canAddEdit: true,
           groupPath: 'group-1',
           graphqlFieldName: 'ComplianceManagement::Framework',
           pipelineConfigurationFullPathEnabled: true,
-          glFeatures,
+          ...provide,
         },
       }),
     );
@@ -161,7 +159,6 @@ describe('Table', () => {
     it('shows the empty state', () => {
       expect(findEmptyState().exists()).toBe(true);
       expect(findEmptyState().props('imagePath')).toBe('dir/image.svg');
-      expect(findEmptyState().props('addFrameworkPath')).toBe('group/framework/new');
     });
 
     it('does not show the other parts of the app', () => {
@@ -188,7 +185,6 @@ describe('Table', () => {
     it('shows the add framework button', () => {
       const addBtn = findAddBtn();
 
-      expect(addBtn.attributes('href')).toBe('group/framework/new');
       expect(addBtn.text()).toBe('Add framework');
     });
 
@@ -196,11 +192,10 @@ describe('Table', () => {
       expect(findDeleteModal().exists()).toBe(true);
     });
 
-    describe('when no paths are provided', () => {
+    describe('when editing is unavailable', () => {
       beforeEach(() => {
-        wrapper = createComponentWithApollo(fetch, updateDefault, {
-          addFrameworkPath: null,
-          editFrameworkPath: null,
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, shallowMount, {
+          canAddEdit: false,
         });
       });
 
@@ -232,7 +227,6 @@ describe('Table', () => {
                 PIPELINE_CONFIGURATION_PATH_FORMAT,
               ),
               color: expect.stringMatching(/^#([0-9A-F]{3}){1,2}$/i),
-              editPath: expect.stringMatching(/^group\/framework\/[0-9+]\/edit$/i),
             },
             loading: false,
           }),
@@ -248,7 +242,6 @@ describe('Table', () => {
       expect(findLabels().at(0).props()).toMatchObject({
         title: 'GDPR',
         backgroundColor: '#1aaa55',
-        target: 'group/framework/1/edit',
         disabled: false,
         description: 'Edit framework',
       });
@@ -371,74 +364,59 @@ describe('Table', () => {
   });
 
   describe('create framework', () => {
-    describe('with "manageComplianceFrameworksModalsRefactor" feature flag enabled', () => {
-      beforeEach(async () => {
-        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount, {
-          manageComplianceFrameworksModalsRefactor: true,
-        });
-        await waitForPromises();
-      });
+    beforeEach(async () => {
+      wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
+      await waitForPromises();
+    });
 
-      it('renders a button instead of a link', () => {
-        const btn = findAddBtn();
+    it('shows modal when clicking add framework button', () => {
+      findAddBtn().vm.$emit('click', new MouseEvent('click'));
 
-        expect(btn.find('button').exists()).toBe(true);
-        expect(btn.find('a').exists()).toBe(false);
-      });
+      expect(mockModalShow).toHaveBeenCalled();
+    });
 
-      it('shows modal when clicking add framework button', () => {
-        findAddBtn().vm.$emit('click', new MouseEvent('click'));
+    it('hides modal when successful', () => {
+      const successMessage = 'woo!';
+      findFormModal().vm.$emit('change', successMessage);
 
-        expect(mockModalShow).toHaveBeenCalled();
-      });
+      expect(mockModalHide).toHaveBeenCalled();
+    });
 
-      it('hides modal when successful', () => {
-        const successMessage = 'woo!';
-        findFormModal().vm.$emit('change', successMessage);
+    it('shows a toast when successful', () => {
+      const successMessage = 'woo!';
+      findFormModal().vm.$emit('change', successMessage);
 
-        expect(mockModalHide).toHaveBeenCalled();
-      });
-
-      it('shows a toast when successful', () => {
-        const successMessage = 'woo!';
-        findFormModal().vm.$emit('change', successMessage);
-
-        expect(mockToastShow).toHaveBeenCalledWith(successMessage);
-      });
+      expect(mockToastShow).toHaveBeenCalledWith(successMessage);
     });
   });
 
   describe('edit framework', () => {
-    describe('with "manageComplianceFrameworksModalsRefactor" feature flag enabled', () => {
-      beforeEach(async () => {
-        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount, {
-          manageComplianceFrameworksModalsRefactor: true,
-        });
-        await waitForPromises();
-      });
+    beforeEach(async () => {
+      wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
+      await waitForPromises();
+    });
 
-      it('shows modal when clicking edit framework button', () => {
-        const tableAction = findAllTableActions().at(0);
-        const framework = tableAction.props('framework');
+    it('shows modal when clicking edit framework button', () => {
+      const tableAction = findAllTableActions().at(0);
+      const framework = tableAction.props('framework');
 
-        tableAction.vm.$emit('edit', framework);
+      tableAction.vm.$emit('edit', framework);
 
-        expect(mockModalShow).toHaveBeenCalled();
-      });
+      expect(mockModalShow).toHaveBeenCalled();
+    });
 
-      it('hides modal when successful', () => {
-        const successMessage = 'woo!';
-        findFormModal().vm.$emit('change', successMessage);
+    it('hides modal when successful', () => {
+      const successMessage = 'woo!';
+      findFormModal().vm.$emit('change', successMessage);
 
-        expect(mockModalHide).toHaveBeenCalled();
-      });
+      expect(mockModalHide).toHaveBeenCalled();
+    });
 
-      it('shows a toast when successful', () => {
-        const successMessage = 'woo!';
-        findFormModal().vm.$emit('change', successMessage);
+    it('shows a toast when successful', () => {
+      const successMessage = 'woo!';
+      findFormModal().vm.$emit('change', successMessage);
 
-        expect(mockToastShow).toHaveBeenCalledWith(successMessage);
-      });
+      expect(mockToastShow).toHaveBeenCalledWith(successMessage);
     });
   });
 });

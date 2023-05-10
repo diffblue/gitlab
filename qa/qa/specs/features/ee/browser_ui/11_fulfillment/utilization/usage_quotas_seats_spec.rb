@@ -33,7 +33,7 @@ module QA
         Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
         Support::Waiter.wait_until(max_duration: 15) { page.text.include?('successfully purchased') }
         Gitlab::Page::Group::Settings::Billing.perform do |billing|
-          billing.wait_for_subscription('ultimate saas', page: page)
+          billing.wait_for_subscription(ULTIMATE[:name], page: page)
           group.add_member(guest_user, Resource::Members::AccessLevel::GUEST)
           group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
           billing.refresh_subscription_seats

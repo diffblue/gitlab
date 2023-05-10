@@ -22,7 +22,7 @@ describe('TableActions', () => {
   const findRemoveDefaultButton = () =>
     wrapper.findByTestId('compliance-framework-remove-default-button');
 
-  const createComponent = (props = {}, glFeatures = {}) => {
+  const createComponent = (props = {}, provide = {}) => {
     wrapper = extendedWrapper(
       shallowMount(TableActions, {
         propsData: {
@@ -34,7 +34,8 @@ describe('TableActions', () => {
           GlTooltip: createMockDirective('gl-tooltip'),
         },
         provide: {
-          glFeatures,
+          canAddEdit: true,
+          ...provide,
         },
       }),
     );
@@ -47,10 +48,8 @@ describe('TableActions', () => {
     expect(button.attributes('aria-label')).toBe(ariaLabel);
   };
 
-  it('does not show modification buttons when framework is missing paths', () => {
-    createComponent({
-      framework: { ...framework, editPath: null },
-    });
+  it('does not show modification buttons when editing is unavailable', () => {
+    createComponent({}, { canAddEdit: false });
 
     expect(findEditButton().exists()).toBe(false);
     expect(findDropdownButton().exists()).toBe(false);
@@ -62,11 +61,10 @@ describe('TableActions', () => {
     const button = findEditButton();
 
     displaysTheButton(button, 'pencil', EDIT_BUTTON_LABEL);
-    expect(button.attributes('href')).toBe('group/framework/1/edit');
   });
 
-  it('emits an "edit" event when clicked and the "manageComplianceFrameworksModalsRefactor" feature flag is enabled', () => {
-    createComponent({}, { manageComplianceFrameworksModalsRefactor: true });
+  it('emits an "edit" event when clicked', () => {
+    createComponent();
 
     const button = findEditButton();
 

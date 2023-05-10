@@ -4,7 +4,6 @@ import { GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { __, s__ } from '~/locale';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
-import { isModalsRefactorEnabled } from 'ee/groups/settings/compliance_frameworks/utils';
 
 const frameworksDropdownPlaceholder = s__('ComplianceReport|Choose one framework');
 
@@ -18,10 +17,6 @@ export default {
     event: 'select',
   },
   props: {
-    newGroupComplianceFrameworkPath: {
-      type: String,
-      required: true,
-    },
     rootAncestorPath: {
       type: String,
       required: true,
@@ -65,7 +60,6 @@ export default {
     },
   },
   computed: {
-    isModalsRefactorEnabled,
     toggleText() {
       const selectedFramework = this.frameworks?.find((f) => f.id === this.selected);
 
@@ -129,8 +123,7 @@ export default {
           category="tertiary"
           block
           class="gl-justify-content-start! gl-mt-2!"
-          :href="isModalsRefactorEnabled ? null : newGroupComplianceFrameworkPath"
-          @click="isModalsRefactorEnabled ? createNewFramework() : null"
+          @click="createNewFramework"
         >
           {{ $options.i18n.createNewFramework }}
         </gl-button>

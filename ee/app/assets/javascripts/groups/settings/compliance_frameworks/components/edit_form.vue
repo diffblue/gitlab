@@ -1,13 +1,12 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
-import { visitUrl } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { FETCH_ERROR, SAVE_ERROR } from '../constants';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
-import { getSubmissionParams, initialiseFormData, isModalsRefactorEnabled } from '../utils';
+import { getSubmissionParams, initialiseFormData } from '../utils';
 import FormStatus from './form_status.vue';
 import SharedForm from './shared_form.vue';
 
@@ -20,7 +19,6 @@ export default {
     graphqlFieldName: {
       default: '',
     },
-    groupEditPath: 'groupEditPath',
     groupPath: 'groupPath',
     pipelineConfigurationFullPathEnabled: 'pipelineConfigurationFullPathEnabled',
   },
@@ -104,9 +102,7 @@ export default {
       Sentry.captureException(error);
     },
     onCancel() {
-      if (isModalsRefactorEnabled()) {
-        this.$emit('cancel');
-      }
+      this.$emit('cancel');
     },
     async onSubmit() {
       this.saving = true;
@@ -125,19 +121,15 @@ export default {
               params,
             },
           },
-          ...(isModalsRefactorEnabled()
-            ? {
-                awaitRefetchQueries: true,
-                refetchQueries: [
-                  {
-                    query: getComplianceFrameworkQuery,
-                    variables: {
-                      fullPath: this.groupPath,
-                    },
-                  },
-                ],
-              }
-            : {}),
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: getComplianceFrameworkQuery,
+              variables: {
+                fullPath: this.groupPath,
+              },
+            },
+          ],
         });
 
         const [error] = data?.updateComplianceFramework?.errors || [];
@@ -145,11 +137,6 @@ export default {
         if (error) {
           this.setSavingError(new Error(error), error);
         } else {
-          if (!isModalsRefactorEnabled()) {
-            visitUrl(this.groupEditPath);
-            return;
-          }
-
           this.$emit('success', {
             message: this.$options.i18n.successMessageText,
             framework: data.updateComplianceFramework.framework,

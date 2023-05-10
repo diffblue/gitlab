@@ -37,10 +37,6 @@ export default {
       type: String,
       required: true,
     },
-    newGroupComplianceFrameworkPath: {
-      type: String,
-      required: true,
-    },
   },
   data() {
     return {
@@ -204,7 +200,6 @@ export default {
       :projects="projects.list"
       :root-ancestor-path="rootAncestorPath"
       :group-path="groupPath"
-      :new-group-compliance-framework-path="newGroupComplianceFrameworkPath"
       @updated="showUpdatePopoverIfNeeded"
     />
 

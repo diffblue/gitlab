@@ -14,11 +14,9 @@ import * as Sentry from '@sentry/browser';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import getComplianceFrameworkQuery from 'ee/graphql_shared/queries/get_compliance_framework.query.graphql';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
 import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
-import { injectIdIntoEditPath } from '../utils';
 import DeleteModal from './delete_modal.vue';
 import EmptyState from './table_empty_state.vue';
 import TableActions from './table_actions.vue';
@@ -39,19 +37,8 @@ export default {
     GlLabel,
     TableActions,
   },
-  mixins: [glFeatureFlagMixin()],
-  inject: ['groupPath'],
+  inject: ['canAddEdit', 'groupPath'],
   props: {
-    addFrameworkPath: {
-      type: String,
-      required: false,
-      default: null,
-    },
-    editFrameworkPath: {
-      type: String,
-      required: false,
-      default: null,
-    },
     emptyStateSvgPath: {
       type: String,
       required: true,
@@ -104,7 +91,6 @@ export default {
             return {
               ...framework,
               parsedId,
-              editPath: injectIdIntoEditPath(this.editFrameworkPath, parsedId),
             };
           }) || []
         );
@@ -140,20 +126,11 @@ export default {
       return this.error || this.message;
     },
     showAddButton() {
-      return this.hasLoaded && this.addFrameworkPath && !this.isEmpty;
-    },
-    addFrameworkHref() {
-      return this.glFeatures.manageComplianceFrameworksModalsRefactor
-        ? undefined
-        : this.addFrameworkPath;
+      return this.hasLoaded && this.canAddEdit && !this.isEmpty;
     },
   },
   methods: {
     onClickAdd(event) {
-      if (!this.glFeatures.manageComplianceFrameworksModalsRefactor) {
-        return;
-      }
-
       event?.preventDefault();
       this.markForAdd();
     },
@@ -261,12 +238,7 @@ export default {
       {{ alertMessage }}
     </gl-alert>
     <gl-loading-icon v-if="isLoading" size="lg" class="gl-mt-5" />
-    <empty-state
-      v-if="isEmpty"
-      :image-path="emptyStateSvgPath"
-      :add-framework-path="addFrameworkPath"
-      @addFramework="onClickAdd"
-    />
+    <empty-state v-if="isEmpty" :image-path="emptyStateSvgPath" @addFramework="onClickAdd" />
 
     <gl-table-lite v-if="hasFrameworks" :items="complianceFrameworks" :fields="tableFields">
       <template #cell(name)="{ item: framework }">
@@ -310,18 +282,12 @@ export default {
       variant="confirm"
       size="small"
       data-testid="add-framework-btn"
-      :href="addFrameworkHref"
       @click="onClickAdd"
     >
       {{ $options.i18n.addBtn }}
     </gl-button>
 
-    <form-modal
-      v-if="glFeatures.manageComplianceFrameworksModalsRefactor"
-      ref="formModal"
-      :framework="markedForEdit"
-      @change="onChange"
-    />
+    <form-modal ref="formModal" :framework="markedForEdit" @change="onChange" />
     <delete-modal
       v-if="hasFrameworks"
       :id="markedForDeletion.id"

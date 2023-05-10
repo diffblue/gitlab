@@ -52,19 +52,3 @@ export const fetchPipelineConfigurationFileExists = async (path) => {
     return false;
   }
 };
-
-export function isModalsRefactorEnabled() {
-  /*
-   * Temporary util function to determine if we are in the new refactored modal flow, or the existing full-page form
-   * flow. We need to check both feature flag and the current page to handle the situation where the FF is enabled
-   * but someone has navigated directly to the old page by URL.
-   * Clean up in https://gitlab.com/gitlab-org/gitlab/-/merge_requests/113641
-   */
-  if (!gon.features?.manageComplianceFrameworksModalsRefactor) {
-    return false;
-  }
-
-  return !['groups:compliance_frameworks:edit', 'groups:compliance_frameworks:new'].includes(
-    document.body.dataset.page,
-  );
-}
