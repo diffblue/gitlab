@@ -31,6 +31,10 @@ export const projectVulnerabilityImages = {
             name: 'long-image-name',
             __typename: 'VulnerabilityContainerImage',
           },
+          {
+            name: 'second-long-image-name',
+            __typename: 'VulnerabilityContainerImage',
+          },
         ],
         __typename: 'VulnerabilityContainerImageConnection',
       },
