@@ -5,7 +5,9 @@ module TrialsHelper
 
   def create_lead_form_data
     {
-      submit_path: create_lead_trials_path(step: :lead, **params.permit(:namespace_id).merge(glm_params)),
+      submit_path: create_lead_trials_path(
+        step: GitlabSubscriptions::Trials::CreateService::LEAD, **params.permit(:namespace_id).merge(glm_params)
+      ),
       first_name: current_user.first_name,
       last_name: current_user.last_name,
       company_name: current_user.organization
@@ -38,7 +40,7 @@ module TrialsHelper
   end
 
   def trial_selection_intro_text
-    if any_trialable_group_namespaces?
+    if any_trial_eligible_namespaces?
       s_('Trials|You can apply your trial to a new group or an existing group.')
     else
       s_('Trials|Create a new group to start your GitLab Ultimate trial.')
@@ -46,11 +48,11 @@ module TrialsHelper
   end
 
   def show_trial_namespace_select?
-    any_trialable_group_namespaces?
+    any_trial_eligible_namespaces?
   end
 
   def namespace_options_for_listbox
-    group_options = trialable_group_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+    group_options = trial_eligible_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
     options = [
       {
         text: _('New'),
@@ -79,13 +81,15 @@ module TrialsHelper
     )
   end
 
-  def trialable_group_namespaces
-    strong_memoize(:trialable_group_namespaces) do
-      current_user.manageable_groups_eligible_for_trial
+  def trial_eligible_namespaces
+    # TODO: Not sure this helps any as relation is lazy loaded
+    # see https://gitlab.com/gitlab-org/gitlab/-/issues/393969
+    strong_memoize(:trial_eligible_namespaces) do
+      current_user.manageable_namespaces_eligible_for_trial
     end
   end
 
-  def any_trialable_group_namespaces?
-    trialable_group_namespaces.any?
+  def any_trial_eligible_namespaces?
+    trial_eligible_namespaces.any?
   end
 end
