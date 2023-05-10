@@ -321,10 +321,12 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
 
   rule { resource_access_token_creation_allowed & can?(:read_resource_access_tokens) }.policy do
     enable :create_resource_access_tokens
+    enable :manage_resource_access_tokens
   end
 
   rule { can?(:project_bot_access) }.policy do
     prevent :create_resource_access_tokens
+    prevent :manage_resource_access_tokens
   end
 
   rule { can?(:admin_group_member) }.policy do
