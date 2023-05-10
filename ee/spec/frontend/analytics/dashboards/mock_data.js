@@ -54,12 +54,12 @@ const mockMetrics = ([
   },
   vulnerability_critical: {
     value: vulnerabilityCritical,
-    label: 'Critical Vulnerabilities',
+    label: 'Critical Vulnerabilities over time',
     identifier: 'vulnerability_critical',
   },
   vulnerability_high: {
     value: vulnerabilityHigh,
-    label: 'High Vulnerabilities',
+    label: 'High Vulnerabilities  over time',
     identifier: 'vulnerability_high',
   },
 });
@@ -306,38 +306,38 @@ export const mockComparativeTableData = [
   {
     metric: {
       identifier: 'vulnerability_critical',
-      value: 'Critical Vulnerabilities',
+      value: 'Critical Vulnerabilities over time',
     },
     invertTrendColor: true,
     lastMonth: {
-      change: 0,
+      change: null,
       value: 0,
     },
     thisMonth: {
-      change: 0,
+      change: null,
       value: 3,
     },
     twoMonthsAgo: {
-      change: 0,
+      change: null,
       value: 2,
     },
   },
   {
     metric: {
       identifier: 'vulnerability_high',
-      value: 'High Vulnerabilities',
+      value: 'High Vulnerabilities over time',
     },
     invertTrendColor: true,
     lastMonth: {
-      change: 0,
+      change: null,
       value: 3,
     },
     thisMonth: {
-      change: 0,
+      change: null,
       value: 0,
     },
     twoMonthsAgo: {
-      change: 0,
+      change: null,
       value: 0,
     },
   },

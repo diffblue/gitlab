@@ -13461,7 +13461,7 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
-msgid "DORA4Metrics|Critical Vulnerabilities"
+msgid "DORA4Metrics|Critical Vulnerabilities over time"
 msgstr ""
 
 msgid "DORA4Metrics|Cycle time"
@@ -13494,7 +13494,7 @@ msgstr ""
 msgid "DORA4Metrics|Go to docs"
 msgstr ""
 
-msgid "DORA4Metrics|High Vulnerabilities"
+msgid "DORA4Metrics|High Vulnerabilities over time"
 msgstr ""
 
 msgid "DORA4Metrics|Lead Time for Changes"
@@ -48958,6 +48958,9 @@ msgstr ""
 msgid "ValueStreamAnalytics|Average number of deployments to production per day. This metric measures how often value is delivered to end users."
 msgstr ""
 
+msgid "ValueStreamAnalytics|Critical vulnerabilities over time."
+msgstr ""
+
 msgid "ValueStreamAnalytics|Dashboard"
 msgstr ""
 
@@ -48965,6 +48968,9 @@ msgid "ValueStreamAnalytics|Edit Value Stream: %{name}"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Go to docs"
+msgstr ""
+
+msgid "ValueStreamAnalytics|High vulnerabilities over time."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Key metrics"
@@ -49016,12 +49022,6 @@ msgid "ValueStreamAnalytics|The time to successfully deliver a commit into produ
 msgstr ""
 
 msgid "ValueStreamAnalytics|There was an error while fetching value stream analytics %{requestTypeName} data."
-msgstr ""
-
-msgid "ValueStreamAnalytics|Total Critical vulnerabilities."
-msgstr ""
-
-msgid "ValueStreamAnalytics|Total High vulnerabilities."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Total number of deploys to production."
