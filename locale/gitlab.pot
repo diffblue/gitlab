@@ -53102,6 +53102,9 @@ msgstr ""
 msgid "failed to revert associated finding(id=%{finding_id}) to detected"
 msgstr ""
 
+msgid "failed to revoke token"
+msgstr ""
+
 msgid "file"
 msgid_plural "files"
 msgstr[0] ""
@@ -54322,6 +54325,9 @@ msgid "today"
 msgstr ""
 
 msgid "toggle collapse"
+msgstr ""
+
+msgid "token already revoked"
 msgstr ""
 
 msgid "total must be less than or equal to %{size}"
