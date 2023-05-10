@@ -25004,13 +25004,13 @@ msgstr ""
 msgid "Iterations|Error loading iteration cadences."
 msgstr ""
 
+msgid "Iterations|Incomplete issues will be added to the next iteration at %{strongStart}midnight, %{timezone}%{strongEnd}."
+msgstr ""
+
 msgid "Iterations|Iteration cadences"
 msgstr ""
 
 msgid "Iterations|Iterations are scheduled to start on %{weekday}s."
-msgstr ""
-
-msgid "Iterations|Move incomplete issues to the next iteration."
 msgstr ""
 
 msgid "Iterations|New iteration"
