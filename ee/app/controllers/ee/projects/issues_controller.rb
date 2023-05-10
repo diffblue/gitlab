@@ -6,6 +6,8 @@ module EE
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
+      EE_ISSUES_EXCEPT_ACTIONS = [:delete_description_version, :description_diff].freeze
+
       prepended do
         include DescriptionDiffActions
         include GeoInstrumentation
@@ -39,6 +41,11 @@ module EE
       end
 
       private
+
+      override :work_item_redirect_except_actions
+      def work_item_redirect_except_actions
+        super + EE_ISSUES_EXCEPT_ACTIONS
+      end
 
       def issue_params_attributes
         attrs = super
