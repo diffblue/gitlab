@@ -52,16 +52,6 @@ RSpec.describe 'Update a work item' do
     end
   end
 
-  shared_examples 'does not update work_item progress widget' do
-    it 'does not update progress widget' do
-      expect do
-        post_graphql_mutation(mutation, current_user: current_user)
-        work_item.reload
-      end.not_to change { work_item_progress }
-      expect(mutation_response['errors']).to contain_exactly(message)
-    end
-  end
-
   context 'with iteration widget input' do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:old_iteration) { create(:iteration, iterations_cadence: cadence) }
@@ -252,7 +242,7 @@ RSpec.describe 'Update a work item' do
 
   context 'with progress widget input' do
     let(:new_progress) { 30 }
-    let(:input) { { 'progressWidget' => { 'progress' => new_progress } } }
+    let(:input) { { 'progressWidget' => { 'current_value' => new_progress } } }
 
     let_it_be_with_refind(:work_item) { create(:work_item, :objective, project: project) }
 
@@ -293,28 +283,6 @@ RSpec.describe 'Update a work item' do
         let(:current_user) { reporter }
 
         it_behaves_like 'update work item progress widget'
-
-        context 'when setting progress to an invalid value' do
-          context 'if progress is greater than 100' do
-            let(:input) do
-              { 'progressWidget' => { 'progress' => 102 } }
-            end
-
-            it_behaves_like 'does not update work_item progress widget' do
-              let(:message) { 'Progress must be less than or equal to 100' }
-            end
-          end
-
-          context 'if progress is less than 0' do
-            let(:input) do
-              { 'progressWidget' => { 'progress' => -10 } }
-            end
-
-            it_behaves_like 'does not update work_item progress widget' do
-              let(:message) { 'Progress must be greater than or equal to 0' }
-            end
-          end
-        end
       end
 
       it_behaves_like 'user without permission to admin work item cannot update the attribute'

@@ -145,7 +145,7 @@ describe('WorkItemProgress component', () => {
           input: {
             id: workItemId,
             progressWidget: {
-              progress: 1,
+              currentValue: 1,
             },
           },
         });

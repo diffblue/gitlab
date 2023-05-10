@@ -19,6 +19,28 @@ RSpec.describe WorkItems::Progress do
     end
   end
 
+  describe 'custom validations' do
+    describe 'check_start_end_values_to_not_be_same' do
+      context 'when start and end values are different' do
+        let(:progress) { build(:progress, start_value: 0, end_value: 100) }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when start and end values are same' do
+        let(:progress) { build(:progress, start_value: 10, end_value: 10) }
+
+        it 'adds an error message' do
+          progress.valid?
+
+          expect(progress.errors.full_messages).to contain_exactly(
+            'Start value cannot be same as end value'
+          )
+        end
+      end
+    end
+  end
+
   describe '#update_all_parent_objectives_progress' do
     let_it_be(:project) { create(:project) }
     let_it_be_with_reload(:parent_work_item) { create(:work_item, :objective, project: project) }

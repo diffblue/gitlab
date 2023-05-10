@@ -6,9 +6,10 @@ module Types
       class ProgressInputType < BaseInputObject
         graphql_name 'WorkItemWidgetProgressInput'
 
-        argument :progress, GraphQL::Types::Int,
+        argument :current_value,
+                 GraphQL::Types::Int,
                  required: true,
-                 description: 'Progress of the work item.'
+                 description: 'Current progress value of the work item.'
       end
     end
   end
