@@ -162,6 +162,10 @@ Review the details carefully before upgrading.
 
 From GitLab 15.9, all Release links are external. The `external` field in the Releases and Release link APIs was deprecated in 15.9, and removed in GitLab 16.0.
 
+### Stop publishing GitLab Runner images based on Windows Server 2004 and 20H2
+
+As of GitLab 16.0, GitLab Runner images based on Windows Server 2004 and 20H2 will not be provided as these operating systems are end-of-life.
+
 ### Use of `id` field in vulnerabilityFindingDismiss mutation
 
 WARNING:
