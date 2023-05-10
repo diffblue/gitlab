@@ -5,7 +5,14 @@ import {
   getInvalidBranches,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
+  invalidVulnerabilityStates,
+  VULNERABILITY_STATE_KEYS,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
+import {
+  APPROVAL_VULNERABILITY_STATES,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 
 describe('invalidScanners', () => {
   describe('with undefined rules', () => {
@@ -89,12 +96,37 @@ describe('getInvalidBranches', () => {
 
 describe('invalidVulnerabilitiesAllowed', () => {
   it.each`
-    payload                                | expectedResult
-    ${{ vulnerabilities_allowed: 'test' }} | ${true}
-    ${{ vulnerabilities_allowed: 1.1 }}    | ${true}
-    ${{ vulnerabilities_allowed: -1 }}     | ${true}
-    ${{ scanners: [] }}                    | ${false}
-  `('returns $expectedResult when payload is set to $payload', ({ payload, expectedResult }) => {
-    expect(invalidVulnerabilitiesAllowed([payload])).toBe(expectedResult);
+    rules                                    | expectedResult
+    ${null}                                  | ${false}
+    ${[]}                                    | ${false}
+    ${[{}]}                                  | ${false}
+    ${[{ vulnerabilities_allowed: 0 }]}      | ${false}
+    ${[{ vulnerabilities_allowed: 'test' }]} | ${true}
+    ${[{ vulnerabilities_allowed: 1.1 }]}    | ${true}
+    ${[{ vulnerabilities_allowed: -1 }]}     | ${true}
+    ${[{ scanners: [] }]}                    | ${false}
+  `('returns $expectedResult when rules are set to $rules', ({ rules, expectedResult }) => {
+    expect(invalidVulnerabilitiesAllowed(rules)).toBe(expectedResult);
+  });
+});
+
+describe('invalidVulnerabilityStates', () => {
+  const newlyDetectedStates = Object.keys(APPROVAL_VULNERABILITY_STATES[NEWLY_DETECTED]);
+  const previouslyExistingStates = Object.keys(APPROVAL_VULNERABILITY_STATES[PREVIOUSLY_EXISTING]);
+
+  it.each`
+    rules                                                                   | expectedResult
+    ${null}                                                                 | ${false}
+    ${[]}                                                                   | ${false}
+    ${[{}]}                                                                 | ${false}
+    ${[{ vulnerability_states: [] }]}                                       | ${false}
+    ${[{ vulnerability_states: newlyDetectedStates }]}                      | ${false}
+    ${[{ vulnerability_states: previouslyExistingStates }]}                 | ${false}
+    ${[{ vulnerability_states: VULNERABILITY_STATE_KEYS }]}                 | ${false}
+    ${[{ vulnerability_states: ['invalid'] }]}                              | ${true}
+    ${[{ vulnerability_states: [...newlyDetectedStates, 'invalid'] }]}      | ${true}
+    ${[{ vulnerability_states: [...previouslyExistingStates, 'invalid'] }]} | ${true}
+  `('returns $expectedResult with $rules', ({ rules, expectedResult }) => {
+    expect(invalidVulnerabilityStates(rules)).toStrictEqual(expectedResult);
   });
 });

@@ -7,6 +7,7 @@ export {
   getDefaultRule,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
+  invalidVulnerabilityStates,
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';
