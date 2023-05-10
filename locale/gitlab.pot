@@ -1274,9 +1274,6 @@ msgstr ""
 msgid "%{verb} this %{noun} as a draft."
 msgstr ""
 
-msgid "%{verb} this %{noun} as ready."
-msgstr ""
-
 msgid "%{webhooks_link_start}%{webhook_type}%{link_end} enable you to send notifications to web applications in response to events in a group or project."
 msgstr ""
 

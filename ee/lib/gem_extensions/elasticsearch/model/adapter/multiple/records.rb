@@ -19,12 +19,13 @@ module GemExtensions
 
             def __type_for_hit(hit)
               @@__types ||= {} # rubocop:disable Style/ClassVars
+              helper = ::Gitlab::Elastic::Helper.default
 
-              @@__types[ "#{hit[:_index]}::#{hit[:_source][:type]}" ] ||= begin
+              @@__types[ hit[:_source][:type] ] ||=
                 ::Elasticsearch::Model::Registry.all.detect do |model|
-                  model.index_name == hit[:_index] && model.es_type == hit[:_source][:type]
+                  hit_type = hit[:_source][:type]
+                  hit_type == model.es_type && helper.target_index_names(target: model.index_name).key?(hit["_index"])
                 end
-              end
             end
 
             def __ids_by_type
