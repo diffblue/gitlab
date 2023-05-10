@@ -27,7 +27,7 @@ export default {
       'usersPresent',
       'showAmount',
       'discount',
-      'promotionalOfferText',
+      'showPromotionalOfferText',
       'unitPrice',
     ]),
     taxAmount() {
@@ -35,9 +35,6 @@ export default {
     },
     taxLine() {
       return `${this.$options.i18n.tax} ${this.$options.i18n.taxNote}`;
-    },
-    showPromotionalOfferText() {
-      return !this.isInvoicePreviewLoading && this.promotionalOfferText;
     },
   },
   i18n: {

@@ -6953,6 +6953,9 @@ msgstr ""
 msgid "Below you will find all the groups that are public."
 msgstr ""
 
+msgid "Beta"
+msgstr ""
+
 msgid "Bi-weekly code coverage"
 msgstr ""
 
@@ -40688,6 +40691,12 @@ msgstr ""
 msgid "SecurityReports|Activity"
 msgstr ""
 
+msgid "SecurityReports|Add a comment"
+msgstr ""
+
+msgid "SecurityReports|Add a comment (required)"
+msgstr ""
+
 msgid "SecurityReports|Add a comment or reason for dismissal"
 msgstr ""
 
@@ -40926,6 +40935,9 @@ msgid "SecurityReports|Security scans have run"
 msgstr ""
 
 msgid "SecurityReports|Select a project to add by using the project search field above."
+msgstr ""
+
+msgid "SecurityReports|Set dismissal reason"
 msgstr ""
 
 msgid "SecurityReports|Set status"
@@ -50973,9 +50985,6 @@ msgstr ""
 msgid "Workspaces|GitLab Workspaces is a powerful collaborative platform that provides a comprehensive set of tools for software development teams to manage their entire development lifecycle."
 msgstr ""
 
-msgid "Workspaces|Hours before automatic termination"
-msgstr ""
-
 msgid "Workspaces|New workspace"
 msgstr ""
 
@@ -51021,7 +51030,10 @@ msgstr ""
 msgid "Workspaces|Terminating"
 msgstr ""
 
-msgid "Workspaces|To create a workspace for this project, an administrator must configure an agent for the project's group."
+msgid "Workspaces|Time before automatic termination"
+msgstr ""
+
+msgid "Workspaces|To create a workspace for this project, an administrator must %{linkStart}configure a cluster agent%{linkEnd} for the project's group."
 msgstr ""
 
 msgid "Workspaces|To create a workspace, add a devfile to this project. A devfile is a configuration file for your workspace."

@@ -55,7 +55,6 @@ module SubscriptionsHelper
           :code,
           :price_per_year,
           :eligible_to_use_promo_code,
-          :promotional_offer_text,
           :deprecated,
           :name,
           :hide_card

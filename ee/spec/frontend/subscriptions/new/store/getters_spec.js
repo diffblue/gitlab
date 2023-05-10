@@ -381,6 +381,44 @@ describe('Subscriptions Getters', () => {
     });
   });
 
+  describe('showPromotionalOfferText', () => {
+    it('returns true when showPromotionalOfferText is true and preview is not loading', () => {
+      expect(
+        getters.showPromotionalOfferText({
+          invoicePreview: { metaData: { showPromotionalOfferText: true } },
+          isInvoicePreviewLoading: false,
+        }),
+      ).toBe(true);
+    });
+
+    it('returns false when showPromotionalOfferText is true and preview is loading', () => {
+      expect(
+        getters.showPromotionalOfferText({
+          invoicePreview: { metaData: { showPromotionalOfferText: true } },
+          isInvoicePreviewLoading: true,
+        }),
+      ).toBe(false);
+    });
+
+    it('returns false when showPromotionalOfferText is false', () => {
+      expect(
+        getters.showPromotionalOfferText({
+          invoicePreview: { metaData: { showPromotionalOfferText: false } },
+          isInvoicePreviewLoading: false,
+        }),
+      ).toBe(false);
+    });
+
+    it('returns false when invoice preview is not present', () => {
+      expect(
+        getters.showPromotionalOfferText({
+          invoicePreview: {},
+          isInvoicePreviewLoading: false,
+        }),
+      ).toBe(false);
+    });
+  });
+
   describe('isEligibleToUsePromoCode', () => {
     it('returns true if plan is eligible to use promo code', () => {
       expect(
@@ -390,30 +428,12 @@ describe('Subscriptions Getters', () => {
       ).toBe(true);
     });
 
-    it('returns false if plan is eligible to use promo code', () => {
+    it('returns false if plan is not eligible to use promo code', () => {
       expect(
         getters.isEligibleToUsePromoCode(state, {
           selectedPlanDetails: { isEligibleToUsePromoCode: false },
         }),
       ).toBe(false);
-    });
-  });
-
-  describe('promotionalOfferText', () => {
-    it('returns promotional offer text when present', () => {
-      expect(
-        getters.promotionalOfferText(state, {
-          selectedPlanDetails: { promotionalOfferText: 'Promotional offer text' },
-        }),
-      ).toBe('Promotional offer text');
-    });
-
-    it('does not return promotional offer text when not present', () => {
-      expect(
-        getters.promotionalOfferText(state, {
-          selectedPlanDetails: {},
-        }),
-      ).toBe(undefined);
     });
   });
 });

@@ -5,6 +5,10 @@ query getGroupClusterAgents($groupPath: ID!) {
       nodes {
         id
         name
+        project {
+          id
+          nameWithNamespace
+        }
       }
     }
   }

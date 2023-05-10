@@ -127,7 +127,18 @@ export const GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT = {
     group: {
       id: 'gid://gitlab/Group/80',
       fullPath: 'gitlab-org',
-      clusterAgents: { nodes: [{ name: 'default-agent', id: 'agents/1' }] },
+      clusterAgents: {
+        nodes: [
+          {
+            id: 'agents/1',
+            name: 'default-agent',
+            project: {
+              id: 'gid://gitlab/Project/79',
+              nameWithNamespace: 'GitLab Org / GitLab Shell',
+            },
+          },
+        ],
+      },
     },
   },
 };

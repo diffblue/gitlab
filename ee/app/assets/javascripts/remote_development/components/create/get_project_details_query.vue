@@ -81,9 +81,9 @@ export default {
         }
 
         return {
-          result: data.group.clusterAgents.nodes.map((agent) => ({
-            value: agent.id,
-            text: agent.name,
+          result: data.group.clusterAgents.nodes.map(({ id, name, project }) => ({
+            value: id,
+            text: `${project.nameWithNamespace} / ${name}`,
           })),
         };
       } catch (error) {

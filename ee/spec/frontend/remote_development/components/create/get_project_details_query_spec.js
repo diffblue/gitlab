@@ -72,12 +72,12 @@ describe('remote_development/components/create/get_project_details_query', () =>
       await buildWrapper();
 
       expect(wrapper.emitted('result')[0][0]).toMatchObject({
-        clusterAgents: [
-          {
-            text: 'default-agent',
-            value: 'agents/1',
-          },
-        ],
+        clusterAgents: GET_GROUP_CLUSTER_AGENTS_QUERY_RESULT.data.group.clusterAgents.nodes.map(
+          ({ id, name, project }) => ({
+            text: `${project.nameWithNamespace} / ${name}`,
+            value: id,
+          }),
+        ),
         id: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.id,
         groupPath: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.group.fullPath,
         rootRef: GET_PROJECT_DETAILS_QUERY_RESULT.data.project.repository.rootRef,
