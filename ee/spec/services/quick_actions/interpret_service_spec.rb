@@ -485,7 +485,7 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         before do
           stub_feature_flags(openai_experimentation: true)
 
-          allow_next_instance_of(::MergeRequests::Llm::SummarizeMergeRequestService) do |service|
+          allow_next_instance_of(::Llm::MergeRequests::SummarizeDiffService) do |service|
             allow(service).to receive(:enabled?).and_return(true)
           end
         end

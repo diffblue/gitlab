@@ -29,7 +29,7 @@ module EE
           condition do
             ::Feature.enabled?(:summarize_diff_quick_action, current_user) &&
               ::License.feature_available?(:summarize_mr_changes) &&
-              ::MergeRequests::Llm::SummarizeMergeRequestService.new(
+              ::Llm::MergeRequests::SummarizeDiffService.new(
                 merge_request: quick_action_target,
                 user: current_user
               ).enabled?
