@@ -142,7 +142,7 @@ an `upstream` remote repository for your fork:
 
 A fork can be configured as a mirror of the upstream if all these conditions are met:
 
-1. Your subscription is **Premium** or higher.
+1. Your subscription is **Premium** or **Ultimate**.
 1. You create all changes in branches (not `main`).
 1. You do not work on [merge requests for confidential issues](../merge_requests/confidential.md),
    which requires changes to `main`.
