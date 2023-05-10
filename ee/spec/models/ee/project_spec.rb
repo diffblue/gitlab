@@ -1445,6 +1445,17 @@ RSpec.describe Project, feature_category: :projects do
     end
   end
 
+  shared_examples "service ping features" do |arguments|
+    it "handles service ping features properly" do
+      stub_application_setting(usage_ping_features_enabled: true)
+
+      default_result = GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.include?(feature)
+
+      expected_result = arguments&.key?(:expected_result) ? arguments[:expected_result] : default_result
+      is_expected.to eq(expected_result)
+    end
+  end
+
   describe '#feature_available?' do
     let(:namespace) { build(:namespace) }
     let(:plan_license) { nil }
@@ -1480,18 +1491,24 @@ RSpec.describe Project, feature_category: :projects do
                 it 'returns true' do
                   is_expected.to eq(true)
                 end
+
+                it_behaves_like "service ping features", expected_result: true
               end
 
               context 'not allowed by Plan License but project and namespace are public' do
                 let(:allowed_on_global_license) { true }
                 let(:plan_license) { build(:bronze_plan) }
 
-                it 'returns true' do
+                before do
                   allow(namespace).to receive(:public?) { true }
                   allow(project).to receive(:public?) { true }
+                end
 
+                it 'returns true' do
                   is_expected.to eq(true)
                 end
+
+                it_behaves_like "service ping features", expected_result: true
               end
 
               unless GitlabSubscriptions::Features.plans_with_feature(feature_sym).include?(License::STARTER_PLAN)
@@ -1502,6 +1519,8 @@ RSpec.describe Project, feature_category: :projects do
                   it 'returns false' do
                     is_expected.to eq(false)
                   end
+
+                  it_behaves_like "service ping features", expected_result: false
                 end
               end
 
@@ -1512,6 +1531,8 @@ RSpec.describe Project, feature_category: :projects do
                 it 'returns false' do
                   is_expected.to eq(false)
                 end
+
+                it_behaves_like "service ping features", expected_result: false
               end
             end
           end
@@ -1525,6 +1546,8 @@ RSpec.describe Project, feature_category: :projects do
               it 'returns true' do
                 is_expected.to eq(true)
               end
+
+              it_behaves_like "service ping features", expected_result: true
             end
 
             context 'not allowed by Global License' do
@@ -1533,6 +1556,8 @@ RSpec.describe Project, feature_category: :projects do
               it 'returns false' do
                 is_expected.to eq(false)
               end
+
+              it_behaves_like "service ping features"
             end
           end
         end

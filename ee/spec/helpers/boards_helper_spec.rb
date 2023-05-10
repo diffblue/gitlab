@@ -71,6 +71,16 @@ RSpec.describe BoardsHelper do
           it "indicates that the feature is unavailable in a boolean string" do
             expect(board_data[feature_key]).to eq("false")
           end
+
+          if GitlabSubscriptions::Features::FEATURES_WITH_USAGE_PING.include?(feature_name)
+            context "when registration features are enabled" do
+              it "indicates that the feature is available in a boolean string" do
+                stub_application_setting(usage_ping_features_enabled: true)
+
+                expect(board_data[feature_key]).to eq("true")
+              end
+            end
+          end
         end
       end
 

@@ -71,7 +71,6 @@ module GitlabSubscriptions
       repository_mirrors
       resource_access_token
       seat_link
-      scoped_issue_board
       usage_quotas
       visual_review_app
       wip_limits
@@ -260,6 +259,7 @@ module GitlabSubscriptions
       send_emails_from_admin_area
       repository_size_limit
       maintenance_mode
+      scoped_issue_board
     ].freeze
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
