@@ -8,6 +8,7 @@ module QA
       let!(:group) do
         Resource::Sandbox.fabricate_via_api! do |sandbox_group|
           sandbox_group.path = "saml_sso_group_#{SecureRandom.hex(8)}"
+          sandbox_group.visibility = :private
         end
       end
 
