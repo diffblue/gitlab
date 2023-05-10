@@ -27,22 +27,11 @@ module Resolvers
              required: false,
              description: 'How the metric should be aggregated. Defaults to `DAILY`. In the case of `ALL`, the `date` field in the response will be `null`.'
 
-    argument :environment_tier, Types::DeploymentTierEnum,
-             required: false,
-             description: 'Deployment tier of the environments to return.',
-             deprecated: { reason: 'Superseded by `environment_tiers` param', milestone: '15.2' }
-
     argument :environment_tiers, [Types::DeploymentTierEnum],
              required: false,
              description: 'Deployment tiers of the environments to return. Defaults to `[PRODUCTION]`.'
 
     def resolve_with_lookahead(**params)
-      # Backwards compatibility until %16.0
-      if params[:environment_tier]
-        params[:environment_tiers] ||= []
-        params[:environment_tiers] |= [params[:environment_tier]]
-      end
-
       params[:metrics] = Array(params[:metric] || selected_metrics)
 
       result = ::Dora::AggregateMetricsService

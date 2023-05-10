@@ -1576,6 +1576,8 @@
 
 .rails:rules:rspec-predictive:
   rules:
+    - <<: *if-fork-merge-request
+      changes: *code-backstage-patterns
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-approved
@@ -1654,6 +1656,8 @@
 .rails:rules:ee-only-migration:
   rules:
     - <<: *if-not-ee
+      when: never
+    - <<: *if-fork-merge-request
       when: never
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
