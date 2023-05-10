@@ -542,7 +542,7 @@ module EE
       if ::Gitlab::CurrentSettings.should_check_namespace_plan?
         globally_available && feature_available_in_plan?(feature)
       else
-        globally_available
+        globally_available || ::GitlabSubscriptions::Features.usage_ping_feature?(feature)
       end
     end
 

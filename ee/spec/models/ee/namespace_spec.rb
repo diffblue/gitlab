@@ -616,18 +616,12 @@ RSpec.describe Namespace do
       stub_licensed_features(licensed_feature => true)
     end
 
-    it 'uses the global setting when running on premise' do
-      stub_application_setting_on_object(group, should_check_namespace_plan: false)
-
-      is_expected.to be_truthy
-    end
-
-    context 'when checking namespace plan' do
+    context 'when on SaaS instance' do
       before do
         stub_application_setting_on_object(group, should_check_namespace_plan: true)
       end
 
-      it 'combines the global setting with the group setting when not running on premise' do
+      it 'combines the global setting with the group setting' do
         is_expected.to be_falsy
       end
 
@@ -655,6 +649,66 @@ RSpec.describe Namespace do
 
         it 'returns false' do
           is_expected.to be_falsy
+        end
+      end
+
+      context "with service ping features" do
+        let(:feature) { :scoped_issue_board }
+
+        before do
+          stub_application_setting(usage_ping_features_enabled: usage_ping_features_enabled)
+          stub_licensed_features(feature => false)
+        end
+
+        context 'when service ping features are disabled' do
+          let(:usage_ping_features_enabled) { false }
+
+          it 'is disabled' do
+            is_expected.to eq(false)
+          end
+        end
+
+        context 'when service ping features are enabled' do
+          let(:usage_ping_features_enabled) { true }
+
+          it 'is disabled' do
+            is_expected.to eq(false)
+          end
+        end
+      end
+    end
+
+    context 'when on self managed instance' do
+      before do
+        stub_application_setting_on_object(group, should_check_namespace_plan: false)
+      end
+
+      it 'uses the global setting when running on premise' do
+        is_expected.to be_truthy
+      end
+
+      context "with service ping features" do
+        let(:feature) { :scoped_issue_board }
+
+        before do
+          stub_application_setting(usage_ping_features_enabled: usage_ping_features_enabled)
+          stub_licensed_features(feature => false)
+        end
+
+        context 'when service ping features are disabled' do
+          let(:usage_ping_features_enabled) { false }
+
+          it 'is disabled' do
+            is_expected.to eq(false)
+          end
+        end
+
+        context 'when service ping features are enabled' do
+          let(:usage_ping_features_enabled) { true }
+
+          it 'is enabled' do
+            is_expected.to eq(true)
+          end
         end
       end
     end

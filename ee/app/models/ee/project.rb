@@ -1193,7 +1193,7 @@ module EE
         globally_available &&
           (open_source_license_granted? || namespace.feature_available_in_plan?(feature))
       else
-        globally_available
+        globally_available || ::GitlabSubscriptions::Features.usage_ping_feature?(feature)
       end
     end
 
