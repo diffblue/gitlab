@@ -136,6 +136,40 @@ In GitLab 13.9, we updated the Omnibus GitLab package and GitLab Helm chart 4.9 
 GitLab 16.0, we have removed support for Redis 5. If you are using your own Redis 5.0 instance, you must upgrade it to Redis 6.0 or later before upgrading to GitLab 16.0
 or later.
 
+### Remove legacy configuration fields in GitLab Runner Helm Chart
+
+In GitLab 13.6 and later, users can [specify any runner configuration in the GitLab Runner Helm chart](https://docs.gitlab.com/runner/install/kubernetes.html). When this features was released, we deprecated the fields in the GitLab Helm Chart configuration specific to the runner. As of v1.0 of the GitLab Runner Helm chart (GitLab 16.0), the following fields have been removed and are no longer supported:
+
+- `image`
+- `rbac.resources`
+- `rbac.verbs`
+- `runners.image`
+- `runners.imagePullSecrets`
+- `runners.imagePullPolicy`
+- `runners.requestConcurrency`
+- `runners.privileged`
+- `runners.namespace`
+- `runners.pollTimeout`
+- `runners.outputLimit`
+- `runners.cache.cacheType`
+- `runners.cache.cachePath`
+- `runners.cache.cacheShared`
+- `runners.cache.s3ServerAddress`
+- `runners.cache.s3BucketLocation`
+- `runners.cache.s3CacheInsecure`
+- `runners.cache.gcsBucketName`
+- `runners.builds`
+- `runners.services`
+- `runners.helpers`
+- `runners.pod_security_context`
+- `runners.serviceAccountName`
+- `runners.cloneUrl`
+- `runners.nodeSelector`
+- `runners.nodeTolerations`
+- `runners.podLabels`
+- `runners.podAnnotations`
+- `runners.env`
+
 ### Remove the deprecated `environment_tier` parameter from the DORA API
 
 WARNING:
