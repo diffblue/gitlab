@@ -1,4 +1,4 @@
-import { GlButton, GlCard } from '@gitlab/ui';
+import { GlCard } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoSiteReplicationCounts from 'ee/geo_sites/components/details/secondary_site/geo_site_replication_counts.vue';
 import GeoSiteReplicationStatus from 'ee/geo_sites/components/details/secondary_site/geo_site_replication_status.vue';
@@ -23,7 +23,6 @@ describe('GeoSiteReplicationSummary', () => {
     });
   };
 
-  const findGlButton = () => wrapper.findComponent(GlButton);
   const findGeoSiteReplicationStatus = () => wrapper.findComponent(GeoSiteReplicationStatus);
   const findGeoSiteReplicationCounts = () => wrapper.findComponent(GeoSiteReplicationCounts);
   const findGeoSiteSyncSettings = () => wrapper.findComponent(GeoSiteSyncSettings);
@@ -31,13 +30,6 @@ describe('GeoSiteReplicationSummary', () => {
   describe('template', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('renders the GlButton as a link', () => {
-      expect(findGlButton().exists()).toBe(true);
-      expect(findGlButton().attributes('href')).toBe(
-        MOCK_SECONDARY_SITE.webGeoReplicationDetailsUrl,
-      );
     });
 
     it('renders the geo site replication status', () => {

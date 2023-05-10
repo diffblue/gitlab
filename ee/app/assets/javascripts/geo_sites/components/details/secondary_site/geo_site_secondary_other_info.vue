@@ -70,7 +70,7 @@ export default {
 <template>
   <gl-card>
     <template #header>
-      <h5 class="gl-my-3">{{ $options.i18n.otherInfo }}</h5>
+      <h5 class="gl-my-0">{{ $options.i18n.otherInfo }}</h5>
     </template>
     <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
       <span>{{ $options.i18n.dbReplicationLag }}</span>
