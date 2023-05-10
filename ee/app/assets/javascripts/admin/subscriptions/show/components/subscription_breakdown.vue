@@ -11,6 +11,7 @@ import {
   addActivationCode,
   licensedToHeaderText,
   subscriptionDetailsHeaderText,
+  subscriptionTypes,
 } from '../constants';
 import SubscriptionActivationBanner from './subscription_activation_banner.vue';
 import SubscriptionActivationModal from './subscription_activation_modal.vue';
@@ -98,6 +99,9 @@ export default {
     subscriptionHistory() {
       return this.hasSubscriptionHistory ? this.subscriptionList : [this.subscription];
     },
+    isLegacySubscription() {
+      return this.hasSubscription && this.subscription.type === subscriptionTypes.LEGACY_LICENSE;
+    },
   },
   watch: {
     licenseError(error, prevError) {
@@ -147,7 +151,7 @@ export default {
     <user-callout-dismisser :feature-name="subscriptionActivationBannerCalloutName">
       <template #default="{ dismiss, shouldShowCallout }">
         <subscription-activation-banner
-          v-if="shouldShowCallout"
+          v-if="isLegacySubscription && shouldShowCallout"
           class="mb-4"
           @activate-subscription="showActivationModal"
           @close="dismiss"
