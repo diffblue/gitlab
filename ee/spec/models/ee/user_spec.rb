@@ -757,8 +757,12 @@ RSpec.describe User, feature_category: :system_access do
           ("users"."user_type" = 0 OR "users"."user_type" IS NULL OR "users"."user_type" IN (0, 4, 5))
           AND
           (EXISTS (SELECT 1 FROM ((SELECT "members".* FROM "members"
-            WHERE (members.access_level > 10))) members
-            WHERE "members"."user_id" = "users"."id"))
+            WHERE (members.access_level > 10))
+            UNION
+            (SELECT "members".* FROM "members" INNER JOIN "member_roles" ON "member_roles"."id" = "members"."member_role_id"
+            WHERE "members"."access_level" = 10
+            AND
+            (read_vulnerability = true))) members WHERE "members"."user_id" = "users"."id"))
         SQL
 
         expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
@@ -2120,6 +2124,53 @@ RSpec.describe User, feature_category: :system_access do
     context 'when project not present in preloaded custom roles' do
       it 'loads the custom role' do
         expect(user.read_code_for?(project)).to be true
+      end
+    end
+  end
+
+  describe '#read_vulnerability_for?', :request_store do
+    let_it_be(:project) { create(:project, :in_group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:another_user) { create(:user) }
+
+    before do
+      stub_licensed_features(custom_roles: true)
+    end
+
+    before_all do
+      project_member = create(:project_member, :reporter, user: user, source: project)
+      create(
+        :member_role,
+        :reporter,
+        read_vulnerability: true,
+        members: [project_member],
+        namespace: project.group
+      )
+    end
+
+    context 'when read_vulnerability present in preloaded custom roles' do
+      before do
+        user.read_vulnerability_for?(project)
+      end
+
+      it 'returns true' do
+        expect(user.read_vulnerability_for?(project)).to be true
+      end
+
+      it 'does not perform extra queries when asked for projects have already been preloaded' do
+        expect { user.read_vulnerability_for?(project) }.not_to exceed_query_limit(0)
+      end
+    end
+
+    context 'when project not present in preloaded custom roles' do
+      it 'loads the custom role' do
+        expect(user.read_vulnerability_for?(project)).to be true
+      end
+    end
+
+    context 'when a user is not assigned to the custom role' do
+      it 'returns false' do
+        expect(another_user.read_vulnerability_for?(project)).to be false
       end
     end
   end

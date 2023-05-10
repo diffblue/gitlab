@@ -207,11 +207,22 @@ module EE
         @subject.custom_roles_enabled?
       end
 
+      condition(:custom_roles_vulnerabilities_allowed) do
+        ::Feature.enabled?(:custom_roles_vulnerability, @subject.root_ancestor)
+      end
+
       desc "Custom role on project that enables read code"
       condition(:role_enables_read_code) do
         next unless @user.is_a?(User)
 
         @user.read_code_for?(project)
+      end
+
+      desc "Custom role on project that enables read vulnerability"
+      condition(:role_enables_read_vulnerability) do
+        next unless @user.is_a?(User)
+
+        @user.read_vulnerability_for?(project)
       end
 
       with_scope :subject
@@ -543,6 +554,11 @@ module EE
       end
 
       rule { custom_roles_allowed & role_enables_read_code }.enable :read_code
+      rule { custom_roles_allowed & custom_roles_vulnerabilities_allowed & role_enables_read_vulnerability }.policy do
+        enable :read_vulnerability
+        enable :read_security_resource
+        enable :create_vulnerability_export
+      end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do
         enable :create_objective

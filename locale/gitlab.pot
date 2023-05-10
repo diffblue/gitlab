@@ -27548,6 +27548,9 @@ msgstr ""
 msgid "MemberRole|maximum number of Member Roles are already in use by the group hierarchy. Please delete an existing Member Role."
 msgstr ""
 
+msgid "MemberRole|minimal base access level must be %{min_access_level}."
+msgstr ""
+
 msgid "MemberRole|must be top-level namespace"
 msgstr ""
 

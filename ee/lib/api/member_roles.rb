@@ -42,8 +42,8 @@ module API
           documentation: { example: 10 }
         )
 
-        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_description|
-          optional permission_name.to_s, type: Boolean, desc: permission_description
+        ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_params|
+          optional permission_name.to_s, type: Boolean, desc: permission_params[:description], default: false
         end
       end
 
