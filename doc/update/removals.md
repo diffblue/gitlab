@@ -113,6 +113,22 @@ In GitLab 16.0 and later, the GraphQL query for runners will no longer return th
 - `PAUSED` has been replaced with the field, `paused: true`.
 - `ACTIVE` has been replaced with the field, `paused: false`.
 
+### Limit CI_JOB_TOKEN scope is disabled
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+In GitLab 14.4 we introduced the ability to [limit your project's CI/CD job token](https://docs.gitlab.com/ee/ci/jobs/ci_job_token.html#limit-your-projects-job-token-access) (`CI_JOB_TOKEN`) access to make it more secure. You could use the **Limit CI_JOB_TOKEN access** setting to prevent job tokens from your project's pipelines from being used to **access other projects**. When enabled with no other configuration, your pipelines could not access any other projects. To use job tokens to access other projects from your project's pipelines, you needed to list those other projects explicitly in the setting's allowlist, and you needed to be a maintainer in _all_ the projects. You might have seen this mentioned as the "outbound scope" of the job token.
+
+The job token functionality was updated in 15.9 with a [better security setting](https://docs.gitlab.com/ee/ci/jobs/ci_job_token.html#allow-access-to-your-project-with-a-job-token). Instead of securing your own project's job tokens from accessing other projects, the new workflow is to secure your own project from being accessed by other projects' job tokens without authorization. You can see this as an "inbound scope" for job tokens. When this new **Allow access to this project with a CI_JOB_TOKEN** setting is enabled with no other configuration, job tokens from other projects cannot **access your project**. If you want a project to have access to your own project, you must list it in the new setting's allowlist. You must be a maintainer in your own project to control the new allowlist, but you only need to have the Guest role in the other projects. This new setting is enabled by default for all new projects.
+
+In GitLab 16.0, the old **Limit CI_JOB_TOKEN access** setting is disabled by default for all **new** projects. In existing projects with this setting currently enabled, it will continue to function as expected, but you are unable to add any more projects to the old allowlist. If the setting is disabled in any project, it is not possible to re-enable this setting in 16.0 or later. To control access between your projects, use the new **Allow access** setting instead.
+
+In 17.0, we plan to remove the **Limit** setting completely, and set the **Allow access** setting to enabled for all projects. This change ensures a higher level of security between projects. If you currently use the **Limit** setting, you should update your projects to use the **Allow access** setting instead. If other projects access your project with a job token, you must add them to the **Allow access** setting's allowlist.
+
+To prepare for this change, users on GitLab.com or self-managed GitLab 15.9 or later can enable the **Allow access** setting now and add the other projects. It will not be possible to disable the setting in 17.0 or later.
+
 ### PipelineSecurityReportFinding name GraphQL field
 
 WARNING:
