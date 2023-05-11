@@ -6,7 +6,7 @@ module Resolvers
 
     type [::Types::Security::TrainingUrlType], null: true
 
-    authorize :read_security_resource
+    authorize :access_security_and_compliance
     authorizes_object!
 
     argument :identifier_external_ids,
