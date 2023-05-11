@@ -177,7 +177,7 @@ describe('remote_development/pages/create.vue', () => {
 
     it('displays a link that navigates to the workspaces documentation', () => {
       expect(wrapper.findComponent(GlLink).attributes().href).toBe(
-        '/help/user/workspace/index.md#configure-the-gitlab-agent-for-kubernetes',
+        '/help/user/clusters/agent/install/index.md',
       );
     });
 
