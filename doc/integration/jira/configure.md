@@ -13,11 +13,11 @@ The Jira issue integration connects one or more GitLab projects to a Jira instan
 Prerequisites:
 
 - Your GitLab installation must not use a [relative URL](https://docs.gitlab.com/omnibus/settings/configuration.html#configure-a-relative-url-for-gitlab).
+- **For Jira Cloud**, you must have a [Jira Cloud API token](#create-a-jira-cloud-api-token) and
+  the email address you used to create the token.
 - **For Jira Data Center or Jira Server**, you must have one of the following:
   - [Jira username and password](jira_server_configuration.md).
   - Jira personal access token.
-- **For Jira Cloud**, you must have a [Jira Cloud API token](#create-a-jira-cloud-api-token) and
-  the email address you used to create the token.
 
 You can enable the Jira issue integration by configuring your project settings in GitLab.
 You can also configure these settings at the:
