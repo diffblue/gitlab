@@ -180,6 +180,21 @@ The [**Maximum number of active pipelines per project** limit](https://docs.gitl
 - [**Pipelines rate limits**](https://docs.gitlab.com/ee/user/admin_area/settings/rate_limit_on_pipelines_creation.html).
 - [**Total number of jobs in currently active pipelines**](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#set-cicd-limits).
 
+### Non-standard default Redis ports are no longer supported
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+If GitLab starts without any Redis configuration file present,
+GitLab assumes it can connect to three Redis servers at `localhost:6380`,
+`localhost:6381` and `localhost:6382`. We are changing this behavior
+so GitLab assumes there is one Redis server at `localhost:6379`.
+
+If you want to keep using the three servers, you must configure
+the Redis URLs by editing the `config/redis.cache.yml`,`config/redis.queues.yml`,
+and `config/redis.shared_state.yml` files.
+
 ### PipelineSecurityReportFinding name GraphQL field
 
 WARNING:
