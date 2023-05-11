@@ -94,6 +94,22 @@ Review the details carefully before upgrading.
 
 The Container Registry [pull-through cache](https://docs.docker.com/registry/recipes/mirror/) was deprecated in GitLab 15.8 and removed in GitLab 16.0. This feature is part of the upstream [Docker Distribution project](https://github.com/distribution/distribution) but we are removing that code in favor of the GitLab Dependency Proxy. Use the GitLab Dependency Proxy to proxy and cache container images from Docker Hub.
 
+### Enforced validation of CI/CD parameter character lengths
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Previously, only CI/CD [job names](https://docs.gitlab.com/ee/ci/jobs/index.html#job-name-limitations) had a strict 255-character limit. Now, more CI/CD keywords are validated to ensure they stay under the limit.
+
+The following to 255 characters are now strictly limited to 255 characters:
+
+- The `stage` keyword.
+- The `ref` parameter, which is the Git branch or tag name for the pipeline.
+- The `description` and `target_url` parameters, used by external CI/CD integrations.
+
+Users on self-managed instances should update their pipelines to ensure they do not use parameters that exceed 255 characters. Users on GitLab.com do not need to make any changes, as these parameters are already limited in that database.
+
 ### GitLab administrators must have permission to modify protected branches or tags
 
 WARNING:
