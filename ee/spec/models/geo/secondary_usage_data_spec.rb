@@ -38,7 +38,7 @@ RSpec.describe Geo::SecondaryUsageData, :geo, type: :model, feature_category: :g
   end
 
   Geo::SecondaryUsageData::PAYLOAD_COUNT_FIELDS.each do |field|
-    context "##{field}" do
+    describe "##{field}" do
       it_behaves_like 'a payload count field', field
     end
   end
