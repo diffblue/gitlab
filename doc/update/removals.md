@@ -59,6 +59,22 @@ The Azure Storage Driver used to write to `//` as the default root directory. Th
 
 In GitLab 16.0, the new default configuration for the storage driver uses `trimlegacyrootprefix: true`, and `/` is the default root directory. You can set your configuration to `trimlegacyrootprefix: false` if needed, to revert to the previous behavior.
 
+### Bundled Grafana Helm Chart
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The Grafana Helm chart that was bundled with the GitLab Helm Chart is removed in the GitLab Helm Chart 7.0 release (releasing along with GitLab 16.0).
+
+The `global.grafana.enabled` setting for the GitLab Helm Chart has also been removed alongside the Grafana Helm chart.
+
+If you're using the bundled Grafana, you should switch to the [newer chart version from Grafana Labs](https://artifacthub.io/packages/helm/grafana/grafana)
+or a Grafana Operator from a trusted provider.
+
+In your new Grafana instance, you can [configure the GitLab provided Prometheus as a data source](https://docs.gitlab.com/ee/administration/monitoring/performance/grafana_configuration.html#integration-with-gitlab-ui)
+and [connect Grafana to the GitLab UI](https://docs.gitlab.com/ee/administration/monitoring/performance/grafana_configuration.html#integration-with-gitlab-ui).
+
 ### CAS OmniAuth provider is removed
 
 WARNING:
