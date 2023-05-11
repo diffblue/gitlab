@@ -37,17 +37,6 @@ module EE
       end
     end
 
-    class_methods do
-      # We can't specify `override` here:
-      #   https://gitlab.com/gitlab-org/gitlab-foss/issues/50911
-      def allowed_access_levels
-        [
-          *super,
-          ::Gitlab::Access::ADMIN
-        ]
-      end
-    end
-
     override :type
     def type
       return :user if user.present?
@@ -69,7 +58,6 @@ module EE
       super do
         break current_user.id == user_id if user?
         break group.users.exists?(current_user.id) if group?
-        break current_user.admin? if admin_access?
 
         yield if block_given?
       end
@@ -83,10 +71,6 @@ module EE
 
     def group?
       type == :group
-    end
-
-    def admin_access?
-      role? && access_level == ::Gitlab::Access::ADMIN
     end
 
     # We don't need to validate the license if this access applies to a role.
