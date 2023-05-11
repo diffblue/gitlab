@@ -24590,6 +24590,9 @@ msgstr ""
 msgid "IssuableEvents|requested review from"
 msgstr ""
 
+msgid "IssuableEvents|resolved all threads"
+msgstr ""
+
 msgid "IssuableEvents|unassigned"
 msgstr ""
 
