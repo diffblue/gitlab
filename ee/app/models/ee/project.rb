@@ -853,11 +853,17 @@ module EE
 
     override :licensed_features
     def licensed_features
-      return super unless License.current
+      result = super
 
-      License.current.features.select do |feature|
+      result += ::GitlabSubscriptions::Features.features_with_usage_ping
+
+      return result unless License.current
+
+      license_features = License.current.features.select do |feature|
         GitlabSubscriptions::Features.global?(feature) || licensed_feature_available?(feature)
       end
+
+      (result + license_features).uniq
     end
 
     def any_path_locks?

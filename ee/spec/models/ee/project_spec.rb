@@ -2246,6 +2246,26 @@ RSpec.describe Project, feature_category: :projects do
             is_expected.to contain_exactly(:epics, :push_rules, :audit_events, :geo, :subepics)
           end
         end
+
+        context 'when service ping features are disabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: false)
+          end
+
+          it "doesn't include coverage_fuzzing" do
+            is_expected.not_to include(:coverage_fuzzing)
+          end
+        end
+
+        context 'when service ping features are enabled' do
+          before do
+            stub_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it 'includes coverage_fuzzing' do
+            is_expected.to include(:coverage_fuzzing)
+          end
+        end
       end
     end
 
