@@ -24,6 +24,7 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validates_associated :members
 
   scope :elevating, -> do
+    return none unless Feature.enabled?(:elevated_guests)
     return none if elevating_permissions.empty?
 
     query = elevating_permissions.map { |permission| "#{permission} = true" }

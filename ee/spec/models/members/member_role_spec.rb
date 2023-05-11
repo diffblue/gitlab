@@ -133,25 +133,44 @@ RSpec.describe MemberRole, feature_category: :system_access do
 
   describe 'scopes' do
     describe '.elevating' do
-      it 'creates proper query' do
+      context 'with elevated_guests FF enabled' do
+        before do
+          stub_feature_flags(elevated_guests: true)
+        end
+
+        it 'creates proper query' do
+          stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
+                                                                                see_code: 'Test permission' })
+
+          expect(described_class.elevating.to_sql).to include('WHERE (see_code = true)')
+        end
+
+        it 'creates proper query with multiple permissions' do
+          stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
+                                                                                see_code: 'Test permission',
+                                                                                remove_code: 'Test second permission' })
+
+          expect(described_class.elevating.to_sql).to include('WHERE (see_code = true OR remove_code = true)')
+        end
+
+        it 'returns nothing when there are no elevating permissions' do
+          create(:member_role)
+
+          expect(described_class.elevating).to be_empty
+        end
+      end
+    end
+
+    context 'with elevated_guests FF disabled' do
+      before do
+        stub_feature_flags(elevated_guests: false)
+      end
+
+      it 'returns nothing' do
         stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
                                                                               see_code: 'Test permission' })
 
-        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true)')
-      end
-
-      it 'creates proper query with multiple permissions' do
-        stub_const("#{described_class.name}::ALL_CUSTOMIZABLE_PERMISSIONS", { read_code: 'Permission to read code',
-                                                                              see_code: 'Test permission',
-                                                                              remove_code: 'Test second permission' })
-
-        expect(described_class.elevating.to_sql).to include('WHERE (see_code = true OR remove_code = true)')
-      end
-
-      it 'returns nothing when there are no elevating permissions' do
-        create(:member_role)
-
-        expect(described_class.elevating).to be_empty
+        expect(described_class.elevating.to_sql).not_to include('WHERE (see_code = true)')
       end
     end
   end

@@ -745,6 +745,7 @@ RSpec.describe User, feature_category: :system_access do
       before do
         license = double('License', exclude_guests_from_active_count?: true)
         allow(License).to receive(:current) { license }
+        stub_feature_flags(elevated_guests: false)
       end
 
       it 'validates the sql matches the specific index we have' do
