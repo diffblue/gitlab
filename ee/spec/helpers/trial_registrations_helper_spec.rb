@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::TrialRegistrationHelper do
+RSpec.describe TrialRegistrationsHelper, feature_category: :purchase do
   using RSpec::Parameterized::TableSyntax
 
   describe '#social_signin_enabled?' do
@@ -10,7 +10,7 @@ RSpec.describe EE::TrialRegistrationHelper do
       allow(::Gitlab).to receive(:com?).and_return(com)
       allow(view).to receive(:omniauth_enabled?).and_return(omniauth_enabled)
       allow(view).to receive(:button_based_providers_enabled?).and_return(button_based_providers_enabled)
-      allow(view).to receive(:devise_mapping).and_return(double(omniauthable?: omniauthable))
+      allow(view).to receive(:devise_mapping).and_return(instance_double(Devise::Mapping, omniauthable?: omniauthable))
     end
 
     subject { helper.social_signin_enabled? }
