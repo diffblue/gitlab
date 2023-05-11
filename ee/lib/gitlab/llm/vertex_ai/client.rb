@@ -72,6 +72,10 @@ module Gitlab
             body: config.payload(content).merge(options).to_json
           )
         end
+
+        def service_name
+          'vertex_ai'
+        end
       end
     end
   end

@@ -55,6 +55,10 @@ module Gitlab
             temperature: DEFAULT_TEMPERATURE
           }.merge(options)
         end
+
+        def service_name
+          'anthropic'
+        end
       end
     end
   end

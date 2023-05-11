@@ -51,7 +51,10 @@ module Gitlab
             http_response = response.response
             return if http_response.nil? || http_response.body.blank?
 
-            raise InternalServerError if response.server_error? && Feature.enabled?(:circuit_breaker, type: :ops)
+            if response.server_error? && Feature.enabled?(:circuit_breaker, type: :ops)
+              raise Gitlab::Llm::Concerns::CircuitBreaker::InternalServerError
+            end
+
             return response unless response.too_many_requests?
 
             retries += 1
@@ -61,10 +64,6 @@ module Gitlab
             sleep delay
             next
           end
-        end
-
-        def service_name
-          'open_ai'
         end
       end
     end

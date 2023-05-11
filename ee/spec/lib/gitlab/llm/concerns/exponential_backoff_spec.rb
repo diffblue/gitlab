@@ -30,6 +30,13 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
     instance_double(HTTParty::Response, response: nil)
   end
 
+  let(:server_error) do
+    instance_double(HTTParty::Response,
+      code: 503, success?: false, parsed_response: {},
+      response: response, server_error?: true, too_many_requests?: false
+    )
+  end
+
   let(:response_caller) { -> { success } }
 
   let(:dummy_class) do
@@ -40,6 +47,10 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
 
       include Gitlab::Llm::Concerns::ExponentialBackoff
       retry_methods_with_exponential_backoff :dummy_method
+
+      def service_name
+        'dummy'
+      end
     end
   end
 
@@ -124,6 +135,14 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
 
         expect(subject).to be_nil
         expect(response_caller).to have_received(:call).once
+      end
+    end
+
+    context 'when the function response is a server error' do
+      it 'returns a nil response' do
+        allow(response_caller).to receive(:call).and_return(server_error)
+
+        expect(subject).to be_nil
       end
     end
   end
