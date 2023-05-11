@@ -872,7 +872,7 @@ RSpec.describe GeoNodeStatus, :geo, feature_category: :geo_replication do
     end
 
     described_class.usage_data_fields.each do |field|
-      context "##{field}" do
+      describe "##{field}" do
         it_behaves_like 'a field from secondary_usage_data', field
       end
     end
