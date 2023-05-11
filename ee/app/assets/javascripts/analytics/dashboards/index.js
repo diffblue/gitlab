@@ -4,17 +4,6 @@ import createDefaultClient from '~/lib/graphql';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import DashboardsApp from './components/app.vue';
 
-const buildNamespaces = ({ groupFullPath, groupName, jsonString = '' }) => {
-  const namespaces = jsonString ? JSON.parse(jsonString).map(convertObjectPropsToCamelCase) : [];
-  return [
-    {
-      name: groupName,
-      fullPath: groupFullPath,
-      isProject: false,
-    },
-  ].concat(namespaces);
-};
-
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
@@ -23,14 +12,20 @@ const apolloProvider = new VueApollo({
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
-  const { groupFullPath, groupName, namespaces, pointerProject: pointerProjectJson } = el.dataset;
+  const { fullPath, namespaces, pointerProject } = el.dataset;
 
-  const chartConfigs = buildNamespaces({ groupFullPath, groupName, jsonString: namespaces });
-  let pointerProject;
+  let queryPaths;
   try {
-    pointerProject = JSON.parse(pointerProjectJson);
+    queryPaths = JSON.parse(namespaces).map((namespace) => namespace.full_path);
   } catch {
-    pointerProject = undefined;
+    queryPaths = [];
+  }
+
+  let yamlConfigProject;
+  try {
+    yamlConfigProject = convertObjectPropsToCamelCase(JSON.parse(pointerProject));
+  } catch (e) {
+    yamlConfigProject = undefined;
   }
 
   return new Vue({
@@ -39,7 +34,11 @@ export default () => {
     apolloProvider,
     render: (createElement) =>
       createElement(DashboardsApp, {
-        props: { chartConfigs, pointerProject },
+        props: {
+          fullPath,
+          queryPaths,
+          yamlConfigProject,
+        },
       }),
   });
 };

@@ -24,7 +24,7 @@ import {
   mockComparativeTableData,
 } from '../mock_data';
 
-const mockProps = { name: 'Exec group', requestPath: 'exec-group', isProject: false };
+const mockProps = { requestPath: 'exec-group', isProject: false };
 const mockLastVulnerabilityCount = { date: '2020-05-20', critical: 7, high: 6, medium: 5, low: 4 };
 
 jest.mock('~/alert');
@@ -52,14 +52,15 @@ describe('Comparison chart', () => {
     data: { namespace: { id: 'project', ...vulnerabilitiesCountByDayResponse } },
   });
 
-  const createMockApolloProvider = () => {
-    Vue.use(VueApollo);
-
-    return createMockApollo([
-      [GroupVulnerabilitiesQuery, groupRequestHandler],
-      [ProjectVulnerabilitiesQuery, projectRequestHandler],
-    ]);
-  };
+  const createMockApolloProvider = () =>
+    createMockApollo(
+      [
+        [GroupVulnerabilitiesQuery, groupRequestHandler],
+        [ProjectVulnerabilitiesQuery, projectRequestHandler],
+      ],
+      {},
+      { typePolicies: { Query: { fields: { project: { merge: false } } } } },
+    );
 
   const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMount(ComparisonChart, {
@@ -244,12 +245,6 @@ describe('Comparison chart', () => {
 
       expect(getTableData().filter(({ chart }) => !chart)).toEqual([]);
     });
-
-    it('renders the group title', async () => {
-      await createWrapper();
-
-      expect(wrapper.text()).toContain('Metrics comparison for Exec group group');
-    });
   });
 
   describe('with isProject=true', () => {
@@ -263,10 +258,6 @@ describe('Comparison chart', () => {
         .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
 
       await createWrapper({ props: { isProject: true, requestPath: fakeProjectPath } });
-    });
-
-    it('renders the project title', () => {
-      expect(wrapper.text()).toContain('Metrics comparison for Exec group project');
     });
 
     it('will request project endpoints for the summary and time summary metrics', () => {

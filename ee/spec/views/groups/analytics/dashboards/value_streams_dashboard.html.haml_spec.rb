@@ -25,8 +25,7 @@ RSpec.describe 'groups/analytics/dashboards/value_streams_dashboard',
     render
 
     expect(rendered).to have_selector('#js-analytics-dashboards-app')
-    expect(rendered).to have_css("[data-group-name='#{group.name}']")
-    expect(rendered).to have_css("[data-group-full-path='#{group.full_path}']")
+    expect(rendered).to have_css("[data-full-path='#{group.full_path}']")
   end
 
   context 'with namespaces set' do

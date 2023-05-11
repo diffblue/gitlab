@@ -1,20 +1,13 @@
 <script>
 import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
-import { sprintf } from '~/locale';
 import { createAlert } from '~/alert';
 import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import { fetchMetricsData, toYmd } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
-import {
-  DASHBOARD_DESCRIPTION_GROUP,
-  DASHBOARD_DESCRIPTION_PROJECT,
-  DASHBOARD_LOADING_FAILURE,
-  DASHBOARD_NO_DATA,
-  CHART_LOADING_FAILURE,
-} from '../constants';
+import { DASHBOARD_LOADING_FAILURE, DASHBOARD_NO_DATA, CHART_LOADING_FAILURE } from '../constants';
 import {
   fetchMetricsForTimePeriods,
   hasDoraMetricValues,
@@ -40,10 +33,6 @@ export default {
   },
   props: {
     requestPath: {
-      type: String,
-      required: true,
-    },
-    name: {
       type: String,
       required: true,
     },
@@ -73,11 +62,6 @@ export default {
       return this.hasChartData
         ? mergeSparklineCharts(this.tableData, this.chartData)
         : this.tableData;
-    },
-    description() {
-      const { name } = this;
-      const text = this.isProject ? DASHBOARD_DESCRIPTION_PROJECT : DASHBOARD_DESCRIPTION_GROUP;
-      return sprintf(text, { name });
     },
     namespaceRequestPath() {
       return this.isProject ? this.requestPath : joinPaths('groups', this.requestPath);
@@ -180,7 +164,6 @@ export default {
 </script>
 <template>
   <div>
-    <h5>{{ description }}</h5>
     <gl-skeleton-loader v-if="loadingTable" />
     <gl-alert v-else-if="!hasData" variant="info" :dismissible="false">{{
       $options.i18n.noData
