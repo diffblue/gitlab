@@ -80,6 +80,12 @@ module Elastic
         filters = []
 
         if repository_ids.any?
+          if options[:features].eql?('wiki') && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+            repository_ids = repository_ids.flat_map do |rid|
+              rid =~ /wiki_project_\d+/ ? [rid, rid.gsub(/wiki_project/, 'wiki')] : rid
+            end.uniq
+          end
+
           filters << {
             terms: {
               _name: context.name(type, :related, :repositories),
