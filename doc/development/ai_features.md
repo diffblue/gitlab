@@ -144,12 +144,78 @@ A[GitLab frontend] -->B[AiAction GraphQL mutation]
 B --> C[Llm::ExecuteMethodService]
 C --> D[One of services, for example: Llm::GenerateSummaryService]
 D -->|scheduled| E[AI worker:Llm::CompletionWorker]
-E -->F[::Gitlab::Llm::OpenAi::Completions::Factory]
+E -->F[::Gitlab::Llm::Completions::Factory]
 F -->G[`::Gitlab::Llm::OpenAi::Completions::...` class using `::Gitlab::Llm::OpenAi::Templates::...` class]
 G -->|calling| H[Gitlab::Llm::OpenAi::Client]
 H --> |response| I[::Gitlab::Llm::OpenAi::ResponseService]
 I --> J[GraphqlTriggers.ai_completion_response]
 J --> K[::GitlabSchema.subscriptions.trigger]
+```
+
+## CircuitBreaker
+
+The CircuitBreaker concern is a reusable module that you can include in any class that needs to run code with circuit breaker protection. The concern provides a `run_with_circuit` method that wraps a code block with circuit breaker functionality, which helps prevent cascading failures and improves system resilience. For more information about the circuit breaker pattern, see:
+
+- [What is Circuit breaker](https://martinfowler.com/bliki/CircuitBreaker.html).
+- [The Hystrix documentation on CircuitBreaker](https://github.com/Netflix/Hystrix/wiki/How-it-Works#circuit-breaker).
+
+### Use CircuitBreaker
+
+To use the CircuitBreaker concern, you need to include it in a class and define the `service_name` method, which should return the name of the service that the circuit breaker is protecting. For example:
+
+```ruby
+class MyService
+  include Gitlab::Llm::Concerns::CircuitBreaker
+
+  def call_external_service
+    run_with_circuit do
+      # Code that interacts with external service goes here
+
+      raise MyCustomError
+    end
+  end
+
+  private
+
+  def service_name
+    my_service
+  end
+end
+```
+
+The `call_external_service` method is an example method that interacts with an external service.
+By wrapping the code that interacts with the external service with `run_with_circuit`, the method is executed within the circuit breaker.
+The circuit breaker is created and configured by the `circuit` method, which is called automatically when the `CircuitBreaker` module is included.
+The method should raise a custom error, that matches the `exceptions` from the concern.
+
+The circuit breaker tracks the number of errors and the rate of requests,
+and opens the circuit if it reaches the configured error threshold or volume threshold.
+If the circuit is open, subsequent requests fail fast without executing the code block, and the circuit breaker periodically allows a small number of requests through to test the service's availability before closing the circuit again.
+
+### Configuration
+
+The circuit breaker is configured with two constants which control the number of errors and requests at which the circuit will open: 
+
+- `ERROR_THRESHOLD`
+- `VOLUME_THRESHOLD`
+
+You can adjust these values as needed for the specific service and usage pattern.
+The concern also raises an `InternalServerError` exception, which is counted towards the error threshold if raised during the execution of the code block.
+This is the exception class that triggers the circuit breaker when raised by the code that interacts with the external service.
+By default, the `CircuitBreaker` concern uses `StandardError`.
+
+NOTE:
+The service_name method must be implemented by the including class to provide a unique identifier for the service being protected. The `CircuitBreaker` module depends on the `Circuitbox` gem to provide the circuit breaker implementation.
+
+### Testing
+
+To test code that uses the `CircuitBreaker` concern, you can use `RSpec` shared examples and pass the `service` and `subject` variables:
+
+```ruby
+it_behaves_like 'has circuit breaker' do
+  let(:service) { dummy_class.new }
+  let(:subject) { service.dummy_method }
+end
 ```
 
 ## How to implement a new action
