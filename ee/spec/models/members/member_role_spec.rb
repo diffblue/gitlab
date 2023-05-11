@@ -105,7 +105,7 @@ RSpec.describe MemberRole, feature_category: :system_access do
 
   describe 'callbacks' do
     context 'for preventing deletion after member is associated' do
-      let_it_be(:member_role) { create(:member_role) }
+      let_it_be_with_reload(:member_role) { create(:member_role) }
 
       subject(:destroy_member_role) { member_role.destroy } # rubocop: disable Rails/SaveBang
 
