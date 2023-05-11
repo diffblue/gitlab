@@ -17,17 +17,6 @@
   }
 }
 
-.new-epic-form .md-area.gfm-form {
-  @include gl-rounded-base;
-  @include gl-border-none;
-  @include gl-inset-border-1-gray-200;
-
-  &.is-focused {
-    @include gl-focus($gl-border-size-1, $gray-900);
-    @include gl-text-gray-900;
-  }
-}
-
 .new-epic-form .labels-select-wrapper.is-embedded {
   width: $gl-dropdown-width;
 
