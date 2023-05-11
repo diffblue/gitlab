@@ -66,6 +66,16 @@ All AI features are experimental.
 1. Enable the specific feature flag for the feature you want to test
 1. Set either the required access token `OpenAi` or `Vertex`. Ask in [`#ai_enablement_team`](https://gitlab.slack.com/archives/C051K31F30R) to receive an access token.
 
+### Internal-Only GCP account access
+
+In order to obtain a GCP service key for local development, please follow the steps below:
+
+- Create a sandbox GCP environment by visiting [this page](https://about.gitlab.com/handbook/infrastructure-standards/#individual-environment) and following the instructions
+- In the GCP console, go to `IAM & Admin` > `Service Accounts` and click on the "Create new service account" button
+- Name the service account something specific to what you're using it for. Select Create and Continue. Under `Grant this service account access to project`, select the role `Vertex AI User`. Select `Continue` then `Done`
+- Select your new service account and `Manage keys` > `Add Key` > `Create new key`. This will download the **private** JSON credentials for your service account.
+- In the rails console, you will use this by `Gitlab::CurrentSettings.update(tofa_credentials: File.read('/YOUR_FILE.json'))`
+
 ## Experimental REST API
 
 Use the [experimental REST API endpoints](https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/lib/api/ai/experimentation/open_ai.rb) to quickly experiment and prototype AI features.
