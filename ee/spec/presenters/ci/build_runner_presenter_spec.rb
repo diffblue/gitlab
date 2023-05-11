@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::BuildRunnerPresenter do
+RSpec.describe Ci::BuildRunnerPresenter, feature_category: :secrets_management do
   subject(:presenter) { described_class.new(ci_build) }
 
   describe '#secrets_configuration' do
@@ -109,69 +109,43 @@ RSpec.describe Ci::BuildRunnerPresenter do
         end
       end
 
-      context "when the job's project has `opt_in_jwt` set to true" do
+      context 'when there are ID tokens available' do
         before do
-          ci_build.project.ci_cd_settings.update!(opt_in_jwt: true)
+          rsa_key = OpenSSL::PKey::RSA.generate(3072).to_s
+          stub_application_setting(ci_jwt_signing_key: rsa_key)
+          ci_build.id_tokens = {
+            'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
+            'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
+          }
+          ci_build.runner = build_stubbed(:ci_runner)
         end
 
-        context 'when there are ID tokens available' do
-          before do
-            rsa_key = OpenSSL::PKey::RSA.generate(3072).to_s
-            stub_application_setting(ci_jwt_signing_key: rsa_key)
-            ci_build.id_tokens = {
-              'VAULT_ID_TOKEN_1' => { id_token: { aud: 'https://gitlab.test' } },
-              'VAULT_ID_TOKEN_2' => { id_token: { aud: 'https://gitlab.link' } }
-            }
-            ci_build.runner = build_stubbed(:ci_runner)
-          end
-
-          it 'adds the first ID token to the Vault server payload' do
-            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
-
-            expect(jwt).to eq('$VAULT_ID_TOKEN_1')
-          end
-
-          context 'when the token variable is specified for the vault secret' do
-            let(:secrets) do
-              {
-                DATABASE_PASSWORD: {
-                  file: true,
-                  token: '$VAULT_ID_TOKEN_2',
-                  vault: {
-                    engine: { name: 'kv-v2', path: 'kv-v2' },
-                    path: 'production/db',
-                    field: 'password'
-                  }
-                }
-              }
-            end
-
-            it 'uses the specified token variable' do
-              jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
-
-              expect(jwt).to eq('$VAULT_ID_TOKEN_2')
-            end
-          end
-        end
-
-        context 'when there is no ID token available' do
-          it 'leaves the `jwt` field empty' do
-            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
-
-            expect(jwt).to be_blank
-          end
-        end
-      end
-
-      context "when the job's project has `opt_in_jwt` set to false" do
-        before do
-          ci_build.project.ci_cd_settings.update!(opt_in_jwt: false)
-        end
-
-        it 'adds CI_JOB_JWT to the Vault server payload' do
+        it 'adds the first ID token to the Vault server payload' do
           jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
 
-          expect(jwt).to eq('${CI_JOB_JWT}')
+          expect(jwt).to eq('$VAULT_ID_TOKEN_1')
+        end
+
+        context 'when the token variable is specified for the vault secret' do
+          let(:secrets) do
+            {
+              DATABASE_PASSWORD: {
+                file: true,
+                token: '$VAULT_ID_TOKEN_2',
+                vault: {
+                  engine: { name: 'kv-v2', path: 'kv-v2' },
+                  path: 'production/db',
+                  field: 'password'
+                }
+              }
+            }
+          end
+
+          it 'uses the specified token variable' do
+            jwt = presenter.secrets_configuration.dig('DATABASE_PASSWORD', 'vault', 'server', 'auth', 'data', 'jwt')
+
+            expect(jwt).to eq('$VAULT_ID_TOKEN_2')
+          end
         end
       end
     end
