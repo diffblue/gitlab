@@ -197,15 +197,15 @@ module Issuable
     end
 
     def supports_severity?
-      incident?
+      incident_type_issue?
     end
 
     def supports_escalation?
-      incident?
+      incident_type_issue?
     end
 
-    def incident?
-      is_a?(Issue) && super
+    def incident_type_issue?
+      is_a?(Issue) && work_item_type&.incident?
     end
 
     def supports_issue_type?

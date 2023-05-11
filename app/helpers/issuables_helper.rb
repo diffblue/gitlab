@@ -274,7 +274,7 @@ module IssuablesHelper
   end
 
   def incident_only_initial_data(issue)
-    return {} unless issue.incident?
+    return {} unless issue.incident_type_issue?
 
     {
       hasLinkedAlerts: issue.alert_management_alerts.any?,

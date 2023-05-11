@@ -142,7 +142,7 @@ module EE
       end
 
       def redirect_if_test_case
-        return unless issue.test_case?
+        return unless issue.work_item_type&.test_case?
 
         redirect_to project_quality_test_case_path(project, issue)
       end

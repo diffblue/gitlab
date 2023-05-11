@@ -256,7 +256,7 @@ RSpec.describe Issues::CreateService, feature_category: :team_planning do
           expect(requirement.state).to eq(issue.state)
           expect(requirement.project).to eq(issue.project)
           expect(requirement.author).to eq(issue.author)
-          expect(issue.requirement?).to eq(true)
+          expect(issue.work_item_type.requirement?).to eq(true)
         end
 
         context 'when creation of requirement fails' do

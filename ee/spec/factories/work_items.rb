@@ -41,7 +41,7 @@ FactoryBot.modify do
     end
 
     after(:build) do |work_item|
-      next unless work_item.requirement?
+      next unless work_item.work_item_type.requirement?
 
       work_item.build_requirement(project: work_item.project)
     end

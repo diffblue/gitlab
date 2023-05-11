@@ -85,7 +85,7 @@ module EE
       end
 
       def should_update_requirement_verification_status?(issuable)
-        issuable.requirement? &&
+        issuable.work_item_type.requirement? &&
           params[:last_test_report_state].present? &&
           can?(current_user, :create_requirement_test_report, issuable.project)
       end

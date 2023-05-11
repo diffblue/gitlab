@@ -191,12 +191,12 @@ module EE
 
     override :supports_weight?
     def supports_weight?
-      !incident?
+      !work_item_type&.incident?
     end
 
     override :supports_iterations?
     def supports_iterations?
-      !incident?
+      !work_item_type&.incident?
     end
 
     def can_assign_epic?(user)

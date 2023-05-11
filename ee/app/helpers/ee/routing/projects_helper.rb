@@ -9,7 +9,7 @@ module EE
       override :use_work_items_path?
       def use_work_items_path?(issue)
         if issue.project.okrs_mvc_feature_flag_enabled? && issue.project.licensed_feature_available?(:okrs)
-          return super || issue.objective? || issue.key_result?
+          return super || issue.work_item_type.objective? || issue.work_item_type.key_result?
         end
 
         super
