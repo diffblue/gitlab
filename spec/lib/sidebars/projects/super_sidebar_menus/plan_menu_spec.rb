@@ -18,7 +18,6 @@ RSpec.describe Sidebars::Projects::SuperSidebarMenus::PlanMenu, feature_category
       :project_issue_list,
       :boards,
       :project_wiki,
-      :service_desk,
       :requirements
     ])
   end
