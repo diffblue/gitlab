@@ -33,6 +33,7 @@ RSpec.describe Mutations::Ci::Ai::GenerateConfig, feature_category: :pipeline_co
 
       it 'returns no errors' do
         expect(resolve).to eq(
+          user_message: nil,
           errors: []
         )
       end
@@ -44,6 +45,7 @@ RSpec.describe Mutations::Ci::Ai::GenerateConfig, feature_category: :pipeline_co
 
         it 'returns an error' do
           expect(resolve).to eq(
+            user_message: nil,
             errors: ['Feature not available']
           )
         end

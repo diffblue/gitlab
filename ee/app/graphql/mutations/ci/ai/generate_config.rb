@@ -20,12 +20,18 @@ module Mutations
           required: true,
           description: 'Content of the user message to be sent to the language model.'
 
+        field :user_message,
+          Types::Ai::MessageType,
+          null: true,
+          description: 'User chat message.'
+
         def resolve(project_path:, user_content:) # rubocop:disable Lint/UnusedMethodArgument
           authorized_find!(project_path)
 
-          return { errors: ['Feature not available'] } unless Feature.enabled?(:ai_ci_config_generator, current_user)
+          return { user_message: nil, errors: ['Feature not available'] } unless Feature.enabled?(
+            :ai_ci_config_generator, current_user)
 
-          { errors: [] }
+          { user_message: nil, errors: [] }
         end
       end
     end
