@@ -30,7 +30,7 @@ module EE
       end
 
       def vault_jwt(secret)
-        if project.ci_cd_settings.opt_in_jwt?
+        if id_tokens?
           id_token_var(secret)
         else
           '${CI_JOB_JWT}'
@@ -38,8 +38,6 @@ module EE
       end
 
       def id_token_var(secret)
-        return unless id_tokens?
-
         secret['token'] || "$#{id_tokens.each_key.first}"
       end
     end
