@@ -18,7 +18,7 @@ RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent, :saas,
       group.root_storage_statistics.update!(
         storage_size: 5.gigabytes
       )
-      subgroup.add_maintainer(user)
+      subgroup.add_guest(user)
       create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
     end
 

@@ -11,7 +11,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_ee_application_setting(enforce_namespace_storage_limit: true)
 
-    project.add_maintainer(user)
+    project.add_guest(user)
     create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
   end
 
