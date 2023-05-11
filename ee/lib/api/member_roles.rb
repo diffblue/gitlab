@@ -43,7 +43,7 @@ module API
         )
 
         ::MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission_name, permission_description|
-          optional permission_name.to_s, type: Boolean, desc: permission_description
+          optional permission_name.to_s, type: Boolean, desc: permission_description, default: false
         end
       end
 

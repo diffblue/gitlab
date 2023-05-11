@@ -93,12 +93,14 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "id" => member_role_1.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => false,
+                  "read_vulnerability" => false,
                   "group_id" => group_id
                 },
                 {
                   "id" => member_role_2.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
+                  "read_vulnerability" => false,
                   "group_id" => group_id
                 }
               ]
