@@ -187,6 +187,10 @@ export default {
         {{ s__('GroupRoadmap|Loading epics') }}
       </div>
     </gl-intersection-observer>
-    <div v-show="showBottomShadow" class="gl-left-auto epic-scroll-bottom-shadow"></div>
+    <div
+      v-show="showBottomShadow"
+      data-testid="epic-scroll-bottom-shadow"
+      class="gl-left-auto epic-scroll-bottom-shadow"
+    ></div>
   </div>
 </template>
