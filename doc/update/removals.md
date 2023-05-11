@@ -235,6 +235,26 @@ From GitLab 15.9, all Release links are external. The `external` field in the Re
 
 As of GitLab 16.0, GitLab Runner images based on Windows Server 2004 and 20H2 will not be provided as these operating systems are end-of-life.
 
+### The stable Terraform CI/CD template has been replaced with the latest template
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+With every major GitLab version, we update the stable Terraform templates with the current latest templates.
+This change affects the [quickstart](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform.gitlab-ci.yml)
+and the [base](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Terraform/Base.gitlab-ci.yml) templates.
+
+The new templates do not change the directory to `$TF_ROOT` explicitly: `gitlab-terraform` gracefully
+handles directory changing. If you altered the job scripts to assume that the current working directory is `$TF_ROOT`, you must manually add `cd "$TF_ROOT"` now.
+
+Because the latest template introduces Merge Request Pipeline support which is not supported in Auto DevOps,
+those rules are not yet integrated into the stable template.
+However, we may introduce them later on, which may break your Terraform pipelines in regards to which jobs are executed.
+
+To accommodate the changes, you might need to adjust the [`rules`](https://docs.gitlab.com/ee/ci/yaml/#rules) in your
+`.gitlab-ci.yml` file.
+
 ### Two DAST API variables have been removed
 
 WARNING:
