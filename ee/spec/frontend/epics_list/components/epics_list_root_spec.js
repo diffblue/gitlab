@@ -1,4 +1,3 @@
-import { shallowMount } from '@vue/test-utils';
 import { pick } from 'lodash';
 
 import Vue, { nextTick } from 'vue';
@@ -9,11 +8,12 @@ import groupEpicsQuery from 'ee/epics_list//queries/group_epics.query.graphql';
 import { mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { stubComponent } from 'helpers/stub_component';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockAuthor, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 
 import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
+import IssuableItem from '~/vue_shared/issuable/list/components/issuable_item.vue';
 import { issuableListTabs } from '~/vue_shared/issuable/list/constants';
 
 Vue.use(VueApollo);
@@ -29,7 +29,7 @@ const mockRawEpic = {
   ...pick(mockFormattedEpic, ['title', 'webUrl', 'userDiscussionsCount', 'confidential']),
   author: mockAuthor,
   labels: {
-    nodes: mockLabels,
+    nodes: [...mockLabels.map((label) => ({ ...label, color: '#D9C2EE', __typename: 'Label' }))],
   },
   startDate: '2021-04-01',
   dueDate: '2021-06-30',
@@ -38,7 +38,10 @@ const mockRawEpic = {
   blockingCount: 0,
   upvotes: 0,
   downvotes: 0,
-  group: null,
+  group: {
+    id: 'id',
+    fullPath: 'gitlab-org/marketing',
+  },
 };
 
 const mockEpics = new Array(5)
@@ -70,31 +73,39 @@ const mockPageInfo = {
 
 let wrapper;
 let mockApollo;
+let requestHandler;
 
-const groupEpicsQueryHandler = jest.fn().mockResolvedValue({
-  data: {
-    group: {
-      epics: {
-        nodes: mockEpics,
-        pageInfo: mockPageInfo,
+const groupEpicsQueryHandler = ({ nodes = mockEpics, pageInfo = mockPageInfo } = {}) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      group: {
+        epics: {
+          nodes,
+          pageInfo,
+        },
+        totalEpics: {
+          count: 5,
+        },
+        totalOpenedEpics: {
+          count: 5,
+        },
+        totalClosedEpics: {
+          count: 0,
+        },
+        id: 'gid://gitlab/Group/1',
       },
-      totalEpics: {
-        count: 5,
-      },
-      totalOpenedEpics: {
-        count: 5,
-      },
-      totalClosedEpics: {
-        count: 0,
-      },
-      id: 'gid://gitlab/Group/1',
     },
-  },
-});
+  });
 
-const createComponent = ({ provide = mockProvide, initialFilterParams = {} } = {}) => {
+const createComponent = ({
+  provide = mockProvide,
+  initialFilterParams = {},
+  handler = groupEpicsQueryHandler(),
+} = {}) => {
+  requestHandler = handler;
+
   mockApollo = createMockApollo(
-    [[groupEpicsQuery, groupEpicsQueryHandler]],
+    [[groupEpicsQuery, handler]],
     {},
     {
       typePolicies: {
@@ -108,20 +119,22 @@ const createComponent = ({ provide = mockProvide, initialFilterParams = {} } = {
       },
     },
   );
-  wrapper = shallowMount(EpicsListRoot, {
+  wrapper = shallowMountExtended(EpicsListRoot, {
     propsData: {
       initialFilterParams,
     },
     apolloProvider: mockApollo,
     provide,
     stubs: {
-      IssuableList: stubComponent(IssuableList),
+      IssuableList,
+      IssuableItem,
     },
   });
 };
 
 describe('EpicsListRoot', () => {
   const getIssuableList = () => wrapper.findComponent(IssuableList);
+  const findAllIssuableReference = () => wrapper.findAllByTestId('issuable-reference');
 
   describe('methods', () => {
     beforeEach(() => {
@@ -129,29 +142,14 @@ describe('EpicsListRoot', () => {
     });
 
     describe('epicReference', () => {
-      const mockEpicWithPath = {
-        ...mockFormattedEpic,
-        group: {
-          fullPath: 'gitlab-org/marketing',
-        },
-      };
-      const mockEpicWithoutPath = {
-        ...mockFormattedEpic,
-        group: {
-          fullPath: 'gitlab-org',
-        },
-      };
-
-      it.each`
-        epic                   | reference
-        ${mockEpicWithPath}    | ${'gitlab-org/marketing&2'}
-        ${mockEpicWithoutPath} | ${'&2'}
-      `(
-        'returns string "$reference" based on provided `epic.group.fullPath`',
-        ({ epic, reference }) => {
-          expect(wrapper.vm.epicReference(epic)).toBe(reference);
-        },
-      );
+      it('renders Epic Reference based provided `epic.group.fullPath`', async () => {
+        await waitForPromises();
+        mockEpics.forEach((epic, index) => {
+          expect(findAllIssuableReference().at(index).text()).toBe(
+            `${epic.group.fullPath}&${epic.iid}`,
+          );
+        });
+      });
     });
 
     describe('epicTimeframe', () => {
@@ -163,13 +161,18 @@ describe('EpicsListRoot', () => {
         ${null}       | ${'2021-2-28'} | ${'No start date – Feb 28, 2021'}
       `(
         'returns string "$returnValue" when startDate is $startDate and dueDate is $dueDate',
-        ({ startDate, dueDate, returnValue }) => {
-          expect(
-            wrapper.vm.epicTimeframe({
-              startDate,
-              dueDate,
+        async ({ startDate, dueDate, returnValue }) => {
+          createComponent({
+            handler: groupEpicsQueryHandler({
+              nodes: [
+                { ...mockRawEpic, startDate, dueDate, id: 1, iid: 10 },
+                ...mockEpics.slice(1),
+              ],
             }),
-          ).toBe(returnValue);
+          });
+
+          await waitForPromises();
+          expect(wrapper.findByText(returnValue).exists()).toBe(true);
         },
       );
     });
@@ -186,9 +189,8 @@ describe('EpicsListRoot', () => {
       });
 
       await waitForPromises();
-      await nextTick();
 
-      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect(requestHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           prevPageCursor: mockPageInfo.startCursor,
           nextPageCursor: '',
@@ -199,9 +201,8 @@ describe('EpicsListRoot', () => {
       getIssuableList().vm.$emit('page-change', 2);
 
       await waitForPromises();
-      await nextTick();
 
-      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect(requestHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           prevPageCursor: '',
           nextPageCursor: '',
@@ -221,9 +222,8 @@ describe('EpicsListRoot', () => {
       });
 
       await waitForPromises();
-      await nextTick();
 
-      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect(requestHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           prevPageCursor: mockPageInfo.startCursor,
           nextPageCursor: '',
@@ -233,9 +233,8 @@ describe('EpicsListRoot', () => {
       getIssuableList().vm.$emit('sort', 'TITLE_DESC');
 
       await waitForPromises();
-      await nextTick();
 
-      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+      expect(requestHandler).toHaveBeenCalledWith(
         expect.objectContaining({
           prevPageCursor: '',
           nextPageCursor: '',
@@ -248,7 +247,6 @@ describe('EpicsListRoot', () => {
     it('renders issuable-list component', async () => {
       createComponent();
       await waitForPromises();
-      jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
 
       getIssuableList().vm.$emit('filter', [
         { id: 'token-1', type: FILTERED_SEARCH_TERM, value: { data: 'foo' } },
@@ -270,41 +268,62 @@ describe('EpicsListRoot', () => {
         sortOptions: epicsSortOptions,
         initialFilterValue: ['foo'],
         initialSortBy: 'created_desc',
-        urlParams: wrapper.vm.urlParams,
+        urlParams: {
+          author_username: undefined,
+          confidential: undefined,
+          epic_iid: undefined,
+          group_path: undefined,
+          in: undefined,
+          'label_name[]': undefined,
+          layout: undefined,
+          milestone_title: undefined,
+          milestones_type: undefined,
+          my_reaction_emoji: undefined,
+          next: undefined,
+          'not[author_username]': undefined,
+          'not[label_name][]': undefined,
+          'not[my_reaction_emoji]': undefined,
+          'or[author_username]': undefined,
+          'or[label_name][]': undefined,
+          page: 1,
+          prev: undefined,
+          progress: undefined,
+          search: 'foo',
+          show_labels: undefined,
+          show_milestones: undefined,
+          show_progress: undefined,
+          sort: 'created_desc',
+          state: 'opened',
+          timeframe_range_type: undefined,
+        },
         issuableSymbol: '&',
         recentSearchesStorageKey: 'epics',
-      });
-
-      expect(wrapper.vm.getFilteredSearchTokens).toHaveBeenCalledWith({
-        supportsEpic: false,
       });
     });
 
     it.each`
-      hasPreviousPage | hasNextPage  | returnValue
-      ${true}         | ${undefined} | ${true}
-      ${undefined}    | ${true}      | ${true}
-      ${false}        | ${undefined} | ${false}
-      ${undefined}    | ${false}     | ${false}
-      ${false}        | ${false}     | ${false}
-      ${true}         | ${true}      | ${true}
+      hasPreviousPage | hasNextPage | returnValue
+      ${true}         | ${false}    | ${true}
+      ${false}        | ${true}     | ${true}
+      ${false}        | ${false}    | ${false}
+      ${false}        | ${false}    | ${false}
+      ${false}        | ${false}    | ${false}
+      ${true}         | ${true}     | ${true}
     `(
       'sets showPaginationControls prop value as $returnValue when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `epics.pageInfo`',
       async ({ hasPreviousPage, hasNextPage, returnValue }) => {
-        createComponent();
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          epics: {
+        createComponent({
+          handler: groupEpicsQueryHandler({
             pageInfo: {
+              ...mockPageInfo,
               hasPreviousPage,
               hasNextPage,
+              __typename: 'PageInfo',
             },
-          },
+          }),
         });
 
-        await nextTick();
-
+        await waitForPromises();
         expect(getIssuableList().props('showPaginationControls')).toBe(returnValue);
       },
     );
@@ -315,7 +334,7 @@ describe('EpicsListRoot', () => {
 
       await nextTick();
 
-      expect(wrapper.vm.previousPage).toBe(2);
+      expect(getIssuableList().props('previousPage')).toBe(2);
     });
 
     it('sets nextPage prop value a number representing next page based on currentPage value', async () => {
