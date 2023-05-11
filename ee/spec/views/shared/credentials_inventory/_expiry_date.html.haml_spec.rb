@@ -20,8 +20,27 @@ RSpec.describe('shared/credentials_inventory/_expiry_date.html.haml') do
   context 'when an expirable credential is used' do
     let_it_be(:credential) { create(:personal_access_token, user: user, expires_at: nil) }
 
-    it 'shows "Never" when not expirable' do
-      expect(rendered).to have_text('Never')
+    context 'when default_pat_expiration feature flag is true' do
+      it 'shows default expiry date in case expires_at is nil' do
+        expect(rendered).to have_text(
+          PersonalAccessToken::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS
+          .days
+          .from_now.strftime("%Y-%m-%d")
+        )
+      end
+    end
+
+    context 'when default_pat_expiration feature flag is false' do
+      before do
+        stub_feature_flags(default_pat_expiration: false)
+        credential.expires_at = nil
+      end
+
+      it 'shows "Never" when not expirable' do
+        render 'shared/credentials_inventory/expiry_date', credential: credential
+
+        expect(rendered).to have_text("Never")
+      end
     end
 
     context 'and is not expired' do
