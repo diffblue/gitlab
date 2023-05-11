@@ -2425,48 +2425,24 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
   end
 
   context 'custom role' do
-    def custom_role_allowed?(user, ability)
-      described_class.new(user, project).allowed?(ability)
-    end
-
-    let_it_be(:guest) { create(:user) }
-    let_it_be(:reporter) { create(:user) }
+    let_it_be(:current_user) { create(:user) }
     let_it_be(:project) { private_project_in_group }
-    let_it_be(:group_member_guest) do
+    let_it_be(:group_member) do
       create(
         :group_member,
-        user: guest,
+        user: current_user,
         source: project.group,
         access_level: Gitlab::Access::GUEST
       )
     end
 
-    let_it_be(:group_member_reporter) do
-      create(
-        :group_member,
-        user: reporter,
-        source: project.group,
-        access_level: Gitlab::Access::REPORTER
-      )
-    end
-
-    let_it_be(:project_member_guest) do
+    let_it_be(:project_member) do
       create(
         :project_member,
         :guest,
-        user: guest,
+        user: current_user,
         project: project,
         access_level: Gitlab::Access::GUEST
-      )
-    end
-
-    let_it_be(:project_member_reporter) do
-      create(
-        :project_member,
-        :guest,
-        user: reporter,
-        project: project,
-        access_level: Gitlab::Access::REPORTER
       )
     end
 
@@ -2488,147 +2464,62 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       )
     end
 
-    let_it_be(:member_role_read_vulnerability_true) do
-      create(
-        :member_role,
-        :reporter,
-        namespace: project.group,
-        read_vulnerability: true
-      )
-    end
-
-    let_it_be(:member_role_read_vulnerability_false) do
-      create(
-        :member_role,
-        :reporter,
-        namespace: project.group,
-        read_vulnerability: false
-      )
-    end
-
     context 'custom_roles license enabled' do
       before do
         stub_licensed_features(custom_roles: true)
       end
 
       context 'custom role for parent group' do
-        context 'custom role allows abilities' do
-          it 'allows guest to read code' do
-            member_role_read_code_true.members << group_member_guest
-
-            expect(custom_role_allowed?(guest, :read_code)).to be_truthy
+        context 'custom role allows read code' do
+          before do
+            member_role_read_code_true.members << group_member
           end
 
-          it 'allows reporter to read security related resources' do
-            member_role_read_vulnerability_true.members << group_member_reporter
-
-            expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_truthy
-            expect(custom_role_allowed?(reporter, :read_security_resource)).to be_truthy
-            expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_truthy
-          end
+          it { is_expected.to be_allowed(:read_code) }
         end
 
-        context 'custom role disallows abilities' do
-          it 'does not allow guest to read code' do
-            member_role_read_code_false.members << group_member_guest
-
-            expect(custom_role_allowed?(guest, :read_code)).to be_falsey
+        context 'custom role disallows read code' do
+          before do
+            member_role_read_code_false.members << group_member
           end
 
-          it 'does not allow reporter to read security related resources' do
-            member_role_read_vulnerability_false.members << group_member_reporter
-
-            expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_falsey
-            expect(custom_role_allowed?(reporter, :read_security_resource)).to be_falsey
-            expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_falsey
-          end
+          it { is_expected.to be_disallowed(:read_code) }
         end
       end
 
       context 'custom role on project membership' do
-        context 'custom role allows abilities' do
-          it 'allows guest to read code' do
-            member_role_read_code_true.members << project_member_guest
-
-            expect(custom_role_allowed?(guest, :read_code)).to be_truthy
+        context 'custom role allows read code' do
+          before do
+            member_role_read_code_true.members << project_member
           end
 
-          context 'when custom_roles_vulnerability FF is enabled' do
-            before do
-              stub_feature_flags(custom_roles_vulnerability: [project.group])
-            end
-
-            it 'allows reporter to read security related resources' do
-              member_role_read_vulnerability_true.members << project_member_reporter
-
-              expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_truthy
-              expect(custom_role_allowed?(reporter, :read_security_resource)).to be_truthy
-              expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_truthy
-            end
-          end
-
-          context 'when custom_roles_vulnerability FF is disabled' do
-            it 'does not allow reporter to read security related resources' do
-              member_role_read_vulnerability_true.members << project_member_reporter
-
-              expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_falsey
-              expect(custom_role_allowed?(reporter, :read_security_resource)).to be_falsey
-              expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_falsey
-            end
-          end
+          it { is_expected.to be_allowed(:read_code) }
         end
 
-        context 'custom role disallows abilities' do
-          it 'does not allow guest to read code' do
-            member_role_read_code_false.members << project_member_guest
-
-            expect(custom_role_allowed?(guest, :read_code)).to be_falsey
+        context 'custom role disallows read code' do
+          before do
+            member_role_read_code_false.members << project_member
           end
 
-          it 'does not allow reporter to read security related resources' do
-            member_role_read_vulnerability_false.members << project_member_reporter
-
-            expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_falsey
-            expect(custom_role_allowed?(reporter, :read_security_resource)).to be_falsey
-            expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_falsey
-          end
+          it { is_expected.to be_disallowed(:read_code) }
         end
       end
 
       context 'multiple custom roles in hierarchy with different read_code values' do
-        let(:current_user) { guest }
-
         before do
-          member_role_read_code_true.members << project_member_guest
-          member_role_read_code_false.members << group_member_guest
+          member_role_read_code_true.members << project_member
+          member_role_read_code_false.members << group_member
         end
 
         # allows read code if any of the custom roles allow it
         it { is_expected.to be_allowed(:read_code) }
       end
-
-      context 'multiple custom roles in hierarchy with different read_vulnerability values' do
-        let(:current_user) { reporter }
-
-        before do
-          member_role_read_vulnerability_true.members << project_member_reporter
-          member_role_read_vulnerability_false.members << group_member_reporter
-        end
-
-        it 'allows reporter to read security related resources' do
-          expect(custom_role_allowed?(reporter, :read_vulnerability)).to be_truthy
-          expect(custom_role_allowed?(reporter, :read_security_resource)).to be_truthy
-          expect(custom_role_allowed?(reporter, :create_vulnerability_export)).to be_truthy
-        end
-      end
     end
 
     context 'without custom_roles license enabled' do
-      let(:current_user) { guest }
-
       before do
         stub_licensed_features(custom_roles: false)
-        member_role_read_code_true.members << project_member_guest
+        member_role_read_code_true.members << project_member
       end
 
       it { is_expected.to be_disallowed(:read_code) }

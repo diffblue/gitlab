@@ -22,8 +22,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
       :member_role,
       namespace: group_with_member_roles,
       base_access_level: ::Gitlab::Access::REPORTER,
-      read_code: false,
-      read_vulnerability: true
+      read_code: false
     )
   end
 
@@ -32,8 +31,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
       :member_role,
       namespace: group_with_member_roles,
       base_access_level: ::Gitlab::Access::REPORTER,
-      read_code: true,
-      read_vulnerability: false
+      read_code: true
     )
   end
 
@@ -95,14 +93,12 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "id" => member_role_1.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => false,
-                  "read_vulnerability" => true,
                   "group_id" => group_id
                 },
                 {
                   "id" => member_role_2.id,
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
-                  "read_vulnerability" => false,
                   "group_id" => group_id
                 }
               ]
@@ -133,7 +129,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
 
   describe "POST /groups/:id/member_roles" do
     let_it_be(:params) do
-      { base_access_level: ::Gitlab::Access::GUEST, read_code: true }
+      { base_access_level: ::Gitlab::Access::MAINTAINER, read_code: true }
     end
 
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
@@ -175,7 +171,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
 
           aggregate_failures "testing response" do
             expect(response).to have_gitlab_http_status(:created)
-            expect(json_response['base_access_level']).to eq(::Gitlab::Access::GUEST)
+            expect(json_response['base_access_level']).to eq(::Gitlab::Access::MAINTAINER)
             expect(json_response['read_code']).to eq(true)
           end
         end
