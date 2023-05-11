@@ -145,6 +145,13 @@ In 17.0, we plan to remove the **Limit** setting completely, and set the **Allow
 
 To prepare for this change, users on GitLab.com or self-managed GitLab 15.9 or later can enable the **Allow access** setting now and add the other projects. It will not be possible to disable the setting in 17.0 or later.
 
+### Maximum number of active pipelines per project limit (`ci_active_pipelines`)
+
+The [**Maximum number of active pipelines per project** limit](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#set-cicd-limits) has been removed. Instead, use the other recommended rate limits that offer similar protection:
+
+- [**Pipelines rate limits**](https://docs.gitlab.com/ee/user/admin_area/settings/rate_limit_on_pipelines_creation.html).
+- [**Total number of jobs in currently active pipelines**](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#set-cicd-limits).
+
 ### PipelineSecurityReportFinding name GraphQL field
 
 WARNING:
