@@ -6,13 +6,19 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        after_commit :reindex_issues, on: [:create, :destroy]
+        after_commit :reindex_issues_and_merge_requests, on: [:create, :destroy]
       end
 
       private
 
-      def reindex_issues
-        ElasticAssociationIndexerWorker.perform_async(user.class.name, user.id, [:issues])
+      def reindex_issues_and_merge_requests
+        associations = [:issues]
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hidden_to_merge_requests)
+          associations << :merge_requests
+        end
+
+        ElasticAssociationIndexerWorker.perform_async(user.class.name, user.id, associations)
       end
     end
   end

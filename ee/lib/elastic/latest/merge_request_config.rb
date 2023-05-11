@@ -36,6 +36,7 @@ module Elastic
         indexes :created_at, type: :date
         indexes :updated_at, type: :date
 
+        indexes :hidden, type: :boolean
         indexes :visibility_level, type: :integer
         indexes :merge_requests_access_level, type: :integer
         indexes :upvotes, type: :integer

@@ -67,34 +67,45 @@ RSpec.describe MergeRequest, :elastic, feature_category: :global_search do
     expect(results.first.title).to eq('bla-bla merge request')
   end
 
-  it "returns json with all needed elements" do
-    merge_request = create :merge_request
-    merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
+  describe 'json' do
+    let_it_be(:merge_request) { create :merge_request }
 
-    expected_hash = merge_request.attributes.extract!(
-      'id',
-      'iid',
-      'target_branch',
-      'source_branch',
-      'title',
-      'description',
-      'created_at',
-      'updated_at',
-      'state',
-      'merge_status',
-      'source_project_id',
-      'target_project_id',
-      'author_id'
-    ).merge({
-      'state' => merge_request.state,
-      'type' => merge_request.es_type,
-      'merge_requests_access_level' => ProjectFeature::ENABLED,
-      'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
-      'project_id' => merge_request.target_project.id,
-      'hashed_root_namespace_id' => merge_request.target_project.namespace.hashed_root_namespace_id
-    })
+    let(:expected_hash) do
+      merge_request.attributes.extract!(
+        'id',
+        'iid',
+        'target_branch',
+        'source_branch',
+        'title',
+        'description',
+        'created_at',
+        'updated_at',
+        'state',
+        'merge_status',
+        'source_project_id',
+        'target_project_id',
+        'author_id'
+      ).merge({ 'state' => merge_request.state,
+        'type' => merge_request.es_type,
+        'merge_requests_access_level' => ProjectFeature::ENABLED,
+        'visibility_level' => Gitlab::VisibilityLevel::INTERNAL,
+        'project_id' => merge_request.target_project.id,
+        'hashed_root_namespace_id' => merge_request.target_project.namespace.hashed_root_namespace_id })
+    end
 
-    expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    before do
+      merge_request.project.update!(visibility_level: Gitlab::VisibilityLevel::INTERNAL)
+    end
+
+    it 'does not include hidden if add_hidden_to_merge_requests is not finished' do
+      set_elasticsearch_migration_to :add_hidden_to_merge_requests, including: false
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
+
+    it 'returns json with all needed elements' do
+      expected_hash['hidden'] = merge_request.author.banned?
+      expect(merge_request.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
   end
 
   it 'handles when a project is missing project_feature' do

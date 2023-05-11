@@ -29,9 +29,14 @@ module Elastic
 
         data['visibility_level'] = target.project.visibility_level
         data['merge_requests_access_level'] = safely_read_project_feature_for_elasticsearch(:merge_requests)
-
         if ::Elastic::DataMigrationService.migration_has_finished?(:add_hashed_root_namespace_id_to_merge_requests)
           data['hashed_root_namespace_id'] = target_project.namespace.hashed_root_namespace_id
+        end
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_hidden_to_merge_requests)
+          # Use target.hidden? once the FF hide_merge_requests_from_banned_users is fully rolled out
+          # https://gitlab.com/gitlab-org/gitlab/-/issues/410671
+          data['hidden'] = target.author&.banned?
         end
 
         data.merge(generic_attributes)
