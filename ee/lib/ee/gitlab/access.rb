@@ -9,7 +9,7 @@ module EE
   module Gitlab
     module Access
       extend ActiveSupport::Concern
-      ADMIN = 60
+
       MINIMAL_ACCESS_HASH = { "Minimal Access" => ::Gitlab::Access::MINIMAL_ACCESS }.freeze
 
       class_methods do

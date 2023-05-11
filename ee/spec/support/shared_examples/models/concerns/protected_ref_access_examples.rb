@@ -24,22 +24,6 @@ RSpec.shared_examples 'ee protected ref access' do |association|
       )
     end
 
-    context 'when instance admin access is configured' do
-      let(:access_level) { Gitlab::Access::ADMIN }
-
-      context 'when current_user is a maintainer' do
-        it { expect(subject.check_access(current_user)).to eq(false) }
-      end
-
-      context 'when current_user is admin' do
-        before do
-          allow(current_user).to receive(:admin?).and_return(true)
-        end
-
-        it { expect(subject.check_access(current_user)).to eq(true) }
-      end
-    end
-
     context 'when user is assigned' do
       context 'when current_user is the user' do
         let(:user) { current_user }

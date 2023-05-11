@@ -6,7 +6,7 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        value 'ADMIN', value: Gitlab::Access::ADMIN, description: 'Admin access.'
+        value 'ADMIN', value: ::Gitlab::Access::ADMIN, description: 'Admin access.'
       end
     end
   end
