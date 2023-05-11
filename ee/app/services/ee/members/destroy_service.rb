@@ -3,7 +3,7 @@
 module EE
   module Members
     module DestroyService
-      def after_execute(member:)
+      def after_execute(member:, skip_saml_identity: false)
         super
 
         if system_event? && removed_due_to_expiry?(member)
@@ -12,7 +12,12 @@ module EE
           log_audit_event(member: member, author: current_user, action: :destroy)
         end
 
-        cleanup_group_identity(member)
+        if ::Feature.enabled?(:skip_saml_identity_destroy_during_scim_deprovision)
+          cleanup_group_identity(member) unless skip_saml_identity
+        else
+          cleanup_group_identity(member)
+        end
+
         cleanup_group_deletion_schedule(member) if member.source.is_a?(Group)
         cleanup_oncall_rotations(member)
         cleanup_escalation_rules(member) if member.user

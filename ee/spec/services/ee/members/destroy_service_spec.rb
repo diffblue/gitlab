@@ -24,7 +24,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
   end
 
   context 'when current_user is present' do
-    subject { described_class.new(current_user) }
+    subject(:destroy_service) { described_class.new(current_user) }
 
     context 'with group membership via Group SAML' do
       let!(:saml_provider) { create(:saml_provider, group: group) }
@@ -34,8 +34,20 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
           create(:group_saml_identity, user: member_user, saml_provider: saml_provider)
         end
 
-        it 'cleans up linked SAML identity' do
-          expect { subject.execute(member) }.to change { member_user.reload.identities.count }.by(-1)
+        context 'when skip_saml_identity is true' do
+          it 'preserves linked SAML identity' do
+            expect { destroy_service.execute(member, skip_saml_identity: true) }.to change { member_user.reload.identities.count }.by(0)
+          end
+
+          context 'with skip_saml_identity_destroy_during_scim_deprovision flag disabled' do
+            before do
+              stub_feature_flags(skip_saml_identity_destroy_during_scim_deprovision: false)
+            end
+
+            it 'deletes the saml identity' do
+              expect { destroy_service.execute(member, skip_saml_identity: true) }.to change { member_user.reload.identities.count }.by(-1)
+            end
+          end
         end
       end
 
@@ -43,7 +55,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         it 'does not attempt to destroy unrelated identities' do
           create(:identity, user: member_user)
 
-          expect { subject.execute(member) }.not_to change(Identity, :count)
+          expect { destroy_service.execute(member) }.not_to change(Identity, :count)
         end
       end
     end
@@ -54,7 +66,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
       end
 
       it 'does not log the audit event as a system event' do
-        subject.execute(member, skip_authorization: true)
+        destroy_service.execute(member, skip_authorization: true)
         details = AuditEvent.last.details
 
         expect(details[:system_event]).to be_nil
@@ -63,14 +75,14 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
     end
 
     context 'streaming audit event' do
-      subject { described_class.new(current_user).execute(member, skip_authorization: true) }
+      subject(:destroy_service) { described_class.new(current_user).execute(member, skip_authorization: true) }
 
       it 'audits event with name' do
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
           hash_including(name: "member_destroyed")
         ).and_call_original
 
-        subject
+        destroy_service
       end
 
       include_examples 'sends streaming audit event'
@@ -83,7 +95,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         it 'deletes the group deletion schedule' do
           expect(group.reload.deletion_schedule).to eq(group_deletion_schedule)
 
-          subject.execute(member)
+          destroy_service.execute(member)
 
           expect(group.reload.deletion_schedule).to be nil
         end
@@ -93,7 +105,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         let!(:group_deletion_schedule) { create(:group_deletion_schedule, group: group, user_id: current_user.id, marked_for_deletion_on: 2.days.ago) }
 
         it 'does not delete the group deletion schedule' do
-          subject.execute(member)
+          destroy_service.execute(member)
 
           expect(group.reload.deletion_schedule).to eq(group_deletion_schedule)
         end
@@ -117,7 +129,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
           it 'calls the remove service for each project in the group' do
             expect(IncidentManagement::OncallRotations::RemoveParticipantsService).to receive(:new).with([project_1_rotation, project_2_rotation], member_user).and_call_original
 
-            subject.execute(member)
+            destroy_service.execute(member)
 
             expect(project_1_participant.reload.is_removed).to eq(true)
             expect(project_2_participant.reload.is_removed).to eq(true)
@@ -130,7 +142,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
           it 'calls the remove service for that project only' do
             expect(IncidentManagement::OncallRotations::RemoveParticipantsService).to receive(:new).with([project_1_rotation], member_user).and_call_original
 
-            subject.execute(project_member)
+            destroy_service.execute(project_member)
 
             expect(project_1_participant.reload.is_removed).to eq(true)
             expect(project_2_participant.reload.is_removed).to eq(false)
@@ -147,7 +159,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         it 'does not call the remove service' do
           expect(IncidentManagement::OncallRotations::RemoveParticipantsService).not_to receive(:new)
 
-          subject.execute(member)
+          destroy_service.execute(member)
         end
       end
     end
@@ -170,7 +182,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
             .with({ escalation_rules: rules_to_delete, user: member_user })
             .and_call_original
 
-          subject.execute(member)
+          destroy_service.execute(member)
 
           rules_to_delete.each { |rule| expect { rule.reload }.to raise_error(ActiveRecord::RecordNotFound) }
           rules_to_preserve.each { |rule| expect { rule.reload }.not_to raise_error }
@@ -203,13 +215,13 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
       end
 
       it 'nullifies the configuration bot_user_id' do
-        expect { subject.execute(member) }.to change { security_orchestration_policy_configuration.reload.bot_user_id }.to(nil)
+        expect { destroy_service.execute(member) }.to change { security_orchestration_policy_configuration.reload.bot_user_id }.to(nil)
       end
     end
   end
 
   context 'when current user is not present' do # ie, when the system initiates the destroy
-    subject { described_class.new(nil) }
+    subject(:destroy_service) { described_class.new(nil) }
 
     context 'for members with expired access' do
       let!(:member) { create(:project_member, user: member_user, expires_at: 1.day.from_now) }
@@ -224,7 +236,7 @@ RSpec.describe Members::DestroyService, feature_category: :subgroups do
         end
 
         it 'logs the audit event as a system event' do
-          subject.execute(member, skip_authorization: true)
+          destroy_service.execute(member, skip_authorization: true)
           details = AuditEvent.last.details
 
           expect(details[:system_event]).to be_truthy
