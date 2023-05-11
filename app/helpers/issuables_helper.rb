@@ -396,6 +396,35 @@ module IssuablesHelper
     }
   end
 
+  def issuable_label_selector_data(project, issuable)
+    initial_labels = issuable.labels.map do |label|
+      {
+        __typename: "Label",
+        id: label.id,
+        title: label.title,
+        description: label.description,
+        color: label.color,
+        text_color: label.text_color
+      }
+    end
+
+    filter_base_path =
+      if issuable.issuable_type == "merge_request"
+        project_merge_requests_path(project)
+      else
+        project_issues_path(project)
+      end
+
+    {
+      field_name: "#{issuable.class.model_name.param_key}[label_ids][]",
+      full_path: project.full_path,
+      initial_labels: initial_labels.to_json,
+      issuable_type: issuable.issuable_type,
+      labels_filter_base_path: filter_base_path,
+      labels_manage_path: project_labels_path(project)
+    }
+  end
+
   private
 
   def sidebar_gutter_collapsed?

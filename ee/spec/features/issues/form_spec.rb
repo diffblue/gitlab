@@ -15,6 +15,8 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
   let!(:label2)    { create(:label, project: project) }
   let!(:issue)     { create(:issue, project: project, assignees: [user], milestone: milestone) }
 
+  let(:visible_label_selection_on_metadata) { false }
+
   before do
     project.add_maintainer(user)
     project.add_maintainer(user2)
@@ -22,6 +24,7 @@ RSpec.describe 'New/edit issue', :js, feature_category: :team_planning do
     allow_any_instance_of(ApplicationHelper).to receive(:collapsed_sidebar?).and_return(true)
 
     stub_licensed_features(multiple_issue_assignees: true)
+    stub_feature_flags(visible_label_selection_on_metadata: visible_label_selection_on_metadata)
     gitlab_sign_in(user)
   end
 
