@@ -6,13 +6,13 @@ import {
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
   DASHBOARD_DOCS_LINK,
-  MAX_WIDGETS_LIMIT,
+  MAX_PANELS_LIMIT,
   YAML_CONFIG_LOAD_ERROR,
 } from '../constants';
 import { fetchYamlConfig } from '../utils';
 import DoraVisualization from './dora_visualization.vue';
 
-const pathsToWidgets = (paths) => paths.map((namespace) => ({ data: { namespace } }));
+const pathsToPanels = (paths) => paths.map((namespace) => ({ data: { namespace } }));
 
 export default {
   name: 'DashboardsApp',
@@ -56,23 +56,23 @@ export default {
     isDefaultDescription() {
       return this.dashboardDescription === DASHBOARD_DESCRIPTION;
     },
-    defaultWidgets() {
-      return pathsToWidgets([this.fullPath]);
+    defaultPanels() {
+      return pathsToPanels([this.fullPath]);
     },
-    queryWidgets() {
-      return pathsToWidgets(this.queryPaths);
+    queryPanels() {
+      return pathsToPanels(this.queryPaths);
     },
-    widgets() {
-      let list = this.defaultWidgets;
-      if (!isEmpty(this.queryWidgets)) {
-        list = list.concat(this.queryWidgets);
-      } else if (!isEmpty(this.yamlConfig?.widgets)) {
-        list = this.yamlConfig?.widgets;
+    panels() {
+      let list = this.defaultPanels;
+      if (!isEmpty(this.queryPanels)) {
+        list = list.concat(this.queryPanels);
+      } else if (!isEmpty(this.yamlConfig?.panels)) {
+        list = this.yamlConfig?.panels;
       }
 
-      // Each widget requires many requests to render, so restrict
-      // the number of widgets to prevent overloading the server.
-      return list.slice(0, MAX_WIDGETS_LIMIT);
+      // Each panel requires many requests to render, so restrict
+      // the number of panels to prevent overloading the server.
+      return list.slice(0, MAX_PANELS_LIMIT);
     },
     loadError() {
       if (!this.yamlConfigProject?.id || this.yamlConfig) return '';
@@ -106,7 +106,7 @@ export default {
     </p>
 
     <dora-visualization
-      v-for="({ title, data }, index) in widgets"
+      v-for="({ title, data }, index) in panels"
       :key="index"
       :title="title"
       :data="data"
