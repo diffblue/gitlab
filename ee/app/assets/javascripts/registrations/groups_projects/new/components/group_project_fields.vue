@@ -171,7 +171,6 @@ export default {
           :id="groupInputAttr('group_name')"
           v-gl-tooltip="{ placement, title: $options.i18n.tooltipTitle }"
           required
-          autofocus
           class="js-group-name-field"
           name="group[name]"
           data-testid="group-name"
