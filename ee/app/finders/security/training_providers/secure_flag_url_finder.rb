@@ -10,9 +10,12 @@ module Security
 
       def calculate_reactive_cache(full_url)
         response = Gitlab::HTTP.try_get(full_url)
-        parsed_response = response&.parsed_response
 
-        { url: parsed_response["link"] } if parsed_response
+        return unless response
+
+        parsed_response = response.parsed_response || {}
+
+        { url: parsed_response["link"] }
       end
 
       def full_url
