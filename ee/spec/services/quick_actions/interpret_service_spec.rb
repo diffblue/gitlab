@@ -1632,6 +1632,13 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
     end
+
+    context 'blocking issues commands' do
+      let(:user) { current_user }
+
+      it_behaves_like 'issues link quick action', :blocks
+      it_behaves_like 'issues link quick action', :blocked_by
+    end
   end
 
   describe '#explain' do
@@ -1912,6 +1919,91 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           end
 
           it_behaves_like 'without permissions for action'
+        end
+      end
+    end
+
+    describe 'blocking issues commands' do
+      let_it_be(:guest) { create(:user) }
+      let_it_be(:ref1) { create(:issue, project: project).to_reference }
+      let_it_be(:ref2) { create(:issue, project: project).to_reference }
+
+      let(:target) { issue }
+
+      before do
+        issue.project.add_guest(guest)
+      end
+
+      context 'with /blocks' do
+        let(:blocks_command) { "/blocks #{ref1} #{ref2}" }
+
+        context 'with sufficient permissions' do
+          before do
+            issue.project.add_developer(current_user)
+          end
+
+          it '/blocks is available' do
+            _, explanations = service.explain(blocks_command, issue)
+
+            expect(explanations).to contain_exactly("Set this issue as blocking #{[ref1, ref2].to_sentence}.")
+          end
+
+          context 'when licensed feature is not available' do
+            before do
+              stub_licensed_features(blocked_issues: false)
+            end
+
+            it_behaves_like 'quick action is unavailable', :blocks
+          end
+
+          context 'when target is not an issue' do
+            let(:target) { create(:epic, group: group) }
+
+            it_behaves_like 'quick action is unavailable', :blocks
+          end
+        end
+
+        context 'with insufficient permissions' do
+          let(:current_user) { guest }
+
+          it_behaves_like 'quick action is unavailable', :blocks
+        end
+      end
+
+      context 'with /blocked_by' do
+        let(:blocked_by_command) { "/blocked_by #{ref1} #{ref2}" }
+
+        context 'with sufficient permissions' do
+          before do
+            issue.project.add_developer(current_user)
+          end
+
+          it '/blocked_by is available' do
+            _, explanations = service.explain(blocked_by_command, issue)
+
+            expect(explanations)
+              .to contain_exactly("Set this issue as blocked by #{[ref1, ref2].to_sentence}.")
+          end
+
+          context 'when licensed feature is not available' do
+            before do
+              stub_licensed_features(blocked_issues: false)
+            end
+
+            it_behaves_like 'quick action is unavailable', :blocked_by
+          end
+
+          context 'when target is not an issue' do
+            let(:target) { create(:epic, group: group) }
+
+            it_behaves_like 'quick action is unavailable', :blocked_by
+          end
+        end
+
+        context 'with insufficient permissions' do
+          let(:current_user) { guest }
+
+          it_behaves_like 'quick action is unavailable', :blocked_by
         end
       end
     end

@@ -27122,6 +27122,9 @@ msgstr ""
 msgid "Mark this issue as a duplicate of another issue"
 msgstr ""
 
+msgid "Mark this issue as blocked by other issues"
+msgstr ""
+
 msgid "Mark this issue as related to another issue"
 msgstr ""
 
@@ -27185,6 +27188,9 @@ msgstr ""
 msgid "Marked"
 msgstr ""
 
+msgid "Marked %{target} as blocked by this issue."
+msgstr ""
+
 msgid "Marked For Deletion At - %{deletion_time}"
 msgstr ""
 
@@ -27195,6 +27201,9 @@ msgid "Marked as ready. Merging is now allowed."
 msgstr ""
 
 msgid "Marked this %{noun} as ready."
+msgstr ""
+
+msgid "Marked this issue as blocked by %{target}."
 msgstr ""
 
 msgid "Marked this issue as related to %{issue_ref}."
@@ -41555,6 +41564,12 @@ msgstr ""
 msgid "Set the per-user rate limit for notes created by web or API requests."
 msgstr ""
 
+msgid "Set this issue as blocked by %{target}."
+msgstr ""
+
+msgid "Set this issue as blocking %{target}."
+msgstr ""
+
 msgid "Set this number to 0 to disable the limit."
 msgstr ""
 
@@ -42925,6 +42940,9 @@ msgid "Specific branches"
 msgstr ""
 
 msgid "Specified URL cannot be used: \"%{reason}\""
+msgstr ""
+
+msgid "Specifies that this issue blocks other issues"
 msgstr ""
 
 msgid "Specify IP ranges that are always allowed for inbound traffic, for use with group-level IP restrictions. Runner and Pages daemon internal IPs should be listed here so that they can access project artifacts."
