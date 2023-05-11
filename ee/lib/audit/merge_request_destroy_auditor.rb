@@ -38,12 +38,16 @@ module Audit
       if merge_request.merged?
         labels = merge_request.labels.pluck_titles.to_sentence
         approvers = merge_request.approved_by_user_ids.to_sentence
-        merged_by_id = merge_request.metrics.merged_by_id
+        merged_by_id = merge_request.metrics&.merged_by_id
         committer_ids = merge_request.commits.committer_user_ids.to_sentence
 
-        "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
-          "and ID: #{merge_request.id}), labels: #{labels}, approved_by_user_ids: #{approvers}, " \
-          "merged_by_user_id: #{merged_by_id}, committer_user_ids: #{committer_ids}"
+        message = "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} " \
+                  "and ID: #{merge_request.id}), labels: #{labels}, approved_by_user_ids: #{approvers}, " \
+                  "committer_user_ids: #{committer_ids}"
+
+        message += ", merged_by_user_id: #{merged_by_id}" if merged_by_id.present?
+
+        message
       else
         "Removed MergeRequest(#{merge_request.title} with IID: #{merge_request.iid} and ID: #{merge_request.id})"
       end
