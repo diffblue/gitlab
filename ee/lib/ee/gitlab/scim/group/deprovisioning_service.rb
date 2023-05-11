@@ -33,7 +33,7 @@ module EE
           def remove_group_access
             return unless group_membership
 
-            ::Members::DestroyService.new(user).execute(group_membership)
+            ::Members::DestroyService.new(user).execute(group_membership, skip_saml_identity: true)
           end
 
           def group_membership

@@ -30,6 +30,28 @@ RSpec.describe ::EE::Gitlab::Scim::Group::DeprovisioningService, feature_categor
 
         expect(response.message).to include("User #{user.name} was removed from #{group.name}.")
       end
+
+      context 'with a SAML identity' do
+        let(:saml_provider) { create(:saml_provider, group: group) }
+
+        before do
+          create(:group_saml_identity, user: user, saml_provider: saml_provider)
+        end
+
+        it 'preserves the saml identity' do
+          expect { service.execute }.to change { user.reload.identities.count }.by(0)
+        end
+
+        context 'with skip_saml_identity_destroy_during_scim_deprovision flag disabled' do
+          before do
+            stub_feature_flags(skip_saml_identity_destroy_during_scim_deprovision: false)
+          end
+
+          it 'deletes the saml identity' do
+            expect { service.execute }.to change { user.reload.identities.count }.by(-1)
+          end
+        end
+      end
     end
 
     context 'with minimal access role' do
