@@ -217,10 +217,42 @@ RSpec.describe GitlabSubscriptions::Features do
       end
     end
 
+    context 'when param is an Ultimate usage ping feature' do
+      let(:feature) { described_class::ULTIMATE_FEATURES_WITH_USAGE_PING.sample }
+
+      it { is_expected.to be_truthy }
+
+      context 'when usage ping setting is disabled' do
+        let(:usage_ping_enabled) { false }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
     context 'when param is another usage ping feature' do
       let(:feature) { :audit_events }
 
       it { is_expected.to be_falsey }
+    end
+  end
+
+  describe '.features_with_usage_ping' do
+    subject { described_class.features_with_usage_ping }
+
+    before do
+      stub_application_setting(usage_ping_features_enabled: usage_ping_features_enabled)
+    end
+
+    context 'when usage ping features are disabled' do
+      let(:usage_ping_features_enabled) { false }
+
+      it { is_expected.to eq([]) }
+    end
+
+    context 'when usage ping features are enabled' do
+      let(:usage_ping_features_enabled) { true }
+
+      it { is_expected.to eq(described_class::FEATURES_WITH_USAGE_PING) }
     end
   end
 

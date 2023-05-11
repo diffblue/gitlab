@@ -187,7 +187,6 @@ module GitlabSubscriptions
       external_status_checks
       combined_project_analytics_dashboards
       container_scanning
-      coverage_fuzzing
       credentials_inventory
       custom_roles
       dast
@@ -266,12 +265,16 @@ module GitlabSubscriptions
       group_ip_restriction
     ].freeze
 
+    ULTIMATE_FEATURES_WITH_USAGE_PING = %i[
+      coverage_fuzzing
+    ].freeze
+
     ALL_STARTER_FEATURES  = STARTER_FEATURES + STARTER_FEATURES_WITH_USAGE_PING
     ALL_PREMIUM_FEATURES  = ALL_STARTER_FEATURES + PREMIUM_FEATURES + PREMIUM_FEATURES_WITH_USAGE_PING
-    ALL_ULTIMATE_FEATURES = ALL_PREMIUM_FEATURES + ULTIMATE_FEATURES
+    ALL_ULTIMATE_FEATURES = ALL_PREMIUM_FEATURES + ULTIMATE_FEATURES + ULTIMATE_FEATURES_WITH_USAGE_PING
     ALL_FEATURES = ALL_ULTIMATE_FEATURES
 
-    FEATURES_WITH_USAGE_PING = STARTER_FEATURES_WITH_USAGE_PING + PREMIUM_FEATURES_WITH_USAGE_PING
+    FEATURES_WITH_USAGE_PING = STARTER_FEATURES_WITH_USAGE_PING + PREMIUM_FEATURES_WITH_USAGE_PING + ULTIMATE_FEATURES_WITH_USAGE_PING
 
     FEATURES_BY_PLAN = {
       License::STARTER_PLAN => ALL_STARTER_FEATURES,
@@ -324,13 +327,13 @@ module GitlabSubscriptions
         LICENSE_PLANS_TO_SAAS_PLANS.values_at(*plans_with_feature(feature)).flatten
       end
 
-      private
-
       def features_with_usage_ping
         return FEATURES_WITH_USAGE_PING if Gitlab::CurrentSettings.usage_ping_features_enabled?
 
         []
       end
+
+      private
 
       def for_plan(plan)
         FEATURES_BY_PLAN.fetch(plan, [])
