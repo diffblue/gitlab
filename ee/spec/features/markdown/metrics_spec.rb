@@ -121,6 +121,18 @@ feature_category: :team_planning do
         .with(cluster, 'GET', 'query_range', hash_including('start', 'end', 'step'))
         .at_least(:once)
     end
+
+    context 'when metrics dashboard feature is unavailable' do
+      before do
+        stub_feature_flags(remove_monitor_metrics: true)
+      end
+
+      it 'shows no embedded metrics' do
+        visit project_issue_path(project, issue)
+
+        expect(page).to have_no_css('div.prometheus-graph')
+      end
+    end
   end
 
   def import_common_metrics
