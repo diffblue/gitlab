@@ -16341,6 +16341,7 @@ Check permissions for the current user on a issue.
 | <a id="issuepermissionsreaddesign"></a>`readDesign` | [`Boolean!`](#boolean) | Indicates the user can perform `read_design` on this resource. |
 | <a id="issuepermissionsreadissue"></a>`readIssue` | [`Boolean!`](#boolean) | Indicates the user can perform `read_issue` on this resource. |
 | <a id="issuepermissionsreopenissue"></a>`reopenIssue` | [`Boolean!`](#boolean) | Indicates the user can perform `reopen_issue` on this resource. |
+| <a id="issuepermissionsupdatedesign"></a>`updateDesign` | [`Boolean!`](#boolean) | Indicates the user can perform `update_design` on this resource. |
 | <a id="issuepermissionsupdateissue"></a>`updateIssue` | [`Boolean!`](#boolean) | Indicates the user can perform `update_issue` on this resource. |
 
 ### `IssueStatusCountsType`
