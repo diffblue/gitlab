@@ -31,7 +31,7 @@ import {
 export const i18n = {
   title: s__('Workspaces|New workspace'),
   subtitle: s__(
-    'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace on its own or as part of a project.',
+    'Workspaces|A workspace is a virtual sandbox environment for your code in GitLab. You can create a workspace for a public project.',
   ),
   betaBadge: __('Beta'),
   form: {
@@ -65,9 +65,7 @@ export const i18n = {
   ),
 };
 
-const clusterAgentsHelpPath = helpPagePath('user/workspace/index.md', {
-  anchor: 'configure-the-gitlab-agent-for-kubernetes',
-});
+const clusterAgentsHelpPath = helpPagePath('user/clusters/agent/install/index.md');
 
 export default {
   components: {
