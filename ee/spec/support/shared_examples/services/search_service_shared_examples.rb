@@ -4,8 +4,11 @@ RSpec.shared_examples 'search respects visibility' do
   it 'respects visibility' do
     enable_admin_mode!(user) if admin_mode
     projects.each do |project|
-      update_feature_access_level(project, feature_access_level,
-visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s))
+      update_feature_access_level(
+        project,
+        feature_access_level,
+        visibility_level: Gitlab::VisibilityLevel.level_value(project_level.to_s)
+      )
     end
     ensure_elasticsearch_index!
 

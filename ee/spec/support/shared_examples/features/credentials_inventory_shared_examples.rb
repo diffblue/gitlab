@@ -53,11 +53,13 @@ RSpec.shared_examples_for 'credentials inventory personal access tokens' do
     let_it_be(:expiry_date) { 1.day.since.to_date.to_s }
 
     before_all do
-      create(:personal_access_token,
-             user: user,
-             created_at: '2019-12-10',
-             updated_at: '2020-06-22',
-             expires_at: expiry_date)
+      create(
+        :personal_access_token,
+        user: user,
+        created_at: '2019-12-10',
+        updated_at: '2020-06-22',
+        expires_at: expiry_date
+      )
     end
 
     before do
@@ -99,11 +101,13 @@ RSpec.shared_examples_for 'credentials inventory SSH keys' do
 
   context 'when a SSH key is active' do
     before_all do
-      create(:personal_key,
-             user: user,
-             created_at: '2019-12-09',
-             last_used_at: '2019-12-10',
-             expires_at: nil)
+      create(
+        :personal_key,
+        user: user,
+        created_at: '2019-12-09',
+        last_used_at: '2019-12-10',
+        expires_at: nil
+      )
     end
 
     before do
@@ -139,11 +143,13 @@ RSpec.shared_examples_for 'credentials inventory SSH keys' do
     let_it_be(:expiry_date) { 1.day.since.to_date.to_s }
 
     before_all do
-      create(:personal_key,
-             user: user,
-             created_at: '2019-12-10',
-             last_used_at: '2020-06-22',
-             expires_at: expiry_date)
+      create(
+        :personal_key,
+        user: user,
+        created_at: '2019-12-10',
+        last_used_at: '2020-06-22',
+        expires_at: expiry_date
+      )
     end
 
     before do

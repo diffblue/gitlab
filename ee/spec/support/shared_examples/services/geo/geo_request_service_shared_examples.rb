@@ -8,10 +8,12 @@ RSpec.shared_examples 'a geo RequestService' do
 
   describe '#execute' do
     it 'parses a 401 response' do
-      response = double(success?: false,
-                        code: 401,
-                        message: 'Unauthorized',
-                        parsed_response: { 'message' => 'Test' } )
+      response = double(
+        success?: false,
+        code: 401,
+        message: 'Unauthorized',
+        parsed_response: { 'message' => 'Test' }
+      )
       allow(Gitlab::HTTP).to receive(:perform_request).and_return(response)
       expect(subject).to receive(:log_error).with("Could not connect to Geo primary node - HTTP Status Code: 401 Unauthorized\nTest")
 

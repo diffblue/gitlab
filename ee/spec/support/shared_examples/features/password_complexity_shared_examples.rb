@@ -44,10 +44,14 @@ RSpec.shared_examples 'password complexity validations' do
       end
 
       it 'shows two rules' do
-        expect(page).to have_selector('[data-testid="password-number-status-icon"].gl-visibility-hidden',
-              visible: false, count: 1)
-        expect(page).to have_selector('[data-testid="password-lowercase-status-icon"].gl-visibility-hidden',
-              visible: false, count: 1)
+        expect(page).to have_selector(
+          '[data-testid="password-number-status-icon"].gl-visibility-hidden',
+          visible: false, count: 1
+        )
+        expect(page).to have_selector(
+          '[data-testid="password-lowercase-status-icon"].gl-visibility-hidden',
+          visible: false, count: 1
+        )
         expect(page).to have_selector('[data-testid="password-rule-text"]', count: 2)
       end
     end
