@@ -1,3 +1,5 @@
+import { parse } from 'yaml';
+import Api from '~/api';
 import { s__, __ } from '~/locale';
 import { isNumeric } from '~/lib/utils/number_utils';
 import {
@@ -12,7 +14,30 @@ import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
-import { TABLE_METRICS, UNITS, CHART_TOOLTIP_UNITS, METRICS_WITH_NO_TREND } from './constants';
+import {
+  TABLE_METRICS,
+  UNITS,
+  CHART_TOOLTIP_UNITS,
+  METRICS_WITH_NO_TREND,
+  YAML_CONFIG_PATH,
+} from './constants';
+
+/**
+ * Fetches and returns the parsed YAML config file.
+ *
+ * @param {Number} projectId - ID of the project that contains the YAML config file
+ * @returns {Object} The parsed YAML config file
+ */
+export const fetchYamlConfig = async (projectId) => {
+  if (!projectId) return null;
+
+  try {
+    const { data } = await Api.getRawFile(projectId, YAML_CONFIG_PATH);
+    return parse(data);
+  } catch {
+    return null;
+  }
+};
 
 /**
  * Checks if a string representation of a value contains an

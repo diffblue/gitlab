@@ -528,16 +528,3 @@ export const mockChartData = {
     tooltipLabel: undefined,
   },
 };
-
-export const mockChartConfig = [
-  {
-    name: 'Group',
-    fullPath: 'path/to/group',
-    isProject: false,
-  },
-  {
-    name: 'Project 1',
-    fullPath: 'path/to/project',
-    isProject: true,
-  },
-];

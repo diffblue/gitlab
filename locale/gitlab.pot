@@ -13494,7 +13494,13 @@ msgstr ""
 msgid "DORA4Metrics|Deploys"
 msgstr ""
 
+msgid "DORA4Metrics|Failed to load YAML config from Project: %{fullPath}"
+msgstr ""
+
 msgid "DORA4Metrics|Failed to load charts"
+msgstr ""
+
+msgid "DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}"
 msgstr ""
 
 msgid "DORA4Metrics|Forecast"

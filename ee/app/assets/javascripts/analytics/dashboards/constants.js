@@ -2,6 +2,8 @@ import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { KEY_METRICS, DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 
+export const MAX_WIDGETS_LIMIT = 4;
+
 export const UNITS = {
   COUNT: 'COUNT',
   DAYS: 'DAYS',
@@ -72,6 +74,9 @@ export const DASHBOARD_DESCRIPTION_PROJECT = s__(
 );
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
+export const DASHBOARD_NAMESPACE_LOAD_ERROR = s__(
+  'DORA4Metrics|Failed to load comparison chart for Namespace: %{fullPath}',
+);
 
 export const CHART_GRADIENT = ['#499767', '#5252B5'];
 export const CHART_GRADIENT_INVERTED = [...CHART_GRADIENT].reverse();
@@ -83,3 +88,8 @@ export const CHART_TOOLTIP_UNITS = {
   [UNITS.PER_DAY]: __('/day'),
   [UNITS.PERCENT]: '%',
 };
+
+export const YAML_CONFIG_PATH = '.gitlab/analytics/dashboards/value_streams/value_streams.yaml';
+export const YAML_CONFIG_LOAD_ERROR = s__(
+  'DORA4Metrics|Failed to load YAML config from Project: %{fullPath}',
+);

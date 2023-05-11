@@ -1,21 +1,38 @@
 <script>
-import { GlLink } from '@gitlab/ui';
-import { __ } from '~/locale';
-import { DASHBOARD_TITLE, DASHBOARD_DESCRIPTION, DASHBOARD_DOCS_LINK } from '../constants';
-import ComparisonChart from './comparison_chart.vue';
+import { isEmpty } from 'lodash';
+import { GlLink, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { __, sprintf } from '~/locale';
+import {
+  DASHBOARD_TITLE,
+  DASHBOARD_DESCRIPTION,
+  DASHBOARD_DOCS_LINK,
+  MAX_WIDGETS_LIMIT,
+  YAML_CONFIG_LOAD_ERROR,
+} from '../constants';
+import { fetchYamlConfig } from '../utils';
+import DoraVisualization from './dora_visualization.vue';
+
+const pathsToWidgets = (paths) => paths.map((namespace) => ({ data: { namespace } }));
 
 export default {
   name: 'DashboardsApp',
   components: {
+    GlAlert,
     GlLink,
-    ComparisonChart,
+    GlSkeletonLoader,
+    DoraVisualization,
   },
   props: {
-    chartConfigs: {
-      type: Array,
+    fullPath: {
+      type: String,
       required: true,
     },
-    pointerProject: {
+    queryPaths: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
+    yamlConfigProject: {
       type: Object,
       required: false,
       default: () => ({}),
@@ -24,26 +41,75 @@ export default {
   i18n: {
     learnMore: __('Learn more'),
   },
-  DASHBOARD_TITLE,
-  DASHBOARD_DESCRIPTION,
+  data: () => ({
+    loading: true,
+    yamlConfig: {},
+    projects: [],
+  }),
+  computed: {
+    dashboardTitle() {
+      return this.yamlConfig?.title || DASHBOARD_TITLE;
+    },
+    dashboardDescription() {
+      return this.yamlConfig?.description || DASHBOARD_DESCRIPTION;
+    },
+    isDefaultDescription() {
+      return this.dashboardDescription === DASHBOARD_DESCRIPTION;
+    },
+    defaultWidgets() {
+      return pathsToWidgets([this.fullPath]);
+    },
+    queryWidgets() {
+      return pathsToWidgets(this.queryPaths);
+    },
+    widgets() {
+      let list = this.defaultWidgets;
+      if (!isEmpty(this.queryWidgets)) {
+        list = list.concat(this.queryWidgets);
+      } else if (!isEmpty(this.yamlConfig?.widgets)) {
+        list = this.yamlConfig?.widgets;
+      }
+
+      // Each widget requires many requests to render, so restrict
+      // the number of widgets to prevent overloading the server.
+      return list.slice(0, MAX_WIDGETS_LIMIT);
+    },
+    loadError() {
+      if (!this.yamlConfigProject?.id || this.yamlConfig) return '';
+
+      const { fullPath } = this.yamlConfigProject;
+      return sprintf(YAML_CONFIG_LOAD_ERROR, { fullPath });
+    },
+  },
+  async mounted() {
+    this.yamlConfig = await fetchYamlConfig(this.yamlConfigProject?.id);
+    this.loading = false;
+  },
   DASHBOARD_DOCS_LINK,
 };
 </script>
 <template>
-  <div>
-    <h3 class="page-title">{{ $options.DASHBOARD_TITLE }}</h3>
+  <div v-if="loading" class="gl-mt-5">
+    <gl-skeleton-loader :lines="2" />
+  </div>
+  <div v-else>
+    <gl-alert v-if="loadError" class="gl-mt-5" variant="warning" :dismissible="false">
+      {{ loadError }}
+    </gl-alert>
+
+    <h3 class="page-title" data-testid="dashboard-title">{{ dashboardTitle }}</h3>
     <p data-testid="dashboard-description">
-      {{ $options.DASHBOARD_DESCRIPTION }}
-      <gl-link :href="$options.DASHBOARD_DOCS_LINK" target="_blank">
+      {{ dashboardDescription }}
+      <gl-link v-if="isDefaultDescription" :href="$options.DASHBOARD_DOCS_LINK" target="_blank">
         {{ $options.i18n.learnMore }}.
       </gl-link>
     </p>
-    <comparison-chart
-      v-for="({ name, fullPath, isProject }, index) in chartConfigs"
+
+    <dora-visualization
+      v-for="({ title, data }, index) in widgets"
       :key="index"
-      :name="name"
-      :request-path="fullPath"
-      :is-project="isProject"
+      :title="title"
+      :data="data"
     />
   </div>
 </template>
