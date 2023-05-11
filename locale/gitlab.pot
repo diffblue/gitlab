@@ -53917,6 +53917,9 @@ msgstr ""
 msgid "must contain only a discord user ID."
 msgstr ""
 
+msgid "must expire in 365 days"
+msgstr ""
+
 msgid "must have a repository"
 msgstr ""
 

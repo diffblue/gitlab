@@ -2,11 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe PersonalAccessToken do
+RSpec.describe PersonalAccessToken, feature_category: :system_access do
   describe 'scopes' do
     let_it_be(:expired_token) { create(:personal_access_token, expires_at: 1.day.ago) }
     let_it_be(:valid_token) { create(:personal_access_token, expires_at: 1.day.from_now) }
-    let_it_be(:long_expiry_token) { create(:personal_access_token, expires_at: '999999-12-31'.to_date) }
+    let_it_be(:long_expiry_token) do
+      create(
+        :personal_access_token,
+        expires_at: described_class::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS.days.from_now
+      )
+    end
 
     let!(:pat) { create(:personal_access_token, expires_at: expiration_date) }
 
@@ -31,7 +36,12 @@ RSpec.describe PersonalAccessToken do
     describe 'with_no_expires_at' do
       subject { described_class.with_expires_at_after(2.days.from_now) }
 
-      let(:expiration_date) { nil }
+      let!(:pat) { create(:personal_access_token) }
+
+      before do
+        stub_feature_flags(default_pat_expiration: false)
+        pat.update_attribute(:expires_at, nil)
+      end
 
       it 'includes the tokens with nil expires_at' do
         expect(described_class.with_no_expires_at).to contain_exactly(pat)
@@ -103,11 +113,26 @@ RSpec.describe PersonalAccessToken do
           expect(personal_access_token.errors[:expires_at].first).to eq('is invalid')
         end
 
-        it "can't be blank" do
-          personal_access_token.expires_at = nil
+        context 'when default_pat_expiration feature flag is true' do
+          it "is invalid" do
+            personal_access_token.expires_at = nil
 
-          expect(personal_access_token).not_to be_valid
-          expect(personal_access_token.errors[:expires_at].first).to eq("can't be blank")
+            expect(personal_access_token).not_to be_valid
+            expect(personal_access_token.errors[:expires_at].first).to eq("is invalid")
+          end
+        end
+
+        context 'when default_pat_expiration feature flag is false' do
+          before do
+            stub_feature_flags(default_pat_expiration: false)
+          end
+
+          it "can't be blank" do
+            personal_access_token.expires_at = nil
+
+            expect(personal_access_token).not_to be_valid
+            expect(personal_access_token.errors[:expires_at].first).to eq("can't be blank")
+          end
         end
       end
 
@@ -146,13 +171,48 @@ RSpec.describe PersonalAccessToken do
               end
             end
 
-            context 'when the instance does not enforce a PAT expiry setting' do
-              before do
-                stub_ee_application_setting(max_personal_access_token_lifetime: nil)
-              end
+            context 'when default_pat_expiration feature flag is true' do
+              context 'when the instance does not enforce a PAT expiry setting' do
+                before do
+                  stub_ee_application_setting(max_personal_access_token_lifetime: nil)
+                end
 
-              it_behaves_like 'PAT expiry rules are not enforced' do
-                let(:max_expiration_date) { instance_level_max_expiration_date }
+                it_behaves_like 'PAT expiry rules are not enforced' do
+                  let(:max_expiration_date) { instance_level_max_expiration_date }
+                end
+
+                it 'defaults to PersonalAccessToken::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS' do
+                  freeze_time do
+                    personal_access_token.expires_at = nil
+
+                    expect(personal_access_token).to be_valid
+                    expect(personal_access_token.expires_at).to eq(
+                      PersonalAccessToken::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS.days.from_now.to_date
+                    )
+                  end
+                end
+              end
+            end
+
+            context 'when default_pat_expiration feature flag is false' do
+              context 'when the instance does not enforce a PAT expiry setting' do
+                before do
+                  stub_ee_application_setting(max_personal_access_token_lifetime: nil)
+                  stub_feature_flags(default_pat_expiration: false)
+                end
+
+                it_behaves_like 'PAT expiry rules are not enforced' do
+                  let(:max_expiration_date) { instance_level_max_expiration_date }
+                end
+
+                it 'does not have a default' do
+                  freeze_time do
+                    personal_access_token.expires_at = nil
+
+                    expect(personal_access_token).to be_valid
+                    expect(personal_access_token.expires_at).to eq(nil)
+                  end
+                end
               end
             end
           end
