@@ -95,7 +95,6 @@ describe('EpicsListSectionComponent', () => {
       wrapper.destroy();
       wrapper = createComponent();
 
-      expect(wrapper.vm.offsetLeft).toBe(0);
       expect(wrapper.vm.emptyRowContainerStyles).toEqual({});
       expect(wrapper.vm.showBottomShadow).toBe(false);
       expect(wrapper.vm.roadmapShellEl).toBeDefined();
@@ -116,12 +115,6 @@ describe('EpicsListSectionComponent', () => {
         expect(wrapper.vm.sectionContainerStyles.width).toBe(
           `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * wrapper.vm.timeframe.length}px`,
         );
-      });
-    });
-
-    describe('shadowCellStyles', () => {
-      it('returns computed style object based on `offsetLeft` prop value', () => {
-        expect(wrapper.vm.shadowCellStyles.left).toBe('0px');
       });
     });
 
@@ -153,6 +146,8 @@ describe('EpicsListSectionComponent', () => {
   });
 
   describe('methods', () => {
+    const findEmptyRowEl = () => wrapper.find('.epics-list-item-empty');
+
     describe('initMounted', () => {
       beforeEach(() => {
         // Destroy the existing wrapper, and create a new one. This works
@@ -167,47 +162,26 @@ describe('EpicsListSectionComponent', () => {
         expect(wrapper.vm.bufferSize).toBe(16);
       });
 
-      it('sets value of `offsetLeft` with parentElement.offsetLeft', async () => {
-        await nextTick();
-        // During tests, there's no `$el.parentElement` present
-        // hence offsetLeft is 0.
-        expect(wrapper.vm.offsetLeft).toBe(0);
-      });
-
       it('calls `scrollToCurrentDay` following the component render', async () => {
-        // Original method implementation waits for render cycle
-        // to complete at 2 levels before scrolling.
-        await nextTick(); // set offsetLeft value
         await nextTick(); // Wait for nextTick before scroll
         expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
 
-      it('sets style object to `emptyRowContainerStyles`', async () => {
+      it('sets style attribute containing `height` on empty row', async () => {
         await nextTick();
-        expect(wrapper.vm.emptyRowContainerStyles).toEqual(
-          expect.objectContaining({
-            height: '0px',
-          }),
-        );
+        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 0px);');
       });
     });
 
     describe('getEmptyRowContainerStyles', () => {
-      it('returns empty object when there are no epics available to render', async () => {
-        wrapper.setProps({
-          epics: [],
-        });
+      it('does not set style attribute on empty row when no epics are available to render', () => {
+        wrapper = createComponent({ epics: [] });
 
-        await nextTick();
-        expect(wrapper.vm.getEmptyRowContainerStyles()).toEqual({});
+        expect(findEmptyRowEl().attributes('style')).not.toBeDefined();
       });
 
-      it('returns object containing `height` when there epics available to render', () => {
-        expect(wrapper.vm.getEmptyRowContainerStyles()).toEqual(
-          expect.objectContaining({
-            height: '0px',
-          }),
-        );
+      it('sets style attribute with `height` on empty row when there epics available to render', () => {
+        expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 0px);');
       });
     });
 

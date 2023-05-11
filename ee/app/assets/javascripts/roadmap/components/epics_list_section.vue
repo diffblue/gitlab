@@ -45,7 +45,6 @@ export default {
   data() {
     return {
       clientWidth: 0,
-      offsetLeft: 0,
       emptyRowContainerStyles: {},
       showBottomShadow: false,
       roadmapShellEl: null,
@@ -67,11 +66,6 @@ export default {
     sectionContainerStyles() {
       return {
         width: `${EPIC_DETAILS_CELL_WIDTH + TIMELINE_CELL_MIN_WIDTH * this.timeframe.length}px`,
-      };
-    },
-    shadowCellStyles() {
-      return {
-        left: `${this.offsetLeft}px`,
       };
     },
     epicsWithAssociatedParents() {
@@ -108,8 +102,6 @@ export default {
 
       // Wait for component render to complete
       this.$nextTick(() => {
-        this.offsetLeft = (this.$el.parentElement && this.$el.parentElement.offsetLeft) || 0;
-
         // We cannot scroll to the indicator immediately
         // on render as it will trigger scroll event leading
         // to timeline expand, so we wait for another render
@@ -129,12 +121,10 @@ export default {
       this.clientWidth = this.$root.$el?.clientWidth || 0;
     },
     getEmptyRowContainerStyles() {
-      if (this.$refs.epicItems && this.$refs.epicItems.length) {
+      if (this.displayedEpics.length && this.$refs.emptyRowContainer) {
+        const { top } = this.$refs.emptyRowContainer.getBoundingClientRect();
         return {
-          height: `${
-            this.$el.clientHeight -
-            this.displayedEpics.length * this.$refs.epicItems[0].$el.clientHeight
-          }px`,
+          height: `calc(100vh - ${top}px)`,
         };
       }
       return {};
@@ -174,6 +164,7 @@ export default {
     />
     <div
       v-if="emptyRowContainerVisible"
+      ref="emptyRowContainer"
       :style="emptyRowContainerStyles"
       class="epics-list-item epics-list-item-empty clearfix"
     >
@@ -196,10 +187,6 @@ export default {
         {{ s__('GroupRoadmap|Loading epics') }}
       </div>
     </gl-intersection-observer>
-    <div
-      v-show="showBottomShadow"
-      :style="shadowCellStyles"
-      class="epic-scroll-bottom-shadow"
-    ></div>
+    <div v-show="showBottomShadow" class="gl-left-auto epic-scroll-bottom-shadow"></div>
   </div>
 </template>

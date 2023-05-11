@@ -83,7 +83,7 @@ export default {
 <template>
   <div class="epics-filters epics-roadmap-filters epics-roadmap-filters-gl-ui">
     <div
-      class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-pb-3 row-content-block second-block"
+      class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-p-3 row-content-block second-block"
     >
       <filtered-search-bar
         :namespace="groupFullPath"

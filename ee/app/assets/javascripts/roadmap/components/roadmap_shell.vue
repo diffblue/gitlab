@@ -36,6 +36,11 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      containerStyles: {},
+    };
+  },
   computed: {
     ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType', 'milestones']),
     displayMilestones() {
@@ -58,6 +63,9 @@ export default {
     if (this.isShowingMilestones) {
       this.fetchMilestones();
     }
+    this.$nextTick(() => {
+      this.containerStyles = this.getContainerStyles();
+    });
   },
   methods: {
     ...mapActions(['fetchMilestones']),
@@ -66,14 +74,21 @@ export default {
 
       eventHub.$emit('epicsListScrolled', { scrollTop, scrollLeft, clientHeight, scrollHeight });
     },
+    getContainerStyles() {
+      const { top } = this.$el.getBoundingClientRect();
+      return {
+        height: `calc(100vh - ${top}px)`,
+      };
+    },
   },
 };
 </script>
 
 <template>
   <div
-    class="js-roadmap-shell gl-relative gl-h-full gl-w-full gl-overflow-x-auto"
+    class="js-roadmap-shell gl-relative gl-w-full gl-overflow-x-auto"
     data-qa-selector="roadmap_shell"
+    :style="containerStyles"
     @scroll="handleScroll"
   >
     <roadmap-timeline-section
