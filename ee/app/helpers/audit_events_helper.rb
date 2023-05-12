@@ -47,4 +47,22 @@ module AuditEventsHelper
 
     can?(current_user, :admin_external_audit_events, group)
   end
+
+  def audit_log_app_data(is_last_page, events)
+    {
+      form_path: admin_audit_logs_path,
+      events: events.to_json,
+      is_last_page: is_last_page.to_json,
+      filter_token_options: admin_audit_event_tokens.to_json,
+      export_url: export_url
+    }.tap do |data|
+      break data unless Feature.enabled?(:instance_streaming_audit_events)
+
+      data.merge!({
+        empty_state_svg_path: image_path('illustrations/cloud.svg'),
+        group_path: 'instance',
+        show_streams: 'true'
+      })
+    end
+  end
 end

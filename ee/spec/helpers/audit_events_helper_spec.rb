@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEventsHelper do
+RSpec.describe AuditEventsHelper, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
 
   def setup_permission(model, permission, current_user, has_permission)
@@ -155,6 +155,46 @@ RSpec.describe AuditEventsHelper do
 
     it 'returns an empty array when view_only is false' do
       expect(helper.filter_view_only_own_events_token_values(false)).to eq([])
+    end
+  end
+
+  describe '#audit_log_app_data' do
+    let_it_be(:group) { build_stubbed(:group, :private) }
+    let_it_be(:events) { build_list(:group_audit_event, 5, entity_id: group.id) }
+
+    context 'when compliance_pipeline_configuration is off' do
+      before do
+        stub_feature_flags(instance_streaming_audit_events: false)
+      end
+
+      it 'returns the correct data' do
+        expect(helper.audit_log_app_data(true, events)).to contain_exactly(
+          [:form_path, "/admin/audit_logs"],
+          [:events, events.to_json],
+          [:is_last_page, "true"],
+          [:filter_token_options, admin_audit_event_tokens.to_json],
+          [:export_url, export_url]
+        )
+      end
+    end
+
+    context 'when compliance_pipeline_configuration is on' do
+      before do
+        stub_feature_flags(instance_streaming_audit_events: true)
+      end
+
+      it 'returns the correct data' do
+        expect(helper.audit_log_app_data(true, events)).to contain_exactly(
+          [:form_path, "/admin/audit_logs"],
+          [:events, events.to_json],
+          [:is_last_page, "true"],
+          [:filter_token_options, admin_audit_event_tokens.to_json],
+          [:export_url, export_url],
+          [:empty_state_svg_path, ActionController::Base.helpers.image_path('illustrations/cloud.svg')],
+          [:group_path, "instance"],
+          [:show_streams, "true"]
+        )
+      end
     end
   end
 end
