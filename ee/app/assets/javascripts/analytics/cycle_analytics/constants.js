@@ -2,6 +2,7 @@ import { getValueStreamMetrics } from 'ee/api/analytics_api';
 import { METRIC_TYPE_SUMMARY, METRIC_TYPE_TIME_SUMMARY } from '~/api/analytics_api';
 import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { __, s__ } from '~/locale';
+import { DEFAULT_NULL_SERIES_OPTIONS } from '../shared/constants';
 
 export const TASKS_BY_TYPE_SUBJECT_ISSUE = 'Issue';
 export const TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST = 'MergeRequest';
@@ -43,6 +44,11 @@ export const METRICS_REQUESTS = [
 export const DURATION_OVERVIEW_CHART_X_AXIS_DATE_FORMAT = 'd mmm';
 export const DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT = 'd mmm yyyy';
 export const DURATION_OVERVIEW_CHART_NO_DATA = s__('CycleAnalytics|No data');
+export const DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM = {
+  name: DURATION_OVERVIEW_CHART_NO_DATA,
+  ...DEFAULT_NULL_SERIES_OPTIONS.lineStyle,
+  disabled: true,
+};
 export const DURATION_CHART_X_AXIS_TITLE = s__('CycleAnalytics|Date');
 export const DURATION_CHART_Y_AXIS_TITLE = s__('CycleAnalytics|Average time to completion (days)');
 export const DURATION_CHART_Y_AXIS_TOOLTIP_TITLE = s__('CycleAnalytics|Average time to completion');

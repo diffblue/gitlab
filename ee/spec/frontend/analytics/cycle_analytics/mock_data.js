@@ -24,8 +24,11 @@ import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
   DURATION_CHART_Y_AXIS_TITLE,
-  DURATION_OVERVIEW_CHART_NO_DATA,
 } from 'ee/analytics/cycle_analytics/constants';
+import {
+  STACKED_AREA_CHART_SERIES_OPTIONS,
+  STACKED_AREA_CHART_NULL_SERIES_OPTIONS,
+} from 'ee/analytics/shared/constants';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
 import {
@@ -379,50 +382,52 @@ export const durationOverviewChartPlottableData = [
   },
 ];
 
-export const summedDurationOverviewData = [
-  {
-    name: 'Issue',
-    data: [
-      ['2019-01-01', 13],
-      ['2019-01-02', 27],
-    ],
-  },
-  {
-    name: 'Plan',
-    data: [
-      ['2019-01-01', 38],
-      ['2019-01-02', 69],
-    ],
-  },
-];
-
-export const durationOverviewDataSeries = summedDurationOverviewData.map((stageDetails, idx) => {
-  const colors = [dataVizBlue500, dataVizOrange600];
-
-  return {
+export const durationOverviewChartOptionsData = durationOverviewChartPlottableData.map(
+  (stageDetails) => ({
     ...stageDetails,
-    lineStyle: {
-      color: colors[idx],
-      type: 'solid',
-    },
-  };
-});
+    ...STACKED_AREA_CHART_SERIES_OPTIONS,
+  }),
+);
 
-export const durationOverviewDataNullSeries = summedDurationOverviewData.map(() => ({
-  areaStyle: {
-    color: 'none',
+export const durationOverviewDataSeries = durationOverviewChartPlottableData.map(
+  (stageDetails, idx) => {
+    const colors = [dataVizBlue500, dataVizOrange600];
+
+    return {
+      ...stageDetails,
+      lineStyle: {
+        color: colors[idx],
+        type: 'solid',
+      },
+    };
   },
-  data: [
-    ['2019-01-01', null],
-    ['2019-01-02', null],
-  ],
-  itemStyle: {
-    color: '#a4a3a8',
-  },
-  lineStyle: {
-    color: '#a4a3a8',
-    type: 'dashed',
-  },
-  name: DURATION_OVERVIEW_CHART_NO_DATA,
-  showSymbol: false,
-}));
+);
+
+export const durationOverviewDataNullSeries = durationOverviewChartPlottableData.map(
+  ({ name }) => ({
+    areaStyle: {
+      color: 'none',
+    },
+    data: [
+      ['2019-01-01', null],
+      ['2019-01-02', null],
+    ],
+    itemStyle: {
+      color: '#a4a3a8',
+    },
+    lineStyle: {
+      color: '#a4a3a8',
+      type: 'dashed',
+    },
+    name,
+    showSymbol: false,
+    ...STACKED_AREA_CHART_NULL_SERIES_OPTIONS,
+  }),
+);
+
+export const durationOverviewLegendSeriesInfo = durationOverviewDataSeries.map(
+  ({ name, lineStyle }) => ({
+    name,
+    ...lineStyle,
+  }),
+);

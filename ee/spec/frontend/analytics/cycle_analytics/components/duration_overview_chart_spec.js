@@ -8,13 +8,14 @@ import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleto
 import {
   DURATION_TOTAL_TIME_DESCRIPTION,
   DURATION_TOTAL_TIME_NO_DATA,
-  DURATION_OVERVIEW_CHART_NO_DATA,
+  DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from 'ee/analytics/cycle_analytics/constants';
 import {
-  durationOverviewChartPlottableData as durationOverviewData,
+  durationOverviewChartPlottableData,
   durationOverviewDataSeries,
   durationOverviewDataNullSeries,
-  summedDurationOverviewData,
+  durationOverviewChartOptionsData,
+  durationOverviewLegendSeriesInfo,
 } from '../mock_data';
 
 Vue.use(Vuex);
@@ -32,7 +33,7 @@ const fakeStore = ({ initialGetters, initialState, rootGetters, rootState }) =>
       durationChart: {
         namespaced: true,
         getters: {
-          durationChartPlottableData: () => durationOverviewData,
+          durationChartPlottableData: () => durationOverviewChartPlottableData,
           ...initialGetters,
         },
         state: {
@@ -101,7 +102,7 @@ describe('DurationOverviewChart', () => {
       const chartDataProps = findDurationOverviewChart().props('data');
 
       expect(chartDataProps).toStrictEqual([
-        ...summedDurationOverviewData,
+        ...durationOverviewChartOptionsData,
         ...durationOverviewDataNullSeries,
       ]);
     });
@@ -109,28 +110,14 @@ describe('DurationOverviewChart', () => {
     it('correctly sets the chart legend-series-info property', () => {
       const chartLegendSeriesInfoProps = findDurationOverviewChart().props('legendSeriesInfo');
 
-      const getNonNullSeriesInfo = ({ name }) => name !== DURATION_OVERVIEW_CHART_NO_DATA;
-
-      const legendSeriesInfo = mockChartOptionSeries.map(
-        ({ name, lineStyle: { color, type } }) => ({
-          name,
-          color,
-          type,
-        }),
-      );
-
-      const legendNonNullSeriesInfo = legendSeriesInfo.filter(getNonNullSeriesInfo);
-
-      const [nullSeriesItem] = legendSeriesInfo.filter(
-        (seriesItem) => !getNonNullSeriesInfo(seriesItem),
-      );
-
       expect(chartLegendSeriesInfoProps).toStrictEqual([
-        ...legendNonNullSeriesInfo,
-        nullSeriesItem,
+        ...durationOverviewLegendSeriesInfo,
+        DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
       ]);
 
-      expect(chartLegendSeriesInfoProps).toHaveLength(summedDurationOverviewData.length + 1);
+      expect(chartLegendSeriesInfoProps).toHaveLength(
+        durationOverviewChartPlottableData.length + 1,
+      );
     });
   });
 
