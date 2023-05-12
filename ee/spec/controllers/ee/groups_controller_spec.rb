@@ -502,13 +502,16 @@ RSpec.describe GroupsController, feature_category: :subgroups do
       end
     end
 
-    context 'when `code_suggestions` is specified', :saas do
-      let_it_be(:managed_group) { create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_owner(user) } }
+    context 'when `code_suggestions` is specified' do
       let(:params) { { code_suggestions: '1' } }
-      let(:submitted_group) { managed_group }
+      let(:submitted_group) { group }
 
       subject(:put_update) do
         put :update, params: { id: submitted_group.to_param, group: params }
+      end
+
+      before_all do
+        group.add_owner(user)
       end
 
       before do
@@ -517,7 +520,6 @@ RSpec.describe GroupsController, feature_category: :subgroups do
 
       context 'with `ai_assist_ui_enabled` enabled' do
         before do
-          stub_licensed_features(ai_assist: true)
           stub_feature_flags(ai_assist_ui: true)
           stub_feature_flags(ai_assist_flag: true)
           stub_ee_application_setting(check_namespace_plan: true)
@@ -525,11 +527,11 @@ RSpec.describe GroupsController, feature_category: :subgroups do
 
         context 'when enabling' do
           it 'allows the parameter' do
-            expect(managed_group.code_suggestions).to eq(false)
+            expect(group.code_suggestions).to eq(false)
 
             put_update
 
-            expect(managed_group.reload.code_suggestions).to eq(true)
+            expect(group.reload.code_suggestions).to eq(true)
           end
         end
 
@@ -537,16 +539,16 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           let(:params) { { code_suggestions: '0' } }
 
           it 'allows the parameter' do
-            managed_group.update!(code_suggestions: true)
+            group.update!(code_suggestions: true)
 
             put_update
 
-            expect(managed_group.reload.code_suggestions).to eq(false)
+            expect(group.reload.code_suggestions).to eq(false)
           end
         end
 
         context 'when group is a subgroup' do
-          let_it_be(:subgroup) { create(:group, parent: managed_group) }
+          let_it_be(:subgroup) { create(:group, parent: group) }
           let(:submitted_group) { subgroup }
 
           it 'does not allow changes to a subgroup' do
@@ -560,12 +562,14 @@ RSpec.describe GroupsController, feature_category: :subgroups do
       end
 
       context 'with `ai_assist_ui_enabled` disabled' do
-        let_it_be(:managed_group) { create(:group_with_plan, plan: :free_plan).tap { |g| g.add_owner(user) } }
+        before do
+          stub_ee_application_setting(check_namespace_plan: false)
+        end
 
         it 'does not allow the parameter' do
           put_update
 
-          expect(managed_group.reload.code_suggestions).to eq(false)
+          expect(group.reload.code_suggestions).to eq(false)
         end
       end
     end
@@ -863,64 +867,38 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     end
   end
 
-  describe '#ai_assist_ui_enabled?', :saas do
-    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+  describe '#ai_assist_ui_enabled?' do
     let_it_be(:subgroup) { create(:group, parent: group) }
 
-    where(:feature_ai_assist_ui, :feature_ai_assist, :ai_assist_flag, :current_group, :check_namespace_plan, :result) do
-      false | false | false | ref(:group)    | false | false
-      false | false | false | nil            | false | false
-      false | false | false | ref(:subgroup) | false | false
-      false | false | false | ref(:group)    | true  | false
-      false | false | false | nil            | true  | false
-      false | false | false | ref(:subgroup) | true  | false
-      false | true  | true  | ref(:group)    | false | false
-      false | true  | true  | nil            | false | false
-      false | true  | true  | ref(:subgroup) | false | false
-      false | true  | true  | ref(:group)    | true  | false
-      false | true  | true  | nil            | true  | false
-      false | true  | true  | ref(:subgroup) | true  | false
-      false | false | true  | ref(:group)    | false | false
-      false | false | true  | nil            | false | false
-      false | false | true  | ref(:subgroup) | false | false
-      false | false | true  | ref(:group)    | true  | false
-      false | false | true  | nil            | true  | false
-      false | false | true  | ref(:subgroup) | true  | false
-      true  | false | false | ref(:group)    | false | false
-      true  | false | false | nil            | false | false
-      true  | false | false | ref(:subgroup) | false | false
-      true  | false | false | ref(:group)    | true  | false
-      true  | false | false | nil            | true  | false
-      true  | false | false | ref(:subgroup) | true  | false
-      true  | true  | false | ref(:group)    | false | false
-      true  | true  | false | nil            | false | false
-      true  | true  | false | ref(:subgroup) | false | false
-      true  | true  | false | ref(:group)    | true  | false
-      true  | true  | false | nil            | true  | false
-      true  | true  | false | ref(:subgroup) | true  | false
-      true  | true  | true  | ref(:group)    | false | false
-      true  | true  | true  | nil            | false | false
-      true  | true  | true  | ref(:subgroup) | false | false
-      true  | true  | true  | ref(:group)    | true  | true
-      true  | true  | true  | nil            | true  | false
-      true  | true  | true  | ref(:subgroup) | true  | false
-      true  | false | true  | ref(:group)    | false | false
-      true  | false | true  | nil            | false | false
-      true  | false | true  | ref(:subgroup) | false | false
-      true  | false | true  | ref(:group)    | true  | false
-      true  | false | true  | nil            | true  | false
-      true  | false | true  | ref(:subgroup) | true  | false
-      false | true  | false | ref(:group)    | false | false
-      false | true  | false | nil            | false | false
-      false | true  | false | ref(:subgroup) | false | false
-      false | true  | false | ref(:group)    | true  | false
-      false | true  | false | nil            | true  | false
-      false | true  | false | ref(:subgroup) | true  | false
+    where(:feature_ai_assist_ui, :ai_assist_flag, :current_group, :check_namespace_plan, :result) do
+      false | true  | ref(:group)    | false | false
+      false | true  | nil            | false | false
+      false | true  | ref(:subgroup) | false | false
+      false | true  | ref(:group)    | true  | false
+      false | true  | nil            | true  | false
+      false | true  | ref(:subgroup) | true  | false
+      true  | false | ref(:group)    | false | false
+      true  | false | nil            | false | false
+      true  | false | ref(:subgroup) | false | false
+      true  | false | ref(:group)    | true  | false
+      true  | false | nil            | true  | false
+      true  | false | ref(:subgroup) | true  | false
+      true  | true  | ref(:group)    | false | false
+      true  | true  | nil            | false | false
+      true  | true  | ref(:subgroup) | false | false
+      true  | true  | ref(:group)    | true  | true
+      true  | true  | nil            | true  | false
+      true  | true  | ref(:subgroup) | true  | false
+      false | false | ref(:group)    | false | false
+      false | false | nil            | false | false
+      false | false | ref(:subgroup) | false | false
+      false | false | ref(:group)    | true  | false
+      false | false | nil            | true  | false
+      false | false | ref(:subgroup) | true  | false
     end
 
     with_them do
       before do
-        stub_licensed_features(ai_assist: feature_ai_assist)
         stub_feature_flags(ai_assist_ui: feature_ai_assist_ui)
         stub_feature_flags(ai_assist_flag: ai_assist_flag)
         allow(controller).to receive(:current_group).and_return(current_group)
