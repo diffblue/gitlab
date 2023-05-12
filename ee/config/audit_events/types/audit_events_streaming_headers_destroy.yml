@@ -1,0 +1,9 @@
+---
+name: audit_events_streaming_headers_destroy
+description: Triggered when a streaming header for audit events is deleted
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/366350
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92068
+milestone: '15.3'
+feature_category: audit_events
+saved_to_database: true
+streamed: true

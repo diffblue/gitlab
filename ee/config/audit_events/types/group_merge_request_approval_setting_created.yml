@@ -1,0 +1,9 @@
+---
+name: group_merge_request_approval_setting_created
+description: Triggered when merge request approval settings are added on a group level.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/356152
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87880
+milestone: '15.1'
+feature_category: subgroups
+saved_to_database: true
+streamed: true
