@@ -18,7 +18,6 @@ import {
   formatMedianValuesWithOverview,
   generateFilterTextDescription,
   groupDurationsByDay,
-  progressiveSummation,
   formatDurationOverviewChartData,
 } from 'ee/analytics/cycle_analytics/utils';
 import {
@@ -43,7 +42,6 @@ import {
   flattenedDurationData,
   durationChartPlottableData,
   durationOverviewChartPlottableData,
-  summedDurationOverviewData,
   issueStage,
   rawCustomStage,
   rawTasksByTypeData,
@@ -307,14 +305,6 @@ describe('Value Stream Analytics utils', () => {
       const plottableDurationOverviewData = getDurationOverviewChartData(rawData);
 
       expect(plottableDurationOverviewData).toEqual(expect.arrayContaining(result));
-    });
-  });
-
-  describe('progressiveSummation', () => {
-    it('progressively sums up the duration data as expected', () => {
-      expect(progressiveSummation(durationOverviewChartPlottableData)).toStrictEqual(
-        summedDurationOverviewData,
-      );
     });
   });
 

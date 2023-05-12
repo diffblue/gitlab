@@ -49,3 +49,11 @@ export const DEFAULT_NULL_SERIES_OPTIONS = {
     color: 'none',
   },
 };
+
+export const STACKED_AREA_CHART_SERIES_OPTIONS = {
+  stack: 'chart',
+};
+
+export const STACKED_AREA_CHART_NULL_SERIES_OPTIONS = {
+  stack: 'null',
+};

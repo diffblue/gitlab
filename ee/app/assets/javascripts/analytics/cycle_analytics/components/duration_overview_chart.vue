@@ -7,7 +7,6 @@ import dateFormat from '~/lib/dateformat';
 import { buildNullSeries, formatDurationOverviewTooltipMetric } from 'ee/analytics/shared/utils';
 import { isNumeric } from '~/lib/utils/number_utils';
 import { n__ } from '~/locale';
-import { progressiveSummation } from '../utils';
 import {
   DURATION_CHART_Y_AXIS_TITLE,
   DURATION_TOTAL_TIME_DESCRIPTION,
@@ -16,7 +15,13 @@ import {
   DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT,
   DURATION_OVERVIEW_CHART_NO_DATA,
   DURATION_TOTAL_TIME_NO_DATA,
+  DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from '../constants';
+import {
+  DEFAULT_NULL_SERIES_OPTIONS,
+  STACKED_AREA_CHART_SERIES_OPTIONS,
+  STACKED_AREA_CHART_NULL_SERIES_OPTIONS,
+} from '../../shared/constants';
 
 export default {
   name: 'DurationOverviewChart',
@@ -53,12 +58,10 @@ export default {
       return this.errorMessage || DURATION_TOTAL_TIME_NO_DATA;
     },
     chartData() {
-      const summedData = progressiveSummation(this.durationChartPlottableData);
-
       const nonNullSeries = [];
       const nullSeries = [];
 
-      summedData.forEach(({ name: seriesName, data: seriesData }) => {
+      this.durationChartPlottableData.forEach(({ name: seriesName, data: seriesData }) => {
         const valuesSeries = {
           name: seriesName,
           data: seriesData,
@@ -66,12 +69,16 @@ export default {
 
         const [nullData, nonNullData] = buildNullSeries({
           seriesData: [valuesSeries],
-          nullSeriesTitle: DURATION_OVERVIEW_CHART_NO_DATA,
+          nullSeriesTitle: seriesName, // to simultaneously toggle both stage and corresponding null series from legend
+          nullSeriesOptions: {
+            ...DEFAULT_NULL_SERIES_OPTIONS,
+            ...STACKED_AREA_CHART_NULL_SERIES_OPTIONS,
+          },
         });
 
         const { data, name } = nonNullData;
 
-        nonNullSeries.push({ data, name });
+        nonNullSeries.push({ data, name, ...STACKED_AREA_CHART_SERIES_OPTIONS });
         nullSeries.push(nullData);
       });
 
@@ -102,16 +109,14 @@ export default {
       if (!this.compiledChartOptions) return [];
 
       const { series } = this.compiledChartOptions;
-      const seriesInfo = series.map(({ name, lineStyle: { color, type } }) => ({
+      const seriesInfo = series.map(({ name, lineStyle }) => ({
         name,
-        color,
-        type,
+        ...lineStyle,
       }));
 
-      const nonNullSeriesInfo = seriesInfo.filter(({ name }) => this.isNonNullSeriesData(name));
-      const [nullSeriesItem] = seriesInfo.filter(({ name }) => !this.isNonNullSeriesData(name));
+      const nonNullSeriesInfo = this.getNonNullSeriesData(seriesInfo);
 
-      return [...nonNullSeriesInfo, nullSeriesItem];
+      return [...nonNullSeriesInfo, DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM];
     },
   },
   beforeDestroy() {
@@ -121,8 +126,13 @@ export default {
     }
   },
   methods: {
-    isNonNullSeriesData(seriesName) {
-      return seriesName !== DURATION_OVERVIEW_CHART_NO_DATA;
+    getNonNullSeriesData(seriesData) {
+      const seriesDataHalf = Math.ceil(seriesData.length / 2);
+      /**
+       * Since series data is structured as follows: [...nonNullSeries, ...nullSeries]
+       * we want to slice the array and return the first half
+       */
+      return seriesData.slice(0, seriesDataHalf);
     },
     formatTooltipText({ seriesData }) {
       const [dateTime] = seriesData[0].data;
@@ -131,12 +141,9 @@ export default {
         DURATION_OVERVIEW_CHART_X_AXIS_TOOLTIP_TITLE_DATE_FORMAT,
       );
 
-      const nonNullSeries = seriesData.filter(({ seriesName }) =>
-        this.isNonNullSeriesData(seriesName),
-      );
+      const nonNullSeries = this.getNonNullSeriesData(seriesData);
 
-      this.tooltipContent = nonNullSeries.map(({ seriesName, color, seriesId, dataIndex }, idx) => {
-        const data = this.durationChartPlottableData[idx].data[dataIndex];
+      this.tooltipContent = nonNullSeries.map(({ seriesName, color, seriesId, data }) => {
         const [, metric] = data;
 
         return {
