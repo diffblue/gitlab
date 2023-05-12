@@ -16,11 +16,7 @@ RSpec.shared_examples DescriptionDiffActions do
       delete :delete_description_version, params: base_params.merge(extra_params)
     end
 
-    context 'when license is available' do
-      before do
-        stub_licensed_features(epics: true, description_diffs: true)
-      end
-
+    shared_examples 'description diff actions' do
       context 'GET description_diff' do
         it 'returns the diff with the previous version' do
           expect(Gitlab::Diff::CharDiff).to receive(:new).with(version_2.description, version_3.description).and_call_original
@@ -127,6 +123,23 @@ RSpec.shared_examples DescriptionDiffActions do
           end
         end
       end
+    end
+
+    context 'when license is available' do
+      before do
+        stub_licensed_features(epics: true, description_diffs: true)
+      end
+
+      it_behaves_like 'description diff actions'
+    end
+
+    context 'when features are available through Registration Features' do
+      before do
+        stub_application_setting(usage_ping_features_enabled: true)
+        stub_licensed_features(epics: true, description_diffs: false)
+      end
+
+      it_behaves_like 'description diff actions'
     end
 
     context 'when license is not available' do
