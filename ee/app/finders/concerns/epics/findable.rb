@@ -105,7 +105,9 @@ module Epics
     # rubocop: disable CodeReuse/ActiveRecord
     def by_parent(items)
       if top_level_only? && !parent_id?
-        items.where(parent_id: nil)
+        items.left_outer_joins(:parent)
+             .where.not(parent: { group_id: related_groups.as_ids })
+             .or(items.where(parent_id: nil))
       elsif parent_id?
         items.where(parent_id: params[:parent_id])
       else
