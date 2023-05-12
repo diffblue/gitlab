@@ -13,7 +13,7 @@ module Llm
       def execute
         return unless enabled? && @user.can?(:read_merge_request, @merge_request) && llm_client
 
-        response = llm_client.chat(content: summary_message)
+        response = llm_client.chat(content: summary_message, moderated: true)
 
         return unless response.respond_to?(:parsed_response)
         return unless response.parsed_response.fetch("choices", nil)
