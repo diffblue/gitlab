@@ -11,6 +11,9 @@ module EE
           argument :has_vulnerabilities, GraphQL::Types::Boolean,
             required: false,
             description: 'Returns only cluster agents which have vulnerabilities.'
+          argument :has_remote_development_agent_config, GraphQL::Types::Boolean,
+            required: false,
+            description: 'Returns only cluster agents which have an associated remote development agent config.'
         end
       end
     end

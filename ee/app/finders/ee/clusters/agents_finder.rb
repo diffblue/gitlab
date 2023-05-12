@@ -20,6 +20,13 @@ module EE
         agents = super(agents)
         agents = agents.has_vulnerabilities(params[:has_vulnerabilities]) unless params[:has_vulnerabilities].nil?
 
+        case params[:has_remote_development_agent_config]
+        when true
+          agents = agents.with_remote_development_agent_config
+        when false
+          agents = agents.without_remote_development_agent_config
+        end
+
         agents
       end
     end
