@@ -39,7 +39,7 @@ module EE
         enabled = if obj
                     obj.feature_available?(name)
                   else
-                    ::License.feature_available?(name)
+                    ::License.feature_available?(name) || ::GitlabSubscriptions::Features.usage_ping_feature?(name)
                   end
 
         push_to_gon_attributes(:licensed_features, name, enabled)

@@ -60,6 +60,27 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
     end
 
+    shared_examples 'settings for registration features' do
+      it 'does not update settings when registration features are not available' do
+        stub_application_setting(usage_ping_features_enabled: false)
+
+        attribute_names = settings.keys.map(&:to_s)
+
+        expect { put :update, params: { application_setting: settings } }
+          .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
+      end
+
+      it 'updates settings when the registration features are available' do
+        stub_application_setting(usage_ping_features_enabled: true)
+
+        put :update, params: { application_setting: settings }
+
+        settings.each do |attribute, value|
+          expect(ApplicationSetting.current.public_send(attribute)).to eq(value)
+        end
+      end
+    end
+
     context 'mirror settings' do
       let(:settings) do
         {
@@ -140,6 +161,7 @@ RSpec.describe Admin::ApplicationSettingsController do
       let(:feature) { :password_complexity }
 
       it_behaves_like 'settings for licensed features'
+      it_behaves_like 'settings for registration features'
     end
 
     context 'updating pypi packages request forwarding setting' do
@@ -171,31 +193,7 @@ RSpec.describe Admin::ApplicationSettingsController do
       let(:feature) { :geo }
 
       it_behaves_like 'settings for licensed features'
-
-      context "with geo feature disabled" do
-        context "with registration features disabled" do
-          it 'does not update settings' do
-            stub_application_setting(usage_ping_features_enabled: false)
-
-            attribute_names = settings.keys.map(&:to_s)
-
-            expect { put :update, params: { application_setting: settings } }
-              .not_to change { ApplicationSetting.current.reload.attributes.slice(*attribute_names) }
-          end
-        end
-
-        context "with registration features enabled" do
-          it 'updates settings' do
-            stub_application_setting(usage_ping_features_enabled: true)
-
-            put :update, params: { application_setting: settings }
-
-            settings.each do |attribute, value|
-              expect(ApplicationSetting.current.public_send(attribute)).to eq(value)
-            end
-          end
-        end
-      end
+      it_behaves_like 'settings for registration features'
     end
 
     context 'deletion adjourned period' do
