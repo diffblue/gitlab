@@ -42,6 +42,19 @@ RSpec.describe Security::TrainingProviders::SecureFlagUrlFinder, feature_categor
       end
     end
 
+    context 'when response exists but does not have a link' do
+      let_it_be(:response) { nil }
+
+      before do
+        synchronous_reactive_cache(finder)
+        allow(Gitlab::HTTP).to receive_message_chain(:try_get, :parsed_response).and_return(response)
+      end
+
+      it 'returns a nil link' do
+        expect(finder.calculate_reactive_cache(dummy_url)).to eq({ url: nil })
+      end
+    end
+
     context "when external_type is not present in allowed list" do
       let_it_be(:identifier) do
         create(:vulnerabilities_identifier, external_type: 'invalid type', external_id: "A1", name: "A1. Injection")
