@@ -24,7 +24,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       code_coverage_summary api_fuzzing_ci_configuration corpuses path_locks incident_management_escalation_policies
       incident_management_escalation_policy scan_execution_policies network_policies security_training_urls
       vulnerability_images only_allow_merge_if_all_status_checks_passed dependencies merge_requests_disable_committers_approval
-      ai_conversations
+      ai_conversations has_jira_vulnerability_issue_creation_enabled
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -304,6 +304,49 @@ RSpec.describe GitlabSchema.types['Project'] do
 
       it 'returns a list of container images reported for vulnerabilities' do
         expect(vulnerability_images).to eq('name' => 'alpine:3.7')
+      end
+    end
+  end
+
+  describe 'has_jira_vulnerability_issue_creation_enabled' do
+    let_it_be(:jira_integration) { create(:jira_integration, project: project) }
+
+    let_it_be(:query) do
+      %(
+        query {
+          project(fullPath: "#{project.full_path}") {
+            hasJiraVulnerabilityIssueCreationEnabled
+          }
+        }
+      )
+    end
+
+    subject(:has_jira_vulnerability_issue_creation_enabled) do
+      result = GitlabSchema.execute(query, context: { current_user: user }).as_json
+      result.dig('data', 'project', 'hasJiraVulnerabilityIssueCreationEnabled')
+    end
+
+    context 'when jira integration is enabled' do
+      before do
+        allow_next_found_instance_of(::Integrations::Jira) do |jira_integration|
+          allow(jira_integration).to receive(:configured_to_create_issues_from_vulnerabilities?).and_return(true)
+        end
+      end
+
+      it 'returns true' do
+        expect(has_jira_vulnerability_issue_creation_enabled).to be true
+      end
+    end
+
+    context 'when jira integration is not enabled' do
+      before do
+        allow_next_found_instance_of(::Integrations::Jira) do |jira_integration|
+          allow(jira_integration).to receive(:configured_to_create_issues_from_vulnerabilities?).and_return(false)
+        end
+      end
+
+      it 'returns false' do
+        expect(has_jira_vulnerability_issue_creation_enabled).to be false
       end
     end
   end
