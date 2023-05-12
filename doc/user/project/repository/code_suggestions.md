@@ -8,7 +8,7 @@ type: index, reference
 # Code Suggestions (Beta) **(PREMIUM SAAS)**
 
 > - [Introduced](https://about.gitlab.com/releases/2023/02/22/gitlab-15-9-released/#code-suggestions-available-in-closed-beta) in GitLab 15.9 as [Beta](/ee/policy/alpha-beta-support.md#beta) for early access Ultimate customers.
-> - [Enabled] as opt-in with GitLab 15.11 as [Beta](/ee/policy/alpha-beta-support.md#beta).
+> - [Enabled](https://gitlab.com/gitlab-org/gitlab/-/issues/408104) as opt-in with GitLab 15.11 as [Beta](/ee/policy/alpha-beta-support.md#beta).
 > - [Moved](https://gitlab.com/gitlab-org/gitlab/-/issues/408158) from GitLab Ultimate to GitLab Premium in 16.0.
 
 WARNING:
