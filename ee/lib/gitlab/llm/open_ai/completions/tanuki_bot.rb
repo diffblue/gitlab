@@ -11,11 +11,13 @@ module Gitlab
             question = options[:question]
 
             response = ::Gitlab::Llm::TanukiBot.execute(current_user: user, question: question)
+            response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot.new(response)
 
-            response_options = { request_id: params[:request_id] }
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, resource, response, options: response_options).execute(
-              Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot.new
-            )
+            response_options = { request_id: options[:request_id] }
+
+            ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
+              user, resource, response_modifier, options: response_options
+            ).execute
           end
         end
       end

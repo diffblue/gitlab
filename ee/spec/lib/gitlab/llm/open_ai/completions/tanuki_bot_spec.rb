@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :g
   let_it_be(:user) { create(:user) }
 
   let(:question) { 'A question' }
-  let(:options) { { question: question } }
+  let(:options) { { question: question, request_id: 'uuid' } }
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::TanukiBot }
 
   let(:ai_response) do
@@ -32,9 +32,18 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :g
     it 'calls ResponseService' do
       allow(::Gitlab::Llm::TanukiBot).to receive(:execute)
         .with(current_user: user, question: question).and_return(ai_response)
-      response_service = double
 
-      expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).and_return(response_service)
+      response_modifier = double
+      response_service = double
+      params = [user, user, response_modifier, { options: { request_id: 'uuid' } }]
+
+      expect(Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot).to receive(:new).with(ai_response).and_return(
+        response_modifier
+      )
+
+      expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
+        response_service
+      )
       expect(response_service).to receive(:execute)
 
       tanuki_bot

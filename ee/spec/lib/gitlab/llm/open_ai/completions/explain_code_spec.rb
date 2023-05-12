@@ -48,10 +48,16 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::ExplainCode, feature_category: 
         expect(instance).to receive(:chat).with(content: nil, **ai_template).and_return(ai_response)
       end
 
-      params = [user, project, ai_response, { options: { request_id: 'uuid' } }]
+      response_modifier = double
       response_service = double
+      params = [user, project, response_modifier, { options: { request_id: 'uuid' } }]
 
-      expect(::Gitlab::Llm::OpenAi::ResponseService).to receive(:new).with(*params).and_return(response_service)
+      expect(Gitlab::Llm::OpenAi::ResponseModifiers::Chat).to receive(:new).with(ai_response).and_return(
+        response_modifier
+      )
+      expect(::Gitlab::Llm::GraphqlSubscriptionResponseService).to receive(:new).with(*params).and_return(
+        response_service
+      )
       expect(response_service).to receive(:execute)
 
       explain_code

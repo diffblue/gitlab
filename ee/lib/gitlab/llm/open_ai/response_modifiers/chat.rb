@@ -4,9 +4,13 @@ module Gitlab
   module Llm
     module OpenAi
       module ResponseModifiers
-        class Chat
-          def execute(ai_response)
-            ai_response&.dig(:choices, 0, :message, :content)
+        class Chat < ::Gitlab::Llm::BaseResponseModifier
+          def response_body
+            @response_body ||= ai_response&.dig(:choices, 0, :message, :content).to_s.strip
+          end
+
+          def errors
+            @errors ||= [ai_response&.dig(:error)].compact
           end
         end
       end

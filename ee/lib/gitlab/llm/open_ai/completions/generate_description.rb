@@ -35,15 +35,12 @@ module Gitlab
             TEMPLATE
 
             options = ai_prompt_class.get_options(content[0..INPUT_CONTENT_LIMIT])
+            ai_response = Gitlab::Llm::OpenAi::Client.new(user).chat(content: nil, **options)
+            response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(ai_response)
 
-            ai_response = Gitlab::Llm::OpenAi::Client.new(user).chat(
-              content: nil,
-              **options
-            )
-
-            ::Gitlab::Llm::OpenAi::ResponseService
-              .new(user, issuable, ai_response, options: { request_id: params[:request_id] })
-              .execute(Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new)
+            ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
+              user, issuable, response_modifier, options: { request_id: params[:request_id] }
+            ).execute
           end
         end
       end
