@@ -33,6 +33,7 @@ RSpec.describe Group, feature_category: :subgroups do
     it { is_expected.to have_many(:iterations_cadences) }
     it { is_expected.to have_many(:epic_board_recent_visits).inverse_of(:group) }
     it { is_expected.to have_many(:external_audit_event_destinations) }
+    it { is_expected.to have_many(:google_cloud_logging_configurations) }
     it { is_expected.to have_one(:analytics_dashboards_pointer) }
     it { is_expected.to have_one(:analytics_dashboards_configuration_project) }
 
