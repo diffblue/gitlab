@@ -7,7 +7,6 @@ module Gitlab
     DURATION_PRECISION = 6 # microseconds
 
     def init_instrumentation_data
-      ::Gitlab::Instrumentation::Storage.clear!
       Gitlab::RequestContext.start_thread_context
     end
 
