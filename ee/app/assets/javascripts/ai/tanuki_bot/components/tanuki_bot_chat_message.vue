@@ -27,10 +27,10 @@ export default {
   },
   computed: {
     isUserMessage() {
-      return this.message.type === MESSAGE_TYPES.USER;
+      return this.message.role === MESSAGE_TYPES.USER;
     },
     isTanukiMessage() {
-      return this.message.type === MESSAGE_TYPES.TANUKI;
+      return this.message.role === MESSAGE_TYPES.TANUKI;
     },
     hasSources() {
       return this.message.sources?.length > 0;
@@ -84,10 +84,10 @@ export default {
   >
     <div
       v-if="isTanukiMessage"
-      v-safe-html="renderMarkdown(message.msg)"
+      v-safe-html="renderMarkdown(message.content)"
       class="tanuki-bot-chat-message-markdown"
     ></div>
-    <p v-if="isUserMessage" class="gl-mb-0">{{ message.msg }}</p>
+    <p v-if="isUserMessage" class="gl-mb-0">{{ message.content }}</p>
     <div v-if="isTanukiMessage" class="gl-display-flex gl-align-items-flex-end gl-mt-3">
       <div
         v-if="hasSources"

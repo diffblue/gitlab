@@ -1,8 +1,9 @@
 import { s__ } from '~/locale';
+import { GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 
 export const MESSAGE_TYPES = {
-  USER: 'user',
-  TANUKI: 'tanuki',
+  USER: GENIE_CHAT_MODEL_ROLES.user,
+  TANUKI: GENIE_CHAT_MODEL_ROLES.assistant,
 };
 
 export const SOURCE_TYPES = {
