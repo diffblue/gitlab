@@ -31,8 +31,10 @@ module Security
     def schedule_rules(schedule)
       schedule.schedule_next_run!
 
+      user = schedule.security_orchestration_policy_configuration.bot_user || schedule.owner
+
       Security::SecurityOrchestrationPolicies::RuleScheduleService
-        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner)
+        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: user)
         .execute(schedule)
     end
   end

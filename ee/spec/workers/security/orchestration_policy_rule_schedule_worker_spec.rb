@@ -34,6 +34,28 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
         end
       end
 
+      context 'when policy has a security_policy_bot user' do
+        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, bot_user: security_policy_bot) }
+        let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
+
+        before do
+          security_orchestration_policy_configuration.project.add_guest(security_policy_bot)
+        end
+
+        it 'executes the rule schedule service with the bot user' do
+          expect_next_instance_of(
+            Security::SecurityOrchestrationPolicies::RuleScheduleService,
+            container: schedule.security_orchestration_policy_configuration.project,
+            current_user: security_policy_bot
+          ) do |service|
+            expect(service).to receive(:execute)
+          end
+
+          worker.perform
+        end
+      end
+
       context 'when schedule is created for security orchestration policy configuration in namespace' do
         let_it_be(:namespace) { create(:group) }
 
