@@ -7,6 +7,8 @@ module EE
       # in gitlab_subscriptions table
       module FixIncorrectMaxSeatsUsed
         class FixIncorrectMaxSeatsUsedJsonLogger < ::Gitlab::JsonLogger
+          exclude_context!
+
           def self.file_name_noext
             'fix_incorrect_max_seats_used_json'
           end

@@ -3,6 +3,8 @@
 module Gitlab
   module Geo
     class Logger < ::Gitlab::JsonLogger
+      exclude_context!
+
       module StdoutLogger
         def full_log_path
           $stdout
