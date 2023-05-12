@@ -14,6 +14,7 @@ export const TASK_TYPE_NAME = 'Task';
 
 export const WIDGET_TYPE_ASSIGNEES = 'ASSIGNEES';
 export const WIDGET_TYPE_DESCRIPTION = 'DESCRIPTION';
+export const WIDGET_TYPE_AWARD_EMOJI = 'AWARD_EMOJI';
 export const WIDGET_TYPE_NOTIFICATIONS = 'NOTIFICATIONS';
 export const WIDGET_TYPE_CURRENT_USER_TODOS = 'CURRENT_USER_TODOS';
 export const WIDGET_TYPE_LABELS = 'LABELS';
@@ -227,3 +228,8 @@ export const TODO_CONNECTION_TYPENAME = 'TodoConnection';
 export const CURRENT_USER_TODOS_TYPENAME = 'WorkItemWidgetCurrentUserTodos';
 export const WORK_ITEM_TYPENAME = 'WorkItem';
 export const WORK_ITEM_UPDATE_PAYLOAD_TYPENAME = 'WorkItemUpdatePayload';
+
+export const EMOJI_ACTION_ADD = 'ADD';
+export const EMOJI_ACTION_REMOVE = 'REMOVE';
+export const EMOJI_THUMBSUP = 'thumbsup';
+export const EMOJI_THUMBSDOWN = 'thumbsdown';
