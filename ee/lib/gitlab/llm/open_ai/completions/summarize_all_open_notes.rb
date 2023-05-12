@@ -41,10 +41,12 @@ module Gitlab
               content: nil,
               **options
             )
+            response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(ai_response)
 
             response_options = { request_id: params[:request_id] }
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, issuable, ai_response, options: response_options)
-              .execute(Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new)
+            ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
+              user, issuable, response_modifier, options: response_options
+            ).execute
           end
         end
       end

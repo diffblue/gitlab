@@ -17,12 +17,13 @@ module Gitlab
             ai_options[:max_tokens] = OUTPUT_TOKEN_LIMIT
 
             ai_response = Gitlab::Llm::OpenAi::Client.new(user).chat(content: nil, **ai_options)
+            response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(ai_response)
 
             options[:request_id] = params[:request_id]
 
-            ::Gitlab::Llm::OpenAi::ResponseService.new(user, merge_request, ai_response, options: options).execute(
-              Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new
-            )
+            ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
+              user, merge_request, response_modifier, options: options
+            ).execute
           end
         end
       end

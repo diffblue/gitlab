@@ -4,15 +4,17 @@ module Gitlab
   module Llm
     module OpenAi
       module ResponseModifiers
-        class TanukiBot
+        class TanukiBot < Gitlab::Llm::BaseResponseModifier
+          include Gitlab::Utils::StrongMemoize
+
           CONTENT_ID_FIELD = 'ATTRS'
           CONTENT_ID_REGEX = /CNT-IDX-(?<id>\d+)/
           NO_ANSWER_REGEX = /i do.*n.+know/i
 
-          def execute(ai_response)
-            text = ai_response&.dig(:choices, 0, :text)
+          def response_body
+            text = ai_response&.dig(:choices, 0, :text).to_s.strip
 
-            return unless text
+            return unless text.present?
 
             output = text.split("#{CONTENT_ID_FIELD}:")
             msg = output[0].strip
@@ -31,6 +33,11 @@ module Gitlab
               msg: msg,
               sources: sources
             }.to_json
+          end
+          strong_memoize_attr :response_body
+
+          def errors
+            @errors ||= [ai_response&.dig(:error)].compact
           end
         end
       end

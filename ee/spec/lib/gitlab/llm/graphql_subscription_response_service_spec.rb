@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe ::Gitlab::Llm::GraphqlSubscriptionResponseService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
@@ -30,6 +30,8 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
       }
     }'
   end
+
+  let(:response_modifier) { Gitlab::Llm::OpenAi::ResponseModifiers::Completions.new(ai_response_json) }
 
   shared_examples 'triggers ai completion subscription' do
     it 'triggers subscription' do
@@ -59,7 +61,7 @@ RSpec.describe Gitlab::Llm::OpenAi::ResponseService, feature_category: :no_categ
   end
 
   describe '#execute' do
-    subject { described_class.new(user, resource, ai_response_json, options: options).execute }
+    subject { described_class.new(user, resource, response_modifier, options: options).execute }
 
     let_it_be(:resource) { create(:merge_request, source_project: project) }
 
