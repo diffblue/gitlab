@@ -14084,7 +14084,7 @@ msgstr ""
 msgid "Data type"
 msgstr ""
 
-msgid "Database '%{database_name}' is using PostgreSQL %{pg_version_current}, but PostgreSQL %{pg_version_minimum} is required for this version of GitLab. Please upgrade your environment to a supported PostgreSQL version, see %{pg_requirements_url} for details."
+msgid "Database '%{database_name}' is using PostgreSQL %{pg_version_current}, but this version of GitLab requires PostgreSQL %{pg_version_minimum}. Please upgrade your environment to a supported PostgreSQL version. See %{pg_requirements_url} for details."
 msgstr ""
 
 msgid "Database update failed"
