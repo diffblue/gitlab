@@ -115,7 +115,7 @@ module EE
           attrs += EE::ApplicationSettingsHelper.merge_request_appovers_rules_attributes
         end
 
-        if License.feature_available?(:password_complexity)
+        if ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
           attrs += EE::ApplicationSettingsHelper.password_complexity_attributes
         end
 

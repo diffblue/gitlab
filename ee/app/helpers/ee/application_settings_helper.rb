@@ -184,7 +184,7 @@ module EE
 
     override :signup_form_data
     def signup_form_data
-      return super unless ::License.feature_available?(:password_complexity)
+      return super unless ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
 
       super.merge({
         password_uppercase_required: @application_setting[:password_uppercase_required].to_s,

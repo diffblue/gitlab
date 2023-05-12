@@ -144,7 +144,6 @@ module GitlabSubscriptions
       operations_dashboard
       package_forwarding
       pages_size_limit
-      password_complexity
       productivity_analytics
       project_aliases
       protected_environments
@@ -264,6 +263,7 @@ module GitlabSubscriptions
 
     PREMIUM_FEATURES_WITH_USAGE_PING = %i[
       group_ip_restriction
+      password_complexity
     ].freeze
 
     ULTIMATE_FEATURES_WITH_USAGE_PING = %i[

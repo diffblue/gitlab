@@ -44,7 +44,7 @@ module EE
     end
 
     def password_rule_list
-      if ::License.feature_available?(:password_complexity)
+      if ::Gitlab::RegistrationFeatures::PasswordComplexity.feature_available?
         rules = []
         rules << :number if ::Gitlab::CurrentSettings.password_number_required?
         rules << :lowercase if ::Gitlab::CurrentSettings.password_lowercase_required?

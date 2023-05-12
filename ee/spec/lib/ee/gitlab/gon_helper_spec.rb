@@ -60,7 +60,7 @@ RSpec.describe EE::Gitlab::GonHelper do
     let_it_be(:feature) { GitlabSubscriptions::Features::ALL_FEATURES.first }
 
     shared_examples 'sets the licensed features flag' do
-      it 'pushes the licensed feature flag to the frotnend' do
+      it 'pushes the licensed feature flag to the frontend' do
         gon = class_double('Gon')
         stub_licensed_features(feature => true)
 
@@ -84,6 +84,17 @@ RSpec.describe EE::Gitlab::GonHelper do
       end
 
       it_behaves_like 'sets the licensed features flag'
+
+      context 'with feature from registration features' do
+        let(:feature) { :password_complexity }
+
+        before do
+          stub_licensed_features(feature => false)
+          stub_application_setting(usage_ping_features_enabled: true)
+        end
+
+        it_behaves_like 'sets the licensed features flag'
+      end
     end
 
     context 'obj given' do

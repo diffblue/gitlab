@@ -2390,6 +2390,37 @@ RSpec.describe User, feature_category: :system_access do
         it_behaves_like 'validating with random_password'
       end
     end
+
+    context 'when password complexity is available through registration features' do
+      before do
+        stub_application_setting(usage_ping_features_enabled: true)
+      end
+
+      context 'without any password complexity polices' do
+        it_behaves_like 'validating with random_password'
+      end
+
+      context 'when number is required' do
+        before do
+          stub_application_setting(password_number_required: true)
+        end
+
+        it_behaves_like 'validating with random_password'
+
+        it 'is invalid' do
+          user.password = 'qwertasdf'
+          expect(user).not_to be_valid
+        end
+
+        context 'when password complexity is required' do
+          before do
+            stub_application_setting(password_symbol_required: true)
+          end
+
+          it_behaves_like 'validating with random_password'
+        end
+      end
+    end
   end
 
   describe '.banned_from_namespace?' do
