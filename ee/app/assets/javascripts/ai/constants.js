@@ -22,6 +22,7 @@ export const i18n = {
     'AI|There is too much text in the chat. Please try again with a shorter text.',
   ),
   GENIE_CHAT_PROMPT_PLACEHOLDER: s__('AI|You can ask AI for more information.'),
+  GENIE_CHAT_SUBMIT_LABEL: s__('AI|Send chat message.'),
 };
 export const TOO_LONG_ERROR_TYPE = 'too-long';
 export const AI_GENIE_DEBOUNCE = 300;

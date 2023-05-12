@@ -1,0 +1,15 @@
+query getChatHistory($project: ID!) {
+  project(fullPath: $project) {
+    id
+    aiConversations {
+      ciConfigMessages {
+        nodes {
+          id
+          content
+          role
+          errors
+        }
+      }
+    }
+  }
+}
