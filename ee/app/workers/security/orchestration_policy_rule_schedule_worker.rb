@@ -31,6 +31,8 @@ module Security
     def schedule_rules(schedule)
       schedule.schedule_next_run!
 
+      return if schedule.security_orchestration_policy_configuration.project.marked_for_deletion?
+
       user = schedule.security_orchestration_policy_configuration.bot_user || schedule.owner
 
       service_result = Security::SecurityOrchestrationPolicies::RuleScheduleService

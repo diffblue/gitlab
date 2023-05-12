@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category: :security_policy_management do
   describe '#perform' do
-    let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:project) { create(:project) }
+    let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let_it_be(:schedule) { create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
     subject(:worker) { described_class.new }
@@ -66,6 +67,20 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
 
               worker.perform
             end
+          end
+        end
+
+        context 'when project is marked for deletion' do
+          before do
+            stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+
+            security_orchestration_policy_configuration.project.update!(marked_for_deletion_at: Time.zone.now)
+          end
+
+          it 'does not executes the rule schedule service' do
+            expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new)
+
+            worker.perform
           end
         end
       end

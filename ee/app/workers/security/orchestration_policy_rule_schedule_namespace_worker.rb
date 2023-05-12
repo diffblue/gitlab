@@ -20,7 +20,7 @@ module Security
 
       schedule.schedule_next_run!
 
-      security_orchestration_policy_configuration.namespace.all_projects.find_in_batches.each do |projects|
+      security_orchestration_policy_configuration.namespace.all_projects.not_aimed_for_deletion.find_in_batches.each do |projects|
         projects.each do |project|
           with_context(project: project, user: schedule.owner) do
             Security::SecurityOrchestrationPolicies::RuleScheduleService
