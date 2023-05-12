@@ -1,0 +1,9 @@
+---
+name: project_merge_method_updated
+description: Triggered when a project's merge request method has been changed.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/301124
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/83922
+milestone: '14.10'
+feature_category: projects
+saved_to_database: true
+streamed: true

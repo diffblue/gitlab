@@ -1,0 +1,9 @@
+---
+name: compliance_framework_deleted
+description: Triggered when a framework gets removed from a project
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/329362
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/65343
+milestone: '14.1'
+feature_category: compliance_management
+saved_to_database: true
+streamed: true
