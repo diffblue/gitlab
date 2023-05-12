@@ -188,6 +188,62 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
     it { is_expected.not_to be_allowed(:read_cluster_environments) }
   end
 
+  describe 'modify_value_stream_dashboard_settings policy' do
+    context 'when analytics dashboard is available' do
+      let(:current_user) { maintainer }
+
+      before do
+        stub_licensed_features(group_level_analytics_dashboard: true)
+      end
+
+      it { is_expected.to be_allowed(:modify_value_stream_dashboard_settings) }
+
+      context 'when the current user is the owner' do
+        let(:current_user) { owner }
+
+        it { is_expected.to be_allowed(:modify_value_stream_dashboard_settings) }
+      end
+
+      context 'when the current user is admin', :enable_admin_mode do
+        let(:current_user) { admin }
+
+        it { is_expected.to be_allowed(:modify_value_stream_dashboard_settings) }
+      end
+
+      context 'when a sub-group is given' do
+        let(:sub_group) { create(:group, :private, parent: group) }
+
+        subject { described_class.new(maintainer, sub_group) }
+
+        it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
+      end
+
+      context 'when the user is not a maintainer' do
+        let(:current_user) { developer }
+
+        it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
+      end
+
+      context 'when the value_stream_dashboard_on_off_setting FF is off' do
+        before do
+          stub_feature_flags(value_stream_dashboard_on_off_setting: false)
+        end
+
+        it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
+      end
+    end
+
+    context 'when analytics dashboard is not available' do
+      let(:current_user) { maintainer }
+
+      before do
+        stub_licensed_features(group_level_analytics_dashboard: false)
+      end
+
+      it { is_expected.not_to be_allowed(:modify_value_stream_dashboard_settings) }
+    end
+  end
+
   context 'when contribution analytics is available' do
     let(:current_user) { developer }
 

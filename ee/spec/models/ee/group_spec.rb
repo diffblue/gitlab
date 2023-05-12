@@ -36,6 +36,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to have_many(:google_cloud_logging_configurations) }
     it { is_expected.to have_one(:analytics_dashboards_pointer) }
     it { is_expected.to have_one(:analytics_dashboards_configuration_project) }
+    it { is_expected.to have_one(:value_stream_dashboard_aggregation).with_foreign_key(:namespace_id) }
 
     it_behaves_like 'model with wiki' do
       let(:container) { create(:group, :nested, :wiki_repo) }
