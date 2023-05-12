@@ -20,16 +20,16 @@
       %fieldset
         - component_params = { card_options: { class: 'gl-bg-gray-10 gl-mb-6' } }
         = render Pajamas::CardComponent.new(**component_params) do |c|
-          = c.body do
+          - c.with_body do
             - halted_migrations = elasticsearch_available && Elastic::DataMigrationService.halted_migrations?
             - if halted_migrations
               = render Pajamas::AlertComponent.new(variant: :warning,
                 title: _('Elasticsearch migration halted'),
                 alert_options: { class: 'gl-my-3' }) do |c|
-                = c.body do
+                - c.with_body do
                   = html_escape(_('Check the %{code_open}elasticsearch.log%{code_close} file to debug why the migration halted and make any changes before retrying the migration. When you fix the cause of the failure, select %{strong_open}Retry migration%{strong_close}, and the migration is scheduled to retry in the background.')) % { strong_open: '<strong>'.html_safe, strong_close: '</strong>'.html_safe, code_open: '<code>'.html_safe, code_close: '</code>'.html_safe }
                   = link_to _('Learn more.'), help_page_path('integration/advanced_search/elasticsearch', anchor: 'advanced-search-migrations')
-                = c.actions do
+                - c.with_actions do
                   - migration = Elastic::DataMigrationService.halted_migration
                   = link_to _('Retry migration'), admin_elasticsearch_retry_migration_path(version: migration.version), class: 'btn gl-alert-action btn-confirm gl-button', disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to retry this migration?') }, method: :post
 
@@ -125,7 +125,7 @@
                 = _('To use the system\'s default, set this value to 0.')
 
         = render Pajamas::CardComponent.new(**component_params) do |c|
-          = c.body do
+          - c.with_body do
             %h4= _('Elasticsearch indexing restrictions')
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_limit_indexing, s_('AdminSettings|Limit the number of namespaces and projects that can be indexed.'), checkbox_options: { class: 'js-limit-checkbox' }
@@ -145,7 +145,7 @@
                 .js-projects-indexing-restrictions{ data: { selected: elasticsearch_objects_options(@application_setting.elasticsearch_limited_projects(true)).to_json } }
 
         = render Pajamas::CardComponent.new(**component_params) do |c|
-          = c.body do
+          - c.with_body do
             %h4= _('Custom analyzers: language support')
             %h5
               = _('Chinese language support using')
@@ -166,7 +166,7 @@
               = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_kuromoji_search, s_('AdminSettings|Enable kuromoji custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_kuromoji_enabled? }, help_text: s_('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
 
         = render Pajamas::CardComponent.new(**component_params) do |c|
-          = c.body do
+          - c.with_body do
             %h4= _('AWS OpenSearch IAM credentials')
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_aws, s_('AdminSettings|Use AWS OpenSearch Service with IAM credentials')

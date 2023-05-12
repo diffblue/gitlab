@@ -6,5 +6,5 @@
   = render Pajamas::AlertComponent.new(variant: :success,
     alert_options: { class: 'gl-mt-3 gl-mb-7'},
     close_button_options: { 'aria-label' => s_('Trial|Dismiss'), data: { uid: 'trial_success_banner_dismissed' } }) do |c|
-    = c.body { _('Congratulations, your free trial is activated.') }
+    - c.with_body { _('Congratulations, your free trial is activated.') }
 #js-group-security-dashboard{ data: group_level_security_dashboard_data(@group) }

@@ -7,14 +7,14 @@
       dismissible: false,
       alert_options: { class: "#{'gl-mb-3' unless secondary_description}" }) do |c|
     - if description
-      = c.body do
+      - c.with_body do
         = description
 
 - if secondary_description
   = render Pajamas::AlertComponent.new(dismissible: false,
     alert_options: { class: 'gl-mb-3' }) do |c|
-    = c.body do
+    - c.with_body do
       = secondary_description
-    = c.actions do
+    - c.with_actions do
       - if ::Gitlab::Geo.primary_node.present?
         = link_to s_('Geo|Go to the primary site'), ::Gitlab::Geo.primary_node_url, class: "btn gl-alert-action btn-default btn-md gl-button btn-default-secondary"

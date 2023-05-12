@@ -15,7 +15,7 @@
   close_button_options: { class: 'js-namespace-user-cap-alert-dismiss',
                           data: { cookie_id: hide_user_cap_alert_cookie_id(root_namespace),
                                   testid: 'namespace_user_cap_alert_dismiss' }}) do |c|
-  = c.body do
+  - c.with_body do
     = s_('NamespaceUserCap|Pending users must be reviewed and approved by a group owner. Learn more about %{user_caps_link_start}user caps%{link_end} and %{users_pending_approval_link_start}users pending approval%{link_end}.').html_safe % { user_caps_link_start: user_caps_link_start, users_pending_approval_link_start: users_pending_approval_link_start, link_end: link_end }
-  = c.actions do
+  - c.with_actions do
     = link_to(s_('NamespaceUserCap|View pending approvals'), pending_users_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")

@@ -19,7 +19,7 @@
           variant: :warning,
           dismissible: false,
           alert_options: { class: 'gl-mb-5' }) do |c|
-          = c.body do
+          - c.with_body do
             = html_escape(_('You should add a %{linkStart}.gitlab-ci.yml%{linkEnd} file to this project to avoid pipeline failures. %{compliancePipelineLinkStart}Why?%{compliancePipelineLinkEnd}')) % { linkStart: gitlab_ci_yaml_doc_link, linkEnd: '</a>'.html_safe, compliancePipelineLinkStart: compliance_pipelines_doc_link, compliancePipelineLinkEnd: '</a>'.html_safe }
       = gitlab_ui_form_for @project, html: { multipart: true, class: "compliance-framework-form" }, authenticity_token: true do |f|
         .form-group

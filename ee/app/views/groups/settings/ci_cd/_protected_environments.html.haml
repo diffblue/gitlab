@@ -13,7 +13,7 @@
       - if @protected_environments.empty?
         = render Pajamas::AlertComponent.new(variant: :warning, show_icon: false, dismissible: false,
           alert_options: { class: 'gl-mb-5'}) do |c|
-          = c.body do
+          - c.with_body do
             = s_('ProtectedEnvironment|There are currently no protected environments. Protect an environment with this form.')
 
       = render 'groups/protected_environments/form'

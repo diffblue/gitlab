@@ -1,7 +1,7 @@
 .h3.gl-mb-5= _('License overview')
 = render Pajamas::CardComponent.new(card_options: { class: 'gl-mb-5' },
                                     body_options: { class: 'gl-display-flex gl-justify-content-space-between gl-align-items-center' }) do |c|
-  = c.body do
+  - c.with_body do
     %div
       %p.gl-mb-0
         = sprite_icon('license', css_class: 'gl-fill-gray-700')

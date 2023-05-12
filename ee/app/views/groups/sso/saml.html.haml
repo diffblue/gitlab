@@ -13,7 +13,7 @@
         %h4.gl-mt-0= s_('Allow %{strongOpen}%{group_name}%{strongClose} to sign you in?').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
         %p= s_('SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on.').html_safe % { strongOpen: '<strong>'.html_safe, group_path: @group_path, strongClose: '</strong>'.html_safe }
         = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_options: { class: 'gl-mb-5 gl-word-break-word' }) do |c|
-          = c.body do
+          - c.with_body do
             = s_('SAML|To allow %{strongOpen}%{group_name}%{strongClose} to manage your GitLab account %{strongOpen}%{username}%{strongClose} (%{email}) after you sign in successfully using single sign-on, select %{strongOpen}Authorize%{strongClose}.').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe, username: current_user.username, email: current_user.email }
         = saml_link _('Authorize'), @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block', data: { qa_selector: 'saml_sso_signin_button' }
       - else

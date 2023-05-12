@@ -1,5 +1,5 @@
 = render Pajamas::AlertComponent.new(title: _('Thanks for your purchase!'),
   variant: :success,
   close_button_options: { data: { testid: 'close-product-purchase-success' }}) do |c|
-  = c.body do
+  - c.with_body do
     = _('You have successfully purchased %{product}. You\'ll receive a receipt by email. Your purchase may take a minute to sync, so refresh the page if you don\'t see it yet.') % { product: product_name }

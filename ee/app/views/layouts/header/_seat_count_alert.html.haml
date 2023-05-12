@@ -7,9 +7,9 @@
             group_id: namespace.id }},
     title: _('%{group_name} is approaching the limit of available seats') % { group_name: namespace.name },
     close_button_options: { data: { testid: 'approaching-seat-count-threshold-alert-dismiss' }}) do |c|
-    = c.body do
+    - c.with_body do
       = n_('Your subscription has %{remaining_seat_count} out of %{total_seat_count} seat remaining.', 'Your subscription has %{remaining_seat_count} out of %{total_seat_count} seats remaining.', total_seat_count) % { remaining_seat_count: remaining_seat_count, total_seat_count: total_seat_count }
       = _('Even if you reach the number of seats in your subscription, you can continue to add users, and GitLab will bill you for the overage.')
       = link_to _('Learn more.'), help_page_path('subscriptions/quarterly_reconciliation'), target: '_blank', rel: 'noopener noreferrer'
-    = c.actions do
+    - c.with_actions do
       = link_to _('View seat usage'), usage_quotas_path(namespace, anchor: 'seats-quota-tab'), class: 'btn gl-alert-action btn-confirm btn-md gl-button'

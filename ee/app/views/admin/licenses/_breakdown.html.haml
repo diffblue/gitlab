@@ -9,7 +9,7 @@
   .row
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
-        = c.body do
+        - c.with_body do
           %h2.gl-mt-0{ data: { qa_selector: 'users_in_license' } }
             = licensed_users(@license)
           .text-uppercase.gl-mb-4= _('Users in License')
@@ -25,7 +25,7 @@
             = s_("AdminArea|Updated %{last_update_time}") % { last_update_time: @license.updated_at.to_s }
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
-        = c.body do
+        - c.with_body do
           %h2.gl-mt-0{ data: { qa_selector: 'billable_users' } }
             = number_with_delimiter @license.daily_billable_users_count
           .text-uppercase.gl-mb-4= _('Billable Users')
@@ -37,7 +37,7 @@
   .row
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new(card_options: { class: 'flex-fill' }) do |c|
-        = c.body do
+        - c.with_body do
           %h2.gl-mt-0{ data: { qa_selector: 'maximum_users' } }
             = number_with_delimiter @license.maximum_user_count
           .text-uppercase.gl-mb-4= _('Maximum Users')
@@ -47,13 +47,13 @@
 
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
-        = c.body do
+        - c.with_body do
           %h2.gl-mt-0{ data: { qa_selector: 'users_over_license' } }
             = number_with_delimiter users_over_license
           .text-uppercase.gl-mb-4= _('Users over License')
           - if users_over_license > 0
             = render Pajamas::AlertComponent.new(alert_options: { class: 'gl-mb-3' }, dismissible: false) do |c|
-              = c.body do
+              - c.with_body do
                 = s_('Your instance has exceeded your subscription\'s licensed user count.')
           %p= _('You\'ll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement.').html_safe % { true_up_link_start: true_up_link_start, link_end: link_end }
           .gl-font-sm.gl-text-gray-300

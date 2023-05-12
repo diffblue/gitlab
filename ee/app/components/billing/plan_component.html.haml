@@ -1,8 +1,8 @@
 = render Pajamas::CardComponent.new(card_options: { class: card_classes, data: { testid: card_testid }},
                                     header_options: { class: header_classes }) do |c|
-  = c.header do
+  - c.with_header do
     = header_text
-  = c.body do
+  - c.with_body do
     = image_tag image_path('logo.svg'), class: 'svg gl-w-8!'
     .gl-font-size-h1.gl-font-weight-bold.gl-line-height-24.gl-text-purple-800.gl-mb-3
       = name

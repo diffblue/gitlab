@@ -4,5 +4,5 @@
   variant: :danger,
   alert_options: { class: 'gl-mb-5' },
   dismissible: false) do |c|
-  = c.body do
+  - c.with_body do
     = html_escape(_("The GitLab subscription service (customers.gitlab.com) is currently experiencing an outage. You can monitor the status and get updates at %{linkStart}status.gitlab.com%{linkEnd}.")) % { linkStart: "<a href=\"#{::EE::GITLAB_COM_STATUS_URL}\">".html_safe, linkEnd: '</a>'.html_safe }

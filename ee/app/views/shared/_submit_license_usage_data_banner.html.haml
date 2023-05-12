@@ -9,8 +9,8 @@
                        data: { feature_id: payload.class::SUBMIT_LICENSE_USAGE_DATA_BANNER,
                                dismiss_endpoint: callouts_path }},
       dismissible: payload.dismissable?) do |c|
-      = c.body do
+      - c.with_body do
         = payload.body
-      = c.actions do
+      - c.with_actions do
         = link_to s_('SubscriptionBanner|Export license usage file'), admin_license_usage_export_path(format: :csv), class: 'btn gl-alert-action gl-button btn-confirm'
         = link_to s_('SubscriptionBanner|Upload new license'), general_admin_application_settings_path, class: 'btn gl-alert-action gl-button btn-default'

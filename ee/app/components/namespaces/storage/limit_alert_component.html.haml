@@ -7,7 +7,7 @@
                             dismiss_endpoint: alert_callout_path,
                             group_id: root_namespace_id,
                             defer_links: "true" }}) do |c|
-    = c.body do
+    - c.with_body do
       = sprite_icon(alert_icon, css_class: "gl-icon gl-alert-icon")
 
       - alert_message.each do |paragraph|
@@ -15,7 +15,7 @@
           = paragraph
 
     - if purchase_link || usage_quotas_link
-      = c.actions do
+      - c.with_actions do
         - if purchase_link
           = link_to(_('Purchase more storage'), purchase_link, class: "btn gl-alert-action btn-md gl-button btn-confirm")
         - if usage_quotas_link

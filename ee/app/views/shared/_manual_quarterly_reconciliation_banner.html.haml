@@ -8,8 +8,8 @@
       alert_options: { class: 'gl-my-5',
                        data: { testid: 'manual-quarterly-co-term-banner' }},
       dismissible: false) do |c|
-      = c.body do
+      - c.with_body do
         = payload.body
-      = c.actions do
+      - c.with_actions do
         = link_to s_('SubscriptionBanner|Export license usage file'), admin_license_usage_export_path(format: :csv), class: 'btn gl-alert-action gl-button btn-confirm'
         = link_to s_('SubscriptionBanner|Add new license'), general_admin_application_settings_path, class: 'btn gl-alert-action gl-button btn-default'
