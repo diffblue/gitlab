@@ -1,5 +1,3 @@
-- return unless Feature.enabled?(:commit_committer_name_check_ff)
-
 - context = local_assigns.fetch(:context)
 
 - return unless push_rule.available?(:commit_committer_name_check, object: context)

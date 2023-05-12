@@ -198,60 +198,28 @@ RSpec.describe Groups::PushRulesController, feature_category: :source_code_manag
             stub_licensed_features(commit_committer_name_check: true)
           end
 
-          context 'when commit_committer_name_check_ff is enabled' do
-            context 'as an admin' do
-              let(:user) { create(:admin) }
+          context 'as an admin' do
+            let(:user) { create(:admin) }
 
-              context 'when admin mode enabled', :enable_admin_mode do
-                it_behaves_like 'updates push rule commit_committer_name_check of group', true
-              end
-            end
-
-            context 'as a maintainer user' do
-              before do
-                group.add_maintainer(user)
-              end
-
+            context 'when admin mode enabled', :enable_admin_mode do
               it_behaves_like 'updates push rule commit_committer_name_check of group', true
-            end
-
-            context 'as a developer user' do
-              before do
-                group.add_developer(user)
-              end
-
-              it_behaves_like 'updates push rule commit_committer_name_check of group', false
             end
           end
 
-          context 'when commit_committer_name_check_ff is disabled' do
+          context 'as a maintainer user' do
             before do
-              stub_feature_flags(commit_committer_name_check_ff: false)
+              group.add_maintainer(user)
             end
 
-            context 'as an admin' do
-              let(:user) { create(:admin) }
+            it_behaves_like 'updates push rule commit_committer_name_check of group', true
+          end
 
-              context 'when admin mode enabled', :enable_admin_mode do
-                it_behaves_like 'updates push rule commit_committer_name_check of group', false
-              end
+          context 'as a developer user' do
+            before do
+              group.add_developer(user)
             end
 
-            context 'as a maintainer user' do
-              before do
-                group.add_maintainer(user)
-              end
-
-              it_behaves_like 'updates push rule commit_committer_name_check of group', false
-            end
-
-            context 'as a developer user' do
-              before do
-                group.add_developer(user)
-              end
-
-              it_behaves_like 'updates push rule commit_committer_name_check of group', false
-            end
+            it_behaves_like 'updates push rule commit_committer_name_check of group', false
           end
         end
       end
