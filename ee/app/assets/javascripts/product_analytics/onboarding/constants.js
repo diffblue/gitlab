@@ -18,7 +18,10 @@ export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/applica
 <script>window.glClient = window.glSDK.glClientSDK({
     $appIdProperty: '$applicationId',
     host: '$host',
-});</script>`;
+});
+// Tracks the current page view
+window.glClient.page();
+</script>`;
 
 export const SHORT_POLLING_INTERVAL = 1000;
 
