@@ -122,6 +122,17 @@ Review the details carefully before upgrading.
 
 The Container Registry [pull-through cache](https://docs.docker.com/registry/recipes/mirror/) was deprecated in GitLab 15.8 and removed in GitLab 16.0. This feature is part of the upstream [Docker Distribution project](https://github.com/distribution/distribution) but we are removing that code in favor of the GitLab Dependency Proxy. Use the GitLab Dependency Proxy to proxy and cache container images from Docker Hub.
 
+### Developer role providing the ability to import projects to a group
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The ability for users with the Developer role for a group to import projects to that group was deprecated in GitLab
+15.8 and is removed in GitLab 16.0.
+
+From GitLab 16.0, only users with at least the Maintainer role for a group can import projects to that group.
+
 ### Embedding Grafana panels in Markdown is removed
 
 WARNING:
