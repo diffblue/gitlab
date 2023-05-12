@@ -271,6 +271,11 @@ module EE
         field :merge_requests_disable_committers_approval, GraphQL::Types::Boolean,
           null: false,
           description: 'Indicates that committers of the given merge request cannot approve.'
+
+        field :has_jira_vulnerability_issue_creation_enabled, GraphQL::Types::Boolean,
+          null: false,
+          method: :configured_to_create_issues_from_vulnerabilities?,
+          description: 'Indicates whether Jira issue creation from vulnerabilities is enabled.'
       end
 
       def tracking_key
