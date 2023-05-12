@@ -50716,6 +50716,9 @@ msgstr ""
 msgid "WorkItem|Add a title"
 msgstr ""
 
+msgid "WorkItem|Add a to do"
+msgstr ""
+
 msgid "WorkItem|Add assignee"
 msgstr ""
 
@@ -50812,6 +50815,9 @@ msgid "WorkItem|Iteration"
 msgstr ""
 
 msgid "WorkItem|Key Result"
+msgstr ""
+
+msgid "WorkItem|Mark as done"
 msgstr ""
 
 msgid "WorkItem|Milestone"

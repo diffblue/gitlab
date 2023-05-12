@@ -307,3 +307,38 @@ RSpec.shared_examples 'work items notifications' do
     end
   end
 end
+
+RSpec.shared_examples 'work items todos' do
+  let(:todos_action_selector) { '[data-testid="work-item-todos-action"]' }
+  let(:todos_icon_selector) { '[data-testid="work-item-todos-icon"]' }
+  let(:header_section_selector) { '[data-testid="work-item-body"]' }
+
+  def toggle_todo_action
+    find(todos_action_selector).click
+    wait_for_requests
+  end
+
+  it 'adds item to the list' do
+    page.within(header_section_selector) do
+      expect(find(todos_action_selector)['aria-label']).to eq('Add a to do')
+
+      toggle_todo_action
+
+      expect(find(todos_action_selector)['aria-label']).to eq('Mark as done')
+    end
+
+    page.within ".header-content span[aria-label='#{_('Todos count')}']" do
+      expect(page).to have_content '1'
+    end
+  end
+
+  it 'marks a todo as done' do
+    page.within(header_section_selector) do
+      toggle_todo_action
+      toggle_todo_action
+    end
+
+    expect(find(todos_action_selector)['aria-label']).to eq('Add a to do')
+    expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: :hidden)
+  end
+end
