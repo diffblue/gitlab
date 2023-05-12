@@ -18693,6 +18693,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="pipelinejobsjobkind"></a>`jobKind` | [`CiJobKind`](#cijobkind) | Filter jobs by kind. |
 | <a id="pipelinejobsretried"></a>`retried` | [`Boolean`](#boolean) | Filter jobs by retry-status. |
 | <a id="pipelinejobssecurityreporttypes"></a>`securityReportTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filter jobs by the type of security report they produce. |
 | <a id="pipelinejobsstatuses"></a>`statuses` | [`[CiJobStatus!]`](#cijobstatus) | Filter jobs by status. |
