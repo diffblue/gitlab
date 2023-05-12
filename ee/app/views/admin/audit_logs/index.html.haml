@@ -5,9 +5,5 @@
   = _('Track important events in your GitLab instance.')
   = link_to _('What are instance audit events?'), help_page_path('administration/audit_events.md', anchor: 'instance-events'), target: '_blank', rel: 'noopener noreferrer'
 
-#js-audit-log-app{ data: { form_path: admin_audit_logs_path,
-  events: @events.to_json,
-  is_last_page: @is_last_page.to_json,
-  filter_token_options: admin_audit_event_tokens.to_json,
-  export_url: export_url } }
+#js-audit-log-app{ data: audit_log_app_data(@is_last_page, @events) }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')
