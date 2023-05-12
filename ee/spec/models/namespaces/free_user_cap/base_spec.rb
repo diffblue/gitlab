@@ -15,6 +15,8 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas, feature_category: :experime
     end
 
     context 'with storage limit considerations' do
+      let(:disable_storage_check?) { false }
+
       subject(:test_class) do
         Class.new(described_class) do
           private
@@ -25,16 +27,32 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas, feature_category: :experime
         end
       end
 
+      before do
+        stub_feature_flags(free_user_cap_without_storage_check: disable_storage_check?)
+      end
+
       it 'is enforced when below storage limit' do
         expect(test_class.new(namespace)).to be_enforce_cap
       end
 
-      it 'is not enforced when above storage limit' do
-        limit = 100
-        create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: limit)
-        create(:namespace_root_storage_statistics, namespace: namespace, storage_size: (limit + 1).megabytes)
+      context 'when above storage limit' do
+        before_all do
+          limit = 100
+          create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: limit)
+          create(:namespace_root_storage_statistics, namespace: namespace, storage_size: (limit + 1).megabytes)
+        end
 
-        expect(test_class.new(namespace)).not_to be_enforce_cap
+        it 'is not enforced' do
+          expect(test_class.new(namespace)).not_to be_enforce_cap
+        end
+
+        context 'with storage check disabled' do
+          let(:disable_storage_check?) { true }
+
+          it 'is enforced' do
+            expect(test_class.new(namespace)).to be_enforce_cap
+          end
+        end
       end
     end
 

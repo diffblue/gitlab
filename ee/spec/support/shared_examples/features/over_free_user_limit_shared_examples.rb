@@ -48,6 +48,8 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       include_context 'with over storage limit setup'
 
       it 'does not show alerts' do
+        stub_feature_flags(free_user_cap_without_storage_check: false)
+
         visit_page
 
         expect(page).to have_content(group.name)
@@ -128,11 +130,25 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       context 'when over storage limits' do
         include_context 'with over storage limit setup'
 
-        it 'does not show alerts' do
-          visit_page
+        context 'with storage size check' do
+          it 'does not show alerts' do
+            stub_feature_flags(free_user_cap_without_storage_check: false)
 
-          expect(page).to have_content(group.name)
-          expect(page).not_to have_content(alert_title_content)
+            visit_page
+
+            expect(page).to have_content(group.name)
+            expect(page).not_to have_content(alert_title_content)
+          end
+        end
+
+        context 'without storage size check' do
+          it 'does not show alerts' do
+            stub_feature_flags(free_user_cap_without_storage_check: true)
+
+            visit_page
+
+            expect(page).to have_content(alert_title_content)
+          end
         end
       end
     end
