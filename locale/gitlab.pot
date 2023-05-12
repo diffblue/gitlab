@@ -16914,6 +16914,9 @@ msgstr ""
 msgid "Environments|Commit"
 msgstr ""
 
+msgid "Environments|Create an environment"
+msgstr ""
+
 msgid "Environments|Delete"
 msgstr ""
 
@@ -16938,7 +16941,10 @@ msgstr ""
 msgid "Environments|Edit your search and try again"
 msgstr ""
 
-msgid "Environments|Enable review app"
+msgid "Environments|Enable Review Apps"
+msgstr ""
+
+msgid "Environments|Enable review apps"
 msgstr ""
 
 msgid "Environments|Environment"
@@ -16947,10 +16953,10 @@ msgstr ""
 msgid "Environments|Environments"
 msgstr ""
 
-msgid "Environments|Environments are places where code gets deployed, such as staging or production."
+msgid "Environments|Environments are places where code gets deployed, such as staging or production. You can create an environment in the UI or in your .gitlab-ci.yml file. You can also enable review apps, which assist with providing an environment to showcase product changes. %{linkStart}Learn more%{linkEnd} about environments."
 msgstr ""
 
-msgid "Environments|How do I create an environment?"
+msgid "Environments|Get started with environments"
 msgstr ""
 
 msgid "Environments|Job"
@@ -17044,12 +17050,6 @@ msgid "Environments|Upcoming deployment"
 msgstr ""
 
 msgid "Environments|Updated"
-msgstr ""
-
-msgid "Environments|You don't have any environments."
-msgstr ""
-
-msgid "Environments|You don't have any stopped environments."
 msgstr ""
 
 msgid "Environments|by %{avatar}"
@@ -38413,9 +38413,6 @@ msgid "Review time"
 msgstr ""
 
 msgid "Review time is the amount of time since the first comment in a merge request."
-msgstr ""
-
-msgid "ReviewApp|Enable Review App"
 msgstr ""
 
 msgid "Reviewer"
