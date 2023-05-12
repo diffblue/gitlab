@@ -342,3 +342,47 @@ RSpec.shared_examples 'work items todos' do
     expect(page).to have_selector(".header-content span[aria-label='#{_('Todos count')}']", visible: :hidden)
   end
 end
+
+RSpec.shared_examples 'work items award emoji' do
+  let(:award_section_selector) { '[data-testid="work-item-award-list"]' }
+  let(:award_action_selector) { '[data-testid="award-button"]' }
+  let(:selected_award_action_selector) { '[data-testid="award-button"].selected' }
+  let(:emoji_picker_action_selector) { '[data-testid="emoji-picker"]' }
+  let(:basketball_emoji_selector) { 'gl-emoji[data-name="basketball"]' }
+
+  def select_emoji
+    first(award_action_selector).click
+
+    wait_for_requests
+  end
+
+  it 'adds award to the work item' do
+    within(award_section_selector) do
+      select_emoji
+
+      expect(page).to have_selector(selected_award_action_selector)
+      expect(first(award_action_selector)).to have_content '1'
+    end
+  end
+
+  it 'removes award from work item' do
+    within(award_section_selector) do
+      select_emoji
+
+      expect(first(award_action_selector)).to have_content '1'
+
+      select_emoji
+
+      expect(first(award_action_selector)).to have_content '0'
+    end
+  end
+
+  it 'add custom award to the work item' do
+    within(award_section_selector) do
+      find(emoji_picker_action_selector).click
+      find(basketball_emoji_selector).click
+
+      expect(page).to have_selector(basketball_emoji_selector)
+    end
+  end
+end

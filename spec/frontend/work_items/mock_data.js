@@ -46,6 +46,29 @@ export const mockMilestone = {
   dueDate: '2022-10-24',
 };
 
+export const mockAwardEmojiThumbsUp = {
+  name: 'thumbsup',
+  __typename: 'AwardEmoji',
+  user: {
+    id: 'gid://gitlab/User/5',
+    __typename: 'UserCore',
+  },
+};
+
+export const mockAwardEmojiThumbsDown = {
+  name: 'thumbsdown',
+  __typename: 'AwardEmoji',
+  user: {
+    id: 'gid://gitlab/User/5',
+    __typename: 'UserCore',
+  },
+};
+
+export const mockAwardsWidget = {
+  nodes: [mockAwardEmojiThumbsUp, mockAwardEmojiThumbsDown],
+  __typename: 'AwardEmojiConnection',
+};
+
 export const workItemQueryResponse = {
   data: {
     workItem: {
@@ -387,6 +410,7 @@ export const workItemResponseFactory = ({
   adminParentLink = false,
   notificationsWidgetPresent = true,
   currentUserTodosWidgetPresent = true,
+  awardEmojiWidgetPresent = true,
   subscribed = true,
   allowsMultipleAssignees = true,
   assigneesWidgetPresent = true,
@@ -410,6 +434,7 @@ export const workItemResponseFactory = ({
   author = mockAssignees[0],
   createdAt = '2022-08-03T12:41:54Z',
   updatedAt = '2022-08-08T12:32:54Z',
+  awardEmoji = mockAwardsWidget,
 } = {}) => ({
   data: {
     workItem: {
@@ -599,6 +624,13 @@ export const workItemResponseFactory = ({
               __typename: 'WorkItemWidgetCurrentUserTodos',
             }
           : { type: 'MOCK TYPE' },
+        awardEmojiWidgetPresent
+          ? {
+              __typename: 'WorkItemWidgetAwardEmoji',
+              type: 'AWARD_EMOJI',
+              awardEmoji,
+            }
+          : { type: 'MOCK TYPE' },
       ],
     },
   },
@@ -614,6 +646,18 @@ export const workItemByIidResponseFactory = (options) => {
         workItems: {
           nodes: [response.data.workItem],
         },
+      },
+    },
+  };
+};
+
+export const updateWorkItemMutationResponseFactory = (options) => {
+  const response = workItemResponseFactory(options);
+  return {
+    data: {
+      workItemUpdate: {
+        workItem: response.data.workItem,
+        errors: [],
       },
     },
   };
@@ -654,18 +698,6 @@ export const projectWorkItemTypesQueryResponse = {
       },
     },
   },
-};
-
-export const updateWorkItemMutationResponseFactory = (options) => {
-  const response = workItemResponseFactory(options);
-  return {
-    data: {
-      workItemUpdate: {
-        workItem: response.data.workItem,
-        errors: [],
-      },
-    },
-  };
 };
 
 export const createWorkItemMutationResponse = {

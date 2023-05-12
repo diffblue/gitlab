@@ -30,6 +30,7 @@ import {
   WIDGET_TYPE_NOTIFICATIONS,
   WIDGET_TYPE_CURRENT_USER_TODOS,
   WIDGET_TYPE_DESCRIPTION,
+  WIDGET_TYPE_AWARD_EMOJI,
   WIDGET_TYPE_START_AND_DUE_DATE,
   WIDGET_TYPE_WEIGHT,
   WIDGET_TYPE_PROGRESS,
@@ -58,6 +59,7 @@ import WorkItemState from './work_item_state.vue';
 import WorkItemTitle from './work_item_title.vue';
 import WorkItemCreatedUpdated from './work_item_created_updated.vue';
 import WorkItemDescription from './work_item_description.vue';
+import WorkItemAwardEmoji from './work_item_award_emoji.vue';
 import WorkItemDueDate from './work_item_due_date.vue';
 import WorkItemAssignees from './work_item_assignees.vue';
 import WorkItemLabels from './work_item_labels.vue';
@@ -84,6 +86,7 @@ export default {
     WorkItemTodos,
     WorkItemCreatedUpdated,
     WorkItemDescription,
+    WorkItemAwardEmoji,
     WorkItemDueDate,
     WorkItemLabels,
     WorkItemTitle,
@@ -315,6 +318,9 @@ export default {
     },
     workItemProgress() {
       return this.isWidgetPresent(WIDGET_TYPE_PROGRESS);
+    },
+    workItemAwardEmoji() {
+      return this.isWidgetPresent(WIDGET_TYPE_AWARD_EMOJI);
     },
     workItemHierarchy() {
       return this.isWidgetPresent(WIDGET_TYPE_HIERARCHY);
@@ -703,6 +709,12 @@ export default {
           :work-item-id="workItem.id"
           :work-item-iid="workItem.iid"
           class="gl-pt-5"
+          @error="updateError = $event"
+        />
+        <work-item-award-emoji
+          v-if="workItemAwardEmoji"
+          :work-item="workItem"
+          :award-emoji="workItemAwardEmoji.awardEmoji"
           @error="updateError = $event"
         />
         <work-item-tree

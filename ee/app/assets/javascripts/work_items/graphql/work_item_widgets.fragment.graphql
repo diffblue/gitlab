@@ -1,6 +1,7 @@
 #import "~/graphql_shared/fragments/label.fragment.graphql"
 #import "~/graphql_shared/fragments/user.fragment.graphql"
 #import "~/work_items/graphql/milestone.fragment.graphql"
+#import "~/work_items/graphql/award_emoji.fragment.graphql"
 
 #import "./work_item_metadata_widgets.fragment.graphql"
 
@@ -122,6 +123,14 @@ fragment WorkItemWidgets on WorkItemWidget {
           id
           state
         }
+      }
+    }
+  }
+  ... on WorkItemWidgetAwardEmoji {
+    type
+    awardEmoji {
+      nodes {
+        ...AwardEmojiFragment
       }
     }
   }
