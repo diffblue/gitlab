@@ -8,7 +8,7 @@
 = render Pajamas::AlertComponent.new(variant: :success,
   title: _('Thanks for your purchase!'),
   alert_options: { class: 'gl-mt-6 gl-mb-3', data: { uid: 'purchase_success_alert_dismissed' } }) do |c|
-  = c.body do
+  - c.with_body do
     = n_('You\'ve successfully purchased the %{plan} plan subscription for 1 user and you\'ll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven\'t displayed yet.',
          'You\'ve successfully purchased the %{plan} plan subscription for %{quantity} users and you\'ll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven\'t displayed yet.',
          quantity) % { plan: plan_title, quantity: quantity }

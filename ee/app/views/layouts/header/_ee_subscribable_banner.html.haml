@@ -7,7 +7,7 @@
     = render Pajamas::AlertComponent.new(variant: :danger,
       title: subject,
       alert_options: { data: { license_expiry: subscribable.expires_at, defer_links: "true", testid: 'subscribable_banner' }}) do |c|
-      = c.body do
+      - c.with_body do
         = message
         - if subscribable.block_changes?
           = link_to_button_style(path: renew_subscription_path, track_property: 'renew')

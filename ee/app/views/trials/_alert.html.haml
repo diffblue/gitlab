@@ -1,4 +1,4 @@
 - return unless show_trial_alert?(namespace)
 = render Pajamas::AlertComponent.new(variant: :success, alert_options: { class: 'gl-mt-5', data: { testid: 'trial-alert' } }) do |c|
-  = c.body do
+  - c.with_body do
     %span{ data: { qa_selector: 'trial_activated_message' } }= s_("BillingPlans|Congratulations, your free trial is activated.")

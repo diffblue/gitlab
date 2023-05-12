@@ -10,10 +10,10 @@
                                group_id: root_namespace.id,
                                testid: 'unlimited-members-during-trial-alert' } },
       close_button_options: { data: { testid: 'hide-unlimited-members-during-trial-alert' }}) do |c|
-      = c.body do
+      - c.with_body do
         = s_("UnlimitedMembersDuringTrialAlert|During your trial, invite as many members as you like to %{group_or_project} to collaborate with you.") % { group_or_project: resource.name }
         = n_("When your trial ends, you'll have a maximum of %d member on the Free tier, or you can get more by upgrading to a paid tier.", "When your trial ends, you'll have a maximum of %d members on the Free tier, or you can get more by upgrading to a paid tier.", ::Namespaces::FreeUserCap.dashboard_limit) % ::Namespaces::FreeUserCap.dashboard_limit
-      = c.actions do
+      - c.with_actions do
         - button_variant = :default
         - if members_page?
           - button_variant = :confirm

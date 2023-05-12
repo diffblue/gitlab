@@ -1,7 +1,7 @@
 = gitlab_ui_form_for @push_rule, url: admin_push_rule_path(anchor: 'js-push-rule-settings'), method: :put, html: { class: 'fieldset-form' } do |f|
   - if @push_rule.errors.any?
     = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false, alert_options: { class: 'gl-mb-5' }) do |c|
-      = c.body do
+      - c.with_body do
         - @push_rule.errors.full_messages.each do |msg|
           %p= msg
   = render "shared/push_rules/form", f: f, context: nil

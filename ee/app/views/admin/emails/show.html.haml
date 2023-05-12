@@ -1,6 +1,6 @@
 - if admin_emails_are_currently_rate_limited?
   = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
-    = c.body do
+    - c.with_body do
       = admin_emails_rate_limited_alert
 
 - page_title _("Email Notification")

@@ -1,10 +1,10 @@
 - content_for :flash_message do
   = render Pajamas::AlertComponent.new(variant: :success, dismissible: true, alert_options: { class: 'gl-mb-5', data: { testid: 'pre-scan-verification-alert' }}) do |c|
-    = c.body do
+    - c.with_body do
       -# #TODO Profile name, variant of alert and occurrence of validation should be replaced
       -# with dynamic values when backend for pre-scan verification is ready https://gitlab.com/gitlab-org/gitlab/-/issues/366456
       - profile_name = '<b>Full DAST scan - weekly</b>'.html_safe
       = s_("OnDemandScans|Pre-scan verification for %{profile_name} completed with").html_safe % { profile_name: profile_name }
-    = c.actions do
+    - c.with_actions do
       = render Pajamas::ButtonComponent.new(href: "#", target: '_blank', button_options: { rel: 'noopener noreferrer' }) do
         = s_("OnDemandScans|View results")

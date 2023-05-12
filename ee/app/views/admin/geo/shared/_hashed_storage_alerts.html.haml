@@ -4,12 +4,12 @@
   = render Pajamas::AlertComponent.new(variant: :warning,
     dismissible: true,
     alert_options: { class: 'gl-mt-5 js-geo-enable-hashed-storage-callout', data: { testid: 'enable_hashed_storage_alert', feature_id: Users::CalloutsHelper::GEO_ENABLE_HASHED_STORAGE, dismiss_endpoint: callouts_path } }) do |c|
-    = c.body do
+    - c.with_body do
       = _('Please enable and migrate to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}').html_safe % { migrate_link: migrate_link }
 
 - if show_migrate_hashed_storage_warning?
   = render Pajamas::AlertComponent.new(variant: :warning,
     dismissible: true,
     alert_options: { class: 'gl-mt-5 js-geo-migrate-hashed-storage-callout', data: { testid: 'migrate_hashed_storage_alert', feature_id: Users::CalloutsHelper::GEO_MIGRATE_HASHED_STORAGE, dismiss_endpoint: callouts_path } }) do |c|
-    = c.body do
+    - c.with_body do
       = _('Please migrate all existing projects to hashed storage to avoid security issues and ensure data integrity. %{migrate_link}').html_safe % { migrate_link: migrate_link }

@@ -1,5 +1,5 @@
 - if session.delete(:slack_install_success)
   = render Pajamas::AlertComponent.new(title: s_('SlackIntegration|GitLab for Slack was successfully installed.'),
     variant: :success) do |c|
-    = c.body do
+    - c.with_body do
       = s_('SlackIntegration|You can now close this window and go to your Slack workspace.')

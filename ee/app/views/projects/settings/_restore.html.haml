@@ -7,10 +7,10 @@
 = render Pajamas::AlertComponent.new(variant: :warning,
   title: title,
   alert_options: { class: "gl-mb-7"}) do |c|
-  = c.body do
+  - c.with_body do
     = _("Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it.")
     = _("The repository can be committed to, and issues, comments and other entities can be created.")
     = _('Only active projects show up in the search and on the dashboard.')
-  = c.actions do
+  - c.with_actions do
     = link_to _('Restore project'), namespace_project_restore_path(project.namespace, project),
         method: :post, class: "gl-button btn btn-confirm"

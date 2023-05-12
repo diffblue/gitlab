@@ -4,10 +4,10 @@
         alert_options: { class: 'js-user-over-limit-free-plan-alert gl-mb-2 gl-mt-6', data: alert_data },
         title: alert_attributes[:title],
         close_button_options: { data: close_button_data }) do |c|
-    = c.body do
+    - c.with_body do
       = alert_attributes[:body]
 
     - if alert_attributes[:primary_cta] || alert_attributes[:secondary_cta]
-      = c.actions do
+      - c.with_actions do
         = alert_attributes[:primary_cta]
         = alert_attributes[:secondary_cta]

@@ -7,7 +7,7 @@
   .user-callout.promotion-callout.js-gold-trial-callout{ class: 'gl-mt-0! gl-mx-0', data: { uid: 'trial_callout_dismissed', feature_id: callout, dismiss_endpoint: callouts_path } }
     = render Pajamas::CardComponent.new(card_options: { class: 'gl-px-8 gl-py-6' },
                                           body_options: { class: 'gl-display-flex gl-p-0!'}) do |c|
-      = c.body do
+      - c.with_body do
         .gl-banner-illustration
           = image_tag 'illustrations/golden_tanuki.svg', class: 'svg gl-w-8!'
         .gl-banner-content

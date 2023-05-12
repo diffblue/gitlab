@@ -2,7 +2,7 @@
   = render Pajamas::AlertComponent.new(variant: :warning,
     dismissible: dismissible?,
     alert_options: { class: 'js-storage-enforcement-banner', data: callout_data}) do |c|
-    = c.body do
+    - c.with_body do
       %p= text_paragraph_1
       %p= text_paragraph_2
       %p= text_paragraph_3

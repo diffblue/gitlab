@@ -1,7 +1,7 @@
 = gitlab_ui_form_for @saml_response_check.tap(&:valid?), url: '#', html: { class: 'gl-show-field-errors', role: 'form' } do |f|
   - if f.object.valid?
     = render Pajamas::AlertComponent.new(variant: :success) do |c|
-      = c.body do
+      - c.with_body do
         = s_('GroupSAML|Valid SAML Response')
   = form_errors(@saml_response_check)
   .form-group

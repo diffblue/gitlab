@@ -16,7 +16,7 @@
       = render Pajamas::AlertComponent.new(title: s_('AdvancedSearch|Elasticsearch version not compatible'),
         dismissible: false,
         variant: :danger) do |c|
-        = c.body do
+        - c.with_body do
           = s_('AdvancedSearch|Pause indexing and upgrade Elasticsearch to a supported version.')
           = link_to _('Learn more.'), help_page_path('integration/advanced_search/elasticsearch', anchor: 'version-requirements')
 
@@ -26,7 +26,7 @@
       = render Pajamas::AlertComponent.new(title: s_('AdvancedSearch|Reindex recommended'),
         dismissible: false,
         variant: :warning) do |c|
-        = c.body do
+        - c.with_body do
           = s_('AdvancedSearch|You are using outdated code search mappings. To improve code search quality, we recommend you use %{reindexing_link_start}zero-downtime reindexing%{link_end} or %{recreate_link_start}re-create your index%{link_end}.').html_safe % { reindexing_link_start: help_zero_downtime_reindexing_link_start, recreate_link_start: help_recreate_index_link_start, link_end: '</a>'.html_safe }
 
 - if @elasticsearch_warn_if_not_using_aliases
@@ -35,8 +35,7 @@
       = render Pajamas::AlertComponent.new(title: s_('AdvancedSearch|Reindex required'),
         dismissible: false,
         variant: :warning) do |c|
-        = c.body do
+        - c.with_body do
           = s_('AdvancedSearch|Introduced in GitLab 13.1, before using %{reindexing_link_start}zero-downtime reindexing%{link_end} and %{migrations_link_start}Advanced Search migrations%{link_end}, you need to %{recreate_link_start}recreate your index%{link_end}.').html_safe % { reindexing_link_start: help_zero_downtime_reindexing_link_start, migrations_link_start: help_advanced_search_migrations_link_start, recreate_link_start: help_recreate_index_link_start, link_end: '</a>'.html_safe }
 
 = render_if_exists 'admin/application_settings/elasticsearch_form'
-

@@ -8,7 +8,7 @@
                             project_id: project.id,
                             defer_links: 'true' }},
   close_button_options: { data: { testid: 'dismiss-ultimate-feature-removal-banner' }}) do |c|
-  = c.body do
+  - c.with_body do
     - faq_link = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#public-projects-on-gitlab-saas-free-tier'
     - faq_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: faq_link }
     = html_escape(_('Your project is no longer receiving GitLab Ultimate benefits as of 2022-07-01. As notified in-app previously, public open source projects on the Free tier can apply to the GitLab for Open Source Program to receive GitLab Ultimate benefits. Please refer to the %{faq_link_start}FAQ%{link_end} for more details.')) % { faq_link_start: faq_link_start, link_end: '</a>'.html_safe }
