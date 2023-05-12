@@ -122,6 +122,34 @@ Review the details carefully before upgrading.
 
 The Container Registry [pull-through cache](https://docs.docker.com/registry/recipes/mirror/) was deprecated in GitLab 15.8 and removed in GitLab 16.0. This feature is part of the upstream [Docker Distribution project](https://github.com/distribution/distribution) but we are removing that code in favor of the GitLab Dependency Proxy. Use the GitLab Dependency Proxy to proxy and cache container images from Docker Hub.
 
+### Container Scanning variables that reference Docker removed
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+All Container Scanning variables with a name prefixed by `DOCKER_` have been removed. This includes:
+
+- `DOCKER_IMAGE`
+- `DOCKER_PASSWORD`
+- `DOCKER_USER`
+- `DOCKERFILE_PATH`
+
+Instead, use the [new variable names](https://docs.gitlab.com/ee/user/application_security/container_scanning/#available-cicd-variables):
+
+- `CS_IMAGE`
+- `CS_REGISTRY_PASSWORD`
+- `CS_REGISTRY_USER`
+- `CS_DOCKERFILE_PATH`
+
+### Dependency Scanning ends support for Java 13, 14, 15, and 16
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Dependency Scanning no longer supports projects that use Java versions 13, 14, 15, and 16.
+
 ### Developer role providing the ability to import projects to a group
 
 WARNING:
@@ -404,6 +432,14 @@ Review the details carefully before upgrading.
 
 Version 14.x.x [security report schemas](https://gitlab.com/gitlab-org/security-products/security-report-schemas) have been removed.
 Security reports that use schema version 14.x.x will cause an error in the pipeline's **Security** tab. For more information, refer to [security report validation](https://docs.gitlab.com/ee/user/application_security/#security-report-validation).
+
+### Starboard directive in the config for the GitLab agent for Kubernetes removed
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The GitLab operational container scanning feature no longer requires you to install Starboard. The `starboard:` directive in configuration files for the GitLab agent for Kubernetes has been removed. Use the `container_scanning:` directive instead.
 
 ### Stop publishing GitLab Runner images based on Windows Server 2004 and 20H2
 
