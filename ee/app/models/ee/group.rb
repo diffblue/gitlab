@@ -814,6 +814,10 @@ module EE
       feature_available?(:code_owner_approval_required)
     end
 
+    def sbom_occurrences
+      Sbom::Occurrence.where(project: all_projects)
+    end
+
     private
 
     override :post_create_hook

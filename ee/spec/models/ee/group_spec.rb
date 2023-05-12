@@ -2716,4 +2716,22 @@ RSpec.describe Group, feature_category: :subgroups do
       end
     end
   end
+
+  describe '#sbom_occurrences' do
+    subject { group.sbom_occurrences }
+
+    it { is_expected.to be_empty }
+
+    context 'with project' do
+      let!(:project) { create(:project, group: group) }
+
+      it { is_expected.to be_empty }
+
+      context 'with occurrences' do
+        let!(:sbom_occurence) { create(:sbom_occurrence, project: project) }
+
+        it { is_expected.to eq [sbom_occurence] }
+      end
+    end
+  end
 end
