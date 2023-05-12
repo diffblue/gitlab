@@ -21,9 +21,7 @@ options:
     - incident_management_issuable_resource_link_created
     - incident_management_issuable_resource_link_deleted
     - incident_management_issuable_resource_link_visited
-performance_indicator_type:
-  - gmau
-  - paid_gmau
+performance_indicator_type: []
 distribution:
 - ee
 tier:
