@@ -26,5 +26,5 @@
   - if can?(current_user, :admin_group, top_level_namespace)
     #js-mr-approvals-promo{ data: { try_now_path: new_trial_path(namespace_id: top_level_namespace.id),
       learn_more_path: help_page_path('user/project/merge_requests/approvals/index'),
-      promo_image_path: image_path('illustrations/merge_requests.svg'),
+      promo_image_path: image_path('illustrations/empty-state/empty-merge-requests-md.svg'),
       promo_image_alt: s_('ApprovalRule|A merge request author collaborating with a merge request approver') } }
