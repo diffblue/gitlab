@@ -11,7 +11,7 @@ RSpec.describe Analytics::CodeReviewHelper do
     before do
       allow(helper).to receive(:project_path).with(project).and_return('/mock/project')
       allow(helper).to receive(:namespace_project_new_merge_request_path).with(project.namespace).and_return('/mock/project/-/merge_requests/new')
-      allow(helper).to receive(:image_path).with('illustrations/merge_requests.svg').and_return('/assets/illustrations/mock.svg')
+      allow(helper).to receive(:image_path).with('illustrations/empty-state/empty-merge-requests-md.svg').and_return('/assets/illustrations/mock.svg')
       allow(helper).to receive(:project_milestones_path).with(project).and_return('/mock/project/-/milestones')
       allow(helper).to receive(:project_labels_path).with(project).and_return('/mock/project/-/labels')
     end
