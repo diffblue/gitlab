@@ -19,6 +19,26 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
       expect { service.execute(protected_branch) }.to change(::AuditEvent, :count).by(1)
     end
 
+    context 'when destroy succeeds but cache refresh fails' do
+      let(:bad_cache) { instance_double('ProtectedBranches::CacheService') }
+      let(:exception) { RuntimeError }
+
+      before do
+        expect(ProtectedBranches::CacheService).to receive(:new).with(project, user, {}).and_return(bad_cache)
+        expect(bad_cache).to receive(:refresh).and_raise(exception)
+      end
+
+      it "adds a security audit event entry" do
+        expect { service.execute(protected_branch) }.to change(::AuditEvent, :count).by(1)
+      end
+
+      it "tracks the exception" do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception).with(exception).once
+
+        service.execute(protected_branch)
+      end
+    end
+
     context 'when security_orchestration_policies is not licensed' do
       before do
         stub_licensed_features(security_orchestration_policies: false)
