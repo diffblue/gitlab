@@ -30,7 +30,7 @@ module Gitlab
                       end
 
             {
-              msg: msg,
+              content: msg,
               sources: sources
             }.to_json
           end

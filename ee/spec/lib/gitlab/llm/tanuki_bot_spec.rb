@@ -256,7 +256,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
             it 'returns an i do not know' do
               expect(execute).to eq({
-                msg: 'I do not know.',
+                content: 'I do not know.',
                 sources: []
               })
             end
