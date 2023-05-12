@@ -386,6 +386,7 @@ export const workItemResponseFactory = ({
   canDelete = false,
   adminParentLink = false,
   notificationsWidgetPresent = true,
+  currentUserTodosWidgetPresent = true,
   subscribed = true,
   allowsMultipleAssignees = true,
   assigneesWidgetPresent = true,
@@ -579,6 +580,25 @@ export const workItemResponseFactory = ({
               subscribed,
             }
           : { type: 'MOCK TYPE' },
+        currentUserTodosWidgetPresent
+          ? {
+              type: 'CURRENT_USER_TODOS',
+              currentUserTodos: {
+                edges: [
+                  {
+                    node: {
+                      id: 'gid://gitlab/Todo/1',
+                      state: 'pending',
+                      __typename: 'Todo',
+                    },
+                    __typename: 'TodoEdge',
+                  },
+                ],
+                __typename: 'TodoConnection',
+              },
+              __typename: 'WorkItemWidgetCurrentUserTodos',
+            }
+          : { type: 'MOCK TYPE' },
       ],
     },
   },
@@ -634,6 +654,18 @@ export const projectWorkItemTypesQueryResponse = {
       },
     },
   },
+};
+
+export const updateWorkItemMutationResponseFactory = (options) => {
+  const response = workItemResponseFactory(options);
+  return {
+    data: {
+      workItemUpdate: {
+        workItem: response.data.workItem,
+        errors: [],
+      },
+    },
+  };
 };
 
 export const createWorkItemMutationResponse = {

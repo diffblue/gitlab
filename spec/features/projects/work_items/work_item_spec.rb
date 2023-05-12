@@ -41,6 +41,7 @@ RSpec.describe 'Work item', :js, feature_category: :team_planning do
     it_behaves_like 'work items description'
     it_behaves_like 'work items milestone'
     it_behaves_like 'work items notifications'
+    it_behaves_like 'work items todos'
   end
 
   context 'for signed in owner' do
@@ -74,6 +75,10 @@ RSpec.describe 'Work item', :js, feature_category: :team_planning do
 
     it 'actions dropdown is not displayed' do
       expect(page).not_to have_selector('[data-testid="work-item-actions-dropdown"]')
+    end
+
+    it 'todos action is not displayed' do
+      expect(page).not_to have_selector('[data-testid="work-item-todos-action"]')
     end
   end
 end
