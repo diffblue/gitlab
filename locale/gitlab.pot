@@ -22069,9 +22069,6 @@ msgstr ""
 msgid "Highest role:"
 msgstr ""
 
-msgid "Highlight"
-msgstr ""
-
 msgid "HighlightBar|Alert events:"
 msgstr ""
 
@@ -43440,9 +43437,6 @@ msgstr ""
 msgid "Subscribes to this %{quick_action_target}."
 msgstr ""
 
-msgid "Subscript"
-msgstr ""
-
 msgid "Subscription"
 msgstr ""
 
@@ -43956,9 +43950,6 @@ msgid "SuperSonics|future subscriptions"
 msgstr ""
 
 msgid "SuperSonics|past subscriptions"
-msgstr ""
-
-msgid "Superscript"
 msgstr ""
 
 msgid "Support"
