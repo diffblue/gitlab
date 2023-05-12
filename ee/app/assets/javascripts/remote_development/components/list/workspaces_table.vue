@@ -103,7 +103,11 @@ export default {
   <gl-table-lite :items="sortedWorkspaces" :fields="$options.fields">
     <template #cell(name)="{ item }">
       <div class="gl-display-flex gl-align-items-center">
-        <workspace-state-indicator :workspace-state="item.actualState" class="gl-mr-5" />
+        <workspace-state-indicator
+          :workspace-state="item.actualState"
+          class="gl-mr-5"
+          :data-qa-selector="`${item.name}_actual_state`"
+        />
         <div class="gl-display-flex gl-flex-direction-column">
           <span class="gl-text-gray-500 gl-font-sm gl-pb-1"> {{ item.projectName }} </span>
           <span class="gl-text-black-normal"> {{ item.name }} </span>
@@ -123,6 +127,7 @@ export default {
       <workspace-actions
         :actual-state="item.actualState"
         :desired-state="item.desiredState"
+        :data-qa-selector="`${item.name}_action`"
         @click="updateWorkspace(item.id, $event)"
       />
     </template>

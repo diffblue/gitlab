@@ -210,6 +210,7 @@ export default {
         <search-projects-listbox
           v-model="selectedProject"
           :visibility="$options.PROJECT_VISIBILITY.public"
+          data-qa-selector="workspace_devfile_project_id_field"
         />
         <gl-alert
           v-if="displayClusterAgentsAlert"

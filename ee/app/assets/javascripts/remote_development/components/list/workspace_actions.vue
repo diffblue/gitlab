@@ -132,6 +132,7 @@ export default {
         :loading="action.isLoading"
         :aria-label="action.tooltip"
         :icon="action.icon"
+        :data-qa-selector="`workspace_${action.key}_button`"
         @click="onClick(action.desiredState)"
       />
     </span>

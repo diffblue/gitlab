@@ -143,9 +143,12 @@ export default {
         <gl-link class="gl-mr-5 workspace-preview-link" :href="$options.workspacesHelpPath">{{
           $options.i18n.learnMoreHelpLink
         }}</gl-link>
-        <gl-button variant="confirm" :to="$options.ROUTES.create">{{
-          $options.i18n.newWorkspaceButton
-        }}</gl-button>
+        <gl-button
+          variant="confirm"
+          :to="$options.ROUTES.create"
+          data-qa-selector="list_new_workspace_button"
+          >{{ $options.i18n.newWorkspaceButton }}</gl-button
+        >
       </div>
     </div>
     <workspace-empty-state v-if="isEmpty" />
@@ -154,7 +157,11 @@ export default {
         <gl-skeleton-loader :lines="4" :equal-width-lines="true" :width="600" />
       </div>
       <div v-else>
-        <workspaces-table :workspaces="workspaces" @updateFailed="onUpdateFailed" />
+        <workspaces-table
+          :workspaces="workspaces"
+          data-qa-selector="workspace_list_item"
+          @updateFailed="onUpdateFailed"
+        />
         <workspaces-list-pagination :page-info="pageInfo" @input="onPaginationInput" />
       </div>
     </template>

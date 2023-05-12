@@ -84,5 +84,6 @@ export default {
     class="workspace-state-indicator"
     :class="iconClass"
     data-testid="workspace-state-indicator"
+    :data-qa-title="iconLabel"
   />
 </template>
