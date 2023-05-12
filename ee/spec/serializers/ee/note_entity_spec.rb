@@ -27,6 +27,20 @@ RSpec.describe NoteEntity do
     end
   end
 
+  context 'when description_diffs feature is available through Registration Features' do
+    before do
+      stub_application_setting(usage_ping_features_enabled: true)
+      stub_licensed_features(description_diffs: false)
+    end
+
+    it 'includes description versions attributes' do
+      expect(subject[:description_version_id]).to eq(description_version.id)
+      expect(subject[:description_diff_path]).to eq(description_diff_project_issue_path(issue.project, issue, description_version.id))
+      expect(subject[:delete_description_version_path]).to eq(delete_description_version_project_issue_path(issue.project, issue, description_version.id))
+      expect(subject[:can_delete_description_version]).to eq(true)
+    end
+  end
+
   context 'when description_diffs license is not available' do
     before do
       stub_licensed_features(description_diffs: false)

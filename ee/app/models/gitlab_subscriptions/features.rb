@@ -48,7 +48,6 @@ module GitlabSubscriptions
       code_owners
       code_review_analytics
       contribution_analytics
-      description_diffs
       elastic_search
       full_codequality_report
       group_activity_analytics
@@ -256,6 +255,7 @@ module GitlabSubscriptions
     ].freeze
 
     STARTER_FEATURES_WITH_USAGE_PING = %i[
+      description_diffs
       send_emails_from_admin_area
       repository_size_limit
       maintenance_mode

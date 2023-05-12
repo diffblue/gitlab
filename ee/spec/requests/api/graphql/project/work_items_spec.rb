@@ -311,6 +311,15 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
 
           it_behaves_like 'description change diff', description_diffs_enabled: false
         end
+
+        context 'with description_diffs enabled through Registration Features' do
+          before do
+            stub_licensed_features(description_diffs: false)
+            stub_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it_behaves_like 'description change diff', description_diffs_enabled: true
+        end
       end
     end
 

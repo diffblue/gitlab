@@ -52,6 +52,7 @@ tier. Users can continue to access the features in a paid tier without sharing u
 
 ### Features available in 16.0 and later
 
+- [View description change history](../../../user/discussions/index.md#view-description-change-history).
 - [Maintenance mode](../../../administration/maintenance_mode/index.md).
 - [Configurable issue boards](../../project/issue_board.md#configurable-issue-boards).
 - [Coverage-guided fuzz testing](../../application_security/coverage_fuzzing/index.md).
