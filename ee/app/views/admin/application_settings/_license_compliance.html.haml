@@ -5,10 +5,14 @@
     .form-group
       = f.label :package_metadata_purl_types, s_('AdminSettings|Package registry metadata to sync'), class: 'label-bold gl-mb-0'
       %span.form-text.gl-mt-0.gl-mb-3#package_metadata_purl_types-help
-        = _('Package registry types for which metadata is stored, required for License Compliance for CycloneDX files')
+        = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_options: { class: 'gl-my-2' }) do |c|
+          = c.body do
+            - link_start = '<a href="%{url}">'.html_safe % { url: "https://gitlab.com/groups/gitlab-org/-/epics/10415" }
+            - link_end = "</a>".html_safe
+            = s_('The full package metadata sync can add up to 30 GB to GitLab PostgreSQL database. Ensure you have provisioned enough disk space for the database before enabling this feature. We are actively working on reducing this data size in %{link_start}epic 10415%{link_end}.').html_safe % { link_start: link_start, link_end: link_end }
+        = _('Package registry types for which metadata is stored, required for License Compliance for CycloneDX files.')
         = link_to sprite_icon('question-o'), help_page_path("user/compliance/license_scanning_of_cyclonedx_files/index")
       = hidden_field_tag 'application_setting[package_metadata_purl_types][]'
       - sync_purl_types_checkboxes(f).each do |checkbox|
         = checkbox
   = f.submit _('Save changes'), pajamas_button: true
-
