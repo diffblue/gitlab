@@ -553,6 +553,11 @@ module EE
         enable :admin_project_member
         enable :create_resource_access_tokens
       end
+
+      rule { security_policy_bot }.policy do
+        enable :create_pipeline
+        enable :push_code
+      end
     end
 
     override :lookup_access_level!

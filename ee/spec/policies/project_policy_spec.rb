@@ -2690,4 +2690,54 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       it { is_expected.to be_allowed(:create_workspace) }
     end
   end
+
+  describe 'create_pipeline policy' do
+    context 'as a guest member' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:create_pipeline) }
+
+      context 'and user is a security_policy_bot' do
+        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let(:current_user) { security_policy_bot }
+
+        it { is_expected.not_to be_allowed(:create_pipeline) }
+
+        context 'and user is a member of the project' do
+          before do
+            [private_project, internal_project, public_project, public_project_in_group].each do |project|
+              project.add_guest(security_policy_bot)
+            end
+          end
+
+          it { is_expected.to be_allowed(:create_pipeline) }
+        end
+      end
+    end
+  end
+
+  describe 'push_code policy' do
+    context 'as a guest member' do
+      let(:current_user) { guest }
+
+      it { is_expected.not_to be_allowed(:push_code) }
+
+      context 'and user is a security_policy_bot' do
+        let_it_be(:security_policy_bot) { create(:user, user_type: :security_policy_bot) }
+        let(:current_user) { security_policy_bot }
+
+        it { is_expected.not_to be_allowed(:create_pipeline) }
+
+        context 'and user is a member of the project' do
+          before do
+            [private_project, internal_project, public_project, public_project_in_group].each do |project|
+              project.add_guest(security_policy_bot)
+            end
+          end
+
+          it { is_expected.to be_allowed(:push_code) }
+        end
+      end
+    end
+  end
 end
