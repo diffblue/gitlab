@@ -14,7 +14,7 @@ describe('Executive dashboard app', () => {
   let wrapper;
   const fullPath = 'groupFullPath';
   const tooManyPaths = ['group', 'group/a', 'group/b', 'group/c', 'group/d', 'group/e'];
-  const tooManyWidgets = tooManyPaths.map((namespace) => ({ data: { namespace } }));
+  const tooManyPanels = tooManyPaths.map((namespace) => ({ data: { namespace } }));
 
   const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMountExtended(Component, {
@@ -80,7 +80,7 @@ describe('Executive dashboard app', () => {
 
   describe('YAML config', () => {
     const yamlConfigProject = { id: 3, fullPath: 'group/project' };
-    const widgets = [
+    const panels = [
       { title: 'One', data: { namespace: 'group/one' } },
       { data: { namespace: 'group/two' } },
     ];
@@ -107,29 +107,29 @@ describe('Executive dashboard app', () => {
       expect(findDescription().findComponent(GlLink).exists()).toBe(false);
     });
 
-    it('renders a visualization for each widget', async () => {
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ widgets });
+    it('renders a visualization for each panel', async () => {
+      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels });
       await createWrapper({ props: { yamlConfigProject } });
 
       const charts = findDoraVisualizations();
       expect(charts.length).toBe(2);
 
-      expect(charts.wrappers[0].props()).toMatchObject(widgets[0]);
-      expect(charts.wrappers[1].props()).toMatchObject(widgets[1]);
+      expect(charts.wrappers[0].props()).toMatchObject(panels[0]);
+      expect(charts.wrappers[1].props()).toMatchObject(panels[1]);
     });
 
     it('does not render more than 4 visualizations', async () => {
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ widgets: tooManyWidgets });
+      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels: tooManyPanels });
       await createWrapper({ props: { yamlConfigProject } });
 
       const charts = findDoraVisualizations();
       expect(charts.length).toBe(4);
     });
 
-    it('queryPaths override the widgets list', async () => {
+    it('queryPaths override the panels list', async () => {
       const queryPaths = ['group/one', 'group/two', 'group/three'];
 
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ widgets });
+      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels });
       await createWrapper({ props: { yamlConfigProject, queryPaths } });
 
       const charts = findDoraVisualizations();

@@ -2,7 +2,7 @@ import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { KEY_METRICS, DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 
-export const MAX_WIDGETS_LIMIT = 4;
+export const MAX_PANELS_LIMIT = 4;
 
 export const UNITS = {
   COUNT: 'COUNT',
