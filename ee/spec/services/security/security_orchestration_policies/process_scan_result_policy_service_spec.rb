@@ -207,6 +207,54 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'when rules are provided' do
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: %w[master],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: vulnerability_states
+        }
+      end
+
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: [rule]) }
+
+      context 'with valid vulnerability_states' do
+        states_list = [
+          %w[newly_detected],
+          %w[detected],
+          %w[dismissed],
+          %w[resolved],
+          %w[confirmed],
+          %w[new_dismissed],
+          %w[new_needs_triage],
+          %w[new_dismissed new_needs_triage],
+          %w[detected dismissed confirmed resolved],
+          %w[confirmed dismissed]
+        ]
+
+        states_list.each do |states|
+          context "with #{states}" do
+            let(:vulnerability_states) { states }
+
+            it 'creates new approval rules' do
+              expect { subject }.to change { project.approval_rules.count }.by(1)
+            end
+          end
+        end
+      end
+
+      context 'with invalid vulnerability_states' do
+        let(:vulnerability_states) { ['invalid_state'] }
+
+        it 'creates no approval rules' do
+          expect { subject }.not_to change { project.approval_rules.count }
+        end
+      end
+    end
+
     context 'with a specific number of rules' do
       using RSpec::Parameterized::TableSyntax
 
