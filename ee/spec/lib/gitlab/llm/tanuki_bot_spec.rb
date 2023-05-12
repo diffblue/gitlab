@@ -23,23 +23,19 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
     describe 'enabled_for?' do
       describe 'when :openai_experimentation and tanuki_bot FF are true' do
-        where(:feature_available, :dot_com, :has_paid_namespace, :result) do
+        where(:feature_available, :ai_feature_enabled, :result) do
           [
-            [false, false, false, false],
-            [false, true, false, false],
-            [false, true, true, false],
-            [true, false, false, true],
-            [true, true, false, false],
-            [true, true, true, true]
+            [false, false, false],
+            [false, true, false],
+            [true, false, false],
+            [true, true, true]
           ]
         end
 
         with_them do
           before do
             allow(License).to receive(:feature_available?).and_return(feature_available)
-            allow(::Gitlab).to receive(:com?).and_return(dot_com)
-            allow(user).to receive(:has_paid_namespace?)
-              .with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return(has_paid_namespace)
+            allow(described_class).to receive(:ai_feature_enabled?).and_return(ai_feature_enabled)
           end
 
           it 'returns correct result' do
@@ -60,8 +56,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
         with_them do
           before do
             allow(License).to receive(:feature_available?).and_return(true)
-            allow(Gitlab).to receive(:com?).and_return(true)
-            allow(user).to receive(:has_paid_namespace?).and_return(true)
+            allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
 
             stub_feature_flags(openai_experimentation: openai_experimentation)
             stub_feature_flags(tanuki_bot: tanuki_bot)
@@ -69,6 +64,83 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
 
           it 'returns false' do
             expect(described_class.enabled_for?(user: user)).to be(false)
+          end
+        end
+      end
+    end
+
+    describe '#ai_feature_enabled?' do
+      let_it_be_with_reload(:namespace) { create(:group) }
+      let_it_be_with_reload(:namespace_2) { create(:group) }
+
+      before do
+        allow(namespace.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+        allow(namespace_2.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
+      end
+
+      it 'is true' do
+        expect(described_class.ai_feature_enabled?(user)).to be_truthy
+      end
+
+      context 'on GitLab.com', :saas do
+        it 'is false' do
+          expect(described_class.ai_feature_enabled?(user)).to be_falsey
+        end
+
+        context 'with a paid namespace' do
+          using RSpec::Parameterized::TableSyntax
+
+          where(:third_party_ai_features_enabled, :experiment_features_enabled, :result) do
+            false | false | false
+            false | true | false
+            true | false | false
+            true | true | true
+          end
+
+          with_them do
+            before do
+              allow(user).to receive(:paid_namespaces)
+                .with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([namespace])
+              namespace.namespace_settings.update!(third_party_ai_features_enabled: third_party_ai_features_enabled)
+              namespace.namespace_settings.update!(experiment_features_enabled: experiment_features_enabled)
+            end
+
+            it 'is correct' do
+              expect(described_class.ai_feature_enabled?(user)).to eq(result)
+            end
+          end
+        end
+
+        context 'with multiple paid namespaces' do
+          before do
+            allow(user).to receive(:paid_namespaces)
+              .with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([namespace, namespace_2])
+          end
+
+          context 'when one namespace has both settings enabled' do
+            before do
+              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
+              namespace.namespace_settings.update!(experiment_features_enabled: false)
+              namespace_2.namespace_settings.update!(third_party_ai_features_enabled: true)
+              namespace_2.namespace_settings.update!(experiment_features_enabled: true)
+            end
+
+            it 'is true' do
+              expect(described_class.ai_feature_enabled?(user)).to be_truthy
+            end
+          end
+
+          context 'when one namespace does not have both settings enabled' do
+            before do
+              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
+              namespace.namespace_settings.update!(experiment_features_enabled: true)
+              namespace_2.namespace_settings.update!(third_party_ai_features_enabled: true)
+              namespace_2.namespace_settings.update!(experiment_features_enabled: false)
+            end
+
+            it 'is false' do
+              expect(described_class.ai_feature_enabled?(user)).to be_falsey
+            end
           end
         end
       end
@@ -106,9 +178,9 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
             end
           end
 
-          context 'when the user does not have a paid namespace' do
+          context 'when #ai_feature_enabled is false' do
             before do
-              allow(user).to receive(:has_paid_namespace?).and_return(false)
+              allow(described_class).to receive(:ai_feature_enabled?).and_return(false)
             end
 
             it 'returns an empty hash' do
@@ -116,10 +188,10 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
             end
           end
 
-          context 'when the user has a paid namespace' do
+          context 'when #ai_feature_enabled is true' do
             before do
               allow(::Gitlab::Llm::OpenAi::Client).to receive(:new).and_return(openai_client)
-              allow(user).to receive(:has_paid_namespace?).and_return(true)
+              allow(described_class).to receive(:ai_feature_enabled?).and_return(true)
             end
 
             it 'executes calls through to open ai' do

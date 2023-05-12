@@ -262,7 +262,7 @@ module EE
     def send_to_ai?
       return true unless ::Gitlab.com?
 
-      has_paid_namespace?(plans: AI_SUPPORTED_PLANS)
+      paid_namespaces(plans: AI_SUPPORTED_PLANS).any?(&:third_party_ai_features_enabled)
     end
 
     def use_elasticsearch?
@@ -323,12 +323,16 @@ module EE
     # Returns true if the user is a Reporter or higher on any namespace
     # currently on a paid plan
     def has_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS)
+      paid_namespaces(plans: plans).any?
+    end
+
+    def paid_namespaces(plans: ::Plan::PAID_HOSTED_PLANS)
       paid_hosted_plans = ::Plan::PAID_HOSTED_PLANS & plans
       ::Namespace
         .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
         .include_gitlab_subscription
         .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
-        .any?
+        .select(:id)
     end
 
     # Returns true if the user is an Owner on any namespace currently on

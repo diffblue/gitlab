@@ -2511,21 +2511,45 @@ RSpec.describe User, feature_category: :system_access do
   describe '#send_to_ai?' do
     subject(:user) { create(:user) }
 
-    it 'returns true' do
-      expect(subject.send_to_ai?).to be_truthy
+    it 'is true' do
+      expect(user).to be_send_to_ai
     end
 
     context 'for Gitlab.com', :saas do
-      let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+      let_it_be_with_reload(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
-      it 'returns false if the user does not have an ultimate plan' do
-        expect(subject.send_to_ai?).to be_falsey
+      before do
+        allow(ultimate_group.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
       end
 
-      it 'returns true if the user has an ultimate plan' do
-        ultimate_group.add_developer(subject)
+      it 'is false' do
+        expect(user).not_to be_send_to_ai
+      end
 
-        expect(subject.send_to_ai?).to be_truthy
+      context 'when the user belongs to a group with an ultimate plan' do
+        before do
+          ultimate_group.add_developer(user)
+        end
+
+        context 'when the group has third party AI features enabled' do
+          before do
+            ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: true)
+          end
+
+          it 'is true' do
+            expect(user).to be_send_to_ai
+          end
+        end
+
+        context 'when the group does not have third party AI features enabled' do
+          before do
+            ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: false)
+          end
+
+          it 'is false' do
+            expect(user).not_to be_send_to_ai
+          end
+        end
       end
     end
   end
