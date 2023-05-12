@@ -1,8 +1,6 @@
 - if Gitlab::CurrentSettings.help_text.present?
   - if Feature.enabled?(:restyle_login_page, @project)
-    .slead.signin-text.gl-w-half.gl-xs-w-full.gl-ml-auto.gl-mr-auto.gl-text-left.gl-px-3
-      %hr.gl-w-70p.gl-ml-auto.gl-mr-auto
-      = markdown(Gitlab::CurrentSettings.help_text)
+    = markdown(Gitlab::CurrentSettings.help_text)
   - else
     %h3= _("Need help?")
     %hr
