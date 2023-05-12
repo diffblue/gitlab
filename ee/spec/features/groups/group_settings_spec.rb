@@ -403,11 +403,8 @@ RSpec.describe 'Edit group settings', feature_category: :subgroups do
   end
 
   describe 'permissions and group features', :js do
-    context 'for code suggestions', :saas do
-      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan).tap { |g| g.add_owner(user) } }
-
+    context 'for code suggestions' do
       before do
-        stub_licensed_features(ai_assist: true)
         stub_feature_flags(ai_assist_flag: true)
         stub_ee_application_setting(check_namespace_plan: true)
       end

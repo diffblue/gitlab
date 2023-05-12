@@ -27,7 +27,7 @@ module API
         end
         get 'ai-assist' do
           response = {
-            user_is_allowed: accessible_root_groups.with_feature_available_in_plan(:ai_assist).present?
+            user_is_allowed: accessible_root_groups.present?
           }
           present response, with: EE::API::Entities::Ml::AiAssist
         end

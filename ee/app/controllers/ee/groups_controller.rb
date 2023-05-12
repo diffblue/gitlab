@@ -115,7 +115,6 @@ module EE
         ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
         ::Feature.enabled?(:ai_assist_ui) &&
         ::Feature.enabled?(:ai_assist_flag, current_group) &&
-        current_group.licensed_feature_available?(:ai_assist) &&
         current_group.root?
     end
 
