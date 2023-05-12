@@ -16,7 +16,13 @@ RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :expe
   end
 
   describe '#above_size_limit?' do
+    let(:disable_storage_check?) { false }
+
     subject { model.above_size_limit? }
+
+    before do
+      stub_feature_flags(free_user_cap_without_storage_check: disable_storage_check?)
+    end
 
     context 'when below limit' do
       it { is_expected.to eq(false) }
@@ -31,7 +37,15 @@ RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :expe
         allow(model).to receive(:enforce_limit?).and_return(false)
       end
 
-      it { is_expected.to eq(true) }
+      context 'when valid for enforcement' do
+        it { is_expected.to eq(true) }
+      end
+
+      context 'when not valid for enforcement' do
+        let(:disable_storage_check?) { true }
+
+        it { is_expected.to eq(false) }
+      end
     end
   end
 end

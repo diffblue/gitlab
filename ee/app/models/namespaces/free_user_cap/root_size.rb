@@ -9,7 +9,7 @@ module Namespaces
 
       override :valid_enforcement?
       def valid_enforcement?
-        true
+        Feature.disabled?(:free_user_cap_without_storage_check)
       end
     end
   end
