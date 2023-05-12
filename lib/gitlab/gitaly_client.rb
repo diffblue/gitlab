@@ -255,8 +255,8 @@ module Gitlab
     # forced to route all requests to the primary node which has injected the
     # quarantine object directory to us.
     def self.route_to_primary
-      return {} unless ::Gitlab::SafeRequestStore.active?
-      return {} if ::Gitlab::SafeRequestStore[:gitlab_git_env].blank?
+      return {} unless InstrumentationStorage.active?
+      return {} if InstrumentationStorage[:gitlab_git_env].blank?
 
       { 'gitaly-route-repository-accessor-policy' => 'primary-only' }
     end
@@ -279,7 +279,7 @@ module Gitlab
     private_class_method :request_deadline
 
     def self.session_id
-      ::Gitlab::SafeRequestStore[:gitaly_session_id] ||= SecureRandom.uuid
+      InstrumentationStorage[:gitaly_session_id] ||= SecureRandom.uuid
     end
 
     def self.token(storage)
@@ -345,19 +345,19 @@ module Gitlab
     # afterwards. However, for read-only requests that never mutate the
     # branch, this method allows caching of the ref name directly.
     def self.allow_ref_name_caching
-      return yield unless ::Gitlab::SafeRequestStore.active?
+      return yield unless InstrumentationStorage.active?
       return yield if ref_name_caching_allowed?
 
       begin
-        ::Gitlab::SafeRequestStore[:allow_ref_name_caching] = true
+        InstrumentationStorage[:allow_ref_name_caching] = true
         yield
       ensure
-        ::Gitlab::SafeRequestStore[:allow_ref_name_caching] = false
+        InstrumentationStorage[:allow_ref_name_caching] = false
       end
     end
 
     def self.ref_name_caching_allowed?
-      ::Gitlab::SafeRequestStore[:allow_ref_name_caching]
+      InstrumentationStorage[:allow_ref_name_caching]
     end
 
     def self.get_call_count(key)
@@ -545,8 +545,8 @@ module Gitlab
     end
 
     def self.feature_flag_actors
-      if ::Gitlab::SafeRequestStore.active?
-        ::Gitlab::SafeRequestStore[:gitaly_feature_flag_actors] ||= {}
+      if InstrumentationStorage.active?
+        InstrumentationStorage[:gitaly_feature_flag_actors] ||= {}
       else
         Thread.current[:gitaly_feature_flag_actors] ||= {}
       end
