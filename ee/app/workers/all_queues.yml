@@ -993,6 +993,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: abuse_new_abuse_report
+  :worker_name: Abuse::NewAbuseReportWorker
+  :feature_category: :instance_resiliency
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: adjourned_project_deletion
   :worker_name: AdjournedProjectDeletionWorker
   :feature_category: :compliance_management
