@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe EE::NamespacesHelper do
+RSpec.describe EE::NamespacesHelper, feature_category: :subgroups do
   using RSpec::Parameterized::TableSyntax
   include NamespacesTestHelper
 
@@ -200,10 +200,10 @@ RSpec.describe EE::NamespacesHelper do
   end
 
   describe '#pipeline_usage_app_data', feature_category: :consumables_cost_management do
-    context 'when gitlab sass', :saas do
-      let(:minutes_usage) { user_group.ci_minutes_usage }
-      let(:minutes_usage_presenter) { ::Ci::Minutes::UsagePresenter.new(minutes_usage) }
+    let(:minutes_usage) { user_group.ci_minutes_usage }
+    let(:minutes_usage_presenter) { ::Ci::Minutes::UsagePresenter.new(minutes_usage) }
 
+    context 'when gitlab sass', :saas do
       before do
         allow(Gitlab).to receive(:com?).and_return(true)
         stub_ee_application_setting(should_check_namespace_plan: true)
@@ -246,7 +246,15 @@ RSpec.describe EE::NamespacesHelper do
           namespace_path: user_group.full_path,
           namespace_id: user_group.id,
           user_namespace: user_group.user_namespace?.to_s,
-          page_size: Kaminari.config.default_per_page
+          page_size: Kaminari.config.default_per_page,
+          ci_minutes: {
+            any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s,
+            last_reset_date: minutes_usage.reset_date,
+            display_minutes_available_data: minutes_usage_presenter.display_minutes_available_data?.to_s,
+            monthly_minutes_used: minutes_usage_presenter.monthly_minutes_report.used,
+            monthly_minutes_used_percentage: minutes_usage_presenter.monthly_percent_used,
+            monthly_minutes_limit: minutes_usage_presenter.monthly_minutes_report.limit
+          }
         })
       end
     end

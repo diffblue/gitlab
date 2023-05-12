@@ -182,6 +182,7 @@ export default {
           </gl-button>
         </div>
         <usage-overview
+          :class="{ 'gl-pt-5': !shouldShowBuyAdditionalMinutes }"
           :minutes-title="monthlyUsageTitle"
           :minutes-used="monthlyMinutesUsed"
           minutes-used-qa-selector="plan_ci_minutes"
