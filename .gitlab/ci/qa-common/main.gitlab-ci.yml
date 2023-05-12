@@ -216,7 +216,7 @@ stages:
       bundle exec relate-failure-issue \
         --input-files "${CI_PROJECT_DIR}/gitlab-qa-run-*/**/rspec-*.json" \
         --project "gitlab-org/gitlab" \
-        --token "${RELATE_TEST_FAILURE_TOKEN}"
+        --token "${QA_RELATE_FAILURE_ISSUE_TOKEN}"
 
 .generate-test-session:
   extends:
