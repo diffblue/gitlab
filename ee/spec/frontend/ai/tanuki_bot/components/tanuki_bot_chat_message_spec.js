@@ -69,7 +69,7 @@ describe('TanukiBotChatMessage', () => {
       });
 
       it('uses renderMarkdown to render the message', () => {
-        expect(renderMarkdown).toHaveBeenCalledWith(MOCK_TANUKI_MESSAGE.msg);
+        expect(renderMarkdown).toHaveBeenCalledWith(MOCK_TANUKI_MESSAGE.content);
       });
 
       it('does render Share Feedback Link', () => {

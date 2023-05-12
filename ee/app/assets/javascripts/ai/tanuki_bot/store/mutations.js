@@ -6,16 +6,26 @@ export default {
     state.loading = loading;
   },
   [types.ADD_USER_MESSAGE](state, msg) {
-    state.messages.push({ id: state.messages.length, type: MESSAGE_TYPES.USER, msg });
+    state.messages.push({
+      id: state.messages.length,
+      role: MESSAGE_TYPES.USER,
+      content: msg,
+    });
   },
   [types.ADD_TANUKI_MESSAGE](state, data) {
-    state.messages.push({ id: state.messages.length, type: MESSAGE_TYPES.TANUKI, ...data });
+    const { msg, content, ...rest } = data;
+    state.messages.push({
+      id: state.messages.length,
+      role: MESSAGE_TYPES.TANUKI,
+      ...rest,
+      content: content || msg,
+    });
   },
   [types.ADD_ERROR_MESSAGE](state) {
     state.messages.push({
       id: state.messages.length,
-      type: MESSAGE_TYPES.TANUKI,
-      msg: ERROR_MESSAGE,
+      role: MESSAGE_TYPES.TANUKI,
+      content: ERROR_MESSAGE,
     });
   },
 };

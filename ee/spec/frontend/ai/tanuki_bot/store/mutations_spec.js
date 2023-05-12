@@ -20,7 +20,7 @@ describe('TanukiBot Store Mutations', () => {
 
   describe('ADD_USER_MESSAGE', () => {
     it('pushes a message to the messages array with type: User', () => {
-      mutations[types.ADD_USER_MESSAGE](state, MOCK_USER_MESSAGE.msg);
+      mutations[types.ADD_USER_MESSAGE](state, MOCK_USER_MESSAGE.content);
 
       expect(state.messages).toStrictEqual([{ id: 0, ...MOCK_USER_MESSAGE }]);
     });
@@ -32,6 +32,11 @@ describe('TanukiBot Store Mutations', () => {
 
       expect(state.messages).toStrictEqual([{ id: 0, ...MOCK_TANUKI_MESSAGE }]);
     });
+    it('correctly sets content in backwards compatible manner', () => {
+      mutations[types.ADD_TANUKI_MESSAGE](state, { ...MOCK_TANUKI_MESSAGE, msg: 'test' });
+
+      expect(state.messages).toStrictEqual([{ id: 0, ...MOCK_TANUKI_MESSAGE }]);
+    });
   });
 
   describe('ADD_ERROR_MESSAGE', () => {
@@ -39,7 +44,7 @@ describe('TanukiBot Store Mutations', () => {
       mutations[types.ADD_ERROR_MESSAGE](state);
 
       expect(state.messages).toStrictEqual([
-        { id: 0, type: MESSAGE_TYPES.TANUKI, msg: ERROR_MESSAGE },
+        { id: 0, role: MESSAGE_TYPES.TANUKI, content: ERROR_MESSAGE },
       ]);
     });
   });

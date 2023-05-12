@@ -23,14 +23,14 @@ export const MOCK_SOURCE_TYPES = {
 export const MOCK_SOURCES = Object.values(MOCK_SOURCE_TYPES);
 
 export const MOCK_TANUKI_MESSAGE = {
-  msg: 'Tanuki Bot message',
-  type: MESSAGE_TYPES.TANUKI,
+  content: 'Tanuki Bot message',
+  role: MESSAGE_TYPES.TANUKI,
   sources: MOCK_SOURCES,
 };
 
 export const MOCK_USER_MESSAGE = {
-  msg: 'User message',
-  type: MESSAGE_TYPES.USER,
+  content: 'User message',
+  role: MESSAGE_TYPES.USER,
 };
 
 export const MOCK_TANUKI_SUCCESS_RES = {
