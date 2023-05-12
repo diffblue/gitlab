@@ -277,14 +277,20 @@ describe('BoardSettingsWipLimit', () => {
         });
 
         describe('when response fails', () => {
+          let setErrorMock;
+
           beforeEach(() => {
-            const spy = jest.fn().mockRejectedValue();
+            setErrorMock = jest.fn();
+
             createComponent({
               vuexState: { activeId: listId },
-              actions: { updateListWipLimit: spy, unsetActiveId: noop },
+              actions: {
+                updateListWipLimit: jest.fn().mockRejectedValue(),
+                setError: setErrorMock,
+                unsetActiveId: noop,
+              },
               localState: { edit: true, currentWipLimit },
             });
-            jest.spyOn(wrapper.vm, 'setError').mockImplementation(() => {});
 
             triggerBlur(blurMethod);
 
@@ -292,7 +298,7 @@ describe('BoardSettingsWipLimit', () => {
           });
 
           it('calls flash with expected error', () => {
-            expect(wrapper.vm.setError).toHaveBeenCalledTimes(1);
+            expect(setErrorMock).toHaveBeenCalledTimes(1);
           });
         });
       });
