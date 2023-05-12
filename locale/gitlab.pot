@@ -19439,9 +19439,6 @@ msgstr ""
 msgid "Geo|Filter by status"
 msgstr ""
 
-msgid "Geo|Full details"
-msgstr ""
-
 msgid "Geo|Geo Settings"
 msgstr ""
 

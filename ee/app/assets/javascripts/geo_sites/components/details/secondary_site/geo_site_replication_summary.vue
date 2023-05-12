@@ -1,5 +1,5 @@
 <script>
-import { GlCard, GlButton } from '@gitlab/ui';
+import { GlCard } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import GeoSiteReplicationCounts from './geo_site_replication_counts.vue';
 import GeoSiteReplicationStatus from './geo_site_replication_status.vue';
@@ -9,13 +9,11 @@ export default {
   name: 'GeoSiteReplicationSummary',
   i18n: {
     replicationSummary: s__('Geo|Replication summary'),
-    replicationDetailsButton: s__('Geo|Full details'),
     replicationStatus: s__('Geo|Replication status'),
     syncSettings: s__('Geo|Synchronization settings'),
   },
   components: {
     GlCard,
-    GlButton,
     GeoSiteReplicationStatus,
     GeoSiteSyncSettings,
     GeoSiteReplicationCounts,
@@ -30,18 +28,9 @@ export default {
 </script>
 
 <template>
-  <gl-card header-class="gl-display-flex gl-align-items-center">
+  <gl-card>
     <template #header>
       <h5 class="gl-my-0">{{ $options.i18n.replicationSummary }}</h5>
-      <gl-button
-        class="gl-ml-auto"
-        variant="confirm"
-        icon="external-link"
-        category="secondary"
-        :href="site.webGeoReplicationDetailsUrl"
-        target="_blank"
-        >{{ $options.i18n.replicationDetailsButton }}</gl-button
-      >
     </template>
     <div class="gl-display-flex gl-flex-direction-column gl-mb-5">
       <span>{{ $options.i18n.replicationStatus }}</span>

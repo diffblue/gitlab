@@ -46,19 +46,6 @@ RSpec.describe 'Geo Sites', :geo, feature_category: :geo_replication do
     end
 
     describe 'Geo Sites admin screen' do
-      it "has a 'Full details' button on listed secondary geo sites pointing to correct URL", :js do
-        visit admin_geo_nodes_path
-
-        expect(page).to have_content(geo_primary.url)
-        expect(page).to have_content(geo_secondary.url)
-
-        wait_for_requests
-
-        expected_url = File.join(geo_secondary.url, "/admin/geo/sites/#{geo_secondary.id}/replication/lfs_objects")
-
-        expect(all('.geo-site-details-grid-columns').last).to have_link('Full details', href: expected_url)
-      end
-
       context 'Site Filters', :js do
         it 'defaults to the All tab when a status query is not already set' do
           visit admin_geo_nodes_path
