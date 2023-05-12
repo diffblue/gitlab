@@ -167,6 +167,17 @@ Review the details carefully before upgrading.
 
 GitLab administrators can no longer perform actions on protected branches or tags unless they have been explicitly granted that permission. These actions include pushing and merging into a [protected branch](https://docs.gitlab.com/ee/user/project/protected_branches.html), unprotecting a branch, and creating [protected tags](https://docs.gitlab.com/ee/user/project/protected_tags.html).
 
+### GitLab.com importer
+
+The [GitLab.com importer](https://docs.gitlab.com/ee/user/project/import/gitlab_com.html) was deprecated in GitLab 15.8 and is removed in GitLab 16.0.
+
+The GitLab.com importer was introduced in 2015 for importing a project from GitLab.com to a self-managed GitLab instance through the UI.
+
+This feature was available on self-managed instances only. [Migrating GitLab groups and projects by direct transfer](https://docs.gitlab.com/ee/user/group/import/#migrate-groups-by-direct-transfer-recommended)
+supersedes the GitLab.com importer and provides a more cohesive importing functionality.
+
+See [migrated group items](https://docs.gitlab.com/ee/user/group/import/#migrated-group-items) and [migrated project items](https://docs.gitlab.com/ee/user/group/import/#migrated-project-items) for an overview.
+
 ### GraphQL API: Runner status no longer returns `PAUSED` and `ACTIVE` values
 
 WARNING:
