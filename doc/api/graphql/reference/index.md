@@ -13999,6 +13999,10 @@ Returns [`Deployment`](#deployment).
 
 Metrics dashboard schema for the environment.
 
+WARNING:
+**Deprecated** in 16.0.
+Returns no data. Underlying feature was removed in 16.0.
+
 Returns [`MetricsDashboard`](#metricsdashboard).
 
 ###### Arguments
