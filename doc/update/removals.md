@@ -189,6 +189,14 @@ In GitLab 16.0 and later, the GraphQL query for runners will no longer return th
 - `PAUSED` has been replaced with the field, `paused: true`.
 - `ACTIVE` has been replaced with the field, `paused: false`.
 
+### License-Check and the Policies tab on the License Compliance page
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The License Check Policies feature has been removed. Additionally, the Policies tab on the License Compliance page and all APIs related to the License Check feature have been removed. To enforce approvals based on detected licenses, use the [License Approval policy](https://docs.gitlab.com/ee/user/compliance/license_approval_policies.html) feature instead.
+
 ### Limit CI_JOB_TOKEN scope is disabled
 
 WARNING:
@@ -204,6 +212,18 @@ In GitLab 16.0, the old **Limit CI_JOB_TOKEN access** setting is disabled by def
 In 17.0, we plan to remove the **Limit** setting completely, and set the **Allow access** setting to enabled for all projects. This change ensures a higher level of security between projects. If you currently use the **Limit** setting, you should update your projects to use the **Allow access** setting instead. If other projects access your project with a job token, you must add them to the **Allow access** setting's allowlist.
 
 To prepare for this change, users on GitLab.com or self-managed GitLab 15.9 or later can enable the **Allow access** setting now and add the other projects. It will not be possible to disable the setting in 17.0 or later.
+
+### Managed Licenses API
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The [Managed Licenses API](https://archives.docs.gitlab.com/15.8/ee/api/managed_licenses.html) has been removed. To enforce approvals in merge requests when non-compliant licenses are detected, use the [License Approval policy](https://docs.gitlab.com/ee/user/compliance/license_approval_policies.html) feature instead.
+
+Our [GraphQL APIs](https://docs.gitlab.com/ee/api/graphql/reference/) can be used to create a Security Policy Project, [update the policy.yml](https://docs.gitlab.com/ee/api/graphql/reference/#mutationscanexecutionpolicycommit) in the Security Policy Project, and enforce those policies.
+
+To query a list of dependencies and components, use our [Dependencies REST API](https://docs.gitlab.com/ee/api/dependencies.html) or [export from the Dependency List](https://docs.gitlab.com/ee/user/application_security/dependency_list/).
 
 ### Maximum number of active pipelines per project limit (`ci_active_pipelines`)
 
