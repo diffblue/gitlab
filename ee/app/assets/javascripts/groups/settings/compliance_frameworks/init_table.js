@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 import createDefaultClient from '~/lib/graphql';
 import Table from './components/table.vue';
@@ -21,6 +22,7 @@ const createComplianceFrameworksTableApp = (el) => {
     graphqlFieldName = null,
     groupPath,
     pipelineConfigurationFullPathEnabled,
+    pipelineConfigurationEnabled,
   } = el.dataset;
 
   return new Vue({
@@ -30,7 +32,8 @@ const createComplianceFrameworksTableApp = (el) => {
       canAddEdit,
       graphqlFieldName,
       groupPath,
-      pipelineConfigurationFullPathEnabled: Boolean(pipelineConfigurationFullPathEnabled),
+      pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
+      pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
     },
     render(createElement) {
       return createElement(Table, {

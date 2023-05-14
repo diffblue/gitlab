@@ -8,4 +8,5 @@
   group_path: @group.full_path,
   root_ancestor_path: @group.root_ancestor.full_path,
   pipeline_configuration_full_path_enabled: can?(current_user, :admin_compliance_pipeline_configuration, @group),
-  base_path: group_security_compliance_dashboard_path(@group) } }
+  base_path: group_security_compliance_dashboard_path(@group),
+  pipeline_configuration_enabled: @group.licensed_feature_available?(:compliance_pipeline_configuration).to_s } }

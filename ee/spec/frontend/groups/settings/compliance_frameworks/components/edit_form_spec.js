@@ -33,6 +33,7 @@ describe('EditForm', () => {
     graphqlFieldName: 'ComplianceManagement::Framework',
     groupPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
+    pipelineConfigurationEnabled: true,
   };
 
   const sentryError = new Error('Network error');

@@ -23,6 +23,7 @@ describe('CreateForm', () => {
   const provideData = {
     groupPath: 'group-1',
     pipelineConfigurationFullPathEnabled: true,
+    pipelineConfigurationEnabled: true,
   };
 
   const sentryError = new Error('Network error');
