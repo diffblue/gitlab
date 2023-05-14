@@ -1,5 +1,13 @@
 <script>
-import { GlButton, GlForm, GlFormGroup, GlFormInput, GlLink, GlSprintf } from '@gitlab/ui';
+import {
+  GlButton,
+  GlForm,
+  GlFormGroup,
+  GlFormInput,
+  GlLink,
+  GlSprintf,
+  GlPopover,
+} from '@gitlab/ui';
 import { debounce } from 'lodash';
 
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -18,8 +26,9 @@ export default {
     GlFormInput,
     GlLink,
     GlSprintf,
+    GlPopover,
   },
-  inject: ['pipelineConfigurationFullPathEnabled'],
+  inject: ['pipelineConfigurationFullPathEnabled', 'pipelineConfigurationEnabled'],
   props: {
     color: {
       type: String,
@@ -135,11 +144,22 @@ export default {
     pipelineConfigurationInputDescription: s__(
       'ComplianceFrameworks|Required format: %{codeStart}path/file.y[a]ml@group-name/project-name%{codeEnd}. %{linkStart}See some examples%{linkEnd}.',
     ),
+    pipelineConfigurationInputDisabledPopoverTitle: s__(
+      'ComplianceFrameworks|Requires Ultimate subscription',
+    ),
+    pipelineConfigurationInputDisabledPopoverContent: s__(
+      'ComplianceFrameworks|Set compliance pipeline configuration for projects that use this framework. %{linkStart}How do I create the configuration?%{linkEnd}',
+    ),
+    pipelineConfigurationInputDisabledPopoverLink: helpPagePath(
+      'user/group/compliance_frameworks.html#compliance-pipelines',
+    ),
     pipelineConfigurationInputInvalidFormat: s__('ComplianceFrameworks|Invalid format'),
     pipelineConfigurationInputUnknownFile: s__('ComplianceFrameworks|Configuration not found'),
     colorInputLabel: s__('ComplianceFrameworks|Background color'),
     cancelBtnText: s__('ComplianceFrameworks|Cancel'),
   },
+  disabledPipelineConfigurationInputPopoverTarget:
+    'disabled-pipeline-configuration-input-popover-target',
 };
 </script>
 <template>
@@ -173,8 +193,9 @@ export default {
     </gl-form-group>
 
     <gl-form-group
-      v-if="pipelineConfigurationFullPathEnabled"
+      v-if="pipelineConfigurationFullPathEnabled && pipelineConfigurationEnabled"
       :label="$options.i18n.pipelineConfigurationInputLabel"
+      label-for="pipeline-configuration-input"
       :invalid-feedback="pipelineConfigurationFeedbackMessage"
       :state="isValidPipelineConfiguration"
       data-testid="pipeline-configuration-input-group"
@@ -194,12 +215,50 @@ export default {
       </template>
 
       <gl-form-input
+        id="pipeline-configuration-input"
         :value="pipelineConfigurationFullPath"
         :state="isValidPipelineConfiguration"
         data-testid="pipeline-configuration-input"
         @input="onPipelineInput"
       />
     </gl-form-group>
+
+    <template v-if="!pipelineConfigurationEnabled">
+      <gl-form-group
+        id="disabled-pipeline-configuration-input-group"
+        :label="$options.i18n.pipelineConfigurationInputLabel"
+        label-for="disabled-pipeline-configuration-input"
+        data-testid="disabled-pipeline-configuration-input-group"
+      >
+        <div :id="$options.disabledPipelineConfigurationInputPopoverTarget" tabindex="0">
+          <gl-form-input
+            id="disabled-pipeline-configuration-input"
+            disabled
+            data-testid="disabled-pipeline-configuration-input"
+          />
+        </div>
+      </gl-form-group>
+      <gl-popover
+        :title="$options.i18n.pipelineConfigurationInputDisabledPopoverTitle"
+        show-close-button
+        :target="$options.disabledPipelineConfigurationInputPopoverTarget"
+        data-testid="disabled-pipeline-configuration-input-popover"
+      >
+        <p class="gl-mb-0">
+          <gl-sprintf :message="$options.i18n.pipelineConfigurationInputDisabledPopoverContent">
+            <template #link="{ content }">
+              <gl-link
+                :href="$options.i18n.pipelineConfigurationInputDisabledPopoverLink"
+                target="_blank"
+                class="gl-font-sm"
+              >
+                {{ content }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
+        </p>
+      </gl-popover>
+    </template>
 
     <color-picker
       :value="color"

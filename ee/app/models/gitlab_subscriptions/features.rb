@@ -186,6 +186,7 @@ module GitlabSubscriptions
       cluster_image_scanning
       external_status_checks
       combined_project_analytics_dashboards
+      compliance_pipeline_configuration
       container_scanning
       credentials_inventory
       custom_roles

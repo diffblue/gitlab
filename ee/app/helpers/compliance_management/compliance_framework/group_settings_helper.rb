@@ -13,6 +13,8 @@ module ComplianceManagement
           data[:group_path] = group.root_ancestor.full_path
           data[:can_add_edit] = group.subgroup? ? "false" : "true"
           data[:pipeline_configuration_full_path_enabled] = pipeline_configuration_full_path_enabled?(group).to_s
+          data[:pipeline_configuration_enabled] =
+            group.licensed_feature_available?(:compliance_pipeline_configuration).to_s
           data[:graphql_field_name] = ComplianceManagement::Framework.name
         end
       end
@@ -20,7 +22,7 @@ module ComplianceManagement
       private
 
       def pipeline_configuration_full_path_enabled?(group)
-        can?(current_user, :admin_compliance_pipeline_configuration, group)
+        can?(current_user, :admin_compliance_pipeline_configuration, group).to_s
       end
     end
   end

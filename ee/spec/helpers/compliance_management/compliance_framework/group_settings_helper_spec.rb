@@ -2,12 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe ComplianceManagement::ComplianceFramework::GroupSettingsHelper do
+RSpec.describe ComplianceManagement::ComplianceFramework::GroupSettingsHelper, feature_category: :compliance_management do
   let_it_be_with_refind(:group) { create(:group) }
   let_it_be(:current_user) { build(:admin) }
 
   before do
     allow(helper).to receive(:current_user) { current_user }
+    stub_licensed_features(compliance_pipeline_configuration: true)
   end
 
   describe '#show_compliance_frameworks?' do
@@ -46,8 +47,19 @@ RSpec.describe ComplianceManagement::ComplianceFramework::GroupSettingsHelper do
         [:group_path, group.full_path],
         [:can_add_edit, 'true'],
         [:pipeline_configuration_full_path_enabled, 'true'],
+        [:pipeline_configuration_enabled, 'true'],
         [:graphql_field_name, ComplianceManagement::Framework.name]
       )
+    end
+
+    context 'with out access to pipeline_configuration_enabled feature' do
+      before do
+        stub_licensed_features(compliance_pipeline_configuration: false)
+      end
+
+      it {
+        is_expected.to include(pipeline_configuration_enabled: "false")
+      }
     end
 
     context 'group is a subgroup' do

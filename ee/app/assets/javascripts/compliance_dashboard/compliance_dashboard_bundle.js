@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
+import { parseBoolean } from '~/lib/utils/common_utils';
 
 import createDefaultClient from '~/lib/graphql';
 
@@ -18,6 +19,7 @@ export default () => {
     groupPath,
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
+    pipelineConfigurationEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -41,7 +43,8 @@ export default () => {
     provide: {
       groupPath,
       canAddEdit,
-      pipelineConfigurationFullPathEnabled,
+      pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
+      pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
     },
     render: (createElement) =>
       createElement(ReportsApp, {

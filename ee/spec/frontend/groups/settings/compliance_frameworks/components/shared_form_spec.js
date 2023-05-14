@@ -15,6 +15,7 @@ describe('SharedForm', () => {
   };
   const defaultProvideData = {
     pipelineConfigurationFullPathEnabled: true,
+    pipelineConfigurationEnabled: true,
   };
 
   const findForm = () => wrapper.findComponent(GlForm);
@@ -29,6 +30,10 @@ describe('SharedForm', () => {
   const findColorPicker = () => wrapper.findComponent(ColorPicker);
   const findSubmitBtn = () => wrapper.find('[data-testid="submit-btn"]');
   const findCancelBtn = () => wrapper.find('[data-testid="cancel-btn"]');
+  const findDisabledPopover = () =>
+    wrapper.find('[data-testid="disabled-pipeline-configuration-input-popover"]');
+  const findDisabledPipelineConfigurationGroup = () =>
+    wrapper.find('[data-testid="disabled-pipeline-configuration-input-group"]');
 
   function createComponent(props = {}, provide = {}) {
     return shallowMount(SharedForm, {
@@ -62,6 +67,7 @@ describe('SharedForm', () => {
       expect(findColorPicker().exists()).toBe(true);
       expect(findSubmitBtn().exists()).toBe(true);
       expect(findCancelBtn().exists()).toBe(true);
+      expect(findDisabledPipelineConfigurationGroup().exists()).toBe(false);
     });
 
     it('sets the submit button text from the property', () => {
@@ -78,6 +84,14 @@ describe('SharedForm', () => {
         expect(findPipelineConfigurationGroup().exists()).toBe(enabled);
       },
     );
+
+    describe('When pipeline configuration is not enabled', () => {
+      it('renders disabled pipeline configuration input', () => {
+        wrapper = createComponent({}, { pipelineConfigurationEnabled: false });
+
+        expect(findDisabledPopover().exists()).toBe(true);
+      });
+    });
   });
 
   describe('Validation', () => {
