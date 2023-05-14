@@ -98,7 +98,7 @@ module QA
           # Remove the enforcement by starting a free Ultimate Trial
           Gitlab::Page::Trials::New.perform(&:visit)
           # due to invited group used here we have more than one group so we have to select
-          Flow::Trial.register_for_trial(group: private_group)
+          register_for_trial(group: private_group)
           private_group.visit!
 
           aggregate_failures do
@@ -124,7 +124,7 @@ module QA
                   .within(max_attempts: 5, sleep_interval: 2, reload_page: page)
 
           Gitlab::Page::Trials::New.perform(&:visit)
-          Flow::Trial.register_for_trial
+          register_for_trial
           private_group.visit!
 
           expect(page).not_to have_content(notifications(private_group, :limit_reached_enforcement_msg))
@@ -166,6 +166,13 @@ module QA
       end
 
       private
+
+      def register_for_trial(group: nil)
+        Flow::Trial.register_for_trial(group: group)
+        Page::Alert::FreeTrial.perform do |free_trial_alert|
+          expect(free_trial_alert.trial_activated_message).to have_text('Congratulations, your free trial is activated')
+        end
+      end
 
       # group_owner is also counted, free user member limit for a new private group is 5
       def create_private_group_with_members
