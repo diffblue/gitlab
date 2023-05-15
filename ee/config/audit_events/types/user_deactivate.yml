@@ -1,0 +1,8 @@
+name: user_deactivate
+description: Event triggered on user deactivate action
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/13473
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117776
+feature_category: "user_management"
+milestone: "16.0"
+saved_to_database: true
+streamed: true

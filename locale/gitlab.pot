@@ -48592,6 +48592,9 @@ msgstr ""
 msgid "User does not have permission to create a Security Policy project."
 msgstr ""
 
+msgid "User has already been deactivated"
+msgstr ""
+
 msgid "User identity was successfully created."
 msgstr ""
 
