@@ -255,97 +255,58 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
   describe '#enforce_limit?' do
     before do
-      stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
       stub_application_setting(
         enforce_namespace_storage_limit: true,
         automatic_purchased_storage_allocation: true
       )
     end
 
-    around do |example|
-      travel_to(current_date) { example.run }
-    end
-
     subject { model.enforce_limit? }
 
-    shared_examples ':namespace_storage_limit_bypass_date_check enabled' do
-      before do
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: true)
-      end
+    context 'when no subscription is found for namespace' do
+      let(:namespace_without_subscription) { create(:namespace) }
+      let(:model) { described_class.new(namespace_without_subscription) }
 
       it { is_expected.to eq(true) }
     end
 
-    context 'when current date is before enforcement date' do
-      let(:current_date) { ::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE - 1.day }
+    context 'when subscription is for opensource plan' do
+      let!(:subscription) do
+        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:opensource_plan))
+      end
 
       it { is_expected.to eq(false) }
-
-      it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
     end
 
-    context 'when current date is on or after enforcement date' do
-      let(:current_date) { ::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE }
-
-      context 'when no subscription is found for namespace' do
-        let(:namespace_without_subscription) { create(:namespace) }
-        let(:model) { described_class.new(namespace_without_subscription) }
-
-        it { is_expected.to eq(true) }
+    context 'when subscription is for a free plan' do
+      let!(:subscription) do
+        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:free_plan))
       end
 
-      context 'when subscription is for opensource plan' do
-        let!(:subscription) do
-          create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:opensource_plan))
-        end
+      it { is_expected.to eq(true) }
 
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when subscription start date is before effective date' do
-        let(:start_date) { ::Namespaces::Storage::Enforcement::EFFECTIVE_DATE - 1.day }
-
+      context 'when enforce_storage_limit_for_free is disabled' do
         before do
-          allow(subscription).to receive(:start_date).and_return(start_date)
+          stub_feature_flags(enforce_storage_limit_for_free: false)
         end
 
         it { is_expected.to eq(false) }
       end
+    end
 
-      context 'when subscription is for a free plan' do
-        let!(:subscription) do
-          create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:free_plan))
-        end
-
-        context 'when enforce_storage_limit_for_free is disabled' do
-          before do
-            stub_feature_flags(enforce_storage_limit_for_free: false)
-          end
-
-          it { is_expected.to eq(false) }
-        end
-
-        context 'when subscription start date is on or after effective date' do
-          it { is_expected.to eq(true) }
-        end
-
-        it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
+    context 'when subscription is for a paid plan' do
+      let!(:subscription) do
+        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:ultimate_plan))
       end
 
-      context 'when subscription is for a paid plan' do
-        context 'when enforce_storage_limit_for_paid is disabled' do
-          before do
-            stub_feature_flags(enforce_storage_limit_for_paid: false)
-          end
+      it { is_expected.to eq(true) }
 
-          it { is_expected.to eq(false) }
+      context 'when enforce_storage_limit_for_paid is disabled' do
+        before do
+          stub_feature_flags(enforce_storage_limit_for_paid: false)
         end
 
-        context 'when subscription start date is on or after effective date' do
-          it { is_expected.to eq(true) }
-        end
-
-        it_behaves_like ':namespace_storage_limit_bypass_date_check enabled'
+        it { is_expected.to eq(false) }
       end
     end
   end

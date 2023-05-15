@@ -11,15 +11,12 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
       stub_feature_flags(
         namespace_storage_limit: group,
         enforce_storage_limit_for_free: group,
-        enforce_storage_limit_for_paid: group,
-        namespace_storage_limit_bypass_date_check: false
+        enforce_storage_limit_for_paid: group
       )
       stub_application_setting(
         enforce_namespace_storage_limit: true,
         automatic_purchased_storage_allocation: true
       )
-      stub_enforcement_date(Date.today)
-      stub_effective_date(group.gitlab_subscription&.start_date || 1.year.ago.to_date)
     end
 
     context 'with a free plan' do
@@ -31,14 +28,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
       it 'returns true when the enforce_storage_limit_for_paid feature flag is disabled' do
         stub_feature_flags(enforce_storage_limit_for_paid: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns true when the namespace_storage_limit_bypass_date_check flag is enabled regardless of dates' do
-        stub_enforcement_date(Date.tomorrow)
-        stub_effective_date(group.gitlab_subscription.start_date + 1.day)
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: group)
 
         expect(described_class.enforce_limit?(group)).to eq(true)
       end
@@ -66,18 +55,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
         expect(described_class.enforce_limit?(group)).to eq(false)
       end
-
-      it 'returns false if the enforcement date is in the future' do
-        stub_enforcement_date(Date.tomorrow)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false if the effective date is after the subscription start date' do
-        stub_effective_date(group.gitlab_subscription.start_date + 1.day)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
     end
 
     context 'with a paid plan' do
@@ -89,14 +66,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
       it 'returns true when the enforce_storage_limit_for_free feature flag is disabled' do
         stub_feature_flags(enforce_storage_limit_for_free: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns true when the namespace_storage_limit_bypass_date_check flag is enabled regardless of dates' do
-        stub_enforcement_date(Date.tomorrow)
-        stub_effective_date(group.gitlab_subscription.start_date + 1.day)
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: group)
 
         expect(described_class.enforce_limit?(group)).to eq(true)
       end
@@ -124,18 +93,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
         expect(described_class.enforce_limit?(group)).to eq(false)
       end
-
-      it 'returns false if the enforcement date is in the future' do
-        stub_enforcement_date(Date.tomorrow)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false if the effective date is after the subscription start date' do
-        stub_effective_date(group.gitlab_subscription.start_date + 1.day)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
     end
 
     context 'with an open source plan' do
@@ -155,14 +112,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
       it 'returns true when the enforce_storage_limit_for_paid feature flag is disabled' do
         stub_feature_flags(enforce_storage_limit_for_paid: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns true when the namespace_storage_limit_bypass_date_check flag is enabled regardless of dates' do
-        stub_enforcement_date(Date.tomorrow)
-        stub_effective_date(Date.tomorrow)
-        stub_feature_flags(namespace_storage_limit_bypass_date_check: group)
 
         expect(described_class.enforce_limit?(group)).to eq(true)
       end
@@ -187,18 +136,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
 
       it 'returns false when the automatic_purchased_storage_allocation application setting is disabled' do
         stub_application_setting(automatic_purchased_storage_allocation: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false if the enforcement date is in the future' do
-        stub_enforcement_date(Date.tomorrow)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false if the effective date is in the future' do
-        stub_effective_date(Date.tomorrow)
 
         expect(described_class.enforce_limit?(group)).to eq(false)
       end
@@ -287,25 +224,5 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
         end
       end
     end
-  end
-
-  describe 'ENFORCEMENT_DATE' do
-    it 'is 100 years from today' do
-      expect(described_class::ENFORCEMENT_DATE).to eq(100.years.from_now.to_date)
-    end
-  end
-
-  describe 'EFFECTIVE_DATE' do
-    it 'is 99 years from today' do
-      expect(described_class::EFFECTIVE_DATE).to eq(99.years.from_now.to_date)
-    end
-  end
-
-  def stub_enforcement_date(date)
-    stub_const('::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', date)
-  end
-
-  def stub_effective_date(date)
-    stub_const('::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', date)
   end
 end

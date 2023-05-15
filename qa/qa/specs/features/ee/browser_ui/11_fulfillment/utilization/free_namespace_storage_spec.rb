@@ -44,7 +44,6 @@ module QA
 
         Runtime::Feature.enable(:namespace_storage_limit, group: free_plan_group)
         Runtime::Feature.enable(:enforce_storage_limit_for_free, group: free_plan_group)
-        Runtime::Feature.enable(:namespace_storage_limit_bypass_date_check, group: free_plan_group)
 
         Page::Group::Menu.perform(&:go_to_usage_quotas)
       end
