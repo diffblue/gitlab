@@ -1,3 +1,4 @@
+import htmlEeMrMultipleAssignees from 'test_fixtures/ee/merge_requests/merge_request_with_multiple_assignees_feature.html';
 import {
   createInputsModelExpectation,
   createAssignedExpectation,
@@ -12,9 +13,7 @@ import {
 } from 'jest/users_select/test_helper';
 
 describe('EE ~/users_select/index with multiple assignees', () => {
-  const context = createTestContext({
-    fixturePath: 'ee/merge_requests/merge_request_with_multiple_assignees_feature.html',
-  });
+  const context = createTestContext({ fixture: htmlEeMrMultipleAssignees });
 
   beforeEach(() => {
     context.setup();
