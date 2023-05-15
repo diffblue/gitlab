@@ -31,6 +31,7 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
       post_graphql(query, current_user: user)
 
       expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :title)).to eq('Dashboard Example 1')
+      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :slug)).to eq('dashboard_example_1')
     end
 
     context 'when feature flag is disabled' do
