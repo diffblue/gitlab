@@ -8,7 +8,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
 
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:another_project) { create(:project, :repository, :public) }
-  let_it_be(:rule) { create(:external_status_check, project: project) }
+  let_it_be(:rule) { create(:external_status_check, project: project, external_url: 'https://mock.api.test/status?token=123456789') }
   let_it_be(:rule_2) { create(:external_status_check, project: project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:merge_request) { create(:merge_request, source_project: project, target_project: project, author: user) }
@@ -21,9 +21,40 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
   subject { get api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks", user), params: { external_status_check_id: rule.id, sha: sha } }
 
   describe 'GET :id/merge_requests/:merge_request_iid/status_checks' do
+    before do
+      stub_licensed_features(external_status_checks: true)
+    end
+
+    context 'external url response' do
+      context 'when access level is at least `reporter`' do
+        before do
+          project.add_member(user, :reporter)
+        end
+
+        it 'is empty' do
+          subject
+
+          expect(json_response[0]["external_url"]).to eq('')
+          expect(json_response[1]["external_url"]).to eq('')
+        end
+      end
+
+      context 'when access level is at least `developer`' do
+        before do
+          project.add_member(user, :developer)
+        end
+
+        it 'has excluded the sensitive token url param' do
+          subject
+
+          expect(json_response[0]["external_url"]).to eq('https://mock.api.test/status')
+          expect(json_response[1]["external_url"]).to eq(rule_2.external_url)
+        end
+      end
+    end
+
     context 'when current_user has access' do
       before do
-        stub_licensed_features(external_status_checks: true)
         project.add_member(user, :maintainer)
       end
 
