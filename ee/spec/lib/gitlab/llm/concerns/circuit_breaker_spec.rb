@@ -18,25 +18,23 @@ RSpec.describe Gitlab::Llm::Concerns::CircuitBreaker, :clean_gitlab_redis_rate_l
           # Do nothing but successful.
         end
       end
-
-      private
-
-      def service_name
-        'dummy_service'
-      end
     end
   end
 
   subject { dummy_class.new }
 
+  before do
+    stub_const('DummyService', dummy_class)
+  end
+
   describe '#circuit' do
     it 'returns nil value' do
-      expect(Circuitbox).to receive(:circuit).with('dummy_service', anything).and_call_original
+      expect(Circuitbox).to receive(:circuit).with('DummyService', anything).and_call_original
       expect(subject.dummy_method).to be_nil
     end
 
     it 'does not raise an error' do
-      expect(Circuitbox).to receive(:circuit).with('dummy_service', anything).and_call_original
+      expect(Circuitbox).to receive(:circuit).with('DummyService', anything).and_call_original
       expect { subject.dummy_method }.not_to raise_error
     end
 
@@ -100,15 +98,6 @@ RSpec.describe Gitlab::Llm::Concerns::CircuitBreaker, :clean_gitlab_redis_rate_l
     it 'runs the code block within the Circuitbox circuit' do
       expect(circuit).to receive(:run).with(exception: false, &block)
       subject.run_with_circuit(&block)
-    end
-  end
-
-  describe '#service_name' do
-    it 'raises NotImplementedError' do
-      instance = Object.new
-      instance.extend(described_class)
-
-      expect { instance.send(:service_name) }.to raise_error(NotImplementedError)
     end
   end
 end

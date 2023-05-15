@@ -192,7 +192,7 @@ The CircuitBreaker concern is a reusable module that you can include in any clas
 
 ### Use CircuitBreaker
 
-To use the CircuitBreaker concern, you need to include it in a class and define the `service_name` method, which should return the name of the service that the circuit breaker is protecting. For example:
+To use the CircuitBreaker concern, you need to include it in a class. For example:
 
 ```ruby
 class MyService
@@ -204,12 +204,6 @@ class MyService
 
       raise MyCustomError
     end
-  end
-
-  private
-
-  def service_name
-    my_service
   end
 end
 ```
@@ -236,7 +230,7 @@ This is the exception class that triggers the circuit breaker when raised by the
 By default, the `CircuitBreaker` concern uses `StandardError`.
 
 NOTE:
-The service_name method must be implemented by the including class to provide a unique identifier for the service being protected. The `CircuitBreaker` module depends on the `Circuitbox` gem to provide the circuit breaker implementation.
+The `CircuitBreaker` module depends on the `Circuitbox` gem to provide the circuit breaker implementation. By default, the service name is inferred from the class name where the concern module is included. Override the `service_name` method if the name needs to be different.
 
 ### Testing
 

@@ -198,10 +198,6 @@ module Gitlab
           end
         end
         # rubocop:enable CodeReuse/ActiveRecord
-
-        def service_name
-          'open_ai'
-        end
       end
     end
   end
