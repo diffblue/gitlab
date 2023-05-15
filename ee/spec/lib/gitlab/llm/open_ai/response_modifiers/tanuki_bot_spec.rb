@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Llm::OpenAi::ResponseModifiers::TanukiBot, feature_category: :global_search do
   let(:text) { 'some ai response text' }
   let(:ai_response) { { choices: [{ text: "#{text} ATTRS: CNT-IDX-#{record_id}" }] }.to_json }
-  let(:response) { { msg: text, sources: sources }.with_indifferent_access }
+  let(:response) { { content: text, sources: sources }.with_indifferent_access }
 
   subject { ::Gitlab::Json.parse(described_class.new(ai_response).response_body) }
 

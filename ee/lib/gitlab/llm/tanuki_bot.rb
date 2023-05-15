@@ -158,7 +158,7 @@ module Gitlab
 
       def empty_response
         {
-          msg: _("I do not know."),
+          content: _("I do not know."),
           sources: []
         }
       end
