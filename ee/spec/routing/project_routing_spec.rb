@@ -28,10 +28,6 @@ RSpec.describe 'EE-specific project routing' do
     it "to #destroy" do
       expect(delete("/gitlab/gitlabhq/-/vulnerability_feedback/1")).to route_to('projects/vulnerability_feedback#destroy', namespace_id: 'gitlab', project_id: 'gitlabhq', id: '1')
     end
-
-    describe 'legacy routing' do
-      it_behaves_like 'redirecting a legacy path', "/gitlab/gitlabhq/vulnerability_feedback", "/gitlab/gitlabhq/-/vulnerability_feedback"
-    end
   end
 
   # security_namespace_project_pipeline GET /:project_id/pipelines/:id/security(.:format)
@@ -48,14 +44,14 @@ RSpec.describe 'EE-specific project routing' do
   end
 
   describe Projects::ProtectedEnvironmentsController, 'routing' do
-    describe 'legacy routing' do
-      it_behaves_like 'redirecting a legacy path', "/gitlab/gitlabhq/protected_environments", "/gitlab/gitlabhq/-/protected_environments"
+    it "to #create" do
+      expect(post("/gitlab/gitlabhq/-/protected_environments")).to route_to('projects/protected_environments#create', namespace_id: 'gitlab', project_id: 'gitlabhq')
     end
   end
 
   describe Projects::AuditEventsController, 'routing' do
-    describe 'legacy routing' do
-      it_behaves_like 'redirecting a legacy path', "/gitlab/gitlabhq/audit_events", "/gitlab/gitlabhq/-/audit_events"
+    it "to #index" do
+      expect(get("/gitlab/gitlabhq/-/audit_events")).to route_to('projects/audit_events#index', namespace_id: 'gitlab', project_id: 'gitlabhq')
     end
   end
 
