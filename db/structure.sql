@@ -15321,6 +15321,18 @@ CREATE SEQUENCE design_management_repositories_id_seq
 
 ALTER SEQUENCE design_management_repositories_id_seq OWNED BY design_management_repositories.id;
 
+CREATE TABLE design_management_repository_states (
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    design_management_repository_id bigint NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    verification_checksum bytea,
+    verification_failure text,
+    CONSTRAINT check_bf1387c28b CHECK ((char_length(verification_failure) <= 255))
+);
+
 CREATE TABLE design_management_versions (
     id bigint NOT NULL,
     sha bytea NOT NULL,
@@ -27048,6 +27060,9 @@ ALTER TABLE ONLY design_management_designs_versions
 ALTER TABLE ONLY design_management_repositories
     ADD CONSTRAINT design_management_repositories_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY design_management_repository_states
+    ADD CONSTRAINT design_management_repository_states_pkey PRIMARY KEY (design_management_repository_id);
+
 ALTER TABLE ONLY design_management_versions
     ADD CONSTRAINT design_management_versions_pkey PRIMARY KEY (id);
 
@@ -30561,6 +30576,14 @@ CREATE INDEX index_design_management_designs_versions_on_event ON design_managem
 CREATE INDEX index_design_management_designs_versions_on_version_id ON design_management_designs_versions USING btree (version_id);
 
 CREATE UNIQUE INDEX index_design_management_repositories_on_project_id ON design_management_repositories USING btree (project_id);
+
+CREATE INDEX index_design_management_repository_states_failed_verification ON design_management_repository_states USING btree (verification_retry_at NULLS FIRST) WHERE (verification_state = 3);
+
+CREATE INDEX index_design_management_repository_states_needs_verification ON design_management_repository_states USING btree (verification_state) WHERE ((verification_state = 0) OR (verification_state = 3));
+
+CREATE INDEX index_design_management_repository_states_on_verification_state ON design_management_repository_states USING btree (verification_state);
+
+CREATE INDEX index_design_management_repository_states_pending_verification ON design_management_repository_states USING btree (verified_at NULLS FIRST) WHERE (verification_state = 0);
 
 CREATE INDEX index_design_management_versions_on_author_id ON design_management_versions USING btree (author_id) WHERE (author_id IS NOT NULL);
 
@@ -37024,6 +37047,9 @@ ALTER TABLE ONLY requirements_management_test_reports
 
 ALTER TABLE ONLY pool_repositories
     ADD CONSTRAINT fk_rails_d2711daad4 FOREIGN KEY (source_project_id) REFERENCES projects(id) ON DELETE SET NULL;
+
+ALTER TABLE ONLY design_management_repository_states
+    ADD CONSTRAINT fk_rails_d2a258cc5a FOREIGN KEY (design_management_repository_id) REFERENCES design_management_repositories(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY web_hooks
     ADD CONSTRAINT fk_rails_d35697648e FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
