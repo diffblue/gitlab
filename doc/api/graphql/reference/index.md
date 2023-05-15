@@ -1785,6 +1785,10 @@ Input type: `CreateAlertIssueInput`
 
 ### `Mutation.createAnnotation`
 
+WARNING:
+**Deprecated** in 16.0.
+Underlying feature was removed in 16.0.
+
 Input type: `CreateAnnotationInput`
 
 #### Arguments
@@ -2592,6 +2596,10 @@ Input type: `DastSiteValidationRevokeInput`
 | <a id="mutationdastsitevalidationrevokeerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.deleteAnnotation`
+
+WARNING:
+**Deprecated** in 16.0.
+Underlying feature was removed in 16.0.
 
 Input type: `DeleteAnnotationInput`
 
