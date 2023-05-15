@@ -33032,8 +33032,6 @@ CREATE UNIQUE INDEX issue_user_mentions_on_issue_id_index ON issue_user_mentions
 
 CREATE UNIQUE INDEX kubernetes_namespaces_cluster_and_namespace ON clusters_kubernetes_namespaces USING btree (cluster_id, namespace);
 
-CREATE INDEX merge_request_mentions_temp_index ON merge_requests USING btree (id) WHERE ((description ~~ '%@%'::text) OR ((title)::text ~~ '%@%'::text));
-
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_and_note_id_index ON merge_request_user_mentions USING btree (merge_request_id, note_id);
 
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_index ON merge_request_user_mentions USING btree (merge_request_id) WHERE (note_id IS NULL);
