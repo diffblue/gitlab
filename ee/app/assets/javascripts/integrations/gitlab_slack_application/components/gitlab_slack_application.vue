@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlIcon, GlLink } from '@gitlab/ui';
 import { createAlert } from '~/alert';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { helpPagePath } from '~/helpers/help_page_helper';
 
 import { addProjectToSlack } from '../api';
@@ -62,7 +62,7 @@ export default {
     },
     addToSlack() {
       addProjectToSlack(this.slackLinkPath, this.selectedProject.id)
-        .then((response) => redirectTo(response.data.add_to_slack_link))
+        .then((response) => redirectTo(response.data.add_to_slack_link)) // eslint-disable-line import/no-deprecated
         .catch(() =>
           createAlert({
             message: i18n.slackErrorMessage,

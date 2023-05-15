@@ -1,7 +1,7 @@
 <script>
 import { GlModal, GlSprintf, GlLink } from '@gitlab/ui';
 import ClipboardJS from 'clipboard';
-import { getBaseURL, setUrlParams, redirectTo } from '~/lib/utils/url_utility';
+import { getBaseURL, setUrlParams, redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { sprintf, s__, __ } from '~/locale';
 import { CODE_SNIPPET_SOURCE_URL_PARAM } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
@@ -80,6 +80,7 @@ export default {
       clipboard.on('success', () => {
         if (andRedirect) {
           const url = new URL(this.ciYamlEditUrl, getBaseURL());
+          // eslint-disable-next-line import/no-deprecated
           redirectTo(
             setUrlParams(
               {

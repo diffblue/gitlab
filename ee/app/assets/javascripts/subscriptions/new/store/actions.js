@@ -3,7 +3,7 @@ import { PAYMENT_FORM_ID } from 'ee/subscriptions/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { s__, sprintf } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
 import { isInvalidPromoCodeError } from 'ee/subscriptions/new/utils';
@@ -268,7 +268,7 @@ export const confirmOrder = ({ getters, dispatch, commit }) => {
 };
 
 export const confirmOrderSuccess = (_, { location }) => {
-  redirectTo(location);
+  redirectTo(location); // eslint-disable-line import/no-deprecated
 };
 
 export const confirmOrderError = ({ commit }) => {

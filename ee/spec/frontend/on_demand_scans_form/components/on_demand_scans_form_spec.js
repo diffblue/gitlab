@@ -17,7 +17,7 @@ import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graph
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import RefSelector from '~/ref/components/ref_selector.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
@@ -334,7 +334,7 @@ describe('OnDemandScansForm', () => {
           });
 
           it('redirects to the URL provided in the response', () => {
-            expect(redirectTo).toHaveBeenCalledWith(redirectPath);
+            expect(redirectTo).toHaveBeenCalledWith(redirectPath); // eslint-disable-line import/no-deprecated
           });
 
           it('does not show an alert', () => {
@@ -453,7 +453,7 @@ describe('OnDemandScansForm', () => {
     });
 
     it('redirects to profiles library', () => {
-      expect(redirectTo).toHaveBeenCalledWith(onDemandScansPath);
+      expect(redirectTo).toHaveBeenCalledWith(onDemandScansPath); // eslint-disable-line import/no-deprecated
     });
   });
 

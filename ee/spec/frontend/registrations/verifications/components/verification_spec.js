@@ -1,6 +1,6 @@
 import { GlButton, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import Verification from 'ee/registrations/verification/components/verification.vue';
 import {
@@ -41,7 +41,7 @@ describe('Verification', () => {
   const findPopoverClose = () => wrapper.findComponent({ ref: 'popoverClose' });
   const findSkipConfirmationLink = () => wrapper.findComponent({ ref: 'skipConfirmationLink' });
 
-  const expectRedirect = () => expect(redirectTo).toHaveBeenCalledWith(NEXT_STEP_URL);
+  const expectRedirect = () => expect(redirectTo).toHaveBeenCalledWith(NEXT_STEP_URL); // eslint-disable-line import/no-deprecated
   const expectTrackingOfEvent = (event) => {
     expect(trackingSpy).toHaveBeenCalledWith(undefined, event, {
       label: EVENT_LABEL,

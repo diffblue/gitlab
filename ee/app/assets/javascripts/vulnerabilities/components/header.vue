@@ -9,7 +9,7 @@ import { TYPENAME_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import download from '~/lib/utils/downloader';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import UsersCache from '~/lib/utils/users_cache';
 import { s__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -195,7 +195,7 @@ export default {
             ? data.merge_request_links.at(-1).merge_request_path
             : data.merge_request_path;
 
-          redirectTo(mergeRequestPath);
+          redirectTo(mergeRequestPath); // eslint-disable-line import/no-deprecated
         })
         .catch(() => {
           this.isProcessingAction = false;

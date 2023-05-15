@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import setWindowLocation from 'helpers/set_window_location_helper';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { __ } from '~/locale';
 import MembersFilteredSearchBar from '~/members/components/filter_sort/members_filtered_search_bar.vue';
 import { MEMBER_TYPES } from '~/members/constants';
@@ -87,7 +87,7 @@ describe('MembersFilteredSearchBar', () => {
         { type: FILTERED_SEARCH_TOKEN_ENTERPRISE.type, value: { data: true, operator: '=' } },
       ]);
 
-      expect(redirectTo).toHaveBeenCalledWith('https://localhost/?enterprise=true');
+      expect(redirectTo).toHaveBeenCalledWith('https://localhost/?enterprise=true'); // eslint-disable-line import/no-deprecated
     });
   });
 
@@ -119,7 +119,7 @@ describe('MembersFilteredSearchBar', () => {
             },
           ]);
 
-          expect(redirectTo).toHaveBeenCalledWith('https://localhost/?user_type=service_account');
+          expect(redirectTo).toHaveBeenCalledWith('https://localhost/?user_type=service_account'); // eslint-disable-line import/no-deprecated
         });
       });
     });

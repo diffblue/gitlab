@@ -8,7 +8,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
@@ -87,7 +87,7 @@ export default {
           this.handleActionError(errors[0]);
           this.runningScanId = null;
         } else {
-          redirectTo(pipelineUrl);
+          redirectTo(pipelineUrl); // eslint-disable-line import/no-deprecated
         }
       } catch (exception) {
         this.handleActionError(this.$options.i18n.runScanError, exception);

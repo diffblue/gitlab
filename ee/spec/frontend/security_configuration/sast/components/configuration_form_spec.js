@@ -6,7 +6,7 @@ import DynamicFields from 'ee/security_configuration/components/dynamic_fields.v
 import ExpandableSection from 'ee/security_configuration/components/expandable_section.vue';
 import AnalyzerConfiguration from 'ee/security_configuration/sast/components/analyzer_configuration.vue';
 import ConfigurationForm from 'ee/security_configuration/sast/components/configuration_form.vue';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import configureSastMutation from '~/security_configuration/graphql/configure_sast.mutation.graphql';
 import { makeEntities, makeSastCiConfiguration } from '../../helpers';
 
@@ -260,7 +260,7 @@ describe('ConfigurationForm component', () => {
         beforeEach(fulfillPendingPromises);
 
         it('does not call redirectTo', () => {
-          expect(redirectTo).not.toHaveBeenCalled();
+          expect(redirectTo).not.toHaveBeenCalled(); // eslint-disable-line import/no-deprecated
         });
 
         it('displays an alert message', () => {
@@ -313,7 +313,7 @@ describe('ConfigurationForm component', () => {
         beforeEach(fulfillPendingPromises);
 
         it('calls redirectTo', () => {
-          expect(redirectTo).toHaveBeenCalledWith(newMergeRequestPath);
+          expect(redirectTo).toHaveBeenCalledWith(newMergeRequestPath); // eslint-disable-line import/no-deprecated
         });
 
         it('does not display an alert message', () => {

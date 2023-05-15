@@ -1,6 +1,6 @@
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import {
-  redirectTo,
+  redirectTo, // eslint-disable-line import/no-deprecated
   setUrlParams,
   relativePathToAbsolute,
   getBaseURL,
@@ -20,7 +20,7 @@ export const returnToPreviousPageFactory = ({
   const redirectPath = allowedPaths.find((allowedPath) => referrerPath === allowedPath);
 
   // when previous page is not an allowed path
-  if (!redirectPath) return redirectTo(profilesLibraryPath);
+  if (!redirectPath) return redirectTo(profilesLibraryPath); // eslint-disable-line import/no-deprecated
 
   // otherwise redirect to the previous page along
   // with the given profile id
@@ -31,5 +31,5 @@ export const returnToPreviousPageFactory = ({
       )
     : redirectPath;
 
-  return redirectTo(redirectPathWithId);
+  return redirectTo(redirectPathWithId); // eslint-disable-line import/no-deprecated
 };
