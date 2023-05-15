@@ -12,6 +12,14 @@ module API
         def status
           object.status(options[:merge_request], options[:sha])
         end
+
+        def external_url
+          if options[:current_user].can?(:developer_access, options[:merge_request].project)
+            return object.external_url[/[^?]+/]
+          end
+
+          ''
+        end
       end
     end
   end

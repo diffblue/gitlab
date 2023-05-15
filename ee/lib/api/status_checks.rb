@@ -158,7 +158,7 @@ module API
             merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
             ::Gitlab::PollingInterval.set_api_header(self, interval: 10_000)
-            present(paginate(user_project.external_status_checks.applicable_to_branch(merge_request.target_branch)), with: Entities::MergeRequests::StatusCheck, merge_request: merge_request, sha: merge_request.diff_head_sha)
+            present(paginate(user_project.external_status_checks.applicable_to_branch(merge_request.target_branch)), with: Entities::MergeRequests::StatusCheck, merge_request: merge_request, sha: merge_request.diff_head_sha, current_user: current_user)
           end
 
           desc 'Retry failed external status check' do
