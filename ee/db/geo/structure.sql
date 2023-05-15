@@ -130,6 +130,39 @@ CREATE SEQUENCE dependency_proxy_blob_registry_id_seq
 
 ALTER SEQUENCE dependency_proxy_blob_registry_id_seq OWNED BY dependency_proxy_blob_registry.id;
 
+CREATE TABLE design_management_repository_registry (
+    id bigint NOT NULL,
+    design_management_repository_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    last_synced_at timestamp with time zone,
+    retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    retry_count smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    force_to_redownload boolean DEFAULT false NOT NULL,
+    missing_on_primary boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    last_sync_failure text,
+    CONSTRAINT check_0fb2f801b1 CHECK ((char_length(last_sync_failure) <= 255)),
+    CONSTRAINT check_5fc5c30cb0 CHECK ((char_length(verification_failure) <= 255))
+);
+
+CREATE SEQUENCE design_management_repository_registry_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE design_management_repository_registry_id_seq OWNED BY design_management_repository_registry.id;
+
 CREATE TABLE design_registry (
     id integer NOT NULL,
     project_id integer NOT NULL,
@@ -611,6 +644,8 @@ ALTER TABLE ONLY dependency_proxy_blob_registry ALTER COLUMN id SET DEFAULT next
 
 ALTER TABLE ONLY dependency_proxy_manifest_registry ALTER COLUMN id SET DEFAULT nextval('dependency_proxy_manifest_registry_id_seq'::regclass);
 
+ALTER TABLE ONLY design_management_repository_registry ALTER COLUMN id SET DEFAULT nextval('design_management_repository_registry_id_seq'::regclass);
+
 ALTER TABLE ONLY design_registry ALTER COLUMN id SET DEFAULT nextval('design_registry_id_seq'::regclass);
 
 ALTER TABLE ONLY event_log_states ALTER COLUMN event_id SET DEFAULT nextval('event_log_states_event_id_seq'::regclass);
@@ -660,6 +695,9 @@ ALTER TABLE ONLY dependency_proxy_blob_registry
 
 ALTER TABLE ONLY dependency_proxy_manifest_registry
     ADD CONSTRAINT dependency_proxy_manifest_registry_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY design_management_repository_registry
+    ADD CONSTRAINT design_management_repository_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY design_registry
     ADD CONSTRAINT design_registry_pkey PRIMARY KEY (id);
@@ -736,6 +774,12 @@ CREATE INDEX dependency_proxy_manifest_registry_needs_verification ON dependency
 
 CREATE INDEX dependency_proxy_manifest_registry_pending_verification ON dependency_proxy_manifest_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
+CREATE INDEX design_management_repository_registry_failed_verification ON design_management_repository_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX design_management_repository_registry_needs_verification ON design_management_repository_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX design_management_repository_registry_pending_verification ON design_management_repository_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
 CREATE INDEX file_registry_failed_verification ON file_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
 CREATE INDEX file_registry_needs_verification ON file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
@@ -788,11 +832,17 @@ CREATE INDEX index_dependency_proxy_manifest_registry_on_retry_at ON dependency_
 
 CREATE INDEX index_dependency_proxy_manifest_registry_on_state ON dependency_proxy_manifest_registry USING btree (state);
 
+CREATE INDEX index_design_management_repository_registry_on_retry_at ON design_management_repository_registry USING btree (retry_at);
+
+CREATE INDEX index_design_management_repository_registry_on_state ON design_management_repository_registry USING btree (state);
+
 CREATE UNIQUE INDEX index_design_registry_on_project_id ON design_registry USING btree (project_id);
 
 CREATE INDEX index_design_registry_on_retry_at ON design_registry USING btree (retry_at);
 
 CREATE INDEX index_design_registry_on_state ON design_registry USING btree (state);
+
+CREATE UNIQUE INDEX index_design_repo_registry_on_design_repo_id ON design_management_repository_registry USING btree (design_management_repository_id);
 
 CREATE INDEX index_file_registry_on_retry_at ON file_registry USING btree (retry_at);
 
