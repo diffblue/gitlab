@@ -18364,7 +18364,8 @@ CREATE TABLE milestones (
     description_html text,
     start_date date,
     cached_markdown_version integer,
-    group_id integer
+    group_id integer,
+    lock_version integer DEFAULT 0 NOT NULL
 );
 
 CREATE SEQUENCE milestones_id_seq

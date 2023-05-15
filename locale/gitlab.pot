@@ -42447,6 +42447,12 @@ msgstr ""
 msgid "Someone edited this %{issueType} at the same time you did. The description has been updated and you will need to make your changes again."
 msgstr ""
 
+msgid "Someone edited this %{model_name} at the same time you did. Please check out the %{link_to_model} and make sure your changes will not unintentionally remove theirs."
+msgstr ""
+
+msgid "Someone edited this %{model_name} at the same time you did. Please refresh your browser and make sure your changes will not unintentionally remove theirs."
+msgstr ""
+
 msgid "Someone edited this merge request at the same time you did. Please refresh the page to see changes."
 msgstr ""
 
