@@ -20564,6 +20564,9 @@ msgstr ""
 msgid "Go to parent directory"
 msgstr ""
 
+msgid "Go to pipelines"
+msgstr ""
+
 msgid "Go to previous page"
 msgstr ""
 
