@@ -403,14 +403,6 @@ module EE
       !!import_state&.hard_failed?
     end
 
-    def third_party_ai_features_enabled?
-      !!namespace&.root_ancestor&.third_party_ai_features_enabled
-    end
-
-    def experiment_features_enabled?
-      !!namespace&.root_ancestor&.experiment_features_enabled
-    end
-
     class_methods do
       extend ::Gitlab::Utils::Override
 
@@ -1142,8 +1134,7 @@ module EE
 
     def send_to_ai?
       public? &&
-        repository_access_level > ::ProjectFeature::PRIVATE &&
-        namespace.root_ancestor.third_party_ai_features_enabled
+        repository_access_level > ::ProjectFeature::PRIVATE
     end
 
     def resource_parent

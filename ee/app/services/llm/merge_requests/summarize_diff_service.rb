@@ -23,8 +23,7 @@ module Llm
 
       def enabled?
         Feature.enabled?(:openai_experimentation, @user) &&
-          @merge_request.project.experiment_features_enabled? &&
-          @merge_request.project.third_party_ai_features_enabled? &&
+          Gitlab::Llm::StageCheck.available?(@merge_request.project.root_ancestor, :summarize_diff) &&
           @merge_request.send_to_ai?
       end
 

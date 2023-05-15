@@ -136,23 +136,16 @@ RSpec.describe EE::Issuable do
     end
 
     context 'for epics' do
-      where(:confidentiality, :visibility, :third_party_ai_features_enabled, :result) do
+      where(:confidentiality, :visibility, :result) do
         [
-          [true, :public, false, false],
-          [true, :public, true, false],
-          [true, :private, false, false],
-          [false, :private, false, false],
-          [false, :private, true, false],
-          [false, :public, true, true]
+          [true, :public, false],
+          [false, :private, false],
+          [false, :public, true]
         ]
       end
       with_them do
         let(:group) { build_stubbed(:group, visibility) }
         let(:issuable) { build_stubbed(:epic, confidential: confidentiality, group: group) }
-
-        before do
-          allow(group).to receive(:third_party_ai_features_enabled).and_return(third_party_ai_features_enabled)
-        end
 
         subject { issuable.send_to_ai? }
 
@@ -161,19 +154,12 @@ RSpec.describe EE::Issuable do
     end
 
     context 'for merge requests' do
-      where(:visibility, :third_party_ai_features_enabled, :result) do
+      where(:visibility, :result) do
         [
-          [Gitlab::VisibilityLevel::PUBLIC, true, true],
-          [Gitlab::VisibilityLevel::PUBLIC, false, false],
-          [Gitlab::VisibilityLevel::INTERNAL, false, false],
-          [Gitlab::VisibilityLevel::INTERNAL, true, false],
-          [Gitlab::VisibilityLevel::PRIVATE, false, false],
-          [Gitlab::VisibilityLevel::PRIVATE, true, false]
+          [Gitlab::VisibilityLevel::PUBLIC, true],
+          [Gitlab::VisibilityLevel::INTERNAL, false],
+          [Gitlab::VisibilityLevel::PRIVATE, false]
         ]
-      end
-
-      before do
-        allow(project.namespace).to receive(:third_party_ai_features_enabled).and_return(third_party_ai_features_enabled)
       end
 
       with_them do
