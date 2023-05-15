@@ -75,6 +75,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: cronjob:analytics_value_stream_dashboard_count
+  :worker_name: Analytics::ValueStreamDashboard::CountWorker
+  :feature_category: :value_stream_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:app_sec_dast_profile_schedule
   :worker_name: AppSec::Dast::ProfileScheduleWorker
   :feature_category: :dynamic_application_security_testing
