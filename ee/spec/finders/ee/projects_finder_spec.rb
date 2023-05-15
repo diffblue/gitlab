@@ -81,10 +81,46 @@ RSpec.describe ProjectsFinder do
       end
     end
 
+    context 'filter by feature available' do
+      let_it_be(:private_premium_project) { create_project(:premium_plan, :private) }
+
+      before do
+        private_premium_project.add_owner(user)
+      end
+
+      context 'when feature_available filter is used' do
+        # `product_analytics` is a feature available in Ultimate tier only
+        let_it_be(:params) { { feature_available: 'product_analytics' } }
+
+        it do
+          is_expected.to contain_exactly(
+            ultimate_project,
+            ultimate_project2,
+            premium_project,
+            no_plan_project
+          )
+        end
+      end
+
+      context 'when feature_available filter is not used' do
+        let_it_be(:params) { {} }
+
+        it do
+          is_expected.to contain_exactly(
+            ultimate_project,
+            ultimate_project2,
+            premium_project,
+            no_plan_project,
+            private_premium_project
+          )
+        end
+      end
+    end
+
     private
 
-    def create_project(plan)
-      create(:project, :public, namespace: create(:namespace_with_plan, plan: plan))
+    def create_project(plan, visibility = :public)
+      create(:project, visibility, namespace: create(:group_with_plan, plan: plan))
     end
   end
 end

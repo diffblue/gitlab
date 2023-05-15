@@ -165,8 +165,20 @@ module EE
       scope :verification_failed_wikis, -> { joins(:repository_state).merge(ProjectRepositoryState.verification_failed_wikis) }
       scope :for_plan_name, -> (name) { joins(namespace: { gitlab_subscription: :hosted_plan }).where(plans: { name: name }) }
       scope :with_feature_available, -> (name) do
-        projects_with_feature_available_in_plan = ::Project.for_group(::Group.with_feature_available_in_plan(name))
-        public_projects_in_public_groups = ::Project.public_only.for_group(::Group.public_only)
+        if ::Feature.enabled?(:optimize_scope_projects_with_feature_available)
+          groups_of_these_projects = ::Group.id_in(select(:namespace_id))
+          root_groups_of_these_projects = groups_of_these_projects.roots
+
+          paid_groups = root_groups_of_these_projects.with_feature_available_in_plan(name)
+          # subgroups of a paid group inherit paid features of the root group,
+          # and hence we must also include projects from such subgroups.
+          projects_with_feature_available_in_plan = for_group_and_its_subgroups(paid_groups)
+          public_projects_in_public_groups = public_only.for_group(groups_of_these_projects.public_only)
+        else
+          projects_with_feature_available_in_plan = ::Project.for_group(::Group.with_feature_available_in_plan(name))
+          public_projects_in_public_groups = ::Project.public_only.for_group(::Group.public_only)
+        end
+
         from_union([projects_with_feature_available_in_plan, public_projects_in_public_groups])
       end
       scope :requiring_code_owner_approval,
