@@ -25397,9 +25397,6 @@ msgstr ""
 msgid "JobAssistant|Error - Valid value is between 1 second and 1 week"
 msgstr ""
 
-msgid "JobAssistant|Example: %{entrypointPlaceholderExample}, Input format: %{entrypointPlaceholderInput}"
-msgstr ""
-
 msgid "JobAssistant|Image"
 msgstr ""
 
@@ -25421,7 +25418,10 @@ msgstr ""
 msgid "JobAssistant|Job name"
 msgstr ""
 
-msgid "JobAssistant|Please use \",\" to separate array type fields."
+msgid "JobAssistant|Please enter the parameters."
+msgstr ""
+
+msgid "JobAssistant|Please separate array type fields with new lines"
 msgstr ""
 
 msgid "JobAssistant|Rules"
@@ -25430,13 +25430,13 @@ msgstr ""
 msgid "JobAssistant|Script"
 msgstr ""
 
-msgid "JobAssistant|Service"
-msgstr ""
-
 msgid "JobAssistant|Service entrypoint (optional)"
 msgstr ""
 
 msgid "JobAssistant|Service name (optional)"
+msgstr ""
+
+msgid "JobAssistant|Services"
 msgstr ""
 
 msgid "JobAssistant|Stage (optional)"
