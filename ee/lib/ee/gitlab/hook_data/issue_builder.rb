@@ -12,6 +12,7 @@ module EE
 
         EE_SAFE_HOOK_ATTRIBUTES = %i[
           weight
+          health_status
         ].freeze
 
         override :build

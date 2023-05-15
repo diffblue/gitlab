@@ -32,13 +32,10 @@ RSpec.describe Gitlab::HookData::IssueBuilder do
         updated_at
         updated_by_id
         weight
+        health_status
       ].each do |key|
         expect(data).to include(key)
       end
-    end
-
-    it 'includes additional attr' do
-      expect(data).to include(:weight)
     end
 
     context 'when the issue has an image in the description' do
