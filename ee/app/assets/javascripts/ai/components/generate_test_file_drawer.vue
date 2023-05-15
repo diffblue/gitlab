@@ -1,10 +1,11 @@
 <script>
-import { GlDrawer, GlBadge, GlSkeletonLoader, GlAlert } from '@gitlab/ui';
+import { GlDrawer, GlBadge, GlSkeletonLoader, GlAlert, GlLink } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import testFileGeneratorMutation from '../graphql/test_file_generator.mutation.graphql';
 
 export default {
@@ -45,6 +46,8 @@ export default {
     GlBadge,
     GlSkeletonLoader,
     GlAlert,
+    GlLink,
+    UserFeedback,
   },
   props: {
     resourceId: {
@@ -97,6 +100,10 @@ export default {
     },
   },
   DRAWER_Z_INDEX,
+  feedback: {
+    eventName: 'generate_test_file_merge_request',
+    link: 'https://gitlab.com/gitlab-org/gitlab/-/issues/408995',
+  },
 };
 </script>
 
@@ -136,6 +143,14 @@ export default {
             <span v-safe-html="generatedTest" data-testid="generate-test-code"></span>
             <copy-code />
           </div>
+          <user-feedback :event-name="$options.feedback.eventName" />
+          <p>
+            {{ __('AI generated this test') }}
+            &middot;
+            <gl-link :href="$options.feedback.link" target="_blank">{{
+              __('Leave feedback')
+            }}</gl-link>
+          </p>
         </template>
       </div>
     </div>
