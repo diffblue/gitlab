@@ -28,13 +28,13 @@ class EpicPolicy < BasePolicy
 
   condition(:ai_available, scope: :subject) do
     ::Feature.enabled?(:openai_experimentation) &&
-      @subject.group.root_ancestor.experiment_features_enabled &&
       @subject.send_to_ai?
   end
 
   condition(:summarize_notes_enabled, scope: :subject) do
     ::Feature.enabled?(:summarize_comments, @subject.group) &&
-      @subject.group.licensed_feature_available?(:summarize_notes)
+      @subject.group.licensed_feature_available?(:summarize_notes) &&
+      Gitlab::Llm::StageCheck.available?(@subject.group.root_ancestor, :summarize_notes)
   end
 
   rule { can?(:read_epic) }.policy do

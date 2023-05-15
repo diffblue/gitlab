@@ -66,7 +66,7 @@ module EE
     end
 
     def send_to_ai?
-      !try(:confidential) && resource_parent.public? && resource_parent.root_ancestor.third_party_ai_features_enabled
+      !try(:confidential) && resource_parent.public?
     end
 
     override :hook_association_changes

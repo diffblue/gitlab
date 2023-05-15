@@ -12,7 +12,7 @@ module Llm
       super &&
         Feature.enabled?(:explain_code_snippet, user) &&
         resource.licensed_feature_available?(:explain_code) &&
-        resource.root_ancestor.experiment_features_enabled
+        Gitlab::Llm::StageCheck.available?(resource.root_ancestor, :explain_code)
     end
 
     private
