@@ -370,7 +370,7 @@ RSpec.describe EE::Users::CalloutsHelper do
     end
   end
 
-  describe '#web_hook_disabled_dismissed?', feature_category: :integrations do
+  describe '#web_hook_disabled_dismissed?', feature_category: :webhooks do
     let_it_be(:user, refind: true) { create(:user) }
 
     before do

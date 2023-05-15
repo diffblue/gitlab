@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::HooksController, feature_category: :integrations do
+RSpec.describe Groups::HooksController, feature_category: :webhooks do
   let_it_be(:group_owner) { create(:user) }
   let_it_be(:group_maintainer) { create(:user) }
   let_it_be(:group) { create(:group) }

@@ -6,7 +6,7 @@ module API
 
     group_hooks_tags = %w[group_hooks]
 
-    feature_category :integrations
+    feature_category :webhooks
 
     before { authenticate! }
     before { authorize! :admin_group, user_group }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "User tests hooks", :js, feature_category: :integrations do
+RSpec.describe "User tests hooks", :js, feature_category: :webhooks do
   include StubRequests
 
   let!(:group) { create(:group) }

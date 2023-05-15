@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integrations do
+RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :webhooks do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

@@ -14,7 +14,6 @@ class Groups::HooksController < Groups::ApplicationController
 
   layout 'group_settings'
 
-  feature_category :integrations
   urgency :low, [:test]
 
   def test
