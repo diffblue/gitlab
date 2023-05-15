@@ -4,7 +4,7 @@ import Api from 'ee/api';
 import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { s__ } from '~/locale';
 import { PurchaseEvent } from 'ee/subscriptions/new/constants';
 
@@ -66,7 +66,7 @@ export default {
       return Api.confirmOrder(this.confirmOrderParams)
         .then(({ data }) => {
           if (data.location) {
-            redirectTo(data.location);
+            redirectTo(data.location); // eslint-disable-line import/no-deprecated
           } else {
             throw new Error(JSON.stringify(data.errors));
           }

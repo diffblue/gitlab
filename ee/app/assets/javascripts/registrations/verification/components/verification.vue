@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlPopover, GlLink, GlIcon } from '@gitlab/ui';
 import Tracking from '~/tracking';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import Zuora from 'ee/billings/components/zuora.vue';
 import {
   I18N,
@@ -57,7 +57,7 @@ export default {
       this.nextStep();
     },
     nextStep() {
-      redirectTo(this.nextStepUrl);
+      redirectTo(this.nextStepUrl); // eslint-disable-line import/no-deprecated
     },
   },
   i18n: I18N,

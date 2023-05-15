@@ -3,7 +3,7 @@ import { GlButton } from '@gitlab/ui';
 import axios from 'axios';
 import { createAlert } from '~/alert';
 import { TYPE_ISSUE } from '~/issues/constants';
-import { joinPaths, redirectTo } from '~/lib/utils/url_utility';
+import { joinPaths, redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { sprintf, __, s__ } from '~/locale';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
 import { PathIdSeparator } from '~/related_issues/constants';
@@ -87,7 +87,7 @@ export default {
   methods: {
     createIssue() {
       this.isProcessingAction = true;
-      redirectTo(this.newIssueUrl, { params: { vulnerability_id: this.vulnerabilityId } });
+      redirectTo(this.newIssueUrl, { params: { vulnerability_id: this.vulnerabilityId } }); // eslint-disable-line import/no-deprecated
     },
     toggleFormVisibility() {
       this.isFormVisible = !this.isFormVisible;

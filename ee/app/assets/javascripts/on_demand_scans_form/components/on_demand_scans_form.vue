@@ -17,7 +17,7 @@ import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { s__, __ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
@@ -286,9 +286,9 @@ export default {
             this.showErrors(ERROR_RUN_SCAN, errors);
             this.loading = false;
           } else if (!runAfter) {
-            redirectTo(this.onDemandScansPath);
+            redirectTo(this.onDemandScansPath); // eslint-disable-line import/no-deprecated
           } else {
-            redirectTo(response.pipelineUrl);
+            redirectTo(response.pipelineUrl); // eslint-disable-line import/no-deprecated
           }
         })
         .catch((e) => {
@@ -298,7 +298,7 @@ export default {
         });
     },
     onCancelClicked() {
-      redirectTo(this.onDemandScansPath);
+      redirectTo(this.onDemandScansPath); // eslint-disable-line import/no-deprecated
     },
     showGeneralErrors(message) {
       this.showErrors(null, [message]);

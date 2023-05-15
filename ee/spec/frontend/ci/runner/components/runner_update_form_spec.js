@@ -7,7 +7,7 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerFormData } from 'jest/ci/runner/mock_data';
 import { VARIANT_SUCCESS } from '~/alert';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/ci/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/ci/runner/graphql/edit/runner_update.mutation.graphql';
@@ -65,7 +65,7 @@ describe('RunnerUpdateForm', () => {
         variant: VARIANT_SUCCESS,
       }),
     );
-    expect(redirectTo).toHaveBeenCalledWith(mockRunnerPath);
+    expect(redirectTo).toHaveBeenCalledWith(mockRunnerPath); // eslint-disable-line import/no-deprecated
   };
 
   beforeEach(() => {

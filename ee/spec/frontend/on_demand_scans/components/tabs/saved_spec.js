@@ -20,7 +20,7 @@ import {
 } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
-import { redirectTo } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK } from '../../mocks';
 
 Vue.use(VueApollo);
@@ -228,7 +228,7 @@ describe('Saved tab', () => {
         findRunScanButton().vm.$emit('click');
         await waitForPromises();
 
-        expect(redirectTo).toHaveBeenCalledWith('/pipelines/1');
+        expect(redirectTo).toHaveBeenCalledWith('/pipelines/1'); // eslint-disable-line import/no-deprecated
       });
     });
 
