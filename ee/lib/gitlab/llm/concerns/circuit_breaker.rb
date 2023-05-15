@@ -28,7 +28,7 @@ module Gitlab
         private
 
         def service_name
-          raise NotImplementedError
+          self.class.name
         end
       end
     end

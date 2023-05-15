@@ -47,10 +47,6 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
 
       include Gitlab::Llm::Concerns::ExponentialBackoff
       retry_methods_with_exponential_backoff :dummy_method
-
-      def service_name
-        'dummy'
-      end
     end
   end
 
