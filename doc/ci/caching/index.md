@@ -623,10 +623,10 @@ job B:
 ```
 
 1. `job A` runs.
-1. `public/` is cached as cache.zip.
+1. `public/` is cached as `cache.zip`.
 1. `job B` runs.
 1. The previous cache, if any, is unzipped.
-1. `vendor/` is cached as cache.zip and overwrites the previous one.
+1. `vendor/` is cached as `cache.zip` and overwrites the previous one.
 1. The next time `job A` runs it uses the cache of `job B` which is different
    and thus isn't effective.
 
