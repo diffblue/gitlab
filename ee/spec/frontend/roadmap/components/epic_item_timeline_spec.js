@@ -56,6 +56,10 @@ describe('EpicItemTimelineComponent', () => {
       wrapper = createComponent();
     });
 
+    it('has correct root element classes', () => {
+      expect(wrapper.classes()).toEqual(['gl-relative', 'gl-w-full']);
+    });
+
     it('shows the title', () => {
       expect(getEpicBar(wrapper).text()).toContain(mockFormattedEpic.title);
     });
