@@ -9,7 +9,6 @@ RSpec.describe 'Subscription expired notification', :js, feature_category: :cons
 
   before do
     stub_application_setting(signup_enabled: false)
-    stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
     stub_feature_flags(namespace_storage_limit_show_preenforcement_banner: false)
 
     sign_in(admin)
