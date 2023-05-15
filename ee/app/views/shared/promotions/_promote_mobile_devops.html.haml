@@ -1,0 +1,12 @@
+- if show_mobile_devops_project_promo?(project)
+  = render Pajamas::BannerComponent.new(banner_options: { id: 'mobile-devops-promo-banner' },
+    close_options: { class: 'hide-mobile-devops-promo',
+                            data: { project_id: project.id }}) do |c|
+    - c.illustration do
+      = image_tag image_path('illustrations/rocket-launch-md.svg')
+    - c.title do
+      = s_('Promotions|Ship faster with GitLab Mobile DevOps.')
+    %p
+      = s_('Promotions|Use GitLab Mobile DevOps to quickly build, sign, and release native and cross-platform mobile apps for Android and iOS using GitLab CI/CD.')
+    - c.primary_action do
+      = link_to s_('Promotions|Get started with GitLab Mobile DevOps'), help_page_path('ci/mobile_devops.md'), class: 'gl-button btn btn-confirm gl-mb-3'
