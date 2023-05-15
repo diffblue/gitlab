@@ -2,8 +2,8 @@ import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
-import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
@@ -50,11 +50,13 @@ describe('SecurityScanRuleBuilder', () => {
         namespaceType: NAMESPACE_TYPES.PROJECT,
         ...provide,
       },
+      stubs: {
+        PolicyRuleBranchSelection: true,
+      },
     });
   };
 
-  const findBranches = () => wrapper.findComponent(ProtectedBranchesSelector);
-  const findBranchesLabel = () => wrapper.findByTestId('branches-label');
+  const findBranches = () => wrapper.findComponent(PolicyRuleBranchSelection);
   const findGroupLevelBranches = () => wrapper.findByTestId('group-level-branch');
   const findScanners = () => wrapper.findByTestId('scanners-select');
   const findSeverities = () => wrapper.findByTestId('severities-select');
@@ -96,23 +98,19 @@ describe('SecurityScanRuleBuilder', () => {
         expect.arrayContaining([expect.objectContaining({ includeSelectAll: true })]),
       );
     });
-
-    it('does not render branches label when targeting all branches', () => {
-      expect(findBranchesLabel().exists()).toBe(false);
-    });
   });
 
   describe('when editing any attribute of the rule', () => {
     it.each`
-      currentComponent | newValue                      | expected
-      ${findBranches}  | ${PROTECTED_BRANCHES_MOCK[0]} | ${{ branches: UPDATED_RULE.branches }}
-      ${findScanners}  | ${UPDATED_RULE.scanners}      | ${{ scanners: UPDATED_RULE.scanners }}
+      currentComponent | event        | newValue                                           | expected
+      ${findBranches}  | ${'changed'} | ${{ branches: [PROTECTED_BRANCHES_MOCK[0].name] }} | ${{ branches: UPDATED_RULE.branches }}
+      ${findScanners}  | ${'input'}   | ${UPDATED_RULE.scanners}                           | ${{ scanners: UPDATED_RULE.scanners }}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
-      async ({ currentComponent, newValue, expected }) => {
+      async ({ currentComponent, event, newValue, expected }) => {
         factory();
         await nextTick();
-        currentComponent().vm.$emit('input', newValue);
+        currentComponent().vm.$emit(event, newValue);
         await nextTick();
 
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
@@ -210,12 +208,6 @@ describe('SecurityScanRuleBuilder', () => {
 
     expect(currentComponent().exists()).toBe(false);
     expect(wrapper.emitted('changed')).toHaveLength(1);
-  });
-
-  it('does render branches label when a branch is selected', async () => {
-    factory({ initRule: UPDATED_RULE });
-    await nextTick();
-    expect(findBranchesLabel().exists()).toBe(true);
   });
 
   it('can change scan type', () => {

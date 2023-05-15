@@ -1,6 +1,6 @@
 import { GlCollapsibleListbox } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import {
@@ -9,28 +9,33 @@ import {
   PLACEHOLDER,
 } from 'ee/vue_shared/components/branches_selector/constants';
 import waitForPromises from 'helpers/wait_for_promises';
-import { TEST_BRANCHES_SELECTIONS, TEST_PROJECT_ID, TEST_PROTECTED_BRANCHES } from './mock_data';
+import { TEST_PROTECTED_BRANCHES } from './mock_data';
 
-const allBranchOptions = [ALL_BRANCHES, ALL_PROTECTED_BRANCHES, ...TEST_PROTECTED_BRANCHES];
-const branchNames = (branches = TEST_BRANCHES_SELECTIONS) => branches.map((branch) => branch.name);
+const branchNames = (branches = TEST_PROTECTED_BRANCHES) => branches.map((branch) => branch.name);
 const addValueToBranches = (branches) => branches.map((b) => ({ ...b, value: b.name }));
-const protectedBranchNames = () => TEST_PROTECTED_BRANCHES.map((branch) => branch.name);
 const error = new Error('Something went wrong');
 
 describe('Protected Branches Selector', () => {
   let wrapper;
+  let closeSpy;
 
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSelectableBranches = () =>
     findListbox()
       .props('items')
       .map((item) => item.name);
+  const findAllBranchesOption = () => wrapper.findByTestId('all-branches-option');
+  const findAllProtectedBranchesOption = () =>
+    wrapper.findByTestId('all-protected-branches-option');
 
   const createComponent = (props = {}) => {
-    wrapper = mount(ProtectedBranchesSelector, {
+    wrapper = mountExtended(ProtectedBranchesSelector, {
       propsData: {
         projectId: '1',
         ...props,
+      },
+      stubs: {
+        GlDropdownItem: true,
       },
     });
   };
@@ -41,7 +46,7 @@ describe('Protected Branches Selector', () => {
       .mockReturnValue(Promise.resolve(TEST_PROTECTED_BRANCHES));
   });
 
-  describe('Initialization', () => {
+  describe('default rendering', () => {
     it('renders dropdown', async () => {
       createComponent();
       await waitForPromises();
@@ -56,38 +61,7 @@ describe('Protected Branches Selector', () => {
       expect(findListbox().classes('is-invalid')).toBe(true);
     });
 
-    it.each`
-      allowAllBranchesOption | allowAllProtectedBranchesOption | selectedBranches                          | selectedBranchesNames | branchName
-      ${true}                | ${false}                        | ${[ALL_BRANCHES]}                         | ${[]}                 | ${ALL_BRANCHES.name}
-      ${true}                | ${false}                        | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                 | ${ALL_BRANCHES.name}
-      ${true}                | ${false}                        | ${[]}                                     | ${['development']}    | ${'development'}
-      ${true}                | ${false}                        | ${[{ id: 1, name: 'main' }]}              | ${[]}                 | ${'main'}
-      ${true}                | ${false}                        | ${[{ id: 1, name: 'main' }]}              | ${['development']}    | ${'main'}
-      ${true}                | ${true}                         | ${[ALL_BRANCHES, ALL_PROTECTED_BRANCHES]} | ${[]}                 | ${ALL_BRANCHES.name}
-      ${false}               | ${true}                         | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                 | ${ALL_PROTECTED_BRANCHES.name}
-      ${false}               | ${false}                        | ${[]}                                     | ${[]}                 | ${PLACEHOLDER.name}
-    `(
-      'with allowAllBranchesOption set to $allowAllBranchesOption and allowAllProtectedBranchesOption set to $allowAllProtectedBranchesOption and selectedBranches set to $selectedBranches and selectedBranchesNames set to $selectedBranchesNames, the selected branch is $branchName',
-      async ({
-        allowAllBranchesOption,
-        allowAllProtectedBranchesOption,
-        selectedBranches,
-        selectedBranchesNames,
-        branchName,
-      }) => {
-        createComponent({
-          selectedBranches,
-          selectedBranchesNames,
-          allowAllBranchesOption,
-          allowAllProtectedBranchesOption,
-        });
-        await waitForPromises();
-
-        expect(findListbox().props('toggleText')).toBe(branchName);
-      },
-    );
-
-    it('displays all the protected branches and all branches', async () => {
+    it('displays the protected branches and all branches option', async () => {
       createComponent();
       await nextTick();
 
@@ -98,11 +72,99 @@ describe('Protected Branches Selector', () => {
       expect(findSelectableBranches()).toStrictEqual(branchNames());
       expect(findListbox().props('loading')).toBe(false);
     });
+  });
 
-    it('when the branch is changed it emits the input event', async () => {
-      createComponent();
+  describe('selected branch', () => {
+    it.each`
+      allowAllBranchesOption | allowAllProtectedBranchesOption | multiple | selectedBranches                          | selectedBranchesNames  | branchName
+      ${true}                | ${false}                        | ${false} | ${[ALL_BRANCHES]}                         | ${[]}                  | ${ALL_BRANCHES.name}
+      ${true}                | ${false}                        | ${false} | ${[]}                                     | ${['development']}     | ${'development'}
+      ${true}                | ${false}                        | ${false} | ${[{ id: 1, name: 'main' }]}              | ${[]}                  | ${'main'}
+      ${true}                | ${false}                        | ${false} | ${[{ id: 1, name: 'main' }]}              | ${['development']}     | ${'main'}
+      ${true}                | ${true}                         | ${false} | ${[ALL_BRANCHES, ALL_PROTECTED_BRANCHES]} | ${[]}                  | ${ALL_BRANCHES.name}
+      ${false}               | ${true}                         | ${false} | ${[ALL_PROTECTED_BRANCHES]}               | ${[]}                  | ${ALL_PROTECTED_BRANCHES.name}
+      ${false}               | ${false}                        | ${false} | ${[]}                                     | ${[]}                  | ${PLACEHOLDER.name}
+      ${true}                | ${true}                         | ${false} | ${null}                                   | ${null}                | ${PLACEHOLDER.name}
+      ${true}                | ${false}                        | ${true}  | ${[ALL_BRANCHES]}                         | ${[ALL_BRANCHES.name]} | ${ALL_BRANCHES.name}
+    `(
+      'with allowAllBranchesOption = $allowAllBranchesOption, allowAllProtectedBranchesOption = $allowAllProtectedBranchesOption, selectedBranches = $selectedBranches, and selectedBranchesNames = $selectedBranchesNames, the selected branch is $branchName',
+      async ({
+        allowAllBranchesOption,
+        allowAllProtectedBranchesOption,
+        multiple,
+        selectedBranches,
+        selectedBranchesNames,
+        branchName,
+      }) => {
+        createComponent({
+          allowAllBranchesOption,
+          allowAllProtectedBranchesOption,
+          multiple,
+          selectedBranches,
+          selectedBranchesNames,
+        });
+        await waitForPromises();
 
+        expect(findListbox().props('toggleText')).toBe(branchName);
+        if (multiple) {
+          expect(findListbox().props('selected')).toStrictEqual([branchName]);
+        } else {
+          expect(findListbox().props('selected')).toBe(branchName);
+        }
+      },
+    );
+  });
+
+  describe.each`
+    ALL_OPTION                | findFn                            | prop
+    ${ALL_BRANCHES}           | ${findAllBranchesOption}          | ${'allowAllBranchesOption'}
+    ${ALL_PROTECTED_BRANCHES} | ${findAllProtectedBranchesOption} | ${'allowAllProtectedBranchesOption'}
+  `('$prop', ({ ALL_OPTION, findFn, prop }) => {
+    it('does show the option when $prop is true', () => {
+      createComponent({
+        [prop]: true,
+      });
+
+      expect(findFn().exists()).toBe(true);
+    });
+
+    it('does not show the option when $prop is false', () => {
+      createComponent({
+        [prop]: false,
+      });
+
+      expect(findFn().exists()).toBe(false);
+    });
+
+    it('selects the all branches option if passed in', async () => {
+      createComponent({
+        [prop]: true,
+        selectedBranches: [ALL_OPTION],
+      });
       await waitForPromises();
+
+      expect(findListbox().props('toggleText')).toBe(ALL_OPTION.name);
+    });
+
+    it('closes the dropdown when clicked', async () => {
+      createComponent({
+        [prop]: true,
+      });
+      closeSpy = jest.spyOn(wrapper.vm.$refs.branches, 'close');
+
+      await findFn().vm.$emit('click');
+
+      expect(closeSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('single branch', () => {
+    beforeEach(async () => {
+      createComponent();
+      await waitForPromises();
+    });
+
+    it('emits the correct branch when selected', async () => {
       findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[0].name);
       await nextTick();
 
@@ -111,184 +173,95 @@ describe('Protected Branches Selector', () => {
       ]);
     });
 
-    describe('with allow all branches option', () => {
-      describe('set to true', () => {
-        it('shows the allow all option', async () => {
-          createComponent({
-            allowAllBranchesOption: true,
-          });
-          await waitForPromises();
+    it('emits the new branch when selected', async () => {
+      findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[0].name);
+      await nextTick();
+      findListbox().vm.$emit('select', TEST_PROTECTED_BRANCHES[1].name);
+      await nextTick();
 
-          expect(
-            findListbox()
-              .props('items')
-              .findIndex((b) => b.id === ALL_BRANCHES.id),
-          ).toBeGreaterThan(-1);
-        });
-      });
-
-      describe('set to false', () => {
-        it('does not show the allow all option', async () => {
-          createComponent({
-            allowAllBranchesOption: false,
-          });
-          await waitForPromises();
-
-          expect(
-            findListbox()
-              .props('items')
-              .findIndex((b) => b.id === ALL_BRANCHES.id),
-          ).toBe(-1);
-        });
-      });
-    });
-
-    describe('with allow all protected branches option', () => {
-      it('selects the all protected branches option if passed in', async () => {
-        createComponent({
-          allowAllProtectedBranchesOption: true,
-          selectedBranches: [ALL_PROTECTED_BRANCHES],
-        });
-        await waitForPromises();
-
-        expect(findListbox().props('toggleText')).toBe(ALL_PROTECTED_BRANCHES.name);
-      });
-
-      it('displays all the protected branches, all branches, and all protected branches', async () => {
-        createComponent({ allowAllProtectedBranchesOption: true });
-        await nextTick();
-
-        expect(findListbox().props('loading')).toBe(true);
-        await waitForPromises();
-
-        expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: false }]]);
-        expect(findSelectableBranches()).toStrictEqual(branchNames(allBranchOptions));
-        expect(findListbox().props('loading')).toBe(false);
-      });
-    });
-
-    describe('when fetching the branch list fails', () => {
-      beforeEach(() => {
-        jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        createComponent();
-      });
-
-      it('emits the `apiError` event', () => {
-        expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: true, error }]]);
-      });
-
-      it('returns just the all branch dropdown item', () => {
-        expect(findSelectableBranches()).toStrictEqual([ALL_BRANCHES.name]);
-      });
+      expect(wrapper.emitted('input')[1]).toStrictEqual(
+        addValueToBranches([TEST_PROTECTED_BRANCHES[1]]),
+      );
     });
   });
 
-  describe('with search term', () => {
-    it('fetches protected branches with search term', async () => {
-      const term = 'lorem';
+  describe('multiple branches', () => {
+    beforeEach(async () => {
+      createComponent({ multiple: true });
+      await waitForPromises();
+    });
 
-      createComponent();
-
-      findListbox().vm.$emit('search', term);
+    it('emits the correct branch when selected', async () => {
+      findListbox().vm.$emit('select', [TEST_PROTECTED_BRANCHES[0].name]);
       await nextTick();
 
-      expect(findListbox().props('loading')).toBe(true);
-
-      await waitForPromises();
-
-      expect(Api.projectProtectedBranches).toHaveBeenCalledWith(TEST_PROJECT_ID, term);
-      expect(wrapper.emitted('apiError')).toStrictEqual([
-        [{ hasErrored: false }],
-        [{ hasErrored: false }],
+      expect(wrapper.emitted('input')).toStrictEqual([
+        [addValueToBranches([TEST_PROTECTED_BRANCHES[0]])],
       ]);
-      expect(findListbox().props('loading')).toBe(false);
     });
 
-    it('fetches protected branches with no all branches if there is a search', async () => {
+    it('emits multiple branches when selected', async () => {
+      findListbox().vm.$emit('select', [
+        TEST_PROTECTED_BRANCHES[0].name,
+        TEST_PROTECTED_BRANCHES[1].name,
+      ]);
+      await nextTick();
+
+      expect(wrapper.emitted('input')[0]).toStrictEqual([
+        addValueToBranches([TEST_PROTECTED_BRANCHES[0], TEST_PROTECTED_BRANCHES[1]]),
+      ]);
+    });
+
+    it('emits one branch when a branch is deselected', async () => {
+      findListbox().vm.$emit('select', []);
+      await nextTick();
+
+      expect(wrapper.emitted('input')[0]).toStrictEqual([addValueToBranches([])]);
+    });
+  });
+
+  describe('footer', () => {
+    it('emits "null" if it is already selected', async () => {
       createComponent();
-
-      findListbox().vm.$emit('search', 'main');
       await waitForPromises();
+      await findAllBranchesOption().vm.$emit('click');
 
-      expect(findSelectableBranches()).toStrictEqual(protectedBranchNames());
+      expect(wrapper.emitted('input')).toStrictEqual([[null]]);
     });
 
-    it('fetches protected branches with all branches if search contains term "all"', async () => {
+    it('emits the correct branch when the footer is clicked for single branches', async () => {
+      createComponent({ allowAllProtectedBranchesOption: true });
+      await waitForPromises();
+      await findAllProtectedBranchesOption().vm.$emit('click');
+
+      expect(wrapper.emitted('input')).toStrictEqual([
+        addValueToBranches([ALL_PROTECTED_BRANCHES]),
+      ]);
+    });
+
+    it('emits the correct branch when the footer is clicked for multiple branches', async () => {
+      createComponent({ allowAllProtectedBranchesOption: true, multiple: true });
+      await waitForPromises();
+      await findAllProtectedBranchesOption().vm.$emit('click');
+
+      expect(wrapper.emitted('input')).toStrictEqual([
+        [addValueToBranches([ALL_PROTECTED_BRANCHES])],
+      ]);
+    });
+  });
+
+  describe('when fetching the branch list fails', () => {
+    beforeEach(() => {
+      jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
       createComponent();
-
-      findListbox().vm.$emit('search', 'all');
-      await waitForPromises();
-
-      expect(findSelectableBranches()).toStrictEqual(branchNames());
     });
 
-    describe('with allow all protected branches option', () => {
-      it('fetches protected branches with all branches if search contains term "all"', async () => {
-        createComponent({ allowAllProtectedBranchesOption: true }, mount);
-
-        findListbox().vm.$emit('search', 'all');
-        await waitForPromises();
-
-        expect(findSelectableBranches()).toStrictEqual(branchNames(allBranchOptions));
-      });
-
-      describe('when fetching the branch list fails while searching', () => {
-        beforeEach(() => {
-          createComponent({ allowAllProtectedBranchesOption: true }, mount);
-
-          return waitForPromises();
-        });
-
-        it('emits the `apiError` event and returns all branches and all protected branches when searching for "all"', async () => {
-          jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-          findListbox().vm.$emit('search', 'all');
-
-          await waitForPromises();
-
-          expect(wrapper.emitted('apiError')).toStrictEqual([
-            [{ hasErrored: false }],
-            [{ hasErrored: true, error }],
-          ]);
-          expect(findSelectableBranches()).toStrictEqual([
-            ALL_BRANCHES.name,
-            ALL_PROTECTED_BRANCHES.name,
-          ]);
-        });
-      });
+    it('emits the `apiError` event', () => {
+      expect(wrapper.emitted('apiError')).toStrictEqual([[{ hasErrored: true, error }]]);
     });
 
-    describe('when fetching the branch list fails while searching', () => {
-      beforeEach(() => {
-        createComponent();
-
-        return waitForPromises();
-      });
-
-      it('emits the `apiError` event and returns no items when searching for a term', async () => {
-        jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        findListbox().vm.$emit('search', 'main');
-
-        await waitForPromises();
-
-        expect(wrapper.emitted('apiError')).toStrictEqual([
-          [{ hasErrored: false }],
-          [{ hasErrored: true, error }],
-        ]);
-        expect(findListbox().props('items')).toHaveLength(0);
-      });
-
-      it('emits the `apiError` event and returns all branches when searching for "all"', async () => {
-        jest.spyOn(Api, 'projectProtectedBranches').mockRejectedValueOnce(error);
-        findListbox().vm.$emit('search', 'all');
-
-        await waitForPromises();
-
-        expect(wrapper.emitted('apiError')).toStrictEqual([
-          [{ hasErrored: false }],
-          [{ hasErrored: true, error }],
-        ]);
-        expect(findSelectableBranches()).toStrictEqual([ALL_BRANCHES.name]);
-      });
+    it('returns just the all branch dropdown item', () => {
+      expect(findSelectableBranches()).toStrictEqual([]);
     });
   });
 });

@@ -19,11 +19,13 @@ export default {
   },
   computed: {
     policyAction() {
-      return this.policy.actions.find((action) => action.type === 'require_approval');
+      return this.policy.actions?.find(({ type }) => type === 'require_approval') || {};
     },
     branches() {
-      const branches = this.policy.rules.flatMap((rule) => rule.branches);
-      return branches.length > 0 ? branches.join(', ') : this.$options.i18n.allProtectedBranches;
+      const allRulesBranches = this.policy.rules?.flatMap(({ branches = [] }) => branches);
+      return allRulesBranches.length
+        ? allRulesBranches.join(', ')
+        : this.$options.i18n.allProtectedBranches;
     },
     approvalsRequired() {
       return this.policyAction.approvals_required;

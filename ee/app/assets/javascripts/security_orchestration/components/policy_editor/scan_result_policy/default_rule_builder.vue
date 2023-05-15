@@ -33,6 +33,11 @@ export default {
       selectedBranches: [],
     };
   },
+  computed: {
+    ruleWithSelectedBranchesOnly() {
+      return { branches: this.selectedBranches };
+    },
+  },
   methods: {
     selectScanType(type) {
       const rule = getDefaultRule(type);
@@ -65,7 +70,7 @@ export default {
 
               <template #branches>
                 <policy-rule-branch-selection
-                  :init-rule="initRule"
+                  :init-rule="ruleWithSelectedBranchesOnly"
                   @changed="setSelectedBranches"
                 />
               </template>
