@@ -51,6 +51,10 @@ module EE
         end
 
         state_machine :status do
+          before_transition on: :enqueue do |build|
+            !build.waiting_for_deployment_approval? # If false is returned, it stops the transition
+          end
+
           after_transition any => [:success, :failed, :canceled] do |build|
             build.run_after_commit do
               ::Ci::Minutes::UpdateBuildMinutesService.new(build.project, nil).execute(build)
@@ -188,6 +192,14 @@ module EE
 
       def variable_value(key, default = nil)
         variables_hash.fetch(key, default)
+      end
+
+      def playable?
+        super && !waiting_for_deployment_approval?
+      end
+
+      def waiting_for_deployment_approval?
+        manual? && deployment_job? && deployment&.blocked?
       end
 
       private
