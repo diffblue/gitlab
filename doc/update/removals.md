@@ -547,6 +547,14 @@ The predefined CI/CD variables that start with `CI_BUILD_*` were deprecated in G
 | `CI_BUILD_TOKEN`      | `CI_JOB_TOKEN`          |
 | `CI_BUILD_TRIGGERED`  | `CI_PIPELINE_TRIGGERED` |
 
+### `POST ci/lint` API endpoint removed
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The `POST ci/lint` API endpoint was deprecated in 15.7, and removed in 16.0. This endpoint did not validate the full range of CI/CD configuration options. Instead, use [`POST /projects/:id/ci/lint`](https://docs.gitlab.com/ee/api/lint.html#validate-a-ci-yaml-configuration-with-a-namespace), which properly validates CI/CD configuration.
+
 ### vulnerabilityFindingDismiss GraphQL mutation
 
 WARNING:
