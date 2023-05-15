@@ -320,22 +320,33 @@ RSpec.describe 'Epics through GroupQuery', feature_category: :portfolio_manageme
       end
 
       context 'with top_level_hierarchy_only argument' do
-        let_it_be(:child_epic) { create(:epic, group: group, parent: epic2) }
+        let_it_be(:other_epic) { create(:epic) }
+        let_it_be(:child_epic1) { create(:epic, group: group, parent: epic2) }
+        let_it_be(:child_epic2) { create(:epic, group: group, parent: other_epic) }
 
-        it 'returns only top level matching epics when set as `true`' do
-          graphql_query = query({ top_level_hierarchy_only: true })
+        context 'when set as true' do
+          let(:params) { { top_level_hierarchy_only: true } }
 
-          post_graphql(graphql_query, current_user: user)
+          it 'returns epics with no parent or parents outside group hierarchy' do
+            graphql_query = query(params)
 
-          expect_array_response([epic2.to_global_id.to_s, epic.to_global_id.to_s])
+            post_graphql(graphql_query, current_user: user)
+
+            expected_epics = [child_epic2.to_gid.to_s, epic2.to_gid.to_s, epic.to_gid.to_s]
+            expect_array_response(expected_epics)
+          end
         end
 
-        it 'returns all matching epics when set as `false' do
-          graphql_query = query({ top_level_hierarchy_only: false })
+        context 'when set as false' do
+          let(:params) { { top_level_hierarchy_only: false } }
 
-          post_graphql(graphql_query, current_user: user)
+          it 'returns all matching epics' do
+            graphql_query = query(params)
+            post_graphql(graphql_query, current_user: user)
 
-          expect_array_response([child_epic.to_global_id.to_s, epic2.to_global_id.to_s, epic.to_global_id.to_s])
+            expected_epics = [child_epic2.to_gid.to_s, child_epic1.to_gid.to_s, epic2.to_gid.to_s, epic.to_gid.to_s]
+            expect_array_response(expected_epics)
+          end
         end
       end
 

@@ -367,20 +367,71 @@ RSpec.describe EpicsFinder do
           end
 
           context 'when `top_level_hierarchy_only` param is true' do
-            let_it_be(:epic6) { create(:epic, group: group) }
+            let_it_be(:ancestor) { create(:group) }
+            let_it_be(:base_group) { create(:group, parent: ancestor) }
+            let_it_be(:descendant) { create(:group, parent: base_group) }
+            let_it_be(:parent_base) { create(:epic, group: base_group) }
+            let_it_be(:parent_ancestor) { create(:epic, group: ancestor) }
+            let_it_be(:parent_other) { create(:epic, group: another_group) }
+            let_it_be(:parent_descendant) { create(:epic, group: descendant) }
+            let_it_be(:with_ancestor_parent) { create(:epic, group: base_group, parent: parent_ancestor) }
+            let_it_be(:with_other_parent) { create(:epic, group: base_group, parent: parent_other) }
+            let_it_be(:with_descendant_parent) { create(:epic, group: base_group, parent: parent_descendant) }
+            let_it_be(:with_group_parent) { create(:epic, group: base_group, parent: parent_base) }
+            let_it_be(:with_no_parent) { create(:epic, group: base_group) }
 
-            it 'returns only top level epics' do
-              top_level_epics = epics({ top_level_hierarchy_only: true })
+            let(:params) { { group_id: base_group.id, top_level_hierarchy_only: true } }
 
-              expect(top_level_epics).to contain_exactly(epic1, epic6)
-              expect(top_level_epics.collect(&:parent_id).any?).to be_falsey
+            shared_examples 'epics excluding children in group hierarchy' do
+              it 'excludes children with parents in scoped groups' do
+                expected = [parent_base, with_other_parent, with_no_parent]
+                epics = epics(finder_params)
+
+                expect(epics).to match_array(expected + expected_by_params)
+              end
+            end
+
+            context 'when include_descendant_groups is true' do
+              let(:epic_params) { params.merge(include_descendant_groups: true) }
+
+              it_behaves_like 'epics excluding children in group hierarchy' do
+                let(:finder_params) { epic_params }
+
+                let(:expected_by_params) { [parent_descendant, with_ancestor_parent] }
+              end
+
+              context 'when include_ancestor_groups is true' do
+                let(:finder_params) { epic_params.merge(include_ancestor_groups: true) }
+
+                it_behaves_like 'epics excluding children in group hierarchy' do
+                  let(:expected_by_params) { [parent_descendant, parent_ancestor] }
+                end
+              end
+            end
+
+            context 'when include_descendant_groups is false' do
+              let(:epic_params) { params.merge(include_descendant_groups: false) }
+
+              it_behaves_like 'epics excluding children in group hierarchy' do
+                let(:finder_params) { epic_params }
+
+                let(:expected_by_params) { [with_ancestor_parent, with_descendant_parent] }
+              end
+
+              context 'when include_ancestor_groups is true' do
+                let(:finder_params) { epic_params.merge(include_ancestor_groups: true) }
+
+                it_behaves_like 'epics excluding children in group hierarchy' do
+                  let(:expected_by_params) { [parent_ancestor, with_descendant_parent] }
+                end
+              end
             end
 
             context 'when `parent_id` param is present' do
-              it 'ignores top_level_hierarchy_only param and returns direct children of the parent' do
-                params = { top_level_hierarchy_only: true, parent_id: epic1.id }
+              let(:epic_params) { params.merge({ exclude_group_children: true, parent_id: parent_base.id }) }
 
-                expect(epics(params)).to contain_exactly(epic2)
+              it 'ignores top_level_hierarchy_only param and returns direct children of the parent' do
+                expect(epics(epic_params)).to contain_exactly(with_group_parent)
               end
             end
           end
