@@ -130,7 +130,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-relative">
+  <div class="gl-relative gl-w-full">
     <a
       :id="generateKey(epic)"
       :href="epic.webUrl"
