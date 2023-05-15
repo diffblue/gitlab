@@ -204,7 +204,7 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor, fea
                 name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION'
               },
               variables: {
-                DAST_VERSION: 3,
+                DAST_VERSION: 4,
                 SECURE_ANALYZERS_PREFIX: '$CI_TEMPLATE_REGISTRY_HOST/security-products',
                 GIT_STRATEGY: 'none'
               },

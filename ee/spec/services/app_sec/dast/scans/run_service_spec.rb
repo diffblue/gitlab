@@ -166,7 +166,7 @@ RSpec.describe AppSec::Dast::Scans::RunService do
             masked: false
           }, {
             key: 'DAST_VERSION',
-            value: '3',
+            value: '4',
             public: true,
             masked: false
           }, {
