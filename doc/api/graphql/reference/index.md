@@ -19037,6 +19037,7 @@ Represents a product analytics dashboard visualization.
 | <a id="projectsshurltorepo"></a>`sshUrlToRepo` | [`String`](#string) | URL to connect to the project via SSH. |
 | <a id="projectstarcount"></a>`starCount` | [`Int!`](#int) | Number of times the project has been starred. |
 | <a id="projectstatistics"></a>`statistics` | [`ProjectStatistics`](#projectstatistics) | Statistics of the project. |
+| <a id="projectstatisticsdetailspaths"></a>`statisticsDetailsPaths` | [`ProjectStatisticsRedirect`](#projectstatisticsredirect) | Redirects for Statistics of the project. |
 | <a id="projectsuggestioncommitmessage"></a>`suggestionCommitMessage` | [`String`](#string) | Commit message used to apply merge request suggestions. |
 | <a id="projecttaglist"></a>`tagList` **{warning-solid}** | [`String`](#string) | **Deprecated** in 13.12. Use `topics`. |
 | <a id="projectterraformstates"></a>`terraformStates` | [`TerraformStateConnection`](#terraformstateconnection) | Terraform states associated with the project. (see [Connections](#connections)) |
@@ -20549,6 +20550,19 @@ Represents the source of a security policy belonging to a project.
 | <a id="projectstatisticsstoragesize"></a>`storageSize` | [`Float!`](#float) | Storage size of the project in bytes. |
 | <a id="projectstatisticsuploadssize"></a>`uploadsSize` | [`Float`](#float) | Uploads size of the project in bytes. |
 | <a id="projectstatisticswikisize"></a>`wikiSize` | [`Float`](#float) | Wiki size of the project in bytes. |
+
+### `ProjectStatisticsRedirect`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectstatisticsredirectbuildartifacts"></a>`buildArtifacts` | [`String!`](#string) | Redirection Route for job_artifacts. |
+| <a id="projectstatisticsredirectcontainerregistry"></a>`containerRegistry` | [`String!`](#string) | Redirection Route for container_registry. |
+| <a id="projectstatisticsredirectpackages"></a>`packages` | [`String!`](#string) | Redirection Route for packages. |
+| <a id="projectstatisticsredirectrepository"></a>`repository` | [`String!`](#string) | Redirection Route for repository. |
+| <a id="projectstatisticsredirectsnippets"></a>`snippets` | [`String!`](#string) | Redirection Route for snippets. |
+| <a id="projectstatisticsredirectwiki"></a>`wiki` | [`String!`](#string) | Redirection Route for wiki. |
 
 ### `ProjectValueStreamAnalyticsFlowMetrics`
 
