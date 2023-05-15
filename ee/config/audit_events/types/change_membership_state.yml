@@ -1,0 +1,9 @@
+---
+name: change_membership_state
+description: Event triggered on a users membership is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/362200
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87924
+feature_category: 'user_management'
+milestone: '15.1'
+saved_to_database: true
+streamed: true
