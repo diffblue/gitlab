@@ -214,6 +214,11 @@ module Types
           null: true,
           description: 'Statistics of the project.'
 
+    field :statistics_details_paths, Types::ProjectStatisticsRedirectType,
+          null: true,
+          description: 'Redirects for Statistics of the project.',
+          calls_gitaly: true
+
     field :repository, Types::RepositoryType,
           null: true,
           description: 'Git repository of the project.'
@@ -728,6 +733,19 @@ module Types
       else
         object.forks.visible_to_user_and_access_level(current_user, minimum_access_level)
       end
+    end
+
+    def statistics_details_paths
+      root_ref = project.repository.root_ref || project.default_branch_or_main
+
+      {
+        repository: Gitlab::Routing.url_helpers.project_tree_url(project, root_ref),
+        wiki: Gitlab::Routing.url_helpers.project_wikis_pages_url(project),
+        build_artifacts: Gitlab::Routing.url_helpers.project_artifacts_url(project),
+        packages: Gitlab::Routing.url_helpers.project_packages_url(project),
+        snippets: Gitlab::Routing.url_helpers.project_snippets_url(project),
+        container_registry: Gitlab::Routing.url_helpers.project_container_registry_index_url(project)
+      }
     end
 
     private
