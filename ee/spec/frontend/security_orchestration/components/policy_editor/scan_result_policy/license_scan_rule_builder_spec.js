@@ -2,7 +2,7 @@ import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
-import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
+import PolicyRuleBranchSelection from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_branch_selection.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
@@ -47,11 +47,13 @@ describe('LicenseScanRuleBuilder', () => {
         softwareLicenses: '[]',
         ...provide,
       },
+      stubs: {
+        PolicyRuleBranchSelection: true,
+      },
     });
   };
 
-  const findBranches = () => wrapper.findComponent(ProtectedBranchesSelector);
-  const findBranchesLabel = () => wrapper.findByTestId('branches-label');
+  const findBranches = () => wrapper.findComponent(PolicyRuleBranchSelection);
   const findGroupLevelBranches = () => wrapper.findByTestId('group-level-branch');
   const findMatchType = () => wrapper.findByTestId('match-type-select');
   const findLicenseStates = () => wrapper.findByTestId('license-state-select');
@@ -88,18 +90,14 @@ describe('LicenseScanRuleBuilder', () => {
         expect.arrayContaining([expect.objectContaining({ includeSelectAll: true })]),
       );
     });
-
-    it('does not render branches label when targeting all branches', () => {
-      expect(findBranchesLabel().exists()).toBe(false);
-    });
   });
 
   describe('when editing any attribute of the rule', () => {
     it.each`
-      currentComponent          | newValue                           | expected                                                   | event
-      ${findBranches}           | ${PROTECTED_BRANCHES_MOCK[0]}      | ${{ branches: UPDATED_RULE.branches }}                     | ${'input'}
-      ${findMatchType}          | ${UPDATED_RULE.match_on_inclusion} | ${{ match_on_inclusion: UPDATED_RULE.match_on_inclusion }} | ${'select'}
-      ${findLicenseMultiSelect} | ${UPDATED_RULE.license_types}      | ${{ license_types: UPDATED_RULE.license_types }}           | ${'select'}
+      currentComponent          | newValue                                           | expected                                                   | event
+      ${findBranches}           | ${{ branches: [PROTECTED_BRANCHES_MOCK[0].name] }} | ${{ branches: UPDATED_RULE.branches }}                     | ${'changed'}
+      ${findMatchType}          | ${UPDATED_RULE.match_on_inclusion}                 | ${{ match_on_inclusion: UPDATED_RULE.match_on_inclusion }} | ${'select'}
+      ${findLicenseMultiSelect} | ${UPDATED_RULE.license_types}                      | ${{ license_types: UPDATED_RULE.license_types }}           | ${'select'}
     `(
       'triggers a changed event (by $currentComponent) with the updated rule',
       async ({ currentComponent, newValue, expected, event }) => {
@@ -128,12 +126,6 @@ describe('LicenseScanRuleBuilder', () => {
         [expect.objectContaining({ license_states: 'Newly Detected' })],
       ]);
     });
-  });
-
-  it('does render branches label when a branch is selected', async () => {
-    factory({ initRule: UPDATED_RULE });
-    await nextTick();
-    expect(findBranchesLabel().exists()).toBe(true);
   });
 
   it('can change scan type', () => {

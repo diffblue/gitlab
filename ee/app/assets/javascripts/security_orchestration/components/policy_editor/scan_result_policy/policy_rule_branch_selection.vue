@@ -50,14 +50,28 @@ export default {
       },
     },
     showBranchesLabel() {
+      if (!Array.isArray(this.initRule.branches)) {
+        return false;
+      }
+
       return Boolean(this.initRule.branches?.length) || this.showInput;
     },
     branchesToAdd: {
       get() {
-        return this.initRule.branches || [];
+        return this.initRule.branches;
       },
-      set(value) {
-        const branches = value.id === ALL_PROTECTED_BRANCHES.id ? [] : [value.name];
+      set(values) {
+        let branches = [];
+
+        if (!values) {
+          branches = null;
+        } else {
+          const validValues = values.filter(Boolean);
+          if (!validValues.find((v) => v.id === ALL_PROTECTED_BRANCHES.id)) {
+            branches = validValues.map((v) => v.name);
+          }
+        }
+
         this.triggerChanged({ branches });
       },
     },
@@ -72,7 +86,7 @@ export default {
     handleSelect(value) {
       this.selected = value;
       if (value === ALL_PROTECTED_BRANCHES.value) {
-        this.branchesToAdd = ALL_PROTECTED_BRANCHES;
+        this.branchesToAdd = [ALL_PROTECTED_BRANCHES];
       }
     },
     triggerChanged(value) {
@@ -91,6 +105,7 @@ export default {
       class="gl-display-inline gl-max-w-26"
       :allow-all-branches-option="false"
       :allow-all-protected-branches-option="true"
+      multiple
       :project-id="namespaceId"
       :selected-branches-names="branchesToAdd"
     />
