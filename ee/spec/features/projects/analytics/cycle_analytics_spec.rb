@@ -195,16 +195,4 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
 
     it_behaves_like 'Unlicensed Value Stream Analytics'
   end
-
-  context 'with `vsa_group_and_project_parity` disabled' do
-    before do
-      stub_licensed_features(cycle_analytics_for_projects: true)
-      stub_feature_flags(vsa_group_and_project_parity: false)
-
-      project.add_maintainer(user)
-      sign_in(user)
-    end
-
-    it_behaves_like 'Unlicensed Value Stream Analytics'
-  end
 end

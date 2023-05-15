@@ -27,20 +27,17 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
   end
 
   describe '.licensed?' do
-    where(:model, :enabled_license, :parity_ff_enabled, :outcome) do
-      :nil | nil | false | false
-      :issue | nil | false | false
-      :issue | :cycle_analytics_for_projects | false | false
-      :issue | :cycle_analytics_for_groups | false | false
-      :project_namespace | nil | false | false
-      :project_namespace | :cycle_analytics_for_groups | true | false
-      :project_namespace | :cycle_analytics_for_groups | false | false
-      # parity_ff_enabled affects only these two cases
-      :project_namespace | :cycle_analytics_for_projects | false | false
-      :project_namespace | :cycle_analytics_for_projects | true | true
-      :group | nil | false | false
-      :group | :cycle_analytics_for_groups | false | true
-      :group | :cycle_analytics_for_projects | false | false
+    where(:model, :enabled_license, :outcome) do
+      :nil | nil | false
+      :issue | nil | false
+      :issue | :cycle_analytics_for_projects | false
+      :issue | :cycle_analytics_for_groups | false
+      :project_namespace | nil | false
+      :project_namespace | :cycle_analytics_for_groups | false
+      :project_namespace | :cycle_analytics_for_projects | true
+      :group | nil | false
+      :group | :cycle_analytics_for_groups | true
+      :group | :cycle_analytics_for_projects | false
     end
 
     with_them do
@@ -48,7 +45,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics, feature_category: :team_planni
 
       before do
         stub_licensed_features(enabled_license => true) if enabled_license
-        stub_feature_flags(vsa_group_and_project_parity: parity_ff_enabled)
       end
 
       it { is_expected.to eq(outcome) }
