@@ -9,7 +9,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
       class="gl-clearfix gl-border-t"
     >
       <span
-        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
+        class="details-cell gl-sticky gl-left-0 gl-float-left gl-display-flex gl-justify-content-space-between gl-align-items-center"
       >
         <span
           aria-label="Rotation 242"
@@ -71,12 +71,12 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
       </span>
        
       <span
-        class="timeline-cell gl-overflow-hidden"
+        class="timeline-cell gl-float-left gl-overflow-hidden gl-relative"
         data-testid="timeline-cell"
         style="width: calc(100% - 180px);"
       >
         <span
-          class="current-day-indicator"
+          class="current-day-indicator gl-absolute gl-bg-red-500 gl-pointer-events-none gl-translate-x-n50"
           data-testid="current-day-indicator"
           style="left: 14.285714285714286%;"
         />

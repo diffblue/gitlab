@@ -52,9 +52,9 @@ export default {
 </script>
 
 <template>
-  <div class="timeline-section clearfix">
+  <div class="timeline-section clearfix gl-sticky gl-top-0">
     <div>
-      <span class="timeline-header-label gl-text-gray-700">{{
+      <span class="timeline-header-label gl-text-gray-700 gl-float-left">{{
         presetIsDay ? __('Hour') : __('Date')
       }}</span>
     </div>

@@ -60,10 +60,10 @@ describe('WeeksHeaderSubItemComponent', () => {
       expect(wrapper.find('.current-day-indicator-header.preset-weeks').exists()).toBe(true);
     });
 
-    it("sublabel has `label-dark label-bold` classes when it is for today's date", () => {
+    it("sublabel has `gl-text-gray-900! gl-font-weight-bold` classes when it is for today's date", () => {
       // Timeframe starts at Jan 1, 2018, faked today is Jan 3, 2018 (3rd item in a week timeframe)
       expect(findSublabelValues().at(2).classes()).toEqual(
-        expect.arrayContaining(['label-dark', 'label-bold']),
+        expect.arrayContaining(['gl-text-gray-900!', 'gl-font-weight-bold']),
       );
     });
   });

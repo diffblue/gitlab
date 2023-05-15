@@ -25,7 +25,7 @@ export default {
 
 <template>
   <span
-    class="timeline-header-item"
+    class="timeline-header-item gl-float-left"
     data-testid="timeline-header-item"
     :style="timelineHeaderStyles"
   >

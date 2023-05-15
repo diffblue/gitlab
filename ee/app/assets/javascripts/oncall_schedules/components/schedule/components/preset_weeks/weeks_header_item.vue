@@ -33,19 +33,6 @@ export default {
     timelineHeaderLabel() {
       return monthInWords(this.timeframeItem, true);
     },
-    timelineHeaderClass() {
-      const currentDateTime = this.$options.currentDate.getTime();
-      const lastDayOfCurrentWeekTime = this.lastDayOfCurrentWeek.getTime();
-
-      if (
-        currentDateTime >= this.timeframeItem.getTime() &&
-        currentDateTime <= lastDayOfCurrentWeekTime
-      ) {
-        return 'label-bold';
-      }
-
-      return '';
-    },
     timelineHeaderStyles() {
       return {
         width: `calc((${100}% - ${TIMELINE_CELL_WIDTH}px) / ${2})`,
@@ -56,12 +43,8 @@ export default {
 </script>
 
 <template>
-  <span class="timeline-header-item" :style="timelineHeaderStyles">
-    <div
-      :class="timelineHeaderClass"
-      class="gl-font-weight-bold gl-text-gray-500 gl-pl-6"
-      data-testid="timeline-header-label"
-    >
+  <span class="timeline-header-item gl-float-left" :style="timelineHeaderStyles">
+    <div class="gl-font-weight-bold gl-text-gray-500 gl-pl-6" data-testid="timeline-header-label">
       {{ timelineHeaderLabel }}
     </div>
     <weeks-header-sub-item :timeframe-item="timeframeItem" />
