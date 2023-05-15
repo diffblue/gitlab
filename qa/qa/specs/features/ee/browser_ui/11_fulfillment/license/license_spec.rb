@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  include QA::Support::Helpers::Plan
+  include Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' },
                                                                  product_group: :provision do
-    include QA::Support::Data::License
+    include Support::Data::License
 
     let(:user) { license_user }
     let(:company) { license_company }

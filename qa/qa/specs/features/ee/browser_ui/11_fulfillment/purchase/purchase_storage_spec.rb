@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  include QA::Support::Helpers::Plan
+  include Support::Helpers::Plan
 
   RSpec.shared_examples 'Purchase storage' do |purchase_quantity|
     it 'adds additional storage to group namespace' do
