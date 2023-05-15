@@ -19,9 +19,11 @@ RSpec.shared_examples 'query dastProfiles.dastProfileSchedule shared examples' d
     end
 
     extra_users.each do |extra_user|
-      create(:dast_profile_schedule,
-             project: profile_project,
-             dast_profile: create(:dast_profile, project: profile_project), owner: extra_user)
+      create(
+        :dast_profile_schedule,
+        project: profile_project,
+        dast_profile: create(:dast_profile, project: profile_project), owner: extra_user
+      )
     end
 
     expect { run_query(query) }.not_to exceed_query_limit(control)

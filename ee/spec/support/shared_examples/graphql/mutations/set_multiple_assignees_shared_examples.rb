@@ -15,10 +15,12 @@ RSpec.shared_examples 'a multi-assignable resource' do
     let(:mutated_resource) { subject[resource.class.name.underscore.to_sym] }
 
     subject do
-      mutation.resolve(project_path: resource.project.full_path,
-                       iid: resource.iid,
-                       operation_mode: mode,
-                       assignee_usernames: assignee_usernames)
+      mutation.resolve(
+        project_path: resource.project.full_path,
+        iid: resource.iid,
+        operation_mode: mode,
+        assignee_usernames: assignee_usernames
+      )
     end
 
     before do

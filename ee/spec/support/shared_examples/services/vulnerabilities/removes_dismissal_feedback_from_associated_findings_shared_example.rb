@@ -4,11 +4,13 @@ RSpec.shared_examples 'removes dismissal feedback from associated findings' do
   let(:finding) { create(:vulnerabilities_finding, vulnerability: vulnerability, project: vulnerability.project) }
 
   before do
-    create(:vulnerability_feedback,
-           :dismissal,
-           project: finding.project,
-           category: finding.report_type,
-           finding_uuid: finding.uuid)
+    create(
+      :vulnerability_feedback,
+      :dismissal,
+      project: finding.project,
+      category: finding.report_type,
+      finding_uuid: finding.uuid
+    )
   end
 
   context 'when there is no error' do
