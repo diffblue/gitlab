@@ -82,13 +82,27 @@ module Security
         findings = security_findings.by_severity_levels(approval_rule.severity_levels)
         findings = findings.by_report_types(approval_rule.scanners) if approval_rule.scanners.present?
 
-        if check_dismissed &&
-            vulnerability_states.exclude?(ApprovalProjectRule::NEW_DISMISSED) &&
-            vulnerability_states.include?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
+        if only_new_undismissed_findings?(check_dismissed, vulnerability_states)
           findings = undismissed_security_findings(findings)
         end
 
+        if only_new_dismissed_findings?(check_dismissed, vulnerability_states)
+          findings = findings.by_state(:dismissed, check_feedback: true)
+        end
+
         findings.fetch_uuids
+      end
+
+      def only_new_dismissed_findings?(check_dismissed, vulnerability_states)
+        check_dismissed &&
+          vulnerability_states.include?(ApprovalProjectRule::NEW_DISMISSED) &&
+          vulnerability_states.exclude?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
+      end
+
+      def only_new_undismissed_findings?(check_dismissed, vulnerability_states)
+        check_dismissed &&
+          vulnerability_states.exclude?(ApprovalProjectRule::NEW_DISMISSED) &&
+          vulnerability_states.include?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
       end
 
       def undismissed_security_findings(findings)
