@@ -2,11 +2,14 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "description": "A tuple representing the compressed list of licenses for a package.",
   "type": "array",
-  "minItems": 3,
-  "maxItems": 3,
+  "minItems": 4,
+  "maxItems": 4,
   "items": [
     {
       "$ref": "#/definitions/default_licenses"
+    },
+    {
+      "$ref": "#/definitions/lowest_version"
     },
     {
       "$ref": "#/definitions/highest_version"
@@ -21,9 +24,27 @@
       "description": "List of default licenses for a package.",
       "$ref": "#/definitions/license_ids"
     },
+    "lowest_version": {
+      "description": "The lowest version of a package ingested.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/version"
+        }
+      ]
+    },
     "highest_version": {
       "description": "The highest version of a package ingested.",
-      "$ref": "#/definitions/version"
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/version"
+        }
+      ]
     },
     "non_default_licenses": {
       "type": "array",
