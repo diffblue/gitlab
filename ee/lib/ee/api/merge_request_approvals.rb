@@ -56,8 +56,8 @@ module EE
             end
 
             # Deprecated in favor of approval rules API
-            desc 'Change approval-related configuration' do
-              detail 'This feature was introduced in 10.6'
+            desc 'Deprecated in 16.0: Use the merge request approvals API instead. Change approval-related configuration' do
+              detail 'This feature was introduced in 10.6 and deprecated in 16.0'
               success ::EE::API::Entities::ApprovalState
               deprecated true
             end
@@ -67,18 +67,34 @@ module EE
                 documentation: { example: 2 }
             end
             post 'approvals' do
-              error!('Not found', 404) if ::Feature.enabled?(:remove_deprecated_approvals)
-
               merge_request = find_merge_request_with_access(params[:merge_request_iid], :update_merge_request)
 
               error!('Overriding approvals is disabled', 422) if merge_request.project.disable_overriding_approvers_per_merge_request
 
-              merge_request = ::MergeRequests::UpdateService.new(project: user_project, current_user: current_user, params: { approvals_before_merge: params[:approvals_required] }).execute(merge_request)
+              if ::Feature.enabled?(:adapt_deprecated_approvals)
+                approval_rule = merge_request.approval_rules.any_approver.first
 
-              # Merge request shouldn't be in an invalid state after the changes, but handling errors to be safe
-              handle_merge_request_errors!(merge_request)
+                approval_params = declared_params(include_missing: false)
 
-              present_approval(merge_request)
+                result = if approval_rule
+                           ::ApprovalRules::UpdateService.new(approval_rule, current_user, approval_params).execute
+                         else
+                           ::ApprovalRules::CreateService.new(merge_request, current_user, approval_params).execute
+                         end
+
+                if result[:status] == :success
+                  present_approval(merge_request)
+                else
+                  render_api_error!(result[:message], result[:http_status] || 400)
+                end
+              else
+                merge_request = ::MergeRequests::UpdateService.new(project: user_project, current_user: current_user, params: { approvals_before_merge: params[:approvals_required] }).execute(merge_request)
+
+                # Merge request shouldn't be in an invalid state after the changes, but handling errors to be safe
+                handle_merge_request_errors!(merge_request)
+
+                present_approval(merge_request)
+              end
             end
           end
         end

@@ -280,18 +280,109 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
     let(:params) { { approvals_required: 5 } }
     let(:current_user) { user }
 
-    it 'returns 404 error (deprecated endpoint)' do
-      post api(path, current_user, admin_mode: true), params: params
-
-      expect(response).to have_gitlab_http_status(:not_found)
-    end
-
-    context 'when feature flag "remove_deprecated_approvals" is disabled' do
+    context 'when feature flag "adapt_deprecated_approvals" is enabled' do
       before do
-        stub_feature_flags(remove_deprecated_approvals: false)
+        stub_feature_flags(adapt_deprecated_approvals: true)
       end
 
       it_behaves_like 'POST request permissions for admin mode'
+
+      shared_examples_for 'cannot update approval rules' do
+        context 'when users cannot update approval rules' do
+          before do
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(current_user, :edit_approval_rule, anything).and_return(false)
+          end
+
+          it 'returns 403 error' do
+            post api(path, current_user, admin_mode: true), params: params
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+            expect(json_response['message']).to eq ['Prohibited']
+          end
+        end
+      end
+
+      shared_examples_for 'user allowed to override approvals_before_merge' do
+        context 'when approval rule is missing for the merge request' do
+          it 'creates an approval rule with required number of approvals' do
+            post api(path, current_user, admin_mode: true), params: params
+
+            approval_rule = merge_request.approval_rules.any_approver.first
+            expect(approval_rule.approvals_required).to eq(5)
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['approvals_required']).to eq(5)
+          end
+
+          it_behaves_like 'cannot update approval rules'
+        end
+
+        context 'when approval rules already exist for the merge request' do
+          let!(:any_approver_rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+          let!(:custom_rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 2) }
+
+          it 'updates any approval rule with required number of approvals' do
+            expect do
+              post api(path, current_user, admin_mode: true), params: params
+            end.to change { any_approver_rule.reload.approvals_required }.from(1).to(5)
+                     .and change { custom_rule.reload.approvals_required }.by(0)
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['approvals_required']).to eq(5)
+          end
+
+          it_behaves_like 'cannot update approval rules'
+        end
+      end
+
+      context 'when disable_overriding_approvers_per_merge_request is true on the project' do
+        before do
+          project.update!(disable_overriding_approvers_per_merge_request: true)
+        end
+
+        it 'does not allow you to set approvals_before_merge' do
+          expect do
+            post api(path, current_user, admin_mode: true), params: params
+          end.not_to change { merge_request.approval_rules.any_approver.reload.first }.from(nil)
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'as a project admin' do
+        it_behaves_like 'user allowed to override approvals_before_merge' do
+          let(:current_user) { user }
+          let(:expected_approver_group_size) { 0 }
+        end
+      end
+
+      context 'as a global admin' do
+        it_behaves_like 'user allowed to override approvals_before_merge' do
+          let(:current_user) { admin }
+          let(:expected_approver_group_size) { 1 }
+        end
+      end
+
+      context 'as a random user' do
+        before do
+          project.update!(disable_overriding_approvers_per_merge_request: false)
+        end
+
+        it 'does not allow you to override approvals required' do
+          expect do
+            post api(path, user2), params: params
+          end.not_to change { merge_request.approval_rules.any_approver.reload.first }.from(nil)
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when feature flag "adapt_deprecated_approvals" is disabled' do
+      before do
+        stub_feature_flags(adapt_deprecated_approvals: false)
+      end
 
       shared_examples_for 'user allowed to override approvals_before_merge' do
         context 'when disable_overriding_approvers_per_merge_request is false on the project' do
@@ -322,6 +413,14 @@ RSpec.describe API::MergeRequestApprovals, :aggregate_failures, feature_category
             expect(response).to have_gitlab_http_status(:unprocessable_entity)
           end
         end
+      end
+
+      it 'additionally updates approvals_before_merge on merge request' do
+        expect do
+          post api(path, current_user, admin_mode: true), params: params
+        end.to change { merge_request.reload.approvals_before_merge }.from(nil).to(5)
+
+        expect(response).to have_gitlab_http_status(:created)
       end
 
       context 'as a project admin' do
