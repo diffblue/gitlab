@@ -12,6 +12,11 @@ module Types
             null: false,
             description: 'Title of the dashboard.'
 
+      field :slug,
+            type: GraphQL::Types::String,
+            null: false,
+            description: 'Slug of the dashboard.'
+
       field :description,
             type: GraphQL::Types::String,
             null: true,

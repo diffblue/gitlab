@@ -22,6 +22,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       expect(subject.size).to eq(1)
       expect(subject.first).to be_a(described_class)
       expect(subject.first.title).to eq('Dashboard Example 1')
+      expect(subject.first.slug).to eq('dashboard_example_1')
       expect(subject.first.description).to eq('North Star Metrics across all departments for the last 3 quarters.')
       expect(subject.first.schema_version).to eq('1')
     end
