@@ -57,6 +57,28 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
     end
   end
 
+  describe '.for_project_production' do
+    subject { described_class.for_project_production(project) }
+
+    let_it_be(:project) { create(:project) }
+
+    let_it_be(:production_metrics) do
+      create(:dora_daily_metrics, environment: create(:environment, :production, project: project))
+    end
+
+    let_it_be(:staging_metrics) do
+      create(:dora_daily_metrics, environment: create(:environment, :staging, project: project))
+    end
+
+    let_it_be(:different_production_metrics) do
+      create(:dora_daily_metrics, environment: create(:environment, :production))
+    end
+
+    it 'returns metrics for project production environment' do
+      is_expected.to match_array([production_metrics])
+    end
+  end
+
   describe '.refresh!' do
     subject { described_class.refresh!(environment, date.to_date) }
 

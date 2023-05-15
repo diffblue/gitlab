@@ -51,4 +51,14 @@ RSpec.describe Analytics::Forecasting::HoltWintersOptimizer, feature_category: :
       expect(model.gamma).to be_within(0.05).of(best_params[:gamma])
     end
   end
+
+  describe '.model_for' do
+    it 'returns best fit model' do
+      model = described_class.model_for(time_series, model_class: model_mock)
+
+      expect(model.alpha).to be_within(0.05).of(best_params[:alpha])
+      expect(model.beta).to be_within(0.05).of(best_params[:beta])
+      expect(model.gamma).to be_within(0.05).of(best_params[:gamma])
+    end
+  end
 end

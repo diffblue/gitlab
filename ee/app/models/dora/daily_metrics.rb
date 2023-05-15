@@ -24,6 +24,12 @@ module Dora
       where(date: after..before)
     end
 
+    scope :for_project_production, -> (project) do
+      environment = project.environments.production.limit(1)
+
+      for_environments(environment)
+    end
+
     class << self
       def aggregate_for!(metrics, interval)
         select_query_part = metrics.map do |metric|

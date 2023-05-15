@@ -9,6 +9,10 @@ module Analytics
       SEASON_LENGTH = 7 # First metrics will be weekly so we hardcode it for now.
       STARTING_POINT = { alpha: 0.5, beta: 0.5, gamma: 0.5 }.freeze
 
+      def self.model_for(*args, **params)
+        new(*args, **params).model
+      end
+
       def initialize(time_series, model_class: HoltWinters)
         @time_series = time_series
         @model_class = model_class
