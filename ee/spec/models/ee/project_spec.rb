@@ -558,18 +558,50 @@ RSpec.describe Project, feature_category: :projects do
     end
 
     describe '.with_feature_available', :saas do
-      it 'lists projects with the feature available' do
-        user = create(:user)
-        ultimate_group = create(:group_with_plan, plan: :ultimate_plan)
-        premium_group = create(:group_with_plan, plan: :premium_plan)
-        no_plan_group = create(:group_with_plan, plan: nil)
-        ultimate_project = create(:project, :archived, creator: user, namespace: ultimate_group)
-        premium_project = create(:project, :archived, creator: user, namespace: premium_group)
-        no_plan_project = create(:project, :archived, creator: user, namespace: no_plan_group)
-        no_plan_public_project = create(:project, :archived, creator: user, visibility: ::Gitlab::VisibilityLevel::PUBLIC, namespace: no_plan_group)
+      let_it_be(:user) { create(:user) }
 
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).to contain_exactly(premium_project, ultimate_project, no_plan_public_project)
-        expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project)
+      let_it_be(:ultimate_group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
+      let_it_be(:ultimate_subgroup) { create(:group, :private, parent: ultimate_group) }
+      let_it_be(:another_ultimate_group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
+      let_it_be(:another_ultimate_subgroup) { create(:group, :private, parent: another_ultimate_group) }
+      let_it_be(:premium_group) { create(:group_with_plan, :private, plan: :premium_plan) }
+      let_it_be(:premium_subgroup) { create(:group, :private, parent: premium_group) }
+      let_it_be(:no_plan_group) { create(:group_with_plan, :public, plan: nil) }
+      let_it_be(:no_plan_subgroup) { create(:group, :public, parent: no_plan_group) }
+      let_it_be(:ultimate_project) { create(:project, :private, :archived, creator: user, namespace: ultimate_group) }
+      let_it_be(:premium_project) { create(:project, :private, :archived, creator: user, namespace: premium_group) }
+      let_it_be(:no_plan_public_project) { create(:project, :public, :archived, creator: user, namespace: no_plan_group) }
+      let_it_be(:ultimate_subgroup_project) { create(:project, :private, :archived, creator: user, namespace: ultimate_subgroup) }
+      let_it_be(:another_ultimate_subgroup_project) { create(:project, :private, :archived, creator: user, namespace: another_ultimate_subgroup) }
+      let_it_be(:premium_subgroup_project) { create(:project, :private, :archived, creator: user, namespace: premium_subgroup) }
+      let_it_be(:no_plan_private_project) { create(:project, :private, :archived, creator: user, namespace: no_plan_group) }
+      let_it_be(:no_plan_subgroup_private_project) { create(:project, :private, :archived, creator: user, namespace: no_plan_subgroup) }
+
+      subject(:result) { described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups) }
+
+      it 'lists projects with the feature available' do
+        is_expected.to contain_exactly(
+          premium_project,
+          premium_subgroup_project,
+          ultimate_project,
+          ultimate_subgroup_project,
+          another_ultimate_subgroup_project,
+          no_plan_public_project
+        )
+      end
+
+      context 'when the feature flag `optimize_scope_projects_with_feature_available` is turned off' do
+        before do
+          stub_feature_flags(optimize_scope_projects_with_feature_available: false)
+        end
+
+        it 'does not include projects from paid subgroups' do
+          is_expected.to contain_exactly(
+            premium_project,
+            ultimate_project,
+            no_plan_public_project
+          )
+        end
       end
     end
 
