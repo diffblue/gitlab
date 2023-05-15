@@ -442,6 +442,14 @@ Review the details carefully before upgrading.
 Version 14.x.x [security report schemas](https://gitlab.com/gitlab-org/security-products/security-report-schemas) have been removed.
 Security reports that use schema version 14.x.x will cause an error in the pipeline's **Security** tab. For more information, refer to [security report validation](https://docs.gitlab.com/ee/user/application_security/#security-report-validation).
 
+### Self-monitoring project is removed
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+GitLab self-monitoring project was meant to enable self-hosted GitLab administrators to visualize performance metrics of GitLab within GitLab itself. This feature relied on GitLab Metrics dashboards. With metrics dashboard being removed, self-monitoring project is also removed. We recommended that self-hosted users monitor their GitLab instance with alternative visualization tools, such as Grafana.
+
 ### Starboard directive in the config for the GitLab agent for Kubernetes removed
 
 WARNING:
