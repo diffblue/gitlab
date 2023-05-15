@@ -1,3 +1,9 @@
 %strong.text-truncate.flex-fill
   = s_('Geo|Project (ID: %{project_id}) no longer exists on the primary. It is safe to remove this entry, as this will not remove any data on disk.') % { project_id: project_registry.project_id }
-= button_tag s_('Geo|Remove'), type: "button", class: 'gl-button btn btn-danger btn-inverted js-confirm-modal-button', data: remove_tracking_entry_modal_data(admin_geo_project_path(project_registry))
+= render Pajamas::ButtonComponent.new(type: :submit,
+  variant: :danger,
+  category: :secondary,
+  button_options: { class: 'js-confirm-modal-button',
+    data: remove_tracking_entry_modal_data(admin_geo_project_path(project_registry)) }) do
+  = s_('Geo|Remove')
+
