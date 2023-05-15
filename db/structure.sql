@@ -19179,13 +19179,15 @@ ALTER SEQUENCE operations_user_lists_id_seq OWNED BY operations_user_lists.id;
 CREATE TABLE organizations (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
+    updated_at timestamp with time zone NOT NULL,
+    name text DEFAULT ''::text NOT NULL,
+    CONSTRAINT check_d130d769e0 CHECK ((char_length(name) <= 255))
 );
 
 CREATE SEQUENCE organizations_id_seq
-    START WITH 1
+    START WITH 1000
     INCREMENT BY 1
-    NO MINVALUE
+    MINVALUE 1000
     NO MAXVALUE
     CACHE 1;
 
@@ -33169,6 +33171,8 @@ CREATE UNIQUE INDEX unique_index_for_project_pages_unique_domain ON project_sett
 CREATE UNIQUE INDEX unique_index_on_system_note_metadata_id ON resource_link_events USING btree (system_note_metadata_id);
 
 CREATE UNIQUE INDEX unique_merge_request_metrics_by_merge_request_id ON merge_request_metrics USING btree (merge_request_id);
+
+CREATE UNIQUE INDEX unique_organizations_on_name_lower ON organizations USING btree (lower(name));
 
 CREATE UNIQUE INDEX unique_packages_project_id_and_name_and_version_when_debian ON packages_packages USING btree (project_id, name, version) WHERE ((package_type = 9) AND (status <> 4));
 
