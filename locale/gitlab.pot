@@ -39610,12 +39610,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{rules} actions for the %{scopes} %{branches} %{agents} %{namespaces}"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Run a %{scan} scan on runner that %{tags}"
-msgstr ""
-
-msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Run a %{scan} scan with %{dastProfiles} with tags %{tags}"
-msgstr ""
-
 msgid "ScanExecutionPolicy|A pipeline is run"
 msgstr ""
 
@@ -39626,6 +39620,12 @@ msgid "ScanExecutionPolicy|Conditions"
 msgstr ""
 
 msgid "ScanExecutionPolicy|If the field is empty, the runner will be automatically selected"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Run a %{scan} scan on runner that %{tags}"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Run a %{scan} scan with %{dastProfiles} with tags %{tags}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Scanner profile"

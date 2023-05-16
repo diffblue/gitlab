@@ -97,6 +97,7 @@ export default {
   <div>
     <gl-collapsible-listbox
       id="runner-tags-switcher-id"
+      class="gl-mr-2 gl-xs-mb-3"
       data-testid="runner-tags-switcher"
       :disabled="isTagListEmpty"
       :items="$options.TAGS_MODES"
@@ -118,7 +119,7 @@ export default {
 
     <runner-tags-dropdown
       v-if="isTagsListVisible"
-      toggle-class="gl-max-w-62 gl-ml-2"
+      toggle-class="gl-max-w-62"
       :empty-tags-list-placeholder="$options.i18n.noRunnerTagsText"
       :namespace-path="namespacePath"
       :namespace-type="namespaceType"
