@@ -163,4 +163,19 @@ RSpec.describe 'Query.project(fullPath).dependencies', feature_category: :depend
       expect(packagers).to eq([package_manager_enum(occurrence.packager)])
     end
   end
+
+  context 'with component_names as an argument' do
+    let!(:occurrence) { create(:sbom_occurrence, project: project) }
+    let(:component_name) { occurrence.name }
+    let(:query) { pagination_query({ component_names: [component_name] }) }
+
+    it 'filters records based on the component name' do
+      subject
+
+      result = graphql_data_at(:project, :dependencies, :nodes)
+      names = result.pluck('name')
+
+      expect(names).to eq([component_name])
+    end
+  end
 end
