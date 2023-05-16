@@ -1,8 +1,17 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin,
-    product_group: :utilization, feature_flag: { name: 'saas_user_caps', scope: :group },
+  RSpec.describe 'Fulfillment',
+    :requires_admin,
+    product_group: :utilization,
+    quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/410110',
+      type: :flaky
+    },
+    feature_flag: {
+      name: 'saas_user_caps',
+      scope: :group
+    },
     only: { pipeline: %i[staging staging-canary] } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
