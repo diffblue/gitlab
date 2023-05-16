@@ -72,7 +72,8 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
     [:vulnerability_export, :finished],
-    [:container_repository, :remote_store]
+    [:container_repository, :remote_store],
+    [:geo_design_management_repository_state, any]
   ].freeze
 
   geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?

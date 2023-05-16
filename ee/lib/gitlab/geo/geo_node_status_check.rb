@@ -275,6 +275,8 @@ module Gitlab
       end
 
       def print_design_repositories_status
+        return if ::Geo::DesignManagementRepositoryReplicator.enabled?
+
         print_counts_row(
           description: 'Design repositories',
           failed: current_node_status.design_repositories_failed_count,

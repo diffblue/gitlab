@@ -167,6 +167,46 @@
         "description": "Dependency proxy manifests verified count",
         "type": "number"
       },
+      "design_management_repositories_checksum_failed_count": {
+        "description": "Design management repositories checksum failed count",
+        "type": "number"
+      },
+      "design_management_repositories_checksum_total_count": {
+        "description": "Design management repositories checksum total count",
+        "type": "number"
+      },
+      "design_management_repositories_checksummed_count": {
+        "description": "Design management repositories checksummed count",
+        "type": "number"
+      },
+      "design_management_repositories_count": {
+        "description": "Design management repositories count",
+        "type": "number"
+      },
+      "design_management_repositories_failed_count": {
+        "description": "Design management repositories failed count",
+        "type": "number"
+      },
+      "design_management_repositories_registry_count": {
+        "description": "Design management repositories registry count",
+        "type": "number"
+      },
+      "design_management_repositories_synced_count": {
+        "description": "Design management repositories synced count",
+        "type": "number"
+      },
+      "design_management_repositories_verification_failed_count": {
+        "description": "Design management repositories verification failed count",
+        "type": "number"
+      },
+      "design_management_repositories_verification_total_count": {
+        "description": "Design management repositories verification total count",
+        "type": "number"
+      },
+      "design_management_repositories_verified_count": {
+        "description": "Design management repositories verified count",
+        "type": "number"
+      },
       "design_repositories_count": {
         "description": "Design repositories count",
         "type": "number"

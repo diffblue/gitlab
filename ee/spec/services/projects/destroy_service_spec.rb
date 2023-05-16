@@ -109,6 +109,50 @@ RSpec.describe Projects::DestroyService, feature_category: :projects do
         end
       end
     end
+
+    context 'with a design management repository' do
+      before do
+        project.create_design_management_repository
+      end
+
+      it 'calls replicator to update Geo', :sidekiq_inline do
+        # Run Sidekiq immediately to check that renamed repository will be removed
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect(project.design_management_repository.replicator).to receive(:handle_after_destroy)
+
+          subject.execute
+        end
+      end
+
+      it 'does not call replicator to update Geo if project deletion fails', :aggregate_failures do
+        allow(project).to receive(:destroy!).and_raise(StandardError.new('Other error message'))
+
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_event).and_call_original
+          expect_next_instance_of(Geo::DesignManagementRepositoryReplicator).never
+
+          subject.execute
+        end
+      end
+
+      it 'logs an event to the Geo event log' do
+        # Run Sidekiq immediately to check that renamed repository will be removed
+        Sidekiq::Testing.inline! do
+          expect(subject).to receive(:log_destroy_events).and_call_original
+          expect { subject.execute }.to change {
+            Geo::Event.where(replicable_name: :design_management_repository, event_name: :deleted).count
+          }.by(1)
+
+          payload = Geo::Event.where(replicable_name: :design_management_repository, event_name: :deleted).last.payload
+
+          expect(payload['model_record_id']).to eq(project.design_management_repository.id)
+          expect(payload['disk_path']).to eq(project.design_management_repository.disk_path)
+          expect(payload['full_path']).to eq(project.design_management_repository.full_path)
+          expect(payload['repository_storage']).to eq(project.design_management_repository.repository_storage)
+        end
+      end
+    end
   end
 
   context 'audit events' do
@@ -251,7 +295,7 @@ RSpec.describe Projects::DestroyService, feature_category: :projects do
     end
   end
 
-  context 'associations destoyed in batches' do
+  context 'associations destroyed in batches' do
     let!(:vulnerability) { create(:vulnerability, :with_findings, project: project) }
     let!(:finding) do
       create(:vulnerabilities_finding, vulnerability: vulnerability, project: project)

@@ -22,9 +22,10 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
     end
 
     context 'with legacy replication' do
-      context 'with geo_project_wiki_repository_replication feature flag disabled' do
+      context 'with geo replication FFs for wikis and design repos disabled' do
         before do
           stub_feature_flags(geo_project_wiki_repository_replication: false)
+          stub_feature_flags(geo_design_management_repository_replication: false)
         end
 
         it 'prints messages for all legacy replication and verification checks' do
@@ -44,23 +45,50 @@ RSpec.describe Gitlab::Geo::GeoNodeStatusCheck, :geo, feature_category: :geo_rep
         end
       end
 
-      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+      context 'with geo_project_wiki_repository_replication feature flag disabled' do
         before do
           stub_feature_flags(geo_project_wiki_repository_replication: false)
         end
 
-        it 'prints messages for all legacy replication and verification checks' do
+        it 'prints messages for wiki replication and verification check' do
           checks = [
-            /Repositories: /,
-            /Verified Repositories: /,
-            /Uploads: /,
-            /Container repositories: /,
-            /Design repositories: /
+            /Wikis: /,
+            /Verified Wikis: /
           ]
 
           checks.each do |text|
             expect { subject.print_replication_verification_status }.to output(text).to_stdout
           end
+        end
+      end
+
+      context 'with geo_project_wiki_repository_replication feature flag enabled' do
+        before do
+          stub_feature_flags(geo_project_wiki_repository_replication: true)
+        end
+
+        it 'does not print message for wiki legacy replication and verification checks' do
+          expect { subject.print_replication_verification_status }.not_to output(/Wikis/).to_stdout
+        end
+      end
+
+      context 'with geo_design_management_repository_replication feature flag disabled' do
+        before do
+          stub_feature_flags(geo_design_management_repository_replication: false)
+        end
+
+        it 'prints messages for Design repository legacy replication and verification check' do
+          expect { subject.print_replication_verification_status }.to output(/Design repositories: /).to_stdout
+        end
+      end
+
+      context 'with geo_design_management_repository_replication feature flag enabled' do
+        before do
+          stub_feature_flags(geo_design_management_repository_replication: true)
+        end
+
+        it 'does not print a message for design repository legacy replication and verification check' do
+          expect { subject.print_replication_verification_status }.not_to output(/Design repositories: /).to_stdout
         end
       end
     end

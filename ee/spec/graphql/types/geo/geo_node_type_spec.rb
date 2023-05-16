@@ -26,6 +26,7 @@ RSpec.describe GitlabSchema.types['GeoNode'], feature_category: :geo_replication
       container_repository_registries
       dependency_proxy_blob_registries
       dependency_proxy_manifest_registries
+      design_management_repository_registries
       group_wiki_repository_registries
       job_artifact_registries
       lfs_object_registries

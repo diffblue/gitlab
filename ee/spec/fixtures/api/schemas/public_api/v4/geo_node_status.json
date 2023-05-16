@@ -59,6 +59,18 @@
     "design_repositories_count",
     "design_repositories_failed_count",
     "design_repositories_synced_count",
+    "design_management_repositories_count",
+    "design_management_repositories_checksum_failed_count",
+    "design_management_repositories_checksum_total_count",
+    "design_management_repositories_checksummed_count",
+    "design_management_repositories_registry_count",
+    "design_management_repositories_failed_count",
+    "design_management_repositories_synced_count",
+    "design_management_repositories_synced_in_percentage",
+    "design_management_repositories_verification_failed_count",
+    "design_management_repositories_verification_total_count",
+    "design_management_repositories_verified_count",
+    "design_management_repositories_verified_in_percentage",
     "dependency_proxy_manifests_count",
     "dependency_proxy_manifests_checksum_failed_count",
     "dependency_proxy_manifests_checksum_total_count",
@@ -625,6 +637,72 @@
       ]
     },
     "design_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "design_management_repositories_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_checksum_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_checksum_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_checksummed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_registry_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_synced_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_synced_in_percentage": {
+      "type": "string"
+    },
+    "design_management_repositories_verification_failed_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_verification_total_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_verified_count": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "design_management_repositories_verified_in_percentage": {
       "type": "string"
     },
     "dependency_proxy_manifests_count": {

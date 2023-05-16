@@ -88,16 +88,17 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
       end
 
       it 'includes legacy types' do
-        expected_names = %w(
-          repositories
-          wikis
-          lfs_objects
-          uploads
-          job_artifacts
-          design_repositories
-        )
+        expect(names).to include('wikis')
+      end
+    end
 
-        expect(names).to include(*expected_names)
+    context 'with geo_design_management_repository_replication feature flag disabled' do
+      before do
+        stub_feature_flags(geo_design_management_repository_replication: false)
+      end
+
+      it 'includes design_repositories legacy type' do
+        expect(names).to include('design_repositories')
       end
     end
 
@@ -112,10 +113,19 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
           lfs_objects
           uploads
           job_artifacts
-          design_repositories
         )
 
         expect(names).to include(*expected_names)
+      end
+    end
+
+    context 'with geo_design_management_repository_replication feature flag enabled' do
+      before do
+        stub_feature_flags(geo_design_management_repository_replication: true)
+      end
+
+      it 'excludes design_repository legacy type' do
+        expect(names).not_to include('design_repositories')
       end
     end
 

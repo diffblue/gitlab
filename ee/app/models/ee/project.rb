@@ -886,7 +886,11 @@ module EE
         wiki.repository.log_geo_updated_event
       end
 
-      design_repository.log_geo_updated_event
+      if ::Geo::DesignManagementRepositoryReplicator.enabled?
+        design_management_repository.replicator.handle_after_update if design_management_repository
+      else
+        design_repository.log_geo_updated_event
+      end
     end
 
     override :import?

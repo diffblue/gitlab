@@ -92,9 +92,11 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo, feature_category
       dependency_proxy_blob = create(:dependency_proxy_blob)
       dependency_proxy_manifest = create(:dependency_proxy_manifest)
       project_wiki_repository = create(:project_wiki_repository, project: project)
+      design_management_repository = create(:design_management_repository, project: project)
 
       expect(Geo::ContainerRepositoryRegistry.where(container_repository_id: container_repository.id).count).to eq(0)
       expect(Geo::DesignRegistry.where(project_id: project.id).count).to eq(0)
+      expect(Geo::DesignManagementRepositoryRegistry.where(design_management_repository_id: design_management_repository.id).count).to eq(0)
       expect(Geo::JobArtifactRegistry.where(artifact_id: job_artifact.id).count).to eq(0)
       expect(Geo::LfsObjectRegistry.where(lfs_object_id: lfs_object.id).count).to eq(0)
       expect(Geo::MergeRequestDiffRegistry.where(merge_request_diff_id: merge_request_diff.id).count).to eq(0)

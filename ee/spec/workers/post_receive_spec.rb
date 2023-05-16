@@ -14,7 +14,7 @@ RSpec.describe PostReceive, feature_category: :shared do
   let(:gl_repository) { "project-#{project.id}" }
   let(:key) { create(:key, user: project.first_owner) }
   let(:key_id) { key.shell_id }
-  let(:project) { create(:project, :repository) }
+  let_it_be(:project) { create(:project, :repository) }
 
   describe "#process_project_changes" do
     context 'after project changes hooks' do
@@ -135,8 +135,12 @@ RSpec.describe PostReceive, feature_category: :shared do
           end
 
           context 'when wiki_repository does not exist' do
+            before do
+              project.wiki_repository.destroy!
+            end
+
             it 'does not call replicator to update Geo' do
-              expect(project.wiki_repository).to be_nil
+              expect(project.reload.wiki_repository).to be_nil
 
               expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator).never
 
@@ -221,6 +225,33 @@ RSpec.describe PostReceive, feature_category: :shared do
 
           expect(group.group_wiki_repository).to be_present
           expect_next_instance_of(Geo::GroupWikiRepositoryReplicator).never
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
+      end
+    end
+
+    context 'with a design repository' do
+      let(:gl_repository) { "design-#{project.design_management_repository.id}" }
+
+      context 'when on a Geo primary site' do
+        before do
+          stub_primary_node
+          project.create_design_management_repository
+        end
+
+        it 'calls replicator to update Geo' do
+          expect_next_instance_of(Geo::DesignManagementRepositoryReplicator) do |instance|
+            expect(instance).to receive(:handle_after_update)
+          end
+
+          described_class.new.perform(gl_repository, key_id, base64_changes)
+        end
+      end
+
+      context 'when not on a Geo primary site' do
+        it 'does not call replicator to update Geo' do
+          expect_next_instance_of(Geo::DesignManagementRepositoryReplicator).never
 
           described_class.new.perform(gl_repository, key_id, base64_changes)
         end
