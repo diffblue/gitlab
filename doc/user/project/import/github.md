@@ -124,6 +124,21 @@ If you are not using the GitHub integration, you can still perform an authorizat
 To use a newer personal access token in imports after previously performing these steps, sign out of
 your GitLab account and sign in again, or revoke the older personal access token in GitHub.
 
+### Filter repositories list
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/385113) in GitLab 16.0.
+
+After you authorize access to your GitHub repositories, GitLab redirects you to the importer page and
+your GitHub repositories are listed.
+
+Use one of the following tabs to filter the list of repositories:
+
+- **Owner** (default): Filter the list to the repositories that you are the owner of.
+- **Collaborated**: Filter the list to the repositories that you have contributed to.
+- **Organization**: Filter the list to the repositories that belong to an organization you are a member of.
+
+When the **Organization** tab is selected, you can further narrow down your search by selecting an available GitHub organization from a dropdown.
+
 ### Select additional items to import
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/373705) in GitLab 15.5.
@@ -148,9 +163,6 @@ You can choose to import these items, but this could significantly increase impo
 
 > - Ability to cancel pending or active imports [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/247325) in GitLab 15.7.
 > - Ability to re-import projects [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/23905) in GitLab 15.9.
-
-After you have authorized access to your GitHub repositories, you are redirected to the GitHub importer page and
-your GitHub repositories are listed.
 
 By default, the proposed repository namespaces match the names as they exist in GitHub, but based
 on your permissions, you can choose to edit these names before you proceed to import any of them.
