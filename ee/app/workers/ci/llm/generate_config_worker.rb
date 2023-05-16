@@ -14,7 +14,7 @@ module Ci
       sidekiq_options retry: 3
 
       sidekiq_retries_exhausted do |job, _exception|
-        ai_message = Ci::Editor::AiConversation::Message.find_by_id(job['args'][2])
+        ai_message = Ci::Editor::AiConversation::Message.find_by_id(job['args'][0])
         ai_message.update!(async_errors: ['Error fetching data'])
       end
 

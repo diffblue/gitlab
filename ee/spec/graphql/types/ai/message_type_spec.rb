@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['AiMessageType'], feature_category: :not_owned do # rubocop:disable RSpec/InvalidFeatureCategory
+RSpec.describe GitlabSchema.types['AiMessageType'], feature_category: :shared do
   include GraphqlHelpers
 
   it { expect(described_class.graphql_name).to eq('AiMessageType') }

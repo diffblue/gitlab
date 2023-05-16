@@ -29,4 +29,17 @@ RSpec.describe Ci::Llm::GenerateConfigWorker, feature_category: :pipeline_compos
       it { expect(subject).to eq nil }
     end
   end
+
+  describe '.sidekiq_retries_exhausted' do
+    let_it_be(:ai_message) { create(:message, project: create(:project), user: create(:user)) }
+
+    let(:job) { { 'args' => [ai_message.id] } }
+
+    subject(:sidekiq_retries_exhausted) { described_class.sidekiq_retries_exhausted_block.call(job, StandardError.new) }
+
+    it 'updates status to failed' do
+      expect { sidekiq_retries_exhausted }.to change { ai_message.reload.async_errors }
+        .from([]).to(['Error fetching data'])
+    end
+  end
 end
