@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, feature_category: :integrations do
+RSpec.describe WebHooks::WebHooksHelper, :clean_gitlab_redis_shared_state, feature_category: :webhooks do
   let_it_be_with_reload(:group) { create(:group) } # rubocop: disable RSpec/FactoryBot/AvoidCreate
 
   let(:current_user) { nil }

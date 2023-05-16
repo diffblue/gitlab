@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupHook, feature_category: :integrations do
+RSpec.describe GroupHook, feature_category: :webhooks do
   include_examples 'a hook that gets automatically disabled on failure' do
     let_it_be(:group) { create(:group) }
 

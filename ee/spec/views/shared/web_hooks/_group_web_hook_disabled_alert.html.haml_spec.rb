@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'shared/web_hooks/_group_web_hook_disabled_alert', feature_category: :integrations do
+RSpec.describe 'shared/web_hooks/_group_web_hook_disabled_alert', feature_category: :webhooks do
   let_it_be(:group) { build_stubbed(:group) }
 
   def after_flash_content
