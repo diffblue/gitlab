@@ -10,7 +10,7 @@ import {
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import { ACTION_THEN_LABEL, ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
+import { ACTION_AND_LABEL, RULE_MODE_SCANNERS } from '../constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
   DEFAULT_SCANNER,
@@ -25,6 +25,7 @@ import RunnerTagsList from './runner_tags_list.vue';
 import { buildScannerAction } from './lib';
 
 export default {
+  ACTION_AND_LABEL,
   SCANNERS: RULE_MODE_SCANNERS,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
@@ -60,9 +61,6 @@ export default {
     };
   },
   computed: {
-    actionLabel() {
-      return this.actionIndex === 0 ? ACTION_THEN_LABEL : ACTION_AND_LABEL;
-    },
     actionScannerList() {
       return Object.entries(RULE_MODE_SCANNERS).map(([value, text]) => ({
         value,
@@ -76,6 +74,9 @@ export default {
     },
     selectedScannerText() {
       return RULE_MODE_SCANNERS[this.selectedScanner];
+    },
+    isFirstAction() {
+      return this.actionIndex === 0;
     },
     isProject() {
       return this.namespaceType === NAMESPACE_TYPES.PROJECT;
@@ -124,75 +125,80 @@ export default {
 </script>
 
 <template>
-  <div class="security-policies-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
-    <gl-form
-      class="gl-display-flex gl-flex-wrap gl-align-items-center gl-flex-grow-1 gl-gap-3"
-      @submit.prevent
+  <div>
+    <div
+      v-if="!isFirstAction"
+      class="gl-text-gray-500 gl-mb-4 gl-ml-5"
+      data-testid="action-and-label"
     >
-      <gl-sprintf :message="actionMessage">
-        <template #thenLabel>
-          <label class="text-uppercase gl-font-lg gl-mb-0" data-testid="action-component-label">
-            {{ actionLabel }}
-          </label>
-        </template>
+      {{ $options.ACTION_AND_LABEL }}
+    </div>
+    <div class="security-policies-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
+      <gl-form
+        class="gl-display-flex gl-flex-wrap gl-align-items-center gl-flex-grow-1 gl-gap-3"
+        @submit.prevent
+      >
+        <gl-sprintf :message="actionMessage">
+          <template #scan>
+            <gl-collapsible-listbox
+              :items="actionScannerList"
+              :selected="selectedScanner"
+              :toggle-text="selectedScannerText"
+              @select="setSelectedScanner({ scanner: $event })"
+            />
+          </template>
+          <template #dastProfiles>
+            <project-dast-profile-selector
+              v-if="isProject"
+              :full-path="namespacePath"
+              :saved-scanner-profile-name="scannerProfile"
+              :saved-site-profile-name="siteProfile"
+              @error="
+                $emit('parsing-error', $options.POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY)
+              "
+              @profiles-selected="setSelectedScanner"
+            />
+            <group-dast-profile-selector
+              v-else
+              :saved-scanner-profile-name="scannerProfile"
+              :saved-site-profile-name="siteProfile"
+              @set-profile="setSelectedScanner"
+            />
+          </template>
 
-        <template #scan>
-          <gl-collapsible-listbox
-            :items="actionScannerList"
-            :selected="selectedScanner"
-            :toggle-text="selectedScannerText"
-            @select="setSelectedScanner({ scanner: $event })"
-          />
-        </template>
-        <template #dastProfiles>
-          <project-dast-profile-selector
-            v-if="isProject"
-            :full-path="namespacePath"
-            :saved-scanner-profile-name="scannerProfile"
-            :saved-site-profile-name="siteProfile"
-            @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY)"
-            @profiles-selected="setSelectedScanner"
-          />
-          <group-dast-profile-selector
-            v-else
-            :saved-scanner-profile-name="scannerProfile"
-            :saved-site-profile-name="siteProfile"
-            @set-profile="setSelectedScanner"
-          />
-        </template>
-
-        <template #tags>
-          <gl-form-group
-            class="gl-mb-0"
-            :label="s__('ScanExecutionPolicy|Tags')"
-            label-for="policy-tags"
-            label-sr-only
-          >
-            <div class="gl-display-flex gl-align-items-center">
-              <runner-tags-list
-                v-model="tags"
-                :namespace-path="namespacePath"
-                :namespace-type="namespaceType"
-                @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
-              />
-              <gl-icon
-                v-gl-tooltip
-                name="question-o"
-                :title="$options.i18n.selectedTagsInformation"
-                class="gl-text-blue-600 gl-ml-2"
-              />
-            </div>
-          </gl-form-group>
-        </template>
-      </gl-sprintf>
-    </gl-form>
-    <div class="gl-min-w-7">
-      <gl-button
-        icon="remove"
-        category="tertiary"
-        :aria-label="__('Remove')"
-        @click="$emit('remove', $event)"
-      />
+          <template #tags>
+            <gl-form-group
+              class="gl-mb-0"
+              :label="s__('ScanExecutionPolicy|Tags')"
+              label-for="policy-tags"
+              label-sr-only
+            >
+              <div class="gl-display-flex gl-align-items-center">
+                <runner-tags-list
+                  v-model="tags"
+                  :namespace-path="namespacePath"
+                  :namespace-type="namespaceType"
+                  @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_TAGS_ERROR_KEY)"
+                />
+                <gl-icon
+                  v-gl-tooltip
+                  name="question-o"
+                  :title="$options.i18n.selectedTagsInformation"
+                  class="gl-text-blue-600 gl-ml-2"
+                />
+              </div>
+            </gl-form-group>
+          </template>
+        </gl-sprintf>
+      </gl-form>
+      <div class="gl-min-w-7">
+        <gl-button
+          icon="remove"
+          category="tertiary"
+          :aria-label="__('Remove')"
+          @click="$emit('remove', $event)"
+        />
+      </div>
     </div>
   </div>
 </template>

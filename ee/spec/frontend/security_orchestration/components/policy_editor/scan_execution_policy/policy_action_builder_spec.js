@@ -9,10 +9,6 @@ import projectRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/gra
 import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_group_runner_tags.query.graphql';
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/group_dast_profile_selector.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
-import {
-  ACTION_AND_LABEL,
-  ACTION_THEN_LABEL,
-} from 'ee/security_orchestration/components/policy_editor/constants';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
@@ -71,7 +67,7 @@ describe('PolicyActionBuilder', () => {
     });
   };
 
-  const findActionLabel = () => wrapper.findByTestId('action-component-label');
+  const findActionSeperator = () => wrapper.findByTestId('action-and-label');
   const findRemoveButton = () => wrapper.findByRole('button', { name: __('Remove') });
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
@@ -83,7 +79,7 @@ describe('PolicyActionBuilder', () => {
     factory({ stubs: { GlCollapsibleListbox: true } });
     await nextTick();
 
-    expect(findActionLabel().text()).toBe(ACTION_THEN_LABEL);
+    expect(findActionSeperator().exists()).toBe(false);
     expect(findDropdown().props('selected')).toBe('dast');
   });
 
@@ -101,7 +97,7 @@ describe('PolicyActionBuilder', () => {
     findDropdown().vm.$emit('select', scannerKey);
     await nextTick();
 
-    expect(findActionLabel().text()).toBe(ACTION_THEN_LABEL);
+    expect(findActionSeperator().exists()).toBe(false);
     expect(findDropdown().props('selected')).toBe(scannerKey);
   });
 
@@ -119,7 +115,7 @@ describe('PolicyActionBuilder', () => {
     factory({ props: { actionIndex: 1 } });
     await nextTick();
 
-    expect(findActionLabel().text()).toBe(ACTION_AND_LABEL);
+    expect(findActionSeperator().exists()).toBe(true);
   });
 
   it('emits the "changed" event when an action scan type is changed', async () => {
