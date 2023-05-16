@@ -23,6 +23,9 @@ module Elastic
         context.name(:merge_request) do
           query_hash = context.name(:authorized) { project_ids_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
+          if hidden_filter_applicable?(options[:current_user])
+            query_hash = context.name(:hidden) { hidden_filter(query_hash) }
+          end
         end
         query_hash = apply_sort(query_hash, options)
 
@@ -55,6 +58,18 @@ module Elastic
               target_project_id: filter_ids_by_feature(scoped_project_ids, current_user, 'merge_requests')
             }
           }
+        end
+
+        query_hash
+      end
+
+      def hidden_filter_applicable?(user)
+        Feature.enabled?(:hide_merge_requests_from_banned_users) && !user&.can_admin_all_resources?
+      end
+
+      def hidden_filter(query_hash)
+        if ::Elastic::DataMigrationService.migration_has_finished?(:backfill_hidden_on_merge_requests)
+          query_hash[:query][:bool][:filter] << { term: { hidden: { _name: context.name(:non_hidden), value: false } } }
         end
 
         query_hash
