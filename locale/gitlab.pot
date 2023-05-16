@@ -2262,7 +2262,13 @@ msgstr ""
 msgid "AbuseReport|Confirmed violation of a copyright or a trademark"
 msgstr ""
 
+msgid "AbuseReport|Copyright or trademark violation"
+msgstr ""
+
 msgid "AbuseReport|Credit card"
+msgstr ""
+
+msgid "AbuseReport|Crypto Mining"
 msgstr ""
 
 msgid "AbuseReport|Delete user"
@@ -2292,6 +2298,9 @@ msgstr ""
 msgid "AbuseReport|Last login"
 msgstr ""
 
+msgid "AbuseReport|Malware"
+msgstr ""
+
 msgid "AbuseReport|Member since"
 msgstr ""
 
@@ -2302,6 +2311,18 @@ msgid "AbuseReport|No user found"
 msgstr ""
 
 msgid "AbuseReport|Normal location"
+msgstr ""
+
+msgid "AbuseReport|Offensive or Abusive"
+msgstr ""
+
+msgid "AbuseReport|Other"
+msgstr ""
+
+msgid "AbuseReport|Personal information or credentials"
+msgstr ""
+
+msgid "AbuseReport|Phishing"
 msgstr ""
 
 msgid "AbuseReport|Phone"
@@ -2341,6 +2362,9 @@ msgid "AbuseReport|Snippets"
 msgstr ""
 
 msgid "AbuseReport|Something else"
+msgstr ""
+
+msgid "AbuseReport|Spam"
 msgstr ""
 
 msgid "AbuseReport|Tier"
