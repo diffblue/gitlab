@@ -115,7 +115,6 @@ describe('AddEditScheduleForm', () => {
         });
         expect(findTimezoneDropdown().props('additionalClass')).toStrictEqual([
           { 'invalid-dropdown': true },
-          'timezone-dropdown',
         ]);
       });
 
@@ -127,7 +126,6 @@ describe('AddEditScheduleForm', () => {
         });
         expect(findTimezoneDropdown().props('additionalClass')).toStrictEqual([
           { 'invalid-dropdown': false },
-          'timezone-dropdown',
         ]);
       });
     });

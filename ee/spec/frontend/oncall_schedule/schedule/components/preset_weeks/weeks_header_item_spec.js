@@ -44,18 +44,4 @@ describe('WeeksHeaderItemComponent', () => {
       expect(findHeaderLabel().text()).toBe('Jan');
     });
   });
-
-  describe('timelineHeaderClass', () => {
-    it('returns empty string when timeframeItem week is outside of current week', () => {
-      mountComponent({
-        timeframeIndex: 3,
-        timeframeItem: new Date(2017, 0, 6),
-      });
-      expect(findHeaderLabel().classes()).not.toContain('label-bold');
-    });
-
-    it('returns string containing `label-bold` when current week is same as timeframeItem week', () => {
-      expect(findHeaderLabel().classes()).toContain('label-bold');
-    });
-  });
 });

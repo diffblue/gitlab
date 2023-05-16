@@ -118,7 +118,7 @@ export default {
         id="schedule-timezone"
         :value="selectedTimezone"
         :timezone-data="timezones"
-        :additional-class="[{ 'invalid-dropdown': !validationState.timezone }, 'timezone-dropdown']"
+        :additional-class="[{ 'invalid-dropdown': !validationState.timezone }]"
         name="schedule-timezone"
         @input="setTimezone"
       />

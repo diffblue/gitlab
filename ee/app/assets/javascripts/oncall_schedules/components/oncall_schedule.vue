@@ -365,7 +365,10 @@ export default {
 
         <hr class="gl-my-3" />
 
-        <div class="schedule-shell" data-testid="rotations-body">
+        <div
+          class="schedule-shell gl-relative gl-h-full gl-w-full gl-overflow-x-auto"
+          data-testid="rotations-body"
+        >
           <schedule-timeline-section :preset-type="presetType" :timeframe="timeframe" />
           <rotations-list-section
             :preset-type="presetType"

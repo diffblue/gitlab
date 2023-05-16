@@ -92,12 +92,12 @@ export default {
     <gl-loading-icon v-if="loading" size="sm" />
     <div v-else-if="rotations.length === 0 && !loading" class="gl-clearfix gl-border-t">
       <span
-        class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
+        class="details-cell gl-sticky gl-left-0 gl-float-left gl-display-flex gl-justify-content-space-between gl-align-items-center"
       >
         <span class="gl-text-truncate gl-text-gray-700">{{ $options.i18n.addRotationLabel }}</span>
       </span>
       <span
-        class="timeline-cell gl-overflow-hidden"
+        class="timeline-cell gl-float-left gl-overflow-hidden gl-relative"
         :style="timelineStyles"
         data-testid="empty-timeline-cell"
       >
@@ -111,7 +111,7 @@ export default {
     <div v-else>
       <div v-for="rotation in rotations" :key="rotation.id" class="gl-clearfix gl-border-t">
         <span
-          class="details-cell gl-display-flex gl-justify-content-space-between gl-align-items-center"
+          class="details-cell gl-sticky gl-left-0 gl-float-left gl-display-flex gl-justify-content-space-between gl-align-items-center"
         >
           <span
             v-gl-tooltip="{ boundary: 'viewport', title: rotation.name }"
@@ -146,7 +146,7 @@ export default {
           </gl-button-group>
         </span>
         <span
-          class="timeline-cell gl-overflow-hidden"
+          class="timeline-cell gl-float-left gl-overflow-hidden gl-relative"
           :style="timelineStyles"
           data-testid="timeline-cell"
         >

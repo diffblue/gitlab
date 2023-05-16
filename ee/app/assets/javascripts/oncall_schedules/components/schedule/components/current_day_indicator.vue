@@ -39,6 +39,6 @@ export default {
     v-if="isVisible"
     :style="getIndicatorStyles(presetType, timeframeItem, timelineWidth)"
     data-testid="current-day-indicator"
-    class="current-day-indicator"
+    class="current-day-indicator gl-absolute gl-bg-red-500 gl-pointer-events-none gl-translate-x-n50"
   ></span>
 </template>

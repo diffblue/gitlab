@@ -32,7 +32,7 @@ export default {
     getSubItemValueClass(subItem) {
       // Show dark color text only for the current date
       if (subItem.getTime() === this.$options.currentDate.getTime()) {
-        return 'label-dark label-bold';
+        return 'gl-text-gray-900! gl-font-weight-bold';
       }
 
       return '';
@@ -45,20 +45,23 @@ export default {
 </script>
 
 <template>
-  <div class="item-sublabel week-item-sublabel gl-pb-3" data-testid="week-item-sublabel">
+  <div
+    class="item-sublabel week-item-sublabel gl-pb-3 gl-relative gl-display-flex"
+    data-testid="week-item-sublabel"
+  >
     <span
       v-for="(subItem, index) in headerSubItems"
       :key="index"
       ref="weeklyDayCell"
       :class="getSubItemValueClass(subItem)"
-      class="sublabel-value"
+      class="sublabel-value gl-text-gray-700 gl-font-weight-normal gl-text-center gl-flex-grow-1 gl-flex-basis-0"
       data-testid="sublabel-value"
       >{{ getSubItemValue(subItem) }}</span
     >
     <span
       v-if="hasToday"
       :style="getIndicatorStyles($options.PRESET_TYPES.WEEKS, timeframeItem)"
-      class="current-day-indicator-header preset-weeks"
+      class="current-day-indicator-header preset-weeks gl-absolute gl-bottom-0 gl-rounded-full gl-bg-red-500"
     ></span>
   </div>
 </template>
