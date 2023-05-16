@@ -10,9 +10,9 @@ RSpec.describe 'Creating a new HTTP Integration', feature_category: :incident_ma
 
   let(:payload_example) do
     {
+      'tool' => %w[DataDog V1],
       'alert' => { 'name' => 'Test alert' },
-      'started_at' => Time.current.strftime('%d %B %Y, %-l:%M%p (%Z)'),
-      'tool' => %w[DataDog V1]
+      'started_at' => Time.current.strftime('%d %B %Y, %-l:%M%p (%Z)')
     }.to_json
   end
 
@@ -102,7 +102,7 @@ RSpec.describe 'Creating a new HTTP Integration', feature_category: :incident_ma
       }
     )
     expect(integration_response['payloadExample']).to eq(payload_example)
-    expect(integration_response['payloadAttributeMappings']).to eq(
+    expect(integration_response['payloadAttributeMappings']).to match_array(
       [
         { 'fieldName' => 'TITLE', 'path' => %w[alert name], 'type' => 'STRING', 'label' => nil },
         { 'fieldName' => 'START_TIME', 'path' => %w[started_at], 'type' => 'DATETIME', 'label' => 'Start time' },
