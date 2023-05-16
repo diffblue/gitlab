@@ -6,7 +6,9 @@ module Gitlab
       class Client
         include ::Gitlab::Llm::Concerns::ExponentialBackoff
 
-        def initialize(_user); end
+        def initialize(_user)
+          @logger = Gitlab::Llm::Logger.build
+        end
 
         # @param [String] content - Input string
         # @param [Hash] options - Additional options to pass to the request
@@ -63,14 +65,22 @@ module Gitlab
 
         private
 
+        attr_reader :logger
+
         retry_methods_with_exponential_backoff :chat, :text, :code, :messages_chat
 
         def request(content:, config:, **options)
-          HTTParty.post( # rubocop: disable Gitlab/HTTParty
+          logger.debug(message: "Performing request to Vertex", config: config)
+
+          response = HTTParty.post( # rubocop: disable Gitlab/HTTParty
             config.url,
             headers: config.headers,
             body: config.payload(content).merge(options).to_json
           )
+
+          logger.debug(message: "Received response from Vertex")
+
+          response
         end
 
         def service_name
