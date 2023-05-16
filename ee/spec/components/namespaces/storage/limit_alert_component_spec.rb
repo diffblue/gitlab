@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component, feature_category: :consumables_cost_management do
