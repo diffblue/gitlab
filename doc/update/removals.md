@@ -282,6 +282,27 @@ The [**Maximum number of active pipelines per project** limit](https://docs.gitl
 - [**Pipelines rate limits**](https://docs.gitlab.com/ee/user/admin_area/settings/rate_limit_on_pipelines_creation.html).
 - [**Total number of jobs in currently active pipelines**](https://docs.gitlab.com/ee/user/admin_area/settings/continuous_integration.html#set-cicd-limits).
 
+### Monitoring performance metrics through Prometheus is removed
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+We previously launched a solution that allows you to view performance metrics by displaying data stored in a Prometheus instance.
+The Prometheus instance can be set up as a GitLab-managed app or you can connect a previously configured Prometheus instance.
+The latter is known as an "external Prometheus" in GitLab. The value we provided was to enable you to easily set up monitoring
+(using GitLab Managed Apps) and have the visualization of the metrics all in the same tool you used to build the application.
+
+However, as we are removing certificate-based integrations, the full monitoring experience is also deprecated as you will not
+have the option to easily set up Prometheus from GitLab. Furthermore, we plan to consolidate on
+a focused observability dashboard experience instead of having multiple paths to view metrics. Because of this, we are also removing the external
+Prometheus experience, together with the metrics visualization capability.
+
+This removal only refers to the GitLab Metrics capabilities, and **does not** include:
+
+- Deprecating [alerts for Prometheus](https://gitlab.com/gitlab-org/gitlab/-/issues/338834).
+- [Capabilities that GitLab comes with that allow operators of GitLab to retrieve metrics from those instances](https://docs.gitlab.com/ee/administration/monitoring/prometheus/gitlab_metrics.html).
+
 ### Non-expiring access tokens no longer supported
 
 WARNING:
