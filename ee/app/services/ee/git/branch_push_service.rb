@@ -21,7 +21,7 @@ module EE
         return unless project.product_analytics_enabled?
         return unless default_branch?
 
-        ::ProductAnalytics::PostPushWorker.perform_async(project.id, newrev)
+        ::ProductAnalytics::PostPushWorker.perform_async(project.id, newrev, current_user.id)
       end
 
       def enqueue_elasticsearch_indexing
