@@ -1,9 +1,8 @@
 import { GlIcon, GlTooltip } from '@gitlab/ui';
-import Vue, { nextTick } from 'vue';
-import Vuex from 'vuex';
+import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
-import createDiffsStore from 'jest/diffs/create_diffs_store';
+import store from '~/mr_notes/stores';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/ci/reports/codequality_report/constants';
 import {
   fiveFindings,
@@ -11,23 +10,24 @@ import {
   singularFinding,
 } from '../../../../../spec/frontend/diffs/mock_data/diff_code_quality';
 
-Vue.use(Vuex);
+jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/stores'));
 
 let wrapper;
 const findIcon = () => wrapper.findComponent(GlIcon);
 const findIcons = () => wrapper.findAllComponents(GlIcon);
 const findFirstIcon = () => wrapper.findComponent({ ref: 'firstCodeQualityIcon' });
 
-let store;
 let codequalityDiff;
 
 const createComponent = (props = {}) => {
-  store = createDiffsStore();
+  store.reset();
   store.state.diffs.codequalityDiff = codequalityDiff;
 
   const payload = {
     propsData: props,
-    store,
+    mocks: {
+      $store: store,
+    },
   };
 
   wrapper = shallowMountExtended(CodeQualityGutterIcon, payload);
