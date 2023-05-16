@@ -2,7 +2,7 @@
 
 module ProductAnalytics
   class Dashboard
-    attr_reader :title, :description, :schema_version, :panels, :project, :slug, :path
+    attr_reader :title, :description, :schema_version, :panels, :project, :slug, :path, :user_defined
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/analytics/dashboards'
 
@@ -20,13 +20,14 @@ module ProductAnalytics
       dashboards.flatten
     end
 
-    def initialize(title:, description:, schema_version:, panels:, project:, slug:)
+    def initialize(title:, description:, schema_version:, panels:, project:, slug:, user_defined:)
       @title = title
       @description = description
       @schema_version = schema_version
       @panels = panels
       @project = project
       @slug = slug
+      @user_defined = user_defined
     end
 
     def self.local_dashboards(project, trees)
@@ -42,7 +43,8 @@ module ProductAnalytics
           slug: tree.name,
           description: config['description'],
           schema_version: config['version'],
-          panels: ProductAnalytics::Panel.from_data(config['panels'], project)
+          panels: ProductAnalytics::Panel.from_data(config['panels'], project),
+          user_defined: true
         )
       end
     end
@@ -60,7 +62,8 @@ module ProductAnalytics
           slug: name,
           description: config['description'],
           schema_version: config['version'],
-          panels: ProductAnalytics::Panel.from_data(config['panels'], project)
+          panels: ProductAnalytics::Panel.from_data(config['panels'], project),
+          user_defined: false
         )
       end
     end

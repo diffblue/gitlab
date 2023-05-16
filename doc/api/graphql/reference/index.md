@@ -18994,6 +18994,7 @@ Represents a product analytics dashboard.
 | <a id="productanalyticsdashboarddescription"></a>`description` | [`String`](#string) | Description of the dashboard. |
 | <a id="productanalyticsdashboardpanels"></a>`panels` | [`ProductAnalyticsDashboardPanelConnection!`](#productanalyticsdashboardpanelconnection) | Panels shown on the dashboard. (see [Connections](#connections)) |
 | <a id="productanalyticsdashboardtitle"></a>`title` | [`String!`](#string) | Title of the dashboard. |
+| <a id="productanalyticsdashboarduserdefined"></a>`userDefined` | [`Boolean!`](#boolean) | Indicates whether the dashboard is user-defined or provided by GitLab. |
 
 ### `ProductAnalyticsDashboardPanel`
 

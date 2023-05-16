@@ -20,6 +20,8 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
 
   before do
     stub_licensed_features(product_analytics: true)
+    project.project_setting.update!(product_analytics_instrumentation_key: 'test-key')
+    project.reload
   end
 
   context 'when current user is a developer' do
@@ -31,6 +33,13 @@ RSpec.describe 'Query.project(id).dashboards', feature_category: :product_analyt
       post_graphql(query, current_user: user)
 
       expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes, 0, :title)).to eq('Dashboard Example 1')
+    end
+
+    it 'returns two gitlab provided dashboards' do
+      post_graphql(query, current_user: user)
+
+      expect(graphql_data_at(:project, :product_analytics_dashboards, :nodes).pluck('userDefined'))
+                                                                             .to eq([true, false, false])
     end
 
     context 'when feature flag is disabled' do
