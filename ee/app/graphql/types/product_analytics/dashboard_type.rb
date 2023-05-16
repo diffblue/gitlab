@@ -26,6 +26,11 @@ module Types
             type: Types::ProductAnalytics::PanelType.connection_type,
             null: false,
             description: 'Panels shown on the dashboard.'
+
+      field :user_defined,
+            type: GraphQL::Types::Boolean,
+            null: false,
+            description: 'Indicates whether the dashboard is user-defined or provided by GitLab.'
     end
   end
 end

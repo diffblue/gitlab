@@ -94,7 +94,15 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
   describe '#==' do
     let(:dashboard_1) { described_class.for_project(project).first }
     let(:dashboard_2) do
-      described_class.new(title: 'a', description: 'b', schema_version: '1', panels: [], project: nil, slug: 'test2')
+      described_class.new(
+        title: 'a',
+        description: 'b',
+        schema_version: '1',
+        panels: [],
+        project: nil,
+        slug: 'test2',
+        user_defined: true
+      )
     end
 
     subject { dashboard_1 == dashboard_2 }
