@@ -11,5 +11,6 @@ module Types
 
       field :pages_deployment_id, GraphQL::Types::ID, null: false, description: 'ID of the Pages Deployment.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

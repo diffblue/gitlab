@@ -75,7 +75,7 @@ module Geo
     # This is not needed for replicables that have already implemented
     # create events.
     #
-    # @param [Integer] the last ID of the batch processed in create_untracked_in_range
+    # @param [Integer] end_of_batch the last ID of the batch processed in create_untracked_in_range
     # @return [Array] the list of IDs of created records
     def create_missing_above(end_of_batch:)
       return [] if registry_class.has_create_events?

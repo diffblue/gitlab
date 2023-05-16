@@ -11,5 +11,6 @@ module Types
 
       field :snippet_repository_id, GraphQL::Types::ID, null: false, description: 'ID of the Snippet Repository.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

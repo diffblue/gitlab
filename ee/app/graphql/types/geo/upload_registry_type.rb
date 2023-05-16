@@ -11,5 +11,6 @@ module Types
 
       field :file_id, GraphQL::Types::ID, null: false, description: 'ID of the Upload.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

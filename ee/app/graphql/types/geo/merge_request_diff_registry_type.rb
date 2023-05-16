@@ -11,5 +11,6 @@ module Types
 
       field :merge_request_diff_id, GraphQL::Types::ID, null: false, description: 'ID of the Merge Request diff.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

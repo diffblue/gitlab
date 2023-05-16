@@ -11,5 +11,6 @@ module Types
 
       field :pipeline_artifact_id, GraphQL::Types::ID, null: false, description: 'ID of the pipeline artifact.'
     end
+    # rubocop:enable Graphql/AuthorizeTypes
   end
 end

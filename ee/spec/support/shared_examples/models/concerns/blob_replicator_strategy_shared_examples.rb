@@ -21,7 +21,9 @@ RSpec.shared_examples 'a blob replicator' do
     stub_current_geo_node(primary)
   end
 
-  it_behaves_like 'a replicator'
+  it_behaves_like 'a replicator' do
+    let_it_be(:event_name) { 'created' }
+  end
 
   # This could be included in each model's spec, but including it here is DRYer.
   include_examples 'a replicable model' do

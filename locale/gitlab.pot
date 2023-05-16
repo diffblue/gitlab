@@ -2411,6 +2411,9 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
+msgid "Action '%{action}' in registry %{registry_id} entry is not supported."
+msgstr ""
+
 msgid "Action not allowed."
 msgstr ""
 
@@ -37223,6 +37226,12 @@ msgid "Registration|Your first project"
 msgstr ""
 
 msgid "Registration|Your profile"
+msgstr ""
+
+msgid "Registry entry enqueued to be resynced"
+msgstr ""
+
+msgid "Registry entry enqueued to be reverified"
 msgstr ""
 
 msgid "Registry setup"
