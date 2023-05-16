@@ -226,6 +226,22 @@ Review the details carefully before upgrading.
 The [Jira DVCS connector](https://docs.gitlab.com/ee/integration/jira/dvcs/) for Jira Cloud was deprecated in GitLab 15.1 and has been removed in 16.0. Use the [GitLab for Jira Cloud app](https://docs.gitlab.com/ee/integration/jira/connect-app.html) instead. The Jira DVCS connector was also deprecated for Jira 8.13 and earlier. You can only use the Jira DVCS connector with Jira Data Center or Jira Server in Jira 8.14 and later. Upgrade your Jira instance to Jira 8.14 or later, and reconfigure the Jira integration in your GitLab instance.
 If you cannot upgrade your Jira instance in time and are on GitLab self-managed version, we offer a workaround until GitLab 16.6. This breaking change is deployed in GitLab 16.0 behind a feature flag named `jira_dvcs_end_of_life_amnesty`. The flag is disabled by default, but you can ask an administrator to enable the flag at any time. For questions related to this announcement, see the [feedback issue](https://gitlab.com/gitlab-org/gitlab/-/issues/408185).
 
+### Legacy Gitaly configuration method
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Previously, Gitaly configuration keys for Omnibus GitLab were scattered throughout the configuration file. In GitLab
+15.10, we added support for a single configuration structure that matches Gitaly internal configuration. Both methods
+of configuring Gitaly were supported in parallel.
+
+In GitLab 16.0, we removed support for the former configuration method and now only support the new configuration
+method.
+
+Before upgrading to GitLab 16.0, administrators must migrate to the new single configuration structure. For
+instructions, see [Gitaly - Omnibus GitLab configuration structure change](https://docs.gitlab.com/ee/update/#gitaly-omnibus-gitlab-configuration-structure-change).
+
 ### Legacy Gitaly configuration methods with variables
 
 WARNING:
