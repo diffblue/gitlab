@@ -169,40 +169,61 @@ export const hasDoraMetricValues = (timePeriods) =>
   });
 
 /**
+ * Takes N time periods for a metric and generates the row for the comparison table.
+ *
+ * @param {String} identifier - ID of the metric to create a table row for.
+ * @param {String} label - User friendly name of the metric to show in the table row.
+ * @param {String} units - The type of units used for this metric (ex. days, /day, count)
+ * @param {Boolean} invertTrendColor - Inverts the color indicator used for metric trends.
+ * @param {Array} timePeriods - Array of the metrics for different time periods
+ * @returns {Object} The metric data formatted for the comparison table.
+ */
+const buildMetricComparisonTableRow = ({
+  identifier,
+  label,
+  units,
+  invertTrendColor,
+  timePeriods,
+}) => {
+  const data = { invertTrendColor, metric: { identifier, value: label } };
+  timePeriods.forEach((timePeriod, index) => {
+    // The last timePeriod is not rendered, we just use it
+    // to determine the % change for the 2nd last timePeriod
+    if (index === timePeriods.length - 1) return;
+
+    const current = timePeriod[identifier];
+    const previous = timePeriods[index + 1][identifier];
+    const hasCurrentValue = current && current.value !== '-';
+    const hasPreviousValue = previous && previous.value !== '-';
+    const change = !METRICS_WITH_NO_TREND.includes(identifier)
+      ? percentChange({
+          current: hasCurrentValue ? current.value : 0,
+          previous: hasPreviousValue ? previous.value : 0,
+        })
+      : null;
+
+    data[timePeriod.key] = {
+      value: hasCurrentValue ? formatMetric(current.value, units) : '-',
+      change,
+    };
+  });
+  return data;
+};
+
+/**
  * Takes N time periods of DORA metrics and generates the data rows
  * for the comparison table.
  *
  * @param {Array} timePeriods - Array of the DORA metrics for different time periods
+ * @param {Array} excludeMetrics - Array of DORA metric identifiers to remove from the table
  * @returns {Array} array comparing each DORA metric between the different time periods
  */
-export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
-  const doraMetrics = Object.entries(TABLE_METRICS);
-  return doraMetrics.map(([identifier, { label, units, invertTrendColor }]) => {
-    const data = { invertTrendColor, metric: { identifier, value: label } };
-    timePeriods.forEach((timePeriod, index) => {
-      // The last timePeriod is not rendered, we just use it
-      // to determine the % change for the 2nd last timePeriod
-      if (index === timePeriods.length - 1) return;
-
-      const current = timePeriod[identifier];
-      const previous = timePeriods[index + 1][identifier];
-      const hasCurrentValue = current && current.value !== '-';
-      const hasPreviousValue = previous && previous.value !== '-';
-      const change = !METRICS_WITH_NO_TREND.includes(identifier)
-        ? percentChange({
-            current: hasCurrentValue ? current.value : 0,
-            previous: hasPreviousValue ? previous.value : 0,
-          })
-        : null;
-
-      data[timePeriod.key] = {
-        value: hasCurrentValue ? formatMetric(current.value, units) : '-',
-        change,
-      };
-    });
-    return data;
-  });
-};
+export const generateDoraTimePeriodComparisonTable = ({ timePeriods, excludeMetrics = [] }) =>
+  Object.entries(TABLE_METRICS)
+    .filter(([identifier]) => !excludeMetrics.includes(identifier))
+    .map(([identifier, { label, units, invertTrendColor }]) =>
+      buildMetricComparisonTableRow({ identifier, label, units, invertTrendColor, timePeriods }),
+    );
 
 /**
  * @param {Number|'-'|null|undefined} value

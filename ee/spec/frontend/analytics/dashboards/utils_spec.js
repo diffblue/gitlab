@@ -141,19 +141,20 @@ describe('Analytics Dashboards utils', () => {
   });
 
   describe('generateDoraTimePeriodComparisonTable', () => {
-    let res = {};
+    const timePeriods = [
+      mockMonthToDateTimePeriod,
+      mockPreviousMonthTimePeriod,
+      mockTwoMonthsAgoTimePeriod,
+      mockThreeMonthsAgoTimePeriod,
+    ];
 
-    beforeEach(() => {
-      res = generateDoraTimePeriodComparisonTable([
-        mockMonthToDateTimePeriod,
-        mockPreviousMonthTimePeriod,
-        mockTwoMonthsAgoTimePeriod,
-        mockThreeMonthsAgoTimePeriod,
-      ]);
+    it('calculates the changes between the 2 time periods', () => {
+      const tableData = generateDoraTimePeriodComparisonTable({ timePeriods });
+      expect(tableData).toEqual(mockComparativeTableData);
     });
 
     it('returns the comparison table fields + metadata for each row', () => {
-      res.forEach((row) => {
+      generateDoraTimePeriodComparisonTable({ timePeriods }).forEach((row) => {
         expect(Object.keys(row)).toEqual([
           'invertTrendColor',
           'metric',
@@ -164,8 +165,12 @@ describe('Analytics Dashboards utils', () => {
       });
     });
 
-    it('calculates the changes between the 2 time periods', () => {
-      expect(res).toEqual(mockComparativeTableData);
+    it('does not include metrics that were in excludeMetrics', () => {
+      const excludeMetrics = [LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE];
+      const tableData = generateDoraTimePeriodComparisonTable({ timePeriods, excludeMetrics });
+
+      const metrics = tableData.map(({ metric }) => metric.identifier);
+      expect(metrics).not.toEqual(expect.arrayContaining(excludeMetrics));
     });
   });
 
