@@ -21,7 +21,7 @@ module EE
       include UsageStatistics
       include IterationEventable
 
-      belongs_to :iteration, foreign_key: 'sprint_id'
+      belongs_to :iteration, foreign_key: 'sprint_id', inverse_of: :merge_requests
 
       has_many :approvers, as: :target, dependent: :delete_all # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
@@ -48,10 +48,12 @@ module EE
 
       has_many :blocks_as_blocker,
                class_name: 'MergeRequestBlock',
+               inverse_of: :blocking_merge_request,
                foreign_key: :blocking_merge_request_id
 
       has_many :blocks_as_blockee,
                class_name: 'MergeRequestBlock',
+               inverse_of: :blocked_merge_request,
                foreign_key: :blocked_merge_request_id
 
       has_many :blocking_merge_requests, through: :blocks_as_blockee
