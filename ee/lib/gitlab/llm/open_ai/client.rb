@@ -14,6 +14,7 @@ module Gitlab
         def initialize(user, request_timeout: nil)
           @user = user
           @request_timeout = request_timeout
+          @logger = Gitlab::Llm::Logger.build
         end
 
         def chat(content:, moderated: nil, **options)
@@ -71,7 +72,7 @@ module Gitlab
 
         retry_methods_with_exponential_backoff :chat, :completions, :edits, :embeddings, :moderations
 
-        attr_reader :user, :request_timeout
+        attr_reader :user, :request_timeout, :logger
 
         def client
           @client ||= OpenAI::Client.new(access_token: access_token, request_timeout: request_timeout)
@@ -108,9 +109,13 @@ module Gitlab
         def request(endpoint:, moderated:, **options)
           return unless enabled?
 
+          logger.debug(message: "Performing request to OpenAI", endpoint: endpoint)
+
           moderate!(:input, moderation_input(endpoint, options)) if should_moderate?(:input, moderated)
 
           response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
+
+          logger.debug(message: "Received response from OpenAI")
 
           track_cost(endpoint, response.parsed_response&.dig('usage'))
 

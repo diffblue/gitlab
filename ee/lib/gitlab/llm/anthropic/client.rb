@@ -13,21 +13,28 @@ module Gitlab
 
         def initialize(user)
           @user = user
+          @logger = Gitlab::Llm::Logger.build
         end
 
         def complete(prompt:, **options)
           return unless enabled?
 
-          Gitlab::HTTP.post(
+          logger.debug("Performing request to Anthropic")
+
+          response = Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),
             headers: request_headers,
             body: request_body(prompt: prompt, options: options).to_json
           )
+
+          logger.debug("Received response from Anthropic")
+
+          response
         end
 
         private
 
-        attr_reader :user
+        attr_reader :user, :logger
 
         retry_methods_with_exponential_backoff :complete
 

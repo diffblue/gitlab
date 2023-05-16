@@ -8,10 +8,14 @@ module Llm
       @user = user
       @resource = resource
       @options = options
+      @logger = Gitlab::Llm::Logger.build
     end
 
     def execute
-      return error(INVALID_MESSAGE) unless valid?
+      unless valid?
+        logger.debug(message: "Returning from Service due to validation")
+        return error(INVALID_MESSAGE)
+      end
 
       perform
     end
@@ -24,7 +28,7 @@ module Llm
 
     private
 
-    attr_reader :user, :resource, :options
+    attr_reader :user, :resource, :options, :logger
 
     def perform
       raise NotImplementedError
@@ -33,6 +37,16 @@ module Llm
     def perform_async(user, resource, action_name, options)
       request_id = SecureRandom.uuid
       options[:request_id] = request_id
+
+      logger.debug(
+        message: "Enqueuing CompletionWorker",
+        user_id: user.id,
+        resource_id: resource.id,
+        resource_class: resource.class.name,
+        request_id: request_id,
+        action_name: action_name
+      )
+
       ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
 
       success(request_id: request_id)

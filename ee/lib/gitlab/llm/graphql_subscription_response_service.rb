@@ -8,6 +8,7 @@ module Gitlab
         @resource = resource
         @response_modifier = response_modifier
         @options = options
+        @logger = Gitlab::Llm::Logger.build
       end
 
       def execute
@@ -22,12 +23,17 @@ module Gitlab
           errors: response_modifier.errors
         }
 
+        logger.debug(
+          message: "Broadcasting AI response",
+          data: data
+        )
+
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)
       end
 
       private
 
-      attr_reader :user, :resource, :response_modifier, :options
+      attr_reader :user, :resource, :response_modifier, :options, :logger
 
       def generate_response_body(response_body)
         return response_body if options[:markup_format].nil? || options[:markup_format] == :raw
