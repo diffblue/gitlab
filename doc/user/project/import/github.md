@@ -173,6 +173,18 @@ Completed imports can be re-imported by selecting **Re-import** and specifying n
 
 ![GitHub importer page](img/import_projects_from_github_importer_v12_3.png)
 
+### Check status of imports
+
+> Details of partially completed imports with a list of entities that failed to import [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/386748) in GitLab 16.0.
+
+After imports are completed, they can be in one of three states:
+
+- **Completed**: GitLab imported all repository entities.
+- **Partially completed**: GitLab failed to import some repository entities.
+- **Failed**: GitLab imported no repository entities.
+
+Expand **Details** to see a list of [repository entities](#imported-data) that failed to import.
+
 ## Mirror a repository and share pipeline status **(PREMIUM)**
 
 Depending on your GitLab tier, [repository mirroring](../repository/mirror/index.md) can be set up to keep
