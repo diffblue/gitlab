@@ -48703,6 +48703,9 @@ msgstr ""
 msgid "User created at"
 msgstr ""
 
+msgid "User deleted own account on %{timestamp}"
+msgstr ""
+
 msgid "User does not have a pending request"
 msgstr ""
 
