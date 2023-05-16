@@ -1,5 +1,5 @@
 - if admin_emails_are_currently_rate_limited?
-  = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
+  = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false, alert_options: { class: 'gl-mt-4' }) do |c|
     - c.with_body do
       = admin_emails_rate_limited_alert
 
