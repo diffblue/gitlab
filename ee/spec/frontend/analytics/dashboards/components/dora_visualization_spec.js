@@ -53,6 +53,21 @@ describe('DoraVisualization', () => {
     expect(findAlert().text()).toBe('Failed to load comparison chart for Namespace: test/one');
   });
 
+  it('passes data attributes to the comparison chart', async () => {
+    const requestPath = 'test';
+    const excludeMetrics = ['one', 'two'];
+    await createWrapper({
+      props: { data: { namespace: requestPath, exclude_metrics: excludeMetrics } },
+      group: mockGroup,
+    });
+    expect(findComparisonChart().props()).toEqual(
+      expect.objectContaining({
+        requestPath,
+        excludeMetrics,
+      }),
+    );
+  });
+
   it('renders a group with the default title', async () => {
     await createWrapper({ group: mockGroup });
     expect(findTitle().text()).toEqual(`Metrics comparison for ${mockGroup.name} group`);

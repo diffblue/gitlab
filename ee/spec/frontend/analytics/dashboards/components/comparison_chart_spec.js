@@ -10,7 +10,7 @@ import ComparisonChart from 'ee/analytics/dashboards/components/comparison_chart
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
 import GroupVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from 'ee/analytics/dashboards/graphql/project_vulnerabilities.query.graphql';
-import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
+import { DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import * as utils from '~/analytics/shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -61,6 +61,13 @@ describe('Comparison chart', () => {
       {},
       { typePolicies: { Query: { fields: { project: { merge: false } } } } },
     );
+
+  const mockAllTimePeriodApiResponses = () =>
+    utils.fetchMetricsData
+      .mockReturnValueOnce(mockMonthToDateApiResponse)
+      .mockReturnValueOnce(mockPreviousMonthApiResponse)
+      .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
+      .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
 
   const createWrapper = async ({ props = {} } = {}) => {
     wrapper = shallowMount(ComparisonChart, {
@@ -187,12 +194,8 @@ describe('Comparison chart', () => {
     });
 
     it('will show an alert if the chart data failed to load', async () => {
-      utils.fetchMetricsData
-        .mockReturnValueOnce(mockMonthToDateApiResponse)
-        .mockReturnValueOnce(mockPreviousMonthApiResponse)
-        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
-        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse)
-        .mockRejectedValueOnce();
+      mockAllTimePeriodApiResponses();
+      utils.fetchMetricsData.mockRejectedValueOnce();
       await createWrapper();
 
       expect(createAlert).toHaveBeenCalledWith({
@@ -211,23 +214,28 @@ describe('Comparison chart', () => {
     });
 
     it('renders each DORA metric when there is table data', async () => {
-      utils.fetchMetricsData
-        .mockReturnValueOnce(mockMonthToDateApiResponse)
-        .mockReturnValueOnce(mockPreviousMonthApiResponse)
-        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
-        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
+      mockAllTimePeriodApiResponses();
       await createWrapper();
 
       const metricNames = getTableData().map(({ metric }) => metric);
       expect(metricNames).toEqual(mockComparativeTableData.map(({ metric }) => metric));
     });
 
+    it('does not render DORA metrics that were in excludeMetrics', async () => {
+      const excludeMetrics = [
+        DORA_METRICS.DEPLOYMENT_FREQUENCY,
+        DORA_METRICS.LEAD_TIME_FOR_CHANGES,
+      ];
+
+      mockAllTimePeriodApiResponses();
+      await createWrapper({ props: { excludeMetrics } });
+
+      const metricNames = getTableData().map(({ metric }) => metric.identifier);
+      expect(metricNames).not.toEqual(expect.arrayContaining(excludeMetrics));
+    });
+
     it('selects the final data point in the vulnerability response for display', async () => {
-      utils.fetchMetricsData
-        .mockReturnValueOnce(mockMonthToDateApiResponse)
-        .mockReturnValueOnce(mockPreviousMonthApiResponse)
-        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
-        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
+      mockAllTimePeriodApiResponses();
       await createWrapper();
 
       const critical = getTableDataForMetric(VULNERABILITY_METRICS.CRITICAL);
@@ -251,12 +259,7 @@ describe('Comparison chart', () => {
     const fakeProjectPath = 'fake/project/path';
 
     beforeEach(async () => {
-      utils.fetchMetricsData
-        .mockReturnValueOnce(mockMonthToDateApiResponse)
-        .mockReturnValueOnce(mockPreviousMonthApiResponse)
-        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
-        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
-
+      mockAllTimePeriodApiResponses();
       await createWrapper({ props: { isProject: true, requestPath: fakeProjectPath } });
     });
 

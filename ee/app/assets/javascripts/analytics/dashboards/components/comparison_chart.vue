@@ -40,6 +40,11 @@ export default {
       type: Boolean,
       required: true,
     },
+    excludeMetrics: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -135,13 +140,14 @@ export default {
     },
     async fetchTableMetrics() {
       try {
-        const tableData = await fetchMetricsForTimePeriods(
+        const timePeriods = await fetchMetricsForTimePeriods(
           DASHBOARD_TIME_PERIODS,
           this.fetchMetrics,
         );
 
-        this.tableData = hasDoraMetricValues(tableData)
-          ? generateDoraTimePeriodComparisonTable(tableData)
+        const { excludeMetrics } = this;
+        this.tableData = hasDoraMetricValues(timePeriods)
+          ? generateDoraTimePeriodComparisonTable({ timePeriods, excludeMetrics })
           : [];
       } catch (error) {
         createAlert({ message: DASHBOARD_LOADING_FAILURE, error, captureError: true });

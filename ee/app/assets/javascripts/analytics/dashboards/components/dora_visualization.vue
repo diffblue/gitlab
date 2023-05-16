@@ -54,6 +54,9 @@ export default {
     fullPath() {
       return this.data?.namespace;
     },
+    excludeMetrics() {
+      return this.data?.exclude_metrics;
+    },
     namespace() {
       return this.groupOrProject?.group || this.groupOrProject?.project;
     },
@@ -84,6 +87,10 @@ export default {
   </gl-alert>
   <div v-else>
     <h5 data-testid="comparison-chart-title">{{ title || defaultTitle }}</h5>
-    <comparison-chart :request-path="fullPath" :is-project="isProject" />
+    <comparison-chart
+      :request-path="fullPath"
+      :is-project="isProject"
+      :exclude-metrics="excludeMetrics"
+    />
   </div>
 </template>
