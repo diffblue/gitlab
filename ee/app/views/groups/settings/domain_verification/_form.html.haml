@@ -1,0 +1,34 @@
+- if domain_presenter.errors.any?
+  = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
+    = c.body do
+      - domain_presenter.errors.full_messages.each do |msg|
+        = msg
+
+.form-group.gl-form-group.gl-max-w-80
+  = f.label :domain, _("Domain")
+  = f.text_field :domain, required: true, placeholder: s_("DomainVerification|Enter your domain"), autocomplete: "off", class: "form-control", disabled: domain_presenter.persisted?
+.form-group.gl-form-group.gl-max-w-80
+  - if domain_presenter.persisted?
+    = f.label :project_id, _("Project")
+    = f.text_field :project_id, value: domain_presenter.project.full_path, class: "form-control", disabled: true
+  - else
+    .js-vue-project-select{ data: {
+      label: _('Project'),
+      input_name: 'pages_domain[project_id]',
+      input_id: 'pages_domain_project_id',
+      group_id: @group.id,
+      order_by: 'last_activity_at',
+      with_shared: false.to_s,
+      include_subgroups: true.to_s,
+      clearable: true.to_s,
+      block: true.to_s,
+      selected: domain_presenter.project_id } }
+
+- if can_verify_group_domain?(domain_presenter)
+  = render 'dns'
+
+- if can_add_group_domain_custom_certificate?
+  = render 'certificate', f: f
+- else
+  .nothing-here-block
+    = _("Support for custom certificates is disabled. Ask your system's administrator to enable it.")

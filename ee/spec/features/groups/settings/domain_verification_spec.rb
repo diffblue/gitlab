@@ -9,6 +9,13 @@ RSpec.describe 'Group domain verification settings', :saas, feature_category: :s
 
   before do
     stub_licensed_features(domain_verification: true)
+    stub_config(pages: {
+      enabled: true,
+      external_http: true,
+      external_https: true,
+      access_control: false,
+      host: "new.domain.com"
+    })
     sign_in(user)
     group.add_owner(user)
   end
@@ -21,6 +28,13 @@ RSpec.describe 'Group domain verification settings', :saas, feature_category: :s
     page.within('.shortcuts-settings') do
       expect(page).to have_link _('Domain Verification'), href: group_settings_domain_verification_index_path(group)
     end
+  end
+
+  it 'displays add domain button' do
+    visit_domain_verification_page
+
+    expect(page).to have_link s_("DomainVerification|Add Domain"),
+      href: new_group_settings_domain_verification_path(group)
   end
 
   context 'when there are no domains' do
@@ -39,16 +53,16 @@ RSpec.describe 'Group domain verification settings', :saas, feature_category: :s
     it 'displays all domains within group hierarchy' do
       visit_domain_verification_page
 
-      page.within("td#domain#{verified_domain.id}") do
-        expect(page).to have_link(verified_domain.domain,
-                                  href: project_pages_domain_path(project, verified_domain.domain))
-        expect(page).to have_selector '.badge', text: 'Verified'
+      page.within("tr#domain#{verified_domain.id}") do
+        expect(page).to have_content(verified_domain.domain)
+        expect(page).to have_content('Verified')
+        expect(page).to have_link(href: group_settings_domain_verification_path(group, verified_domain.domain))
       end
 
-      page.within("td#domain#{unverified_domain.id}") do
-        expect(page).to have_link(unverified_domain.domain,
-                                  href: project_pages_domain_path(project, unverified_domain.domain))
-        expect(page).to have_selector '.badge', text: 'Unverified'
+      page.within("tr#domain#{unverified_domain.id}") do
+        expect(page).to have_content(unverified_domain.domain)
+        expect(page).to have_content('Unverified')
+        expect(page).to have_link(href: group_settings_domain_verification_path(group, unverified_domain.domain))
       end
     end
   end

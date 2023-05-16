@@ -1,0 +1,55 @@
+- auto_ssl_available_and_enabled = group_domain_auto_ssl_available? && domain_presenter.auto_ssl_enabled?
+
+- if group_domain_auto_ssl_available?
+  .form-group.gl-form-group
+    %label{ for: "pages_domain_auto_ssl_enabled_button" }
+      = _('Certificate')
+    %p.gl-text-secondary.gl-mt-1
+      - docs_link_url = help_page_path("user/project/pages/custom_domains_ssl_tls_certification/lets_encrypt_integration.md")
+      - docs_link_start = "<a href=\"%{docs_link_url}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-nowrap\">".html_safe % { docs_link_url: docs_link_url }
+      - docs_link_end = "</a>".html_safe
+      = _("Let's Encrypt is a free, automated, and open certificate authority (CA) that gives digital certificates in order to enable HTTPS (SSL/TLS) for websites. Learn more about Let's Encrypt configuration by following the %{docs_link_start}documentation on GitLab Pages%{docs_link_end}.").html_safe % { docs_link_url: docs_link_url, docs_link_start: docs_link_start, docs_link_end: docs_link_end }
+
+    - lets_encrypt_link_url = "https://letsencrypt.org/"
+    - lets_encrypt_link_start = "<a href=\"%{lets_encrypt_link_url}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-nowrap\">".html_safe % { lets_encrypt_link_url: lets_encrypt_link_url }
+    - lets_encrypt_link_end = "</a>".html_safe
+
+    = f.gitlab_ui_radio_component :auto_ssl_enabled,
+      true,
+      _("Automatic certificate management using %{lets_encrypt_link_start}Let's Encrypt%{lets_encrypt_link_end}").html_safe % { lets_encrypt_link_start: lets_encrypt_link_start, lets_encrypt_link_end: lets_encrypt_link_end },
+      radio_options: { checked: auto_ssl_available_and_enabled }
+    = f.gitlab_ui_radio_component :auto_ssl_enabled,
+      false,
+      s_("DomainVerification|Manually enter certificate information"),
+      radio_options: { checked: !auto_ssl_available_and_enabled }
+
+.js-shown-unless-auto-ssl.custom-control{ class: ("gl-display-none" if auto_ssl_available_and_enabled) }
+  - if domain_presenter.user_defined_certificate?
+    .form-group.gl-form-group.gl-max-w-80
+      = render Pajamas::CardComponent.new(body_options: { class: 'gl-display-flex gl-align-items-center gl-justify-content-space-between gl-p-5' }) do |c|
+        - c.header do
+          = s_('Certificate')
+        - c.body do
+          %span
+            = domain_presenter.pages_domain.subject || _('missing')
+          = link_to _('Remove'),
+            clean_certificate_group_settings_domain_verification_path(@group, domain_presenter),
+            data: { confirm: _('Are you sure?'), 'confirm-btn-variant': 'danger' },
+            'aria-label': s_("DomainVerification|Remove certificate"),
+            class: 'gl-button btn btn-danger btn-sm',
+            method: :delete
+  - else
+    .form-group.gl-form-group.gl-max-w-80
+      = f.label :user_provided_certificate, _("Certificate (PEM)")
+      = f.text_area :user_provided_certificate,
+        rows: 5,
+        class: "form-control"
+      %p.help-inline.text-muted= _("Upload a certificate for your domain with all intermediates")
+    .form-group.gl-form-group.gl-max-w-80
+      = f.label :user_provided_key, _("Key (PEM)")
+      = f.text_area :user_provided_key,
+        rows: 5,
+        class: "form-control"
+      %p.help-inline.text-muted= _("Upload a private key for your certificate")
+
+= render 'lets_encrypt_callout', auto_ssl_available_and_enabled: auto_ssl_available_and_enabled

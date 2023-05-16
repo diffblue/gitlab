@@ -1,1 +1,11 @@
+- add_to_breadcrumbs _("Domain Verification"), group_settings_domain_verification_index_path(@group)
 - page_title s_("DomainVerification|Add Domain")
+
+%h1.page-title.gl-font-size-h-display
+  = s_("DomainVerification|New Domain")
+= render 'groups/settings/domain_verification/helper_text'
+%div
+  = gitlab_ui_form_for domain_presenter, url: group_settings_domain_verification_index_path(@group), html: { name: "domainForm", class: 'fieldset-form' } do |f|
+    = render 'form', { f: f }
+    = f.submit s_("DomainVerification|Add Domain"), class: 'gl-mr-3', pajamas_button: true
+    = link_to _('Cancel'), group_settings_domain_verification_index_path(@group), class: 'gl-button btn btn-default btn-cancel'
