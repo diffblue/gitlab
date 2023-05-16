@@ -12,7 +12,6 @@ identifiers:
 product_section: dev
 product_stage: plan
 product_group: product_planning
-product_category: epics
 milestone: "15.3"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91912
 distributions:
