@@ -59,7 +59,7 @@ describe('AnalyticsDashboard', () => {
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
       }/-/raw/main/${encodeURIComponent(CUSTOM_DASHBOARDS_PATH + 'abc.yml'.replace(/^\//, ''))}`;
 
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD);
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
       jest.spyOn(axios, 'get');
       await getCustomDashboard('abc', TEST_CUSTOM_DASHBOARDS_PROJECT);
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
@@ -133,7 +133,7 @@ describe('AnalyticsDashboard', () => {
         PRODUCT_ANALYTICS_VISUALIZATIONS_PATH + 'abc.yml'.replace(/^\//, ''),
       )}`;
 
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD);
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARD());
       jest.spyOn(axios, 'get');
       await getProductAnalyticsVisualization('abc', TEST_CUSTOM_DASHBOARDS_PROJECT);
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {

@@ -4,6 +4,7 @@ import {
   filtersToQueryParams,
   getDateRangeOption,
   isEmptyPanelData,
+  availableVisualizationsValidator,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import { parsePikadayDate } from '~/lib/utils/datetime_utility';
 import {
@@ -115,4 +116,25 @@ describe('isEmptyPanelData', () => {
       expect(result).toBe(expected);
     },
   );
+});
+
+describe('availableVisualizationsValidator', () => {
+  it('returns true when there are no available visualizations', () => {
+    const result = availableVisualizationsValidator({});
+    expect(result).toBe(true);
+  });
+
+  it('returns true when the options have the required keys', () => {
+    const result = availableVisualizationsValidator({
+      foo: { loading: false, visualizationIds: [] },
+    });
+    expect(result).toBe(true);
+  });
+
+  it('returns false when the options dot not have the required keys', () => {
+    const result = availableVisualizationsValidator({
+      foo: { loading: false, bar: [] },
+    });
+    expect(result).toBe(false);
+  });
 });

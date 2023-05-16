@@ -13,11 +13,16 @@ import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboa
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import {
+  getNextPanelId,
+  createNewVisualizationPanel,
+} from 'ee/analytics/analytics_dashboards/utils';
+import {
   I18N_DASHBOARD_NOT_FOUND_TITLE,
   I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
   I18N_DASHBOARD_NOT_FOUND_ACTION,
   I18N_DASHBOARD_SAVED_SUCCESSFULLY,
   I18N_DASHBOARD_ERROR_WHILE_SAVING,
+  I18N_PRODUCT_ANALYTICS_TITLE,
   NEW_DASHBOARD,
 } from 'ee/analytics/analytics_dashboards/constants';
 import {
@@ -26,9 +31,11 @@ import {
   getProductAnalyticsVisualization,
   saveCustomDashboard,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import { builtinVisualizations } from 'ee/analytics/analytics_dashboards/gl_dashboards';
 import {
   TEST_CUSTOM_DASHBOARDS_PROJECT,
   TEST_CUSTOM_DASHBOARD,
+  TEST_VISUALIZATION,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
   TEST_ROUTER_BACK_HREF,
 } from '../mock_data';
@@ -54,9 +61,9 @@ describe('AnalyticsDashboard', () => {
   };
 
   beforeEach(() => {
-    getCustomDashboard.mockImplementation(() => TEST_CUSTOM_DASHBOARD);
+    getCustomDashboard.mockImplementation(() => TEST_CUSTOM_DASHBOARD());
     getProductAnalyticsVisualizationList.mockImplementation(() => []);
-    getProductAnalyticsVisualization.mockImplementation(() => TEST_CUSTOM_DASHBOARD);
+    getProductAnalyticsVisualization.mockImplementation(() => TEST_VISUALIZATION());
   });
 
   const createWrapper = ({ props = {}, data = {}, routeId = '' } = {}) => {
@@ -107,6 +114,19 @@ describe('AnalyticsDashboard', () => {
         dateRangeLimit: 0,
         showDateRangeFilter: true,
         syncUrlFilters: true,
+      });
+    });
+
+    it('fetches the available visualizations', async () => {
+      createWrapper();
+
+      await waitForPromises();
+
+      expect(findDashboard().props().availableVisualizations).toMatchObject({
+        [I18N_PRODUCT_ANALYTICS_TITLE]: {
+          loading: false,
+          visualizationIds: Object.keys(builtinVisualizations),
+        },
       });
     });
 
@@ -166,6 +186,38 @@ describe('AnalyticsDashboard', () => {
       );
 
       expect(findDashboard().exists()).toBe(true);
+    });
+  });
+
+  describe('when an "add panel" event is received', () => {
+    let newPanel;
+    const originalPanels = TEST_CUSTOM_DASHBOARD().panels;
+
+    beforeEach(async () => {
+      createWrapper({}, 'custom_dashboard');
+      await waitForPromises();
+
+      findDashboard().vm.$emit('add-panel', 'foo', 'yml');
+      await waitForPromises();
+
+      newPanel = createNewVisualizationPanel(getNextPanelId(originalPanels), 'foo', 'yml');
+    });
+
+    it('adds a new panel to the default dashboard object', () => {
+      const defaultPanels = findDashboard().props().initialDashboard.default.panels;
+
+      expect(defaultPanels).toHaveLength(originalPanels.length + 1);
+      expect(defaultPanels.pop()).toMatchObject(newPanel);
+    });
+
+    it('adds a new hydrated panel to the dashboard panels array', () => {
+      const { panels } = findDashboard().props().initialDashboard;
+
+      expect(panels).toHaveLength(originalPanels.length + 1);
+      expect(panels.pop()).toMatchObject({
+        ...newPanel,
+        visualization: TEST_VISUALIZATION(),
+      });
     });
   });
 
@@ -265,14 +317,14 @@ describe('AnalyticsDashboard', () => {
       createWrapper({ props: { isNewDashboard: true } });
     });
 
-    it('creates a new dashboard and disables the filters', () => {
+    it('creates a new dashboard and disables the filter syncing', () => {
       expect(findDashboard().props()).toMatchObject({
         initialDashboard: {
           ...NEW_DASHBOARD,
           default: { ...NEW_DASHBOARD },
         },
         defaultFilters: {},
-        showDateRangeFilter: false,
+        showDateRangeFilter: true,
         syncUrlFilters: false,
       });
     });

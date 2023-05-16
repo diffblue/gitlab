@@ -153,7 +153,9 @@ export const ANALYTICS_FIELDS = [
   },
 ];
 
-export const NEW_DASHBOARD = {
+export const NEW_DASHBOARD = () => ({
   title: s__('Analytics|New dashboard'),
   panels: [],
-};
+});
+
+export const I18N_PRODUCT_ANALYTICS_TITLE = __('Product analytics');

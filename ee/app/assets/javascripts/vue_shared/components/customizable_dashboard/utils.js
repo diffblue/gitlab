@@ -61,3 +61,10 @@ export const isEmptyPanelData = (visualizationType, data) => {
   }
   return isEmpty(data);
 };
+
+export const availableVisualizationsValidator = (obj) => {
+  return Object.values(obj).every(
+    ({ loading, visualizationIds }) =>
+      typeof loading === 'boolean' && Array.isArray(visualizationIds),
+  );
+};

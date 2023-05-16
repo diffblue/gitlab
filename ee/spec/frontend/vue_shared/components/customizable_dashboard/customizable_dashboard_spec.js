@@ -20,7 +20,13 @@ import {
   buildDefaultDashboardFilters,
 } from 'ee/vue_shared/components/customizable_dashboard/utils';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
-import { dashboard, builtinDashboard, mockDateRangeFilterChangePayload } from './mock_data';
+import VisualizationSelector from 'ee/vue_shared/components/customizable_dashboard/dashboard_editor/visualization_selector.vue';
+import {
+  dashboard,
+  dashboardWithNewPanel,
+  builtinDashboard,
+  mockDateRangeFilterChangePayload,
+} from './mock_data';
 
 jest.mock('~/alert');
 jest.mock('gridstack', () => ({
@@ -29,6 +35,7 @@ jest.mock('gridstack', () => ({
       return {
         on: jest.fn(),
         destroy: jest.fn(),
+        makeWidget: jest.fn(),
       };
     }),
   },
@@ -43,6 +50,10 @@ describe('CustomizableDashboard', () => {
 
   const sentryError = new Error('Network error');
 
+  const $router = {
+    push: jest.fn(),
+  };
+
   const createWrapper = (props = {}, loadedDashboard = dashboard) => {
     const loadDashboard = { ...loadedDashboard };
     loadDashboard.default = { ...loadDashboard };
@@ -50,11 +61,14 @@ describe('CustomizableDashboard', () => {
     wrapper = shallowMountExtended(CustomizableDashboard, {
       propsData: {
         initialDashboard: loadDashboard,
-        availableVisualizations: [],
+        availableVisualizations: {},
         ...props,
       },
       stubs: {
         RouterLink: RouterLinkStub,
+      },
+      mocks: {
+        $router,
       },
     });
   };
@@ -71,6 +85,7 @@ describe('CustomizableDashboard', () => {
   const findDateRangeFilter = () => wrapper.findComponent(DateRangeFilter);
   const findUrlSync = () => wrapper.findComponent(UrlSync);
   const findForm = () => wrapper.findComponent(GlForm);
+  const findVisualizationSelector = () => wrapper.findComponent(VisualizationSelector);
 
   describe('when being created an error occurs while loading the CSS', () => {
     beforeEach(() => {
@@ -181,6 +196,14 @@ describe('CustomizableDashboard', () => {
     it('does not sync filters with the URL', () => {
       expect(findUrlSync().exists()).toBe(false);
     });
+
+    it('makes a new grid widget when a new panel is added', async () => {
+      wrapper.setProps({ initialDashboard: dashboardWithNewPanel });
+
+      await waitForPromises();
+
+      expect(wrapper.vm.grid.makeWidget).toHaveBeenCalledWith('#panel-3');
+    });
   });
 
   describe('when builtin Dashboard is loaded', () => {
@@ -271,6 +294,24 @@ describe('CustomizableDashboard', () => {
 
     it('shows no Edit Button', () => {
       expect(findEditButton().exists()).toBe(false);
+    });
+
+    it('shows the visualization selector', () => {
+      expect(findVisualizationSelector().props()).toMatchObject({
+        availableVisualizations: {},
+      });
+    });
+
+    it('emits "add-panel" when a visualization is selected', async () => {
+      await findVisualizationSelector().vm.$emit('select', 'foo', 'yml');
+
+      expect(wrapper.emitted('add-panel')).toEqual([['foo', 'yml']]);
+    });
+
+    it('routes to the designer when a "create" event is recieved', async () => {
+      await findVisualizationSelector().vm.$emit('create');
+
+      expect($router.push).toHaveBeenCalledWith({ name: 'visualization-designer' });
     });
   });
 
