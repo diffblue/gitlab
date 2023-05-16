@@ -47423,9 +47423,6 @@ msgstr ""
 msgid "Trial|Continue"
 msgstr ""
 
-msgid "Trial|Dismiss"
-msgstr ""
-
 msgid "Trial|Your GitLab Ultimate trial lasts for 30 days, but you can keep your free GitLab account forever. We just need some additional information to activate your trial."
 msgstr ""
 
