@@ -33,6 +33,10 @@ module Sbom
       joins(:source).where("sbom_sources.source->'package_manager'->>'name' IN (?)", package_managers)
     end
 
+    scope :filter_by_component_names, ->(component_names) do
+      joins(:component).where(sbom_components: { name: component_names })
+    end
+
     def location
       {
         blob_path: input_file_blob_path,

@@ -93,6 +93,20 @@ RSpec.describe Sbom::DependenciesFinder, feature_category: :dependency_managemen
         end
       end
 
+      context 'when filtered by component name' do
+        let_it_be(:params) do
+          {
+            component_names: [occurrence_1.name]
+          }
+        end
+
+        it 'returns only records corresponding to the filter' do
+          component_names = dependencies.map(&:name)
+
+          expect(component_names).to eq([occurrence_1.name])
+        end
+      end
+
       context 'when params is invalid' do
         let_it_be(:params) do
           {

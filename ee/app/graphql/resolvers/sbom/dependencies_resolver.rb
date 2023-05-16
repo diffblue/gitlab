@@ -26,6 +26,10 @@ module Resolvers
         required: false,
         description: 'Filter dependencies by package managers.'
 
+      argument :component_names, [GraphQL::Types::String],
+        required: false,
+        description: 'Filter dependencies by component names.'
+
       alias_method :project, :object
 
       def resolve_with_lookahead(**args)
