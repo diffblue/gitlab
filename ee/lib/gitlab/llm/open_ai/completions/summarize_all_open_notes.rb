@@ -13,7 +13,7 @@ module Gitlab
           # - 25% for output tokens: OpenAI token limit includes both tokenized input prompt as well as the response
           # We may come want to adjust these rations as we learn more, but for now leaving a 25% ration of the total
           # limit seems sensible.
-          # - 25% buffer for input tokens: we aproximate the token count by dividing character count by 4. That is no
+          # - 25% buffer for input tokens: we approximate the token count by dividing character count by 4. That is no
           # very accurate at all, so we need some buffer in case we exceed that so that we avoid getting an error
           # response as much as possible. A better alternative is to use tiktoken_ruby gem which is coming in a
           # follow-up, see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117176
