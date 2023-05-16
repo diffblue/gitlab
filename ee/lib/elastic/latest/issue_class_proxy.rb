@@ -124,17 +124,7 @@ module Elastic
         scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
         return super if scoped_project_ids == :any
 
-        context.name(:project) do
-          query_hash[:query][:bool][:filter] ||= []
-          query_hash[:query][:bool][:filter] << {
-            terms: {
-              _name: context.name,
-              project_id: filter_ids_by_feature(scoped_project_ids, current_user, options[:features])
-            }
-          }
-        end
-
-        query_hash
+        get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, options[:features])
       end
 
       def confidentiality_filter(query_hash, options)
