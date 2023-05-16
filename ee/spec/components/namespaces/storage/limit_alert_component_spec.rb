@@ -72,6 +72,13 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
       expect(page).to have_content(alert_message_repository_below_limit)
     end
 
+    it 'renders the correct callout data' do
+      render_inline(component)
+      expect(page).to have_css("[data-feature-id='repository_storage_limit_banner_warning_threshold']")
+      expect(page).to have_css("[data-dismiss-endpoint='#{group_callouts_path}']")
+      expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
+    end
+
     context 'when storage used is over limit and user has not purchased additional storage' do
       before do
         allow(group).to receive(:contains_locked_projects?).and_return(true)

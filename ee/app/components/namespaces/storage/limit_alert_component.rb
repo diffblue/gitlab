@@ -62,7 +62,7 @@ module Namespaces
       end
 
       def callout_feature_name
-        "namespace_storage_limit_banner_#{alert_level}_threshold"
+        "#{enforcement_type}_storage_limit_banner_#{alert_level}_threshold"
       end
 
       def purchase_link
