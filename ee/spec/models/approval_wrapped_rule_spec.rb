@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ApprovalWrappedRule do
+RSpec.describe ApprovalWrappedRule, feature_category: :code_review_workflow do
   using RSpec::Parameterized::TableSyntax
 
   let(:merge_request) { create(:merge_request) }
@@ -12,7 +12,7 @@ RSpec.describe ApprovalWrappedRule do
   let(:approver2) { create(:user) }
   let(:approver3) { create(:user) }
 
-  subject { described_class.new(merge_request, rule) }
+  subject(:approval_wrapped_rule) { described_class.new(merge_request, rule) }
 
   before do
     rule.clear_memoization(:approvers) if rule.respond_to?(:clear_memoization)
@@ -20,7 +20,7 @@ RSpec.describe ApprovalWrappedRule do
 
   describe '#project' do
     it 'returns merge request project' do
-      expect(subject.project).to eq(merge_request.target_project)
+      expect(approval_wrapped_rule.project).to eq(merge_request.target_project)
     end
   end
 
@@ -36,7 +36,7 @@ RSpec.describe ApprovalWrappedRule do
       let(:approvals_required) { 8 }
 
       it 'returns approvals still needed' do
-        expect(subject.approvals_left).to eq(6)
+        expect(approval_wrapped_rule.approvals_left).to eq(6)
       end
     end
 
@@ -44,12 +44,14 @@ RSpec.describe ApprovalWrappedRule do
       let(:approvals_required) { 1 }
 
       it 'returns zero' do
-        expect(subject.approvals_left).to eq(0)
+        expect(approval_wrapped_rule.approvals_left).to eq(0)
       end
     end
   end
 
   describe '#approved?' do
+    subject { described_class.new(merge_request, rule).approved? }
+
     before do
       create(:approval, merge_request: merge_request, user: approver1)
       rule.users << approver1
@@ -58,9 +60,7 @@ RSpec.describe ApprovalWrappedRule do
     context 'when approvals left is zero' do
       let(:approvals_required) { 1 }
 
-      it 'returns true' do
-        expect(subject.approved?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'when approvals left is not zero, but there is still unactioned approvers' do
@@ -70,17 +70,13 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver2
       end
 
-      it 'returns false' do
-        expect(subject.approved?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'when approvals left is not zero, but there is no unactioned approvers' do
       let(:approvals_required) { 99 }
 
-      it 'returns true' do
-        expect(subject.approved?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'when approvals left is not zero, but there is not enough unactioned approvers' do
@@ -90,27 +86,23 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver2
       end
 
-      it 'returns true' do
-        expect(subject.approved?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
   end
 
   describe '#invalid_rule?' do
+    subject { described_class.new(merge_request, rule).invalid_rule? }
+
     context 'when there are no unactioned approvers and approvals are required' do
       let(:approvals_required) { 1 }
 
-      it 'return true' do
-        expect(subject.invalid_rule?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'when rule is any_approver and approvals are required' do
       let(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
 
-      it 'return false' do
-        expect(subject.invalid_rule?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'when more approvals are required than the number of approvers' do
@@ -120,9 +112,7 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver1
       end
 
-      it 'returns true' do
-        expect(subject.invalid_rule?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'when there are unactioned approvers and approvals are required' do
@@ -132,9 +122,7 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver1
       end
 
-      it 'returns false' do
-        expect(subject.invalid_rule?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'when there are no unactioned approvers because all required approvals are given' do
@@ -145,9 +133,7 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver1
       end
 
-      it 'returns false' do
-        expect(subject.invalid_rule?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'when there are more approvers than required approvals' do
@@ -158,29 +144,25 @@ RSpec.describe ApprovalWrappedRule do
         rule.users << approver2
       end
 
-      it 'returns false' do
-        expect(subject.invalid_rule?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
 
     context 'when no approvals are required' do
       let(:approvals_required) { 0 }
 
-      it 'returns false' do
-        expect(subject.invalid_rule?).to eq(false)
-      end
+      it { is_expected.to eq(false) }
     end
   end
 
-  describe 'allow_merge_when_invalid?' do
+  describe '#allow_merge_when_invalid?' do
+    subject { described_class.new(merge_request, rule).allow_merge_when_invalid? }
+
     context 'when feature "invalid_scan_result_policy_prevents_merge" is disabled' do
       before do
         stub_feature_flags(invalid_scan_result_policy_prevents_merge: false)
       end
 
-      it 'returns true' do
-        expect(subject.allow_merge_when_invalid?).to eq(true)
-      end
+      it { is_expected.to eq(true) }
     end
 
     context 'when feature "invalid_scan_result_policy_prevents_merge" is enabled' do
@@ -191,9 +173,7 @@ RSpec.describe ApprovalWrappedRule do
       context 'when report_type is scan_finding' do
         let(:rule) { create(:report_approver_rule, :scan_finding) }
 
-        it 'returns false' do
-          expect(subject.allow_merge_when_invalid?).to eq(false)
-        end
+        it { is_expected.to eq(false) }
       end
 
       context 'when report_type is license_scanning and scan_result_policy_read is attached' do
@@ -203,17 +183,13 @@ RSpec.describe ApprovalWrappedRule do
 
         let_it_be(:scan_result_policy_read) { create(:scan_result_policy_read) }
 
-        it 'returns false' do
-          expect(subject.allow_merge_when_invalid?).to eq(false)
-        end
+        it { is_expected.to eq(false) }
       end
 
       context 'when report_type is nil' do
         let(:rule) { create(:approval_merge_request_rule, report_type: nil) }
 
-        it 'returns true' do
-          expect(subject.allow_merge_when_invalid?).to eq(true)
-        end
+        it { is_expected.to eq(true) }
       end
 
       context 'when project is a policy management project' do
@@ -225,9 +201,7 @@ RSpec.describe ApprovalWrappedRule do
           create(:report_approver_rule, :scan_finding)
         end
 
-        it 'returns true' do
-          expect(subject.allow_merge_when_invalid?).to eq(true)
-        end
+        it { is_expected.to eq(true) }
       end
     end
   end
@@ -242,7 +216,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns approved approvers' do
-        expect(subject.approved_approvers).to contain_exactly(approver1)
+        expect(approval_wrapped_rule.approved_approvers).to contain_exactly(approver1)
       end
     end
 
@@ -254,7 +228,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns approved approvers from database' do
-        expect(subject.approved_approvers).to contain_exactly(approver3)
+        expect(approval_wrapped_rule.approved_approvers).to contain_exactly(approver3)
       end
     end
 
@@ -269,7 +243,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns computed approved approvers' do
-        expect(subject.approved_approvers).to contain_exactly(approver1)
+        expect(approval_wrapped_rule.approved_approvers).to contain_exactly(approver1)
       end
     end
 
@@ -285,7 +259,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns computed approved approvers' do
-        expect(subject.approved_approvers).to contain_exactly(approver1)
+        expect(approval_wrapped_rule.approved_approvers).to contain_exactly(approver1)
       end
     end
 
@@ -310,7 +284,7 @@ RSpec.describe ApprovalWrappedRule do
     let(:rule) { create(:approval_project_rule, project: merge_request.project, approvals_required: approvals_required, users: [approver1, approver3]) }
 
     it "returns an array" do
-      expect(subject.commented_approvers).to be_an(Array)
+      expect(approval_wrapped_rule.commented_approvers).to be_an(Array)
     end
 
     it "returns an array of approvers who have commented" do
@@ -319,9 +293,9 @@ RSpec.describe ApprovalWrappedRule do
       create(:note, project: merge_request.project, noteable: merge_request, author: non_approver)
       create(:system_note, project: merge_request.project, noteable: merge_request, author: approver3)
 
-      expect(subject.commented_approvers).to include(approver1)
-      expect(subject.commented_approvers).not_to include(non_approver)
-      expect(subject.commented_approvers).not_to include(approver3)
+      expect(approval_wrapped_rule.commented_approvers).to include(approver1)
+      expect(approval_wrapped_rule.commented_approvers).not_to include(non_approver)
+      expect(approval_wrapped_rule.commented_approvers).not_to include(approver3)
     end
   end
 
@@ -333,7 +307,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns unactioned approvers' do
-        expect(subject.unactioned_approvers).to contain_exactly(approver2)
+        expect(approval_wrapped_rule.unactioned_approvers).to contain_exactly(approver2)
       end
     end
 
@@ -346,7 +320,7 @@ RSpec.describe ApprovalWrappedRule do
       end
 
       it 'returns approved approvers from database' do
-        expect(subject.unactioned_approvers).to contain_exactly(approver1)
+        expect(approval_wrapped_rule.unactioned_approvers).to contain_exactly(approver1)
       end
     end
   end
@@ -355,7 +329,7 @@ RSpec.describe ApprovalWrappedRule do
     let(:rule) { create(:approval_merge_request_rule, approvals_required: 19) }
 
     it 'returns the attribute saved on the model' do
-      expect(subject.approvals_required).to eq(19)
+      expect(approval_wrapped_rule.approvals_required).to eq(19)
     end
   end
 
@@ -368,8 +342,8 @@ RSpec.describe ApprovalWrappedRule do
       let(:expected_rule_name) { 'approval rule' }
 
       it 'returns rule name without the sequential notation' do
-        expect(subject.name).not_to eq(rule_name)
-        expect(subject.name).to eq(expected_rule_name)
+        expect(approval_wrapped_rule.name).not_to eq(rule_name)
+        expect(approval_wrapped_rule.name).to eq(expected_rule_name)
       end
     end
 
@@ -377,7 +351,7 @@ RSpec.describe ApprovalWrappedRule do
       let(:report_type) { :license_scanning }
 
       it 'returns rule name as is' do
-        expect(subject.name).to eq(rule_name)
+        expect(approval_wrapped_rule.name).to eq(rule_name)
       end
     end
   end
