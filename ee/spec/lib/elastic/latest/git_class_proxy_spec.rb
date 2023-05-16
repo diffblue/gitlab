@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
+RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, feature_category: :global_search do
   let(:project) { create(:project, :public, :repository) }
   let(:included_class) { Elastic::Latest::RepositoryClassProxy }
 
@@ -49,6 +49,52 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
           expect(results.total).to eq 1
           expect(results.first._index).to match(/#{es_helper.target_name}-wikis/)
         end
+      end
+    end
+
+    context 'if type is blob' do
+      let_it_be(:user) { create(:user) }
+
+      it 'global blob search' do
+        search_options = {
+          current_user: user,
+          public_and_internal_projects: true,
+          order_by: nil,
+          sort: nil,
+          type: 'blob'
+        }
+        subject.elastic_search('*', type: 'blob', options: search_options)
+        assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
+                             'blob:match:search_terms')
+      end
+
+      it 'group blob search' do
+        group_search_options = {
+          current_user: user,
+          project_ids: [project.id],
+          group_ids: [project.namespace.id],
+          public_and_internal_projects: false,
+          order_by: nil,
+          sort: nil,
+          type: 'blob'
+        }
+        subject.elastic_search('*', type: 'blob', options: group_search_options)
+        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+                             'blob:match:search_terms')
+      end
+
+      it 'project blob search' do
+        project_search_options = {
+          current_user: user,
+          project_ids: [project.id],
+          public_and_internal_projects: false,
+          order_by: nil,
+          sort: nil,
+          type: 'blob'
+        }
+        subject.elastic_search('*', type: 'blob', options: project_search_options)
+        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+                             'blob:match:search_terms')
       end
     end
   end
@@ -105,6 +151,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
 
   describe '#blob_aggregations' do
     let(:user) { create(:user) }
+
     let(:options) do
       {
         current_user: user,
@@ -125,6 +172,45 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, featur
       expect(result.first.name).to eq('language')
       expect(result.first.buckets.first[:key]).to eq('Markdown')
       expect(result.first.buckets.first[:count]).to eq(2)
+    end
+
+    it 'assert names queries for global blob search' do
+      search_options = {
+        current_user: user,
+        public_and_internal_projects: true,
+        order_by: nil,
+        sort: nil
+      }
+      subject.blob_aggregations('*', search_options)
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
+                           'blob:match:search_terms')
+    end
+
+    it 'assert names queries for group blob search' do
+      group_search_options = {
+        current_user: user,
+        project_ids: [project.id],
+        group_ids: [project.namespace.id],
+        public_and_internal_projects: false,
+        order_by: nil,
+        sort: nil
+      }
+      subject.blob_aggregations('*', group_search_options)
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+                           'blob:match:search_terms')
+    end
+
+    it 'assert names queries for project blob search' do
+      project_search_options = {
+        current_user: user,
+        project_ids: [project.id],
+        public_and_internal_projects: false,
+        order_by: nil,
+        sort: nil
+      }
+      subject.blob_aggregations('*', project_search_options)
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+                           'blob:match:search_terms')
     end
   end
 

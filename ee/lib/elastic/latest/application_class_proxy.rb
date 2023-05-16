@@ -151,6 +151,20 @@ module Elastic
         }
       end
 
+      def get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, feature)
+        context.name(:project) do
+          query_hash[:query][:bool][:filter] ||= []
+          query_hash[:query][:bool][:filter] << {
+            terms: {
+              _name: context.name,
+              project_id: filter_ids_by_feature(scoped_project_ids, current_user, feature)
+            }
+          }
+        end
+
+        query_hash
+      end
+
       # Builds an elasticsearch query that will select child documents from a
       # set of projects, taking user access rules into account.
       def project_ids_filter(query_hash, options)
@@ -175,7 +189,7 @@ module Elastic
                                                 else
                                                   {
                                                     has_parent: {
-                                                      _name: context.name,
+                                                      _name: "#{context.name}:parent",
                                                       parent_type: "project",
                                                       query: {
                                                         bool: project_query

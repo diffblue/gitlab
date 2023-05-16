@@ -3,14 +3,15 @@
 module Elastic
   module Latest
     module GitClassProxy
+      extend ::Gitlab::Utils::Override
       SHA_REGEX = /\A[0-9a-f]{5,40}\z/i.freeze
       HIGHLIGHT_START_TAG = 'gitlabelasticsearch→'
       HIGHLIGHT_END_TAG = '←gitlabelasticsearch'
       MAX_LANGUAGES = 100
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
+        options[:scope] = type
         results = { blobs: [], commits: [] }
-
         case type
         when 'all'
           results[:commits] = search_commit(query, page: page, per: per, options: options.merge(features: 'repository'))
@@ -38,8 +39,7 @@ module Elastic
       end
 
       def blob_aggregations(query, options)
-        query_hash, options = blob_query(query, options: options.merge(features: 'repository', aggregation: true))
-
+        query_hash, options = blob_query(query, options: options.merge(features: 'repository', aggregation: true, scope: 'blob'))
         results = search(query_hash, options)
 
         ::Gitlab::Search::AggregationParser.call(results.response.aggregations)
@@ -71,6 +71,20 @@ module Elastic
         end
 
         query_hash
+      end
+
+      # Builds an elasticsearch query that will select documents from a
+      # set of projects for Group and Project searches, taking user access
+      # rules for blob into account. Relies upon super for Global searches
+      override :project_ids_filter
+      def project_ids_filter(query_hash, options)
+        return super if options[:public_and_internal_projects] || options[:scope] != 'blob'
+
+        current_user = options[:current_user]
+        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
+        return super if scoped_project_ids == :any
+
+        get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, 'repository')
       end
 
       def options_filter_context(type, options)
@@ -177,7 +191,6 @@ module Elastic
 
       def search_blob(query, type: 'blob', page: 1, per: 20, options: {})
         query_hash, options = blob_query(query, type: type, page: page, per: per, options: options)
-
         res = search(query_hash, options)
 
         {
@@ -363,7 +376,6 @@ module Elastic
         # inject the `id` part of repository as project id
         repository_ids = [options[:repository_id]].flatten
         options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if type == 'wiki_blob' && repository_ids.any?
-
         [query_hash, options]
       end
       # rubocop:enable Metrics/AbcSize
