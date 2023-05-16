@@ -814,6 +814,15 @@ The predefined CI/CD variables that start with `CI_BUILD_*` were deprecated in G
 
 The `POST ci/lint` API endpoint was deprecated in 15.7, and removed in 16.0. This endpoint did not validate the full range of CI/CD configuration options. Instead, use [`POST /projects/:id/ci/lint`](https://docs.gitlab.com/ee/api/lint.html#validate-a-ci-yaml-configuration-with-a-namespace), which properly validates CI/CD configuration.
 
+### `docker-ssh` and `docker-ssh+machine` executors are removed
+
+<div class="deprecation-notes">
+- Announced in: GitLab <span class="milestone">10.0</span>
+- To discuss this change or learn more, see the [deprecation issue](https://gitlab.com/gitlab-org/gitlab-runner/-/issues/29406).
+</div>
+
+In GitLab 16.0 and later, the `docker-ssh` and `docker+machine-ssh` executors for GitLab Runner have been removed from the GitLab Runner [code base](https://gitlab.com/gitlab-org/gitlab-runner).
+
 ### vulnerabilityFindingDismiss GraphQL mutation
 
 <div class="deprecation-notes">
