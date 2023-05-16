@@ -15,13 +15,23 @@ RSpec.describe Ci::Editor::AiConversation::MessagePolicy, feature_category: :pip
   context 'when the user created the message' do
     let(:policy_check_user) { message_user }
 
-    context 'when the user cannot read the project' do
+    context 'when the user is not a project member' do
       it 'dis-allows reading the message' do
         expect(policy).not_to be_allowed :read_ai_message
       end
     end
 
-    context 'when the user can read the project' do
+    context "when the user is a member who can't create a pipeline" do
+      before do
+        message_project.add_reporter(message_user)
+      end
+
+      it 'dis-allows reading the message' do
+        expect(policy).not_to be_allowed :read_ai_message
+      end
+    end
+
+    context "when the user is a member who can create a pipeline" do
       before do
         message_project.add_developer(message_user)
       end
@@ -35,18 +45,28 @@ RSpec.describe Ci::Editor::AiConversation::MessagePolicy, feature_category: :pip
   context 'when the user did not create the message' do
     let(:policy_check_user) { non_message_user }
 
-    context 'when the user cannot read the project' do
+    context 'when the user is not a project member' do
       it 'dis-allows reading the message' do
         expect(policy).not_to be_allowed :read_ai_message
       end
     end
 
-    context 'when the user can read the project' do
+    context "when the user is a member who can't create a pipeline" do
+      before do
+        message_project.add_reporter(message_user)
+      end
+
+      it 'dis-allows reading the message' do
+        expect(policy).not_to be_allowed :read_ai_message
+      end
+    end
+
+    context "when the user is a member who can create a pipeline" do
       before do
         message_project.add_developer(message_user)
       end
 
-      it 'allows reading the message' do
+      it 'dis-allows reading the message' do
         expect(policy).not_to be_allowed :read_ai_message
       end
     end

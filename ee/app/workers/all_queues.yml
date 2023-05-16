@@ -1119,6 +1119,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: ci_llm_generate_config
+  :worker_name: Ci::Llm::GenerateConfigWorker
+  :feature_category: :pipeline_composition
+  :has_external_dependencies: false
+  :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: ci_upstream_projects_subscriptions_cleanup
   :worker_name: Ci::UpstreamProjectsSubscriptionsCleanupWorker
   :feature_category: :continuous_integration

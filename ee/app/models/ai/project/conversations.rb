@@ -15,6 +15,8 @@ module Ai
       end
 
       def ci_config_messages
+        return Ci::Editor::AiConversation::Message.none unless @user.can?(:create_pipeline, @project)
+
         Ci::Editor::AiConversation::Message.belonging_to(@project, @user).asc
       end
     end
