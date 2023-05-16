@@ -7,7 +7,8 @@ RSpec.describe ProductAnalytics::FunnelStep, feature_category: :product_analytic
     ::ProductAnalytics::Funnel.new(name: 'test',
                                    project: create(:project, :repository),
                                    seconds_to_convert: 300,
-                                   config_path: 'nothing')
+                                   config_path: 'nothing',
+                                   config_project: create(:project, :repository))
   end
 
   let(:funnel_step) { described_class.new(name: 'test', target: '/page1.html', action: 'pageview', funnel: funnel) }

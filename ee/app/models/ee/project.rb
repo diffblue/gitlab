@@ -36,6 +36,7 @@ module EE
       include ProjectSecurityScannersInformation
       include VulnerabilityFlagHelpers
       include MirrorConfiguration
+      include ProductAnalyticsHelpers
 
       before_update :update_legacy_open_source_license_available, if: -> { visibility_level_changed? }
 
@@ -781,31 +782,6 @@ module EE
           )
         end
       end
-    end
-
-    def product_analytics_enabled?
-      return false unless licensed_feature_available?(:product_analytics)
-      return false unless ::Feature.enabled?(:product_analytics_dashboards, self)
-
-      true
-    end
-
-    def product_analytics_dashboards
-      return [] unless product_analytics_enabled?
-
-      ::ProductAnalytics::Dashboard.for_project(self.analytics_dashboards_configuration_project || self)
-    end
-
-    def product_analytics_funnels
-      return [] unless product_analytics_enabled?
-
-      ::ProductAnalytics::Funnel.for_project(self)
-    end
-
-    def product_analytics_dashboard(slug)
-      return [] unless product_analytics_enabled?
-
-      ::ProductAnalytics::Dashboard.for_project(self).find { |dashboard| dashboard.slug == slug }
     end
 
     def repository_size_excess
