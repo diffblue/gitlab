@@ -330,6 +330,18 @@ Before upgrading to GitLab 16.0, if you are:
 - Using an externally-provided PostgreSQL 12, you must upgrade to PostgreSQL 13 or later to meet the
   [minimum version requirements](https://docs.gitlab.com/ee/install/requirements.html#postgresql-requirements).
 
+### Praefect custom metrics endpoint configuration
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Support for using the `prometheus_exclude_database_from_default_metrics` configuration value was deprecated in
+GitLab 15.9 and is removed in GitLab 16.0. We made this change to improve the performance of Praefect.
+All metrics that scrape the Praefect database are now exported to the `/db_metrics` endpoint.
+
+You must update your metrics collection targets to use the `/db_metrics` endpoint.
+
 ### Project REST API field `operations_access_level` removed
 
 WARNING:
