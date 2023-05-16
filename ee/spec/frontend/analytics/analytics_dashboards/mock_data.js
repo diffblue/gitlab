@@ -25,7 +25,28 @@ export const TEST_CUSTOM_DASHBOARDS_LIST = [
   },
 ];
 
-export const TEST_CUSTOM_DASHBOARD = {
+export const TEST_VISUALIZATION = () => ({
+  version: 1,
+  type: 'LineChart',
+  data: {
+    type: 'cube_analytics',
+    query: {
+      measures: ['TrackedEvents.count'],
+      timeDimensions: [
+        {
+          dimension: 'TrackedEvents.utcTime',
+          granularity: 'day',
+        },
+      ],
+      limit: 100,
+      timezone: 'UTC',
+      filters: [],
+      dimensions: [],
+    },
+  },
+});
+
+export const TEST_CUSTOM_DASHBOARD = () => ({
   id: 'new_dashboard',
   title: 'New dashboard',
   panels: [
@@ -42,7 +63,7 @@ export const TEST_CUSTOM_DASHBOARD = {
       options: {},
     },
   ],
-};
+});
 export const mockResultSet = {
   seriesNames: () => [
     {

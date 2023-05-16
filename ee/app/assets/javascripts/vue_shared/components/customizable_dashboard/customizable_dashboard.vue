@@ -15,6 +15,7 @@ import {
   GRIDSTACK_MIN_ROW,
   CURSOR_GRABBING_CLASS,
 } from './constants';
+import VisualizationSelector from './dashboard_editor/visualization_selector.vue';
 import { filtersToQueryParams } from './utils';
 
 export default {
@@ -26,6 +27,7 @@ export default {
     GlForm,
     PanelsBase,
     UrlSync,
+    VisualizationSelector,
   },
   props: {
     initialDashboard: {
@@ -33,14 +35,10 @@ export default {
       required: true,
       default: () => {},
     },
-    getVisualization: {
-      type: Function,
+    availableVisualizations: {
+      type: Object,
       required: false,
       default: () => {},
-    },
-    availableVisualizations: {
-      type: Array,
-      required: true,
     },
     dateRangeLimit: {
       type: Number,
@@ -102,6 +100,17 @@ export default {
     mounted() {
       this.initGridStack();
     },
+    'initialDashboard.panels': {
+      async handler(panels) {
+        const newPanel = panels[panels.length - 1];
+        // Wait for the panels to render
+        await this.$nextTick();
+        this.registerNewGridPanel(newPanel.id);
+      },
+    },
+    isNewDashboard(isNew) {
+      this.editing = isNew;
+    },
   },
   async created() {
     try {
@@ -161,10 +170,20 @@ export default {
         });
       }
     },
+    registerNewGridPanel(panelId) {
+      const id = this.panelDomId(panelId);
+
+      this.grid.makeWidget(`#${id}`);
+
+      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+    },
     getGridAttribute(panel, attribute) {
       const { gridAttributes = {} } = panel;
 
       return gridAttributes[attribute];
+    },
+    async addNewPanel(visualizationId, source) {
+      this.$emit('add-panel', visualizationId, source);
     },
     convertToGridAttributes(gridStackProperties) {
       return {
@@ -179,6 +198,9 @@ export default {
         this.editing = true;
         if (this.grid) this.grid.setStatic(false);
       }
+    },
+    routeToVisualizationDesigner() {
+      this.$router.push({ name: 'visualization-designer' });
     },
     async saveEdit(submitEvent) {
       submitEvent.preventDefault();
@@ -195,6 +217,7 @@ export default {
       // as the main one was hydrated during load with other file
       this.dashboard.default.id = this.dashboard.id;
       this.dashboard.default.title = this.dashboard.title;
+
       this.$emit('save', this.dashboard.id, this.dashboard.default);
     },
     cancelEdit() {
@@ -240,6 +263,9 @@ export default {
         startDate,
         endDate,
       };
+    },
+    panelDomId(id) {
+      return `panel-${id}`;
     },
   },
   HISTORY_REPLACE_UPDATE_METHOD,
@@ -307,31 +333,31 @@ export default {
     <div
       class="grid-stack-container gl-mx-n5 gl-pl-2 gl-pr-2 gl-bg-gray-10 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
     >
-      <section
-        v-if="showFilters"
-        data-testid="dashboard-filters"
-        class="gl-display-flex gl-pt-4 gl-px-3"
-      >
-        <date-range-filter
-          v-if="showDateRangeFilter"
-          :default-option="filters.dateRangeOption"
-          :start-date="filters.startDate"
-          :end-date="filters.endDate"
-          :date-range-limit="dateRangeLimit"
-          @change="setDateRangeFilter"
-        />
-      </section>
-      <url-sync
-        v-if="syncUrlFilters"
-        :query="queryParams"
-        :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
-      />
       <div class="grid-stack-container gl-display-flex">
         <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1 gl-py-3">
+          <section
+            v-if="showFilters"
+            data-testid="dashboard-filters"
+            class="gl-display-flex gl-pt-4 gl-px-3"
+          >
+            <date-range-filter
+              v-if="showDateRangeFilter"
+              :default-option="filters.dateRangeOption"
+              :start-date="filters.startDate"
+              :end-date="filters.endDate"
+              :date-range-limit="dateRangeLimit"
+              @change="setDateRangeFilter"
+            />
+          </section>
+          <url-sync
+            v-if="syncUrlFilters"
+            :query="queryParams"
+            :history-update-method="$options.HISTORY_REPLACE_UPDATE_METHOD"
+          />
           <div v-if="!showCode" class="grid-stack">
             <div
               v-for="(panel, index) in dashboard.panels"
-              :id="'panel-' + panel.id"
+              :id="panelDomId(panel.id)"
               :key="index"
               :gs-id="panel.id"
               :gs-x="getGridAttribute(panel, 'xPos')"
@@ -360,6 +386,18 @@ export default {
               class="code highlight gl-display-flex"
             ><code data-testid="dashboard-code">{{ dashboard.default }}</code></pre>
           </div>
+        </div>
+        <div
+          v-if="editing"
+          class="gl-ml-4 gl-p-4 gl-bg-white gl-border-l gl-overflow-auto gl-w-full gl-max-w-34"
+        >
+          <h5>{{ s__('Analytics|Add visualizations') }}</h5>
+          <visualization-selector
+            class="gl-border-t gl-pt-2"
+            :available-visualizations="availableVisualizations"
+            @select="addNewPanel"
+            @create="routeToVisualizationDesigner"
+          />
         </div>
       </div>
     </div>

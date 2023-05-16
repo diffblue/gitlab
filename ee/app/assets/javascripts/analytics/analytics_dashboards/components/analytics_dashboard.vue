@@ -8,7 +8,12 @@ import {
 } from '~/lib/utils/http_status';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
-import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
+import {
+  isValidConfigFileName,
+  configFileNameToID,
+  getNextPanelId,
+  createNewVisualizationPanel,
+} from 'ee/analytics/analytics_dashboards/utils';
 import {
   getCustomDashboard,
   getProductAnalyticsVisualizationList,
@@ -23,6 +28,7 @@ import {
   I18N_DASHBOARD_NOT_FOUND_ACTION,
   I18N_DASHBOARD_SAVED_SUCCESSFULLY,
   I18N_DASHBOARD_ERROR_WHILE_SAVING,
+  I18N_PRODUCT_ANALYTICS_TITLE,
   NEW_DASHBOARD,
 } from '../constants';
 
@@ -53,7 +59,12 @@ export default {
     return {
       dashboard: null,
       showEmptyState: false,
-      availableVisualizations: [],
+      availableVisualizations: {
+        [I18N_PRODUCT_ANALYTICS_TITLE]: {
+          loading: true,
+          visualizationIds: [],
+        },
+      },
       defaultFilters: this.isNewDashboard
         ? {}
         : buildDefaultDashboardFilters(window.location.search),
@@ -65,7 +76,7 @@ export default {
     let loadedDashboard;
 
     if (this.isNewDashboard) {
-      loadedDashboard = await this.createNewDashboard();
+      loadedDashboard = this.createNewDashboard();
     } else if (builtinDashboards[this.$route?.params.id]) {
       loadedDashboard = await this.loadBuiltInDashboard(this.$route?.params.id);
     } else if (this.customDashboardsProject) {
@@ -80,8 +91,8 @@ export default {
     }
   },
   methods: {
-    async createNewDashboard() {
-      return { ...NEW_DASHBOARD, default: { ...NEW_DASHBOARD } };
+    createNewDashboard() {
+      return { ...NEW_DASHBOARD(), default: { ...NEW_DASHBOARD() } };
     },
     async loadBuiltInDashboard() {
       const builtInDashboard = await builtinDashboards[this.$route.params.id]();
@@ -103,27 +114,25 @@ export default {
         throw error;
       }
     },
+    async getCustomVisualizationIds() {
+      const visualizationFiles = await getProductAnalyticsVisualizationList(
+        this.customDashboardsProject,
+      );
+
+      return visualizationFiles
+        .filter(({ file_name }) => isValidConfigFileName(file_name))
+        .map(({ file_name }) => configFileNameToID(file_name));
+    },
     async loadAvailableVisualizations() {
-      // Loading all visualizations from file
-      this.availableVisualizations = [];
+      const builtInVisualizationIds = Object.keys(builtinVisualizations).map((id) => id);
+      const customVisualizationIds = this.customDashboardsProject
+        ? await this.getCustomVisualizationIds()
+        : [];
 
-      if (this.customDashboardsProject) {
-        const visualizations = await getProductAnalyticsVisualizationList(
-          this.customDashboardsProject,
-        );
-
-        for (const visualization of visualizations) {
-          const fileName = visualization.file_name;
-          if (isValidConfigFileName(fileName)) {
-            const id = configFileNameToID(fileName);
-
-            this.availableVisualizations.push({
-              id,
-              name: id,
-            });
-          }
-        }
-      }
+      this.availableVisualizations[I18N_PRODUCT_ANALYTICS_TITLE] = {
+        loading: false,
+        visualizationIds: [...builtInVisualizationIds, ...customVisualizationIds],
+      };
     },
     // TODO: Remove in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
     async importVisualization(visualization, visualizationType) {
@@ -160,6 +169,17 @@ export default {
             )
           : [],
       };
+    },
+    async addNewPanel(visualizationId, source) {
+      const panelId = getNextPanelId(this.dashboard.panels);
+
+      const panel = createNewVisualizationPanel(panelId, visualizationId, source);
+
+      this.dashboard.default.panels.push({ ...panel });
+      this.dashboard.panels.push({
+        ...panel,
+        visualization: await this.importVisualization(panel.visualization, panel.visualizationType),
+      });
     },
     async saveDashboard(dashboardId, dashboardObject) {
       try {
@@ -213,20 +233,20 @@ export default {
 
 <template>
   <div>
-    <template v-if="dashboard">
-      <customizable-dashboard
-        :initial-dashboard="dashboard"
-        :get-visualization="importVisualization"
-        :available-visualizations="availableVisualizations"
-        :default-filters="defaultFilters"
-        :is-saving="isSaving"
-        :date-range-limit="0"
-        :show-date-range-filter="!isNewDashboard"
-        :sync-url-filters="!isNewDashboard"
-        :is-new-dashboard="isNewDashboard"
-        @save="saveDashboard"
-      />
-    </template>
+    <customizable-dashboard
+      v-if="dashboard"
+      :initial-dashboard="dashboard"
+      :get-visualization="importVisualization"
+      :available-visualizations="availableVisualizations"
+      :default-filters="defaultFilters"
+      :is-saving="isSaving"
+      :date-range-limit="0"
+      :sync-url-filters="!isNewDashboard"
+      :is-new-dashboard="isNewDashboard"
+      show-date-range-filter
+      @save="saveDashboard"
+      @add-panel="addNewPanel"
+    />
     <gl-empty-state
       v-else-if="showEmptyState"
       :svg-path="dashboardEmptyStateIllustrationPath"

@@ -5076,6 +5076,9 @@ msgstr ""
 msgid "Analytics|Add to Dashboard"
 msgstr ""
 
+msgid "Analytics|Add visualizations"
+msgstr ""
+
 msgid "Analytics|An error occurred while loading data"
 msgstr ""
 
@@ -34151,6 +34154,9 @@ msgid "ProductAnalytics|Compares feature usage of all features against each othe
 msgstr ""
 
 msgid "ProductAnalytics|Compares page views of all pages against each other"
+msgstr ""
+
+msgid "ProductAnalytics|Create a visualization"
 msgstr ""
 
 msgid "ProductAnalytics|Creating your product analytics instance..."

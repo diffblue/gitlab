@@ -57,6 +57,20 @@ export const builtinDashboard = {
   ],
 };
 
+export const dashboardWithNewPanel = {
+  ...dashboard,
+  panels: [
+    ...dashboard.panels,
+    {
+      id: 3,
+      title: __('Test C'),
+      gridAttributes: { width: 3, height: 3 },
+      visualization: cubeLineChart,
+      queryOverrides: {},
+    },
+  ],
+};
+
 export const mockDateRangeFilterChangePayload = {
   startDate: new Date('2016-01-01'),
   endDate: new Date('2016-02-01'),
