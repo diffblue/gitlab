@@ -9,6 +9,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     )
   end
 
+  let_it_be(:config_project) do
+    create(:project, :with_product_analytics_dashboard)
+  end
+
   before do
     stub_feature_flags(product_analytics_snowplow_support: false)
     stub_licensed_features(product_analytics: true)
@@ -39,6 +43,16 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
       it 'includes hardcoded dashboards' do
         expect(subject.size).to eq(3)
         expect(subject.map(&:title)).to include('Audience', 'Behavior')
+      end
+
+      context 'when project has a configuration project assigned to it' do
+        before do
+          project.update!(analytics_dashboards_configuration_project: config_project)
+        end
+
+        it 'has all dashboards included hardcoded' do
+          expect(subject.map(&:title)).to match_array(['Audience', 'Behavior', 'Dashboard Example 1'])
+        end
       end
     end
 
@@ -99,9 +113,10 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         description: 'b',
         schema_version: '1',
         panels: [],
-        project: nil,
+        project: project,
         slug: 'test2',
-        user_defined: true
+        user_defined: true,
+        config_project: project
       )
     end
 
