@@ -59,6 +59,11 @@ export default {
       required: false,
       default: '',
     },
+    disableScanPolicyUpdate: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
     isPolicyInherited() {
@@ -105,7 +110,7 @@ export default {
       />
     </template>
     <template v-if="policy" #header>
-      <span ref="editButton" class="gl-display-inline-block">
+      <span v-if="!disableScanPolicyUpdate" ref="editButton" class="gl-display-inline-block">
         <gl-button
           class="gl-mt-5"
           data-testid="edit-button"

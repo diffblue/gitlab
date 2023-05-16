@@ -73,6 +73,24 @@ describe('PolicyDrawer component', () => {
     });
   });
 
+  describe('based on policy permission', () => {
+    it.each`
+      disableScanPolicyUpdate | expectedResult
+      ${true}                 | ${false}
+      ${false}                | ${true}
+    `('renders edit button', ({ disableScanPolicyUpdate, expectedResult }) => {
+      factory({
+        mountFn: mountExtended,
+        propsData: {
+          policy: mockProjectScanExecutionPolicy,
+          disableScanPolicyUpdate,
+        },
+      });
+
+      expect(findEditButton().exists()).toBe(expectedResult);
+    });
+  });
+
   describe.each`
     policyType                                           | mock                              | finder
     ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.value} | ${mockProjectScanExecutionPolicy} | ${findScanExecutionPolicy}

@@ -67,7 +67,13 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['documentationPath', 'namespacePath', 'namespaceType', 'newPolicyPath'],
+  inject: [
+    'documentationPath',
+    'namespacePath',
+    'namespaceType',
+    'newPolicyPath',
+    'disableScanPolicyUpdate',
+  ],
   props: {
     hasPolicyProject: {
       type: Boolean,
@@ -355,6 +361,7 @@ export default {
       :policy="selectedPolicy"
       :policy-type="policyType"
       :edit-policy-path="editPolicyPath"
+      :disable-scan-policy-update="disableScanPolicyUpdate"
       data-testid="policyDrawer"
       @close="deselectPolicy"
     />
