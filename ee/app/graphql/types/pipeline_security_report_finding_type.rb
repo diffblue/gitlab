@@ -86,8 +86,9 @@ module Types
     field :project_fingerprint,
           type: GraphQL::Types::String,
           null: true,
-          description: 'Fingerprint of the vulnerability finding.',
-          alpha: { milestone: '16.0' }
+          method: :uuid,
+          description: 'Same as uuid. It is strongly suggested to use the uuid field instead.',
+          deprecated: { milestone: '16.1', reason: 'Use uuid instead' }
 
     field :uuid,
           type: GraphQL::Types::String,
