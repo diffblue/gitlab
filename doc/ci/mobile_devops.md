@@ -270,7 +270,7 @@ For example:
     script:
       - fastlane build
     tags:
-      - shared-macos-amd64
+      - saas-macos-medium-m1
   ```
 
 ## Distribution
