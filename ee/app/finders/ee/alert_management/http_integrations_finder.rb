@@ -7,9 +7,9 @@ module EE
 
       private
 
-      override :multiple_alert_http_integrations?
-      def multiple_alert_http_integrations?
-        project.feature_available?(:multiple_alert_http_integrations)
+      override :filter_by_availability
+      def filter_by_availability
+        super unless project.feature_available?(:multiple_alert_http_integrations)
       end
     end
   end
