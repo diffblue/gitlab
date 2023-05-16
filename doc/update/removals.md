@@ -255,6 +255,22 @@ in GitLab 16.0. These variables are replaced with standard
 GitLab instances that use `GIT_CONFIG_SYSTEM` and `GIT_CONFIG_GLOBAL` to configure Gitaly must switch to configuring
 using `config.toml`.
 
+### Legacy Praefect configuration method
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+Previously, Praefect configuration keys for Omnibus GitLab were scattered throughout the configuration file. In GitLab
+15.9, we added support for a single configuration structure that matches Praefect internal configuration. Both methods
+of configuring Praefect were supported in parallel.
+
+In GitLab 16.0, we removed support for the former configuration method and now only support the new configuration
+method.
+
+Before upgrading to GitLab 16.0, administrators must migrate to the new single configuration structure. For
+instructions, see [Praefect - Omnibus GitLab configuration structure change](https://docs.gitlab.com/ee/update/#praefect-omnibus-gitlab-configuration-structure-change).
+
 ### License-Check and the Policies tab on the License Compliance page
 
 WARNING:
