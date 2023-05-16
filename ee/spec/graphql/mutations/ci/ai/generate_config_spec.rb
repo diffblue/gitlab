@@ -20,35 +20,40 @@ RSpec.describe Mutations::Ci::Ai::GenerateConfig, feature_category: :pipeline_co
   describe '#resolve' do
     subject(:resolve) { mutation.resolve(**params) }
 
-    context 'when user cannot read the project' do
+    context 'when user is not a project member' do
       it 'raises an error if the resource is not accessible to the user' do
         expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
       end
     end
 
-    context 'when user can read the project' do
+    context 'when user is a project member who cannot create a pipeline' do
       before do
-        project.add_maintainer(current_user)
+        project.add_reporter(current_user)
       end
 
-      it 'returns no errors' do
+      it 'raises an error if the resource is not accessible to the user' do
+        expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
+      end
+    end
+
+    context 'when user is a project member who can create a pipeline' do
+      before do
+        project.add_developer(current_user)
+      end
+
+      it 'calls the service returning the user message payload' do
+        message = instance_double(Ci::Editor::AiConversation::Message)
+        service = instance_double(
+          Ci::Llm::AsyncGenerateConfigService,
+          execute: ServiceResponse.success(payload: message)
+        )
+        expect(Ci::Llm::AsyncGenerateConfigService).to receive(:new).and_return(service)
+        expect(service).to receive(:execute)
+
         expect(resolve).to eq(
-          user_message: nil,
+          user_message: message,
           errors: []
         )
-      end
-
-      context 'when feature flag disabled' do
-        before do
-          stub_feature_flags(ai_ci_config_generator: false)
-        end
-
-        it 'returns an error' do
-          expect(resolve).to eq(
-            user_message: nil,
-            errors: ['Feature not available']
-          )
-        end
       end
     end
   end

@@ -46,8 +46,20 @@ RSpec.describe Ai::Project::Conversations, feature_category: :shared do
       create(:message, project: project, user: user2)
     end
 
-    it 'returns the conversation messages in order' do
-      expect(subject.ci_config_messages).to eq([message1, message2, message3])
+    context 'when the user cannot create a pipeline for the project' do
+      it 'returns no messages' do
+        expect(subject.ci_config_messages).to eq([])
+      end
+    end
+
+    context 'when the user can create a pipeline for the project' do
+      before do
+        project.add_developer(user)
+      end
+
+      it 'returns the conversation messages in order' do
+        expect(subject.ci_config_messages).to eq([message1, message2, message3])
+      end
     end
   end
 end

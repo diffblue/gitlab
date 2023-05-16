@@ -8,4 +8,8 @@ FactoryBot.define do
     content { nil }
     async_errors { [] }
   end
+
+  trait :ai do
+    role { Gitlab::Llm::OpenAi::Options::AI_ROLE }
+  end
 end

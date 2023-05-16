@@ -10,11 +10,7 @@ module Ci
           @subject.user_id == @user.id
         end
 
-        condition(:can_read_project) do
-          can?(:read_project, @subject.project)
-        end
-
-        rule { owner_of_message & can_read_project }.enable :read_ai_message
+        rule { owner_of_message & can?(:create_pipeline) }.enable :read_ai_message
       end
     end
   end

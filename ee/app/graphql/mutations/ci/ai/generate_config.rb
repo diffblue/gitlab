@@ -6,7 +6,7 @@ module Mutations
       class GenerateConfig < BaseMutation
         graphql_name 'CiAiGenerateConfig'
 
-        authorize :read_project
+        authorize :create_pipeline
 
         include FindsProject
 
@@ -25,13 +25,30 @@ module Mutations
           null: true,
           description: 'User chat message.'
 
-        def resolve(project_path:, user_content:) # rubocop:disable Lint/UnusedMethodArgument
-          authorized_find!(project_path)
+        def resolve(project_path:, user_content:)
+          verify_rate_limit!
 
-          return { user_message: nil, errors: ['Feature not available'] } unless Feature.enabled?(
-            :ai_ci_config_generator, current_user)
+          project = authorized_find!(project_path)
 
-          { user_message: nil, errors: [] }
+          response = ::Ci::Llm::AsyncGenerateConfigService.new(
+            project: project,
+            user: current_user,
+            user_content: user_content
+          ).execute
+
+          if response.error?
+            { user_message: nil, errors: response.errors }
+          else
+            { user_message: response.payload, errors: [] }
+          end
+        end
+
+        # TODO: extract to module
+        def verify_rate_limit!
+          return unless Gitlab::ApplicationRateLimiter.throttled?(:ai_action, scope: [@user])
+
+          raise Gitlab::Graphql::Errors::ResourceNotAvailable,
+            'This endpoint has been requested too many times. Try again later.'
         end
       end
     end
