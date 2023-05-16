@@ -17,17 +17,24 @@ module IdentityVerificationHelpers
     end
   end
 
-  def stub_telesign_verification(phone_number, verification_code)
-    reference_id = 'xxx'
+  def stub_telesign_verification
+    allow_next_instance_of(::PhoneVerification::TelesignClient::RiskScoreService) do |service|
+      allow(service).to receive(:execute).and_return(
+        ServiceResponse.success(payload: { risk_score: 80 })
+      )
+    end
 
-    stub_request(:get, "https://rest-ww.telesign.com/v1/phoneid/score/#{phone_number}?request_risk_insights=true&ucid=BACF")
-      .to_return(status: 200, body: { phone_type: { description: 'MOBILE' }, risk: { score: 97 } }.to_json)
+    allow_next_instance_of(::PhoneVerification::TelesignClient::SendVerificationCodeService) do |service|
+      allow(service).to receive(:execute).and_return(
+        ServiceResponse.success(payload: { telesign_reference_xid: '123' })
+      )
+    end
 
-    stub_request(:post, 'https://rest-ww.telesign.com/v1/verify/sms')
-      .to_return(status: 200, body: { reference_id: reference_id }.to_json)
-
-    stub_request(:get, "https://rest-ww.telesign.com/v1/verify/#{reference_id}?verify_code=#{verification_code}")
-      .to_return(status: 200, body: { verify: { code_state: 'VALID' } }.to_json)
+    allow_next_instance_of(::PhoneVerification::TelesignClient::VerifyCodeService) do |service|
+      allow(service).to receive(:execute).and_return(
+        ServiceResponse.success(payload: { telesign_reference_xid: '123' })
+      )
+    end
   end
 
   def email_verification_code
