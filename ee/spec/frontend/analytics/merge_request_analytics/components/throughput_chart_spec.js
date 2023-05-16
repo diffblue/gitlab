@@ -3,8 +3,12 @@ import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import VueApollo from 'vue-apollo';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import ThroughputChart from 'ee/analytics/merge_request_analytics/components/throughput_chart.vue';
 import ThroughputStats from 'ee/analytics/merge_request_analytics/components/throughput_stats.vue';
+import throughputChartQueryBuilder from 'ee/analytics/merge_request_analytics/graphql/throughput_chart_query_builder';
 import { THROUGHPUT_CHART_STRINGS } from 'ee/analytics/merge_request_analytics/constants';
 import store from 'ee/analytics/merge_request_analytics/store';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -17,20 +21,14 @@ import {
 } from '../mock_data';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
+const defaultQueryResolver = jest.fn().mockResolvedValue({ data: { throughputChartData: [] } });
 const defaultQueryVariables = {
   assigneeUsername: null,
   authorUsername: null,
   milestoneTitle: null,
   labels: null,
-};
-
-const defaultMocks = {
-  $apollo: {
-    queries: {
-      throughputChartData: {},
-    },
-  },
 };
 
 describe('ThroughputChart', () => {
@@ -42,15 +40,17 @@ describe('ThroughputChart', () => {
     expect(element.exists()).toBe(visible);
   }
 
-  function createComponent(options = {}) {
-    const { mocks = defaultMocks } = options;
-    return shallowMount(ThroughputChart, {
+  function createWrapper({ queryResolver = null } = {}) {
+    const query = throughputChartQueryBuilder(startDate, endDate);
+    const apolloProvider = createMockApollo([[query, queryResolver || defaultQueryResolver]]);
+
+    wrapper = shallowMount(ThroughputChart, {
       store,
-      mocks,
+      apolloProvider,
       provide: {
         fullPath,
       },
-      props: {
+      propsData: {
         startDate,
         endDate,
       },
@@ -58,8 +58,9 @@ describe('ThroughputChart', () => {
   }
 
   describe('default state', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
+    beforeEach(async () => {
+      createWrapper();
+      await waitForPromises();
     });
 
     it('displays the throughput stats component', () => {
@@ -80,7 +81,6 @@ describe('ThroughputChart', () => {
 
     it('displays an empty state message when there is no data', () => {
       const alert = wrapper.findComponent(GlAlert);
-
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toBe(THROUGHPUT_CHART_STRINGS.NO_DATA);
     });
@@ -95,16 +95,8 @@ describe('ThroughputChart', () => {
   });
 
   describe('while loading', () => {
-    const apolloLoading = {
-      queries: {
-        throughputChartData: {
-          loading: true,
-        },
-      },
-    };
-
     beforeEach(() => {
-      wrapper = createComponent({ mocks: { ...defaultMocks, $apollo: apolloLoading } });
+      createWrapper();
     });
 
     it('displays a skeleton loader', () => {
@@ -121,11 +113,10 @@ describe('ThroughputChart', () => {
   });
 
   describe('with data', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ throughputChartData });
+    beforeEach(async () => {
+      const queryResolver = jest.fn().mockResolvedValue({ data: { throughputChartData } });
+      createWrapper({ queryResolver });
+      await waitForPromises();
     });
 
     it('displays the chart', () => {
@@ -142,11 +133,12 @@ describe('ThroughputChart', () => {
   });
 
   describe('with no data in the response', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ throughputChartData: throughputChartNoData });
+    beforeEach(async () => {
+      const queryResolver = jest
+        .fn()
+        .mockResolvedValue({ data: { throughputChartData: throughputChartNoData } });
+      createWrapper({ queryResolver });
+      await waitForPromises();
     });
 
     it('does not display a skeleton loader', () => {
@@ -166,11 +158,10 @@ describe('ThroughputChart', () => {
   });
 
   describe('with errors', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({ hasError: true });
+    beforeEach(async () => {
+      const queryResolver = jest.fn().mockRejectedValue();
+      createWrapper({ queryResolver });
+      await waitForPromises();
     });
 
     it('does not display the chart', () => {
@@ -190,8 +181,9 @@ describe('ThroughputChart', () => {
   });
 
   describe('when fetching data', () => {
-    beforeEach(() => {
-      wrapper = createComponent();
+    beforeEach(async () => {
+      createWrapper();
+      await waitForPromises();
     });
 
     it('has initial variables set', () => {
