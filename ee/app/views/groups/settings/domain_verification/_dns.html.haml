@@ -1,0 +1,10 @@
+.form-group
+  %label
+    = _("TXT")
+  .input-group.gl-max-w-80
+    = text_field_tag :domain_verification, domain_presenter.verification_record, class: "monospace js-select-on-focus form-control", readonly: true
+    .input-group-append
+      = clipboard_button(target: '#domain_verification', class: 'btn-default d-none d-sm-block')
+  %p.form-text.text-muted
+    - link_to_help = link_to(s_('DomainVerification|How to set up DNS records?'), help_page_path('user/project/pages/custom_domains_ssl_tls_certification/index.md', anchor: '3-set-up-dns-records'))
+    = s_("DomainVerification|To verify ownership of your domain, add the above key to a TXT record within your DNS configuration. %{link_to_help}").html_safe % { link_to_help: link_to_help }

@@ -1,0 +1,18 @@
+- if domain_presenter.enabled?
+  - if domain_presenter.auto_ssl_enabled
+    - if domain_presenter.show_auto_ssl_failed_warning?
+      .form-group.gl-form-group.js-shown-if-auto-ssl{ class: ("gl-display-none" unless auto_ssl_available_and_enabled) }
+        .bs-callout.bs-callout-warning.gl-mt-0
+          .row.align-items-center.gl-mx-2
+            = sprite_icon('warning-solid', css_class: 'gl-mr-2 gl-text-orange-600')
+            = _("Something went wrong while obtaining the Let's Encrypt certificate.")
+          .row.gl-mx-0.gl-mt-3
+            = link_to _('Retry'), retry_auto_ssl_group_settings_domain_verification_path(group, domain_presenter), class: "gl-button btn btn-default btn-sm btn-grouped", method: :post
+    - elsif !domain_presenter.certificate_gitlab_provided?
+      .form-group.gl-form-group.js-shown-if-auto-ssl{ class: ("gl-display-none" unless auto_ssl_available_and_enabled) }
+        .bs-callout.bs-callout-info.gl-mt-0
+          = _("GitLab is obtaining a Let's Encrypt SSL certificate for this domain. This process can take some time. Please try again later.")
+- else
+  .form-group.gl-form-group.js-shown-if-auto-ssl{ class: ("gl-display-none" unless auto_ssl_available_and_enabled) }
+    .bs-callout.bs-callout-warning.gl-mt-0
+      = _("A Let's Encrypt SSL certificate can not be obtained until your domain is verified.")

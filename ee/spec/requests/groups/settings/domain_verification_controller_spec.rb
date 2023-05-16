@@ -43,6 +43,13 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
   before do
     stub_licensed_features(domain_verification: true)
     stub_feature_flags(domain_verification_operation: true)
+    stub_config(pages: {
+      enabled: true,
+      external_http: true,
+      external_https: true,
+      access_control: false,
+      host: "pages.domain.com"
+    })
     group.add_member(user, access_level)
 
     sign_in(user)

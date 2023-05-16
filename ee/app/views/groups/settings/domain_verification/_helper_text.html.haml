@@ -1,0 +1,5 @@
+- docs_link_url = help_page_path("user/enterprise_user/index.md", anchor: "verified-domains-for-groups")
+- docs_link_start = "<a href=\"%{docs_link_url}\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"text-nowrap\">".html_safe % { docs_link_url: docs_link_url }
+- docs_link_end = "</a>".html_safe
+
+%p= _("%{docs_link_start}Setting up a verified domain%{docs_link_end} requires being linked to a project.").html_safe % { docs_link_url: docs_link_url, docs_link_start: docs_link_start, docs_link_end: docs_link_end }
