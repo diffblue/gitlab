@@ -7,12 +7,16 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
 
   let_it_be(:admin) { create(:admin) }
 
+  let(:path) { "/features/#{feature_name}" }
+
   before do
     Feature.reset
     Flipper.unregister_groups
     Flipper.register(:perf_team) do |actor|
       actor.respond_to?(:admin) && actor.admin?
     end
+
+    stub_feature_flags(admin_mode_for_api: true)
 
     skip_feature_flags_yaml_validation
   end
@@ -23,6 +27,10 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
         .values.find(&:development?).name
     end
 
+    it_behaves_like 'POST request permissions for admin mode' do
+      let(:params) { { value: 'true' } }
+    end
+
     context 'when running on a Geo primary node' do
       before do
         stub_primary_node
@@ -31,7 +39,7 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
 
       it 'creates Geo cache invalidation event' do
         expect do
-          post api("/features/#{feature_name}", admin), params: { value: 'true' }
+          post api(path, admin, admin_mode: true), params: { value: 'true' }
         end.to change(Geo::CacheInvalidationEvent, :count).by(1)
       end
     end
@@ -42,14 +50,14 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
       end
 
       it 'returns bad request' do
-        post api("/features/#{feature_name}", admin), params: { value: 'true' }
+        post api(path, admin, admin_mode: true), params: { value: 'true' }
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
 
       context 'when force=1 is set' do
         it 'allows to change state' do
-          post api("/features/#{feature_name}", admin), params: { value: 'true', force: true }
+          post api(path, admin, admin_mode: true), params: { value: 'true', force: true }
 
           expect(response).to have_gitlab_http_status(:created)
         end
@@ -70,7 +78,7 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
         Feature.enable(feature_name)
 
         expect do
-          delete api("/features/#{feature_name}", admin)
+          delete api(path, admin, admin_mode: true)
         end.to change(Geo::CacheInvalidationEvent, :count).by(1)
       end
     end
