@@ -186,7 +186,7 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
   def verify_phone_number
     phone_number = '311234567890'
     verification_code = '4319315'
-    stub_telesign_verification(phone_number, verification_code)
+    stub_telesign_verification
 
     page.find('[data-testid="country-form-select"]').find("option[value$='+#{phone_number.first(2)}']").select_option
     fill_in 'phone_number', with: phone_number.from(2)

@@ -39,6 +39,8 @@ module PhoneVerification
 
       rescue URI::InvalidURIError
         invalid_phone_number_error
+      rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError
+        telesign_error
       rescue StandardError => e
         track_exception(e)
         generic_error

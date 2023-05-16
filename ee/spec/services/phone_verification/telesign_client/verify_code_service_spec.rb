@@ -165,6 +165,26 @@ RSpec.describe PhoneVerification::TelesignClient::VerifyCodeService, feature_cat
       end
     end
 
+    context 'when there is a timeout error' do
+      let(:exception) { Timeout::Error }
+
+      before do
+        allow(Gitlab::ErrorTracking).to receive(:track_exception)
+        allow_next_instance_of(TelesignEnterprise::VerifyClient) do |instance|
+          allow(instance).to receive(:status).and_raise(exception)
+        end
+      end
+
+      it 'returns an error ServiceResponse', :aggregate_failures do
+        response = service.execute
+
+        expect(response).to be_a(ServiceResponse)
+        expect(response).to be_error
+        expect(response.message).to eq('Something went wrong. Please try again.')
+        expect(response.reason).to be(:unknown_telesign_error)
+      end
+    end
+
     context 'when there is an unknown exception' do
       let(:exception) { StandardError.new }
 

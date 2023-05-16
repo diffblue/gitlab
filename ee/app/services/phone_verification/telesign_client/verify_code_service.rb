@@ -36,6 +36,8 @@ module PhoneVerification
           telesign_error
         end
 
+      rescue Timeout::Error, Errno::ECONNREFUSED, Errno::EHOSTUNREACH, SocketError
+        telesign_error
       rescue StandardError => e
         track_exception(e)
         generic_error
