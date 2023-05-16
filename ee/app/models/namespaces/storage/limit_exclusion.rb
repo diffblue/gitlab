@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module Namespaces
   module Storage
     class LimitExclusion < ApplicationRecord
