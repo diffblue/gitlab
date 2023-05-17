@@ -4,18 +4,26 @@
     {
       "query": {
         "measures": [
-          "TrackedEvents.count"
+          "SnowplowTrackedEvents.pageViewsCount"
         ],
         "timezone": "UTC",
-        "order": [],
-        "filters": [],
-        "dimensions": [],
-        "timeDimensions": [],
+        "order": [
+
+        ],
+        "filters": [
+
+        ],
+        "dimensions": [
+
+        ],
+        "timeDimensions": [
+
+        ],
         "queryType": "regularQuery"
       },
       "data": [
         {
-          "TrackedEvents.count": "335"
+          "SnowplowTrackedEvents.pageViewsCount": "335"
         }
       ],
       "lastRefreshTime": "2022-11-25T15:37:31.835Z",
@@ -26,22 +34,29 @@
           }
         ]
       ],
-      "usedPreAggregations": {},
+      "usedPreAggregations": {
+      },
       "transformedQuery": {
-        "sortedDimensions": [],
-        "sortedTimeDimensions": [],
-        "timeDimensions": [],
+        "sortedDimensions": [
+
+        ],
+        "sortedTimeDimensions": [
+
+        ],
+        "timeDimensions": [
+
+        ],
         "measures": [
-          "TrackedEvents.count"
+          "SnowplowTrackedEvents.pageViewsCount"
         ],
         "leafMeasureAdditive": true,
         "leafMeasures": [
-          "TrackedEvents.count"
+          "SnowplowTrackedEvents.pageViewsCount"
         ],
         "measureToLeafMeasures": {
-          "TrackedEvents.count": [
+          "SnowplowTrackedEvents.pageViewsCount": [
             {
-              "measure": "TrackedEvents.count",
+              "measure": "SnowplowTrackedEvents.pageViewsCount",
               "additive": true,
               "type": "count"
             }
@@ -105,15 +120,22 @@
         "hasMultipliedMeasures": false,
         "hasCumulativeMeasures": false,
         "windowGranularity": null,
-        "filterDimensionsSingleValueEqual": {},
-        "ownedDimensions": [],
-        "ownedTimeDimensionsWithRollupGranularity": [],
-        "ownedTimeDimensionsAsIs": []
+        "filterDimensionsSingleValueEqual": {
+        },
+        "ownedDimensions": [
+
+        ],
+        "ownedTimeDimensionsWithRollupGranularity": [
+
+        ],
+        "ownedTimeDimensionsAsIs": [
+
+        ]
       },
       "requestId": "7c3d84eb-3217-4365-ba03-31019313b8ce-span-1",
       "annotation": {
         "measures": {
-          "TrackedEvents.count": {
+          "SnowplowTrackedEvents.pageViewsCount": {
             "title": "TrackedEvents Count",
             "shortTitle": "Count",
             "type": "number",
@@ -125,7 +147,9 @@
               "TrackedEvents.userHashedAnonymousId"
             ],
             "drillMembersGrouped": {
-              "measures": [],
+              "measures": [
+
+              ],
               "dimensions": [
                 "TrackedEvents.eventnCtxEventId",
                 "TrackedEvents.idsAjsAnonymousId",
@@ -136,9 +160,12 @@
             }
           }
         },
-        "dimensions": {},
-        "segments": {},
-        "timeDimensions": {}
+        "dimensions": {
+        },
+        "segments": {
+        },
+        "timeDimensions": {
+        }
       },
       "dataSource": "default",
       "dbType": "clickhouse",
@@ -150,13 +177,21 @@
   ],
   "pivotQuery": {
     "measures": [
-      "TrackedEvents.count"
+      "SnowplowTrackedEvents.pageViewsCount"
     ],
     "timezone": "UTC",
-    "order": [],
-    "filters": [],
-    "dimensions": [],
-    "timeDimensions": [],
+    "order": [
+
+    ],
+    "filters": [
+
+    ],
+    "dimensions": [
+
+    ],
+    "timeDimensions": [
+
+    ],
     "queryType": "regularQuery"
   },
   "slowQuery": false

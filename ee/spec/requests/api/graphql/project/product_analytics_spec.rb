@@ -6,6 +6,8 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
   let_it_be(:project) { create(:project, :with_product_analytics_dashboard) }
   let_it_be(:user) { create(:user) }
 
+  let_it_be(:events_table) { 'TrackedEvents.pageViewsCount' }
+
   context 'with trackingKey' do
     let_it_be(:query) do
       %(
@@ -74,7 +76,7 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
             ServiceResponse.success(
               message: 'test success',
               payload: {
-                'results' => [{ 'data' => [{ 'TrackedEvents.count' => 1 }] }]
+                'results' => [{ 'data' => [{ events_table => 1 }] }]
               }))
         end
 
@@ -139,6 +141,8 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
     end
 
     context 'with snowplow enabled' do
+      let_it_be(:events_table) { 'SnowplowTrackedEvents.pageViewsCount' }
+
       before do
         stub_feature_flags(product_analytics_snowplow_support: true)
         allow_next_instance_of(ProjectSetting) do |instance|

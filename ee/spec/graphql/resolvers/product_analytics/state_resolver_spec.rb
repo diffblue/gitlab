@@ -29,6 +29,17 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
         end
       end
 
+      context 'when snowplow is disabled' do
+        before do
+          stub_feature_flags(product_analytics_snowplow_support: false)
+        end
+
+        it 'returns complete' do
+          setup_for('complete')
+          expect(subject).to eq('complete')
+        end
+      end
+
       context "when error is raised by Cube" do
         it "raises error in GraphQL output" do
           setup_for('error')
@@ -88,7 +99,7 @@ RSpec.describe Resolvers::ProductAnalytics::StateResolver, feature_category: :pr
           ServiceResponse.success(
             message: 'test success',
             payload: {
-              'results' => [{ 'data' => [{ 'TrackedEvents.count' => state == 'waiting_for_events' ? 0 : 1 }] }]
+              'results' => [{ 'data' => [{ described_class.events_table => state == 'waiting_for_events' ? 0 : 1 }] }]
             })
         end
       )
