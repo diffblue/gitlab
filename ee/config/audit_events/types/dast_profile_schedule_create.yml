@@ -1,0 +1,9 @@
+---
+name: dast_profile_schedule_create
+description: Triggered when a dynamic application security testing profile schedule is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/330308
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68046
+milestone: '14.3'
+feature_category: dynamic_application_security_testing
+saved_to_database: true
+streamed: true

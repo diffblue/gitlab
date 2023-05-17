@@ -1,0 +1,9 @@
+---
+name: dast_site_profile_update
+description: Triggered when a dynamic application security testing site profile is updated
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/217872
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62465
+milestone: '14.0'
+feature_category: dynamic_application_security_testing
+saved_to_database: true
+streamed: true
