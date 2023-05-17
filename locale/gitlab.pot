@@ -48745,6 +48745,9 @@ msgstr ""
 msgid "UserList|created %{timeago}"
 msgstr ""
 
+msgid "UserProfiles|No snippets found."
+msgstr ""
+
 msgid "UserProfile|Activity"
 msgstr ""
 
