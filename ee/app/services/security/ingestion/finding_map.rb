@@ -8,7 +8,7 @@ module Security
     # You can think this as the Message object in the pipeline design pattern
     # which is passed between tasks.
     class FindingMap
-      FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details description message cve solution].freeze
+      FINDING_ATTRIBUTES = %i[confidence metadata_version name raw_metadata report_type severity details description message solution].freeze
 
       attr_reader :security_finding, :report_finding
       attr_accessor :finding_id, :vulnerability_id, :new_record, :identifier_ids

@@ -5,16 +5,16 @@ require 'spec_helper'
 RSpec.describe Security::Ingestion::Tasks::IngestIssueLinks, feature_category: :vulnerability_management do
   describe '#execute' do
     let_it_be(:pipeline) { create(:ci_pipeline) }
-    let_it_be(:compare_key) { 'foo' }
-    let_it_be(:project_fingerprint) { Digest::SHA1.hexdigest('foo') } # rubocop:disable Fips/SHA1 (This is used to match existing function with the report finding)
+    let_it_be(:uuid) { SecureRandom.uuid }
+    let_it_be(:project_fingerprint) { Digest::SHA1.hexdigest(uuid) } # rubocop:disable Fips/SHA1 (This is used to match existing function with the report finding)
     let_it_be(:project) { create(:project) }
     let_it_be(:security_scan) { create(:security_scan, project: project) }
     let_it_be(:security_finding_1) { create(:security_finding, scan: security_scan) }
     let_it_be(:security_finding_2) { create(:security_finding, scan: security_scan) }
     let_it_be(:security_finding_3) { create(:security_finding, scan: security_scan) }
-    let_it_be(:report_finding_1) { create(:ci_reports_security_finding, compare_key: compare_key) }
-    let_it_be(:report_finding_2) { create(:ci_reports_security_finding, compare_key: compare_key) }
-    let_it_be(:report_finding_3) { create(:ci_reports_security_finding, compare_key: compare_key) }
+    let_it_be(:report_finding_1) { create(:ci_reports_security_finding, uuid: uuid) }
+    let_it_be(:report_finding_2) { create(:ci_reports_security_finding, uuid: uuid) }
+    let_it_be(:report_finding_3) { create(:ci_reports_security_finding, uuid: uuid) }
 
     let(:finding_map_1) do
       create(:finding_map,
