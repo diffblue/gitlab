@@ -21,7 +21,13 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   mixins: [Tracking.mixin()],
-  inject: ['groupFullPath', 'groupName'],
+  inject: [
+    'groupFullPath',
+    'groupName',
+    'mergeRequestsMetricLink',
+    'issuesMetricLink',
+    'newMembersMetricLink',
+  ],
   data() {
     return {
       isLoading: false,
@@ -29,19 +35,19 @@ export default {
         mergeRequests: {
           value: null,
           label: s__('GroupActivityMetrics|Merge requests created'),
-          link: `/groups/${this.groupFullPath}/-/analytics/productivity_analytics`,
+          link: this.mergeRequestsMetricLink,
           trackingLabel: MERGE_REQUESTS_TRACKING_LABEL,
         },
         issues: {
           value: null,
           label: s__('GroupActivityMetrics|Issues created'),
-          link: `/groups/${this.groupFullPath}/-/issues_analytics`,
+          link: this.issuesMetricLink,
           trackingLabel: ISSUES_TRACKING_LABEL,
         },
         newMembers: {
           value: null,
           label: s__('GroupActivityMetrics|Members added'),
-          link: `/groups/${this.groupFullPath}/-/group_members?sort=last_joined`,
+          link: this.newMembersMetricLink,
           trackingLabel: NEW_MEMBERS_TRACKING_LABEL,
         },
       },
