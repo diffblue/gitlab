@@ -28,6 +28,13 @@ describe('getSelectedOptionsText', () => {
     expect(getSelectedOptionsText(options, selected)).toBe('first');
   });
 
+  it('should also work with the value property', () => {
+    const options = [{ value: 1, text: 'first' }];
+    const selected = [options[0].value];
+
+    expect(getSelectedOptionsText(options, selected)).toBe('first');
+  });
+
   it.each`
     options                                                                            | expectedText
     ${[{ id: 1, text: 'first' }, { id: 2, text: 'second' }]}                           | ${'first +1 more'}
