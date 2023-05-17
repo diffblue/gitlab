@@ -2,17 +2,20 @@ import { s__, __ } from '~/locale';
 
 export const INSTALL_NPM_PACKAGE = `yarn add @gitlab/application-sdk-js$version
 
---
+OR
 
 npm install @gitlab/application-sdk-js$version`;
 
-export const ESM_SETUP_WITH_NPM = `import { glClientSDK } from '@gitlab/application-sdk-js';
+export const IMPORT_NPM_PACKAGE = `// import as an ES module
+import { glClientSDK } from '@gitlab/application-sdk-js';
 
-this.glClient = glClientSDK({ $appIdProperty: '$applicationId', host: '$host' });`;
+OR
 
-export const COMMON_JS_SETUP_WITH_NPM = `const { glClientSDK } = require('@gitlab/application-sdk-js');
+// import as a CommonJS module
+const { glClientSDK } = require('@gitlab/application-sdk-js');
+`;
 
-this.glClient = glClientSDK({ $appIdProperty: '$applicationId', host: '$host' });`;
+export const INIT_TRACKING = `this.glClient = glClientSDK({ $appIdProperty: '$applicationId', host: '$host' });`;
 
 export const HTML_SCRIPT_SETUP = `<script src="https://unpkg.com/@gitlab/application-sdk-js$version/dist/gl-sdk.min.js"></script>
 <script>window.glClient = window.glSDK.glClientSDK({

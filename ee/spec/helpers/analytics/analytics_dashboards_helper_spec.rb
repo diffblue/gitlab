@@ -111,4 +111,43 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
       end
     end
   end
+
+  describe '#analytics_project_settings_data' do
+    where(
+      :product_analytics_enabled_setting,
+      :feature_flag_enabled,
+      :licensed_feature_enabled,
+      :user_has_permission,
+      :enabled
+    ) do
+      true  | true | true | true | true
+      false | true | true | true | false
+      true  | false | true | true | false
+      true  | true | false | true | false
+      true  | true | true | false | false
+    end
+
+    with_them do
+      before do
+        project.project_setting.update!(jitsu_key: jitsu_key)
+
+        stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
+
+        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
+        stub_licensed_features(product_analytics: licensed_feature_enabled)
+
+        allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
+      end
+
+      subject(:data) { helper.analytics_project_settings_data(project) }
+
+      it 'returns the expected data' do
+        expect(data).to eq({
+          tracking_key: user_has_permission ? jitsu_key : nil,
+          collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
+          dashboards_path: '/-/analytics/dashboards'
+        })
+      end
+    end
+  end
 end
