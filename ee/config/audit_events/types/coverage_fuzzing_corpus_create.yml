@@ -1,0 +1,9 @@
+---
+name: coverage_fuzzing_corpus_create
+description: Event triggered on a corpus action is added
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/341485
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/71992
+feature_category: 'fuzz_testing'
+milestone: '14.5'
+saved_to_database: true
+streamed: true

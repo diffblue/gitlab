@@ -1,0 +1,9 @@
+---
+name: ip_restrictions_changed
+description: Event triggered on any changes in the IP AllowList
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/358986
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86037
+feature_category: 'system_access'
+milestone: '15.0'
+saved_to_database: true
+streamed: true
