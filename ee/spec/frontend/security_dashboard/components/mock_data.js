@@ -54,6 +54,11 @@ export const projectClusters = {
             name: 'primary-agent',
             __typename: 'ClusterAgentConnection',
           },
+          {
+            id: 'gid://gitlab/Clusters::Agent/007',
+            name: 'james-bond-agent',
+            __typename: 'ClusterAgentConnection',
+          },
         ],
         __typename: 'ClusterAgentConnection',
       },
