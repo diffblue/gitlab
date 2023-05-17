@@ -81,6 +81,20 @@ module Elastic
       halted? || completed?
     end
 
+    def started_at
+      started_at = load_from_index&.dig('_source', 'started_at')
+      return unless started_at
+
+      DateTime.parse(started_at)
+    end
+
+    def completed_at
+      completed_at = load_from_index&.dig('_source', 'completed_at')
+      return unless completed_at
+
+      DateTime.parse(completed_at)
+    end
+
     def method_missing(method, *args, &block)
       if migration.respond_to?(method)
         migration.public_send(method, *args, &block) # rubocop: disable GitlabSecurity/PublicSend

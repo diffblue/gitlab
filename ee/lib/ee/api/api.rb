@@ -11,6 +11,7 @@ module EE
         mount ::EE::API::GroupBoards
 
         mount ::API::Admin::Search::Zoekt
+        mount ::API::Admin::Search::Migrations
         mount ::API::Ai::Experimentation::OpenAi
         mount ::API::Ai::Experimentation::VertexAi
         mount ::API::Ai::Experimentation::Anthropic

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationRecord, :elastic_clean do
+RSpec.describe Elastic::MigrationRecord, :elastic_clean, feature_category: :global_search do
   using RSpec::Parameterized::TableSyntax
 
   let(:record) { described_class.new(version: Time.now.to_i, name: 'ExampleMigration', filename: nil) }
@@ -197,6 +197,62 @@ RSpec.describe Elastic::MigrationRecord, :elastic_clean do
       it 'returns the expected result' do
         expect(record.stopped?).to eq(expected)
       end
+    end
+  end
+
+  describe '#completed_at', :freeze_time do
+    subject(:completed_at) { record.completed_at }
+
+    context 'when completed_at is stored in the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => { 'completed_at' => Time.now.utc.to_s } })
+      end
+
+      it { is_expected.to eq(Time.now.utc) }
+    end
+
+    context 'when completed_at is missing from the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => {} })
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when document is missing from index' do
+      before do
+        allow(record).to receive(:load_from_index).and_return(nil)
+      end
+
+      it { is_expected.to be_nil }
+    end
+  end
+
+  describe '#started_at', :freeze_time do
+    subject(:started_at) { record.started_at }
+
+    context 'when started_at is stored in the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => { 'started_at' => Time.now.utc.to_s } })
+      end
+
+      it { is_expected.to eq(Time.now.utc) }
+    end
+
+    context 'when started_at is missing from the indexed document' do
+      before do
+        allow(record).to receive(:load_from_index).and_return({ '_source' => {} })
+      end
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when document is missing from index' do
+      before do
+        allow(record).to receive(:load_from_index).and_return(nil)
+      end
+
+      it { is_expected.to be_nil }
     end
   end
 end
