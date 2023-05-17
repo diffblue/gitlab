@@ -11785,6 +11785,9 @@ msgstr ""
 msgid "Container Scanning"
 msgstr ""
 
+msgid "Container must be a group."
+msgstr ""
+
 msgid "Container must be a project or a group."
 msgstr ""
 
@@ -51811,6 +51814,9 @@ msgid "You do not have access to any projects for creating incidents."
 msgstr ""
 
 msgid "You do not have any subscriptions yet"
+msgstr ""
+
+msgid "You do not have permission to access DORA4 metrics."
 msgstr ""
 
 msgid "You do not have permission to access dora metrics."
