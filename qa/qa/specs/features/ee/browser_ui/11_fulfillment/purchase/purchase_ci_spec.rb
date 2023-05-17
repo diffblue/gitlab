@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  include QA::Support::Helpers::Plan
+  include Support::Helpers::Plan
+  include Support::Helpers::Zuora
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     describe 'Purchase CI minutes' do
-      # the quantity of products to purchase
       let(:purchase_quantity) { 5 }
       let(:hash) { SecureRandom.hex(4) }
       let(:user) do
@@ -16,9 +16,10 @@ module QA
         end
       end
 
+      # Group cannot be deleted until subscription is deleted in Zuora
       let(:group) do
         Resource::Sandbox.fabricate! do |sandbox|
-          sandbox.path = "test-group-fulfillment#{hash}"
+          sandbox.path = "test-group-fulfillment-#{hash}"
           sandbox.api_client = Runtime::API::Client.as_admin
         end
       end
@@ -54,10 +55,8 @@ module QA
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
 
             expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes_added? }
-              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
+              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
+            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
           end
         end
       end
@@ -68,7 +67,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
@@ -76,13 +75,9 @@ module QA
             plan_limits = ULTIMATE[:ci_minutes]
 
             expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes_added? }
-              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            aggregate_failures do
-              expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
-              expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
-            end
+              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
+            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
+            expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
           end
         end
       end
@@ -104,14 +99,20 @@ module QA
             expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
 
             expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-            expect { usage_quota.additional_ci_minutes_added? }
-              .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
-            expect { usage_quota.additional_ci_limits }
-              .to eventually_eq(expected_minutes.to_s).within(max_duration: 120, max_attempts: 60, reload_page: page)
+              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
+            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
           end
         end
       end
+    end
+
+    private
+
+    def expect_additional_ci_minutes(usage_quota, expected_minutes)
+      expect { usage_quota.additional_ci_minutes_added? }
+        .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
+      expect { usage_quota.additional_ci_limits }
+        .to eventually_eq(expected_minutes).within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
     end
   end
 end

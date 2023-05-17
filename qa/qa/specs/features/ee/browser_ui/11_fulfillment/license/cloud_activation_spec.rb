@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  include QA::Support::Helpers::Plan
+  include Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, :orchestrated, :cloud_activation,
                                 product_group: :provision do

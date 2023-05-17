@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  include QA::Support::Helpers::Plan
+  include Support::Helpers::Plan
+  include Support::Helpers::Zuora
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     describe 'Purchase' do
@@ -15,9 +16,7 @@ module QA
           end
         end
 
-        # Normally we would delete the group, however we cannot remove this group
-        # after the test runs since GitLab will not allow deletion of a group
-        # that has a Subscription attached
+        # Group cannot be deleted until subscription is deleted in Zuora
         let(:group) do
           Resource::Sandbox.fabricate! do |sandbox|
             sandbox.path = "test-group-fulfillment#{hash}"
@@ -45,7 +44,7 @@ module QA
             expect do
               billing.billing_plan_header
             end.to eventually_include("#{group.path} is currently using the Ultimate SaaS Plan")
-                     .within(max_duration: 120, max_attempts: 60, reload_page: page)
+                     .within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
           end
         end
 
@@ -75,7 +74,7 @@ module QA
               expect do
                 billing.billing_plan_header
               end.to eventually_include("#{group.path} is currently using the Premium SaaS Plan")
-                       .within(max_duration: 120, max_attempts: 60, sleep_interval: 2, reload_page: page)
+                       .within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
             end
 
             Page::Group::Menu.perform(&:go_to_usage_quotas)
@@ -83,7 +82,7 @@ module QA
               usage_quota.pipelines_tab
 
               expect { usage_quota.additional_ci_minutes_added? }
-                .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
+                .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
               aggregate_failures do
                 expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
                 expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
