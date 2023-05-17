@@ -123,7 +123,14 @@ module SaasRegistrationHelpers
     trial_user_information = {
       namespace_id: anything,
       gitlab_com_trial: true,
-      sync_to_gl: true
+      sync_to_gl: true,
+      namespace: {
+        id: anything,
+        name: 'Test Group',
+        path: 'test-group',
+        kind: 'group',
+        trial_ends_on: nil
+      }
     }.merge(glm_params)
 
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
@@ -176,7 +183,14 @@ module SaasRegistrationHelpers
     trial_user_information = {
       namespace_id: anything,
       gitlab_com_trial: true,
-      sync_to_gl: true
+      sync_to_gl: true,
+      namespace: {
+        id: anything,
+        name: 'Test Group',
+        path: 'test-group',
+        kind: 'group',
+        trial_ends_on: nil
+      }
     }.merge(glm_params)
 
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
