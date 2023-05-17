@@ -14,7 +14,11 @@ module Llm
       super &&
         SUPPORTED_ISSUABLE_TYPES.include?(resource.to_ability_name) &&
         Ability.allowed?(user, :summarize_notes, resource) &&
-        !resource.notes.for_summarize_by_ai.empty?
+        !notes.empty?
+    end
+
+    def notes
+      NotesFinder.new(user, target: resource).execute.by_humans
     end
   end
 end

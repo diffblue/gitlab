@@ -65,8 +65,10 @@ module EE
       false
     end
 
+    # We can remove this method once it's no longer called for all resources in `Llm::BaseService`.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/411479
     def send_to_ai?
-      !try(:confidential) && resource_parent.public?
+      true
     end
 
     override :hook_association_changes

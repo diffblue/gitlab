@@ -90,6 +90,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
       context 'for an issue' do
         let_it_be(:issuable) { create(:issue, project: project) }
         let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issuable) }
+        let_it_be(:system_note) { create(:note_on_issue, :system, project: project, noteable: issuable) }
 
         it_behaves_like 'performs completion'
       end
@@ -97,6 +98,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
       context 'for a work item' do
         let_it_be(:issuable) { create(:work_item, :task, project: project) }
         let_it_be(:notes) { create_pair(:note_on_work_item, project: project, noteable: issuable) }
+        let_it_be(:system_note) { create(:note_on_work_item, :system, project: project, noteable: issuable) }
 
         it_behaves_like 'performs completion'
       end
@@ -104,6 +106,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
       context 'for a merge request' do
         let_it_be(:issuable) { create(:merge_request, source_project: project) }
         let_it_be(:notes) { create_pair(:note_on_merge_request, project: project, noteable: issuable) }
+        let_it_be(:system_note) { create(:note_on_merge_request, :system, project: project, noteable: issuable) }
 
         it_behaves_like 'performs completion'
       end
@@ -111,6 +114,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes, feature_
       context 'for an epic' do
         let_it_be(:issuable) { create(:epic) }
         let_it_be(:notes) { create_pair(:note_on_epic, project: project, noteable: issuable) }
+        let_it_be(:system_note) { create(:note_on_epic, :system, project: project, noteable: issuable) }
 
         it_behaves_like 'performs completion'
       end

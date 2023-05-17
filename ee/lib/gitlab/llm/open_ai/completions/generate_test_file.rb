@@ -11,7 +11,6 @@ module Gitlab
           def execute(user, merge_request, options)
             return unless user
             return unless merge_request
-            return unless merge_request.send_to_ai?
 
             ai_options = ai_prompt_class.get_options(merge_request, options[:file_path])
             ai_options[:max_tokens] = OUTPUT_TOKEN_LIMIT

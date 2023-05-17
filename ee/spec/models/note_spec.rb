@@ -100,17 +100,6 @@ RSpec.describe Note, feature_category: :team_planning do
     end
   end
 
-  describe '.for_summarize_by_ai', feature_category: :not_owned do # rubocop: disable RSpec/InvalidFeatureCategory
-    it 'excludes system, confidential and internal notes' do
-      note = create(:note)
-      create(:note, :system)
-      create(:note, :confidential)
-      create(:note, :internal)
-
-      expect(described_class.for_summarize_by_ai).to contain_exactly(note)
-    end
-  end
-
   describe '.by_humans' do
     it 'excludes notes by bots and service users' do
       user_note = create(:note)
