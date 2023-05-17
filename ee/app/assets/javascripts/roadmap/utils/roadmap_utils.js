@@ -13,6 +13,30 @@ export const getFirstDay = () => {
   return window?.gon?.first_day_of_week ?? 0;
 };
 
+/**
+ * This method uses `gon.first_day_of_week` to compute correct offset
+ * value to use when layout for Roadmap is set to WEEKS.
+ *
+ * @returns {number} Returns offset number based on first day of week setting
+ */
+export const getLocaleOffsetDays = () => {
+  const firstDayOfWeek = getFirstDay();
+  let localeOffsetDays = 0;
+
+  if (firstDayOfWeek === 0) {
+    // Sunday
+    localeOffsetDays = 1;
+  } else if (firstDayOfWeek === 1) {
+    // Monday
+    localeOffsetDays = 0;
+  } else if (firstDayOfWeek === 6) {
+    // Saturday
+    localeOffsetDays = 2;
+  }
+
+  return localeOffsetDays;
+};
+
 export const getWeeksForDates = (startDate, endDate) => {
   const timeframe = [];
   const start = newDate(startDate);

@@ -2,11 +2,12 @@ import { GlIcon, GlPopover, GlProgressBar } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMount } from '@vue/test-utils';
+import { useFakeDate } from 'helpers/fake_date';
 import EpicItemTimeline from 'ee/roadmap/components/epic_item_timeline.vue';
 import { DATE_RANGES, PRESET_TYPES, PROGRESS_COUNT, PROGRESS_WEIGHT } from 'ee/roadmap/constants';
 import createStore from 'ee/roadmap/store';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
-import { mockTimeframeInitialDate, mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
+import { mockTimeframeInitialDate, mockFormattedEpic, mockEpic } from 'ee_jest/roadmap/mock_data';
 
 Vue.use(Vuex);
 
@@ -24,6 +25,8 @@ const createComponent = ({
   timeframeString = '',
   progressTracking = PROGRESS_WEIGHT,
   isProgressTrackingActive = true,
+  startDate,
+  endDate,
 } = {}) => {
   const store = createStore();
 
@@ -36,8 +39,8 @@ const createComponent = ({
     store,
     propsData: {
       epic,
-      startDate: epic.originalStartDate,
-      endDate: epic.originalEndDate,
+      startDate: startDate || epic.originalStartDate,
+      endDate: endDate || epic.originalEndDate,
       presetType,
       timeframe,
       timeframeItem,
@@ -140,4 +143,38 @@ describe('EpicItemTimelineComponent', () => {
       },
     );
   });
+
+  describe.each`
+    firstDayName  | firstDayOfWeek | timeframeItem           | expectedLeftOffset
+    ${'Saturday'} | ${6}           | ${new Date(2023, 4, 6)} | ${'left: 0px;'}
+    ${'Sunday'}   | ${0}           | ${new Date(2023, 4, 7)} | ${'left: 141.42'}
+    ${'Monday'}   | ${1}           | ${new Date(2023, 4, 8)} | ${'left: 115.71'}
+  `(
+    'with first day of week set to $firstDayName for presetType WEEKS',
+    ({ firstDayOfWeek, timeframeItem, expectedLeftOffset }) => {
+      useFakeDate(timeframeItem);
+
+      beforeEach(() => {
+        window.gon.first_day_of_week = firstDayOfWeek;
+        const mockTimeframeWeeks = getTimeframeForRangeType({
+          timeframeRangeType: DATE_RANGES.CURRENT_QUARTER,
+          presetType: PRESET_TYPES.WEEKS,
+          initialDate: mockTimeframeInitialDate,
+        });
+
+        wrapper = createComponent({
+          epic: mockEpic,
+          startDate: mockEpic.startDate,
+          endDate: mockEpic.endDate,
+          presetType: PRESET_TYPES.WEEKS,
+          timeframe: mockTimeframeWeeks,
+          timeframeItem,
+        });
+      });
+
+      it('sets indicator style containing accurate value of left', () => {
+        expect(getEpicBar(wrapper).attributes('style')).toContain(expectedLeftOffset);
+      });
+    },
+  );
 });
