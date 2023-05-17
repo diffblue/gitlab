@@ -3,6 +3,7 @@
 module Elastic
   module Latest
     class MergeRequestClassProxy < ApplicationClassProxy
+      extend ::Gitlab::Utils::Override
       include StateFilter
 
       def elastic_search(query, options: {})
@@ -43,6 +44,7 @@ module Elastic
       # Builds an elasticsearch query that will select documents from a
       # set of projects for Group and Project searches, taking user access
       # rules for merge_requests into account. Relies upon super for Global searches
+      override :project_ids_filter
       def project_ids_filter(query_hash, options)
         return super if options[:public_and_internal_projects]
 
