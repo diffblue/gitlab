@@ -34,5 +34,9 @@ module Dependencies
     def retrieve_upload(_identifier, paths)
       Upload.find_by(model: self, path: paths)
     end
+
+    # This `exportable` method will be changed to return
+    # either `project` or `group` in the future.
+    alias_method :exportable, :project
   end
 end

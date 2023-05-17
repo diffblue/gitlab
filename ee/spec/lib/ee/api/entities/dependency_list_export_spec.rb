@@ -14,8 +14,8 @@ RSpec.describe ::EE::API::Entities::DependencyListExport, feature_category: :dep
     expect(subject[:id]).to eq(dependency_list_export.id)
     expect(subject[:has_finished]).to eq(dependency_list_export.finished?)
     expect(subject[:self]).to end_with(
-      "/api/v4/projects/#{project.id}/dependency_list_exports/#{dependency_list_export.id}")
+      "/api/v4/dependency_list_exports/#{dependency_list_export.id}")
     expect(subject[:download]).to end_with(
-      "/api/v4/projects/#{project.id}/dependency_list_exports/#{dependency_list_export.id}/download")
+      "/api/v4/dependency_list_exports/#{dependency_list_export.id}/download")
   end
 end

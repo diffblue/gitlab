@@ -66,8 +66,8 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
   end
 
   describe 'GET /projects/:id/dependency_list_exports/:export_id' do
-    let(:dependency_list_export) { create(:dependency_list_export, :finished) }
-    let(:request_path) { "/projects/#{project.id}/dependency_list_exports/#{dependency_list_export.id}" }
+    let(:dependency_list_export) { create(:dependency_list_export, :finished, author: user, project: project) }
+    let(:request_path) { "/dependency_list_exports/#{dependency_list_export.id}" }
 
     subject(:fetch_dependency_list_export) { get api(request_path, user) }
 
@@ -78,8 +78,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
       end
 
       it 'returns 403' do
-        expect(::Dependencies::FetchExportService).not_to receive(:new)
-
         fetch_dependency_list_export
 
         expect(response).to have_gitlab_http_status(:forbidden)
@@ -97,8 +95,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
         end
 
         it 'returns 403' do
-          expect(::Dependencies::FetchExportService).not_to receive(:new)
-
           fetch_dependency_list_export
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -125,7 +121,7 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
         end
 
         context 'with dependency list export not finished' do
-          let(:dependency_list_export) { create(:dependency_list_export) }
+          let(:dependency_list_export) { create(:dependency_list_export, author: user, project: project) }
 
           it 'sets polling and returns accepted' do
             expect(::Dependencies::FetchExportService).to receive(:new)
@@ -143,8 +139,8 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
   end
 
   describe 'GET /projects/:id/dependency_list_exports/:export_id/download' do
-    let(:dependency_list_export) { create(:dependency_list_export, :finished) }
-    let(:request_path) { "/projects/#{project.id}/dependency_list_exports/#{dependency_list_export.id}/download" }
+    let(:dependency_list_export) { create(:dependency_list_export, :finished, author: user, project: project) }
+    let(:request_path) { "/dependency_list_exports/#{dependency_list_export.id}/download" }
 
     subject(:download_dependency_list_export) { get api(request_path, user) }
 
@@ -155,8 +151,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
       end
 
       it 'returns 403' do
-        expect(::Dependencies::FetchExportService).not_to receive(:new)
-
         download_dependency_list_export
 
         expect(response).to have_gitlab_http_status(:forbidden)
@@ -174,8 +168,6 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
         end
 
         it 'returns 403' do
-          expect(::Dependencies::FetchExportService).not_to receive(:new)
-
           download_dependency_list_export
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -200,7 +192,7 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
         end
 
         context 'with dependency list export not finished' do
-          let(:dependency_list_export) { create(:dependency_list_export) }
+          let(:dependency_list_export) { create(:dependency_list_export, author: user, project: project) }
 
           it 'returns 404' do
             expect(::Dependencies::FetchExportService).to receive(:new)
