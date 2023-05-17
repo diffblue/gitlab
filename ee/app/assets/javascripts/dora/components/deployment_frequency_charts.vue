@@ -1,7 +1,7 @@
 <script>
 import * as Sentry from '@sentry/browser';
 import { GlToggle, GlBadge } from '@gitlab/ui';
-import { gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
@@ -160,7 +160,7 @@ export default {
         this.forecastChartData[id] = {
           name: this.$options.i18n.forecast,
           data: [],
-          lineStyle: { type: 'dashed', color: gray300 },
+          lineStyle: { type: 'dashed', color: dataVizBlue500 },
           areaStyle: { opacity: 0 },
         };
 
