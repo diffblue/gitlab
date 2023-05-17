@@ -30,16 +30,22 @@ module EE
 
     override :schema_migrate_down!
     def schema_migrate_down!
-      with_db_config { super }
+      return super unless geo_migration?
+
+      with_db_config { migration_context.down(migration_schema_version) }
     end
 
     override :schema_migrate_up!
-    def schema_migrate_up!
-      with_db_config { super }
+    def schema_migrate_up!(only_databases: nil)
+      return super unless geo_migration?
+
+      with_db_config { migration_context.up }
     end
 
     override :migrate!
     def migrate!
+      return super unless geo_migration?
+
       with_db_config { super }
     end
 
