@@ -148,6 +148,10 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
     end
 
+    it { is_expected.to allow_value(true).for(:allow_account_deletion) }
+    it { is_expected.to allow_value(false).for(:allow_account_deletion) }
+    it { is_expected.not_to allow_value(nil).for(:allow_account_deletion) }
+
     describe 'when additional email text is enabled', feature_category: :user_profile do
       before do
         stub_licensed_features(email_additional_text: true)

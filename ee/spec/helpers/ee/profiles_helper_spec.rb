@@ -73,4 +73,31 @@ RSpec.describe ProfilesHelper do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '#prevent_delete_account?' do
+    subject { helper.prevent_delete_account? }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:license_feature, :ff, :allow_account_deletion, :result) do
+      true  | true  | true  | false
+      true  | true  | false | true
+      true  | false | true  | false
+      true  | false | false | false
+      false | false | false | false
+      false | false | true  | false
+      false | true  | true  | false
+      false | true  | false | false
+    end
+
+    with_them do
+      before do
+        stub_licensed_features(disable_deleting_account_for_users: license_feature)
+        stub_application_setting(allow_account_deletion: allow_account_deletion)
+        stub_feature_flags(deleting_account_disabled_for_users: ff)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
 end

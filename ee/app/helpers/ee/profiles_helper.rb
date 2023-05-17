@@ -19,5 +19,11 @@ module EE
     def ssh_key_expiration_policy_enabled?
       ::Gitlab::CurrentSettings.max_ssh_key_lifetime && ssh_key_expiration_policy_licensed?
     end
+
+    override :prevent_delete_account?
+    def prevent_delete_account?
+      License.feature_available?(:disable_deleting_account_for_users) &&
+        ::Feature.enabled?(:deleting_account_disabled_for_users) && !::Gitlab::CurrentSettings.allow_account_deletion?
+    end
   end
 end

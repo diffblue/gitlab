@@ -193,6 +193,9 @@ module EE
 
       validates :package_metadata_purl_types, inclusion: { in: ::Enums::PackageMetadata.purl_types.values }
 
+      validates :allow_account_deletion,
+            inclusion: { in: [true, false], message: N_('must be a boolean value') }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
