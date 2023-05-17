@@ -11,15 +11,18 @@ module Abuse
 
     idempotent!
 
+    attr_reader :user, :reporter
+
     def perform(abuse_report_id)
       abuse_report = AbuseReport.find_by_id(abuse_report_id)
       return unless abuse_report&.category == 'spam'
 
-      reporter = abuse_report.reporter
-      user = abuse_report.user
+      @reporter = abuse_report.reporter
+      @user = abuse_report.user
 
       return unless user && reporter
-      return unless reporter.gitlab_employee? && bannable_user?(user)
+      return unless reporter.gitlab_employee?
+      return unless bannable_user?
 
       custom_attribute = {
         user_id: user.id,
@@ -31,16 +34,24 @@ module Abuse
         UserCustomAttribute.upsert_custom_attributes([custom_attribute]) if user.ban!
       end
 
-      log_event(user, reporter)
+      log_event
     end
 
     private
 
-    def bannable_user?(user)
-      user.active? && user.human? && !user.namespace.paid?
+    def bannable_user?
+      return false unless user.active? && user.human?
+      return false if user.gitlab_employee? || user.account_age_in_days > 7
+      return false if user.namespace.paid? || user_owns_populated_namespaces?
+
+      true
     end
 
-    def log_event(user, reporter)
+    def user_owns_populated_namespaces?
+      user.owned_groups.find { |group| group.users_count > 5 }
+    end
+
+    def log_event
       Gitlab::AppLogger.info(
         message: "User ban",
         user: user.username.to_s,

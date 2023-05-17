@@ -88,6 +88,33 @@ RSpec.describe Abuse::NewAbuseReportWorker, feature_category: :instance_resilien
           worker.perform(*job_args)
         end
       end
+
+      context 'when the user is a gitlab employee' do
+        before do
+          allow(user).to receive(:gitlab_employee?).and_return(true)
+        end
+
+        it_behaves_like 'does not ban user'
+      end
+
+      context 'when the user age is greater than 7 days' do
+        before do
+          user.update_attribute(:created_at, 8.days.ago)
+        end
+
+        it_behaves_like 'does not ban user'
+      end
+
+      context 'when user owns namespaces with more than five members' do
+        let_it_be(:group) { create(:group) }
+
+        before do
+          group.add_owner(user)
+          5.times { group.add_guest(create(:user)) }
+        end
+
+        it_behaves_like 'does not ban user'
+      end
     end
 
     context 'when reporter is not a gitlab employee' do
