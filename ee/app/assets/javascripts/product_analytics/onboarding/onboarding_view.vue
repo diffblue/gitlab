@@ -73,6 +73,6 @@ export default {
       @error="showError($event)"
     />
 
-    <onboarding-setup v-else-if="showSetup" is-initial-setup />
+    <onboarding-setup v-else-if="showSetup" is-initial-setup dashboards-path="/" />
   </div>
 </template>

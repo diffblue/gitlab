@@ -18,6 +18,16 @@ module Analytics
       }
     end
 
+    def analytics_project_settings_data(project)
+      can_read_product_analytics = can?(current_user, :read_product_analytics, project)
+
+      {
+        tracking_key: can_read_product_analytics ? tracking_key(project) : nil,
+        collector_host: can_read_product_analytics ? collector_host : nil,
+        dashboards_path: project_analytics_dashboards_path(project)
+      }
+    end
+
     private
 
     def collector_host
