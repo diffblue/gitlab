@@ -12,8 +12,8 @@ module EE
 
     override :active_record_base
     def active_record_base(...)
-      if geo_migration?
-        ::Geo::TrackingBase
+      if custom_migration?
+        db_base_model
       else
         super
       end
@@ -21,8 +21,8 @@ module EE
 
     override :migrations_paths
     def migrations_paths
-      if geo_migration?
-        geo_db_config.configuration_hash[:migrations_paths]
+      if custom_migration?
+        connection_db_config.configuration_hash[:migrations_paths]
       else
         super
       end
@@ -30,38 +30,40 @@ module EE
 
     override :schema_migrate_down!
     def schema_migrate_down!
-      return super unless geo_migration?
+      return super unless custom_migration?
 
       with_db_config { migration_context.down(migration_schema_version) }
     end
 
     override :schema_migrate_up!
     def schema_migrate_up!(only_databases: nil)
-      return super unless geo_migration?
+      return super unless custom_migration?
 
       with_db_config { migration_context.up }
     end
 
     override :migrate!
     def migrate!
-      return super unless geo_migration?
+      return super unless custom_migration?
 
       with_db_config { super }
     end
 
     def with_db_config(&block)
-      if geo_migration?
-        with_added_geo_connection { yield }
+      if custom_migration?
+        with_custom_connection { yield }
       else
         yield
       end
     end
 
-    def with_added_geo_connection
+    def with_custom_connection
+      name = geo_migration? ? :geo : :embedding
+
       with_reestablished_active_record_base(reconnect: true) do
         reconfigure_db_connection(
-          name: :geo,
-          config_model: Geo::TrackingBase,
+          name: name,
+          config_model: db_base_model,
           model: ActiveRecord::Base
         )
 
@@ -69,12 +71,30 @@ module EE
       end
     end
 
+    def custom_migration?
+      geo_migration? || embedding_migration?
+    end
+
     def geo_migration?
       self.class.metadata[:geo]
     end
 
-    def geo_db_config
-      Geo::TrackingBase.connection_db_config
+    def embedding_migration?
+      self.class.metadata[:embedding]
+    end
+
+    def connection_db_config
+      db_base_model.connection_db_config
+    end
+
+    def db_base_model
+      if geo_migration?
+        Geo::TrackingBase
+      elsif embedding_migration?
+        ::Embedding::ApplicationRecord
+      else
+        raise "unknown database migration"
+      end
     end
   end
 end
