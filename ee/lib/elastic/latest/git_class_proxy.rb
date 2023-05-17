@@ -47,32 +47,6 @@ module Elastic
 
       private
 
-      def should_use_project_ids_filter?(options)
-        options[:project_ids] == :any || options[:group_ids].blank?
-      end
-
-      def authorization_filter(query_hash, options)
-        return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
-
-        current_user = options[:current_user]
-        namespaces = Namespace.find(authorized_namespace_ids(current_user, options))
-        traversal_ids = namespaces.map(&:elastic_namespace_ancestry)
-
-        return project_ids_filter(query_hash, options) if traversal_ids.blank?
-
-        context.name(:reject_projects) do
-          query_hash[:query][:bool][:must_not] ||= []
-          query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
-        end
-
-        context.name(:namespace) do
-          query_hash[:query][:bool][:filter] ||= []
-          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, traversal_ids, prefix: :traversal_ids)
-        end
-
-        query_hash
-      end
-
       # Builds an elasticsearch query that will select documents from a
       # set of projects for Group and Project searches, taking user access
       # rules for blob into account. Relies upon super for Global searches
@@ -84,7 +58,7 @@ module Elastic
         scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
         return super if scoped_project_ids == :any
 
-        get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, 'repository')
+        get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, options[:features])
       end
 
       def options_filter_context(type, options)
@@ -326,7 +300,7 @@ module Elastic
         #
         # Note that `:current_user` might be `nil` for a anonymous user
         if options.key?(:current_user)
-          query_hash = context.name(:blob, :authorized) { authorization_filter(query_hash, options) }
+          query_hash = context.name(:blob, :authorized) { authorization_filter(query_hash, options.merge(traversal_ids_prefix: :traversal_ids)) }
         end
 
         # add the document type filter

@@ -25,7 +25,7 @@ module Elastic
       end
 
       def es_import(**options)
-        transform = lambda do |r|
+        transform = ->(r) do
           proxy = r.__elasticsearch__.version(version_namespace)
 
           { index: { _id: proxy.es_id, data: proxy.as_indexed_json } }.tap do |data|
@@ -35,7 +35,7 @@ module Elastic
 
         options[:transform] = transform
 
-        self.import(options)
+        import(options)
       end
 
       # Should be overriden in *ClassProxy for specific model if data needs to
@@ -57,12 +57,13 @@ module Elastic
           memo[field.to_sym] = {}
         end
 
-        # Adding number_of_fragments: 0 to not split results into snippets.  This way controllers can decide how to handle the highlighted data.
+        # Adding number_of_fragments: 0 to not split results into snippets.
+        # This way controllers can decide how to handle the highlighted data.
         {
-            fields: es_fields,
-            number_of_fragments: 0,
-            pre_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG],
-            post_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG]
+          fields: es_fields,
+          number_of_fragments: 0,
+          pre_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG],
+          post_tags: [::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG]
         }
       end
 
@@ -75,7 +76,7 @@ module Elastic
           if query.present?
             simple_query_string = {
               simple_query_string: {
-                _name: context.name(self.es_type, :match, :search_terms),
+                _name: context.name(es_type, :match, :search_terms),
                 fields: fields,
                 query: query,
                 lenient: true,
@@ -114,8 +115,8 @@ module Elastic
                      {
                        term: {
                          type: {
-                           _name: context.name(:doc, :is_a, self.es_type),
-                           value: self.es_type
+                           _name: context.name(:doc, :is_a, es_type),
+                           value: es_type
                          }
                        }
                      }
@@ -143,8 +144,8 @@ module Elastic
           query: {
             bool: {
               filter: [
-                { term: { iid: { _name: context.name(self.es_type, :related, :iid), value: iid } } },
-                { term: { type: { _name: context.name(:doc, :is_a, self.es_type), value: self.es_type } } }
+                { term: { iid: { _name: context.name(es_type, :related, :iid), value: iid } } },
+                { term: { type: { _name: context.name(:doc, :is_a, es_type), value: es_type } } }
               ]
             }
           }
@@ -245,14 +246,21 @@ module Elastic
       # If a project feature(s) is specified, it indicates interest in child
       # documents gated by that project feature - e.g., "issues". The feature's
       # visibility level must be taken into account.
-      def project_ids_query(user, project_ids, public_and_internal_projects, features: nil, no_join_project: false, project_id_field: nil)
+      def project_ids_query(
+        user, project_ids, public_and_internal_projects, features: nil,
+        no_join_project: false, project_id_field: nil)
         scoped_project_ids = scoped_project_ids(user, project_ids)
 
         # At least one condition must be present, so pick no projects for
         # anonymous users.
         # Pick private, internal and public projects the user is a member of.
         # Pick all private projects for admins & auditors.
-        conditions = pick_projects_by_membership(scoped_project_ids, user, no_join_project, features: features, project_id_field: project_id_field)
+        conditions = pick_projects_by_membership(
+          scoped_project_ids,
+          user, no_join_project,
+          features: features,
+          project_id_field: project_id_field
+        )
 
         if public_and_internal_projects
           context.name(:visibility) do
@@ -294,9 +302,9 @@ module Elastic
         if features.nil?
           if project_ids == :any
             return [{ term: { visibility_level: { _name: context.name(:any), value: Project::PRIVATE } } }]
-          else
-            return [{ terms: { _name: context.name(:membership, :id), id_field => project_ids } }]
           end
+
+          return [{ terms: { _name: context.name(:membership, :id), id_field => project_ids } }]
         end
 
         Array(features).map do |feature|
@@ -304,7 +312,12 @@ module Elastic
             if project_ids == :any
               { term: { visibility_level: { _name: context.name(:any), value: Project::PRIVATE } } }
             else
-              { terms: { _name: context.name(:membership, :id), id_field => filter_ids_by_feature(project_ids, user, feature) } }
+              {
+                terms: {
+                  _name: context.name(:membership, :id),
+                  id_field => filter_ids_by_feature(project_ids, user, feature)
+                }
+              }
             end
 
           limit = {
@@ -414,11 +427,13 @@ module Elastic
 
         # When reading cross project is not allowed, only allow searching a
         # a single project, so the `:read_*` ability is only checked once.
-        unless Ability.allowed?(current_user, :read_cross_project)
-          return [] if project_ids.size > 1
-        end
+        return [] if !Ability.allowed?(current_user, :read_cross_project) && project_ids.size > 1
 
         project_ids
+      end
+
+      def should_use_project_ids_filter?(options)
+        options[:project_ids] == :any || options[:group_ids].blank?
       end
 
       def authorized_project_ids(current_user, options = {})
@@ -439,6 +454,35 @@ module Elastic
 
         authorized_ids = current_user.authorized_groups.pluck_primary_key.to_set
         authorized_ids.intersection(options[:group_ids].to_set).to_a
+      end
+
+      def traversal_ids_filter(query_hash, namespaces, options)
+        namespace_ancestry = namespaces.map(&:elastic_namespace_ancestry)
+
+        context.name(:reject_projects) do
+          query_hash[:query][:bool][:must_not] ||= []
+          query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
+        end
+
+        context.name(:namespace) do
+          query_hash[:query][:bool][:filter] ||= []
+          query_hash[:query][:bool][:filter] << ancestry_filter(options[:current_user],
+            namespace_ancestry,
+            prefix: options[:traversal_ids_prefix]
+          )
+        end
+
+        query_hash
+      end
+
+      def authorization_filter(query_hash, options)
+        return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
+
+        namespaces = Namespace.find(authorized_namespace_ids(options[:current_user], options))
+
+        return project_ids_filter(query_hash, options) if namespaces.blank?
+
+        traversal_ids_filter(query_hash, namespaces, options)
       end
 
       def ancestry_filter(current_user, namespace_ancestry, prefix:)

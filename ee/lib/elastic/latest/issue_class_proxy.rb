@@ -3,6 +3,7 @@
 module Elastic
   module Latest
     class IssueClassProxy < ApplicationClassProxy
+      extend ::Gitlab::Utils::Override
       include StateFilter
 
       AGGREGATION_LIMIT = 500
@@ -43,7 +44,7 @@ module Elastic
           end
 
         context.name(:issue) do
-          query_hash = context.name(:authorized) { authorization_filter(query_hash, options) }
+          query_hash = context.name(:authorized) { authorization_filter(query_hash, options.merge(traversal_ids_prefix: :namespace_ancestry_ids)) }
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
           unless options[:current_user]&.can_admin_all_resources?
@@ -88,35 +89,10 @@ module Elastic
         end
       end
 
-      def should_use_project_ids_filter?(options)
-        options[:project_ids] == :any || options[:group_ids].blank?
-      end
-
-      def authorization_filter(query_hash, options)
-        return project_ids_filter(query_hash, options) if should_use_project_ids_filter?(options)
-
-        current_user = options[:current_user]
-        namespaces = Namespace.find(authorized_namespace_ids(current_user, options))
-        namespace_ancestry = namespaces.map(&:elastic_namespace_ancestry)
-
-        return project_ids_filter(query_hash, options) if namespace_ancestry.blank?
-
-        context.name(:reject_projects) do
-          query_hash[:query][:bool][:must_not] ||= []
-          query_hash[:query][:bool][:must_not] << rejected_project_filter(namespaces, options)
-        end
-
-        context.name(:namespace) do
-          query_hash[:query][:bool][:filter] ||= []
-          query_hash[:query][:bool][:filter] << ancestry_filter(current_user, namespace_ancestry, prefix: :namespace_ancestry_ids)
-        end
-
-        query_hash
-      end
-
       # Builds an elasticsearch query that will select documents from a
       # set of projects for Group and Project searches, taking user access
       # rules for issues into account. Relies upon super for Global searches
+      override :project_ids_filter
       def project_ids_filter(query_hash, options)
         return super if options[:public_and_internal_projects]
 
