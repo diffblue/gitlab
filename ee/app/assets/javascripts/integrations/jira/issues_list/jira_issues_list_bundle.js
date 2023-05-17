@@ -1,4 +1,4 @@
-import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
+import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg?raw';
 import externalIssuesListFactory from 'ee/external_issues_list';
 import { s__ } from '~/locale';
 import getIssuesQuery from './graphql/queries/get_jira_issues.query.graphql';
