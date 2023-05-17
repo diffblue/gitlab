@@ -26,32 +26,9 @@ RSpec.describe Security::MergeReportsService, '#execute', feature_category: :vul
     let(:identifier_cve) { build(:ci_reports_security_identifier, external_id: 'CVE-2019-123', external_type: 'cve') }
     let(:identifier_npm) { build(:ci_reports_security_identifier, external_id: 'NPM-13', external_type: 'npm') }
 
-    let(:finding_id_1) do
-      build(
-        :ci_reports_security_finding,
-        identifiers: [identifier_gemnasium, identifier_cve, identifier_npm],
-        scanner: gemnasium_scanner,
-        report_type: :dependency_scanning,
-        uuid: '61eb8e3e-3be1-4d6c-ba26-4e0dd4f94610')
-    end
-
-    let(:finding_id_2) do
-      build(
-        :ci_reports_security_finding,
-        identifiers: [identifier_cve],
-        scanner: bundler_audit_scanner,
-        report_type: :dependency_scanning,
-        uuid: '61eb8e3e-3be1-4d6c-ba26-4e0dd4f94611')
-    end
-
-    let(:finding_id_3) do
-      build(
-        :ci_reports_security_finding,
-        identifiers: [identifier_npm],
-        scanner: retire_js_scaner,
-        report_type: :dependency_scanning,
-        uuid: '61eb8e3e-3be1-4d6c-ba26-4e0dd4f94612')
-    end
+    let(:finding_id_1) { build(:ci_reports_security_finding, identifiers: [identifier_gemnasium, identifier_cve, identifier_npm], scanner: gemnasium_scanner, report_type: :dependency_scanning) }
+    let(:finding_id_2) { build(:ci_reports_security_finding, identifiers: [identifier_cve], scanner: bundler_audit_scanner, report_type: :dependency_scanning) }
+    let(:finding_id_3) { build(:ci_reports_security_finding, identifiers: [identifier_npm], scanner: retire_js_scaner, report_type: :dependency_scanning ) }
 
     let(:gemnasium_report) do
       build( :ci_reports_security_report,

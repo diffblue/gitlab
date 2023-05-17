@@ -21,6 +21,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
 
     let(:params) do
       {
+        compare_key: 'this_is_supposed_to_be_a_unique_value',
         confidence: :medium,
         identifiers: [primary_identifier, other_identifier],
         links: [link],
@@ -62,8 +63,9 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
         expect { subject }.not_to raise_error
 
         expect(subject).to have_attributes(
+          compare_key: 'this_is_supposed_to_be_a_unique_value',
           confidence: :medium,
-          project_fingerprint: 'a0f79a47f5b5ab03cd1126486fdbfe14bae26c77',
+          project_fingerprint: '9a73f32d58d87d94e3dc61c4c1a94803f6014258',
           identifiers: [primary_identifier, other_identifier],
           links: [link],
           flags: [flag_1, flag_2],
@@ -100,7 +102,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
       end
     end
 
-    %i[identifiers location metadata_version name original_data report_type scanner uuid].each do |attribute|
+    %i[compare_key identifiers location metadata_version name original_data report_type scanner uuid].each do |attribute|
       context "when attribute #{attribute} is missing" do
         before do
           params.delete(attribute)
@@ -320,7 +322,8 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
             scanner: scanner,
             identifiers: identifiers,
             location: location,
-            uuid: uuid)
+            uuid: uuid,
+            compare_key: '')
     end
 
     subject { finding.valid? }
@@ -388,6 +391,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
               identifiers: identifiers,
               location: location,
               uuid: uuid,
+              compare_key: '',
               vulnerability_finding_signatures_enabled: true)
       end
 
@@ -415,6 +419,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
               identifiers: identifiers,
               location: location,
               uuid: uuid,
+              compare_key: '',
               vulnerability_finding_signatures_enabled: false)
       end
 
@@ -467,8 +472,8 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
   end
 
   describe '#<=>' do
-    let(:finding_1) { build(:ci_reports_security_finding, severity: :critical, uuid: '3d258b41-a33c-4582-a7e3-c8165b20b681') }
-    let(:finding_2) { build(:ci_reports_security_finding, severity: :critical, uuid: '3d258b41-a33c-4582-a7e3-c8165b20b680') }
+    let(:finding_1) { build(:ci_reports_security_finding, severity: :critical, compare_key: 'b') }
+    let(:finding_2) { build(:ci_reports_security_finding, severity: :critical, compare_key: 'a') }
     let(:finding_3) { build(:ci_reports_security_finding, severity: :high) }
 
     subject { [finding_1, finding_2, finding_3].sort }

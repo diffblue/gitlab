@@ -607,7 +607,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder, feature_category: :vulne
         found_findings = subject.findings.select(&select_proc)
 
         found_findings.each_with_index do |found, i|
-          expect(found.uuid).to eq(report_findings[i].uuid)
+          expect(found.metadata['cve']).to eq(report_findings[i].compare_key)
         end
       end
     end
