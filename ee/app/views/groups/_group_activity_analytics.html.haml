@@ -1,2 +1,2 @@
 - return unless show_group_activity_analytics?
-#js-group-activity{ data: { group_full_path: @group.full_path, group_name: @group.name } }
+#js-group-activity{ data: { group_full_path: @group.full_path, group_name: @group.name, merge_requests_metric_link: group_analytics_productivity_analytics_path(@group), issues_metric_link: group_issues_analytics_path(@group), new_members_metric_link: group_group_members_path(@group, sort: 'last_joined') } }

@@ -11,14 +11,15 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
 const TEST_GROUP_ID = 'gitlab-org';
 const TEST_GROUP_NAME = 'Gitlab Org';
+const TEST_MERGE_REQUESTS_METRIC_LINK = `/groups/${TEST_GROUP_ID}/-/analytics/productivity_analytics`;
+const TEST_ISSUES_METRIC_LINK = `/groups/${TEST_GROUP_ID}/-/issues_analytics`;
+const TEST_NEW_MEMBERS_METRIC_LINK = `/groups/${TEST_GROUP_ID}/-/group_members?sort=last_joined`;
 const TEST_MERGE_REQUESTS_COUNT = { data: { merge_requests_count: 10 } };
 const TEST_LARGE_MERGE_REQUESTS_COUNT = { data: { merge_requests_count: 1001 } };
 const TEST_ISSUES_COUNT = { data: { issues_count: 20 } };
 const TEST_LARGE_ISSUES_COUNT = { data: { issues_count: 999 } };
 const TEST_NEW_MEMBERS_COUNT = { data: { new_members_count: 30 } };
 const TEST_LARGE_NEW_MEMBERS_COUNT = { data: { new_members_count: 998 } };
-
-jest.mock('~/lib/utils/url_utility');
 
 const mockActivityRequests = ({ issuesCount, mergeRequestsCount, newMembersCount }) => {
   jest
@@ -40,6 +41,9 @@ describe('GroupActivity component', () => {
         provide: {
           groupFullPath: TEST_GROUP_ID,
           groupName: TEST_GROUP_NAME,
+          mergeRequestsMetricLink: TEST_MERGE_REQUESTS_METRIC_LINK,
+          issuesMetricLink: TEST_ISSUES_METRIC_LINK,
+          newMembersMetricLink: TEST_NEW_MEMBERS_METRIC_LINK,
         },
       }),
     );
@@ -91,30 +95,24 @@ describe('GroupActivity component', () => {
   });
 
   describe('metrics', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
     describe.each`
       index | value | title                       | link
-      ${0}  | ${10} | ${'Merge requests created'} | ${`/groups/${TEST_GROUP_ID}/-/analytics/productivity_analytics`}
-      ${1}  | ${20} | ${'Issues created'}         | ${`/groups/${TEST_GROUP_ID}/-/issues_analytics`}
-      ${2}  | ${30} | ${'Members added'}          | ${`/groups/${TEST_GROUP_ID}/-/group_members?sort=last_joined`}
+      ${0}  | ${10} | ${'Merge requests created'} | ${TEST_MERGE_REQUESTS_METRIC_LINK}
+      ${1}  | ${20} | ${'Issues created'}         | ${TEST_ISSUES_METRIC_LINK}
+      ${2}  | ${30} | ${'Members added'}          | ${TEST_NEW_MEMBERS_METRIC_LINK}
     `('for metric $title', ({ index, value, title, link }) => {
-      let anchor;
-      let singleStat;
-
       beforeEach(() => {
-        anchor = findAllSingleStatAnchors().at(index);
-        singleStat = findAllSingleStats().at(index);
+        createComponent();
       });
 
       it('renders a GlSingleStat', () => {
+        const singleStat = findAllSingleStats().at(index);
         expect(singleStat.props('value')).toBe(`${value}`);
         expect(singleStat.props('title')).toBe(title);
       });
 
       it('redirects to the link on click', () => {
+        const anchor = findAllSingleStatAnchors().at(index);
         expect(anchor.attributes('href')).toBe(link);
       });
     });

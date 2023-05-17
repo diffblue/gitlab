@@ -6,7 +6,13 @@ export default () => {
 
   if (!container) return;
 
-  const { groupFullPath, groupName } = container.dataset;
+  const {
+    groupFullPath,
+    groupName,
+    mergeRequestsMetricLink,
+    issuesMetricLink,
+    newMembersMetricLink,
+  } = container.dataset;
 
   // eslint-disable-next-line no-new
   new Vue({
@@ -14,6 +20,9 @@ export default () => {
     provide: {
       groupFullPath,
       groupName,
+      mergeRequestsMetricLink,
+      issuesMetricLink,
+      newMembersMetricLink,
     },
     render(h) {
       return h(GroupActivityCard);
