@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_management do
   let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:project) { create(:project, group: group) }
 
   let_it_be(:options) do
     {
@@ -54,16 +54,6 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
       before do
         stub_licensed_features(explain_code: false)
       end
-
-      it 'returns an error' do
-        expect(Llm::CompletionWorker).not_to receive(:perform_async)
-
-        expect(subject.execute).to be_error
-      end
-    end
-
-    context 'when a project is not public' do
-      let_it_be(:project) { create(:project, group: group) }
 
       it 'returns an error' do
         expect(Llm::CompletionWorker).not_to receive(:perform_async)

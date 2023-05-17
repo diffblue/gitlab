@@ -28,7 +28,7 @@ module Gitlab
             return unless user
             return unless issuable
 
-            notes = issuable.notes.for_summarize_by_ai
+            notes = NotesFinder.new(user, target: issuable).execute.by_humans
             return if notes.empty?
 
             # todo: this is not great, loads all notes into memory, but we know this and we'll fix this

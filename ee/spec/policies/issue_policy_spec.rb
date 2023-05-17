@@ -35,66 +35,39 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
         end
 
         context 'when a member' do
-          context 'on a public project' do
+          it { is_expected.to be_allowed(:summarize_notes) }
+          it { is_expected.to be_allowed(:generate_description) }
+
+          context 'when experiment features are disabled' do
             before do
-              project.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+              namespace.namespace_settings.update!(experiment_features_enabled: false)
             end
 
-            it { is_expected.to be_allowed(:summarize_notes) }
-            it { is_expected.to be_allowed(:generate_description) }
-
-            context 'when experiment features are disabled' do
-              before do
-                namespace.namespace_settings.update!(experiment_features_enabled: false)
-              end
-
-              it { is_expected.to be_disallowed(:summarize_notes) }
-            end
-
-            context 'when third party ai features are disabled' do
-              before do
-                namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
-              end
-
-              it { is_expected.to be_disallowed(:summarize_notes) }
-              it { is_expected.to be_disallowed(:generate_description) }
-            end
-
-            context 'when license is not set' do
-              before do
-                stub_licensed_features(summarize_notes: false, generate_description: false)
-              end
-
-              it { is_expected.to be_disallowed(:summarize_notes) }
-              it { is_expected.to be_disallowed(:generate_description) }
-            end
-
-            context 'when feature flag is not set' do
-              before do
-                stub_feature_flags(summarize_comments: false, generate_description_ai: false)
-              end
-
-              it { is_expected.to be_disallowed(:summarize_notes) }
-              it { is_expected.to be_disallowed(:generate_description) }
-            end
-
-            context 'on confidential issue' do
-              let_it_be(:issue) { create(:issue, :confidential, project: project) }
-
-              it { is_expected.to be_disallowed(:summarize_notes) }
-              it { is_expected.to be_disallowed(:generate_description) }
-            end
+            it { is_expected.to be_disallowed(:summarize_notes) }
           end
 
-          context 'on a private project' do
-            let_it_be(:project) { create(:project, :private) }
+          context 'when third party ai features are disabled' do
+            before do
+              namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
+            end
 
             it { is_expected.to be_disallowed(:summarize_notes) }
             it { is_expected.to be_disallowed(:generate_description) }
           end
 
-          context 'on confidential issue' do
-            let_it_be(:issue) { create(:issue, :confidential, project: project) }
+          context 'when license is not set' do
+            before do
+              stub_licensed_features(summarize_notes: false, generate_description: false)
+            end
+
+            it { is_expected.to be_disallowed(:summarize_notes) }
+            it { is_expected.to be_disallowed(:generate_description) }
+          end
+
+          context 'when feature flag is not set' do
+            before do
+              stub_feature_flags(summarize_comments: false, generate_description_ai: false)
+            end
 
             it { is_expected.to be_disallowed(:summarize_notes) }
             it { is_expected.to be_disallowed(:generate_description) }
@@ -104,17 +77,8 @@ RSpec.describe IssuePolicy, :saas, feature_category: :team_planning do
         context 'when not a member' do
           let_it_be(:user) { create(:user) }
 
-          context 'on a public project' do
-            let_it_be(:project) { create(:project, :public) }
-
-            it { is_expected.to be_disallowed(:summarize_notes) }
-            it { is_expected.to be_disallowed(:generate_description) }
-          end
-
-          context 'on a private project' do
-            it { is_expected.to be_disallowed(:summarize_notes) }
-            it { is_expected.to be_disallowed(:generate_description) }
-          end
+          it { is_expected.to be_disallowed(:summarize_notes) }
+          it { is_expected.to be_disallowed(:generate_description) }
         end
       end
     end

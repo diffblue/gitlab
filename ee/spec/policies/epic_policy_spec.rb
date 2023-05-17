@@ -371,11 +371,11 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
   end
 
   describe 'summarize_notes', :saas do
-    let_it_be(:group) { create(:group_with_plan, :private, plan: :ultimate_plan) }
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_licensed_features(summarize_notes: true, ai_features: true)
+      stub_licensed_features(epics: true, summarize_notes: true, ai_features: true)
       stub_feature_flags(summarize_comments: group)
       group.namespace_settings.update!(experiment_features_enabled: true)
       group.namespace_settings.update!(third_party_ai_features_enabled: true)
@@ -386,62 +386,36 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
         group.add_guest(user)
       end
 
-      context 'on a public group' do
+      it { is_expected.to be_allowed(:summarize_notes) }
+
+      context 'when experiment features are disabled' do
         before do
-          group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-        end
-
-        it { is_expected.to be_allowed(:summarize_notes) }
-
-        context 'when experiment features are disabled' do
-          before do
-            group.namespace_settings.update!(experiment_features_enabled: false)
-          end
-
-          it { is_expected.to be_disallowed(:summarize_notes) }
-        end
-
-        context 'when third party ai features are disabled' do
-          before do
-            group.namespace_settings.update!(third_party_ai_features_enabled: false)
-          end
-
-          it { is_expected.to be_disallowed(:summarize_notes) }
-        end
-
-        context 'when license is not set' do
-          before do
-            stub_licensed_features(summarize_notes: false)
-          end
-
-          it { is_expected.to be_disallowed(:summarize_notes) }
-        end
-
-        context 'when feature flag is not set' do
-          before do
-            stub_feature_flags(summarize_comments: false)
-          end
-
-          it { is_expected.to be_disallowed(:summarize_notes) }
-        end
-
-        context 'on confidential epic' do
-          let_it_be(:epic) { create(:epic, :confidential, group: group) }
-
-          it { is_expected.to be_disallowed(:summarize_notes) }
-        end
-      end
-
-      context 'on a private group' do
-        before do
-          group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+          group.namespace_settings.update!(experiment_features_enabled: false)
         end
 
         it { is_expected.to be_disallowed(:summarize_notes) }
       end
 
-      context 'on confidential epic' do
-        let_it_be(:epic) { create(:epic, :confidential, group: group) }
+      context 'when third party ai features are disabled' do
+        before do
+          group.namespace_settings.update!(third_party_ai_features_enabled: false)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+
+      context 'when license is not set' do
+        before do
+          stub_licensed_features(summarize_notes: false)
+        end
+
+        it { is_expected.to be_disallowed(:summarize_notes) }
+      end
+
+      context 'when feature flag is not set' do
+        before do
+          stub_feature_flags(summarize_comments: false)
+        end
 
         it { is_expected.to be_disallowed(:summarize_notes) }
       end
@@ -450,17 +424,7 @@ RSpec.describe EpicPolicy, feature_category: :portfolio_management do
     context 'when not a member' do
       let_it_be(:user) { create(:user) }
 
-      context 'on a public group' do
-        before do
-          group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-        end
-
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
-
-      context 'on a private group' do
-        it { is_expected.to be_disallowed(:summarize_notes) }
-      end
+      it { is_expected.to be_disallowed(:summarize_notes) }
     end
   end
 end

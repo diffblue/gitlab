@@ -7,8 +7,7 @@ module EE
     prepended do
       with_scope :subject
       condition(:ai_available) do
-        ::Feature.enabled?(:openai_experimentation) &&
-          @subject.send_to_ai?
+        ::Feature.enabled?(:openai_experimentation)
       end
 
       with_scope :subject
@@ -30,11 +29,11 @@ module EE
       end
 
       rule do
-        ai_available & summarize_notes_enabled & is_project_member & can?(:read_issue) & ~confidential
+        ai_available & summarize_notes_enabled & is_project_member & can?(:read_issue)
       end.enable :summarize_notes
 
       rule do
-        ai_available & generate_description_enabled & is_project_member & can?(:read_issue) & ~confidential
+        ai_available & generate_description_enabled & is_project_member & can?(:read_issue)
       end.enable :generate_description
     end
   end

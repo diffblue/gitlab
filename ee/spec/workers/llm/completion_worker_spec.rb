@@ -9,8 +9,8 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
 
   describe '#perform' do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group, :public) }
-    let_it_be(:project) { create(:project, :public, group: group) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
     let_it_be(:resource) { create(:issue, project: project) }
 
     let(:user_id) { user.id }
@@ -41,6 +41,10 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     end
 
     context 'with valid parameters' do
+      before do
+        group.add_reporter(user)
+      end
+
       context 'for an issue' do
         let_it_be(:resource) { create(:issue, project: project) }
 
@@ -71,6 +75,10 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
     end
 
     context 'with invalid parameters' do
+      before do
+        group.add_guest(user)
+      end
+
       context 'when issue type is not supported' do
         let(:resource_type) { 'invalid' }
 
@@ -78,50 +86,13 @@ RSpec.describe Llm::CompletionWorker, feature_category: :team_planning do
           expect { subject }.to raise_error(NameError, "uninitialized constant Invalid")
         end
       end
+    end
 
-      context 'when issue is confidential' do
-        let_it_be(:resource) { create(:issue, :confidential, project: project) }
+    context 'when user can not read the resource' do
+      it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
+        expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
 
-        it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
-          expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
-
-          subject
-        end
-
-        it { is_expected.to be_nil }
-
-        context 'when user can read resource' do
-          let(:user) { resource.project.owner }
-
-          it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
-            expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
-
-            subject
-          end
-        end
-      end
-
-      context 'when project is not public' do
-        let_it_be(:project) { create(:project, :private) }
-        let_it_be(:resource) { create(:issue, project: project) }
-
-        it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
-          expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
-
-          subject
-        end
-
-        it { is_expected.to be_nil }
-
-        context 'when user can read resource' do
-          let(:user) { project.owner }
-
-          it 'does not call Gitlab::Llm::CompletionsFactory.completion' do
-            expect(Gitlab::Llm::CompletionsFactory).not_to receive(:completion)
-
-            subject
-          end
-        end
+        subject
       end
     end
   end

@@ -27,8 +27,7 @@ class EpicPolicy < BasePolicy
   end
 
   condition(:ai_available, scope: :subject) do
-    ::Feature.enabled?(:openai_experimentation) &&
-      @subject.send_to_ai?
+    ::Feature.enabled?(:openai_experimentation)
   end
 
   condition(:summarize_notes_enabled, scope: :subject) do
@@ -107,7 +106,7 @@ class EpicPolicy < BasePolicy
     enable :mark_note_as_internal
   end
 
-  rule { ai_available & summarize_notes_enabled & is_member & ~confidential }.policy do
+  rule { ai_available & summarize_notes_enabled & is_member & can?(:read_epic) }.policy do
     enable :summarize_notes
   end
 end
