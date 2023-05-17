@@ -1,20 +1,16 @@
 <script>
-import { GlDropdown } from '@gitlab/ui';
-import { xor } from 'lodash';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import { createAlert } from '~/alert';
-import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
-import DropdownButtonText from './dropdown_button_text.vue';
 import { ALL_ID } from './constants';
+import { getSelectedOptionsText } from './utils';
 
 export default {
   components: {
-    FilterItem,
-    GlDropdown,
+    GlCollapsibleListbox,
     QuerystringSync,
-    DropdownButtonText,
   },
   apollo: {
     clusterAgents: {
@@ -26,8 +22,8 @@ export default {
       },
       update: (data) =>
         data.project?.clusterAgents?.nodes.map((c) => ({
-          id: c.name,
-          name: c.name,
+          value: c.name,
+          text: c.name,
           gid: c.id,
         })) || [],
       error() {
@@ -41,30 +37,43 @@ export default {
     selected: [],
   }),
   computed: {
-    selectedItemNames() {
-      const options = this.clusterAgents?.filter(({ id }) => this.selected.includes(id));
-      // Return the text for selected items, or all items if nothing is selected.
-      return options.length ? options.map(({ name }) => name) : [this.$options.i18n.allItemsText];
+    toggleText() {
+      const options = this.clusterAgents?.filter(({ value }) => this.selected.includes(value));
+      return getSelectedOptionsText(options, this.selected, this.$options.i18n.allItemsText);
     },
     isLoading() {
       return this.$apollo.queries.clusterAgents.loading;
+    },
+    items() {
+      return [
+        {
+          text: this.$options.i18n.allItemsText,
+          value: ALL_ID,
+        },
+        ...this.clusterAgents,
+      ];
+    },
+    selectedItems() {
+      return this.selected.length ? this.selected : [ALL_ID];
     },
   },
   watch: {
     selected() {
       const gids = this.clusterAgents
-        .filter(({ id }) => this.selected.includes(id))
+        .filter(({ value }) => this.selected.includes(value))
         .map(({ gid }) => gid);
 
       this.$emit('filter-changed', { clusterAgentId: gids });
     },
   },
   methods: {
-    deselectAll() {
-      this.selected = [];
-    },
-    toggleSelected(id) {
-      this.selected = xor(this.selected, [id]);
+    handleSelect(selected) {
+      if (selected?.at(-1) === ALL_ID) {
+        this.selected = [];
+        return;
+      }
+
+      this.selected = selected.filter((value) => value !== ALL_ID);
     },
   },
   i18n: {
@@ -80,31 +89,15 @@ export default {
   <div>
     <querystring-sync v-model="selected" querystring-key="cluster" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
-    <gl-dropdown
+    <gl-collapsible-listbox
+      :selected="selectedItems"
+      :items="items"
+      :toggle-text="toggleText"
       :header-text="$options.i18n.label"
       :loading="isLoading"
+      multiple
       block
-      toggle-class="gl-mb-0"
-    >
-      <template #button-text>
-        <dropdown-button-text :items="selectedItemNames" :name="$options.i18n.label" />
-      </template>
-
-      <filter-item
-        :is-checked="!selected.length"
-        :text="$options.i18n.allItemsText"
-        :data-testid="$options.ALL_ID"
-        @click="deselectAll"
-      />
-
-      <filter-item
-        v-for="{ id } in clusterAgents"
-        :key="id"
-        :data-testid="id"
-        :is-checked="selected.includes(id)"
-        :text="id"
-        @click="toggleSelected(id)"
-      />
-    </gl-dropdown>
+      @select="handleSelect"
+    />
   </div>
 </template>

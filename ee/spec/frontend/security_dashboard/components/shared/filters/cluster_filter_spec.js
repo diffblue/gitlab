@@ -1,10 +1,8 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import ClusterFilter from 'ee/security_dashboard/components/shared/filters/cluster_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -20,6 +18,7 @@ describe('ClusterFilter component', () => {
   let wrapper;
   const defaultQueryResolver = jest.fn().mockResolvedValue(projectClusters);
   const mockClusters = projectClusters.data.project.clusterAgents.nodes;
+  const firstMockClusterName = mockClusters[0].name;
 
   const createWrapper = (queryResolver = defaultQueryResolver) => {
     wrapper = mountExtended(ClusterFilter, {
@@ -30,20 +29,15 @@ describe('ClusterFilter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
-  const findDropdownItem = (name) => wrapper.findByTestId(name);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
+  const findListboxItem = (name) => wrapper.findByTestId(`listbox-item-${name}`);
 
-  const clickDropdownItem = async (name) => {
-    findDropdownItem(name).trigger('click');
-    await nextTick();
+  const clickListboxItem = (name) => {
+    return findListboxItem(name).trigger('click');
   };
 
   const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems).toEqual(ids);
+    expect(findListbox().props('selected')).toEqual(ids);
   };
 
   describe('basic structure', () => {
@@ -63,7 +57,7 @@ describe('ClusterFilter component', () => {
       it.each`
         emitted                   | expected
         ${[]}                     | ${[ALL_ID]}
-        ${[mockClusters[0].name]} | ${[mockClusters[0].name]}
+        ${[firstMockClusterName]} | ${[firstMockClusterName]}
       `('restores selected items - $emitted', async ({ emitted, expected }) => {
         findQuerystringSync().vm.$emit('input', emitted);
         await nextTick();
@@ -77,29 +71,37 @@ describe('ClusterFilter component', () => {
         expect(wrapper.find('label').text()).toBe(ClusterFilter.i18n.label);
       });
 
-      it('shows the dropdown with correct header text', () => {
-        expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(
-          ClusterFilter.i18n.label,
-        );
+      it('shows the listbox with correct header text', () => {
+        expect(findListbox().props('headerText')).toBe(ClusterFilter.i18n.label);
       });
 
-      it('shows the DropdownButtonText component with the correct props', () => {
-        expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
-          items: [ClusterFilter.i18n.allItemsText],
-          name: ClusterFilter.i18n.label,
-        });
+      it('passes the placeholder toggle text when no items are selected', () => {
+        expect(findListbox().props('toggleText')).toBe(ClusterFilter.i18n.allItemsText);
+      });
+
+      it(`passes '${firstMockClusterName}' when only ${firstMockClusterName} is selected`, async () => {
+        await clickListboxItem(firstMockClusterName);
+
+        expect(findListbox().props('toggleText')).toBe(firstMockClusterName);
+      });
+
+      it(`passes '${firstMockClusterName} +1 more' when ${firstMockClusterName} and another image is selected`, async () => {
+        await clickListboxItem(firstMockClusterName);
+        await clickListboxItem(mockClusters[1].name);
+
+        expect(findListbox().props('toggleText')).toBe(`${firstMockClusterName} +1 more`);
       });
     });
 
     describe('filter-changed event', () => {
       it('emits filter-changed event when selected item is changed', async () => {
         const ids = [];
-        await clickDropdownItem(ALL_ID);
+        await clickListboxItem(ALL_ID);
 
         expect(wrapper.emitted('filter-changed')[0][0].clusterAgentId).toEqual([]);
 
         for await (const { id, name } of mockClusters) {
-          await clickDropdownItem(name);
+          await clickListboxItem(name);
           ids.push(id);
 
           expect(wrapper.emitted('filter-changed')[ids.length][0].clusterAgentId).toEqual(ids);
@@ -107,13 +109,13 @@ describe('ClusterFilter component', () => {
       });
     });
 
-    describe('dropdown items', () => {
+    describe('listbox items', () => {
       it('populates all dropdown items with correct text', () => {
-        expect(findDropdownItems()).toHaveLength(mockClusters.length + 1);
-        expect(findDropdownItem(ALL_ID).text()).toBe(ClusterFilter.i18n.allItemsText);
+        expect(findListbox().props('items')).toHaveLength(mockClusters.length + 1);
+        expect(findListboxItem(ALL_ID).text()).toBe(ClusterFilter.i18n.allItemsText);
 
         mockClusters.forEach(({ name }) => {
-          expect(findDropdownItem(name).text()).toBe(name);
+          expect(findListboxItem(name).text()).toBe(name);
         });
       });
 
@@ -121,7 +123,7 @@ describe('ClusterFilter component', () => {
         const names = [];
 
         for await (const { name } of mockClusters) {
-          await clickDropdownItem(name);
+          await clickListboxItem(name);
           names.push(name);
 
           expectSelectedItems(names);
@@ -130,11 +132,11 @@ describe('ClusterFilter component', () => {
 
       it('toggles the item selection when clicked on', async () => {
         for await (const { name } of mockClusters) {
-          await clickDropdownItem(name);
+          await clickListboxItem(name);
 
           expectSelectedItems([name]);
 
-          await clickDropdownItem(name);
+          await clickListboxItem(name);
 
           expectSelectedItems([ALL_ID]);
         }
@@ -145,17 +147,17 @@ describe('ClusterFilter component', () => {
       });
 
       it('selects ALL item and deselects everything else when it is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
+        await clickListboxItem(ALL_ID);
+        await clickListboxItem(ALL_ID); // Click again to verify that it doesn't toggle.
 
         expectSelectedItems([ALL_ID]);
       });
 
       it('deselects the ALL item when another item is clicked', async () => {
-        await clickDropdownItem(ALL_ID);
-        await clickDropdownItem(mockClusters[0].name);
+        await clickListboxItem(ALL_ID);
+        await clickListboxItem(firstMockClusterName);
 
-        expectSelectedItems([mockClusters[0].name]);
+        expectSelectedItems([firstMockClusterName]);
       });
     });
   });
