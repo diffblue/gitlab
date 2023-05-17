@@ -120,6 +120,22 @@ RSpec.describe AuditEventPresenter do
 
       expect(presenter.object_url).to be_blank
     end
+
+    context 'when a project in a user namespace has been deleted' do
+      let(:project) { build(:project, namespace: create(:user).namespace).destroy! }
+      let(:audit_event) do
+        build(
+          :audit_event,
+          entity_type: 'Namespaces::UserNamespace',
+          entity_id: project.parent.id,
+          target_type: "Project"
+        )
+      end
+
+      it 'returns no object url' do
+        expect(presenter.object_url).to be_blank
+      end
+    end
   end
 
   it 'exposes the date' do

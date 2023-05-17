@@ -37,6 +37,9 @@ class AuditEventPresenter < Gitlab::View::Presenter::Simple
     return if entity.is_a?(Gitlab::Audit::NullEntity)
 
     url_for(entity)
+
+  rescue NoMethodError
+    ''
   end
 
   def date
