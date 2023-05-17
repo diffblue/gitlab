@@ -12,14 +12,14 @@ module Search
       return unless Feature.enabled?(:search_index_integrity)
       return unless project.should_check_index_integrity?
 
-      check_index_for_blobs(project)
+      check_index_for_blobs
 
-      check_index_for_project(project)
+      repair_index_for_project if project_missing?
     end
 
     private
 
-    def check_index_for_project(project)
+    def project_missing?
       query = {
         query: {
           bool: {
@@ -32,8 +32,10 @@ module Search
       }
 
       project_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
-      return if project_count > 0
+      project_count == 0
+    end
 
+    def repair_index_for_project
       logger.warn(
         build_structured_payload(
           message: 'project document missing from index',
@@ -42,9 +44,11 @@ module Search
           project_id: project.id
         )
       )
+
+      ::Elastic::ProcessBookkeepingService.track!(project)
     end
 
-    def check_index_for_blobs(project)
+    def check_index_for_blobs
       query = {
         query: {
           bool: {
