@@ -111,8 +111,11 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
       rules_params.transform_keys(&:to_s)
     end
 
+    let(:add_validation_for_push_rules_ff) { true }
+
     context "maintainer" do
       before do
+        stub_feature_flags(add_validation_for_push_rules: add_validation_for_push_rules_ff)
         post api("/projects/#{project.id}/push_rule", user), params: rules_params
       end
 
@@ -200,6 +203,23 @@ RSpec.describe API::ProjectPushRule, 'ProjectPushRule', api: true, feature_categ
         it 'returns an error' do
           expect(response).to have_gitlab_http_status(:bad_request)
           expect(json_response['message']).to match('max_file_size' => ['must be greater than or equal to 0'])
+        end
+
+        context 'when regex is too long' do
+          let(:rules_params) { { commit_message_regex: 'a' * 256 } }
+
+          it 'returns an error' do
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to match('commit_message_regex' => ['is too long (maximum is 255 characters)'])
+          end
+
+          context 'when feature flag "add_validation_for_push_rules" is disabled' do
+            let(:add_validation_for_push_rules_ff) { false }
+
+            it 'is successful' do
+              expect(response).to have_gitlab_http_status(:created)
+            end
+          end
         end
       end
     end
