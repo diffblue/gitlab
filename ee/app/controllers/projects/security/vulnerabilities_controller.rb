@@ -10,7 +10,6 @@ module Projects
         push_frontend_feature_flag(:deprecate_vulnerabilities_feedback, @project)
         push_frontend_feature_flag(:dismissal_reason, @project)
         push_frontend_feature_flag(:openai_experimentation, @project)
-        push_frontend_feature_flag(:explain_vulnerability, @project)
       end
 
       before_action :vulnerability, except: [:index, :new]
@@ -23,6 +22,10 @@ module Projects
       urgency :low
 
       def show
+        push_force_frontend_feature_flag(
+          :explain_vulnerability,
+          can?(current_user, :explain_vulnerability, vulnerability)
+        )
         pipeline = vulnerability.finding.first_finding_pipeline
         @pipeline = pipeline if Ability.allowed?(current_user, :read_pipeline, pipeline)
         @gfm_form = true
