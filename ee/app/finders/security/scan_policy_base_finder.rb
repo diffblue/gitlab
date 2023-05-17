@@ -28,7 +28,7 @@ module Security
     end
 
     def authorized_to_read_policy_configuration?(config)
-      Ability.allowed?(actor, :read_security_orchestration_policies, config.security_policy_management_project)
+      Ability.allowed?(actor, :read_security_orchestration_policies, config.source)
     end
 
     def fetch_policy_configurations

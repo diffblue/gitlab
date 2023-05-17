@@ -30,5 +30,5 @@ RSpec.shared_context 'with scan policies information' do
     }
   end
 
-  let(:actor) { policy_management_project.first_owner }
+  let(:actor) { create(:user) }
 end

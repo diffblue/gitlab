@@ -281,12 +281,15 @@ module EE
       end
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
-        enable :modify_security_policy
         enable :update_security_orchestration_policy_project
       end
 
       rule { security_orchestration_policies_enabled & auditor }.policy do
         enable :read_security_orchestration_policies
+      end
+
+      rule { security_orchestration_policies_enabled & can?(:owner_access) & ~security_policy_project_available }.policy do
+        enable :modify_security_policy
       end
 
       rule { security_orchestration_policies_enabled & security_policy_project_available & can_commit_to_security_policy_project }.policy do
