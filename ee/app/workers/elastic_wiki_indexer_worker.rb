@@ -16,7 +16,7 @@ class ElasticWikiIndexerWorker
   # container_id - The ID of the container(project/group) to index
   # container_type - The class of the container(project/group) to index
   # The indexation will cover all commits within INDEXED_SHA..HEAD
-  def perform(container_id, container_type, _options = {})
+  def perform(container_id, container_type, options = {})
     if container_id.nil? || container_type.nil?
       logger.error(message: 'container_id or container_type can not be nil', container_id: container_id,
         container_type: container_type)
@@ -36,10 +36,13 @@ class ElasticWikiIndexerWorker
 
     return true unless container&.use_elasticsearch?
 
+    options = options.with_indifferent_access
+
+    force = !!options[:force]
     search_indexing_duration_s = Benchmark.realtime do
       @ret = in_lock("#{self.class.name}/#{container_type}/#{container_id}",
         ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0) do
-        Gitlab::Elastic::Indexer.new(container, wiki: true).run
+        Gitlab::Elastic::Indexer.new(container, wiki: true, force: force).run
       end
     end
 

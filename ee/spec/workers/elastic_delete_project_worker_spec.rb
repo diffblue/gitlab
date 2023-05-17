@@ -26,6 +26,8 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     milestone = create(:milestone, project: project)
     note = create(:note, project: project)
     merge_request = create(:merge_request, target_project: project, source_project: project)
+    project.wiki.create_page('index_page', 'Bla bla term')
+    project.wiki.index_wiki_blobs
 
     ElasticCommitIndexerWorker.new.perform(project.id)
     ensure_elasticsearch_index!
@@ -39,6 +41,8 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     expect(MergeRequest.elastic_search('*', **search_options).records).to include(merge_request)
     expect(Repository.elastic_search('*', **search_options)[:blobs][:results].response).not_to be_empty
     expect(Repository.find_commits_by_message_with_elastic('*').count).to be > 0
+    expect(ProjectWiki.__elasticsearch__.elastic_search_as_wiki_page('*',
+      options: { project_id: project.id })).not_to be_empty
 
     subject.perform(project.id, project.es_id)
 
@@ -51,6 +55,8 @@ RSpec.describe ElasticDeleteProjectWorker, feature_category: :global_search do
     expect(MergeRequest.elastic_search('*', **search_options).total_count).to be(0)
     expect(Repository.elastic_search('*', **search_options)[:blobs][:results].response).to be_empty
     expect(Repository.find_commits_by_message_with_elastic('*').count).to be(0)
+    expect(ProjectWiki.__elasticsearch__.elastic_search_as_wiki_page('*',
+      options: { project_id: project.id })).to be_empty
 
     # verify that entire index is empty
     # searches use joins on the parent record (project)

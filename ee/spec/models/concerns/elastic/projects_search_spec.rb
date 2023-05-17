@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::ProjectsSearch do
+RSpec.describe Elastic::ProjectsSearch, feature_category: :global_search do
   subject do
     Class.new do
       include Elastic::ProjectsSearch
@@ -17,6 +17,10 @@ RSpec.describe Elastic::ProjectsSearch do
 
       def pending_delete?
         false
+      end
+
+      def project_feature
+        ProjectFeature.new
       end
     end.new
   end
@@ -34,7 +38,7 @@ RSpec.describe Elastic::ProjectsSearch do
       expect(::Elastic::ProcessBookkeepingService).to receive(:track!).and_return(true)
       expect(::Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).and_return(true)
 
-      subject.maintain_elasticsearch_update(updated_attributes: %i[visibility_level repository_access_level])
+      subject.maintain_elasticsearch_update(updated_attributes: %i[visibility_level])
     end
   end
 

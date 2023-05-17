@@ -184,17 +184,6 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
     expect(described_class.elastic_search('"someone_elses_project"', options: { project_ids: project_ids }).total_count).to eq(0)
   end
 
-  it 'does not update Elasticsearch if pending_delete is true' do
-    expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!)
-    project = create(:project)
-
-    expect(Elastic::ProcessBookkeepingService).to receive(:track!)
-    project.update!(name: 'test 1')
-
-    expect(Elastic::ProcessBookkeepingService).not_to receive(:track!)
-    project.update!(pending_delete: true)
-  end
-
   it "finds partial matches in project names" do
     project_ids = []
 

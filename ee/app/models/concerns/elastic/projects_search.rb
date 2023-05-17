@@ -24,7 +24,11 @@ module Elastic
         return if pending_delete?
 
         updated_attributes = updated_attributes.map(&:to_sym)
-        if updated_attributes.include?(:visibility_level) || updated_attributes.include?(:repository_access_level)
+        # repository_access_level wiki_access_level are the attributes on project_feature
+        # So we have to check the previous_changes on project_feature
+        updated_attributes.concat(project_feature.previous_changes.keys.map(&:to_sym))
+
+        if (updated_attributes & %i[visibility_level repository_access_level wiki_access_level]).any?
           maintain_elasticsearch_permissions
         end
 

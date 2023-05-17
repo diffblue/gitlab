@@ -30,9 +30,9 @@ module Elastic
           ElasticCommitIndexerWorker.perform_async(project.id, false, { force: true })
 
           if Feature.enabled?(:separate_elastic_wiki_indexer_for_project)
-            ElasticWikiIndexerWorker.perform_async project.id, project.class.name
+            ElasticWikiIndexerWorker.perform_async project.id, project.class.name, { force: true }
           else
-            ElasticCommitIndexerWorker.perform_async project.id, true
+            ElasticCommitIndexerWorker.perform_async project.id, true, { force: true }
           end
         end
       end
