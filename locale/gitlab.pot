@@ -8383,6 +8383,9 @@ msgstr ""
 msgid "CHANGELOG"
 msgstr ""
 
+msgid "CI"
+msgstr ""
+
 msgid "CI Lint"
 msgstr ""
 
@@ -28979,6 +28982,9 @@ msgid "MlExperimentTracking|Parameters"
 msgstr ""
 
 msgid "MlExperimentTracking|Status"
+msgstr ""
+
+msgid "MlExperimentTracking|Triggered by"
 msgstr ""
 
 msgid "Modal updated"
