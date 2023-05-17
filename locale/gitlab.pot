@@ -11098,6 +11098,18 @@ msgstr ""
 msgid "Committed-before"
 msgstr ""
 
+msgid "Commit|Branches"
+msgstr ""
+
+msgid "Commit|Tags"
+msgstr ""
+
+msgid "Commit|There was an error fetching the commit references. Please try again later."
+msgstr ""
+
+msgid "Commit|containing commit"
+msgstr ""
+
 msgid "Community forum"
 msgstr ""
 
