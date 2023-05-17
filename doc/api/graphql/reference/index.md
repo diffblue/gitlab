@@ -14170,6 +14170,7 @@ Describes where code is deployed for a project.
 | ---- | ---- | ----------- |
 | <a id="environmentautodeleteat"></a>`autoDeleteAt` | [`Time`](#time) | When the environment is going to be deleted automatically. |
 | <a id="environmentautostopat"></a>`autoStopAt` | [`Time`](#time) | When the environment is going to be stopped automatically. |
+| <a id="environmentclusteragent"></a>`clusterAgent` | [`ClusterAgent`](#clusteragent) | Cluster agent of the environment. |
 | <a id="environmentcreatedat"></a>`createdAt` | [`Time`](#time) | When the environment was created. |
 | <a id="environmentdeployfreezes"></a>`deployFreezes` | [`[CiFreezePeriod!]`](#cifreezeperiod) | Deployment freeze periods of the environment. |
 | <a id="environmentenvironmenttype"></a>`environmentType` | [`String`](#string) | Folder name of the environment. |
