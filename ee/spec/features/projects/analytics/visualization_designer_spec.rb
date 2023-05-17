@@ -66,7 +66,8 @@ RSpec.describe 'Analytics Visualization Designer', :js, feature_category: :produ
         end
 
         it 'shows the selected measure data' do
-          expect(find('[data-testid="grid-stack-panel"]')).to have_content('Tracked Events.count 335')
+          expect(find('[data-testid="grid-stack-panel"]'))
+            .to have_content('Snowplow Tracked Events.page Views Count 335')
         end
 
         [

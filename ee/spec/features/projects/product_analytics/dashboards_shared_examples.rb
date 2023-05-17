@@ -87,7 +87,6 @@ RSpec.shared_examples 'product analytics dashboards' do
 
         context 'with the correct user permissions' do
           where(:project_setting, :snowplow_feature_flag_enabled) do
-            { jitsu_key: 123 } | false
             { jitsu_key: 123 } | true
             { product_analytics_instrumentation_key: 456 } | true
           end
@@ -278,7 +277,7 @@ RSpec.shared_examples 'product analytics dashboards' do
 
     def stub_cube_proxy_zero_count
       query_object = Gitlab::Json.parse(query_response_with_data)
-      query_object['results'][0]['data'][0]['TrackedEvents.count'] = 0
+      query_object['results'][0]['data'][0]['SnowplowTrackedEvents.pageViewsCount'] = 0
 
       stub_request(:post, cube_api_url)
         .to_return(status: 200, body: query_object.to_json, headers: {})

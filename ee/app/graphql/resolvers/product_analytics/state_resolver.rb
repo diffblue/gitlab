@@ -31,7 +31,7 @@ module Resolvers
 
       def no_instance_data?
         strong_memoize_with(:no_instance_data, object) do
-          params = { query: { measures: ['TrackedEvents.count'] }, queryType: 'multi', path: 'load' }
+          params = { query: { measures: [self.class.events_table] }, queryType: 'multi', path: 'load' }
           response = ::ProductAnalytics::CubeDataQueryService.new(container: object,
             current_user: current_user,
             params: params).execute
@@ -42,7 +42,17 @@ module Resolvers
             raise ::Gitlab::Graphql::Errors::BaseError, "Error from Cube API: #{error_message}"
           end
 
-          response.error? || response.payload.dig('results', 0, 'data', 0, 'TrackedEvents.count').to_i == 0
+          response.error? || response.payload.dig('results', 0, 'data', 0, self.class.events_table).to_i == 0
+        end
+      end
+
+      class << self
+        def events_table
+          if Feature.enabled?(:product_analytics_snowplow_support, @project)
+            'SnowplowTrackedEvents.pageViewsCount'
+          else
+            'TrackedEvents.pageViewsCount'
+          end
         end
       end
     end
