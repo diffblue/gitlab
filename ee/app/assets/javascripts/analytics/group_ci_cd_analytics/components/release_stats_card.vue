@@ -101,14 +101,13 @@ export default {
     </template>
 
     <div
-      class="gl-display-flex gl-flex-direction-column gl-flex-direction-column gl-sm-flex-direction-row"
+      class="gl-display-flex gl-flex-direction-column gl-flex-direction-column gl-sm-flex-direction-row gl-gap-4"
       data-testid="stats-container"
     >
       <div
-        v-for="(stat, index) of formattedStats"
+        v-for="stat of formattedStats"
         :key="stat.id"
         class="gl-flex-grow-1 gl-h-11 gl-flex-basis-0 gl-display-flex gl-align-items-center gl-flex-direction-column"
-        :class="{ 'gl-xs-mb-4': index != formattedStats.length - 1 }"
       >
         <gl-skeleton-loader v-if="isLoading">
           <rect x="0" y="21" rx="3" ry="3" width="400" height="48" />
