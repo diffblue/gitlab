@@ -29448,6 +29448,9 @@ msgstr ""
 msgid "Navigation|Leave admin mode"
 msgstr ""
 
+msgid "Navigation|Main navigation"
+msgstr ""
+
 msgid "Navigation|Manage"
 msgstr ""
 
