@@ -111,7 +111,7 @@ module Namespaces
       end
 
       def user_allowed?
-        Ability.allowed?(user, :maintainer_access, context)
+        Ability.allowed?(user, :guest_access, context)
       end
 
       def callout_feature_name

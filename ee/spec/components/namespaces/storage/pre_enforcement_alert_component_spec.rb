@@ -29,7 +29,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
   context 'when user is allowed to see and dismiss' do
     before do
-      group.add_maintainer(user)
+      group.add_guest(user)
     end
 
     it 'indicates the storage limit will be enforced soon in the banner text' do
@@ -154,7 +154,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       let(:over_storage_limit) { true }
 
       before do
-        group.add_maintainer(user)
+        group.add_guest(user)
       end
 
       it 'renders the correct callout data' do
