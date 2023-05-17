@@ -1,4 +1,4 @@
-import { GlDropdown } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import StatusFilter, {
   DEFAULT_IDS,
@@ -7,11 +7,9 @@ import StatusFilter, {
 } from 'ee/security_dashboard/components/shared/filters/status_filter.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
-import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
-import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-const OPTION_IDS = DROPDOWN_OPTIONS.map(({ id }) => id);
+const OPTION_IDS = DROPDOWN_OPTIONS.map(({ value }) => value);
 
 describe('Status Filter component', () => {
   let wrapper;
@@ -23,20 +21,11 @@ describe('Status Filter component', () => {
   };
 
   const findQuerystringSync = () => wrapper.findComponent(QuerystringSync);
-  const findDropdownItems = () => wrapper.findAllComponents(FilterItem);
-  const findDropdownItem = (id) => wrapper.findByTestId(id);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
-  const clickDropdownItem = async (id) => {
-    findDropdownItem(id).vm.$emit('click');
+  const clickDropdownItem = async (...ids) => {
+    findListbox().vm.$emit('select', [...ids]);
     await nextTick();
-  };
-
-  const expectSelectedItems = (ids) => {
-    const checkedItems = findDropdownItems()
-      .wrappers.filter((item) => item.props('isChecked'))
-      .map((item) => item.attributes('data-testid'));
-
-    expect(checkedItems).toEqual(ids);
   };
 
   beforeEach(() => {
@@ -61,13 +50,12 @@ describe('Status Filter component', () => {
     it.each`
       emitted                      | expected
       ${['CONFIRMED', 'RESOLVED']} | ${['CONFIRMED', 'RESOLVED']}
-      ${[]}                        | ${DEFAULT_IDS}
       ${[ALL_ID]}                  | ${[ALL_ID]}
     `('restores selected items - $emitted', async ({ emitted, expected }) => {
       findQuerystringSync().vm.$emit('input', emitted);
       await nextTick();
 
-      expectSelectedItems(expected);
+      expect(findListbox().props('selected')).toEqual(expected);
     });
   });
 
@@ -77,92 +65,57 @@ describe('Status Filter component', () => {
     });
 
     it('shows the dropdown with correct header text', () => {
-      expect(wrapper.findComponent(GlDropdown).props('headerText')).toBe(StatusFilter.i18n.label);
+      expect(findListbox().props('headerText')).toBe(StatusFilter.i18n.label);
     });
 
-    it('shows the DropdownButtonText component with the correct props', () => {
-      expect(wrapper.findComponent(DropdownButtonText).props()).toMatchObject({
-        items: ['Needs triage', 'Confirmed'],
-        name: StatusFilter.i18n.label,
-      });
+    it('shows the placeholder correctly', async () => {
+      await clickDropdownItem('CONFIRMED', 'RESOLVED');
+      expect(findListbox().props('toggleText')).toBe('Confirmed +1 more');
     });
   });
 
   describe('dropdown items', () => {
     it('shows all dropdown items with correct text', () => {
-      expect(findDropdownItems()).toHaveLength(DROPDOWN_OPTIONS.length + 1);
-
-      expect(findDropdownItem(ALL_ID).text()).toBe(StatusFilter.i18n.allItemsText);
-      DROPDOWN_OPTIONS.forEach(({ id, text }) => {
-        expect(findDropdownItem(id).text()).toBe(text);
-      });
-    });
-
-    it('allows multiple items to be selected', async () => {
-      const ids = [];
-      // Deselect everything to begin with.
-      clickDropdownItem(ALL_ID);
-
-      for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
-        ids.push(id);
-
-        expectSelectedItems(ids);
-      }
+      expect(findListbox().props('items')).toEqual(DROPDOWN_OPTIONS);
     });
 
     it('toggles the item selection when clicked on', async () => {
-      // Deselect everything to begin with.
-      clickDropdownItem(ALL_ID);
-
-      for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
-
-        expectSelectedItems([id]);
-
-        await clickDropdownItem(id);
-
-        expectSelectedItems([ALL_ID]);
-      }
+      await clickDropdownItem('CONFIRMED', 'RESOLVED');
+      expect(findListbox().props('selected')).toEqual(['CONFIRMED', 'RESOLVED']);
+      await clickDropdownItem('DETECTED');
+      expect(findListbox().props('selected')).toEqual(['DETECTED']);
     });
 
     it('selects default items when created', () => {
-      expectSelectedItems(DEFAULT_IDS);
+      expect(findListbox().props('selected')).toEqual(DEFAULT_IDS);
     });
 
     it('selects ALL item and deselects everything else when it is clicked', async () => {
       await clickDropdownItem(ALL_ID);
-      await clickDropdownItem(ALL_ID); // Click again to verify that it doesn't toggle.
-
-      expectSelectedItems([ALL_ID]);
+      expect(findListbox().props('selected')).toEqual([ALL_ID]);
     });
 
     it('deselects the ALL item when another item is clicked', async () => {
-      await clickDropdownItem(ALL_ID);
-      await clickDropdownItem(OPTION_IDS[0]);
-
-      expectSelectedItems([OPTION_IDS[0]]);
+      await clickDropdownItem(ALL_ID, 'CONFIRMED');
+      expect(findListbox().props('selected')).toEqual(['CONFIRMED']);
     });
   });
 
   describe('filter-changed event', () => {
     it('emits filter-changed event with default IDs when created', () => {
-      expect(wrapper.emitted('filter-changed')[0][0].state).toBe(DEFAULT_IDS);
+      expect(wrapper.emitted('filter-changed')[0][0].state).toEqual(DEFAULT_IDS);
     });
 
     it('emits filter-changed event when selected item is changed', async () => {
-      const ids = [];
-      // Deselect everything to begin with.
       await clickDropdownItem(ALL_ID);
 
       expect(wrapper.emitted('filter-changed')[1][0].state).toEqual([]);
 
-      for await (const id of OPTION_IDS) {
-        await clickDropdownItem(id);
-        ids.push(id);
+      await clickDropdownItem(...OPTION_IDS);
 
-        expect(wrapper.emitted('filter-changed')[ids.length + 1][0].state).toEqual(ids);
-      }
+      expect(wrapper.emitted('filter-changed')[2][0].state).toEqual(
+        OPTION_IDS.filter((id) => id !== ALL_ID),
+      );
     });
   });
 });

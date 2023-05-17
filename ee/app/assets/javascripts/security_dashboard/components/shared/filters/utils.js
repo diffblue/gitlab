@@ -9,12 +9,12 @@ import { n__ } from '~/locale';
  * - If more than one option is selected, returns the text of the first option
  *   followed by the text "+X more", where X is the number of additional selected options
  *
- * @param {Array<{ id: number | string }>} options
+ * @param {Array<{ id: number | string, value: string }>} options
  * @param {Array<{ id: number | string }>} selected
  * @returns {String}
  */
 export const getSelectedOptionsText = (options, selected, placeholder = '') => {
-  const selectedOptions = options.filter(({ id }) => selected.includes(id));
+  const selectedOptions = options.filter(({ id, value }) => selected.includes(id || value));
 
   if (selectedOptions.length === 0) {
     return placeholder;
