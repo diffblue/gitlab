@@ -60,13 +60,17 @@ module QA
         end
 
         # Create a merge request
-        Resource::MergeRequest.fabricate! do |merge_request|
+        mr = Resource::MergeRequest.fabricate! do |merge_request|
           merge_request.project = project
           merge_request.target_new_branch = false
           merge_request.source_branch = branch_name + '-patch'
           merge_request.target_branch = branch_name
           merge_request.no_preparation = true
-        end.visit!
+        end
+
+        # TODO: remove `skip_finished_loading_check: true` when the following issue is resolved
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/398559
+        mr.visit!(skip_finished_loading_check: true)
 
         # Check that the merge request assigns the original code owner as an
         # approver (because the current CODEOWNERS file in the default branch
