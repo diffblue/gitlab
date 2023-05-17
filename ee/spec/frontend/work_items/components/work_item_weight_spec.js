@@ -246,7 +246,7 @@ describe('WorkItemWeight component', () => {
   });
 
   it('skips fetching the work item when missing workItemIid', async () => {
-    createComponent({ workItemIid: null });
+    createComponent({ workItemIid: '' });
     await waitForPromises();
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();
