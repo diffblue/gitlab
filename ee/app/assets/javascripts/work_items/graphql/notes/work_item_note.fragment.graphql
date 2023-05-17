@@ -33,6 +33,12 @@ fragment WorkItemNote on Note {
     descriptionVersion {
       id
       description
+      diff
+      diffPath
+      deletePath
+      canDelete
+      deleted
+      startVersionId @client
     }
   }
 }
