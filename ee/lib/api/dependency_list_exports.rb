@@ -21,38 +21,37 @@ module API
 
         present dependency_list_export, with: EE::API::Entities::DependencyListExport
       end
+    end
 
-      params do
-        requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
-        requires :export_id, types: [Integer, String], desc: 'The ID of the dependency list export'
+    params do
+      requires :export_id, types: [Integer, String], desc: 'The ID of the dependency list export'
+    end
+    desc 'Get a dependency list export'
+    get 'dependency_list_exports/:export_id' do
+      dependency_list_export = ::Dependencies::FetchExportService
+      .new(params[:export_id].to_i).execute
+
+      authorize! :read_dependency_list_export, dependency_list_export
+
+      if dependency_list_export&.finished?
+        present dependency_list_export, with: EE::API::Entities::DependencyListExport
+      else
+        ::Gitlab::PollingInterval.set_api_header(self, interval: 5_000)
+        status :accepted
       end
-      desc 'Get a dependency list export'
-      get ':id/dependency_list_exports/:export_id' do
-        authorize! :read_dependencies, user_project
+    end
 
-        dependency_list_export = ::Dependencies::FetchExportService
-        .new(params[:export_id].to_i).execute
+    desc 'Download a dependency list export'
+    get 'dependency_list_exports/:export_id/download' do
+      dependency_list_export = ::Dependencies::FetchExportService
+      .new(params[:export_id].to_i).execute
 
-        if dependency_list_export&.finished?
-          present dependency_list_export, with: EE::API::Entities::DependencyListExport
-        else
-          ::Gitlab::PollingInterval.set_api_header(self, interval: 5_000)
-          status :accepted
-        end
-      end
+      authorize! :read_dependency_list_export, dependency_list_export
 
-      desc 'Download a dependency list export'
-      get ':id/dependency_list_exports/:export_id/download' do
-        authorize! :read_dependencies, user_project
-
-        dependency_list_export = ::Dependencies::FetchExportService
-        .new(params[:export_id].to_i).execute
-
-        if dependency_list_export&.finished?
-          present_carrierwave_file!(dependency_list_export.file)
-        else
-          not_found!('DependencyListExport')
-        end
+      if dependency_list_export&.finished?
+        present_carrierwave_file!(dependency_list_export.file)
+      else
+        not_found!('DependencyListExport')
       end
     end
   end
