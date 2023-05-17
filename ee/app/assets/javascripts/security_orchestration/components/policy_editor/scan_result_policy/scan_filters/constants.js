@@ -29,6 +29,9 @@ export const FILTER_POLICY_PROPERTY_MAP = {
 export const NEWLY_DETECTED = 'newly_detected';
 export const PREVIOUSLY_EXISTING = 'previously_existing';
 
+export const NEEDS_TRIAGE_PLURAL = s__('ApprovalRule|Need triage');
+export const NEEDS_TRIAGE_SINGULAR = s__('ApprovalRule|Needs triage');
+
 export const APPROVAL_VULNERABILITY_STATE_GROUPS = {
   [NEWLY_DETECTED]: s__('ApprovalRule|New'),
   [PREVIOUSLY_EXISTING]: s__('ApprovalRule|Previously existing'),
@@ -36,7 +39,7 @@ export const APPROVAL_VULNERABILITY_STATE_GROUPS = {
 
 export const APPROVAL_VULNERABILITY_STATES = {
   [NEWLY_DETECTED]: {
-    new_needs_triage: s__('ApprovalRule|Needs triage'),
+    new_needs_triage: NEEDS_TRIAGE_SINGULAR,
     new_dismissed: s__('ApprovalRule|Dismissed'),
   },
   [PREVIOUSLY_EXISTING]: {
@@ -46,3 +49,7 @@ export const APPROVAL_VULNERABILITY_STATES = {
     resolved: s__('ApprovalRule|Resolved'),
   },
 };
+
+export const APPROVAL_VULNERABILITY_STATES_FLAT = Object.values(
+  APPROVAL_VULNERABILITY_STATES,
+).reduce((acc, states) => ({ ...acc, ...states }), {});

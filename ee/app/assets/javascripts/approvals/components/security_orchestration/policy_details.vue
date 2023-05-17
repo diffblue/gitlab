@@ -50,11 +50,18 @@ export default {
         class="gl-border-solid gl-border-1 gl-rounded-base gl-border-gray-100 gl-bg-gray-10 gl-py-4 gl-px-5"
       >
         <require-approvals :action="policyAction" :approvers="approvers" />
-        <ul class="gl-mb-1">
-          <li v-for="(rule, idx) in humanizedRules" :key="idx">
-            {{ rule }}
-          </li>
-        </ul>
+        <div
+          v-for="{ summary, criteriaList } in humanizedRules"
+          :key="summary"
+          class="gl-mt-5 gl-mb-1"
+        >
+          {{ summary }}
+          <ul class="gl-m-0">
+            <li v-for="criteria in criteriaList" :key="criteria">
+              {{ criteria }}
+            </li>
+          </ul>
+        </div>
         <div class="gl-text-right">
           <gl-link :href="policyEditPath" target="_blank">
             {{ $options.i18n.policyDetails }}

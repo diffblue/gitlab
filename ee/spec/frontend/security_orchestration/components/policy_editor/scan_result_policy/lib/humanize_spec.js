@@ -23,8 +23,30 @@ const singleValuedSecurityScannerRule = {
     severity_levels: ['critical'],
     vulnerability_states: ['newly_detected'],
   },
-  humanized:
-    'SAST scanner finds any critical vulnerability in an open merge request targeting the main branch.',
+  humanized: {
+    summary:
+      'When SAST scanner finds any vulnerabilities in an open merge request targeting the main branch and all the following apply:',
+    criteriaList: [
+      'Severity is critical.',
+      'Vulnerabilities are new and need triage or dismissed.',
+    ],
+  },
+};
+
+const noVulnerabilityStatesSecurityScannerRule = {
+  rule: {
+    type: SCAN_FINDING,
+    branches: ['main'],
+    scanners: ['sast'],
+    vulnerabilities_allowed: 0,
+    severity_levels: ['critical'],
+    vulnerability_states: [],
+  },
+  humanized: {
+    summary:
+      'When SAST scanner finds any vulnerabilities in an open merge request targeting the main branch and all the following apply:',
+    criteriaList: ['Severity is critical.'],
+  },
 };
 
 const multipleValuedSecurityScannerRule = {
@@ -36,8 +58,30 @@ const multipleValuedSecurityScannerRule = {
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['resolved'],
   },
-  humanized:
-    'DAST or SAST scanners find more than 2 info or critical vulnerabilities in an open merge request targeting the staging or main branches.',
+  humanized: {
+    summary:
+      'When DAST or SAST scanners find more than 2 vulnerabilities in an open merge request targeting the staging or main branches and all the following apply:',
+    criteriaList: [
+      'Severity is info or critical.',
+      'Vulnerabilities are previously existing and resolved.',
+    ],
+  },
+};
+
+const noCriteriaSecurityScannerRule = {
+  rule: {
+    type: SCAN_FINDING,
+    branches: ['staging', 'main'],
+    scanners: ['sast'],
+    vulnerabilities_allowed: 1,
+    severity_levels: [],
+    vulnerability_states: [],
+  },
+  humanized: {
+    summary:
+      'When SAST scanner finds more than 1 vulnerability in an open merge request targeting the staging or main branches.',
+    criteriaList: [],
+  },
 };
 
 const allValuedSecurityScannerRule = {
@@ -47,10 +91,16 @@ const allValuedSecurityScannerRule = {
     scanners: [],
     vulnerabilities_allowed: 2,
     severity_levels: ['info', 'critical'],
-    vulnerability_states: ['resolved'],
+    vulnerability_states: ['new_needs_triage', 'resolved', 'confirmed'],
   },
-  humanized:
-    'Any security scanner finds more than 2 info or critical vulnerabilities in an open merge request targeting all protected branches.',
+  humanized: {
+    summary:
+      'When any security scanner finds more than 2 vulnerabilities in an open merge request targeting all protected branches and all the following apply:',
+    criteriaList: [
+      'Severity is info or critical.',
+      'Vulnerabilities are new and need triage, or previously existing and resolved or confirmed.',
+    ],
+  },
 };
 
 const singleValuedLicenseScanRule = {
@@ -61,8 +111,10 @@ const singleValuedLicenseScanRule = {
     license_types: ['MIT License'],
     license_states: ['detected'],
   },
-  humanized:
-    'License scanner finds any license matching MIT License that is pre-existing and is in an open merge request targeting the main branch.',
+  humanized: {
+    summary:
+      'When license scanner finds any license matching MIT License that is pre-existing and is in an open merge request targeting the main branch.',
+  },
 };
 
 const multipleValuedLicenseScanRule = {
@@ -73,13 +125,15 @@ const multipleValuedLicenseScanRule = {
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
     license_states: ['detected', 'newly_detected'],
   },
-  humanized:
-    'License scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting the staging or main branches.',
+  humanized: {
+    summary:
+      'When license scanner finds any license except CMU License, CNRI Jython License and CNRI Python License in an open merge request targeting the staging or main branches.',
+  },
 };
 
 describe('humanizeRules', () => {
   it('returns the empty rules message in an Array if no rules are specified', () => {
-    expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
+    expect(humanizeRules([])).toStrictEqual([{ summary: NO_RULE_MESSAGE }]);
   });
 
   describe('security scanner rules', () => {
@@ -94,10 +148,14 @@ describe('humanizeRules', () => {
         humanizeRules([
           singleValuedSecurityScannerRule.rule,
           multipleValuedSecurityScannerRule.rule,
+          noVulnerabilityStatesSecurityScannerRule.rule,
+          noCriteriaSecurityScannerRule.rule,
         ]),
       ).toStrictEqual([
         singleValuedSecurityScannerRule.humanized,
         multipleValuedSecurityScannerRule.humanized,
+        noVulnerabilityStatesSecurityScannerRule.humanized,
+        noCriteriaSecurityScannerRule.humanized,
       ]);
     });
 
