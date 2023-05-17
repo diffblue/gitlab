@@ -67,6 +67,7 @@ describe('PoliciesList component', () => {
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,
         newPolicyPath: `${namespacePath}/-/security/policies/new`,
+        disableScanPolicyUpdate: false,
         ...provide,
       },
       apolloProvider: createMockApollo([
