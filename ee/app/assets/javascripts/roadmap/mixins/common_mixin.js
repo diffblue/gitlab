@@ -6,6 +6,7 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 
+import { getLocaleOffsetDays } from '../utils/roadmap_utils';
 import { PRESET_TYPES, DAYS_IN_WEEK } from '../constants';
 
 export default {
@@ -114,7 +115,9 @@ export default {
           (this.currentDate.getDate() / totalDaysInMonth(this.timeframeItem)) * 100,
         );
       } else if (this.presetTypeWeeks) {
-        left = Math.floor(((this.currentDate.getDay() + 1) / DAYS_IN_WEEK) * 100 - DAYS_IN_WEEK);
+        left = Math.floor(
+          ((this.currentDate.getDay() + getLocaleOffsetDays()) / DAYS_IN_WEEK) * 100 - DAYS_IN_WEEK,
+        );
       }
 
       return {

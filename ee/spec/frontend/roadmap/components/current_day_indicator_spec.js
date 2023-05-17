@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { useFakeDate } from 'helpers/fake_date';
 import CurrentDayIndicator from 'ee/roadmap/components/current_day_indicator.vue';
@@ -112,5 +113,31 @@ describe('CurrentDayIndicator', () => {
     it('sets indicatorStyles containing `left` with value `7%`', () => {
       expect(findCurrentDayIndicatorStyle()).toBe('left: 7%;');
     });
+
+    describe.each`
+      firstDayName  | firstDayOfWeek | timeframeItem           | expectedLeftOffset
+      ${'Saturday'} | ${6}           | ${new Date(2023, 4, 6)} | ${'left: 93%;'}
+      ${'Sunday'}   | ${0}           | ${new Date(2023, 4, 7)} | ${'left: 7%;'}
+      ${'Monday'}   | ${1}           | ${new Date(2023, 4, 8)} | ${'left: 21%;'}
+    `(
+      'with first day of week set to $firstDayName',
+      ({ firstDayOfWeek, timeframeItem, expectedLeftOffset }) => {
+        useFakeDate(timeframeItem);
+        window.gon.first_day_of_week = firstDayOfWeek;
+
+        beforeEach(async () => {
+          createComponent({
+            presetType: PRESET_TYPES.WEEKS,
+            timeframeItem,
+          });
+
+          await nextTick();
+        });
+
+        it(`sets indicator style correctly`, () => {
+          expect(findCurrentDayIndicatorStyle()).toBe(expectedLeftOffset);
+        });
+      },
+    );
   });
 });

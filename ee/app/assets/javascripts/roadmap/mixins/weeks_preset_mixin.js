@@ -1,5 +1,7 @@
 import { newDate } from '~/lib/utils/datetime_utility';
 
+import { getLocaleOffsetDays } from '../utils/roadmap_utils';
+
 export default {
   methods: {
     /**
@@ -56,7 +58,7 @@ export default {
     getTimelineBarStartOffsetForWeeks(roadmapItem) {
       const daysInWeek = 7;
       const dayWidth = this.$options.cellWidth / daysInWeek;
-      const startDate = this.startDateValues.day + 1;
+      const startDate = this.startDateValues.day + getLocaleOffsetDays();
       const firstDayOfWeek = this.timeframeItem.getDay() + 1;
 
       if (

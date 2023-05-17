@@ -4,6 +4,7 @@ import {
   getMonthsForDates,
   getPresetTypeForTimeframeRangeType,
   getTimeframeForRangeType,
+  getLocaleOffsetDays,
   getWeeksForDates,
   sortEpics,
 } from 'ee/roadmap/utils/roadmap_utils';
@@ -16,6 +17,22 @@ const mockTimeframeMonths = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 const getDateString = (date) => date.toISOString().split('T')[0];
+
+describe('getLocaleOffsetDays', () => {
+  it.each`
+    firstDayName  | firstDayOfWeek | localeOffsetDays
+    ${'Saturday'} | ${6}           | ${2}
+    ${'Sunday'}   | ${0}           | ${1}
+    ${'Monday'}   | ${1}           | ${0}
+  `(
+    'returns $localeOffsetDays when first day of week is $firstDayName',
+    ({ firstDayOfWeek, localeOffsetDays }) => {
+      window.gon.first_day_of_week = firstDayOfWeek;
+
+      expect(getLocaleOffsetDays()).toBe(localeOffsetDays);
+    },
+  );
+});
 
 describe('getWeeksForDates', () => {
   it('returns weeks for given dates', () => {
