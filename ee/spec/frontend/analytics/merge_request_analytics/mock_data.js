@@ -11,6 +11,7 @@ export const throughputChartData = {
   May_2020: { count: 2, totalTimeToMerge: 1234567, __typename: 'MergeRequestConnection' },
   Jun_2020: { count: 4, totalTimeToMerge: 2345678, __typename: 'MergeRequestConnection' },
   Jul_2020: { count: 3, totalTimeToMerge: 3456789, __typename: 'MergeRequestConnection' },
+  Aug_2020: { count: 4, totalTimeToMerge: 3456789, __typename: 'MergeRequestConnection' },
   __typename: 'Project',
 };
 
@@ -18,6 +19,7 @@ export const throughputChartNoData = {
   May_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
   Jun_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
   Jul_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
+  Aug_2020: { count: 0, totalTimeToMerge: 0, __typename: 'MergeRequestConnection' },
   __typename: 'Project',
 };
 
@@ -27,6 +29,7 @@ export const formattedThroughputChartData = [
       ['May 2020', 2],
       ['Jun 2020', 4],
       ['Jul 2020', 3],
+      ['Aug 2020', 4],
     ],
     name: THROUGHPUT_CHART_STRINGS.Y_AXIS_TITLE,
   },
