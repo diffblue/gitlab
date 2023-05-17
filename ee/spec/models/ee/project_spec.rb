@@ -4228,4 +4228,48 @@ RSpec.describe Project, feature_category: :projects do
       expect(project.project_feature.requirements_access_level).to eq(ProjectFeature::ENABLED)
     end
   end
+
+  describe 'concern Elastic::ProjectsSearch' do
+    include Elastic::ProjectsSearch
+    describe '#maintain_elasticsearch_update' do
+      def new_level(level)
+        Featurable::STRING_OPTIONS.except('public').values.excluding(level).last # public is only allowed for pages
+      end
+
+      let_it_be(:project) { create(:project) }
+      let(:project_feature) { project.project_feature }
+
+      before do
+        stub_ee_application_setting(elasticsearch_indexing: true)
+        # Clear all dirty changes before each test
+        project.reload
+        project_feature.reload
+      end
+
+      it 'calls Elastic::ProcessBookkeepingService when project visibility_level gets updated' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
+        new_visibility_level = new_level(project.visibility_level)
+        project.update_attribute(:visibility_level, new_visibility_level)
+      end
+
+      it 'calls Elastic::ProcessInitialBookkeepingService when wiki_access_level gets updated' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
+        new_wiki_access_level = new_level(project.wiki_access_level)
+        project_feature.update_attribute :wiki_access_level, new_wiki_access_level
+      end
+
+      it 'calls Elastic::ProcessInitialBookkeepingService when repository_access_level gets updated' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
+        new_repository_access_level = new_level(project.repository_access_level)
+        project_feature.update_attribute :repository_access_level, new_repository_access_level
+      end
+
+      it 'does not calls Elastic::ProcessInitialBookkeepingService when pending_delete is set on project' do
+        project = create(:project, pending_delete: true)
+        expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!).with(project)
+        new_visibility_level = new_level(project.visibility_level)
+        project.update_attribute :visibility_level, new_visibility_level
+      end
+    end
+  end
 end

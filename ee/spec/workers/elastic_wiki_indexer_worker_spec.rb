@@ -42,14 +42,28 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
         end
 
         context 'when elasticsearch is enabled for Project' do
-          it 'does runs Gitlab::Elastic::Indexer and does performs logging and metrics' do
-            expect_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
-              expect(indexer).to receive(:run).and_return(true)
+          context 'and options force is passed as true' do
+            it 'does runs Gitlab::Elastic::Indexer with force and does performs logging and metrics' do
+              expect_next_instance_of(Gitlab::Elastic::Indexer, project, { wiki: true, force: true }) do |indexer|
+                expect(indexer).to receive(:run).and_return(true)
+              end
+              expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
+              expect(logger_double).to receive(:info)
+              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex)
+              worker.perform(project.id, project.class.name, { force: true })
             end
-            expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
-            expect(logger_double).to receive(:info)
-            expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex)
-            worker.perform(project.id, project.class.name)
+          end
+
+          context 'and options is not passed' do
+            it 'does runs Gitlab::Elastic::Indexer without force and does performs logging and metrics' do
+              expect_next_instance_of(Gitlab::Elastic::Indexer, project, { wiki: true, force: false }) do |indexer|
+                expect(indexer).to receive(:run).and_return(true)
+              end
+              expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
+              expect(logger_double).to receive(:info)
+              expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex)
+              worker.perform(project.id, project.class.name)
+            end
           end
         end
       end

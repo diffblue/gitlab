@@ -10,7 +10,7 @@ RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :glo
     it 'calls ElasticCommitIndexerWorker and, ElasticWikiIndexerWorker if feature separate_elastic_wiki_indexer_for_project is enabled' do
       expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
       expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
-      expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name)
+      expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name, { force: true })
 
       described_class.backfill_projects!(project)
     end
@@ -19,7 +19,7 @@ RSpec.describe Elastic::ProcessInitialBookkeepingService, feature_category: :glo
       stub_feature_flags(separate_elastic_wiki_indexer_for_project: false)
       expect(described_class).to receive(:maintain_indexed_associations).with(project, Elastic::ProcessInitialBookkeepingService::INDEXED_PROJECT_ASSOCIATIONS)
       expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, false, { force: true })
-      expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, true)
+      expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, true, { force: true })
 
       described_class.backfill_projects!(project)
     end
