@@ -11,12 +11,12 @@ RSpec.describe Security::RemediationsProxy, feature_category: :vulnerability_man
     # The following byte offsets are collected by parsing the related artifact with Oj::Introspect.
     # If the specs fail due to a change in the related artifact, you can collect them again by parsing
     # the artifact again and checking the `:__oj_introspect` keys for remediations.
-    let(:remediation_1_byte_offsets) { [11842, 12008] }
-    let(:remediation_2_byte_offsets) { [12015, 12181] }
+    let(:remediation_1_byte_offsets) { [12002, 12168] }
+    let(:remediation_2_byte_offsets) { [12175, 12341] }
     let(:remediation_3_byte_offsets) { remediation_2_byte_offsets }
 
     subject(:data_fragments) do
-      model.by_byte_offsets([remediation_1_byte_offsets, remediation_2_byte_offsets, remediation_2_byte_offsets])
+      model.by_byte_offsets([remediation_1_byte_offsets, remediation_2_byte_offsets, remediation_3_byte_offsets])
            .map(&:deep_symbolize_keys)
     end
 

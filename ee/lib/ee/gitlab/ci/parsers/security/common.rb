@@ -15,7 +15,7 @@ module EE
               return report_data["vulnerabilities"] || [] unless report_data["remediations"]
 
               report_data["vulnerabilities"].map do |vulnerability|
-                remediation = fixes[vulnerability['id']] || fixes[vulnerability['cve']]
+                remediation = fixes[vulnerability['id']]
                 vulnerability.merge("remediations" => [remediation])
               end
             end
@@ -23,7 +23,7 @@ module EE
             def fixes
               @fixes ||= report_data['remediations'].each_with_object({}) do |item, memo|
                 item['fixes'].each do |fix|
-                  id = fix['id'] || fix['cve']
+                  id = fix['id']
                   memo[id] = item if id
                 end
                 memo
