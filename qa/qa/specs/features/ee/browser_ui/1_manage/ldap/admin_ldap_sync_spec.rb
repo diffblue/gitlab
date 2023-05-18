@@ -13,7 +13,7 @@ module QA
       it 'sets and removes user\'s admin status', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347896' do
         Page::Main::Menu.perform do |menu|
           admin_synchronised = menu.wait_until(max_duration: 80, sleep_interval: 1, reload: true) do
-            menu.has_admin_area_link?
+            menu.has_admin_area_link?(wait: 0)
           end
 
           expect(admin_synchronised).to be_truthy
@@ -27,7 +27,7 @@ module QA
 
         Page::Main::Menu.perform do |menu|
           admin_removed = menu.wait_until(max_duration: 160, sleep_interval: 1, reload: true) do
-            menu.has_no_admin_area_link?
+            !menu.has_admin_area_link?(wait: 0)
           end
 
           expect(admin_removed).to be_truthy

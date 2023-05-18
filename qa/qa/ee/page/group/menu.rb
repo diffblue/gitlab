@@ -16,7 +16,6 @@ module QA
                 prepend SubMenus::SuperSidebar::Secure
                 prepend SubMenus::SuperSidebar::Plan
                 prepend SubMenus::SuperSidebar::Analyze
-                prepend SubMenus::SuperSidebar::Manage
                 prepend SubMenus::SuperSidebar::Settings
               end
             end
