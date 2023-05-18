@@ -7,4 +7,4 @@
   has_scoped_labels_feature: @project.licensed_feature_available?(:scoped_labels).to_s,
   labels_fetch_path: project_labels_path(@project, format: :json, include_ancestor_groups: true),
   preview_markdown_path: preview_markdown_path(@project),
-  no_issues_svg_path: image_path('illustrations/issues.svg') } }
+  no_issues_svg_path: image_path('illustrations/empty-state/empty-issues-md.svg') } }

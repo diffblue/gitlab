@@ -59,6 +59,7 @@ export default {
     key="empty-filter-state"
     data-testid="empty-filter-state"
     :svg-path="emptyFilterSvgPath"
+    :svg-height="150"
     :title="$options.i18n.emptyFilterTitle"
     :description="$options.i18n.emptyFilterDescription"
   />

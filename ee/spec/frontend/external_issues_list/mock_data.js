@@ -8,7 +8,7 @@ export const mockProvide = {
   issuesFetchPath: '/gitlab-org/gitlab-test/-/integrations/jira/issues.json',
   projectFullPath: 'gitlab-org/gitlab-test',
   issueCreateUrl: 'https://gitlab-jira.atlassian.net/secure/CreateIssue!default.jspa',
-  emptyStatePath: '/assets/illustrations/issues.svg',
+  emptyStatePath: '/assets/illustrations/empty-state/empty-issues-md.svg',
 
   getIssuesQuery: mockGetJiraIssuesQuery,
   externalIssuesLogo: jiraLogo,
