@@ -10236,6 +10236,9 @@ msgstr ""
 msgid "ClusterAgents|Event occurred"
 msgstr ""
 
+msgid "ClusterAgents|External project"
+msgstr ""
+
 msgid "ClusterAgents|Failed to create a token"
 msgstr ""
 
@@ -10404,6 +10407,9 @@ msgid "ClusterAgents|Your agent version is out of sync with your GitLab version 
 msgstr ""
 
 msgid "ClusterAgents|Your instance doesn't have the %{linkStart}GitLab Agent Server (KAS)%{linkEnd} set up. Ask a GitLab Administrator to install it."
+msgstr ""
+
+msgid "ClusterAgents|shared"
 msgstr ""
 
 msgid "ClusterAgent|User has insufficient permissions to create a token for this project"
