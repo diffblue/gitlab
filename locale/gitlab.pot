@@ -33931,6 +33931,9 @@ msgstr ""
 msgid "Preferences|Show one file at a time on merge request's Changes tab"
 msgstr ""
 
+msgid "Preferences|Show shortcut buttons above files on project overview"
+msgstr ""
+
 msgid "Preferences|Show whitespace changes in diffs"
 msgstr ""
 
