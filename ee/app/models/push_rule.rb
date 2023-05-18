@@ -31,7 +31,7 @@ class PushRule < ApplicationRecord
     commit_message_negative_regex: 'rejected commit message regex',
     author_email_regex: 'required author email regex',
     file_name_regex: 'prohibited file name regex',
-    max_file_size: 'maximum file size (MB)'
+    max_file_size: 'maximum file size (MiB)'
   }.freeze
 
   belongs_to :project, inverse_of: :push_rule
