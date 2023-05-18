@@ -48679,6 +48679,9 @@ msgstr ""
 msgid "User Settings"
 msgstr ""
 
+msgid "User Status"
+msgstr ""
+
 msgid "User and IP rate limits"
 msgstr ""
 
