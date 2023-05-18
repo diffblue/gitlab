@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
-import query from '../queries/namespace_storage.query.graphql';
+import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { parseGetStorageResults } from '../utils';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
@@ -37,7 +37,7 @@ export default {
   ],
   apollo: {
     namespace: {
-      query,
+      query: NamespaceStorageQuery,
       variables() {
         return {
           fullPath: this.namespacePath,
@@ -55,7 +55,7 @@ export default {
         captureException({ error, component: this.$options.name });
       },
     },
-    dependencyProxyTotalSize: {
+    dependencyProxyTotalSizeInBytes: {
       query: GetDependencyProxyTotalSizeQuery,
       variables() {
         return {
@@ -63,7 +63,7 @@ export default {
         };
       },
       update({ group }) {
-        return group?.dependencyProxyTotalSize;
+        return group?.dependencyProxyTotalSizeInBytes;
       },
       error(error) {
         captureException({ error, component: this.$options.name });
@@ -78,7 +78,7 @@ export default {
       namespace: {},
       searchTerm: '',
       firstFetch: true,
-      dependencyProxyTotalSize: '',
+      dependencyProxyTotalSizeInBytes: 0,
       loadingError: false,
       sortKey: 'STORAGE_SIZE_DESC',
     };
@@ -103,7 +103,7 @@ export default {
       return this.$apollo.queries.namespace.loading;
     },
     isDependencyProxyStorageQueryLoading() {
-      return this.$apollo.queries.dependencyProxyTotalSize.loading;
+      return this.$apollo.queries.dependencyProxyTotalSizeInBytes.loading;
     },
     pageInfo() {
       return this.namespace.projects?.pageInfo ?? {};
@@ -202,7 +202,7 @@ export default {
 
     <dependency-proxy-usage
       v-if="!userNamespace"
-      :dependency-proxy-total-size="dependencyProxyTotalSize"
+      :dependency-proxy-total-size="dependencyProxyTotalSizeInBytes"
       :loading="isDependencyProxyStorageQueryLoading"
     />
     <template v-if="namespace.rootStorageStatistics">

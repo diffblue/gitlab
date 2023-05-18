@@ -3,19 +3,21 @@ import { GlSprintf, GlLink } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import UsageBanner from '~/vue_shared/components/usage_quotas/usage_banner.vue';
 import { s__ } from '~/locale';
+import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   name: 'DependencyProxyUsage',
   components: {
+    NumberToHumanSize,
     UsageBanner,
     GlSprintf,
     GlLink,
   },
   props: {
     dependencyProxyTotalSize: {
-      type: String,
+      type: Number,
       required: false,
-      default: '',
+      default: 0,
     },
     loading: {
       type: Boolean,
@@ -51,9 +53,11 @@ export default {
       {{ $options.i18n.storageUsed }}
     </template>
     <template #right-secondary-text>
-      <span data-testid="total-size-section" data-qa-selector="dependency_proxy_size">{{
-        dependencyProxyTotalSize
-      }}</span>
+      <number-to-human-size
+        :value="dependencyProxyTotalSize"
+        data-testid="total-size-section"
+        data-qa-selector="dependency_proxy_size"
+      />
     </template>
   </usage-banner>
 </template>

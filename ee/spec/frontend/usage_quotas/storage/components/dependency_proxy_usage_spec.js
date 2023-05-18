@@ -8,7 +8,7 @@ describe('Dependency proxy usage component', () => {
 
   const helpPath = helpPagePath('user/packages/dependency_proxy/index');
   const defaultProps = {
-    dependencyProxyTotalSize: '512 bytes',
+    dependencyProxyTotalSize: 512,
   };
 
   const findTotalSizeSection = () => wrapper.findByTestId('total-size-section');
@@ -31,7 +31,7 @@ describe('Dependency proxy usage component', () => {
   });
 
   it('displays the total size section when prop is provided', () => {
-    expect(findTotalSizeSection().text()).toBe(defaultProps.dependencyProxyTotalSize);
+    expect(findTotalSizeSection().props('value')).toBe(defaultProps.dependencyProxyTotalSize);
   });
 
   it('displays a more information link', () => {

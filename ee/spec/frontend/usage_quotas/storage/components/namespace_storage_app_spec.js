@@ -69,7 +69,7 @@ describe('NamespaceStorageApp', () => {
 
   const createComponent = ({
     provide = {},
-    dependencyProxyTotalSize = '',
+    dependencyProxyTotalSizeInBytes = 0,
     mockApollo = {},
   } = {}) => {
     wrapper = mountExtended(NamespaceStorageApp, {
@@ -80,7 +80,7 @@ describe('NamespaceStorageApp', () => {
       },
       data() {
         return {
-          dependencyProxyTotalSize,
+          dependencyProxyTotalSizeInBytes,
         };
       },
     });
@@ -96,7 +96,7 @@ describe('NamespaceStorageApp', () => {
     it('shows the dependency proxy usage component', async () => {
       createComponent({
         mockApollo,
-        dependencyProxyTotalSize: '512 bytes',
+        dependencyProxyTotalSizeInBytes: 512,
         provide: { userNamespace: false },
       });
       await waitForPromises();
@@ -107,7 +107,7 @@ describe('NamespaceStorageApp', () => {
     it('does not display the dependency proxy for personal namespaces', () => {
       createComponent({
         mockApollo,
-        dependencyProxyTotalSize: '512 bytes',
+        dependencyProxyTotalSizeInBytes: 512,
         provide: { userNamespace: true },
       });
 
@@ -120,7 +120,7 @@ describe('NamespaceStorageApp', () => {
       mockApollo = createMockApolloProvider();
       createComponent({
         mockApollo,
-        dependencyProxyTotalSize: '512 bytes',
+        dependencyProxyTotalSizeInBytes: 512,
       });
       await waitForPromises();
 

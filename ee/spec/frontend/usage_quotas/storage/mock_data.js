@@ -146,7 +146,7 @@ export const mockDependencyProxyResponse = {
   data: {
     group: {
       id: 'gid://gitlab/Group/84',
-      dependencyProxyTotalSize: '0 Bytes',
+      dependencyProxyTotalSizeInBytes: 0,
       __typename: 'Group',
     },
   },
