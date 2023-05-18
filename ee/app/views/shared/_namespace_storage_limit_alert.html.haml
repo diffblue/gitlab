@@ -2,4 +2,4 @@
 - context = local_assigns.fetch(:context)
 
 = cache([context, current_user], expires_in: 1.minute) do
-  = render Namespaces::Storage::LimitAlertComponent.new(context: context, user: current_user)
+  = render Namespaces::Storage::LimitAlertComponentBuilder.build(context: context, user: current_user)
