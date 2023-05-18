@@ -8751,7 +8751,7 @@ msgstr ""
 msgid "Cannot create the abuse report. The user has been deleted."
 msgstr ""
 
-msgid "Cannot create the abuse report. This user has been blocked."
+msgid "Cannot create the abuse report. This user has been banned."
 msgstr ""
 
 msgid "Cannot delete %{profile_name} referenced in security policy"
