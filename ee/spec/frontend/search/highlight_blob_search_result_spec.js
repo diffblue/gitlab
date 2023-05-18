@@ -1,14 +1,14 @@
-import { loadHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
+import htmlCeBlobSearchResult from 'test_fixtures/search/blob_search_result.html';
+import htmlEeBlobSearchResult from 'test_fixtures/ee/search/blob_search_result.html';
+import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import setHighlightClass from 'ee/search/highlight_blob_search_result';
 
-const fixture = 'ee/search/blob_search_result.html';
-const ceFixture = 'search/blob_search_result.html';
 const searchKeyword = 'Send'; // spec/frontend/fixtures/search.rb#79
 
 describe('ee/search/highlight_blob_search_result', () => {
   // Basic search support
   it('highlights lines with search term occurrence', () => {
-    loadHTMLFixture(ceFixture);
+    setHTMLFixture(htmlCeBlobSearchResult);
 
     setHighlightClass(searchKeyword);
 
@@ -19,7 +19,7 @@ describe('ee/search/highlight_blob_search_result', () => {
 
   // Advanced search support
   it('highlights lines which have been identified by Elasticsearch', () => {
-    loadHTMLFixture(fixture);
+    setHTMLFixture(htmlEeBlobSearchResult);
 
     setHighlightClass(searchKeyword);
 
