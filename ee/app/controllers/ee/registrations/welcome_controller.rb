@@ -57,15 +57,15 @@ module EE
       override :signup_onboarding_path
       def signup_onboarding_path
         if params[:joining_project] == 'true'
-          finish_onboarding
+          finish_onboarding(current_user)
           path_for_signed_in_user(current_user)
         elsif redirect_to_company_form?
           path = new_users_sign_up_company_path(passed_through_params)
-          save_onboarding_step_url(path)
+          save_onboarding_step_url(path, current_user)
           path
         else
           path = new_users_sign_up_groups_project_path
-          save_onboarding_step_url(path)
+          save_onboarding_step_url(path, current_user)
           path
         end
       end

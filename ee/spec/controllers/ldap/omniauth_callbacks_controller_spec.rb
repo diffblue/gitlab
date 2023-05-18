@@ -19,6 +19,26 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_acce
     expect(flash[:notice]).to eq nil
   end
 
+  context 'for sign up', :aggregate_failures do
+    let(:user) { build_stubbed(:user) }
+
+    before do
+      request.env['omniauth.params'] = { 'intent' => 'register' }
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_feature_flags(ensure_onboarding: true)
+    end
+
+    it 'does not enforce onboarding for sign up' do
+      post provider
+
+      expect(request.env['warden']).to be_authenticated
+      expect(response).to redirect_to(users_sign_up_welcome_path)
+      created_user = User.find_by_email(user.email)
+      expect(created_user).not_to be_onboarding_in_progress
+      expect(created_user.user_detail.onboarding_step_url).to be_nil
+    end
+  end
+
   context 'multiple ldap providers configured' do
     let(:ldap_server_config) do
       {

@@ -12,6 +12,7 @@ RSpec.describe 'devise/registrations/new', feature_category: :system_access do
   before do
     stub_devise
 
+    allow(view).to receive(:glm_tracking_params).and_return({})
     allow(view).to receive(:arkose_labs_enabled?).and_return(arkose_labs_enabled)
     allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return(arkose_labs_api_key)
     allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return(arkose_labs_domain)

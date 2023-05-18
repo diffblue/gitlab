@@ -6,16 +6,27 @@ module Onboarding
 
     private
 
-    def save_onboarding_step_url(onboarding_step_url)
-      Onboarding.user_onboarding_in_progress?(current_user) &&
-        current_user.user_detail.update(onboarding_step_url: onboarding_step_url)
+    def save_onboarding_step_url(onboarding_step_url, user)
+      Onboarding.user_onboarding_in_progress?(user) &&
+        user.user_detail.update(onboarding_step_url: onboarding_step_url)
     end
 
-    def finish_onboarding
-      return unless Onboarding.user_onboarding_in_progress?(current_user)
+    def start_onboarding(onboarding_step_url, user)
+      return unless Onboarding.user_onboarding_enabled?
 
-      save_onboarding_step_url(nil)
-      current_user.update(onboarding_in_progress: false)
+      user.onboarding_in_progress = true
+      user.user_detail.onboarding_step_url = onboarding_step_url
+      user
+    end
+
+    def start_onboarding!(...)
+      start_onboarding(...)&.save
+    end
+
+    def finish_onboarding(user)
+      return unless Onboarding.user_onboarding_in_progress?(user)
+
+      user.update(onboarding_step_url: nil, onboarding_in_progress: false)
     end
   end
 end

@@ -187,4 +187,49 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
       end
     end
   end
+
+  context 'for sign up with strategies', :aggregate_failures do
+    let(:extern_uid) { 'my-uid' }
+    let(:user) { build_stubbed(:user, email: 'new@example.com') }
+    let(:check_namespace_plan) { true }
+
+    before do
+      request.env['omniauth.params'] = { 'intent' => 'register' }
+      stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan)
+      stub_feature_flags(ensure_onboarding: true)
+      stub_omniauth_setting(block_auto_created_users: false)
+    end
+
+    context 'with github' do
+      let(:provider) { :github }
+
+      context 'when onboarding is enforced' do
+        it 'redirects to welcome path with onboarding setup' do
+          post provider
+
+          expect(response).to redirect_to(users_sign_up_welcome_path)
+          created_user = User.find_by_email(user.email)
+          expect(created_user).to be_onboarding_in_progress
+          expect(created_user.user_detail.onboarding_step_url).to eq(users_sign_up_welcome_path)
+        end
+      end
+
+      context 'when onboarding is not enforced' do
+        let(:check_namespace_plan) { false }
+
+        it 'redirects to welcome path without onboarding setup' do
+          post provider
+
+          expect(response).to redirect_to(users_sign_up_welcome_path)
+          expect_to_not_be_onboarding(user.email)
+        end
+      end
+    end
+
+    def expect_to_not_be_onboarding(email)
+      created_user = User.find_by_email(email)
+      expect(created_user).not_to be_onboarding_in_progress
+      expect(created_user.user_detail.onboarding_step_url).to be_nil
+    end
+  end
 end

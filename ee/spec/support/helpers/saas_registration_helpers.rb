@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module SaasRegistrationHelpers
+  include IdentityVerificationHelpers
+
   def user
     User.find_by(email: user_email)
   end
@@ -46,11 +48,45 @@ module SaasRegistrationHelpers
     click_button 'Register'
   end
 
+  def user_signs_up_with_sso(params = {}, provider: 'google_oauth2')
+    mock_auth_hash(provider, 'external_uid', user_email)
+    stub_omniauth_setting(block_auto_created_users: false)
+
+    if block_given?
+      yield
+    else
+      visit new_user_registration_path(params)
+    end
+
+    click_link "oauth-login-#{provider}"
+    solve_arkose_verify_challenge(saml: true)
+  end
+
+  def user_signs_up_through_trial_with_sso(params = {}, provider: 'google_oauth2')
+    user_signs_up_with_sso({}, provider: provider) do
+      visit new_trial_registration_path(params)
+
+      expect_to_be_on_trial_user_registration
+    end
+  end
+
+  def ensure_onboarding
+    yield
+
+    visit root_path
+
+    yield
+  end
+
   def glm_params
     {
       glm_source: 'some_source',
       glm_content: 'some_content'
     }
+  end
+
+  def expect_to_be_on_trial_user_registration
+    expect(page).to have_content('Free 30-day trial')
   end
 
   def expect_to_be_in_learn_gitlab
@@ -76,6 +112,25 @@ module SaasRegistrationHelpers
 
   def expect_to_see_company_form
     expect(page).to have_content 'About your company'
+  end
+
+  def expect_to_apply_trial
+    service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
+    allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
+
+    expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
+
+    trial_user_information = {
+      namespace_id: anything,
+      gitlab_com_trial: true,
+      sync_to_gl: true
+    }.merge(glm_params)
+
+    expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
+      .to receive(:perform_async).with(
+        user.id,
+        trial_user_information
+      ).and_call_original
   end
 
   def toggle_trial

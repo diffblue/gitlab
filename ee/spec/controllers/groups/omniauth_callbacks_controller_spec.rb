@@ -344,6 +344,27 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
       end
 
       it_behaves_like "and identity already linked"
+
+      context 'for sign up', :aggregate_failures do
+        let(:user) { build_stubbed(:user) }
+
+        before do
+          request.env['omniauth.params'] = { 'intent' => 'register' }
+          stub_ee_application_setting(should_check_namespace_plan: true)
+          stub_feature_flags(ensure_onboarding: true)
+          stub_omniauth_setting(block_auto_created_users: false)
+        end
+
+        it 'does not enforce onboarding for sign up' do
+          post provider, params: { group_id: group }
+
+          expect(request.env['warden']).to be_authenticated
+          expect(response).to redirect_to(group_path(group))
+          created_user = User.find_by_email(user.email)
+          expect(created_user).not_to be_onboarding_in_progress
+          expect(created_user.user_detail.onboarding_step_url).to be_nil
+        end
+      end
     end
 
     describe 'identity verification', feature_category: :insider_threat do

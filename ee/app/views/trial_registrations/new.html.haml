@@ -7,6 +7,9 @@
 
 = render "layouts/google_tag_manager_body"
 
+- content_for :omniauth_providers_top do
+  = render 'trial_registrations/signup_omniauth_provider_list'
+
 .row.gl-align-items-center
   .col-lg-6.gl-display-none.gl-lg-display-flex.gl-flex-direction-column.gl-align-items-center.gl-justify-content-start
     %div
@@ -22,8 +25,7 @@
         borderless: true,
         url: trial_registrations_path(glm_tracking_params),
         button_text: _('Continue'),
-        show_omniauth_providers: social_signin_enabled?,
-        omniauth_providers_placement: :top
+        show_omniauth_providers: social_signin_enabled?
 
       = render 'devise/shared/sign_in_link'
 

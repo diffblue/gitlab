@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module IdentityVerificationHelpers
-  def solve_arkose_verify_challenge(saml: false)
+  def solve_arkose_verify_challenge(saml: false, risk: :low)
     stub_request(:post, 'https://verify-api.arkoselabs.com/api/v4/verify/').to_return(
       status: 200,
       body: { session_risk: { risk_band: risk.capitalize } }.to_json,
@@ -37,5 +37,26 @@ module IdentityVerificationHelpers
     expect(mail.subject).to eq(s_('IdentityVerification|Confirm your email address'))
 
     mail.body.parts.first.to_s[/\d{#{Users::EmailVerification::GenerateTokenService::TOKEN_LENGTH}}/o]
+  end
+
+  def verify_email
+    content = format(
+      s_("IdentityVerification|We've sent a verification code to %{email}"),
+      email: Gitlab::Utils::Email.obfuscated_email(user_email)
+    )
+    expect(page).to have_content(content)
+
+    fill_in 'verification_code', with: email_verification_code
+    click_button s_('IdentityVerification|Verify email address')
+  end
+
+  def expect_to_see_identity_verification_page
+    expect(page).to have_content("For added security, you'll need to verify your identity")
+  end
+
+  def expect_to_see_verification_successful_page
+    expect(page).to have_content(s_('IdentityVerification|Verification successful'))
+
+    click_link 'refresh the page'
   end
 end
