@@ -88,7 +88,6 @@ describe('WorkItemDetail component', () => {
         reportAbusePath: '/report/abuse/path',
       },
       propsData: {
-        workItemId: workItemQueryResponse.data.workspace.workItems.nodes[0].id,
         workItemIid: '1',
       },
     });
