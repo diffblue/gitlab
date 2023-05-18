@@ -32,7 +32,7 @@ RSpec.describe Gitlab::IncidentManagement do
 
     it { is_expected.to be_truthy }
 
-    context 'when escalation policies not avaialble' do
+    context 'when escalation policies not available' do
       before do
         stub_licensed_features(escalation_policies: false)
       end
