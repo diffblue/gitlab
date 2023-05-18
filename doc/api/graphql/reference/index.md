@@ -3038,6 +3038,26 @@ Input type: `EnableDevopsAdoptionNamespaceInput`
 | <a id="mutationenabledevopsadoptionnamespaceenablednamespace"></a>`enabledNamespace` | [`DevopsAdoptionEnabledNamespace`](#devopsadoptionenablednamespace) | Enabled namespace after mutation. |
 | <a id="mutationenabledevopsadoptionnamespaceerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.environmentDelete`
+
+Delete an environment.
+
+Input type: `EnvironmentDeleteInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationenvironmentdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationenvironmentdeleteid"></a>`id` | [`EnvironmentID!`](#environmentid) | Global ID of the environment to Delete. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationenvironmentdeleteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationenvironmentdeleteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.environmentStop`
 
 Stop an environment.
