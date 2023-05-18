@@ -1,8 +1,8 @@
 <script>
-import { GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import { s__ } from '~/locale';
 import CatalogHeader from '../list/catalog_header.vue';
+import CatalogListSkeletonLoader from '../list/catalog_list_skeleton_loader.vue';
 import CiResourcesList from '../list/ci_resources_list.vue';
 import getCiCatalogResources from '../../graphql/queries/get_ci_catalog_resources.query.graphql';
 import { ciCatalogResourcesItemsCount } from '../../graphql/settings';
@@ -11,9 +11,9 @@ import EmptyState from '../list/empty_state.vue';
 export default {
   components: {
     CatalogHeader,
+    CatalogListSkeletonLoader,
     CiResourcesList,
     EmptyState,
-    GlLoadingIcon,
   },
   inject: ['projectFullPath'],
   data() {
@@ -92,7 +92,7 @@ export default {
 <template>
   <div>
     <catalog-header />
-    <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
+    <catalog-list-skeleton-loader v-if="isLoading" class="gl-w-full gl-mt-3" />
     <empty-state v-else-if="!hasResources" />
     <ci-resources-list
       v-else
