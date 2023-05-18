@@ -72,10 +72,11 @@ module Gitlab
         def request(content:, config:, **options)
           logger.debug(message: "Performing request to Vertex", config: config)
 
-          response = HTTParty.post( # rubocop: disable Gitlab/HTTParty
+          response = Gitlab::HTTP.post(
             config.url,
             headers: config.headers,
-            body: config.payload(content).merge(options).to_json
+            body: config.payload(content).merge(options).to_json,
+            stream_body: true
           )
 
           logger.debug(message: "Received response from Vertex")
