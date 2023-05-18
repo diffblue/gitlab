@@ -139,25 +139,6 @@ RSpec.describe 'Protected Environments', feature_category: :environment_manageme
           expect(page).not_to have_content('production')
         end
       end
-
-      context 'when projects_tokens_optional_encryption feature flag is false' do
-        before do
-          stub_feature_flags(projects_tokens_optional_encryption: false)
-        end
-
-        context 'when runners_token exists but runners_token_encrypted is empty' do
-          before do
-            project.update_column(:runners_token, 'abc')
-            project.update_column(:runners_token_encrypted, nil)
-          end
-
-          it 'shows setting page correctly' do
-            visit project_settings_ci_cd_path(project)
-
-            expect(page).to have_gitlab_http_status(:ok)
-          end
-        end
-      end
     end
   end
 
