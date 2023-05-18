@@ -53,7 +53,7 @@ module QA
           Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            expect(config_form).to have_false_dependency_scanning_status
+            expect(config_form).to have_dependency_scanning_status('Not enabled')
             expect(config_form).to have_auto_devops_container
             expect(config_form).to have_auto_devops_container_description
             expect(config_form).to have_no_security_configuration_history_link
@@ -66,7 +66,9 @@ module QA
             new_merge_request.create_merge_request
           end
 
-          Page::MergeRequest::Show.perform(&:merge_immediately!)
+          Page::MergeRequest::Show.perform do |merge_request|
+            merge_request.merge_immediately!
+          end
 
           Flow::Pipeline.visit_latest_pipeline
 
@@ -77,7 +79,8 @@ module QA
           Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            expect(config_form).to have_true_dependency_scanning_status
+            expect(config_form).to have_dependency_scanning_status('Enabled')
+            expect(config_form).to have_no_dependency_scanning_status('Not enabled')
             expect(config_form).to have_security_configuration_history_link
             expect(config_form).to have_no_auto_devops_container
 
@@ -110,7 +113,7 @@ module QA
           Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            expect(config_form).to have_false_sast_status
+            expect(config_form).to have_sast_status('Not enabled')
             expect(config_form).to have_auto_devops_container
             expect(config_form).to have_auto_devops_container_description
             expect(config_form).to have_no_security_configuration_history_link
@@ -142,7 +145,9 @@ module QA
             new_merge_request.create_merge_request
           end
 
-          Page::MergeRequest::Show.perform(&:merge_immediately!)
+          Page::MergeRequest::Show.perform do |merge_request|
+            merge_request.merge_immediately!
+          end
 
           Flow::Pipeline.visit_latest_pipeline
 
@@ -153,7 +158,8 @@ module QA
           Page::Project::Menu.perform(&:go_to_security_configuration)
 
           Page::Project::Secure::ConfigurationForm.perform do |config_form|
-            expect(config_form).to have_true_sast_status
+            expect(config_form).to have_sast_status('Enabled')
+            expect(config_form).to have_no_sast_status('Not enabled')
             expect(config_form).to have_security_configuration_history_link
             expect(config_form).to have_no_auto_devops_container
 
