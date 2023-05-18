@@ -14,7 +14,7 @@ module Namespaces
 
       private
 
-      delegate :sprite_icon, :usage_quotas_path, :buy_storage_path, :purchase_storage_url, to: :helpers
+      delegate :sprite_icon, :usage_quotas_path, :buy_storage_path, :purchase_storage_url, :promo_url, to: :helpers
       attr_reader :context, :root_namespace, :user, :root_storage_size
 
       def render?
@@ -28,19 +28,20 @@ module Namespaces
       end
 
       def alert_title
-        if enforcement_type == :repository && root_namespace.contains_locked_projects?
-          repository_alert_title_locked_projects
+        return usage_percentage_alert_title unless root_storage_size.above_size_limit?
+
+        if namespace_has_additional_storage_purchased?
+          usage_percentage_alert_title
         else
-          namespace_alert_title
+          free_tier_alert_title
         end
       end
 
       def alert_message
-        if enforcement_type == :repository
-          repository_alert_message
-        else
-          namespace_alert_message
-        end.map(&:html_safe)
+        [
+          alert_message_explanation << " " << alert_message_cta,
+          alert_message_faq
+        ]
       end
 
       def alert_variant
@@ -72,6 +73,8 @@ module Namespaces
       end
 
       def usage_quotas_link
+        return unless Ability.allowed?(user, :owner_access, root_namespace)
+
         usage_quotas_path(root_namespace, anchor: 'storage-quota-tab')
       end
 
@@ -97,10 +100,11 @@ module Namespaces
       end
 
       def user_has_access?
-        if enforcement_type == :repository || (!context.is_a?(Project) && context.user_namespace?)
+        # Requires owner_access only for users accessing Personal Namespaces
+        if !context.is_a?(Project) && context.user_namespace?
           Ability.allowed?(user, :owner_access, context)
         else
-          Ability.allowed?(user, :maintainer_access, context)
+          Ability.allowed?(user, :guest_access, context)
         end
       end
 
@@ -134,30 +138,20 @@ module Namespaces
           end
       end
 
-      def repository_alert_title_locked_projects
-        params = {
+      def free_tier_alert_title
+        text_args = {
           namespace_name: root_namespace.name,
-          locked_project_count: root_namespace.repository_size_excess_project_count,
           free_size_limit: formatted(root_namespace.actual_size_limit)
         }
 
-        if namespace_has_additional_storage_purchased?
-          ns_(
-            "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked project",
-            "NamespaceStorageSize|%{namespace_name} contains %{locked_project_count} locked projects",
-            params[:locked_project_count]
-          ) % params
-        else
-          s_(
-            "NamespaceStorageSize|You have reached the free storage limit of %{free_size_limit} " \
-            "on one or more projects"
-          ) % params
-        end
+        s_(
+          "NamespaceStorageSize|You have reached the free storage limit of %{free_size_limit} for %{namespace_name}"
+        ) % text_args
       end
 
-      def namespace_alert_title
-        current_usage_params = {
-          usage_in_percent: number_to_percentage(root_storage_size.usage_ratio * 100, precision: 0),
+      def usage_percentage_alert_title
+        text_args = {
+          usage_in_percent: usage_in_percent,
           namespace_name: root_namespace.name,
           used_storage: formatted(root_storage_size.current_size),
           storage_limit: formatted(root_storage_size.limit)
@@ -166,113 +160,119 @@ module Namespaces
         s_(
           "NamespaceStorageSize|You have used %{usage_in_percent} of the storage quota for %{namespace_name} " \
           "(%{used_storage} of %{storage_limit})"
-        ) % current_usage_params
+        ) % text_args
       end
 
-      def repository_alert_message
-        paragraph_1 = repository_alert_message_below_limit
-        paragraph_1 = repository_alert_message_above_limit if root_storage_size.above_size_limit?
-
-        [paragraph_1]
-      end
-
-      def repository_alert_message_above_limit
-        params = {
-          repository_limits_description: repository_limits_description,
-          free_size_limit: formatted(root_namespace.actual_size_limit)
+      def alert_message_explanation
+        text_args = {
+          namespace_name: root_namespace.name,
+          read_only_link_start: link_start_tag(help_page_path('user/read_only_namespaces')),
+          link_end: "</a>"
         }
 
-        if namespace_has_additional_storage_purchased?
-          s_(
-            "NamespaceStorageSize|You have consumed all of your additional storage, please purchase " \
-            "more to unlock your projects over the free %{free_size_limit} limit. " \
-            "You can't %{repository_limits_description}"
-          ) % params
+        if root_storage_size.above_size_limit?
+          Kernel.format(
+            s_(
+              "NamespaceStorageSize|%{namespace_name} is now read-only. Your ability to write new data to " \
+              "this namespace is restricted. %{read_only_link_start}Which actions are restricted?%{link_end}"
+            ),
+            text_args
+          ).html_safe
         else
-          s_(
-            "NamespaceStorageSize|Please purchase additional storage to unlock your projects over the " \
-            "free %{free_size_limit} project limit. You can't %{repository_limits_description}"
-          ) % params
+          Kernel.format(
+            s_(
+              "NamespaceStorageSize|If %{namespace_name} exceeds the storage quota, your ability to " \
+              "write new data to this namespace will be restricted. " \
+              "%{read_only_link_start}Which actions become restricted?%{link_end}"
+            ),
+            text_args
+          ).html_safe
         end
       end
 
-      def repository_alert_message_below_limit
-        params = {
-          repository_limits_description: repository_limits_description
+      def alert_message_cta
+        text_args = {
+          manage_storage_link_start: link_start_tag(
+            help_page_path('user/usage_quotas', anchor: 'manage-your-storage-usage')
+          ),
+          group_member_link_start: link_start_tag(group_group_members_path(root_namespace)),
+          purchase_more_link_start: link_start_tag(
+            help_page_path('subscriptions/gitlab_com/index.md', anchor: 'purchase-more-storage-and-transfer')
+          ),
+          link_end: "</a>"
         }
 
-        s_(
-          "NamespaceStorageSize|If you reach 100%% storage capacity, you will not be able " \
-          "to: %{repository_limits_description}"
-        ) % params
+        if root_storage_size.above_size_limit?
+          if Ability.allowed?(user, :owner_access, context)
+            return Kernel.format(
+              s_(
+                "NamespaceStorageSize|To remove the read-only state " \
+                "%{manage_storage_link_start}manage your storage usage%{link_end}, " \
+                "or %{purchase_more_link_start}purchase more storage%{link_end}."
+              ),
+              text_args
+            ).html_safe
+          end
+
+          Kernel.format(
+            s_(
+              "NamespaceStorageSize|To remove the read-only state " \
+              "%{manage_storage_link_start}manage your storage usage%{link_end}, " \
+              "or contact a user with the %{group_member_link_start}owner role for this namespace%{link_end} " \
+              "and ask them to %{purchase_more_link_start}purchase more storage%{link_end}."
+            ),
+            text_args
+          ).html_safe
+        else
+          if Ability.allowed?(user, :owner_access, context)
+            return Kernel.format(
+              s_(
+                "NamespaceStorageSize|To prevent your projects from being in a read-only state " \
+                "%{manage_storage_link_start}manage your storage usage%{link_end}, " \
+                "or %{purchase_more_link_start}purchase more storage%{link_end}."
+              ),
+              text_args
+            ).html_safe
+          end
+
+          Kernel.format(
+            s_(
+              "NamespaceStorageSize|To prevent your projects from being in a read-only state " \
+              "%{manage_storage_link_start}manage your storage usage%{link_end}, " \
+              "or contact a user with the %{group_member_link_start}owner role for this namespace%{link_end} " \
+              "and ask them to %{purchase_more_link_start}purchase more storage%{link_end}."
+            ),
+            text_args
+          ).html_safe
+        end
       end
 
-      def repository_limits_description
-        params = {
-          learn_more_link: help_page_link_to(_("Learn more"), 'user/usage_quotas', 'manage-your-storage-usage')
+      def alert_message_faq
+        text_args = {
+          faq_link_start: link_start_tag(
+            "#{promo_url}/pricing/#what-happens-if-i-exceed-my-storage-and-transfer-limits"
+          ),
+          link_end: "</a>"
         }
 
-        s_(
-          "NamespaceStorageSize|push to your repository, create pipelines, create issues or add comments. " \
-          "To reduce storage capacity, delete unused repositories, artifacts, wikis, issues, and pipelines. " \
-          "%{learn_more_link}."
-        ) % params
+        Kernel.format(
+          s_(
+            "NamespaceStorageSize|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."
+          ),
+          text_args
+        ).html_safe
       end
 
-      # paragraphs come in an array, then we use `each` to add these paragraphs in haml
-      def namespace_alert_message
-        params = {
-          namespace_name: root_namespace.name,
-          learn_more_link: help_page_link_to(_("Learn more"), 'user/usage_quotas', 'manage-your-storage-usage')
-        }
-
-        paragraph_1 = namespace_alert_message_below_limit
-        paragraph_1 = namespace_alert_message_above_limit if root_storage_size.above_size_limit?
-
-        paragraph_2 = s_(
-          "NamespaceStorageSize|Manage your storage usage or, if you are a namespace Owner, " \
-          "purchase additional storage. %{learn_more_link}."
-        ) % params
-
-        [paragraph_1, paragraph_2]
-      end
-
-      def namespace_alert_message_above_limit
-        params = {
-          namespace_name: root_namespace.name,
-          actions_restricted_link: help_page_link_to(
-            _("Which actions are restricted?"),
-            'user/read_only_namespaces'
-          )
-        }
-
-        s_(
-          "NamespaceStorageSize|%{namespace_name} is now read-only. " \
-          "Projects under this namespace are locked and actions are restricted. %{actions_restricted_link}"
-        ) % params
-      end
-
-      def namespace_alert_message_below_limit
-        params = {
-          namespace_name: root_namespace.name,
-          actions_restricted_link: help_page_link_to(
-            _("Which actions become restricted?"),
-            'user/read_only_namespaces'
-          )
-        }
-
-        s_(
-          "NamespaceStorageSize|If %{namespace_name} exceeds the storage quota, " \
-          "all projects in the namespace will be locked and actions will be restricted. %{actions_restricted_link}"
-        ) % params
-      end
-
-      def help_page_link_to(name, path, anchor = nil)
-        link_to(name, help_page_path(path, anchor: anchor), target: '_blank', rel: "noopener noreferrer")
+      def link_start_tag(url)
+        "<a href='#{url}' target='_blank' rel='noopener noreferrer'>"
       end
 
       def formatted(number)
         number_to_human_size(number, delimiter: ',', precision: 2)
+      end
+
+      def usage_in_percent
+        number_to_percentage(root_storage_size.usage_ratio * 100, precision: 0)
       end
     end
   end

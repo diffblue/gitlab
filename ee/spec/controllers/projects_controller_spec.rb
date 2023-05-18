@@ -86,7 +86,7 @@ RSpec.describe ProjectsController do
           it 'does not include the CTA for additional purchased storage' do
             subject
 
-            expect(response.body).not_to match(/Please purchase additional storage/)
+            expect(response.body).not_to match(/purchase more storage/)
           end
         end
 
@@ -101,7 +101,7 @@ RSpec.describe ProjectsController do
           it 'includes the CTA for additional purchased storage' do
             subject
 
-            expect(response.body).to match(/Please purchase additional storage/)
+            expect(response.body).to match(/purchase more storage/)
           end
         end
       end
@@ -114,7 +114,7 @@ RSpec.describe ProjectsController do
         it 'does not include the CTA for additional purchased storage' do
           subject
 
-          expect(response.body).not_to match(/Please purchase additional storage/)
+          expect(response.body).not_to match(/purchase more storage/)
         end
       end
     end
