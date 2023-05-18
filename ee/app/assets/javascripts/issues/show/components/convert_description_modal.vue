@@ -139,9 +139,6 @@ export default {
               generateDescription: {
                 resourceId: this.resourceId,
                 content: this.description,
-                descriptionTemplateName: document
-                  .querySelector('.js-issuable-selector')
-                  ?.textContent?.trim(),
               },
             },
           },
