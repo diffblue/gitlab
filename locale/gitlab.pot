@@ -44447,8 +44447,10 @@ msgstr ""
 msgid "TanukiBot|Give feedback"
 msgstr ""
 
-msgid "TanukiBot|Sources"
-msgstr ""
+msgid "TanukiBot|Source"
+msgid_plural "TanukiBot|Sources"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "TanukiBot|There was an error communicating with GitLab Chat. Please try again later."
 msgstr ""
