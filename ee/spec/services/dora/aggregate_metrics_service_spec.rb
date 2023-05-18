@@ -132,10 +132,10 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
       it 'returns the aggregated data' do
         expect(subject[:status]).to eq(:success)
         expect(subject[:data]).to eq([
-          { 'date' => '2022-01-25', metric => 2 },
-          { 'date' => '2022-01-28', metric => 5 },
-          { 'date' => '2022-02-07', metric => 9 },
-          { 'date' => '2022-03-01', metric => 1 }
+          { 'date' => Date.parse('2022-01-25'), metric => 2 },
+          { 'date' => Date.parse('2022-01-28'), metric => 5 },
+          { 'date' => Date.parse('2022-02-07'), metric => 9 },
+          { 'date' => Date.parse('2022-03-01'), metric => 1 }
         ])
       end
 
@@ -145,9 +145,9 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
           expect(subject[:data]).to eq([
-            { 'date' => '2022-01-01', 'deployment_count' => 7, metric => 7.fdiv(days_in_january) },
-            { 'date' => '2022-02-01', 'deployment_count' => 9, metric => 9.fdiv(days_in_february) },
-            { 'date' => '2022-03-01', 'deployment_count' => 1, metric => 1.fdiv(days_in_march) }
+            { 'date' => Date.parse('2022-01-01'), 'deployment_count' => 7, metric => 7.fdiv(days_in_january) },
+            { 'date' => Date.parse('2022-02-01'), 'deployment_count' => 9, metric => 9.fdiv(days_in_february) },
+            { 'date' => Date.parse('2022-03-01'), 'deployment_count' => 1, metric => 1.fdiv(days_in_march) }
           ])
         end
       end
@@ -167,7 +167,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq([{ 'date' => '2022-02-05', metric => 1 }])
+          expect(subject[:data]).to eq([{ 'date' => Date.parse('2022-02-05'), metric => 1 }])
         end
       end
 
@@ -179,10 +179,10 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
           expect(subject[:data]).to eq([
-            { 'date' => '2022-01-25', 'deployment_count' => 2, metric => 2 },
-            { 'date' => '2022-01-28', 'deployment_count' => 5, metric => 5 },
-            { 'date' => '2022-02-07', 'deployment_count' => 9, metric => 9 },
-            { 'date' => '2022-03-01', 'deployment_count' => 1, metric => 1 }
+            { 'date' => Date.parse('2022-01-25'), 'deployment_count' => 2, metric => 2 },
+            { 'date' => Date.parse('2022-01-28'), 'deployment_count' => 5, metric => 5 },
+            { 'date' => Date.parse('2022-02-07'), 'deployment_count' => 9, metric => 9 },
+            { 'date' => Date.parse('2022-03-01'), 'deployment_count' => 1, metric => 1 }
           ])
         end
 
@@ -192,9 +192,9 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
           it 'returns the aggregated data' do
             expect(subject[:status]).to eq(:success)
             expect(subject[:data]).to eq([
-              { 'date' => '2022-01-01', 'deployment_count' => 7, metric => 7 },
-              { 'date' => '2022-02-01', 'deployment_count' => 9, metric => 9 },
-              { 'date' => '2022-03-01', 'deployment_count' => 1, metric => 1 }
+              { 'date' => Date.parse('2022-01-01'), 'deployment_count' => 7, metric => 7 },
+              { 'date' => Date.parse('2022-02-01'), 'deployment_count' => 9, metric => 9 },
+              { 'date' => Date.parse('2022-03-01'), 'deployment_count' => 1, metric => 1 }
             ])
           end
         end
@@ -213,7 +213,7 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
 
           it 'returns the aggregated data' do
             expect(subject[:status]).to eq(:success)
-            expect(subject[:data]).to eq([{ 'date' => '2022-02-05', 'deployment_count' => 1, metric => 1 }])
+            expect(subject[:data]).to eq([{ 'date' => Date.parse('2022-02-05'), 'deployment_count' => 1, metric => 1 }])
           end
         end
       end
@@ -260,8 +260,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
       it 'returns the aggregated data' do
         expect(subject[:status]).to eq(:success)
         expect(subject[:data]).to eq([
-          { 'date' => '2022-01-25', metric => 2 },
-          { 'date' => '2022-02-05', metric => 1 }
+          { 'date' => Date.parse('2022-01-25'), metric => 2 },
+          { 'date' => Date.parse('2022-02-05'), metric => 1 }
         ])
       end
 
@@ -271,8 +271,8 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
         it 'returns the aggregated data' do
           expect(subject[:status]).to eq(:success)
           expect(subject[:data]).to eq([
-            { 'date' => '2022-01-01', 'deployment_count' => 2, metric => 2.fdiv(days_in_january) },
-            { 'date' => '2022-02-01', 'deployment_count' => 1, metric => 1.fdiv(days_in_february) }
+            { 'date' => Date.parse('2022-01-01'), 'deployment_count' => 2, metric => 2.fdiv(days_in_january) },
+            { 'date' => Date.parse('2022-02-01'), 'deployment_count' => 1, metric => 1.fdiv(days_in_february) }
           ])
         end
       end
