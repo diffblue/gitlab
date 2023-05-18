@@ -1,0 +1,9 @@
+---
+name: group_push_rules_branch_name_regex_updated
+description: Event triggered when a groups push rules settings is changed for branch name regex.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369340
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/105791
+feature_category: source_code_management
+milestone: '15.7'
+saved_to_database: true
+streamed: true
