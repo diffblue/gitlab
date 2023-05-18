@@ -82,6 +82,13 @@ module EE
           namespace.root?
       end
 
+      def ai_assist_ui_enabled?
+        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+          ::Feature.enabled?(:ai_assist_ui) &&
+          ::Feature.enabled?(:ai_assist_flag, namespace) &&
+          namespace.root?
+      end
+
       private
 
       def enabling_user_cap?

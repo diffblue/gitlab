@@ -101,9 +101,16 @@ module EE
 
       delegate :trial_ends_on, :trial_starts_on, to: :gitlab_subscription, allow_nil: true
 
-      delegate :third_party_ai_features_enabled, :third_party_ai_features_enabled=,
-        :experiment_features_enabled, :experiment_features_enabled=,
-        to: :namespace_settings, allow_nil: true
+      delegate(
+        :third_party_ai_features_enabled,
+        :third_party_ai_features_enabled=,
+        :experiment_features_enabled,
+        :experiment_features_enabled=,
+        :code_suggestions,
+        :code_suggestions=,
+        to: :namespace_settings,
+        allow_nil: true
+      )
 
       before_create :sync_membership_lock_with_parent
 
@@ -114,6 +121,10 @@ module EE
 
       def temporary_storage_increase_enabled?
         !!namespace_limit&.temporary_storage_increase_enabled?
+      end
+
+      def ai_assist_ui_enabled?
+        !!namespace_settings&.ai_assist_ui_enabled?
       end
 
       def eligible_for_temporary_storage_increase?
@@ -491,6 +502,10 @@ module EE
 
     def okrs_mvc_feature_flag_enabled?
       ::Feature.enabled?(:okrs_mvc, self)
+    end
+
+    def code_suggestions_enabled?
+      ::Feature.enabled?(:ai_assist_flag, self) && code_suggestions
     end
 
     private

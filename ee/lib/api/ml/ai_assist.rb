@@ -13,9 +13,13 @@ module API
         # Initial feature flag check to disable the AI Assist API entirely
         not_found! unless Feature.enabled?(:ai_assist_api)
 
-        # Check if the feature is enabled for any of the user's groups
+        # Check if the feature is disabled for any of the user's groups
         accessible_root_groups = current_user.groups.by_parent(nil)
-        not_found! unless accessible_root_groups.any?(&:code_suggestions_enabled?)
+        code_suggestions_disabled_by_group = accessible_root_groups.reject(&:code_suggestions_enabled?).any?
+        not_found! if code_suggestions_disabled_by_group
+
+        # Check if the feature is disabled by the user
+        not_found! unless current_user.code_suggestions_enabled?
       end
 
       allow_access_with_scope :api
@@ -26,9 +30,7 @@ module API
           success EE::API::Entities::Ml::AiAssist
         end
         get 'ai-assist' do
-          response = {
-            user_is_allowed: accessible_root_groups.present?
-          }
+          response = { user_is_allowed: true }
           present response, with: EE::API::Entities::Ml::AiAssist
         end
       end
