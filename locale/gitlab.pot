@@ -10856,13 +10856,22 @@ msgstr ""
 msgid "CodeSuggestions|%{link_start}What are code suggestions?%{link_end}"
 msgstr ""
 
-msgid "CodeSuggestions|By enabling this feature, you accept the %{link_start}Testing Terms of Use%{link_end}."
-msgstr ""
-
 msgid "CodeSuggestions|Code Suggestions"
 msgstr ""
 
-msgid "CodeSuggestions|Projects in this group can use Code Suggestions in VS Code"
+msgid "CodeSuggestions|Enable Code Suggestions"
+msgstr ""
+
+msgid "CodeSuggestions|Get code suggestions as you write code in your IDE. %{link_start}Learn more.%{link_end}"
+msgstr ""
+
+msgid "CodeSuggestions|Projects in this group can use Code Suggestions"
+msgstr ""
+
+msgid "CodeSuggestions|Subject to the %{link_start}Testing Terms of Use%{link_end}"
+msgstr ""
+
+msgid "CodeSuggestions|Subject to the %{link_start}Testing Terms of Use%{link_end}."
 msgstr ""
 
 msgid "Cohorts|Inactive users"

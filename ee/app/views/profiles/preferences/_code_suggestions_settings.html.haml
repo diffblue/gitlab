@@ -1,0 +1,21 @@
+- return unless @user.namespace.ai_assist_ui_enabled?
+
+- docs_link_url = help_page_path('user/project/repository/code_suggestions')
+- docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
+- terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
+
+.row.js-preferences-form.js-search-settings-section
+  .col-sm-12
+    %hr
+  .col-lg-4.profile-settings-sidebar
+    %h4.gl-mt-0
+      = s_('CodeSuggestions|Code Suggestions')
+      = gl_badge_tag _('beta'), variant: :info, size: :sm
+    %p
+      = s_('CodeSuggestions|Get code suggestions as you write code in your IDE. %{link_start}Learn more.%{link_end}').html_safe % { link_start: docs_link_start, link_end: '</a>'.html_safe }
+
+  .col-lg-8
+    .form-group
+      = form.gitlab_ui_checkbox_component :code_suggestions,
+        s_('CodeSuggestions|Enable Code Suggestions'),
+        help_text: s_('CodeSuggestions|Subject to the %{link_start}Testing Terms of Use%{link_end}').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe }

@@ -584,10 +584,6 @@ module EE
       end
     end
 
-    def code_suggestions_enabled?
-      ::Feature.enabled?(:ai_assist_flag, self) && code_suggestions
-    end
-
     def personal_access_token_expiration_policy_available?
       enforced_group_managed_accounts? && License.feature_available?(:personal_access_token_expiration_policy)
     end

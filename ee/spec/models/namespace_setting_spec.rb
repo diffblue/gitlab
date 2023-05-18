@@ -431,4 +431,59 @@ RSpec.describe NamespaceSetting do
       it { is_expected.to eq result }
     end
   end
+
+  describe '#ai_assist_ui_enabled?', :saas, feature_category: :code_suggestions do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:user_namespace) { create(:user_namespace) }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:feature_ai_assist_ui, :ai_assist_flag, :namespace, :check_namespace_plan, :result) do
+      false | false | ref(:group)          | false | false
+      false | false | ref(:subgroup)       | false | false
+      false | false | ref(:user_namespace) | false | false
+
+      false | false | ref(:group)          | true  | false
+      false | false | ref(:subgroup)       | true  | false
+      false | false | ref(:user_namespace) | true  | false
+
+      false | true  | ref(:group)          | false | false
+      false | true  | ref(:subgroup)       | false | false
+      false | true  | ref(:user_namespace) | false | false
+
+      false | true  | ref(:group)          | true  | false
+      false | true  | ref(:subgroup)       | true  | false
+      false | true  | ref(:user_namespace) | true  | false
+
+      true  | false | ref(:group)          | false | false
+      true  | false | ref(:subgroup)       | false | false
+      true  | false | ref(:user_namespace) | false | false
+
+      true  | false | ref(:group)          | true  | false
+      true  | false | ref(:subgroup)       | true  | false
+      true  | false | ref(:user_namespace) | true  | false
+
+      true  | true  | ref(:group)          | false | false
+      true  | true  | ref(:subgroup)       | false | false
+      true  | true  | ref(:user_namespace) | false | false
+
+      true  | true  | ref(:group)          | true  | true
+      true  | true  | ref(:subgroup)       | true  | false
+      true  | true  | ref(:user_namespace) | true  | true
+    end
+
+    with_them do
+      before do
+        create(:namespace_settings, namespace: user_namespace)
+        stub_feature_flags(ai_assist_ui: feature_ai_assist_ui)
+        stub_feature_flags(ai_assist_flag: ai_assist_flag)
+        stub_ee_application_setting(check_namespace_plan: check_namespace_plan)
+      end
+
+      subject { namespace.ai_assist_ui_enabled? }
+
+      it { is_expected.to eq(result) }
+    end
+  end
 end

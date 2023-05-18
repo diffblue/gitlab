@@ -8,7 +8,7 @@ RSpec.describe 'profiles/preferences/show' do
     allow(controller).to receive(:current_user).and_return(user)
   end
 
-  let(:user) { build(:user) }
+  let(:user) { create_default(:user) }
 
   context 'security dashboard feature is available' do
     before do
@@ -27,6 +27,36 @@ RSpec.describe 'profiles/preferences/show' do
       render
 
       expect(rendered).not_to have_select('Group overview content')
+    end
+  end
+
+  context 'AI Assist feature', :saas, feature_category: :code_suggestions do
+    context 'when the feature is available' do
+      before do
+        allow(user.namespace).to receive(:ai_assist_ui_enabled?).and_return(true)
+      end
+
+      it 'renders the code suggestions preference' do
+        render
+
+        expect(rendered).to render_template('profiles/preferences/_code_suggestions_settings')
+        field_text = s_('CodeSuggestions|Enable Code Suggestions')
+        expect(rendered).to have_content(field_text)
+      end
+    end
+
+    context 'when the feature is not available' do
+      before do
+        allow(user.namespace).to receive(:ai_assist_ui_enabled?).and_return(false)
+      end
+
+      it 'does not render the code suggestions preference' do
+        render
+
+        expect(rendered).to render_template('profiles/preferences/_code_suggestions_settings')
+        field_text = s_('CodeSuggestions|Enable Code Suggestions')
+        expect(rendered).not_to have_content(field_text)
+      end
     end
   end
 end

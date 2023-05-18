@@ -9,6 +9,10 @@ module EE::Profiles::PreferencesController
   end
 
   def preferences_param_names_ee
-    License.feature_available?(:security_dashboard) ? %i[group_view] : []
+    params_ee = []
+    params_ee.push(:group_view) if License.feature_available?(:security_dashboard)
+    params_ee.push(:code_suggestions) if user.namespace.ai_assist_ui_enabled?
+
+    params_ee
   end
 end

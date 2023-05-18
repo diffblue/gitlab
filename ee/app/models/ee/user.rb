@@ -46,6 +46,9 @@ module EE
                :onboarding_step_url=,
                to: :user_detail, allow_nil: true
 
+      delegate :code_suggestions_enabled?, :code_suggestions, :code_suggestions=,
+               to: :namespace
+
       has_many :epics,                    foreign_key: :author_id
       has_many :test_reports,             foreign_key: :author_id, inverse_of: :author, class_name: 'RequirementsManagement::TestReport'
       has_many :assigned_epics,           foreign_key: :assignee_id, class_name: "Epic"

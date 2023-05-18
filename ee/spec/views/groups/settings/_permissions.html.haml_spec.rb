@@ -26,7 +26,7 @@ RSpec.describe 'groups/settings/_permissions.html.haml', :saas, feature_category
       render
 
       expect(rendered).to render_template('groups/settings/_code_suggestions')
-      field_text = s_('CodeSuggestions|Projects in this group can use Code Suggestions in VS Code')
+      field_text = s_('CodeSuggestions|Projects in this group can use Code Suggestions')
       expect(rendered).to have_content(field_text)
       beta_link = help_page_path('user/project/repository/code_suggestions')
       expect(rendered).to have_link('What are code suggestions?', href: beta_link)
