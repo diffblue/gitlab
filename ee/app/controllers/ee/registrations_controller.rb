@@ -9,6 +9,7 @@ module EE
     prepended do
       include Arkose::ContentSecurityPolicy
       include RegistrationsTracking
+      include Onboarding::SetRedirect
 
       skip_before_action :check_captcha, if: -> { arkose_labs_enabled? }
       before_action only: [:new, :create] do
@@ -56,9 +57,8 @@ module EE
       custom_confirmation_instructions_service.set_token(save: false)
 
       return if registered_with_invite_email?
-      return unless Onboarding.user_onboarding_enabled?
 
-      resource.onboarding_in_progress = true
+      start_onboarding(after_sign_up_path, resource)
     end
 
     override :set_blocked_pending_approval?

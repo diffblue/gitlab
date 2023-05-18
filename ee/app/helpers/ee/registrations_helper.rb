@@ -18,6 +18,11 @@ module EE
       }
     end
 
+    override :register_omniauth_params
+    def register_omniauth_params(local_assigns)
+      super.merge(glm_tracking_params.to_h).merge(local_assigns.slice(:trial))
+    end
+
     private
 
     def redirect_path

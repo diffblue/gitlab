@@ -5,8 +5,6 @@ require 'spec_helper'
 RSpec.describe 'Trial flow for user picking just me and creating a project', :js, :saas_registration,
 feature_category: :onboarding do
   it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-    stub_application_setting(import_sources: %w[github gitlab_project])
-
     visit new_trial_registration_path(glm_params)
 
     expect_to_be_on_trial_user_registration
@@ -62,10 +60,6 @@ feature_category: :onboarding do
 
     choose 'Just me'
     check 'I\'d like to receive updates about GitLab via email'
-  end
-
-  def expect_to_be_on_trial_user_registration
-    expect(page).to have_content('Free 30-day trial')
   end
 
   def expect_to_see_welcome_form

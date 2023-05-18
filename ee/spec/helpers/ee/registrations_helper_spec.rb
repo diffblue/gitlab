@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::RegistrationsHelper do
+RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
   include Devise::Test::ControllerHelpers
   let(:expected_keys) { UserDetail.registration_objectives.keys - ['joining_team'] }
 
@@ -29,5 +29,30 @@ RSpec.describe EE::RegistrationsHelper do
     subject(:data) { helper.arkose_labs_data }
 
     it { is_expected.to eq({ api_key: 'api-key', domain: 'domain' }) }
+  end
+
+  describe '#register_omniauth_params' do
+    let(:result) do
+      {
+        glm_source: '_glm_source_',
+        glm_content: '_glm_content_',
+        intent: :register
+      }
+    end
+
+    before do
+      allow(helper)
+        .to receive(:glm_tracking_params).and_return({ glm_source: '_glm_source_', glm_content: '_glm_content_' })
+    end
+
+    it 'adds intent to register with glm params' do
+      expect(helper.register_omniauth_params({})).to eq(result)
+    end
+
+    context 'when trial param exists' do
+      it 'adds intent to register with glm params and trial' do
+        expect(helper.register_omniauth_params({ trial: true })).to eq(result.merge(trial: true))
+      end
+    end
   end
 end

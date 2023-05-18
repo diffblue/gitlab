@@ -144,18 +144,18 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
   def sign_up
     fill_in_user_sign_up_form
-    solve_arkose_verify_challenge
+    solve_arkose_verify_challenge(risk: risk)
     click_button _('Register')
   end
 
   def saml_sign_up
     click_link "oauth-login-#{provider}"
-    solve_arkose_verify_challenge(saml: true)
+    solve_arkose_verify_challenge(saml: true, risk: risk)
   end
 
   def trial_sign_up
     fill_in_user_sign_up_form
-    solve_arkose_verify_challenge
+    solve_arkose_verify_challenge(risk: risk)
     click_button _('Continue')
   end
 
@@ -169,10 +169,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
     fill_in _('Password'), with: new_user.password
 
     wait_for_all_requests
-  end
-
-  def expect_to_see_identity_verification_page
-    expect(page).to have_content("For added security, you'll need to verify your identity")
   end
 
   def verify_credit_card
@@ -197,20 +193,6 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
     fill_in 'verification_code', with: verification_code
     click_button s_('IdentityVerification|Verify phone number')
-  end
-
-  def verify_email
-    expect(page).to have_content(format(s_("IdentityVerification|We've sent a verification code to %{email}"),
-      email: Gitlab::Utils::Email.obfuscated_email(user_email)))
-
-    fill_in 'verification_code', with: email_verification_code
-    click_button s_('IdentityVerification|Verify email address')
-  end
-
-  def expect_to_see_verification_successful_page
-    expect(page).to have_content(s_('IdentityVerification|Verification successful'))
-
-    click_link 'refresh the page'
   end
 
   def expect_to_see_welcome_page

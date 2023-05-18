@@ -43,6 +43,7 @@ module EE
       delegate :provisioned_by_group, :provisioned_by_group=,
                :provisioned_by_group_id, :provisioned_by_group_id=,
                :provisioned_by_group_at, :provisioned_by_group_at=,
+               :onboarding_step_url=,
                to: :user_detail, allow_nil: true
 
       has_many :epics,                    foreign_key: :author_id

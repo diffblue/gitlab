@@ -2,7 +2,12 @@
 
 module EE
   module OmniauthCallbacksController
+    extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+
+    prepended do
+      include Onboarding::SetRedirect
+    end
 
     override :openid_connect
     def openid_connect
@@ -22,6 +27,22 @@ module EE
         nil,
         with: provider
       ).for_failed_login.unauth_security_event
+    end
+
+    override :after_sign_up_path
+    def after_sign_up_path
+      onboarding_params = request.env['omniauth.params'].slice('glm_source', 'glm_content', 'trial')
+
+      ::Gitlab::Utils.add_url_parameters(super, onboarding_params)
+    end
+
+    override :perform_registration_tasks
+    def perform_registration_tasks(user, provider)
+      super
+
+      return unless provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
+
+      start_onboarding!(after_sign_up_path, user)
     end
 
     override :sign_in_and_redirect_or_verify_identity

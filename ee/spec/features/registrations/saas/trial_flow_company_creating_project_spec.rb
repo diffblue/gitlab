@@ -2,11 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas_registration,
-feature_category: :onboarding do
+RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas_registration, feature_category: :onboarding do
   it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-    stub_application_setting(import_sources: %w[github gitlab_project])
-
     visit new_trial_registration_path(glm_params)
 
     expect_to_be_on_trial_user_registration
@@ -19,25 +16,17 @@ feature_category: :onboarding do
 
     user_signs_in
 
-    expect_to_see_welcome_form
+    ensure_onboarding { expect_to_see_welcome_form }
 
     fills_in_welcome_form
     click_on 'Continue'
 
-    expect_to_see_company_form
-
-    # validate user is returned back to the specific onboarding step
-    visit root_path
-    expect_to_see_company_form
+    ensure_onboarding { expect_to_see_company_form }
 
     fill_in_company_form
     click_on 'Continue'
 
-    expect_to_see_group_and_project_creation_form
-
-    # validate user is returned back to the specific onboarding step
-    visit root_path
-    expect_to_see_group_and_project_creation_form
+    ensure_onboarding { expect_to_see_group_and_project_creation_form }
 
     fills_in_group_and_project_creation_form_with_trial
     click_on 'Create project'
@@ -69,10 +58,6 @@ feature_category: :onboarding do
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
     choose 'My company or team'
-  end
-
-  def expect_to_be_on_trial_user_registration
-    expect(page).to have_content('Free 30-day trial')
   end
 
   def expect_to_see_welcome_form

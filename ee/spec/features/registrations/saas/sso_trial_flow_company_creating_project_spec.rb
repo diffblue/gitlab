@@ -2,41 +2,36 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking company and importing a project', :js, :saas_registration,
-feature_category: :onboarding do
-  it 'registers the user and starts to import a project' do
-    visit new_trial_registration_path
+RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas_sso_registration, feature_category: :onboarding do
+  it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+    user_signs_up_through_trial_with_sso(glm_params)
 
-    expect_to_be_on_trial_user_registration
+    expect_to_see_identity_verification_page
 
-    user_signs_up_through_trial_registration
+    verify_email
 
-    expect_to_see_account_confirmation_page
+    expect_to_see_verification_successful_page
 
-    confirm_account
-
-    user_signs_in
-
-    expect_to_see_welcome_form
+    ensure_onboarding { expect_to_see_welcome_form }
 
     fills_in_welcome_form
     click_on 'Continue'
 
-    expect_to_see_company_form
+    ensure_onboarding { expect_to_see_company_form }
 
     fill_in_company_form
     click_on 'Continue'
 
-    expect_to_see_group_and_project_creation_form
+    ensure_onboarding { expect_to_see_group_and_project_creation_form }
 
-    click_on 'Import'
+    fills_in_group_and_project_creation_form_with_trial
+    click_on 'Create project'
 
-    expect_to_see_import_form
+    expect_to_be_in_continuous_onboarding
 
-    fills_in_import_form
-    click_on 'GitHub'
+    click_on 'Ok, let\'s go'
 
-    expect_to_be_in_import_process
+    expect_to_be_in_learn_gitlab
   end
 
   def user_signs_up_through_trial_registration
@@ -62,7 +57,7 @@ feature_category: :onboarding do
   end
 
   def expect_to_see_welcome_form
-    expect(page).to have_content('Welcome to GitLab, Registering!')
+    expect(page).to have_content('Welcome to GitLab, mockuser!')
 
     page.within(welcome_form_selector) do
       expect(page).to have_content('Role')
@@ -75,10 +70,16 @@ feature_category: :onboarding do
     end
   end
 
+  def expect_to_see_group_and_project_creation_form
+    expect(page).to have_content('Create or import your first project')
+    expect(page).to have_content('Projects help you organize your work')
+    expect(page).to have_content('Your project will be created at:')
+  end
+
   def fill_in_company_form
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params(glm: false)
+      params: company_params
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
 
     fill_in 'company_name', with: 'Test Company'
@@ -87,25 +88,5 @@ feature_category: :onboarding do
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
-  end
-
-  def fills_in_import_form
-    fill_in 'import_group_name', with: 'Test Group'
-  end
-
-  def expect_to_be_in_import_process
-    expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
-    MESSAGE
-  end
-
-  def expect_to_see_import_form
-    expect_to_see_group_and_project_creation_form
-    expect(page).to have_content('GitLab export')
   end
 end

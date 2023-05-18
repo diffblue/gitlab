@@ -31,7 +31,7 @@ module Registrations
 
       if result.success?
         track_event('successfully_submitted_form')
-        finish_onboarding
+        finish_onboarding(current_user)
         redirect_successful_namespace_creation(result.payload[:project])
       else
         @group = result.payload[:group]
@@ -45,7 +45,7 @@ module Registrations
       result = Registrations::ImportNamespaceCreateService.new(current_user, params).execute
 
       if result.success?
-        finish_onboarding
+        finish_onboarding(current_user)
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{result.payload[:group].id}").to_s
         redirect_to import_url
       else

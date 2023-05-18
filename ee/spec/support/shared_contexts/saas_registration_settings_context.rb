@@ -16,6 +16,7 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
     stub_application_setting(require_admin_approval_after_user_signup: false)
 
     stub_application_setting(check_namespace_plan: true)
+    stub_application_setting(import_sources: %w[github gitlab_project])
 
     # SaaS always requires confirmation, since the default is set to `off` we want to ensure SaaS is set to `hard`
     stub_application_setting_enum('email_confirmation_setting', 'hard')
@@ -32,6 +33,22 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
   end
 end
 
+RSpec.shared_context 'with saas sso settings for registration flows', shared_context: :metadata do # rubocop: disable RSpec/SharedGroupsMetadata
+  before do
+    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_feature_flags(
+      arkose_labs_oauth_signup_challenge: true,
+      identity_verification: true
+    )
+  end
+
+  around do |example|
+    with_omniauth_full_host { example.run }
+  end
+end
+
 RSpec.configure do |rspec|
   rspec.include_context 'with saas settings for registration flows', saas_registration: true
+  rspec.include_context 'with saas settings for registration flows', saas_sso_registration: true
+  rspec.include_context 'with saas sso settings for registration flows', saas_sso_registration: true
 end
