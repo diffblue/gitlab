@@ -12,6 +12,10 @@ module QA
               def go_to_roadmap
                 open_plan_submenu("Roadmap")
               end
+
+              def go_to_group_iterations
+                open_plan_submenu('Iterations')
+              end
             end
           end
         end
