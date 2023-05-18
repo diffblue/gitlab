@@ -12,8 +12,6 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
   before do
     stub_application_setting(openai_api_key: 'test-key')
     stub_licensed_features(ai_git_command: true)
-    stub_feature_flags(openai_experimentation: true)
-    stub_feature_flags(ai_experimentation_api: current_user)
   end
 
   describe 'POST /ai/llm/git_command', :saas do
@@ -23,7 +21,7 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
       ultimate_group.add_developer(current_user)
     end
 
-    it_behaves_like 'delegates AI request to Workhorse', :openai_experimentation do
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:expected_params) do
         expected_content = <<~PROMPT
         Provide the appropriate git commands for: list 10 commit titles.
@@ -48,6 +46,18 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
             max_tokens: 300
           }.to_json
         }
+      end
+    end
+
+    context 'when openai experimentation is unavailable' do
+      before do
+        stub_feature_flags(openai_experimentation: false)
+      end
+
+      it 'returns bad request' do
+        post api(url, current_user), params: input_params
+
+        expect(response).to have_gitlab_http_status(:bad_request)
       end
     end
 

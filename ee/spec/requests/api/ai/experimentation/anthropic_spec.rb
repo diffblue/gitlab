@@ -19,7 +19,7 @@ RSpec.describe API::Ai::Experimentation::Anthropic, feature_category: :shared do
   end
 
   describe 'POST /ai/experimentation/anthropic/complete' do
-    it_behaves_like 'delegates AI request to Workhorse', :anthropic_experimentation do
+    it_behaves_like 'delegates AI request to Workhorse' do
       let(:input_params) do
         {
           prompt: 'Who won the world series in 2020?',
@@ -40,6 +40,8 @@ RSpec.describe API::Ai::Experimentation::Anthropic, feature_category: :shared do
           'Body' => input_params.to_json
         }
       end
+
+      it_behaves_like 'behind AI related feature flags', :anthropic_experimentation
     end
   end
 end
