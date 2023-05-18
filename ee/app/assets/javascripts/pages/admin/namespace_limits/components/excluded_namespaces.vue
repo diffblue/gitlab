@@ -1,20 +1,13 @@
 <script>
-import { GlTable, GlLoadingIcon, GlButton } from '@gitlab/ui';
-
-/* eslint-disable @gitlab/require-i18n-strings */
-// I opted to disable the rule for this file to not add more changes, I will delete the rule exclusion and the placeholder strings once the component grows more.
-const i18n = {
-  placeholderButtonText: 'click me to toggle loading',
-  placeholderText: 'Exclusion form placeholder',
-};
+import { GlTable, GlLoadingIcon } from '@gitlab/ui';
+import ExcludedNamespacesForm from './excluded_namespaces_form.vue';
 
 export default {
   components: {
     GlTable,
     GlLoadingIcon,
-    GlButton,
+    ExcludedNamespacesForm,
   },
-  i18n,
   data() {
     return {
       loading: false,
@@ -54,11 +47,6 @@ export default {
       </template>
     </gl-table>
     <br />
-    <p>
-      {{ $options.i18n.placeholderText }}
-      <gl-button @click="handleExcludingNamespace">
-        {{ $options.i18n.placeholderButtonText }}
-      </gl-button>
-    </p>
+    <excluded-namespaces-form @added="handleExcludingNamespace" />
   </div>
 </template>
