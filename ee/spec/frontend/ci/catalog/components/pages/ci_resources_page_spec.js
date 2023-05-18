@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlLoadingIcon } from '@gitlab/ui';
 
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -10,6 +9,8 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import CatalogHeader from 'ee/ci/catalog/components/list/catalog_header.vue';
 import ciResourcesPage from 'ee/ci/catalog/components/pages/ci_resources_page.vue';
 import CiResourcesList from 'ee/ci/catalog/components/list/ci_resources_list.vue';
+import CatalogListSkeletonLoader from 'ee/ci/catalog/components/list/catalog_list_skeleton_loader.vue';
+
 import EmptyState from 'ee/ci/catalog/components/list/empty_state.vue';
 import getCiCatalogResources from 'ee/ci/catalog/graphql/queries/get_ci_catalog_resources.query.graphql';
 import { cacheConfig } from 'ee/ci/catalog/graphql/settings';
@@ -45,7 +46,7 @@ describe('CiResourcesPage', () => {
 
   const findCatalogHeader = () => wrapper.findComponent(CatalogHeader);
   const findCiResourcesList = () => wrapper.findComponent(CiResourcesList);
-  const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoadingState = () => wrapper.findComponent(CatalogListSkeletonLoader);
   const findEmptyState = () => wrapper.findComponent(EmptyState);
 
   beforeEach(() => {
@@ -58,7 +59,7 @@ describe('CiResourcesPage', () => {
     });
 
     it('shows a loading icon and no list', () => {
-      expect(findLoadingIcon().exists()).toBe(true);
+      expect(findLoadingState().exists()).toBe(true);
       expect(findEmptyState().exists()).toBe(false);
       expect(findCiResourcesList().exists()).toBe(false);
     });
@@ -79,7 +80,7 @@ describe('CiResourcesPage', () => {
         await createComponent();
       });
       it('renders the empty state', () => {
-        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findLoadingState().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(true);
         expect(findCiResourcesList().exists()).toBe(false);
       });
@@ -95,7 +96,7 @@ describe('CiResourcesPage', () => {
         await createComponent();
       });
       it('renders the resources list', () => {
-        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findLoadingState().exists()).toBe(false);
         expect(findEmptyState().exists()).toBe(false);
         expect(findCiResourcesList().exists()).toBe(true);
       });
