@@ -9,12 +9,26 @@ module Analytics
 
       attr_accessor :context, :type, :horizon
 
-      def self.for(type)
-        DeploymentFrequencyForecast if type == 'deployment_frequency'
+      class << self
+        def declarative_policy_class
+          'Analytics::Forecasting::ForecastPolicy'
+        end
+
+        def for(type)
+          return unless type == 'deployment_frequency'
+
+          DeploymentFrequencyForecast
+        end
+
+        def context_class
+          raise NoMethodError, 'must be implemented in a subclass'
+        end
       end
 
-      def initialize(*args)
+      def initialize(*)
         super
+
+        raise 'Invalid context class.' unless context.class <= self.class.context_class
 
         @end_date = Date.today
       end

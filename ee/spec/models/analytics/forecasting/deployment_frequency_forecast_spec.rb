@@ -23,6 +23,12 @@ RSpec.describe Analytics::Forecasting::DeploymentFrequencyForecast, feature_cate
     allow(Analytics::Forecasting::HoltWintersOptimizer).to receive(:model_for).and_return(model_mock)
   end
 
+  describe '.context_class' do
+    it 'is Project' do
+      expect(described_class.context_class).to eq Project
+    end
+  end
+
   describe '#source_time_series' do
     let(:daily_metrics) do
       [nil, 5, 6, 3, 4, nil, nil, 4, 5, 6, 4, 3]

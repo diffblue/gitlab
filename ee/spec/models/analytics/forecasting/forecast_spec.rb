@@ -9,8 +9,8 @@ RSpec.describe Analytics::Forecasting::Forecast, feature_category: :devops_repor
   end
 
   let(:forecast_type) { 'deployment_frequency' }
-  let(:horizon) { 30 }
-  let_it_be(:project) { Project.new }
+  let(:forecast_horizon) { 30 }
+  let(:forecast_context) { Project.new }
 
   before do
     allow(Analytics::Forecasting::HoltWintersOptimizer).to receive(:model_for).and_return(model_mock)
@@ -23,7 +23,17 @@ RSpec.describe Analytics::Forecasting::Forecast, feature_category: :devops_repor
     end
   end
 
-  subject { described_class.for(forecast_type).new(type: forecast_type, horizon: horizon, context: project) }
+  describe '.context_class' do
+    it 'raises NoMethodError' do
+      expect do
+        described_class.context_class
+      end.to raise_error NoMethodError, 'must be implemented in a subclass'
+    end
+  end
+
+  subject do
+    described_class.for(forecast_type).new(type: forecast_type, horizon: forecast_horizon, context: forecast_context)
+  end
 
   describe '#status' do
     context 'when model score >= 0.4' do
@@ -50,17 +60,27 @@ RSpec.describe Analytics::Forecasting::Forecast, feature_category: :devops_repor
   end
 
   describe '#values' do
-    let(:model_forecast) { (1..horizon).to_a }
+    let(:model_forecast) { (1..forecast_horizon).to_a }
 
     before do
-      allow(model_mock).to receive(:predict).with(horizon).and_return(model_forecast)
+      allow(model_mock).to receive(:predict).with(forecast_horizon).and_return(model_forecast)
     end
 
     it 'returns forecast hash with dates and model forecast values' do
       freeze_time do
         expect(subject.values).to be_kind_of Hash
         expect(subject.values.values).to eq(model_forecast)
-        expect(subject.values.keys).to eq(((Date.today + 1)..(Date.today + horizon)).to_a)
+        expect(subject.values.keys).to eq(((Date.today + 1)..(Date.today + forecast_horizon)).to_a)
+      end
+    end
+  end
+
+  describe '#initialize' do
+    context 'when context has wrong class' do
+      let(:forecast_context) { nil }
+
+      it 'raises an error' do
+        expect { subject }.to raise_error 'Invalid context class.'
       end
     end
   end

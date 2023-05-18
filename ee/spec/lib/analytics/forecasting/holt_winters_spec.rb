@@ -61,7 +61,7 @@ RSpec.describe Analytics::Forecasting::HoltWinters, feature_category: :devops_re
   end
 
   describe '.r2_score' do
-    subject { described_class.r2_score(forecast, real) }
+    subject { described_class.r2_score(real, forecast) }
 
     let(:forecast) { [1.5, 2.5, 3.5, 4.5, 5.5] }
     let(:real) { [2, 3, 4, 5, 6] }
@@ -77,6 +77,12 @@ RSpec.describe Analytics::Forecasting::HoltWinters, feature_category: :devops_re
       it 'excludes nils from r2 score calculation' do
         expect(subject).to be_within(0.001).of(0.625)
       end
+    end
+
+    context 'when data is flat line (SSR = 0)' do
+      let(:real) { [1, 1, 1, 1, 1] }
+
+      it { is_expected.to eq 1.0 }
     end
   end
 

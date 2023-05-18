@@ -14,6 +14,9 @@ module Analytics
         average = values.sum / values.size.to_f
 
         sst = values.sum { |v| (v - average)**2 }
+
+        return 1.0 if sst == 0
+
         ssr = errors.compact.sum { |e| e**2 }
 
         1.0 - (ssr / sst)
