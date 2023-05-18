@@ -9,7 +9,7 @@ import {
   MAX_PANELS_LIMIT,
   YAML_CONFIG_LOAD_ERROR,
 } from '../constants';
-import { fetchYamlConfig } from '../utils';
+import { fetchYamlConfig } from '../api';
 import DoraVisualization from './dora_visualization.vue';
 
 const pathsToPanels = (paths) => paths.map((namespace) => ({ data: { namespace } }));
