@@ -35617,10 +35617,10 @@ msgstr ""
 msgid "ProjectSettings|Security and compliance for this project."
 msgstr ""
 
-msgid "ProjectSettings|Select the default branch for this project, and configure the template for branch names."
+msgid "ProjectSettings|Select a project"
 msgstr ""
 
-msgid "ProjectSettings|Select the project containing Analytics Dashboards configuration files"
+msgid "ProjectSettings|Select the default branch for this project, and configure the template for branch names."
 msgstr ""
 
 msgid "ProjectSettings|Select the project containing Analytics Dashboards configuration files."
