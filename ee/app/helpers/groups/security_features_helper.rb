@@ -20,7 +20,7 @@ module Groups::SecurityFeaturesHelper
     {
       projects_endpoint: expose_url(api_v4_groups_projects_path(id: group.id)),
       group_full_path: group.full_path,
-      no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
+      no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
       empty_state_svg_path: image_path('illustrations/security-dashboard-empty-state.svg'),
       security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
       vulnerabilities_export_endpoint: expose_path(api_v4_security_groups_vulnerability_exports_path(id: group.id)),

@@ -3,7 +3,7 @@
 module SecurityHelper
   def instance_security_dashboard_data
     {
-      no_vulnerabilities_svg_path: image_path('illustrations/issues.svg'),
+      no_vulnerabilities_svg_path: image_path('illustrations/empty-state/empty-search-md.svg'),
       empty_state_svg_path: image_path('illustrations/operations-dashboard_empty.svg'),
       security_dashboard_empty_svg_path: image_path('illustrations/security-dashboard_empty.svg'),
       project_add_endpoint: security_projects_path,

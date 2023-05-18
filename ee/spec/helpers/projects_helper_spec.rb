@@ -188,7 +188,7 @@ RSpec.describe ProjectsHelper do
           operational_configuration_path: new_project_security_policy_path(project),
           security_dashboard_empty_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),
           project_full_path: project.full_path,
-          no_vulnerabilities_svg_path: start_with('/assets/illustrations/issues-'),
+          no_vulnerabilities_svg_path: start_with('/assets/illustrations/empty-state/empty-search-md-'),
           security_configuration_path: end_with('/configuration'),
           can_admin_vulnerability: 'true',
           new_vulnerability_path: end_with('/security/vulnerabilities/new')
@@ -206,7 +206,7 @@ RSpec.describe ProjectsHelper do
           project: { id: project.id, name: project.name },
           project_full_path: project.full_path,
           vulnerabilities_export_endpoint: "/api/v4/security/projects/#{project.id}/vulnerability_exports",
-          no_vulnerabilities_svg_path: start_with('/assets/illustrations/issues-'),
+          no_vulnerabilities_svg_path: start_with('/assets/illustrations/empty-state/empty-search-md-'),
           empty_state_svg_path: start_with('/assets/illustrations/security-dashboard-empty-state'),
           operational_configuration_path: new_project_security_policy_path(project),
           security_dashboard_empty_svg_path: start_with('/assets/illustrations/security-dashboard_empty'),

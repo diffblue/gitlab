@@ -212,6 +212,7 @@ export default {
         )
       "
       :svg-path="filtersEmptyStateSvgPath"
+      :svg-height="150"
     />
 
     <gl-empty-state
