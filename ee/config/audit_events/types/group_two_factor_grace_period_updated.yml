@@ -1,0 +1,9 @@
+---
+name: group_two_factor_grace_period_updated
+description: Event triggered when a groups two factor grace period is updated.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369326
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106079
+feature_category: subgroups
+milestone: '15.7'
+saved_to_database: true
+streamed: true
