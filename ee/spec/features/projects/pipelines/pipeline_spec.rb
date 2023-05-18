@@ -8,8 +8,8 @@ RSpec.describe 'Pipeline', :js, feature_category: :continuous_integration do
   let_it_be(:project, reload: true) { create(:project, :repository, namespace: namespace) }
 
   before do
+    stub_feature_flags(pipeline_details_header_vue: false)
     sign_in(user)
-
     project.add_developer(user)
   end
 

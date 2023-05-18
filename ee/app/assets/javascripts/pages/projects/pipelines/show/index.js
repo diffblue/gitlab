@@ -6,7 +6,7 @@ import initCodequalityReport from './codequality_report';
 import initLicenseReport from './license_report';
 
 initPipelines();
-initPipelineDetails();
+initPipelineDetails(gon.features.pipelineDetailsHeaderVue);
 initPipelineSecurityDashboard();
 initLicenseReport();
 initCodequalityReport();
