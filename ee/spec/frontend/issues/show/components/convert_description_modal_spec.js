@@ -93,7 +93,6 @@ describe('Convert description', () => {
           generateDescription: {
             resourceId,
             content,
-            descriptionTemplateName,
           },
         },
       });
