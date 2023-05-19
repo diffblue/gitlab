@@ -24,6 +24,10 @@ module QA
                 element :filter_activity_dropdown
               end
 
+              view 'ee/app/assets/javascripts/security_dashboard/components/shared/filters/status_filter.vue' do
+                element :filter_status_dropdown
+              end
+
               view 'ee/app/assets/javascripts/security_dashboard/components/
                     shared/vulnerability_report/vulnerability_list.vue' do
                 element :vulnerability_status_content
@@ -47,28 +51,37 @@ module QA
 
             # Retry on exception to avoid ElementNotFound errors when clicks are sent too fast for the UI to update
             retry_on_exception(sleep_interval: 2, message: "Retrying status click until current url matches state") do
-              click_element(:filter_status_dropdown)
-              click_element("filter_all_statuses_dropdown_item")
-              statuses.each do |status|
-                # The data-qa-selector for this element is dynamically computed in qaSelector method in
-                # ee/app/assets/javascripts/security_dashboard/components/shared/filters/filter_body.vue
-                click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown_item")
-                # To account for 'All statuses' dropdown item
+              find(status_dropdown_button_selector, wait: 5).click
+              find(status_item_selector('ALL')).click
+              statuses_list(statuses).each do |status|
+                find(status_item_selector(status)).click
                 wait_for_requests # It takes a moment to update the page after changing selections
               end
-              click_element(:filter_status_dropdown)
-              state = statuses.map do |status|
-                case status
-                when /all/i
-                  'state=all'
-                when /needs triage/i
-                  'state=detected'
-                else
-                  "state=#{status}"
-                end
-              end.join("&")
+              find(status_dropdown_button_selector, wait: 5).click
+              state = statuses_list(statuses).map { |item| "state=#{item}" }.join("&")
               page.current_url.downcase.include?(state)
             end
+          end
+
+          def statuses_list(statuses)
+            statuses.map do |status|
+              case status
+              when /all/i
+                'all'
+              when /needs triage/i
+                'detected'
+              else
+                status
+              end
+            end
+          end
+
+          def status_dropdown_button_selector
+            "[data-qa-selector='filter_status_dropdown'] > button"
+          end
+
+          def status_item_selector(status)
+            "[data-testid='listbox-item-#{status.upcase}']"
           end
 
           def filter_by_activity(activity_name)
