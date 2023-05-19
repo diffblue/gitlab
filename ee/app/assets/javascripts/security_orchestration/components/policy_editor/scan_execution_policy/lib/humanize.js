@@ -1,45 +1,35 @@
 import cronstrue from 'cronstrue/i18n';
-import { getPreferredLocales, sprintf, s__ } from '~/locale';
+import { getPreferredLocales, sprintf, n__, s__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
 import { createHumanizedScanners } from '../../utils';
 
 /**
  * Create a human-readable list of runner tags, adding the necessary punctuation and conjunctions
- * @param {Array} originalNamespaces strings representing runner tags
- * @returns {String}
+ * @param {string} scanner humanized scanner
+ * @param {Array} originalTags all tags associated with the scanner
+ * @returns {String} human-readable list of tags
  */
 const humanizeRunnerTags = (scanner, originalTags) => {
   const tags = originalTags ? [...originalTags] : [];
 
-  if (tags.length === 0) {
-    return sprintf(s__('SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd}'), {
-      scanner,
-    });
-  }
-
-  if (tags.length === 1) {
-    return sprintf(
-      s__(
-        'SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd} on runners with the %{tags} tag',
-      ),
-      {
-        scanner,
-        tags,
-      },
+  if (tags?.length > 0) {
+    const textMessage = n__(
+      'SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with tag:',
+      'SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd} on runners with the tags:',
+      tags.length,
     );
+
+    return {
+      message: sprintf(textMessage, { scanner }),
+      tags,
+    };
   }
 
-  const lastTag = tags.pop();
-  return sprintf(
-    s__(
-      'SecurityOrchestration|%{scannerStart}%{scanner}%{scannerEnd} on runners with the %{tags} and %{lastTag} tags',
-    ),
-    {
+  return {
+    message: sprintf(s__('SecurityOrchestration|Run %{scannerStart}%{scanner}%{scannerEnd}'), {
       scanner,
-      tags: tags.join(', '),
-      lastTag,
-    },
-  );
+    }),
+  };
 };
 
 /**
@@ -109,24 +99,20 @@ const humanizeCadence = (cadence) => {
 };
 
 const humanizePipelineRule = (rule) => {
-  return sprintf(
-    s__('SecurityOrchestration|Scan to be performed on every pipeline on the %{branches}'),
-    { branches: humanizeBranches(rule.branches) },
-  );
+  return sprintf(s__('SecurityOrchestration|on every pipeline on the %{branches}'), {
+    branches: humanizeBranches(rule.branches),
+  });
 };
 
 const humanizeScheduleRule = (rule) => {
   if (rule.agents) {
-    return sprintf(
-      s__('SecurityOrchestration|Scan to be performed by the agent named %{agents} %{cadence}'),
-      {
-        agents: humanizeAgent(rule.agents),
-        cadence: humanizeCadence(rule.cadence),
-      },
-    );
+    return sprintf(s__('SecurityOrchestration|by the agent named %{agents} %{cadence}'), {
+      agents: humanizeAgent(rule.agents),
+      cadence: humanizeCadence(rule.cadence),
+    });
   }
 
-  return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}'), {
+  return sprintf(s__('SecurityOrchestration|%{cadence} on the %{branches}'), {
     cadence: humanizeCadence(rule.cadence),
     branches: humanizeBranches(rule.branches),
   });

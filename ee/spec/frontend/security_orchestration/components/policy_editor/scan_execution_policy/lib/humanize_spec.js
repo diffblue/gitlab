@@ -64,14 +64,22 @@ describe('humanizeActions', () => {
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[0]])).toStrictEqual(['%{scannerStart}DAST%{scannerEnd}']);
+    expect(humanizeActions([mockActions[0]])).toStrictEqual([
+      { message: 'Run %{scannerStart}DAST%{scannerEnd}' },
+    ]);
   });
 
   it('returns multiple actions as human-readable strings', () => {
     expect(humanizeActions(mockActions)).toStrictEqual([
-      '%{scannerStart}DAST%{scannerEnd}',
-      '%{scannerStart}Secret Detection%{scannerEnd}',
-      '%{scannerStart}Container Scanning%{scannerEnd}',
+      {
+        message: 'Run %{scannerStart}DAST%{scannerEnd}',
+      },
+      {
+        message: 'Run %{scannerStart}Secret Detection%{scannerEnd}',
+      },
+      {
+        message: 'Run %{scannerStart}Container Scanning%{scannerEnd}',
+      },
     ]);
   });
 
@@ -84,9 +92,9 @@ describe('humanizeActions', () => {
 
     it.each`
       title                   | input                       | output
-      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${['%{scannerStart}SAST%{scannerEnd} on runners with the one-tag tag']}
-      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${['%{scannerStart}Secret Detection%{scannerEnd} on runners with the two-tag and three-tag tags']}
-      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${['%{scannerStart}Container Scanning%{scannerEnd} on runners with the four-tag, five-tag and six-tag tags']}
+      ${'one tag'}            | ${[mockActionsWithTags[0]]} | ${[{ message: 'Run %{scannerStart}SAST%{scannerEnd} on runners with tag:', tags: mockActionsWithTags[0].tags }]}
+      ${'two tags'}           | ${[mockActionsWithTags[1]]} | ${[{ message: 'Run %{scannerStart}Secret Detection%{scannerEnd} on runners with the tags:', tags: mockActionsWithTags[1].tags }]}
+      ${'more than two tags'} | ${[mockActionsWithTags[2]]} | ${[{ message: 'Run %{scannerStart}Container Scanning%{scannerEnd} on runners with the tags:', tags: mockActionsWithTags[2].tags }]}
     `('$title', ({ input, output }) => {
       expect(humanizeActions(input)).toStrictEqual(output);
     });
@@ -104,20 +112,20 @@ describe('humanizeRules', () => {
 
   it('returns a single rule as a human-readable string', () => {
     expect(humanizeRules([mockRules[1]])).toStrictEqual([
-      'Scan to be performed every 10 minutes, every hour, every day on the main branch',
+      'every 10 minutes, every hour, every day on the main branch',
     ]);
   });
 
   it('returns multiple rules with different number of branches as human-readable strings', () => {
     expect(humanizeRules(mockRules)).toStrictEqual([
-      'Scan to be performed every 10 minutes, every hour, every day on the main branch',
-      'Scan to be performed on every pipeline on the release/* and staging branches',
-      'Scan to be performed on every pipeline on the release/1.*, canary and staging branches',
-      'Scan to be performed by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
-      'Scan to be performed by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
-      'Scan to be performed by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
-      'Scan to be performed by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
-      'Scan to be performed by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
+      'every 10 minutes, every hour, every day on the main branch',
+      'on every pipeline on the release/* and staging branches',
+      'on every pipeline on the release/1.*, canary and staging branches',
+      'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      'by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      'by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
+      'by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
+      'by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
     ]);
   });
 });

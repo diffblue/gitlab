@@ -11,7 +11,7 @@ export default {
 
 <template>
   <div>
-    <h5 data-testid="label" class="gl-mt-6">{{ label }}</h5>
-    <p data-testid="content"><slot></slot></p>
+    <h5 class="gl-mt-6 gl-text-body" data-testid="label">{{ label }}</h5>
+    <p class="gl-text-body" data-testid="content"><slot></slot></p>
   </div>
 </template>
