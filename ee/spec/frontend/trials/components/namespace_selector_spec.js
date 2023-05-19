@@ -18,15 +18,24 @@ describe('NamespaceSelector', () => {
     wrapper = shallowMountExtended(NamespaceSelector, {
       propsData: {
         items,
+        anyTrialEligibleNamespaces: true,
         ...props,
       },
     });
   };
 
-  it('passes the item to the listbox input', () => {
-    createComponent();
+  describe('listbox input', () => {
+    it('passes the item to the listbox input', () => {
+      createComponent();
 
-    expect(findListboxInput().props('items')).toBe(items);
+      expect(findListboxInput().props('items')).toBe(items);
+    });
+
+    it('is hidden if anyTrialEligibleNamespaces is false', () => {
+      createComponent({ anyTrialEligibleNamespaces: false });
+
+      expect(findListboxInput().exists()).toBe(false);
+    });
   });
 
   describe('"New group name" input', () => {
@@ -40,6 +49,18 @@ describe('NamespaceSelector', () => {
       createComponent({ initialValue: CREATE_GROUP_OPTION_VALUE });
 
       expect(findNewGroupNameInput().exists()).toBe(true);
+    });
+
+    it('is visible and has value if the initially selected option is "Create group"', () => {
+      createComponent({ newGroupName: '_name_', initialValue: CREATE_GROUP_OPTION_VALUE });
+
+      expect(findNewGroupNameInput().attributes('value')).toEqual('_name_');
+    });
+
+    it('is visible and has value if anyTrialEligibleNamespaces is false', () => {
+      createComponent({ newGroupName: '_name_', anyTrialEligibleNamespaces: false });
+
+      expect(findNewGroupNameInput().attributes('value')).toEqual('_name_');
     });
 
     it('is revealed when selecting the "Create group" option', async () => {

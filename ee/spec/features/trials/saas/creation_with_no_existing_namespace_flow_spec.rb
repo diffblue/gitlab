@@ -19,18 +19,19 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
       expect_to_be_on_namespace_creation
 
+      click_button 'Start your free trial'
+
+      # required field check
+      message = page.find_field('new_group_name').native.attribute('validationMessage')
+      expect(message).to eq('Please fill out this field.')
+
       # namespace invalid check
       fill_in_trial_form_for_new_group(name: '_invalid group name_')
 
       click_button 'Start your free trial'
 
       expect_to_be_on_namespace_creation
-      expect(page).to have_content('We have found the following errors')
-      expect(page).to have_content('Group URL must not start or end with a special character')
-
-      # required field check
-      message = page.find_field('new_group_name').native.attribute('validationMessage')
-      expect(message).to eq('Please fill out this field.')
+      expect_to_have_namespace_creation_errors
 
       # success
       fill_in_trial_form_for_new_group

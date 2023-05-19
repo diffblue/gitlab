@@ -11,8 +11,13 @@ export default {
     defaultToggleText: __('Please select a group'),
     newGroupNameLabel: __('New Group Name'),
   },
+  inputSize: { md: 'lg' },
   components: { GlFormGroup, GlFormInput, ListboxInput },
   props: {
+    anyTrialEligibleNamespaces: {
+      type: Boolean,
+      required: true,
+    },
     items: {
       type: Array,
       required: true,
@@ -22,15 +27,21 @@ export default {
       required: false,
       default: null,
     },
+    newGroupName: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   data() {
     return {
       selectedGroup: this.initialValue,
+      groupName: this.newGroupName,
     };
   },
   computed: {
     showNewGroupNameField() {
-      return this.selectedGroup === CREATE_GROUP_OPTION_VALUE;
+      return !this.anyTrialEligibleNamespaces || this.selectedGroup === CREATE_GROUP_OPTION_VALUE;
     },
   },
 };
@@ -39,15 +50,23 @@ export default {
 <template>
   <div>
     <listbox-input
+      v-if="anyTrialEligibleNamespaces"
       v-model="selectedGroup"
       name="namespace_id"
+      label-for="namespace_id"
       data-qa-selector="subscription_for"
       :label="$options.i18n.groupSelectLabel"
       :items="items"
       :default-toggle-text="$options.i18n.defaultToggleText"
     />
-    <gl-form-group v-if="showNewGroupNameField" :label="$options.i18n.newGroupNameLabel">
+    <gl-form-group
+      v-if="showNewGroupNameField"
+      :label="$options.i18n.newGroupNameLabel"
+      label-for="new_group_name"
+    >
       <gl-form-input
+        v-model="groupName"
+        :size="$options.inputSize"
         name="new_group_name"
         data-qa-selector="new_group_name"
         data-testid="new-group-name-input"

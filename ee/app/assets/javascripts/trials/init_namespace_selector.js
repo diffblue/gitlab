@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import NamespaceSelector from './components/namespace_selector.vue';
 
 const SELECTOR = '.js-namespace-selector';
@@ -11,13 +12,15 @@ export const initNamespaceSelector = () => {
   }
 
   const items = JSON.parse(el.dataset.items);
-  const { initialValue } = el.dataset;
+  const { anyTrialEligibleNamespaces, newGroupName, initialValue } = el.dataset;
 
   return new Vue({
     el,
     render: (createElement) =>
       createElement(NamespaceSelector, {
         props: {
+          anyTrialEligibleNamespaces: parseBoolean(anyTrialEligibleNamespaces),
+          newGroupName,
           initialValue,
           items,
         },

@@ -94,11 +94,9 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       click_button 'Start your free trial'
 
       # We really shouldn't be showing the selector at this point.
-      # The input should also have the currently invalid group name.
       # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405125
       expect_to_be_on_namespace_selection
-      expect(page).to have_content('We have found the following errors')
-      expect(page).to have_content('Group URL must not start or end with a special character')
+      expect_to_have_namespace_creation_errors
 
       # success
       fill_in_trial_selection_form_for_new_group
@@ -130,11 +128,9 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       click_button 'Start your free trial'
 
       # We really shouldn't be showing the selector at this point.
-      # The input should also have the currently invalid group name.
       # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405125
       expect_to_be_on_namespace_selection
-      expect(page).to have_content('We have found the following errors')
-      expect(page).to have_content('Group URL must not start or end with a special character')
+      expect_to_have_namespace_creation_errors
 
       # success when choosing an existing namespace instead
       fill_in_trial_selection_form(from: 'Create group')
@@ -202,7 +198,9 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
   end
 
   def fill_in_trial_selection_form_for_new_group(name: 'gitlab')
-    expect(page).to have_selector('fieldset', text: 'New Group Name')
+    within('[data-testid="trial-form"]') do
+      expect(page).to have_text('New Group Name')
+    end
 
     fill_in_trial_form_for_new_group(name: name, glm_source: nil)
   end
