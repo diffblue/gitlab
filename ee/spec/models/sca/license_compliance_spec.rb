@@ -7,8 +7,10 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
   let_it_be(:project) { create(:project, :repository, :private) }
 
-  let(:mit) { create(:software_license, :mit) }
-  let(:other_license) { create(:software_license, name: "SOFTWARE-LICENSE", spdx_identifier: "Other-Id") }
+  let_it_be(:mit) { create(:software_license, :mit) }
+  let_it_be(:bsd_3_license) { create(:software_license, spdx_identifier: "BSD-3-Clause", name: 'BSD-3-Clause') }
+  let_it_be(:other_license) { create(:software_license, name: "SOFTWARE-LICENSE", spdx_identifier: "Other-Id") }
+  let_it_be(:custom_denied_license) { create(:software_license, spdx_identifier: 'CUSTOM_DENIED_LICENSE', name: 'CUSTOM_DENIED_LICENSE') }
 
   let(:compressed_data) do
     create(:pm_package, name: "activesupport", purl_type: "gem",
@@ -73,7 +75,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
       let(:license_map) do
         {
-          'MIT' => create(:software_license, name: 'MIT', spdx_identifier: 'MIT'),
+          'MIT' => mit,
           'AML' => create(:software_license, name: 'Apple MIT License', spdx_identifier: 'AML'),
           'MS-PL' => create(:software_license, name: 'Microsoft Public License', spdx_identifier: 'MS-PL'),
           'Apache-2.0' => create(:software_license, name: 'Apache-2.0 License', spdx_identifier: 'Apache-2.0'),
@@ -664,7 +666,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
     context "when the license_scanning_sbom_scanner feature flag is enabled" do
       let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
       let!(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
-      let(:other_license) { create(:software_license, name: 'BSD-3-Clause', spdx_identifier: "BSD-3-Clause") }
+      let(:other_license) { bsd_3_license }
       let!(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
       context 'when querying uncompressed package metadata' do
@@ -744,7 +746,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
           context "with denied license without spdx identifier" do
             let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
-            let(:custom_license) { create(:software_license, :user_entered, name: "CUSTOM_DENIED_LICENSE") }
+            let(:custom_license) { custom_denied_license }
             let!(:custom_license_policy) { create(:software_license_policy, :denied, software_license: custom_license, project: project) }
 
             let(:results) { license_compliance.find_policies(detected_only: true) }
@@ -928,7 +930,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
           context "with denied license without spdx identifier" do
             let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
-            let(:custom_license) { create(:software_license, :user_entered, name: "CUSTOM_DENIED_LICENSE") }
+            let(:custom_license) { custom_denied_license }
             let!(:custom_license_policy) { create(:software_license_policy, :denied, software_license: custom_license, project: project) }
 
             let(:results) { license_compliance.find_policies(detected_only: true) }
@@ -1131,7 +1133,6 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
     context 'when license policies are configured with scan result policies' do
       subject(:diff) { license_compliance.diff_with(base_compliance) }
 
-      let(:mit) { create(:software_license, name: 'MIT', spdx_identifier: 'MIT') }
       let(:aml) { create(:software_license, name: 'Apple MIT License', spdx_identifier: 'AML') }
       let(:mspl) { create(:software_license, name: 'Microsoft Public License', spdx_identifier: 'MS-PL') }
       let(:apache_2) { create(:software_license, name: 'Apache-2.0 License', spdx_identifier: 'Apache-2.0') }
@@ -1353,7 +1354,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
           context "when a software license record does not have an spdx identifier" do
             let(:license_name) { 'MIT' }
-            let!(:policy) { create(:software_license_policy, :allowed, project: project, software_license: create(:software_license, name: license_name)) }
+            let!(:policy) { create(:software_license_policy, :allowed, project: project, software_license: mit) }
 
             it "falls back to matching detections based on name rather than spdx id" do
               mit = diff[:added].find { |item| item.name == license_name }
@@ -1444,7 +1445,7 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
           context "when a software license record does not have an spdx identifier" do
             let(:license_name) { 'MIT' }
-            let!(:policy) { create(:software_license_policy, :allowed, project: project, software_license: create(:software_license, name: license_name)) }
+            let!(:policy) { create(:software_license_policy, :allowed, project: project, software_license: mit) }
 
             it "falls back to matching detections based on name rather than spdx id" do
               mit = diff[:added].find { |item| item.name == license_name }

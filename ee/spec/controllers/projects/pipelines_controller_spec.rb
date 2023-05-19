@@ -6,6 +6,7 @@ RSpec.describe Projects::PipelinesController do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project, ref: 'master', sha: project.commit.id) }
+  let_it_be(:mit) { create(:software_license, :mit) }
 
   before do
     project.add_developer(user)
@@ -82,8 +83,7 @@ RSpec.describe Projects::PipelinesController do
   describe 'GET licenses', feature_category: :software_composition_analysis do
     let(:licenses_with_html) { get :licenses, format: :html, params: { namespace_id: project.namespace, project_id: project, id: pipeline } }
     let(:licenses_with_json) { get :licenses, format: :json, params: { namespace_id: project.namespace, project_id: project, id: pipeline } }
-    let!(:mit_license) { create(:software_license, :mit) }
-    let!(:software_license_policy) { create(:software_license_policy, software_license: mit_license, project: project) }
+    let!(:software_license_policy) { create(:software_license_policy, software_license: mit, project: project) }
 
     let(:payload) { Gitlab::Json.parse(licenses_with_json.body) }
 
@@ -271,7 +271,7 @@ RSpec.describe Projects::PipelinesController do
 
               it 'returns the JSON license data sorted by license name' do
                 expect(payload.pluck('name')).to eq([
-                  'Apache-2.0',
+                  'Apache 2.0 License',
                   'BSD-2-Clause',
                   'MIT',
                   'unknown'
@@ -341,10 +341,9 @@ RSpec.describe Projects::PipelinesController do
 
               it 'returns the JSON license data sorted by license name' do
                 expect(payload.pluck('name')).to eq([
-                  'Apache-2.0',
+                  'Apache 2.0 License',
                   'BSD-2-Clause',
-                  # TODO: document difference in behaviour
-                  'DEFAULT-2.1',
+                  'Default License 2.1',
                   'MIT',
                   'unknown'
                 ])

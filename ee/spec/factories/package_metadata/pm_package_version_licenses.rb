@@ -16,7 +16,7 @@ FactoryBot.define do
       package_version do
         association(:pm_package_version, :with_package, version: version, name: name, purl_type: purl_type)
       end
-      license { association(:pm_license, spdx_identifier: license_name) }
+      license { association(:pm_license, :with_software_license, spdx_identifier: license_name) }
     end
   end
 end

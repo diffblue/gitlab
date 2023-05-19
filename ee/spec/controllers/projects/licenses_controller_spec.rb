@@ -6,6 +6,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
   describe "GET #index" do
     let_it_be(:project) { create(:project, :repository, :private) }
     let_it_be(:user) { create(:user) }
+    let_it_be(:mit_license) { create(:software_license, :mit) }
 
     let(:params) { { namespace_id: project.namespace, project_id: project } }
     let(:get_licenses) { get :index, params: params, format: :json }
@@ -36,7 +37,6 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           context "when requesting HTML" do
             subject { get :index, params: params }
 
-            let_it_be(:mit_license) { create(:software_license, :mit) }
             let_it_be(:apache_license) { create(:software_license, :apache_2_0) }
             let_it_be(:custom_license) { create(:software_license, :user_entered) }
 
@@ -152,7 +152,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                   expect(json_response['licenses'][0]).to include({
                     'id' => nil,
                     'classification' => 'unclassified',
-                    'name' => "BSD-3-Clause",
+                    'name' => 'BSD-3-Clause',
                     'spdx_identifier' => "BSD-3-Clause",
                     'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
                     # TODO: figure out if order is important here
@@ -213,7 +213,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                   expect(json_response['licenses'][0]).to include({
                     'id' => nil,
                     'classification' => 'unclassified',
-                    'name' => "BSD-3-Clause",
+                    'name' => 'BSD-3-Clause',
                     'spdx_identifier' => "BSD-3-Clause",
                     'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
                     # TODO: figure out if order is important here
@@ -256,8 +256,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
           context "when software policies are applied to some of the most recently detected licenses" do
             context "when the license_scanning_sbom_scanner feature flag is disabled" do
               let_it_be(:pipeline) { create(:ci_pipeline, project: project, status: :success, builds: [create(:ee_ci_build, :success, :license_scan_v2_1)]) }
-              let_it_be(:mit) { create(:software_license, :mit) }
-              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
+              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit_license, project: project) }
               let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
               let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
@@ -298,7 +297,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                   expect(json_response.dig("licenses", 1)).to include({
                     "id" => mit_policy.id,
                     "spdx_identifier" => "MIT",
-                    "name" => mit.name,
+                    "name" => mit_license.name,
                     "url" => "https://opensource.org/licenses/MIT",
                     "classification" => "denied"
                   })
@@ -403,7 +402,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 it 'includes `denied` policies' do
                   expect(json_response.dig("licenses", 0)).to include({
                     "id" => mit_policy.id,
-                    "spdx_identifier" => mit.spdx_identifier,
+                    "spdx_identifier" => mit_license.spdx_identifier,
                     "classification" => mit_policy.classification
                   })
                 end
@@ -429,8 +428,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
 
             context "when the license_scanning_sbom_scanner feature flag is enabled" do
               let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
-              let_it_be(:mit) { create(:software_license, :mit) }
-              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit, project: project) }
+              let_it_be(:mit_policy) { create(:software_license_policy, :denied, software_license: mit_license, project: project) }
               let_it_be(:other_license) { create(:software_license, spdx_identifier: "Other-Id") }
               let_it_be(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
@@ -460,14 +458,14 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 it 'sorts by name by default' do
                   names = json_response['licenses'].map { |x| x['name'] }
 
-                  expect(names).to eql(["BSD-3-Clause", 'MIT', other_license.name, 'unknown'])
+                  expect(names).to eql(['BSD-3-Clause', 'MIT', other_license.name, 'unknown'])
                 end
 
                 it 'includes a policy for an unclassified and known license that was detected in the scan report' do
                   expect(json_response.dig("licenses", 0)).to include({
                     "id" => nil,
                     "spdx_identifier" => "BSD-3-Clause",
-                    "name" => "BSD-3-Clause",
+                    "name" => 'BSD-3-Clause',
                     "url" => "https://spdx.org/licenses/BSD-3-Clause.html",
                     "classification" => "unclassified"
                   })
@@ -477,7 +475,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                   expect(json_response.dig("licenses", 1)).to include({
                     "id" => mit_policy.id,
                     "spdx_identifier" => "MIT",
-                    "name" => mit.name,
+                    "name" => mit_license.name,
                     "url" => "https://spdx.org/licenses/MIT.html",
                     "classification" => "denied"
                   })
@@ -582,7 +580,7 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
                 it 'includes `denied` policies' do
                   expect(json_response.dig("licenses", 0)).to include({
                     "id" => mit_policy.id,
-                    "spdx_identifier" => mit.spdx_identifier,
+                    "spdx_identifier" => mit_license.spdx_identifier,
                     "classification" => mit_policy.classification
                   })
                 end

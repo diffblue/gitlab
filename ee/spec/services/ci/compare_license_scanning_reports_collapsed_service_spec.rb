@@ -64,9 +64,11 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
             before do
               stub_feature_flags(compressed_package_metadata_query: false)
 
-              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+              create(:pm_package_version_license, :with_all_relations,
+                name: "nokogiri", purl_type: "gem",
                 version: "1.8.0", license_name: "BSD-3-Clause")
-              create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+              create(:pm_package_version_license, :with_all_relations,
+                name: "django", purl_type: "pypi",
                 version: "1.11.4", license_name: "MIT")
 
               allow_next_instance_of(::SCA::LicensePolicy) do |license|
@@ -153,9 +155,11 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
             before do
               stub_feature_flags(compressed_package_metadata_query: false)
 
-              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+              create(:pm_package_version_license, :with_all_relations,
+                name: "nokogiri", purl_type: "gem",
                 version: "1.8.0", license_name: "BSD-3-Clause")
-              create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+              create(:pm_package_version_license, :with_all_relations,
+                name: "django", purl_type: "pypi",
                 version: "1.11.4", license_name: "MIT")
             end
 

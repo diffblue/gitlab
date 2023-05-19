@@ -66,8 +66,8 @@ RSpec.describe API::Dependencies, feature_category: :dependency_management do
             stub_feature_flags(compressed_package_metadata_query: false)
 
             create(:ee_ci_build, :success, :cyclonedx, pipeline: pipeline)
-            create(:pm_package_version_license, :with_all_relations, name: 'nokogiri', purl_type: 'gem',
-              version: '1.8.0', license_name: 'MIT')
+            create(:pm_package_version_license, :with_all_relations, name: 'nokogiri',
+              purl_type: 'gem', version: '1.8.0', license_name: 'MIT')
           end
 
           it 'include license information to response' do

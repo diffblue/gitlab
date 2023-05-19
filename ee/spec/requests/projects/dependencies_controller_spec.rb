@@ -192,8 +192,8 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
               before do
                 stub_feature_flags(compressed_package_metadata_query: false)
 
-                create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-                  version: "1.8.0", license_name: "BSD")
+                create(:pm_package_version_license, :with_all_relations,
+                  name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
 
                 pipeline.builds << build
                 get project_dependencies_path(project, format: :json)
@@ -201,9 +201,9 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
               it 'includes license information in response' do
                 nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-                url = "https://spdx.org/licenses/BSD-4-Clause.html"
+                url = "https://spdx.org/licenses/BSD.html"
 
-                expect(nokogiri['licenses']).to include({ "name" => "BSD", "url" => url })
+                expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
               end
             end
 
@@ -218,9 +218,9 @@ RSpec.describe Projects::DependenciesController, feature_category: :dependency_m
 
               it 'includes license information in response' do
                 nokogiri = json_response['dependencies'].find { |dep| dep['name'] == 'nokogiri' }
-                url = "https://spdx.org/licenses/BSD-4-Clause.html"
+                url = "https://spdx.org/licenses/BSD.html"
 
-                expect(nokogiri['licenses']).to include({ "name" => "BSD", "url" => url })
+                expect(nokogiri['licenses']).to include({ "name" => "BSD-4-Clause", "url" => url })
               end
             end
           end

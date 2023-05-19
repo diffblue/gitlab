@@ -75,14 +75,14 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
 
           it 'returns the expected licenses' do
             expect(report.licenses).to match_array([
-              have_attributes(id: "BSD-4-Clause", name: "BSD"),
-              have_attributes(id: "OLDAP-2.1", name: "OLDAP-2.1"),
+              have_attributes(id: "BSD", name: "BSD-4-Clause"),
+              have_attributes(id: "OLDAP-2.1", name: "Open LDAP Public License v2.1"),
               have_attributes(id: nil, name: "unknown")
             ])
           end
 
           it 'returns the expected dependencies for known licenses' do
-            bsd_license = report.licenses.find { |license| license.name == "BSD" }
+            bsd_license = report.licenses.find { |license| license.name == "BSD-4-Clause" }
 
             expect(bsd_license.dependencies).to match_array([
               have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
@@ -129,16 +129,15 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
 
           it 'returns the expected licenses' do
             expect(report.licenses).to match_array([
-              have_attributes(id: "BSD-4-Clause", name: "BSD"),
-              have_attributes(id: "OLDAP-2.1", name: "OLDAP-2.1"),
-              # TODO: document difference in behaviour
-              have_attributes(id: "DEFAULT-2.1", name: "DEFAULT-2.1"),
+              have_attributes(id: "BSD", name: "BSD-4-Clause"),
+              have_attributes(id: "DEFAULT-2.1", name: "Default License 2.1"),
+              have_attributes(id: "OLDAP-2.1", name: "Open LDAP Public License v2.1"),
               have_attributes(id: nil, name: "unknown")
             ])
           end
 
           it 'returns the expected dependencies for known licenses' do
-            bsd_license = report.licenses.find { |license| license.name == "BSD" }
+            bsd_license = report.licenses.find { |license| license.name == "BSD-4-Clause" }
 
             expect(bsd_license.dependencies).to match_array([
               have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
@@ -153,7 +152,6 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
 
           it 'returns the expected dependencies for unknown licenses' do
             unknown_license = report.licenses.find { |license| license.name == "unknown" }
-
             expect(unknown_license.dependencies.length).to be(433)
 
             expect(unknown_license.dependencies).to include(
@@ -162,13 +160,10 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
             )
           end
 
-          # TODO: document difference in behaviour
-          it 'returns the expected dependencies for default licenses' do
-            unknown_license = report.licenses.find { |license| license.name == "DEFAULT-2.1" }
+          it 'returns the expected dependencies for the default license' do
+            default_license = report.licenses.find { |license| license.name == "Default License 2.1" }
 
-            expect(unknown_license.dependencies.length).to be(1)
-
-            expect(unknown_license.dependencies).to include(
+            expect(default_license.dependencies).to contain_exactly(
               have_attributes(name: "yargs-parser", version: "8.1.0")
             )
           end
