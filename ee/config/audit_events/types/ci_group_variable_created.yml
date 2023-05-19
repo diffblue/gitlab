@@ -1,0 +1,9 @@
+---
+name: ci_group_variable_created
+description: Triggered when a CI variable is created at a group level
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363090
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91983
+feature_category: continuous_integration
+milestone: '15.2'
+saved_to_database: true
+streamed: true
