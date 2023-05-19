@@ -141,7 +141,7 @@ module Gitlab
         embeddings_result = client.embeddings(input: question, moderated: true)
         question_embedding = embeddings_result['data'].first['embedding']
 
-        ::Embedding::TanukiBotMvc.neighbor_for(
+        ::Embedding::TanukiBotMvc.current.neighbor_for(
           question_embedding,
           limit: RECORD_LIMIT,
           minimum_distance: MINIMUM_DISTANCE

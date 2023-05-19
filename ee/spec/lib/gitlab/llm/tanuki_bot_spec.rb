@@ -288,6 +288,8 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                     .with(input: question, moderated: true)
                     .and_return(embedding_response)
 
+                  expect(::Embedding::TanukiBotMvc).to receive(:current).and_call_original.once
+
                   expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for)
                     .with(embedding,
                       limit: described_class::RECORD_LIMIT,

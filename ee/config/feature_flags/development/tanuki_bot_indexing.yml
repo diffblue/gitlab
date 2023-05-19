@@ -1,0 +1,8 @@
+---
+name: tanuki_bot_indexing
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/117800
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/410682
+milestone: '16.1'
+type: development
+group: group::global search
+default_enabled: false
