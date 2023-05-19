@@ -80,6 +80,15 @@ RSpec.describe MergeRequests::ResetApprovalsService, feature_category: :code_rev
         end
       end
 
+      it 'removes the unmergeable flag after the service is run' do
+        merge_request.approval_state.temporarily_unapprove!
+
+        service.execute("refs/heads/master", newrev)
+        merge_request.reload
+
+        expect(merge_request.approval_state.temporarily_unapproved?).to be_falsey
+      end
+
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
         let(:action) { service.execute('refs/heads/master', newrev) }
       end

@@ -417,6 +417,37 @@ RSpec.describe MergeRequests::RefreshService, feature_category: :code_review_wor
             expect(approval_todos(forked_merge_request)).to be_empty
           end
         end
+
+        context "in the time it takes to reset approvals" do
+          before do
+            allow(MergeRequestResetApprovalsWorker).to receive(:perform_in).and_return(nil)
+            # Running the approval refresh service would normally run this worker and remove
+            # the flag after 10 seconds, but in our test environment "perform_in" happens
+            # instantly... so for testing we're just simulating a long run by returning nil
+
+            service.execute(oldrev, newrev, 'refs/heads/master')
+          end
+
+          it "prevents merging" do
+            expect(merge_request.approval_state.temporarily_unapproved?).to be_truthy
+          end
+
+          it "removes the unmergeable flag after the allotted time" do
+            merge_request.approval_state.expire_unapproved_key!
+
+            expect(merge_request.approval_state.temporarily_unapproved?).to be_falsey
+          end
+        end
+
+        context "with a merge request on a merge train" do
+          before do
+            allow_any_instance_of(MergeRequest).to receive(:merge_train_car).and_return(true)
+          end
+
+          it "does not add an umergeable flag" do
+            expect(merge_request.approval_state.temporarily_unapproved?).to be_falsey
+          end
+        end
       end
 
       context 'push to origin repo target branch' do

@@ -251,6 +251,10 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
         merge_request_1.reload
       end
 
+      it 'does not have a temporarily unapproved flag' do
+        expect(merge_request_1.approval_state.temporarily_unapproved?).to be_falsey
+      end
+
       it 'merges merge request 1' do
         expect(merge_request_1).to be_merged
         expect(merge_request_1.metrics.merged_by).to eq(maintainer_1)
@@ -261,6 +265,10 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
           merge_request_2.merge_train_car.pipeline.succeed!
 
           merge_request_2.reload
+        end
+
+        it 'does not have a temporarily unapproved flag' do
+          expect(merge_request_2.approval_state.temporarily_unapproved?).to be_falsey
         end
 
         it 'merges merge request 2' do

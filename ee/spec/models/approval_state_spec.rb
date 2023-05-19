@@ -359,6 +359,34 @@ RSpec.describe ApprovalState do
       end
     end
 
+    describe '#expire_unapproved_key!', :clean_gitlab_redis_shared_state do
+      it 'successfully removes a flag' do
+        subject.temporarily_unapprove!
+
+        subject.expire_unapproved_key!
+
+        expect(subject.temporarily_unapproved?).to eq(false)
+      end
+    end
+
+    describe '#temporarily_unapproved?', :clean_gitlab_redis_shared_state do
+      context 'checks redis for a temporary flag' do
+        context 'when there is not a flag' do
+          it 'returns false' do
+            expect(subject.temporarily_unapproved?).to eq(false)
+          end
+        end
+
+        context 'when there is a flag' do
+          it 'returns true' do
+            subject.temporarily_unapprove!
+
+            expect(subject.temporarily_unapproved?).to eq(true)
+          end
+        end
+      end
+    end
+
     describe '#approval_rules_left' do
       def create_unapproved_rule
         create_rule(approvals_required: 1, users: users(1))
