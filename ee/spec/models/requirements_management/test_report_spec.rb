@@ -79,6 +79,9 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
     context 'if the CI report contains some entries' do
       context 'and the entries are valid' do
         context 'and legacy is false' do
+          let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
+          let_it_be(:requirement1) { create(:work_item, :requirement, iid: 11, state: :opened, project: project) }
+          let_it_be(:requirement2) { create(:work_item, :requirement, iid: 13, state: :opened, project: project) }
           let(:ci_report) do
             Gitlab::Ci::Reports::RequirementsManagement::Report.new.tap do |report|
               # Keep iids not sequential here to make sure it is properly tested
@@ -88,14 +91,12 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
             end
           end
 
-          let_it_be(:build) { create(:ee_ci_build, :requirements_v2_report, project: project) }
-
-          it 'creates test report with expected status for each open requirement' do
-            requirement1 = create(:work_item, :requirement, iid: 11, state: :opened, project: project)
-            requirement2 = create(:work_item, :requirement, iid: 13, state: :opened, project: project)
+          before_all do
             create(:work_item, :requirement, iid: 11, state: :opened) # different project
             create(:work_item, :requirement, iid: 16, state: :closed, project: project) # archived
+          end
 
+          it 'creates test report with expected status for each open requirement' do
             expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
             reports = RequirementsManagement::TestReport.where(build: build)
@@ -110,6 +111,31 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
                                 author: build.user,
                                 state: 'failed', uses_legacy_iid: false)
               ])
+          end
+
+          context 'when all_passed? in ci_report' do
+            let(:ci_report) do
+              Gitlab::Ci::Reports::RequirementsManagement::Report.new.tap do |report|
+                report.add_requirement('*', 'passed')
+              end
+            end
+
+            it 'creates test report with expected status for each open requirement' do
+              expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
+
+              reports = RequirementsManagement::TestReport.where(build: build)
+
+              requirement_type_id = WorkItems::Type.requirement.first.id
+              expect(reports).to match_array(
+                [
+                  have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                                  author: build.user,
+                                  state: 'passed', uses_legacy_iid: false),
+                  have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                                  author: build.user,
+                                  state: 'passed', uses_legacy_iid: false)
+                ])
+            end
           end
         end
 

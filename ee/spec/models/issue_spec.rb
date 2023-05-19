@@ -116,7 +116,7 @@ RSpec.describe Issue, feature_category: :team_planning do
 
         it 'uses work_item_type_id to filter requirements' do
           expect { Issue.for_requirement_iids(iids).to_a }.to make_queries_matching(
-            /"work_item_type"\."base_type" = #{WorkItems::Type.base_types[:requirement]}/
+            /"work_item_types"\."base_type" = #{WorkItems::Type.base_types[:requirement]}/
           )
         end
 
