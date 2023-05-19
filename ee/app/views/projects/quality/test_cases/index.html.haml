@@ -1,5 +1,6 @@
 - breadcrumb_title _('Test cases')
 - page_title _('Test cases')
+- add_page_specific_style 'page_bundles/issuable_list'
 - @content_class = 'project-test-cases'
 
 #js-test-cases-list{ data: { can_create_test_case: can?(current_user, :create_test_case, @project).to_s,
