@@ -30,6 +30,13 @@ module EE
       end
 
       def reset_approvals_for_merge_requests(ref, newrev)
+        # Add a flag that prevents unverified changes from getting through in the 10 second window below
+        merge_requests_for(push.branch_name, mr_states: [:opened, :closed]).each do |mr|
+          if reset_approvals?(mr, newrev)
+            mr.approval_state.temporarily_unapprove!
+          end
+        end
+
         # We need to make sure the code owner approval rules have all been synced first, so we delay for 10s
         # We are trying to pin down and fix the race condition: https://gitlab.com/gitlab-org/gitlab/-/issues/373846
         MergeRequestResetApprovalsWorker.perform_in(10.seconds, project.id, current_user.id, ref, newrev)
@@ -58,6 +65,10 @@ module EE
         return unless push.branch_updated?
 
         push.modified_paths.find { |path| ::Gitlab::CodeOwners::FILE_PATHS.include?(path) }
+      end
+
+      def reset_approvals?(merge_request, newrev)
+        merge_request.rebase_commit_is_different?(newrev) && !merge_request.merge_train_car && super
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables

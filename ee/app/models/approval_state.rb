@@ -67,6 +67,24 @@ class ApprovalState
     end
   end
 
+  def expire_unapproved_key!
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.del(temporarily_unapproved_cache_key)
+    end
+  end
+
+  def temporarily_unapprove!
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.set(temporarily_unapproved_cache_key, true, ex: 15.seconds)
+    end
+  end
+
+  def temporarily_unapproved?
+    Gitlab::Redis::SharedState.with do |redis|
+      redis.exists?(temporarily_unapproved_cache_key)
+    end
+  end
+
   def approvals_required
     strong_memoize(:approvals_required) do
       wrapped_approval_rules.sum(&:approvals_required)
@@ -212,6 +230,10 @@ class ApprovalState
   private
 
   attr_reader :target_branch
+
+  def temporarily_unapproved_cache_key
+    "mr_#{merge_request.id}_cannot_merge"
+  end
 
   def filter_approvers(approvers, unactioned:)
     approvers = approvers.uniq

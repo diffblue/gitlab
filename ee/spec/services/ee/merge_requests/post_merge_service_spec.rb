@@ -206,5 +206,17 @@ RSpec.describe MergeRequests::PostMergeService, feature_category: :code_review_w
         subject
       end
     end
+
+    context 'when a temporary unapproval is needed for the MR' do
+      it 'removes the unmergeable flag after the service is run' do
+        merge_request.approval_state.temporarily_unapprove!
+
+        subject
+
+        merge_request.reload
+
+        expect(merge_request.approval_state.temporarily_unapproved?).to be_falsey
+      end
+    end
   end
 end

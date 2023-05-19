@@ -72,6 +72,9 @@ module EE
           rule.approved_approvers.map(&:id)
         end.compact
 
+        # In case there is still a temporary flag on the MR
+        merge_request.approval_state.expire_unapproved_key!
+
         merge_request.approvals.where(user_id: match_ids).delete_all # rubocop:disable CodeReuse/ActiveRecord
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
@@ -79,6 +82,10 @@ module EE
 
       def delete_approvals(merge_request)
         merge_request.approvals.delete_all
+
+        # In case there is still a temporary flag on the MR
+        merge_request.approval_state.expire_unapproved_key!
+
         trigger_merge_request_merge_status_updated(merge_request)
         trigger_merge_request_approval_state_updated(merge_request)
       end

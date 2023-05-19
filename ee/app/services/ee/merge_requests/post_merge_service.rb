@@ -15,6 +15,8 @@ module EE
           ComplianceManagement::MergeRequests::ComplianceViolationsWorker.perform_async(merge_request.id)
         end
 
+        merge_request.approval_state.expire_unapproved_key!
+
         audit_approval_rules(merge_request)
         sync_security_scan_orchestration_policies(target_project)
         trigger_blocked_merge_requests_merge_status_updated(merge_request)

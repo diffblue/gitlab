@@ -390,6 +390,10 @@ module EE
         .order('t.ord')
     end
 
+    def rebase_commit_is_different?(newrev)
+      rebase_commit_sha != newrev
+    end
+
     private
 
     def has_approved_license_check?
