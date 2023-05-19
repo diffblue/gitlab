@@ -27,6 +27,10 @@ module Gitlab
         generate_description: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::GenerateDescription,
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::GenerateDescription
+        },
+        generate_commit_message: {
+          service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage,
+          prompt_class: ::Gitlab::Llm::Templates::GenerateCommitMessage
         }
       }.freeze
 

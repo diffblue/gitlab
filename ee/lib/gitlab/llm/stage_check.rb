@@ -10,7 +10,8 @@ module Gitlab
         :generate_description,
         :generate_test_file,
         :summarize_diff,
-        :explain_vulnerability
+        :explain_vulnerability,
+        :generate_commit_message
       ].freeze
       BETA_FEATURES = [].freeze
       THIRD_PARTY_FEATURES = EXPERIMENTAL_FEATURES + BETA_FEATURES
