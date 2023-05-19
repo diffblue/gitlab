@@ -14,15 +14,9 @@
 
     .js-error-alert{ data: { errors: @create_errors } }
 
-    = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group' do
-      - if show_trial_namespace_select?
-        .js-namespace-selector{ data: { items: namespace_options_for_listbox.to_json,
-          initial_value: params[:namespace_id] } }
-      - else
-        #group_name.form-group
-          = label_tag :new_group_name, _('New Group Name'), for: :new_group_name, class: 'col-form-label'
-          = text_field_tag :new_group_name, nil, class: 'form-control', required: !show_trial_namespace_select?,
-            data: { qa_selector: 'new_group_name' }
+    = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group', data: { testid: 'trial-form' } do
+      .js-namespace-selector{ data: { any_trial_eligible_namespaces: any_trial_eligible_namespaces?.to_s, new_group_name: params[:new_group_name],
+        items: namespace_options_for_listbox.to_json, initial_value: params[:namespace_id] } }
       - if should_ask_company_question?
         .form-group
           = label_tag :trial_entity, _('Who will be using GitLab?')
@@ -35,7 +29,7 @@
               = radio_button_tag :trial_entity, :individual, params[:trial_entity]=='individual', required: true,
                 class: 'form-check-input', data: { qa_selector: 'trial_individual' }
               = label_tag :trial_entity_individual, _('Just me'), class: 'form-check-label'
-      = submit_tag _('Start your free trial'), class: 'gl-button btn btn-confirm gl-w-20',
+      = submit_tag _('Start your free trial'), class: 'gl-button btn btn-confirm gl-w-20 gl-xs-w-full',
         data: { qa_selector: 'start_your_free_trial' }
 
   .col-md-4.gl-display-inline-flex.gl-vertical-align-middle

@@ -23,7 +23,7 @@ export default {
   <gl-alert
     variant="danger"
     :dismissible="false"
-    class="gl-mt-3"
+    class="gl-mt-3 gl-mb-5"
     :title="$options.i18n.errorsFound"
     data-testid="alert-danger"
   >
