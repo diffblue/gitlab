@@ -11,6 +11,10 @@ module AuditEvents
     GOOGLE_PROJECT_ID_NAME_REGEX = %r{\A[a-z][a-z0-9-]*[a-z0-9]\z}
     LOG_ID_NAME_REGEX = %r{\A[\w/.-]+\z}
 
+    DEFAULT_LOG_ID_NAME = "audit_events"
+
+    attribute :log_id_name, :string, default: DEFAULT_LOG_ID_NAME
+
     belongs_to :group, class_name: '::Group', foreign_key: 'namespace_id',
       inverse_of: :google_cloud_logging_configurations
 
@@ -18,7 +22,8 @@ module AuditEvents
       format: { with: GOOGLE_PROJECT_ID_NAME_REGEX,
                 message: 'must only contain lowercase letters, digits, or hyphens, ' \
                          'and must start and end with a letter or digit' },
-      length: { in: 6..30 }
+      length: { in: 6..30 },
+      uniqueness: { scope: [:namespace_id, :log_id_name] }
 
     validates :log_id_name, presence: true,
       format: { with: LOG_ID_NAME_REGEX,

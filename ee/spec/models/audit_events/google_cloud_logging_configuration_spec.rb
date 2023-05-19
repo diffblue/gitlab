@@ -45,6 +45,24 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
     it { is_expected.not_to allow_value('#AUDIT_EVENT').for(:log_id_name) }
     it { is_expected.not_to allow_value('%audit_events/123').for(:log_id_name) }
 
+    context 'when the same google_project_id_name for the same namespace and log_id_name exists' do
+      let(:group) { create(:group) }
+      let(:google_project_id_name) { 'valid-project-id' }
+      let(:log_id_name) { 'audit_events' }
+
+      before do
+        create(:google_cloud_logging_configuration, group: group, google_project_id_name: google_project_id_name,
+          log_id_name: log_id_name)
+      end
+
+      it 'is not valid and adds an error message' do
+        config = build(:google_cloud_logging_configuration, group: group,
+          google_project_id_name: google_project_id_name, log_id_name: log_id_name)
+        expect(config).not_to be_valid
+        expect(config.errors[:google_project_id_name]).to include('has already been taken')
+      end
+    end
+
     context 'when the group is a subgroup' do
       let_it_be(:group) { create(:group) }
       let_it_be(:subgroup) { create(:group, parent: group) }
@@ -57,6 +75,12 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
         expect(google_cloud_logging_config).not_to be_valid
         expect(google_cloud_logging_config.errors[:group]).to include('must not be a subgroup')
       end
+    end
+  end
+
+  describe 'default values' do
+    it "uses 'audit_events' as default value for log_id_name" do
+      expect(described_class.new.log_id_name).to eq('audit_events')
     end
   end
 
