@@ -30,6 +30,7 @@ describe('DashboardsList', () => {
   const findPageTitle = () => wrapper.findByTestId('title');
   const findPageDescription = () => wrapper.findByTestId('description');
   const findHelpLink = () => wrapper.findByTestId('help-link');
+  const findNewDashboardButton = () => wrapper.findByTestId('new-dashboard-button');
   const findVisualizationDesignerButton = () =>
     wrapper.findByTestId('visualization-designer-button');
 
@@ -74,8 +75,12 @@ describe('DashboardsList', () => {
       expect(findPageDescription().text()).toContain(I18N_DASHBOARD_LIST_DESCRIPTION);
     });
 
-    it('should render the visualization designer button', () => {
-      expect(findVisualizationDesignerButton().exists()).toBe(true);
+    it('does not render the visualization designer button', () => {
+      expect(findVisualizationDesignerButton().exists()).toBe(false);
+    });
+
+    it('does not render the new dashboard button', () => {
+      expect(findNewDashboardButton().exists()).toBe(false);
     });
 
     it('should render the help link', () => {
@@ -149,6 +154,20 @@ describe('DashboardsList', () => {
           error,
         });
       });
+    });
+  });
+
+  describe('when the combinedAnalyticsDashboardsEditor feature flag is enabled', () => {
+    beforeEach(() => {
+      createWrapper({ glFeatures: { combinedAnalyticsDashboardsEditor: true } });
+    });
+
+    it('renders the visualization designer button', () => {
+      expect(findVisualizationDesignerButton().exists()).toBe(true);
+    });
+
+    it('renders the create new dashboard button', () => {
+      expect(findNewDashboardButton().exists()).toBe(true);
     });
   });
 });

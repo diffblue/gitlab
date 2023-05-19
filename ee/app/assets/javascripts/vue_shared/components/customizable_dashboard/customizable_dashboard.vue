@@ -7,6 +7,7 @@ import { slugify } from '~/lib/utils/text_utility';
 import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 import UrlSync, { HISTORY_REPLACE_UPDATE_METHOD } from '~/vue_shared/components/url_sync.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import PanelsBase from './panels_base.vue';
 import {
   GRIDSTACK_MARGIN,
@@ -29,6 +30,7 @@ export default {
     UrlSync,
     VisualizationSelector,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     initialDashboard: {
       type: Object,
@@ -80,6 +82,7 @@ export default {
       editing: this.isNewDashboard,
       showCode: false,
       filters: this.defaultFilters,
+      editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
     };
   },
   computed: {
@@ -298,7 +301,7 @@ export default {
         >
       </gl-form>
       <gl-button
-        v-if="!editing && !dashboard.builtin"
+        v-if="editingEnabled && !editing && !dashboard.builtin"
         icon="pencil"
         class="gl-mr-2"
         data-testid="dashboard-edit-btn"

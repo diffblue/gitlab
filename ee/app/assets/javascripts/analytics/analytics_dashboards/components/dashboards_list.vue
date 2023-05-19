@@ -5,6 +5,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { createAlert } from '~/alert';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import LIST_OF_FEATURE_DASHBOARDS from '../gl_dashboards/analytics_dashboards.json';
 import {
@@ -32,6 +33,7 @@ export default {
     GlAlert,
     DashboardListItem,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: {
     customDashboardsProject: {
       type: Object,
@@ -53,6 +55,7 @@ export default {
       requiresOnboarding: Object.keys(ONBOARDING_FEATURE_COMPONENTS),
       featureDashboards: [],
       userDashboards: [],
+      showCreateButtons: this.glFeatures.combinedAnalyticsDashboardsEditor,
     };
   },
   computed: {
@@ -136,7 +139,7 @@ export default {
           }}</gl-link>
         </p>
       </div>
-      <div>
+      <div v-if="showCreateButtons">
         <gl-button to="visualization-designer" data-testid="visualization-designer-button">
           {{ $options.I18N_DASHBOARD_LIST_VISUALIZATION_DESIGNER }}
         </gl-button>
@@ -144,6 +147,7 @@ export default {
           v-if="customDashboardsProject"
           to="/new"
           class="btn btn-confirm btn-md gl-button"
+          data-testid="new-dashboard-button"
         >
           {{ $options.I18N_DASHBOARD_LIST_NEW_DASHBOARD }}
         </router-link>
