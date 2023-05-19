@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf } from '@gitlab/ui';
+import { GlBadge, GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import {
   fromYaml,
@@ -12,13 +12,13 @@ import PolicyInfoRow from './policy_info_row.vue';
 
 export default {
   i18n: {
-    multipleActionMessage: s__('SecurityOrchestration|Runs %{actions} and %{lastAction} scans'),
     noActionMessage: s__('SecurityOrchestration|No actions defined - policy will not run.'),
-    singleActionMessage: s__(`SecurityOrchestration|Runs a %{action} scan`),
     scanExecution: s__('SecurityOrchestration|Scan execution'),
     summary: SUMMARY_TITLE,
+    ruleMessage: s__('SecurityOrchestration|And scans to be performed:'),
   },
   components: {
+    GlBadge,
     GlSprintf,
     PolicyDrawerLayout,
     PolicyInfoRow,
@@ -43,21 +43,6 @@ export default {
         return null;
       }
     },
-    hasOnlyOneAction() {
-      return this.humanizedActions.length === 1;
-    },
-    hasMultipleActions() {
-      return this.humanizedActions.length > 1;
-    },
-    firstAction() {
-      return this.hasOnlyOneAction ? this.humanizedActions[0] : '';
-    },
-    allButLastActions() {
-      return this.hasMultipleActions ? this.humanizedActions.slice(0, -1).join(', ') : '';
-    },
-    lastAction() {
-      return this.hasMultipleActions ? [...this.humanizedActions].pop() : '';
-    },
   },
 };
 </script>
@@ -71,34 +56,20 @@ export default {
   >
     <template v-if="parsedYaml" #summary>
       <policy-info-row data-testid="policy-summary" :label="$options.i18n.summary">
-        <p>
-          <template v-if="!humanizedActions.length">{{ $options.i18n.noActionMessage }}</template>
-          <gl-sprintf v-else-if="hasOnlyOneAction" :message="$options.i18n.singleActionMessage">
-            <template #action>
-              <gl-sprintf :message="firstAction">
-                <template #scanner="{ content }">
-                  <strong>{{ content }}</strong>
-                </template>
-              </gl-sprintf>
+        <template v-if="!humanizedActions.length">{{ $options.i18n.noActionMessage }}</template>
+        <div v-for="{ message, tags } in humanizedActions" :key="message" class="gl-mb-3">
+          <gl-sprintf :message="message">
+            <template #scanner="{ content }">
+              <strong>{{ content }}</strong>
             </template>
           </gl-sprintf>
-          <gl-sprintf v-else :message="$options.i18n.multipleActionMessage">
-            <template #actions>
-              <gl-sprintf :message="allButLastActions">
-                <template #scanner="{ content }">
-                  <strong>{{ content }}</strong>
-                </template>
-              </gl-sprintf>
-            </template>
-            <template #lastAction>
-              <gl-sprintf :message="lastAction">
-                <template #scanner="{ content }">
-                  <strong>{{ content }}</strong>
-                </template>
-              </gl-sprintf>
-            </template>
-          </gl-sprintf>
-        </p>
+          <div v-if="tags" class="gl-mt-2 gl-display-flex gl-gap-2 gl-flex-wrap">
+            <gl-badge v-for="tag in tags" :key="tag" variant="info" size="sm">
+              {{ tag }}
+            </gl-badge>
+          </div>
+        </div>
+        <div class="gl-mb-3">{{ $options.i18n.ruleMessage }}</div>
         <ul>
           <li v-for="(rule, idx) in humanizedRules" :key="idx">
             {{ rule }}
