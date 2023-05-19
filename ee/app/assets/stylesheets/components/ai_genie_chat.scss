@@ -26,6 +26,8 @@
 }
 
 .ai-genie-chat-message {
+  max-width: 90%;
+
   pre,
   code {
     @include gl-font-sm;
