@@ -15,11 +15,12 @@ CREATE TABLE tanuki_bot_mvc (
     id bigint NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    embedding vector(1536) NOT NULL,
+    embedding vector(1536),
     url text NOT NULL,
     content text NOT NULL,
     metadata jsonb NOT NULL,
     chroma_id text,
+    version integer DEFAULT 0 NOT NULL,
     CONSTRAINT check_5df597f0fb CHECK ((char_length(url) <= 2048)),
     CONSTRAINT check_67053ce605 CHECK ((char_length(content) <= 32768)),
     CONSTRAINT check_e130e042d4 CHECK ((char_length(chroma_id) <= 512))
@@ -46,3 +47,7 @@ ALTER TABLE ONLY tanuki_bot_mvc
     ADD CONSTRAINT tanuki_bot_mvc_pkey PRIMARY KEY (id);
 
 CREATE UNIQUE INDEX index_tanuki_bot_mvc_on_chroma_id ON tanuki_bot_mvc USING btree (chroma_id);
+
+CREATE INDEX index_tanuki_bot_mvc_on_version ON tanuki_bot_mvc USING btree (version);
+
+CREATE INDEX index_tanuki_bot_mvc_on_version_where_embedding_is_null ON tanuki_bot_mvc USING btree (version) WHERE (embedding IS NULL);

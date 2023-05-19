@@ -444,6 +444,24 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:llm_tanuki_bot_recreate_records
+  :worker_name: Llm::TanukiBot::RecreateRecordsWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: cronjob:llm_tanuki_bot_remove_previous_records
+  :worker_name: Llm::TanukiBot::RemovePreviousRecordsWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:namespaces_free_user_cap_backfill_notification_clearing_jobs
   :worker_name: Namespaces::FreeUserCap::BackfillNotificationClearingJobsWorker
   :feature_category: :user_management
@@ -1439,6 +1457,15 @@
   :feature_category: :team_planning
   :has_external_dependencies: false
   :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: llm_tanuki_bot_update
+  :worker_name: Llm::TanukiBot::UpdateWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
