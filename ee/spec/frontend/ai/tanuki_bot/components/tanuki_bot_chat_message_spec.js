@@ -39,7 +39,12 @@ describe('TanukiBotChatMessage', () => {
 
     it('uses the correct classList', () => {
       expect(findTanukiBotChatMessage().classes()).toEqual(
-        expect.arrayContaining(['gl-ml-auto', 'gl-bg-blue-100', 'gl-text-blue-900']),
+        expect.arrayContaining([
+          'gl-ml-auto',
+          'gl-bg-blue-100',
+          'gl-text-blue-900',
+          'gl-rounded-bottom-right-none',
+        ]),
       );
     });
 
@@ -64,7 +69,11 @@ describe('TanukiBotChatMessage', () => {
 
       it('uses the correct classList', () => {
         expect(findTanukiBotChatMessage().classes()).toEqual(
-          expect.arrayContaining(['tanuki-bot-message', 'gl-text-gray-900']),
+          expect.arrayContaining([
+            'tanuki-bot-message',
+            'gl-text-gray-900',
+            'gl-rounded-bottom-left-none',
+          ]),
         );
       });
 
