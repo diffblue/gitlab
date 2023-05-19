@@ -1,6 +1,8 @@
 import { GlSkeletonLoader, GlTableLite, GlIcon, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import UsageByType from 'ee/usage_quotas/transfer/components/usage_by_type.vue';
+import SectionedPercentageBar from '~/usage_quotas/components/sectioned_percentage_bar.vue';
+import { s__, __ } from '~/locale';
 import {
   EGRESS_TYPE_ARTIFACTS,
   EGRESS_TYPE_REPOSITORY,
@@ -15,8 +17,6 @@ describe('UsageByType', () => {
   const {
     nodes: egressNodes,
   } = getProjectDataTransferEgressResponse.data.project.dataTransfer.egressNodes;
-  const percentageBarTestidPrefix = 'percentage-bar-egress-type-';
-  const percentageBarLegendTestidPrefix = 'percentage-bar-legend-egress-type-';
 
   const defaultPropsData = {
     egressNodes,
@@ -30,6 +30,7 @@ describe('UsageByType', () => {
   };
 
   const findTable = () => wrapper.findComponent(GlTableLite);
+  const findSectionedPercentageBar = () => wrapper.findComponent(SectionedPercentageBar);
 
   describe('when `loading` prop is `true`', () => {
     beforeEach(() => {
@@ -56,44 +57,39 @@ describe('UsageByType', () => {
       expect(wrapper.findByTestId('total-egress').text()).toBe('13.53 MiB');
     });
 
-    it('displays egress type percentage bar', () => {
+    it('renders `SectionedPercentageBar` and passes correct props', () => {
       createComponent();
 
-      const artifacts = wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_ARTIFACTS);
-      const repository = wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_REPOSITORY);
-      const packages = wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_PACKAGES);
-      const registry = wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_REGISTRY);
-
-      expect(artifacts.attributes('style')).toBe('width: 28.408%;');
-      expect(repository.attributes('style')).toBe('width: 23.1013%;');
-      expect(packages.attributes('style')).toBe('width: 28.8873%;');
-      expect(registry.attributes('style')).toBe('width: 19.6034%;');
-      expect(artifacts.text()).toMatchInterpolatedText('Artifacts 28.4%');
-      expect(repository.text()).toMatchInterpolatedText('Repository 23.1%');
-      expect(packages.text()).toMatchInterpolatedText('Packages 28.9%');
-      expect(registry.text()).toMatchInterpolatedText('Registry 19.6%');
-    });
-
-    it('displays egress type percentage bar legend', () => {
-      createComponent();
-
-      const artifacts = wrapper.findByTestId(
-        percentageBarLegendTestidPrefix + EGRESS_TYPE_ARTIFACTS,
-      );
-      const repository = wrapper.findByTestId(
-        percentageBarLegendTestidPrefix + EGRESS_TYPE_REPOSITORY,
-      );
-      const packages = wrapper.findByTestId(percentageBarLegendTestidPrefix + EGRESS_TYPE_PACKAGES);
-      const registry = wrapper.findByTestId(percentageBarLegendTestidPrefix + EGRESS_TYPE_REGISTRY);
-
-      expect(artifacts.text()).toMatchInterpolatedText('Artifacts 3.84 MiB');
-      expect(repository.text()).toMatchInterpolatedText('Repository 3.12 MiB');
-      expect(packages.text()).toMatchInterpolatedText('Packages 3.91 MiB');
-      expect(registry.text()).toMatchInterpolatedText('Registry 2.65 MiB');
+      expect(findSectionedPercentageBar().props('sections')).toEqual([
+        expect.objectContaining({
+          id: EGRESS_TYPE_ARTIFACTS,
+          label: __('Artifacts'),
+          value: 4029020,
+          formattedValue: '3.84 MiB',
+        }),
+        expect.objectContaining({
+          id: EGRESS_TYPE_REPOSITORY,
+          label: __('Repository'),
+          value: 3276391,
+          formattedValue: '3.12 MiB',
+        }),
+        expect.objectContaining({
+          id: EGRESS_TYPE_PACKAGES,
+          label: __('Packages'),
+          value: 4096992,
+          formattedValue: '3.91 MiB',
+        }),
+        expect.objectContaining({
+          id: EGRESS_TYPE_REGISTRY,
+          label: s__('UsageQuota|Registry'),
+          value: 2780286,
+          formattedValue: '2.65 MiB',
+        }),
+      ]);
     });
 
     describe('when egress total is 0', () => {
-      it('does not display percentage bar', () => {
+      it('does not render `SectionedPercentageBar`', () => {
         createComponent({
           propsData: {
             egressNodes: [
@@ -109,12 +105,12 @@ describe('UsageByType', () => {
           },
         });
 
-        expect(wrapper.findByTestId('percentage-bar').exists()).toBe(false);
+        expect(findSectionedPercentageBar().exists()).toBe(false);
       });
     });
 
     describe('when egress type is 0', () => {
-      it('does not display that egress type in percentage bar', () => {
+      it('does not pass that egress type to `SectionedPercentageBar`', () => {
         createComponent({
           propsData: {
             egressNodes: [
@@ -130,10 +126,11 @@ describe('UsageByType', () => {
           },
         });
 
-        expect(wrapper.findByTestId('percentage-bar').exists()).toBe(true);
         expect(
-          wrapper.findByTestId(percentageBarTestidPrefix + EGRESS_TYPE_REPOSITORY).exists(),
-        ).toBe(false);
+          findSectionedPercentageBar()
+            .props('sections')
+            .find((section) => section.id === EGRESS_TYPE_REPOSITORY),
+        ).toBeUndefined();
       });
     });
 
