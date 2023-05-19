@@ -41,6 +41,26 @@ RSpec.shared_examples 'product analytics dashboards' do
     end
   end
 
+  shared_examples 'renders the new dashboard button' do
+    before do
+      visit_page
+    end
+
+    it do
+      expect(page).to have_content(s_('Analytics|New dashboard'))
+    end
+  end
+
+  shared_examples 'does not render the new dashboard button' do
+    before do
+      visit_page
+    end
+
+    it do
+      expect(page).not_to have_content(s_('Analytics|New dashboard'))
+    end
+  end
+
   context 'with the required application settings' do
     before do
       stub_application_setting(product_analytics_enabled?: true)
@@ -239,23 +259,39 @@ RSpec.shared_examples 'product analytics dashboards' do
 
               it_behaves_like 'renders the product analytics dashboards'
 
-              context 'and custom dashboards is not configured' do
-                it 'does not render the new dashboard button' do
-                  visit_page
+              context 'when combined_analytics_dashboards_editor is enabled' do
+                before do
+                  stub_feature_flags(combined_analytics_dashboards_editor: true)
+                end
 
-                  expect(page).not_to have_content(s_('Analytics|New dashboard'))
+                context 'and custom dashboards is configured' do
+                  before do
+                    create(:analytics_dashboards_pointer, :project_based, project: project)
+                  end
+
+                  it_behaves_like 'renders the new dashboard button'
+                end
+
+                context 'and custom dashboards is not configured' do
+                  it_behaves_like 'does not render the new dashboard button'
                 end
               end
 
-              context 'and custom dashboards is configured' do
+              context 'when combined_analytics_dashboards_editor is disabled' do
                 before do
-                  create(:analytics_dashboards_pointer, :project_based, project: project)
-
-                  visit_page
+                  stub_feature_flags(combined_analytics_dashboards_editor: false)
                 end
 
-                it 'renders the new dashboard button' do
-                  expect(page).to have_content(s_('Analytics|New dashboard'))
+                context 'and custom dashboards is configured' do
+                  before do
+                    create(:analytics_dashboards_pointer, :project_based, project: project)
+                  end
+
+                  it_behaves_like 'does not render the new dashboard button'
+                end
+
+                context 'and custom dashboards is not configured' do
+                  it_behaves_like 'does not render the new dashboard button'
                 end
               end
             end

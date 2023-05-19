@@ -36,6 +36,7 @@ jest.mock('gridstack', () => ({
         on: jest.fn(),
         destroy: jest.fn(),
         makeWidget: jest.fn(),
+        setStatic: jest.fn(),
       };
     }),
   },
@@ -54,7 +55,7 @@ describe('CustomizableDashboard', () => {
     push: jest.fn(),
   };
 
-  const createWrapper = (props = {}, loadedDashboard = dashboard) => {
+  const createWrapper = (props = {}, loadedDashboard = dashboard, provide = {}) => {
     const loadDashboard = { ...loadedDashboard };
     loadDashboard.default = { ...loadDashboard };
 
@@ -70,6 +71,7 @@ describe('CustomizableDashboard', () => {
       mocks: {
         $router,
       },
+      provide,
     });
   };
 
@@ -185,8 +187,8 @@ describe('CustomizableDashboard', () => {
       });
     });
 
-    it('shows Edit Button for a custom dashboard', () => {
-      expect(findEditButton().exists()).toBe(true);
+    it('does not show the Edit Button for a custom dashboard', () => {
+      expect(findEditButton().exists()).toBe(false);
     });
 
     it('does not show the filters', () => {
@@ -222,96 +224,104 @@ describe('CustomizableDashboard', () => {
     });
   });
 
-  describe('when editing', () => {
+  describe('when the combinedAnalyticsDashboardsEditor feature flag is enabled on a custom dashboard', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
 
-      createWrapper();
-
-      findEditButton().vm.$emit('click');
+      createWrapper({}, dashboard, { glFeatures: { combinedAnalyticsDashboardsEditor: true } });
     });
 
-    it('shows the Save button', () => {
-      expect(findSaveButton().attributes('type')).toBe('submit');
-      expect(findSaveButton().props('loading')).toBe(false);
+    it('shows the Edit Button', () => {
+      expect(findEditButton().exists()).toBe(true);
     });
 
-    it('shows Code Button', () => {
-      expect(findCodeButton().exists()).toBe(true);
-    });
-
-    it('updates panels when their values change', async () => {
-      await wrapper.vm.updatePanelWithGridStackItem({ id: 1, x: 10, y: 20, w: 30, h: 40 });
-
-      expect(findGridStackPanels().at(0).attributes()).toMatchObject({
-        id: 'panel-1',
-        'gs-h': '40',
-        'gs-w': '30',
-        'gs-x': '10',
-        'gs-y': '20',
+    describe('when editing', () => {
+      beforeEach(() => {
+        findEditButton().vm.$emit('click');
       });
-    });
 
-    it('shows an input element with the title as value', () => {
-      expect(findDashboardTB().attributes()).toMatchObject({
-        value: 'Analytics Overview',
-        required: '',
+      it('shows the Save button', () => {
+        expect(findSaveButton().attributes('type')).toBe('submit');
+        expect(findSaveButton().props('loading')).toBe(false);
       });
-    });
 
-    it('saves the dashboard changes when the form is submitted', async () => {
-      await findDashboardTB().vm.$emit('input', 'New Title');
-
-      await findForm().vm.$emit('submit', new Event('submit'));
-
-      expect(wrapper.emitted('save')).toMatchObject([
-        [
-          'analytics_overview',
-          {
-            ...dashboard,
-            title: 'New Title',
-          },
-        ],
-      ]);
-    });
-
-    it('clicking Code Button will show code', async () => {
-      await findCodeButton().vm.$emit('click');
-
-      expect(findCodeView().exists()).toBe(true);
-    });
-
-    it('clicking twice on Code Button will show dashboard', async () => {
-      await findCodeButton().vm.$emit('click');
-      await findCodeButton().vm.$emit('click');
-
-      expect(findCodeView().exists()).toBe(false);
-    });
-
-    it('shows Cancel Edit Button', () => {
-      expect(findCancelEditButton().exists()).toBe(true);
-    });
-
-    it('shows no Edit Button', () => {
-      expect(findEditButton().exists()).toBe(false);
-    });
-
-    it('shows the visualization selector', () => {
-      expect(findVisualizationSelector().props()).toMatchObject({
-        availableVisualizations: {},
+      it('shows Code Button', () => {
+        expect(findCodeButton().exists()).toBe(true);
       });
-    });
 
-    it('emits "add-panel" when a visualization is selected', async () => {
-      await findVisualizationSelector().vm.$emit('select', 'foo', 'yml');
+      it('updates panels when their values change', async () => {
+        await wrapper.vm.updatePanelWithGridStackItem({ id: 1, x: 10, y: 20, w: 30, h: 40 });
 
-      expect(wrapper.emitted('add-panel')).toEqual([['foo', 'yml']]);
-    });
+        expect(findGridStackPanels().at(0).attributes()).toMatchObject({
+          id: 'panel-1',
+          'gs-h': '40',
+          'gs-w': '30',
+          'gs-x': '10',
+          'gs-y': '20',
+        });
+      });
 
-    it('routes to the designer when a "create" event is recieved', async () => {
-      await findVisualizationSelector().vm.$emit('create');
+      it('shows an input element with the title as value', () => {
+        expect(findDashboardTB().attributes()).toMatchObject({
+          value: 'Analytics Overview',
+          required: '',
+        });
+      });
 
-      expect($router.push).toHaveBeenCalledWith({ name: 'visualization-designer' });
+      it('saves the dashboard changes when the form is submitted', async () => {
+        await findDashboardTB().vm.$emit('input', 'New Title');
+
+        await findForm().vm.$emit('submit', new Event('submit'));
+
+        expect(wrapper.emitted('save')).toMatchObject([
+          [
+            'analytics_overview',
+            {
+              ...dashboard,
+              title: 'New Title',
+            },
+          ],
+        ]);
+      });
+
+      it('clicking Code Button will show code', async () => {
+        await findCodeButton().vm.$emit('click');
+
+        expect(findCodeView().exists()).toBe(true);
+      });
+
+      it('clicking twice on Code Button will show dashboard', async () => {
+        await findCodeButton().vm.$emit('click');
+        await findCodeButton().vm.$emit('click');
+
+        expect(findCodeView().exists()).toBe(false);
+      });
+
+      it('shows Cancel Edit Button', () => {
+        expect(findCancelEditButton().exists()).toBe(true);
+      });
+
+      it('shows no Edit Button', () => {
+        expect(findEditButton().exists()).toBe(false);
+      });
+
+      it('shows the visualization selector', () => {
+        expect(findVisualizationSelector().props()).toMatchObject({
+          availableVisualizations: {},
+        });
+      });
+
+      it('emits "add-panel" when a visualization is selected', async () => {
+        await findVisualizationSelector().vm.$emit('select', 'foo', 'yml');
+
+        expect(wrapper.emitted('add-panel')).toEqual([['foo', 'yml']]);
+      });
+
+      it('routes to the designer when a "create" event is recieved', async () => {
+        await findVisualizationSelector().vm.$emit('create');
+
+        expect($router.push).toHaveBeenCalledWith({ name: 'visualization-designer' });
+      });
     });
   });
 
@@ -398,11 +408,13 @@ describe('CustomizableDashboard', () => {
     });
   });
 
-  describe('when saving while editing', () => {
+  describe('when saving while editing and the editor is enabled', () => {
     beforeEach(() => {
       loadCSSFile.mockResolvedValue();
 
-      createWrapper({ isSaving: true });
+      createWrapper({ isSaving: true }, dashboard, {
+        glFeatures: { combinedAnalyticsDashboardsEditor: true },
+      });
 
       findEditButton().vm.$emit('click');
     });
