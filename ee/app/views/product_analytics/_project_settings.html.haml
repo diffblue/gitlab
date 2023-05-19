@@ -24,6 +24,7 @@
         = s_('ProjectSettings|Override instance analytics configuration for this project')
       = f.fields_for :project_setting do |settings|
         %fieldset
+          = render partial: 'product_analytics/configurator_settings', locals: { f: settings }
           .form-group
             = settings.label :jitsu_host, s_('ProjectSettings|Jitsu host'), class: 'label-light'
             = settings.url_field :jitsu_host, class: 'form-control gl-form-input', placeholder: 'https://jitsu.gitlab.com'
