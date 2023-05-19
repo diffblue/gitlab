@@ -3,10 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Tools::Tool, feature_category: :shared do
-  # Remove this spec once actual implementation is added
-  describe '#initialize' do
-    it 'initializes' do
-      described_class.new(name: nil, description: nil)
+  subject(:tool) { described_class.new(name: 'Name', description: 'Description') }
+
+  describe '#execute' do
+    it 'raises NotImplementedError' do
+      expect { tool.execute(nil, nil) }.to raise_error(NotImplementedError)
     end
   end
 end

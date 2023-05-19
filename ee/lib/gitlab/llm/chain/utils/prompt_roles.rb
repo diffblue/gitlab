@@ -5,16 +5,20 @@ module Gitlab
     module Chain
       module Utils
         class PromptRoles
-          def self.assistant(*strs)
-            # TBD
+          def self.assistant(*inputs)
+            join(:assistant, inputs)
           end
 
-          def self.system(*strs)
-            # TBD
+          def self.system(*inputs)
+            join(:system, inputs)
           end
 
-          def self.user(*strs)
-            # TBD
+          def self.user(*inputs)
+            join(:user, inputs)
+          end
+
+          def self.join(role, *inputs)
+            [role, inputs.join("\n")]
           end
         end
       end
