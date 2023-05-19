@@ -54,5 +54,13 @@ module EE
         snippet.snippet_repository.replicator.handle_after_update if snippet.snippet_repository
       end
     end
+
+    override :replicate_design_management_repository_changes
+    def replicate_design_management_repository_changes(design_management_repository)
+      return unless ::Gitlab::Geo.primary?
+      return unless ::Geo::DesignManagementRepositoryReplicator.enabled?
+
+      design_management_repository.replicator.handle_after_update if design_management_repository
+    end
   end
 end

@@ -4,6 +4,7 @@ description: Registry table for Design Management Repositories
 introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/355660'
 milestone: '16.0'
 feature_categories:
- - geo_replication
-classes: []
+- geo_replication
+classes:
+- Geo::DesignManagementRepositoryRegistry
 gitlab_schema: gitlab_geo

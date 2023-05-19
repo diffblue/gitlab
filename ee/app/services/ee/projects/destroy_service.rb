@@ -76,6 +76,10 @@ module EE
             wiki_path: project.wiki.disk_path
           ).create!
         end
+
+        return unless ::Geo::DesignManagementRepositoryReplicator.enabled?
+
+        project.design_management_repository.replicator.handle_after_destroy if project.design_management_repository
       end
 
       def log_audit_event(project)

@@ -153,9 +153,10 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
           expect { run_rake_task('geo:status') }.not_to output(/Health Status Summary/).to_stdout
         end
 
-        context 'with geo_project_wiki_repository_replication feature flag disabled' do
+        context 'with geo replication feature flags disabled' do
           before do
             stub_feature_flags(geo_project_wiki_repository_replication: false)
+            stub_feature_flags(geo_design_management_repository_replication: false)
           end
 
           it 'prints messages for all the checks' do
@@ -190,28 +191,18 @@ RSpec.describe 'geo rake tasks', :geo, :silence_stdout, feature_category: :geo_r
             stub_feature_flags(geo_project_wiki_repository_replication: true)
           end
 
-          it 'prints messages for all the checks' do
-            checks = [
-              /Name: /,
-              /URL: /,
-              /GitLab Version: /,
-              /Geo Role: /,
-              /Health Status: /,
-              /Sync Settings: /,
-              /Database replication lag: /,
-              /Repositories: /,
-              /Verified Repositories: /,
-              /Uploads: /,
-              /Container repositories: /,
-              /Design repositories: /,
-              /Repositories Checked: /,
-              /Last event ID seen from primary: /,
-              /Last status report was: /
-            ] + self_service_framework_checks
+          it 'does not print message for wiki status checks' do
+            expect { run_rake_task('geo:status') }.not_to output(/Wikis/).to_stdout
+          end
+        end
 
-            checks.each do |text|
-              expect { run_rake_task('geo:status') }.to output(text).to_stdout
-            end
+        context 'with geo_design_management_repository_replication feature flag enabled' do
+          before do
+            stub_feature_flags(geo_design_management_repository_replication: true)
+          end
+
+          it 'does not print message for design repositories status checks' do
+            expect { run_rake_task('geo:status') }.not_to output(/Design repositories/).to_stdout
           end
         end
       end

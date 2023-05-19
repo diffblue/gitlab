@@ -198,6 +198,9 @@ module EE
       ]
 
       replicable_types.reject! { |t| t[:name] == 'wiki' } if ::Geo::ProjectWikiRepositoryReplicator.enabled?
+      if ::Geo::DesignManagementRepositoryReplicator.enabled?
+        replicable_types.reject! { |t| t[:name] == 'design_repository' }
+      end
 
       # Adds all the SSF Data Types automatically
       enabled_replicator_classes.each do |replicator_class|

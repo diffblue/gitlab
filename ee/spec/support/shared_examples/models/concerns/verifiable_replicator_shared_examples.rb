@@ -795,6 +795,7 @@ RSpec.shared_examples 'a verifiable replicator' do
   context 'integration tests' do
     before do
       model_record.save!
+      model_record&.repository&.create_if_not_exists if model_record.respond_to?(:repository)
     end
 
     context 'on a primary' do
