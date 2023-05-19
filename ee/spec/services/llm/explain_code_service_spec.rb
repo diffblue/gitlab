@@ -30,12 +30,9 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
   end
 
   describe '#perform' do
-    it 'schedules a job' do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        user.id, project.id, 'Project', :explain_code, options
-      )
-
-      expect(subject.execute).to be_success
+    it_behaves_like 'async Llm service' do
+      let(:resource) { project }
+      let(:action_name) { :explain_code }
     end
 
     context 'when explain_code_snippet feature flag is disabled' do

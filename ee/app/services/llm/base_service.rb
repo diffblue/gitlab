@@ -49,7 +49,10 @@ module Llm
 
       ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
 
-      success(request_id: request_id)
+      payload = { request_id: request_id }
+      ::Gitlab::Llm::Cache.new(user).add(payload)
+
+      success(payload)
     end
 
     def ai_integration_enabled?

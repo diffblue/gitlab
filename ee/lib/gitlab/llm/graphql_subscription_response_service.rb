@@ -28,6 +28,7 @@ module Gitlab
           data: data
         )
 
+        Gitlab::Llm::Cache.new(user).add(data.slice(:request_id, :response_body, :errors))
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)
       end
 

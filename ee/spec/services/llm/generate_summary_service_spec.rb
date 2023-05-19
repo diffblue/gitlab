@@ -24,16 +24,6 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
       it { is_expected.to be_error.and have_attributes(message: eq(described_class::INVALID_MESSAGE)) }
     end
 
-    shared_examples 'issuable with notes' do
-      it 'enqueues a new worker' do
-        expect(Llm::CompletionWorker).to receive(:perform_async).with(
-          user.id, resource.id, resource.class.name, :summarize_comments, { request_id: an_instance_of(String) }
-        )
-
-        expect(subject).to be_success
-      end
-    end
-
     shared_examples 'ensures user membership' do
       context 'without membership' do
         let(:current_user) { create(:user) }
@@ -68,9 +58,14 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
           create_pair(:note_on_issue, project: resource.project, noteable: resource)
         end
 
-        it_behaves_like "issuable with notes"
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
+        it_behaves_like 'async Llm service' do
+          subject { described_class.new(current_user, resource, {}) }
+
+          let(:action_name) { :summarize_comments }
+          let(:options) { {} }
+        end
       end
     end
 
@@ -84,9 +79,14 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
           create_pair(:note_on_epic, noteable: resource)
         end
 
-        it_behaves_like "issuable with notes"
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
+        it_behaves_like 'async Llm service' do
+          subject { described_class.new(current_user, resource, {}) }
+
+          let(:action_name) { :summarize_comments }
+          let(:options) { {} }
+        end
       end
     end
   end

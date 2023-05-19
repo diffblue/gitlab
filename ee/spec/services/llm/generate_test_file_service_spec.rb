@@ -29,16 +29,9 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
         project.add_maintainer(user)
       end
 
-      it 'schedules a job' do
-        expect(subject.execute).to be_success
-
-        expect(Llm::CompletionWorker).to have_received(:perform_async).with(
-          user.id,
-          merge_request.id,
-          'MergeRequest',
-          :generate_test_file,
-          options
-        )
+      it_behaves_like 'async Llm service' do
+        let(:resource) { merge_request }
+        let(:action_name) { :generate_test_file }
       end
     end
 

@@ -23,16 +23,6 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
 
     subject { service.execute }
 
-    shared_examples 'issuable' do
-      it 'enqueues a new worker' do
-        expect(Llm::CompletionWorker).to receive(:perform_async).with(
-          user.id, resource.id, resource.class.name, :generate_description, { request_id: an_instance_of(String) }
-        )
-
-        expect(subject).to be_success
-      end
-    end
-
     shared_examples 'ensures user membership' do
       context 'without membership' do
         let(:current_user) { create(:user) }
@@ -64,9 +54,14 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
     context 'for an issue' do
       let_it_be(:resource) { create(:issue, project: project) }
 
-      it_behaves_like "issuable"
       it_behaves_like "ensures license and feature flag checks"
       it_behaves_like "ensures user membership"
+      it_behaves_like 'async Llm service' do
+        subject { service }
+
+        let(:action_name) { :generate_description }
+        let(:options) { {} }
+      end
     end
   end
 end
