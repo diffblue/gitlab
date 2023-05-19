@@ -1,0 +1,8 @@
+name: project_access_token_creation_failed
+description: Event triggered on failure to create a project access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363087
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92225
+milestone: '15.2'
+feature_category: project
+saved_to_database: true
+streamed: true

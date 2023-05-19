@@ -1,0 +1,8 @@
+name: group_access_token_created
+description: Event triggered on creating a group access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363087
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92225
+milestone: '15.2'
+feature_category: subgroup
+saved_to_database: true
+streamed: true
