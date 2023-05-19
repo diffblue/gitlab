@@ -42,7 +42,7 @@ module Abuse
     def bannable_user?
       return false unless user.active? && user.human?
       return false if user.gitlab_employee? || user.account_age_in_days > 7
-      return false if user.namespace.paid? || user_owns_populated_namespaces?
+      return false if user.has_paid_namespace? || user_owns_populated_namespaces?
 
       true
     end
