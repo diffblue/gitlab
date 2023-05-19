@@ -84,32 +84,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
         project.add_developer(developer)
       end
 
-      context 'when scan_result_role_action is disabled' do
-        before do
-          stub_feature_flags(scan_result_role_action: false)
-        end
-
-        it_behaves_like 'create approval rule with specific approver'
-
-        it 'does not create scan_result_policy_read' do
-          expect { subject }.not_to change { Security::ScanResultPolicyRead.count }
-        end
+      it 'creates approval rules with role approvers' do
+        expect { subject }.to change { project.approval_rules.count }.by(1)
+        expect(project.approval_rules.first.approvers).to contain_exactly(approver, developer)
       end
 
-      context 'when scan_result_role_action is enabled' do
-        before do
-          stub_feature_flags(scan_result_role_action: true)
-        end
-
-        it 'creates approval rules with role approvers' do
-          expect { subject }.to change { project.approval_rules.count }.by(1)
-          expect(project.approval_rules.first.approvers).to contain_exactly(approver, developer)
-        end
-
-        it 'creates scan_result_policy_read' do
-          expect { subject }.to change { Security::ScanResultPolicyRead.count }.by(1)
-          expect(project.approval_rules.first.scan_result_policy_read.role_approvers).to match_array([Gitlab::Access::DEVELOPER])
-        end
+      it 'creates scan_result_policy_read' do
+        expect { subject }.to change { Security::ScanResultPolicyRead.count }.by(1)
+        expect(project.approval_rules.first.scan_result_policy_read.role_approvers).to match_array([Gitlab::Access::DEVELOPER])
       end
     end
 

@@ -7,10 +7,6 @@ module Groups
       before_action :authorize_modify_security_policy!, only: :edit
       before_action :validate_policy_configuration, only: :edit
 
-      before_action do
-        push_frontend_feature_flag(:scan_result_role_action, group)
-      end
-
       feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]

@@ -27,14 +27,9 @@ export default (el, namespaceType) => {
   const policyProject = JSON.parse(assignedPolicyProject);
 
   // TODO use convertToCamelCase on the approvers with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
-  let scanResultPolicyApprovers;
-  if (gon.features?.scanResultRoleAction) {
-    scanResultPolicyApprovers = scanResultApprovers
-      ? decomposeApproversV2(JSON.parse(scanResultApprovers))
-      : {};
-  } else {
-    scanResultPolicyApprovers = scanResultApprovers ? JSON.parse(scanResultApprovers) : [];
-  }
+  const scanResultPolicyApprovers = scanResultApprovers
+    ? decomposeApproversV2(JSON.parse(scanResultApprovers))
+    : {};
 
   return new Vue({
     el,
