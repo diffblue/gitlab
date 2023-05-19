@@ -26,9 +26,7 @@ module Security
         policy[:rules].first(Security::ScanResultPolicy::LIMIT).each_with_index do |rule, rule_index|
           next unless rule_type_allowed?(rule[:type])
 
-          if create_scan_result_policy_read?(action_info, rule)
-            scan_result_policy_read = create_scan_result_policy(rule, action_info)
-          end
+          scan_result_policy_read = create_scan_result_policy(rule, action_info)
 
           create_software_license_policies(rule, rule_index, scan_result_policy_read) if license_finding?(rule)
 
@@ -40,10 +38,6 @@ module Security
 
       def license_finding?(rule)
         rule[:type] == Security::ScanResultPolicy::LICENSE_FINDING
-      end
-
-      def create_scan_result_policy_read?(action_info, rule)
-        scan_result_role_action_enabled || license_finding?(rule)
       end
 
       def create_software_license_policies(rule, _rule_index, scan_result_policy_read)
@@ -116,10 +110,6 @@ module Security
         return policy_name if rule_index == 0
 
         "#{policy_name} #{rule_index + 1}"
-      end
-
-      def scan_result_role_action_enabled
-        @scan_result_role_action_enabled ||= Feature.enabled?(:scan_result_role_action, project)
       end
 
       def users_ids(user_ids, user_names)

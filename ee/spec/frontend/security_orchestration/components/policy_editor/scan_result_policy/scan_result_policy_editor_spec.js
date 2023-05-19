@@ -1,11 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
-import MockAdapter from 'axios-mock-adapter';
-import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
+  getInvalidBranches,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_result_policy_editor.vue';
@@ -28,15 +27,19 @@ import {
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
+import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder_v2.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
-import axios from '~/lib/utils/axios_utils';
-import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
+
+jest.mock('ee/security_orchestration/components/policy_editor/scan_result_policy/lib', () => ({
+  ...jest.requireActual(
+    'ee/security_orchestration/components/policy_editor/scan_result_policy/lib',
+  ),
+  getInvalidBranches: jest.fn().mockResolvedValue([]),
+}));
 
 jest.mock('~/lib/utils/url_utility', () => ({
-  joinPaths: jest.requireActual('~/lib/utils/url_utility').joinPaths,
+  ...jest.requireActual('~/lib/utils/url_utility'),
   visitUrl: jest.fn().mockName('visitUrlMock'),
-  setUrlFragment: jest.requireActual('~/lib/utils/url_utility').setUrlFragment,
 }));
 
 const newlyCreatedPolicyProject = {
@@ -44,17 +47,15 @@ const newlyCreatedPolicyProject = {
   fullPath: 'path/to/new-project',
 };
 jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
+  ...jest.requireActual('ee/security_orchestration/components/policy_editor/utils'),
   assignSecurityPolicyProject: jest.fn().mockResolvedValue({
     branch: 'main',
     fullPath: 'path/to/new-project',
   }),
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
-  isValidPolicy: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
-    .isValidPolicy,
 }));
 
 describe('ScanResultPolicyEditor', () => {
-  let mock;
   let wrapper;
   const defaultProjectPath = 'path/to/project';
   const policyEditorEmptyStateSvgPath = 'path/to/svg';
@@ -63,7 +64,11 @@ describe('ScanResultPolicyEditor', () => {
     branch: 'main',
     fullPath: 'path/to/existing-project',
   };
-  const scanResultPolicyApprovers = [{ id: 1, username: 'the.one', state: 'active' }];
+  const scanResultPolicyApprovers = {
+    user: [{ id: 1, username: 'the.one', state: 'active' }],
+    group: [],
+    role: [],
+  };
 
   const factory = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = shallowMount(ScanResultPolicyEditor, {
@@ -113,11 +118,7 @@ describe('ScanResultPolicyEditor', () => {
   };
 
   beforeEach(() => {
-    mock = new MockAdapter(axios);
-  });
-
-  afterEach(() => {
-    mock.restore();
+    getInvalidBranches.mockClear();
   });
 
   describe('rendering', () => {
@@ -161,39 +162,6 @@ describe('ScanResultPolicyEditor', () => {
         expect(emptyState.props('primaryButtonLink')).toMatch('scan-result-policy-editor');
         expect(emptyState.props('svgPath')).toBe(policyEditorEmptyStateSvgPath);
       });
-    });
-
-    describe('scanResultRoleAction feature flag turned on', () => {
-      const existingPolicyWithUserId = {
-        actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
-      };
-      const existingUserApprover = {
-        user: [{ id: 1, username: 'the.one', state: 'active', type: USER_TYPE }],
-      };
-      const nonExistingUserApprover = {
-        user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
-      };
-
-      it.each`
-        title         | policy                      | approver                   | output
-        ${'does not'} | ${{}}                       | ${existingUserApprover}    | ${false}
-        ${'does'}     | ${{}}                       | ${nonExistingUserApprover} | ${true}
-        ${'does not'} | ${existingPolicyWithUserId} | ${existingUserApprover}    | ${false}
-        ${'does'}     | ${existingPolicyWithUserId} | ${nonExistingUserApprover} | ${true}
-      `(
-        '$title create an error when policy does not match existing approvers',
-        async ({ policy, approver, output }) => {
-          factoryWithExistingPolicy(policy, {
-            glFeatures: {
-              scanResultRoleAction: true,
-            },
-            scanResultPolicyApprovers: approver,
-          });
-
-          await changesToRuleMode();
-          expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
-        },
-      );
     });
   });
 
@@ -338,13 +306,6 @@ describe('ScanResultPolicyEditor', () => {
       verifiesParsingError();
     });
 
-    it('creates an error when policy does not match existing approvers', async () => {
-      factory();
-
-      await changesToRuleMode();
-      verifiesParsingError();
-    });
-
     it('creates an error when policy scanners are invalid', async () => {
       factoryWithExistingPolicy({ rules: [{ scanners: ['cluster_image_scanning'] }] });
 
@@ -366,25 +327,48 @@ describe('ScanResultPolicyEditor', () => {
       verifiesParsingError();
     });
 
-    it('does not create an error when policy matches existing approvers', async () => {
-      factoryWithExistingPolicy();
+    describe('existing approvers', () => {
+      const existingPolicyWithUserId = {
+        actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],
+      };
 
-      await changesToRuleMode();
-      expect(findPolicyEditorLayout().props('hasParsingError')).toBe(false);
+      const existingUserApprover = {
+        user: [{ id: 1, username: 'the.one', state: 'active', type: USER_TYPE }],
+      };
+      const nonExistingUserApprover = {
+        user: [{ id: 2, username: 'the.two', state: 'active', type: USER_TYPE }],
+      };
+
+      it.each`
+        title         | policy                      | approver                   | output
+        ${'does not'} | ${{}}                       | ${existingUserApprover}    | ${false}
+        ${'does'}     | ${{}}                       | ${nonExistingUserApprover} | ${true}
+        ${'does not'} | ${existingPolicyWithUserId} | ${existingUserApprover}    | ${false}
+        ${'does'}     | ${existingPolicyWithUserId} | ${nonExistingUserApprover} | ${true}
+      `(
+        '$title create an error when the policy does not match existing approvers',
+        async ({ policy, approver, output }) => {
+          factoryWithExistingPolicy(policy, {
+            scanResultPolicyApprovers: approver,
+          });
+
+          await changesToRuleMode();
+          expect(findPolicyEditorLayout().props('hasParsingError')).toBe(output);
+        },
+      );
     });
   });
 
-  describe('protected branches selector', () => {
+  describe('branches being validated', () => {
     it.each`
-      status                   | errorMessage
-      ${HTTP_STATUS_OK}        | ${''}
-      ${HTTP_STATUS_NOT_FOUND} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
+      status                             | value       | errorMessage
+      ${'invalid branches do not exist'} | ${[]}       | ${''}
+      ${'invalid branches exist'}        | ${['main']} | ${'The following branches do not exist on this development project: main. Please review all protected branches to ensure the values are accurate before updating this policy.'}
     `(
-      'triggers error event with the correct content when the http status is $status',
-      async ({ status, errorMessage }) => {
+      'triggers error event with the correct content when $status',
+      async ({ value, errorMessage }) => {
         const rule = { ...mockDefaultBranchesScanResultObject.rules[0], branches: ['main'] };
-
-        mock.onGet('/api/undefined/projects/1/protected_branches/main').replyOnce(status, {});
+        getInvalidBranches.mockReturnValue(value);
 
         factoryWithExistingPolicy({ rules: [rule] });
 
@@ -397,14 +381,12 @@ describe('ScanResultPolicyEditor', () => {
     );
 
     it('does not query protected branches when namespaceType is other than project', async () => {
-      jest.spyOn(Api, 'projectProtectedBranch');
-
       factoryWithExistingPolicy({}, { namespaceType: NAMESPACE_TYPES.GROUP });
 
       await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
       await waitForPromises();
 
-      expect(Api.projectProtectedBranch).not.toHaveBeenCalled();
+      expect(getInvalidBranches).not.toHaveBeenCalled();
     });
   });
 });

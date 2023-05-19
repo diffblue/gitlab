@@ -18,19 +18,16 @@ import {
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
-import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
 import {
   createPolicyObject,
   DEFAULT_SCAN_RESULT_POLICY,
-  DEFAULT_SCAN_RESULT_POLICY_V4,
   getInvalidBranches,
   fromYaml,
   toYaml,
   emptyBuildRule,
-  approversOutOfSync,
   approversOutOfSyncV2,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
@@ -57,7 +54,6 @@ export default {
   components: {
     GlEmptyState,
     GlButton,
-    PolicyActionBuilder,
     PolicyActionBuilderV2,
     PolicyRuleBuilder,
     PolicyEditorLayout,
@@ -90,17 +86,9 @@ export default {
     },
   },
   data() {
-    let yamlEditorValue;
-
-    if (this.glFeatures.scanResultRoleAction) {
-      yamlEditorValue = this.existingPolicy
-        ? toYaml(this.existingPolicy)
-        : DEFAULT_SCAN_RESULT_POLICY_V4;
-    } else {
-      yamlEditorValue = this.existingPolicy
-        ? toYaml(this.existingPolicy)
-        : DEFAULT_SCAN_RESULT_POLICY;
-    }
+    const yamlEditorValue = this.existingPolicy
+      ? toYaml(this.existingPolicy)
+      : DEFAULT_SCAN_RESULT_POLICY;
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
@@ -131,9 +119,6 @@ export default {
     },
     isWithinLimit() {
       return this.policy.rules?.length < MAX_ALLOWED_RULES_LENGTH;
-    },
-    areRolesAvailable() {
-      return this.glFeatures.scanResultRoleAction;
     },
     hasEmptyRules() {
       return this.policy.rules?.length === 0 || this.policy.rules?.at(0)?.type === '';
@@ -249,9 +234,7 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
-      const invalidApprovers = this.glFeatures.scanResultRoleAction
-        ? approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers)
-        : approversOutOfSync(this.policy.actions[0], this.existingApprovers);
+      const invalidApprovers = approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers);
 
       return (
         invalidApprovers ||
@@ -323,28 +306,15 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <template v-if="areRolesAvailable">
-          <policy-action-builder-v-2
-            v-for="(action, index) in policy.actions"
-            :key="index"
-            class="gl-mb-4"
-            :init-action="action"
-            :existing-approvers="existingApprovers"
-            @updateApprovers="updatePolicyApprovers"
-            @changed="updateAction(index, $event)"
-          />
-        </template>
-        <template v-else>
-          <policy-action-builder
-            v-for="(action, index) in policy.actions"
-            :key="index"
-            class="gl-mb-4"
-            :init-action="action"
-            :existing-approvers="existingApprovers"
-            @changed="updateAction(index, $event)"
-            @approversUpdated="updatePolicyApprovers"
-          />
-        </template>
+        <policy-action-builder-v-2
+          v-for="(action, index) in policy.actions"
+          :key="index"
+          class="gl-mb-4"
+          :init-action="action"
+          :existing-approvers="existingApprovers"
+          @updateApprovers="updatePolicyApprovers"
+          @changed="updateAction(index, $event)"
+        />
       </dim-disable-container>
     </template>
   </policy-editor-layout>

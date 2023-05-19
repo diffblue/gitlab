@@ -101,9 +101,7 @@ export const createActionFromApprovers = ({ type, approvals_required }, approver
 /*
   Check if users are present in approvers
 */
-function usersOutOfSync(action, approvers) {
-  // TODO delete this filter as part of the clean up for the `:scan_result_role_action` feature
-  const users = approvers.filter((approver) => approver.type === USER_TYPE);
+function usersOutOfSync(action, users) {
   const usersIDs =
     action?.user_approvers_ids?.some((id) => !users.find((approver) => approver.id === id)) ||
     false;
@@ -120,9 +118,7 @@ function usersOutOfSync(action, approvers) {
 /*
   Check if groups are present in approvers
 */
-function groupsOutOfSync(action, approvers) {
-  // TODO delete this filter as part of the clean up for the `:scan_result_role_action` feature
-  const groups = approvers.filter((approver) => approver.type === GROUP_TYPE);
+function groupsOutOfSync(action, groups) {
   const groupsIDs =
     action?.group_approvers_ids?.some((id) => !groups.find((approver) => approver.id === id)) ||
     false;
@@ -141,14 +137,6 @@ function groupsOutOfSync(action, approvers) {
 */
 export function approversOutOfSyncV2(action, { user = [], group = [] }) {
   return usersOutOfSync(action, user) || groupsOutOfSync(action, group);
-}
-
-/*
-  Check if yaml is out of sync with available approvers
-*/
-export function approversOutOfSync(action, existingApprovers) {
-  const approvers = groupApprovers(existingApprovers);
-  return usersOutOfSync(action, approvers) || groupsOutOfSync(action, approvers);
 }
 
 export const getDefaultHumanizedTemplate = (numOfApproversRequired) => {

@@ -62,11 +62,7 @@ module ApprovalRuleLike
   # Users who are eligible to approve, including specified group members.
   # @return [Array<User>]
   def approvers
-    @approvers ||= if Feature.enabled?(:scan_result_role_action, project)
-                     filter_inactive_approvers(with_role_approvers)
-                   else
-                     filter_inactive_approvers(direct_approvers)
-                   end
+    @approvers ||= filter_inactive_approvers(with_role_approvers)
   end
 
   def code_owner?
