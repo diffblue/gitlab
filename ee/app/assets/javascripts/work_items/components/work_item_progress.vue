@@ -131,7 +131,7 @@ export default {
     getProgressTooltip() {
       return this.glFeatures.okrAutomaticRollups && this.workItemType === __('Objective')
         ? __(
-            'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calcualtion anytime the Progress score of its direct children is updated.',
+            'This field is auto-calculated based on the Progress score of its direct children. You can overwrite this value but it will be replaced by the auto-calculation anytime the Progress score of its direct children is updated.',
           )
         : '';
     },
