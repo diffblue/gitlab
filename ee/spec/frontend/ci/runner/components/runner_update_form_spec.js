@@ -7,13 +7,16 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { runnerFormData } from 'jest/ci/runner/mock_data';
 import { VARIANT_SUCCESS } from '~/alert';
-import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
+import { visitUrl } from '~/lib/utils/url_utility';
 import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/ci/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/ci/runner/graphql/edit/runner_update.mutation.graphql';
 
 jest.mock('~/ci/runner/local_storage_alert/save_alert_to_local_storage');
-jest.mock('~/lib/utils/url_utility');
+jest.mock('~/lib/utils/url_utility', () => ({
+  ...jest.requireActual('~/lib/utils/url_utility'),
+  visitUrl: jest.fn(),
+}));
 
 const mockRunner = runnerFormData.data.runner;
 const mockRunnerPath = '/admin/runners/1';
@@ -65,7 +68,7 @@ describe('RunnerUpdateForm', () => {
         variant: VARIANT_SUCCESS,
       }),
     );
-    expect(redirectTo).toHaveBeenCalledWith(mockRunnerPath); // eslint-disable-line import/no-deprecated
+    expect(visitUrl).toHaveBeenCalledWith(mockRunnerPath);
   };
 
   beforeEach(() => {
