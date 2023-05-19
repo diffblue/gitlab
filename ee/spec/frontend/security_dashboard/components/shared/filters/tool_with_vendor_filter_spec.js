@@ -9,9 +9,8 @@ import ToolWithVendorFilter, {
 } from 'ee/security_dashboard/components/shared/filters/tool_with_vendor_filter.vue';
 import QuerystringSync from 'ee/security_dashboard/components/shared/filters/querystring_sync.vue';
 import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
-import { TYPENAME_VULNERABILITIES_SCANNER } from '~/graphql_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
+import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 
 const GITLAB_SCANNERS = [
   { id: 1, vendor: VENDOR_GITLAB, report_type: 'DEPENDENCY_SCANNING' },
@@ -25,6 +24,7 @@ const GITLAB_SCANNERS = [
 ];
 
 const CUSTOM_SCANNERS = [
+  ...GITLAB_SCANNERS,
   { id: 9, vendor: 'Custom', report_type: 'SAST' },
   { id: 10, vendor: 'Custom', report_type: 'SAST' },
   { id: 11, vendor: 'Custom', report_type: 'DAST' },
@@ -62,12 +62,18 @@ describe('Tool With Vendor Filter component', () => {
     }
   };
 
+  const clickAllItem = () => wrapper.findByTestId(ALL_ID).trigger('click');
+
   const expectSelectedItems = (ids) => {
     const checkedItems = findDropdownItems()
       .wrappers.filter((item) => item.props('isChecked'))
       .map((item) => item.attributes('data-testid'));
 
     expect(checkedItems.sort()).toEqual(ids.sort());
+  };
+
+  const expectFilterChanged = (expected) => {
+    expect(wrapper.emitted('filter-changed')[0][0]).toEqual(expected);
   };
 
   describe('default', () => {
@@ -150,6 +156,27 @@ describe('Tool With Vendor Filter component', () => {
 
       expect(findDropdownItem(VENDOR_GITLAB, CLUSTER_IMAGE_SCANNING).exists()).toBe(false);
     });
+
+    describe('filter-changed event', () => {
+      beforeEach(() => {
+        createWrapper({ scanners: GITLAB_SCANNERS });
+      });
+
+      it('emits the default presets when nothing is selected', async () => {
+        await clickAllItem();
+
+        expectFilterChanged({ reportType: REPORT_TYPE_PRESETS.DEVELOPMENT, scannerId: undefined });
+      });
+
+      it.each(['API_FUZZING', 'SAST'])(
+        'emits the report type %s when it is selected',
+        async (reportType) => {
+          await clickDropdownItem(VENDOR_GITLAB, reportType);
+
+          expectFilterChanged({ reportType: [reportType], scannerId: undefined });
+        },
+      );
+    });
   });
 
   describe('GitLab and custom scanners', () => {
@@ -206,27 +233,33 @@ describe('Tool With Vendor Filter component', () => {
         expectSelectedItems([ALL_ID]);
       });
     });
-  });
 
-  describe('filter-changed event', () => {
-    it('emits expected event data for selected items', async () => {
-      const scanners = [...GITLAB_SCANNERS, ...CUSTOM_SCANNERS];
-      const ids = scanners
-        .map(({ id }) => convertToGraphQLId(TYPENAME_VULNERABILITIES_SCANNER, id))
-        .sort();
+    describe('filter-changed event', () => {
+      beforeEach(createWrapper);
 
-      createWrapper({ scanners });
-      clickDropdownItem(VENDOR_GITLAB);
-      await clickDropdownItem('Custom');
+      it('emits the default presets when nothing is selected', async () => {
+        await clickAllItem();
 
-      expect(wrapper.emitted('filter-changed')[0][0].scannerId.sort()).toEqual(ids);
-    });
+        expectFilterChanged({ reportType: REPORT_TYPE_PRESETS.DEVELOPMENT, scannerId: undefined });
+      });
 
-    it('emits null scanner ID when there are selected items but no scanner IDs', async () => {
-      createWrapper({ scanners: [] });
-      await clickDropdownItem(VENDOR_GITLAB, 'SAST');
+      it('emits the null scanner ID when a report type is selected, but there are no scanners for it', async () => {
+        await clickDropdownItem(VENDOR_GITLAB, 'API_FUZZING');
 
-      expect(wrapper.emitted('filter-changed')[0][0]).toEqual({ scannerId: [NULL_SCANNER_ID] });
+        expectFilterChanged({ reportType: undefined, scannerId: [NULL_SCANNER_ID] });
+      });
+
+      it('emits the scanner IDs when a report type is selected', async () => {
+        await clickDropdownItem(VENDOR_GITLAB, 'SAST');
+
+        expectFilterChanged({
+          reportType: undefined,
+          scannerId: [
+            'gid://gitlab/Vulnerabilities::Scanner/3',
+            'gid://gitlab/Vulnerabilities::Scanner/4',
+          ],
+        });
+      });
     });
   });
 });
