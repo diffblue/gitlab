@@ -17,6 +17,10 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     create(:pages_domain, :letsencrypt, domain: 'letsencrypt.domain.test', project: project)
   end
 
+  let_it_be(:domain_with_letsencrypt_with_auto_ssl_failed) do
+    create(:pages_domain, :letsencrypt, domain: 'letsencrypt.domain.example', project: project, auto_ssl_failed: true)
+  end
+
   let(:domain_params) { { domain: 'www.other-domain.test' } }
 
   let(:domain_secure_params) do
@@ -236,6 +240,15 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response.body).to include(domain_with_letsencrypt.domain)
+    end
+
+    it 'returns domain with letsencrypt with auto_ssl_failed', :aggregate_failures do
+      stub_application_setting(lets_encrypt_terms_of_service_accepted: true)
+      get group_settings_domain_verification_path(group, domain_with_letsencrypt_with_auto_ssl_failed)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response.body).to include(domain_with_letsencrypt_with_auto_ssl_failed.domain)
+      expect(response.body).to include("Retry")
     end
 
     subject { get group_settings_domain_verification_path(group, domain) }

@@ -52,4 +52,4 @@
         class: "form-control"
       %p.help-inline.text-muted= _("Upload a private key for your certificate")
 
-= render 'lets_encrypt_callout', auto_ssl_available_and_enabled: auto_ssl_available_and_enabled
+= render 'lets_encrypt_callout', auto_ssl_available_and_enabled: auto_ssl_available_and_enabled, group: @group
