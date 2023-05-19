@@ -1,10 +1,10 @@
 <script>
-import { GlSkeletonLoader, GlTableLite, GlLink, GlIcon } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite, GlIcon, GlLink } from '@gitlab/ui';
 import { range } from 'lodash';
 import { s__, __ } from '~/locale';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { roundOffFloat } from '~/lib/utils/common_utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import SectionedPercentageBar from '~/usage_quotas/components/sectioned_percentage_bar.vue';
 import {
   EGRESS_TYPE_ARTIFACTS,
   EGRESS_TYPE_REPOSITORY,
@@ -35,7 +35,7 @@ export default {
       thClass: ['gl-white-space-nowrap'],
     },
   ],
-  components: { GlSkeletonLoader, GlTableLite, GlLink, GlIcon },
+  components: { GlSkeletonLoader, GlTableLite, GlIcon, GlLink, SectionedPercentageBar },
   props: {
     egressNodes: {
       type: Array,
@@ -63,39 +63,39 @@ export default {
 
       return [
         {
-          type: EGRESS_TYPE_ARTIFACTS,
+          id: EGRESS_TYPE_ARTIFACTS,
           label: __('Artifacts'),
           description: s__('UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD.'),
           icon: 'disk',
           helpPath: helpPagePath('ci/caching/index', {
             anchor: 'artifacts',
           }),
-          percentage: this.calculatePercentage(EGRESS_TYPE_ARTIFACTS),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_ARTIFACTS]),
-          cssClasses: 'gl-bg-data-viz-blue-500',
+          value: this.egressTypesCombined[EGRESS_TYPE_ARTIFACTS],
+          formattedValue: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_ARTIFACTS]),
         },
         {
-          type: EGRESS_TYPE_REPOSITORY,
+          id: EGRESS_TYPE_REPOSITORY,
           label: __('Repository'),
           description: s__('UsageQuota|Git repository.'),
           icon: 'infrastructure-registry',
           helpPath: helpPagePath('user/project/repository/reducing_the_repo_size_using_git'),
-          percentage: this.calculatePercentage(EGRESS_TYPE_REPOSITORY),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REPOSITORY]),
-          cssClasses: 'gl-bg-data-viz-orange-500',
+          value: this.egressTypesCombined[EGRESS_TYPE_REPOSITORY],
+          formattedValue: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REPOSITORY]),
         },
         {
-          type: EGRESS_TYPE_PACKAGES,
+          id: EGRESS_TYPE_PACKAGES,
           label: __('Packages'),
           description: s__('UsageQuota|Code packages and container images.'),
           icon: 'package',
           helpPath: helpPagePath('user/packages/package_registry/index'),
-          percentage: this.calculatePercentage(EGRESS_TYPE_PACKAGES),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_PACKAGES]),
-          cssClasses: 'gl-bg-data-viz-aqua-500',
+          value: this.egressTypesCombined[EGRESS_TYPE_PACKAGES],
+          formattedValue: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_PACKAGES]),
         },
         {
-          type: EGRESS_TYPE_REGISTRY,
+          id: EGRESS_TYPE_REGISTRY,
           label: s__('UsageQuota|Registry'),
           description: s__(
             'UsageQuota|Gitlab-integrated Docker Container Registry for storing Docker Images.',
@@ -104,11 +104,11 @@ export default {
           helpPath: helpPagePath(
             'user/packages/container_registry/reduce_container_registry_storage',
           ),
-          percentage: this.calculatePercentage(EGRESS_TYPE_REGISTRY),
           humanSize: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REGISTRY]),
-          cssClasses: 'gl-bg-data-viz-green-500',
+          value: this.egressTypesCombined[EGRESS_TYPE_REGISTRY],
+          formattedValue: numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_REGISTRY]),
         },
-      ].filter((egressType) => egressType.percentage > 0);
+      ].filter((egressType) => egressType.value > 0);
     },
     totalEgressCombinedHumanSize() {
       return numberToHumanSize(this.egressTypesCombined[EGRESS_TYPE_TOTAL]);
@@ -122,18 +122,10 @@ export default {
     },
   },
   methods: {
-    percentageAsString(percentage, precision) {
-      return `${roundOffFloat(percentage, precision)}%`;
-    },
     combineEgressNodes(egressType) {
       return this.egressNodes.reduce((accumulator, egressNode) => {
         return accumulator + Number(egressNode[egressType] || '0');
       }, 0);
-    },
-    calculatePercentage(egressType) {
-      return (
-        (this.egressTypesCombined[egressType] / this.egressTypesCombined[EGRESS_TYPE_TOTAL]) * 100
-      );
     },
   },
 };
@@ -167,44 +159,11 @@ export default {
           {{ totalEgressCombinedHumanSize }}
         </p>
       </div>
-      <div
+      <sectioned-percentage-bar
         v-if="egressTypeSections.length"
-        class="gl-display-flex gl-rounded-pill gl-overflow-hidden gl-mt-5 gl-w-full"
-        data-testid="percentage-bar"
-      >
-        <div
-          v-for="{ type, label, cssClasses, percentage } in egressTypeSections"
-          :key="type"
-          class="gl-h-5"
-          :class="cssClasses"
-          :style="{
-            width: percentageAsString(percentage, 4),
-          }"
-          :data-testid="`percentage-bar-egress-type-${type}`"
-        >
-          <span class="gl-sr-only">{{ label }} {{ percentageAsString(percentage, 1) }}</span>
-        </div>
-      </div>
-      <div class="gl-mt-5">
-        <div class="gl-display-flex gl-align-items-center gl-flex-wrap gl-my-n3 gl-mx-n3">
-          <div
-            v-for="{ type, label, cssClasses, humanSize } in egressTypeSections"
-            :key="type"
-            class="gl-display-flex gl-align-items-center gl-p-3"
-            :data-testid="`percentage-bar-legend-egress-type-${type}`"
-          >
-            <div class="gl-h-2 gl-w-5 gl-mr-2 gl-display-inline-block" :class="cssClasses"></div>
-            <p class="gl-m-0 gl-font-sm">
-              <span class="gl-mr-2 gl-font-weight-bold">
-                {{ label }}
-              </span>
-              <span class="gl-text-gray-500">
-                {{ humanSize }}
-              </span>
-            </p>
-          </div>
-        </div>
-      </div>
+        class="gl-mt-5"
+        :sections="egressTypeSections"
+      />
     </template>
     <gl-table-lite :fields="$options.fields" :items="tableItems" class="gl-mt-7">
       <template #cell(transferType)="{ item: { label, description, icon, helpPath } }">
