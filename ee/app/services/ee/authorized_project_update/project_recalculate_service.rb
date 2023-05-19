@@ -14,9 +14,7 @@ module EE
         return unless project.licensed_feature_available?(:security_orchestration_policies)
         return unless authorizations_to_create.any? { |auth| auth[:access_level] >= ::Member::DEVELOPER }
 
-        project.all_security_orchestration_policy_configurations.each do |configuration|
-          Security::ProcessScanResultPolicyWorker.perform_async(project.id, configuration.id)
-        end
+        Security::ScanResultPolicies::SyncProjectWorker.perform_in(1.minute, project.id)
       end
     end
   end
