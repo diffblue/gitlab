@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Every metric definition', feature_category: :service_ping do
   include UsageDataHelpers
 
-  let(:usage_ping) { Gitlab::Usage::ServicePingReport.for(output: :all_metrics_values) }
+  let(:usage_ping) { Gitlab::Usage::ServicePingReport.for(output: :all_metrics_values, cached: false) }
   let(:ignored_usage_ping_key_patterns) do
     %w(
       license_add_ons

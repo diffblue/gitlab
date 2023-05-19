@@ -7,6 +7,8 @@ module Mutations
       class Create < BaseMutation
         graphql_name 'WorkspaceCreate'
 
+        include Gitlab::Utils::UsageData
+
         authorize :create_workspace
 
         field :workspace,
@@ -65,6 +67,8 @@ module Mutations
           cluster_agent_id = args.delete(:cluster_agent_id)
 
           agent = authorized_find!(id: cluster_agent_id)
+
+          track_usage_event(:users_creating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::CreateService.new(current_user: current_user)
           params = args.merge(agent: agent, user: current_user, project: project)
