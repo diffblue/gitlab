@@ -22,13 +22,7 @@ module Gitlab
             original_method = instance_method(method_name)
 
             define_method(method_name) do |*args, **kwargs|
-              if Feature.enabled?(:circuit_breaker, type: :ops)
-                run_with_circuit do
-                  retry_with_exponential_backoff do
-                    original_method.bind_call(self, *args, **kwargs)
-                  end
-                end
-              else
+              run_with_circuit do
                 retry_with_exponential_backoff do
                   original_method.bind_call(self, *args, **kwargs)
                 end
@@ -51,9 +45,7 @@ module Gitlab
             http_response = response.response
             return if http_response.nil? || http_response.body.blank?
 
-            if response.server_error? && Feature.enabled?(:circuit_breaker, type: :ops)
-              raise Gitlab::Llm::Concerns::CircuitBreaker::InternalServerError
-            end
+            raise Gitlab::Llm::Concerns::CircuitBreaker::InternalServerError if response.server_error?
 
             return response unless response.too_many_requests?
 
