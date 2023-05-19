@@ -1,0 +1,9 @@
+---
+name: protected_branch_removed
+description: Triggered when a protected branch is removed
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363091
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92074
+feature_category: source_code_management
+milestone: '15.2'
+saved_to_database: true
+streamed: true

@@ -1,0 +1,9 @@
+---
+name: approval_rule_created
+description: Triggered when a merge request approval rule is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/363092
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89939
+feature_category: source_code_management
+milestone: '15.2'
+saved_to_database: true
+streamed: true
