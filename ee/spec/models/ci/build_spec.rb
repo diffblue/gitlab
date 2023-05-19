@@ -734,6 +734,30 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
     end
   end
 
+  describe 'when the build is waiting for deployment approval' do
+    let(:build) { create(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
+
+    before do
+      create(:deployment, :blocked, deployable: build)
+    end
+
+    it 'does not allow the build to be enqueued' do
+      expect { build.enqueue! }.to raise_error(StateMachines::InvalidTransition)
+    end
+  end
+
+  describe '#playable?' do
+    context 'when build is waiting for deployment approval' do
+      subject { build_stubbed(:ci_build, :manual, environment: 'production', pipeline: pipeline) }
+
+      before do
+        create(:deployment, :blocked, deployable: subject)
+      end
+
+      it { is_expected.not_to be_playable }
+    end
+  end
+
   describe 'secrets management usage data' do
     let_it_be(:user) { create(:user) }
 

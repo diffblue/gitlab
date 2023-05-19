@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval do
+RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval, feature_category: :deployment_management do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
   let_it_be(:build) { create(:ci_build, :manual, environment: 'production', project: project) }
@@ -43,7 +43,10 @@ RSpec.describe Gitlab::Ci::Status::Build::WaitingForApproval do
 
     it { expect(subject.illustration).to include(:image, :size) }
     it { expect(subject.illustration[:title]).to eq('Waiting for approval') }
-    it { expect(subject.illustration[:content]).to include('This job deploys to the protected environment "production"') }
+
+    it do
+      expect(subject.illustration[:content]).to include('This job deploys to the protected environment "production"')
+    end
   end
 
   describe '#has_action?' do
