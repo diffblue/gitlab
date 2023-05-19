@@ -1,0 +1,9 @@
+---
+name: project_feature_snippets_access_level_updated
+description: Event triggered when a project's snippet access level setting is updated.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369293
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106919
+feature_category: projects
+milestone: '15.7'
+saved_to_database: true
+streamed: true
