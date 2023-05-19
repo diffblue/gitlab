@@ -14,12 +14,9 @@ RSpec.describe Llm::TanukiBotService, feature_category: :global_search do
   end
 
   describe '#perform' do
-    it 'schedules a job' do
-      expect(Llm::CompletionWorker).to receive(:perform_async).with(
-        user.id, user.id, 'User', :tanuki_bot, options
-      )
-
-      expect(subject.execute).to be_success
+    it_behaves_like 'async Llm service' do
+      let(:resource) { user }
+      let(:action_name) { :tanuki_bot }
     end
 
     context 'when openai_experimentation feature flag is disabled' do
