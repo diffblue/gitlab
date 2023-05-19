@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Abuse::NewAbuseReportWorker, feature_category: :instance_resiliency do
+RSpec.describe Abuse::NewAbuseReportWorker, :saas, feature_category: :instance_resiliency do
   let_it_be(:user, reload: true) { create(:user) }
   let_it_be(:reporter) { create(:user) }
   let_it_be(:abuse_report) { create(:abuse_report, user: user, reporter: reporter) }
@@ -47,9 +47,11 @@ RSpec.describe Abuse::NewAbuseReportWorker, feature_category: :instance_resilien
         allow(AbuseReport).to receive(:find_by_id).and_return(abuse_report)
       end
 
-      context 'when the user is on a paid plan' do
+      context 'when the user is part of a paid namespace' do
+        let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan) }
+
         before do
-          allow(user.namespace).to receive(:paid?).and_return(true)
+          paid_group.add_reporter(user)
         end
 
         it_behaves_like 'does not ban user'
