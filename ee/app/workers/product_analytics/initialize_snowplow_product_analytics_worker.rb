@@ -16,7 +16,7 @@ module ProductAnalytics
       return unless @project&.product_analytics_enabled?
 
       response = Gitlab::HTTP.post(
-        "#{::Gitlab::CurrentSettings.product_analytics_configurator_connection_string}/setup-project/gitlab_project_#{project_id}", # rubocop:disable Layout/LineLength
+        "#{::ProductAnalytics::Settings.for_project(@project).product_analytics_configurator_connection_string}/setup-project/gitlab_project_#{project_id}", # rubocop:disable Layout/LineLength
         allow_local_requests: true
       )
 

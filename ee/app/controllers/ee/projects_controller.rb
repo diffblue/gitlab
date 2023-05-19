@@ -102,6 +102,7 @@ module EE
         product_analytics_clickhouse_connection_string
         cube_api_base_url
         cube_api_key
+        product_analytics_configurator_connection_string
       ]
 
       if project&.licensed_feature_available?(:external_status_checks)

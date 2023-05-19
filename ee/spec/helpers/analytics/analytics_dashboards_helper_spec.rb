@@ -55,8 +55,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
       subject(:data) { helper.analytics_dashboards_list_app_data(project) }
 
-      it 'returns the expected data' do
-        expect(data).to eq({
+      def expected_data
+        {
           project_id: project.id,
           dashboard_project: {
             id: pointer.target_project.id,
@@ -70,7 +70,27 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
           project_full_path: project.full_path,
           features: (enabled ? [:product_analytics] : []).to_json,
           router_base: '/-/analytics/dashboards'
-        })
+        }
+      end
+
+      context 'without snowplow' do
+        before do
+          stub_feature_flags(product_analytics_snowplow_support: false)
+        end
+
+        it 'returns the expected data' do
+          expect(data).to eq(expected_data)
+        end
+      end
+
+      context 'with snowplow' do
+        before do
+          stub_application_setting(product_analytics_configurator_connection_string: 'http://localhost:3000')
+        end
+
+        it 'returns the expected data' do
+          expect(data).to eq(expected_data)
+        end
       end
     end
 

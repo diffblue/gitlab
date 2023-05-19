@@ -49,6 +49,20 @@ RSpec.describe ProductAnalytics::InitializeSnowplowProductAnalyticsWorker, featu
 
       subject
     end
+
+    context 'when project-level connection string is set' do
+      before do
+        stub_application_setting(product_analytics_configurator_connection_string: '')
+        project.project_setting.update!(
+          product_analytics_configurator_connection_string: 'https://gl-product-analytics-configurator.gl.com:4567'
+        )
+      end
+
+      it 'persists the instrumentation key' do
+        expect { subject }
+          .to change { project.reload.project_setting.product_analytics_instrumentation_key }.from(nil).to(app_id)
+      end
+    end
   end
 
   context 'when response is unsuccessful' do

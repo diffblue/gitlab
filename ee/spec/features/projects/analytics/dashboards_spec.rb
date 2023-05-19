@@ -70,7 +70,17 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
           end
         end
 
-        it_behaves_like 'product analytics dashboards'
+        context 'with snowplow' do
+          it_behaves_like 'product analytics dashboards'
+        end
+
+        context 'without snowplow' do
+          before do
+            stub_feature_flags(product_analytics_snowplow_support: false)
+          end
+
+          it_behaves_like 'product analytics dashboards'
+        end
       end
     end
   end
