@@ -178,13 +178,14 @@ module Gitlab
       alias_method :limited_milestones_count, :milestones_count
 
       def self.parse_search_result(result, project)
-        path = extract_path_from_result result['_source']
+        ref = extract_ref_from_result(result['_source'])
+        path = extract_path_from_result(result['_source'])
         basename = File.join(File.dirname(path), File.basename(path, '.*'))
         content = extract_content_from_result(result['_source'])
         project_id = result['_source']['project_id'].to_i
         total_lines = content.lines.size
 
-        highlight_content = get_highlight_content result
+        highlight_content = get_highlight_content(result)
 
         found_line_number = 0
         highlight_found = false
@@ -217,7 +218,7 @@ module Gitlab
         ::Gitlab::Search::FoundBlob.new(
           path: path,
           basename: basename,
-          ref: extract_ref_from_result(result['_source']),
+          ref: ref,
           matched_lines_count: matched_lines_count,
           startline: from + 1,
           highlight_line: highlight_line,
@@ -271,7 +272,7 @@ module Gitlab
         when :merge_requests
           base_options.merge(filters.slice(:order_by, :sort, :state))
         when :issues
-          base_options.merge(filters.slice(:order_by, :sort, :confidential, :state))
+          base_options.merge(filters.slice(:order_by, :sort, :confidential, :state, :labels))
         when :milestones
           # Must pass 'issues' and 'merge_requests' to check
           # if any of the features is available for projects in ApplicationClassProxy#project_ids_query

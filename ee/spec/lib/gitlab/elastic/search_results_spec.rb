@@ -372,6 +372,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
 
       include_examples 'search results filtered by state'
       include_examples 'search results filtered by confidential'
+      include_examples 'search results filtered by labels'
     end
 
     context 'ordering' do
