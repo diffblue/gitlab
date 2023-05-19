@@ -6,6 +6,8 @@ module Mutations
       class Update < BaseMutation
         graphql_name 'WorkspaceUpdate'
 
+        include Gitlab::Utils::UsageData
+
         authorize :update_workspace
 
         field :workspace,
@@ -33,6 +35,8 @@ module Mutations
           end
 
           workspace = authorized_find!(id: id)
+
+          track_usage_event(:users_updating_workspaces, current_user.id)
 
           service = ::RemoteDevelopment::Workspaces::UpdateService.new(current_user: current_user)
           response = service.execute(workspace: workspace, params: args)
