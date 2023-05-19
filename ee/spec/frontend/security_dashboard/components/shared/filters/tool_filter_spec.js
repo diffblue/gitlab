@@ -10,6 +10,7 @@ import {
   REPORT_TYPES_WITH_MANUALLY_ADDED,
   REPORT_TYPES_WITH_CLUSTER_IMAGE,
 } from 'ee/security_dashboard/store/constants';
+import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 
 const OPTION_IDS = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((id) => id.toUpperCase());
 
@@ -151,16 +152,21 @@ describe('Tool Filter component', () => {
   describe('filter-changed event', () => {
     it('emits filter-changed event when selected item is changed', async () => {
       const ids = [];
-      await clickDropdownItem(ALL_ID);
-
-      expect(wrapper.emitted('filter-changed')[0][0].reportType).toEqual([]);
 
       for await (const id of OPTION_IDS) {
         await clickDropdownItem(id);
         ids.push(id);
 
-        expect(wrapper.emitted('filter-changed')[ids.length][0].reportType).toEqual(ids);
+        expect(wrapper.emitted('filter-changed')[ids.length - 1][0].reportType).toEqual(ids);
       }
+    });
+
+    it('emits filter-changed event with preset report types when ALL item is clicked', async () => {
+      await clickDropdownItem(ALL_ID);
+
+      expect(wrapper.emitted('filter-changed')[0][0].reportType).toEqual(
+        REPORT_TYPE_PRESETS.DEVELOPMENT,
+      );
     });
   });
 });

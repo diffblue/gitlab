@@ -6,6 +6,7 @@ import {
   REPORT_TYPES_WITH_CLUSTER_IMAGE,
 } from 'ee/security_dashboard/store/constants';
 import { s__ } from '~/locale';
+import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 import FilterItem from './filter_item.vue';
 import DropdownButtonText from './dropdown_button_text.vue';
 import QuerystringSync from './querystring_sync.vue';
@@ -37,7 +38,10 @@ export default {
   },
   watch: {
     selected() {
-      this.$emit('filter-changed', { reportType: this.selected });
+      this.$emit('filter-changed', {
+        // Filter out cluster image scanning results if there's no selected report types.
+        reportType: this.selected.length ? this.selected : REPORT_TYPE_PRESETS.DEVELOPMENT,
+      });
     },
   },
   methods: {

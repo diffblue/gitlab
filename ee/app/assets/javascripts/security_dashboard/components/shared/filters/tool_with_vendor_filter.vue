@@ -5,6 +5,7 @@ import { s__ } from '~/locale';
 import { REPORT_TYPES_WITH_MANUALLY_ADDED } from 'ee/security_dashboard/store/constants';
 import { TYPENAME_VULNERABILITIES_SCANNER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { REPORT_TYPE_PRESETS } from 'ee/security_dashboard/components/shared/vulnerability_report/constants';
 import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
 import DropdownButtonText from './dropdown_button_text.vue';
@@ -58,14 +59,30 @@ export default {
   },
   watch: {
     selected() {
-      const scannerIds = this.selected.flatMap((id) => get(this.vendors, id)).filter(Boolean);
-      const hasSelectedButNoScannerIds = this.selected.length && !scannerIds.length;
-      // If scannerIds is an empty array, passing it to the vulnerabilities query is the same as not
-      // applying the filter at all. However, if there are report types selected, this is incorrect.
-      // As a workaround, we'll use a scanner ID that's guaranteed to return no results.
-      this.$emit('filter-changed', {
-        scannerId: hasSelectedButNoScannerIds ? [NULL_SCANNER_ID] : scannerIds,
-      });
+      // We will either use scannerId or reportType, but not both. If we set one, we need to clear out the other.
+      const filterData = { scannerId: undefined, reportType: undefined };
+
+      if (this.hasCustomVendor) {
+        const scannerIds = this.selected.flatMap((id) => get(this.vendors, id, []));
+        // Filter by scanner ID if there are selected items. If the selected items don't have any scanner IDs, use a
+        // fake ID that's guaranteed to return no results. This is to work around a backend issue where filtering using
+        // an empty array will treat it as if the filter is not applied.
+        if (this.selected.length) {
+          filterData.scannerId = scannerIds.length ? scannerIds : [NULL_SCANNER_ID];
+        }
+        // Otherwise, use the preset that removes cluster image scanning results.
+        else {
+          filterData.reportType = REPORT_TYPE_PRESETS.DEVELOPMENT;
+        }
+      }
+      // No custom vendors, filter by the selected report types, or if nothing's selected, the preset that removes
+      // cluster image scanning results.
+      else {
+        const reportTypes = this.selected.map((id) => id.split('.')[1]);
+        filterData.reportType = reportTypes.length ? reportTypes : REPORT_TYPE_PRESETS.DEVELOPMENT;
+      }
+
+      this.$emit('filter-changed', filterData);
     },
   },
   methods: {
