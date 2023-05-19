@@ -285,9 +285,81 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       %(
         uuid
         mergeRequest {
+          id
           description
         }
       )
+    end
+
+    context 'when `load_merge_request_via_links` is enabled' do
+      before do
+        stub_feature_flags(load_merge_request_via_links: true)
+      end
+
+      context 'when a merge request link exists' do
+        let!(:initial_query) do
+          # Warm up table schema and other data (e.g. SAML providers, license)
+          run_with_clean_state(sast_query, context: { current_user: user })
+
+          ActiveRecord::QueryRecorder.new do
+            run_with_clean_state(sast_query, context: { current_user: user })
+          end
+        end
+
+        let_it_be(:vulnerabilities) { create_list(:vulnerability, sast_findings.count, project: project) }
+        let_it_be(:merge_requests) do
+          create_list(:merge_request, sast_findings.count, :unique_branches, source_project: project)
+        end
+
+        let_it_be(:merge_request_links) do
+          merge_requests.zip(vulnerabilities).map do |(merge_request, vulnerability)|
+            create(:vulnerabilities_merge_request_link, vulnerability: vulnerability, merge_request: merge_request)
+          end
+        end
+
+        let_it_be(:vulnerability_findings) do
+          vulnerabilities.each_with_index.map do |vulnerability, index|
+            create(
+              :vulnerabilities_finding,
+              project: project,
+              vulnerability: vulnerability,
+              uuid: sast_findings[index].uuid
+            )
+          end
+        end
+
+        it 'returns the linked merged requests' do
+          ids = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
+            .filter_map { |node| graphql_dig_at(node, :merge_request, :id) }
+
+          expect(ids).to match_array(merge_requests.map { |mr| mr.to_global_id.to_s })
+        end
+
+        it 'prevents N+1' do
+          expect do
+            run_with_clean_state(sast_query, context: { current_user: user })
+          end.not_to exceed_query_limit(initial_query).with_threshold(1)
+        end
+      end
+
+      context 'when a merge request link does not exist' do
+        let_it_be(:vulnerability) { create(:vulnerability, project: project) }
+        let_it_be(:vulnerability_finding) do
+          create(
+            :vulnerabilities_finding,
+            project: project,
+            vulnerability: vulnerability,
+            uuid: sast_findings.first.uuid
+          )
+        end
+
+        it 'does not return a merge request' do
+          nodes = graphql_dig_at(subject, :data, :project, :pipeline, :security_report_findings, :nodes)
+
+          expect(nodes.length).to eq(sast_findings.length)
+          expect(nodes.filter_map { |node| graphql_dig_at(node, :merge_request) }).to be_empty
+        end
+      end
     end
 
     it 'returns no merge requests for the security findings when no vulnerability finding exists' do
@@ -316,6 +388,8 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       let(:mr_description) { get_findings_from_response(subject).first['mergeRequest']['description'] }
 
       it 'returns the merge request for the security findings' do
+        stub_feature_flags(load_merge_request_via_links: false)
+
         expect(mr_description).to eq(mr_feedback.merge_request.description)
       end
     end
@@ -346,6 +420,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       end
 
       let!(:initial_query) do
+        stub_feature_flags(load_merge_request_via_links: false)
         # Warm up table schema and other data (e.g. SAML providers, license)
         run_with_clean_state(sast_query, context: { current_user: user })
 
