@@ -1713,6 +1713,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: security_scan_result_policies_sync_opened_merge_requests
+  :worker_name: Security::ScanResultPolicies::SyncOpenedMergeRequestsWorker
+  :feature_category: :security_policy_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: security_scans_purge_by_job_id
   :worker_name: Security::Scans::PurgeByJobIdWorker
   :feature_category: :vulnerability_management

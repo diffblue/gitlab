@@ -1,0 +1,8 @@
+---
+name: sync_mr_approval_rules_security_policies
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/407761
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/411500
+milestone: '16.1'
+type: development
+group: group::security policies
+default_enabled: false
