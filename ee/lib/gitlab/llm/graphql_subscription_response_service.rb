@@ -37,7 +37,7 @@ module Gitlab
       attr_reader :user, :resource, :response_modifier, :options, :logger
 
       def generate_response_body(response_body)
-        return response_body if options[:markup_format].nil? || options[:markup_format] == :raw
+        return response_body if options[:markup_format].nil? || options[:markup_format].to_sym == :raw
 
         banzai_options = { only_path: false, pipeline: :full, current_user: user }
 

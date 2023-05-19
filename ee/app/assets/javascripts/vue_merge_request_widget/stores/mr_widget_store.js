@@ -30,6 +30,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     this.licenseScanning = data.license_scanning;
     this.requirePasswordToApprove = data.require_password_to_approve;
     this.mergeRequestApproversAvailable = data.merge_request_approvers_available;
+    this.aiCommitMessageEnabled = data.aiCommitMessageEnabled;
 
     this.initBrowserPerformanceReport(data);
     this.initLoadPerformanceReport(data);
