@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic do
+RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:guest) { create(:user).tap { |u| group.add_member(u, Gitlab::Access::GUEST) } }
@@ -33,6 +33,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic do
 
     include_examples 'search results filtered by state'
     include_examples 'search results filtered by confidential'
+    include_examples 'search results filtered by labels'
   end
 
   context 'merge_requests search', :sidekiq_inline do

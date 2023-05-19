@@ -47,14 +47,20 @@ module Elastic
           query_hash = context.name(:authorized) { authorization_filter(query_hash, options.merge(traversal_ids_prefix: :namespace_ancestry_ids)) }
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
+          query_hash = context.name(:filter) { label_ids_filter(query_hash, options) }
           unless options[:current_user]&.can_admin_all_resources?
             query_hash = context.name(:hidden) { hidden_filter(query_hash) }
           end
         end
 
-        if options[:aggregation]
-          query_hash[:size] = 0
-          query_hash[:aggs] = {
+        return apply_aggregation(query_hash) if options[:aggregation]
+
+        apply_sort(query_hash, options)
+      end
+
+      def apply_aggregation(query_hash)
+        query_hash.merge(size: 0,
+          aggs: {
             labels: {
               terms: {
                 field: 'label_ids',
@@ -62,14 +68,10 @@ module Elastic
               }
             }
           }
-        else
-          query_hash = apply_sort(query_hash, options)
-        end
-
-        query_hash
+        )
       end
 
-      # override
+      override :apply_sort
       def apply_sort(query_hash, options)
         case ::Gitlab::Search::SortOptions.sort_and_direction(options[:order_by], options[:sort])
         when :popularity_asc
@@ -156,6 +158,26 @@ module Elastic
 
       def hidden_filter(query_hash)
         query_hash[:query][:bool][:filter] << { term: { hidden: { _name: context.name(:non_hidden), value: false } } }
+        query_hash
+      end
+
+      def label_ids_filter(query_hash, options)
+        labels = [options[:labels]].flatten
+        return query_hash unless labels.any?
+        return query_hash if options[:count_only] || options[:aggregation]
+
+        query_hash[:query][:bool][:filter] ||= []
+        query_hash[:query][:bool][:filter] << {
+          terms_set: {
+            label_ids: {
+              _name: context.name(:label_ids),
+              terms: labels,
+              minimum_should_match_script: {
+                source: 'params.num_terms'
+              }
+            }
+          }
+        }
         query_hash
       end
     end

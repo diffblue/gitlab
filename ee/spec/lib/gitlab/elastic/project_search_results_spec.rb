@@ -87,6 +87,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
 
         include_examples 'search results filtered by state'
         include_examples 'search results filtered by confidential'
+        include_examples 'search results filtered by labels'
       end
 
       context 'merge_requests' do

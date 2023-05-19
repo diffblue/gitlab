@@ -10,7 +10,7 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
   subject { described_class.new(Issue, use_separate_indices: true) }
 
   let!(:project) { create(:project, :public) }
-  let!(:label) { create(:label) }
+  let!(:label) { create(:label, project: project) }
   let!(:issue) { create(:labeled_issue, title: 'test', project: project, labels: [label]) }
   let(:user) { create(:user) }
   let(:options) do
@@ -45,9 +45,9 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
   end
 
   describe '#elastic_search' do
-    describe 'search on basis of hidden attribute' do
-      let(:result) { subject.elastic_search('test', options: options) }
+    let(:result) { subject.elastic_search('test', options: options) }
 
+    describe 'search on basis of hidden attribute' do
       context 'when author of the issue is banned' do
         before do
           issue.author.ban
@@ -88,6 +88,31 @@ RSpec.describe Elastic::Latest::IssueClassProxy, :elastic, :sidekiq_inline, feat
           options[:current_user] = nil
           result = subject.elastic_search('test', options: options)
           expect(elasticsearch_hit_ids(result)).to include issue.id
+        end
+      end
+    end
+
+    describe 'named queries' do
+      let(:options) do
+        {
+          current_user: user,
+          project_ids: [project.id],
+          public_and_internal_projects: false,
+          order_by: nil,
+          sort: nil,
+          labels: [label.id]
+        }
+      end
+
+      context 'when label filters are passed' do
+        before do
+          ensure_elasticsearch_index!
+        end
+
+        it 'filters the labels in the query' do
+          result.response
+
+          assert_named_queries('issue:match:search_terms', 'issue:filter:label_ids')
         end
       end
     end

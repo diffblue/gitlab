@@ -18,7 +18,6 @@ module EE
         search = params[:search]
         order_by = params[:order_by]
         sort = params[:sort]
-        filters = { confidential: params[:confidential], state: params[:state], language: params[:language] }
 
         if project.is_a?(Array)
           project_ids = Array(project).map(&:id)
