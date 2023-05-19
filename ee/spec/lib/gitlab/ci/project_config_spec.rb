@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe ::Gitlab::Ci::ProjectConfig do
   let(:project) { create(:project, ci_config_path: nil) }
-  let(:pipeline) { create(:ci_pipeline, project: project) }
   let(:sha) { '123456' }
   let(:content) { nil }
   let(:source) { :push }
@@ -21,8 +20,7 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig do
 
   subject(:config) do
     described_class.new(project: project, sha: sha,
-                        custom_content: content, pipeline_source: source,
-                        pipeline_source_bridge: bridge, pipeline: pipeline)
+                        custom_content: content, pipeline_source: source, pipeline_source_bridge: bridge)
   end
 
   shared_examples 'does not include compliance pipeline configuration content' do
@@ -55,18 +53,14 @@ RSpec.describe ::Gitlab::Ci::ProjectConfig do
         it 'includes compliance pipeline configuration content' do
           expect(config.source).to eq(:compliance_source)
           expect(config.content).to eq(content_result)
-          expect(config.url).to eq("#{Settings.gitlab.base_url}/compliance/hippa/-/blob/HEAD/.compliance-gitlab-ci.yml")
         end
 
         context 'when pipeline is downstream of a bridge' do
-          let(:bridge) { create(:ci_bridge, pipeline: pipeline) }
+          let(:bridge) { create(:ci_bridge) }
 
           it 'does include compliance pipeline configuration' do
             expect(config.source).to eq(:compliance_source)
             expect(config.content).to eq(content_result)
-            expect(config.url).to eq(<<~TEXT.chomp)
-              #{Settings.gitlab.base_url}/compliance/hippa/-/blob/HEAD/.compliance-gitlab-ci.yml
-            TEXT
           end
 
           context 'when pipeline source is parent pipeline' do

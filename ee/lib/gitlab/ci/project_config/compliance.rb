@@ -11,7 +11,8 @@ module Gitlab
             next if pipeline_source_bridge && pipeline_source == :parent_pipeline
             next if pipeline_source == :security_orchestration_policy
 
-            YAML.dump('include' => [{ 'project' => project_path, 'file' => file_path }])
+            path_file, path_project = pipeline_configuration_full_path.split('@', 2)
+            YAML.dump('include' => [{ 'project' => path_project, 'file' => path_file }])
           end
         end
 
@@ -23,27 +24,7 @@ module Gitlab
           :compliance_source
         end
 
-        def url
-          namespace, _, project = project_path.partition('/')
-          blob = File.join('HEAD', file_path)
-          Rails.application.routes.url_helpers.namespace_project_blob_url(namespace, project, blob)
-        end
-
         private
-
-        def file_path
-          split_pipeline_configuration_path.first
-        end
-
-        def project_path
-          split_pipeline_configuration_path.second
-        end
-
-        def split_pipeline_configuration_path
-          strong_memoize(:split_pipeline_configuration_full_path) do
-            pipeline_configuration_full_path.split('@', 2)
-          end
-        end
 
         def pipeline_configuration_full_path
           strong_memoize(:pipeline_configuration_full_path) do
