@@ -34,6 +34,8 @@ module PhoneVerification
 
         return error_downstream_service(send_code_result) unless send_code_result.success?
 
+        store_risk_score(risk_result[:risk_score])
+
         success(risk_result, send_code_result)
 
       rescue StandardError => e
@@ -127,6 +129,10 @@ module PhoneVerification
         )
 
         ServiceResponse.success
+      end
+
+      def store_risk_score(risk_score)
+        Abuse::TrustScore.create!(user: user, score: risk_score.to_f, source: :telesign)
       end
     end
   end

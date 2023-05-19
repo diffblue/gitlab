@@ -234,6 +234,12 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         expect(record.risk_score).to eq(risk_score)
         expect(record.telesign_reference_xid).to eq(telesign_reference_xid)
       end
+
+      it 'stores risk score in abuse trust scores' do
+        service.execute
+
+        expect(user.telesign_score).to eq(risk_score.to_f)
+      end
     end
   end
 end
