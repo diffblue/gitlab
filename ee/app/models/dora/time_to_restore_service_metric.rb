@@ -17,7 +17,7 @@ module Dora
       #
       return {} unless environment.production?
 
-      query = Issue.incident.closed.select(
+      query = Issue.with_issue_type(:incident).closed.select(
         Arel.sql(
           'PERCENTILE_CONT(0.5) WITHIN GROUP(ORDER BY EXTRACT(EPOCH FROM (issues.closed_at - issues.created_at)))'
         ))

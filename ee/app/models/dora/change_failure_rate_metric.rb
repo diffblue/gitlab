@@ -17,7 +17,7 @@ module Dora
 
       queries = DeploymentFrequencyMetric.new(environment, date).data_queries
 
-      queries[:incidents_count] = Issue.incident.select(Issue.arel_table[:id].count)
+      queries[:incidents_count] = Issue.with_issue_type(:incident).select(Issue.arel_table[:id].count)
         .where(created_at: date.beginning_of_day..date.end_of_day)
         .where(project_id: environment.project_id).to_sql
 
