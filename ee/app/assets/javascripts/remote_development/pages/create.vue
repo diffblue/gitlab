@@ -41,9 +41,7 @@ export const i18n = {
     maxHoursBeforeTermination: s__('Workspaces|Time before automatic termination'),
     maxHoursSuffix: __('hours'),
     help: {
-      devfileProjectHelp: s__(
-        'Workspaces|You can create a workspace for public Premium projects only.',
-      ),
+      devfileProjectHelp: s__('Workspaces|You can create a workspace for public projects only.'),
     },
   },
   invalidProjectAlert: {
