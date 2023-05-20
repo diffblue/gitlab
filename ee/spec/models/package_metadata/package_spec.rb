@@ -86,32 +86,39 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
       end
 
       context 'with different field value permutations' do
+        using RSpec::Parameterized::TableSyntax
+
+        # rubocop:disable Layout/LineLength
         where(:test_case_name, :valid, :default_licenses, :lowest_version, :highest_version, :other_licenses) do
-          'all valid'           | true  | default    | lowest      | highest     | other
-          'nil'                 | false | nil        | lowest      | highest     | other
-          'string'              | false | 's'        | lowest      | highest     | other
-          'array with string'   | false | ['s']      | lowest      | highest     | other
-          'empty array'         | false | []         | lowest      | highest     | other
-          'more than max items' | false | ([1] * 11) | lowest      | highest     | other
-          'nil'                 | true  | default    | nil         | highest     | other
-          'int value'           | false | default    | 1           | highest     | other
-          'empty string'        | false | default    | ''          | highest     | other
-          'exceeds max chars'   | false | default    | ('v' * 256) | highest     | other
-          'nil'                 | true  | default    | lowest      | nil         | other
-          'int value'           | false | default    | lowest      | 1           | other
-          'empty string'        | false | default    | lowest      | ''          | other
-          'exceeds max chars'   | false | default    | lowest      | ('v' * 256) | other
-          'empty array'         | true  | default    | lowest      | highest     | []
-          'nil'                 | false | default    | lowest      | highest     | nil
-          'elts not arrays'     | false | default    | lowest      | highest     | [[1, 'v1.0']]
-          '1st elt not array'   | false | default    | lowest      | highest     | [[1, ['v1.0']]]
-          '2nd elt not array'   | false | default    | lowest      | highest     | [[[1], 'v1.0']]
-          'too many tuples'     | false | default    | lowest      | highest     | [[[1], ['v1.0']] * 11]
-          'too many licenses'   | false | default    | lowest      | highest     | [[[1] * 11, ['v1.0']]]
-          'too many versions'   | false | default    | lowest      | highest     | [[[1], ['v1.0'] * 51]]
-          'invalid license'     | false | default    | lowest      | highest     | [[[1, 2], ['v1']], [[nil], ['v2']]]
-          'invalid version'     | false | default    | lowest      | highest     | [[[1, 2], %w[v1 v2]], [[3], [nil]]]
+          'all attributes valid'            | true  | default     | lowest      | highest     | other
+          'default nil'                     | false | nil         | lowest      | highest     | other
+          'default not arr'                 | false | 's'         | lowest      | highest     | other
+          'default arr elts not ints'       | false | ['s']       | lowest      | highest     | other
+          'default empty arr'               | false | []          | lowest      | highest     | other
+          'default num elts up to max'      | true  | ([1] * 100) | lowest      | highest     | other
+          'default num elts exceed max'     | false | ([1] * 101) | lowest      | highest     | other
+          'lowest nil'                      | true  | default     | nil         | highest     | other
+          'lowest int'                      | false | default     | 1           | highest     | other
+          'lowest empty str'                | false | default     | ''          | highest     | other
+          'lowest version len up to max'    | true  | default     | ('v' * 255) | highest     | other
+          'lowest version len exceeds max'  | false | default     | ('v' * 256) | highest     | other
+          'highest nil'                     | true  | default     | lowest      | nil         | other
+          'highest int'                     | false | default     | lowest      | 1           | other
+          'highest empty str'               | false | default     | lowest      | ''          | other
+          'highest version len up to max'   | true  | default     | lowest      | ('v' * 255) | other
+          'highest version len exceeds max' | false | default     | lowest      | ('v' * 256) | other
+          'other empty arr'                 | true  | default     | lowest      | highest     | []
+          'other nil'                       | false | default     | lowest      | highest     | nil
+          '1st elt not arr'                 | false | default     | lowest      | highest     | [[1, ['v1']]]
+          '2nd elt not arr'                 | false | default     | lowest      | highest     | [[[1], 'v1']]
+          'default num tuples up to max'    | true  | default     | lowest      | highest     | Array.new(20) { [[1], ['v1']] }
+          'default num tuples exceed max'   | false | default     | lowest      | highest     | Array.new(21) { [[1], ['v1']] }
+          'default num licenses up to max'  | true  | default     | lowest      | highest     | [[Array.new(100) { 1 }, ['v1']]]
+          'default num licenses exceed max' | false | default     | lowest      | highest     | [[Array.new(101) { 1 }, ['v1']]]
+          'default num versions up to max'  | true  | default     | lowest      | highest     | [[[1], Array.new(500) { 'v1' }]]
+          'default num versions exceed max' | false | default     | lowest      | highest     | [[[1], Array.new(501) { 'v1' }]]
         end
+        # rubocop:enable Layout/LineLength
 
         with_them do
           let(:licenses) { [default_licenses, lowest_version, highest_version, other_licenses] }
