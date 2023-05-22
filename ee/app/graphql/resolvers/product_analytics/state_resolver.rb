@@ -21,8 +21,11 @@ module Resolvers
       private
 
       def tracking_key?
-        object.project_setting&.product_analytics_instrumentation_key&.present? ||
-          object.project_setting&.jitsu_key&.present?
+        unless ::Feature.enabled?(:product_analytics_snowplow_support)
+          return object.project_setting&.jitsu_key&.present?
+        end
+
+        object.project_setting&.product_analytics_instrumentation_key&.present?
       end
 
       def initializing?

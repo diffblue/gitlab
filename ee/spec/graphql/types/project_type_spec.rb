@@ -43,7 +43,7 @@ RSpec.describe GitlabSchema.types['Project'] do
         false | true | nil | nil | nil
         true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
         true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
-        true | true | 'jitsu-key' | nil | 'jitsu-key'
+        true | true | 'jitsu-key' | nil | nil
         true | true | nil | 'snowplow-key' | 'snowplow-key'
       end
 

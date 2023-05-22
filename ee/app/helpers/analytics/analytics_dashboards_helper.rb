@@ -37,7 +37,7 @@ module Analytics
     def tracking_key(project)
       return project.project_setting.jitsu_key unless ::Feature.enabled?(:product_analytics_snowplow_support)
 
-      project.project_setting.product_analytics_instrumentation_key || project.project_setting.jitsu_key
+      project.project_setting.product_analytics_instrumentation_key
     end
 
     def enabled_analytics_features(project)
