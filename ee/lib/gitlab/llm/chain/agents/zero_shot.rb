@@ -18,17 +18,17 @@ module Gitlab
           end
 
           PROMPT_TEMPLATE = [
-            Utils::PromptRoles.system(
+            Utils::Prompt.as_system(
               <<~PROMPT
                 Answer the following questions as best you can. Start with identifying the resource first.
                 You have access to the following tools:
-                %<tools_definitions>
+                "%<tools_definitions>s"
                 Use the following format:
                 Question: the input question you must answer
                 Thought: you should always think about what to do
-                Action: the action to take, should be one from this list: %<tool_names>
+                Action: the action to take, should be one from this list: %<tool_names>s
                 Action Input: the input to the action
-                Observation: the result of the action
+                Observation: the result of the actions
 
                 ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
 
@@ -39,8 +39,8 @@ module Gitlab
                 Begin!
               PROMPT
             ),
-            Utils::PromptRoles.user("Question: %<user_input>s"),
-            Utils::PromptRoles.assistant("%<agent_scratchpad>s", "Thought: ")
+            Utils::Prompt.as_user("Question: %<user_input>s"),
+            Utils::Prompt.as_assistant("%<agent_scratchpad>s", "Thought: ")
           ].freeze
 
           def execute
@@ -72,13 +72,11 @@ module Gitlab
           private
 
           def prompt
-            prompt = PROMPT_TEMPLATE.map(&:last).join
-
-            format(prompt.to_s, input_variables)
+            Utils::Prompt.no_role_text(PROMPT_TEMPLATE, input_variables)
           end
 
           def request(prompt)
-            context.client.text(content: prompt)&.dig("predictions", 0, 'candidates', 0, 'content').to_s.strip
+            context.ai_client.text(content: prompt)&.dig("predictions", 0, 'content').to_s.strip
           end
 
           def input_variables
