@@ -47,7 +47,8 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
         stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
 
-        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
+        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled,
+          product_analytics_snowplow_support: false)
         stub_licensed_features(product_analytics: licensed_feature_enabled)
 
         allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
@@ -106,7 +107,7 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
         false | true | nil | nil | nil
         true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
         true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
-        true | true | 'jitsu-key' | nil | 'jitsu-key'
+        true | true | 'jitsu-key' | nil | nil
         true | true | nil | 'snowplow-key' | 'snowplow-key'
       end
 
@@ -134,37 +135,41 @@ RSpec.describe Analytics::AnalyticsDashboardsHelper, feature_category: :product_
 
   describe '#analytics_project_settings_data' do
     where(
-      :product_analytics_enabled_setting,
-      :feature_flag_enabled,
-      :licensed_feature_enabled,
-      :user_has_permission,
-      :enabled
+      :can_read_product_analytics,
+      :snowplow_feature_flag_enabled,
+      :project_jitsu_key,
+      :project_instrumentation_key,
+      :expected_tracking_key
     ) do
-      true  | true | true | true | true
-      false | true | true | true | false
-      true  | false | true | true | false
-      true  | true | false | true | false
-      true  | true | true | false | false
+      false | false | nil | nil | nil
+      false | true | nil | nil | nil
+      true | false | 'jitsu-key' | 'snowplow-key' | 'jitsu-key'
+      true | true | 'jitsu-key' | 'snowplow-key' | 'snowplow-key'
+      true | true | 'jitsu-key' | nil | nil
+      true | true | nil | 'snowplow-key' | 'snowplow-key'
     end
 
     with_them do
       before do
-        project.project_setting.update!(jitsu_key: jitsu_key)
+        project.project_setting.update!(jitsu_key: project_jitsu_key)
+        project.project_setting.update!(product_analytics_instrumentation_key: project_instrumentation_key)
 
-        stub_application_setting(product_analytics_enabled: product_analytics_enabled_setting)
+        stub_application_setting(product_analytics_enabled: can_read_product_analytics)
 
-        stub_feature_flags(product_analytics_dashboards: feature_flag_enabled)
-        stub_licensed_features(product_analytics: licensed_feature_enabled)
+        stub_feature_flags(product_analytics_dashboards: can_read_product_analytics,
+          product_analytics_snowplow_support: snowplow_feature_flag_enabled)
+        stub_licensed_features(product_analytics: can_read_product_analytics)
 
-        allow(helper).to receive(:can?).with(user, :read_product_analytics, project).and_return(user_has_permission)
+        allow(helper).to receive(:can?).with(user, :read_product_analytics,
+          project).and_return(can_read_product_analytics)
       end
 
       subject(:data) { helper.analytics_project_settings_data(project) }
 
       it 'returns the expected data' do
         expect(data).to eq({
-          tracking_key: user_has_permission ? jitsu_key : nil,
-          collector_host: user_has_permission ? 'https://new-collector.example.com' : nil,
+          tracking_key: can_read_product_analytics ? expected_tracking_key : nil,
+          collector_host: can_read_product_analytics ? 'https://new-collector.example.com' : nil,
           dashboards_path: '/-/analytics/dashboards'
         })
       end
