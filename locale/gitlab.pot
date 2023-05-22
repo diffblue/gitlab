@@ -32141,6 +32141,9 @@ msgstr ""
 msgid "PackageRegistry|Something went wrong while deleting the package."
 msgstr ""
 
+msgid "PackageRegistry|Something went wrong while fetching package assets."
+msgstr ""
+
 msgid "PackageRegistry|Something went wrong while fetching the package history."
 msgstr ""
 
