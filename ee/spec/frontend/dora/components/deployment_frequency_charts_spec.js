@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import { mount, shallowMount } from '@vue/test-utils';
 import { GlBadge } from '@gitlab/ui';
-import { gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
+import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import MockAdapter from 'axios-mock-adapter';
 import last180DaysData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_180_days.json';
 import lastWeekData from 'test_fixtures/api/dora/metrics/daily_deployment_frequency_for_last_week.json';
@@ -385,7 +385,7 @@ describe('deployment_frequency_charts.vue', () => {
           expect(currentTimePeriodChartData.data).toHaveLength(3);
           expect(forecastSeries.data).toEqual(result);
           expect(forecastSeries.data.length).toBe(daysForecasted);
-          expect(forecastSeries.lineStyle).toEqual({ type: 'dashed', color: gray300 });
+          expect(forecastSeries.lineStyle).toEqual({ type: 'dashed', color: dataVizBlue500 });
           expect(forecastSeries.areaStyle).toEqual({ opacity: 0 });
         },
       );
