@@ -150,13 +150,13 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
 
   def filter_by_project(project)
     page.within('[data-testid="violations-project-dropdown"]') do
-      find('.dropdown-toggle').click
+      find('.dropdown-projects').click
 
       find('input[aria-label="Search"]').set(project.name)
       wait_for_requests
 
-      find('.dropdown-item').click
-      find('.dropdown-toggle').click
+      find('.gl-new-dropdown-item[role="option"]').click
+      find('.dropdown-projects').click
     end
 
     page.find('body').click
