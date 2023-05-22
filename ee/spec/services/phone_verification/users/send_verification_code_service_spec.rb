@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_category: :system_access do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be_with_reload(:user) { create(:user) }
   let(:params) { { country: 'US', international_dial_code: 1, phone_number: '555' } }
 
@@ -68,16 +70,30 @@ RSpec.describe PhoneVerification::Users::SendVerificationCodeService, feature_ca
         }
       end
 
-      it 'returns an error', :aggregate_failures do
-        response = service.execute
+      where(:dot_com, :error_message) do
+        true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+        false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+      end
 
-        expect(response).to be_a(ServiceResponse)
-        expect(response).to be_error
-        expect(response.message).to eq(
-          'There was a problem with the phone number you entered. '\
-          'Enter a different phone number and try again.'
-        )
-        expect(response.reason).to eq(:related_to_banned_user)
+      with_them do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(dot_com)
+        end
+
+        it 'bans the user' do
+          service.execute
+
+          expect(user).to be_banned
+        end
+
+        it 'returns an error', :aggregate_failures do
+          response = service.execute
+
+          expect(response).to be_a(ServiceResponse)
+          expect(response).to be_error
+          expect(response.message).to eq(error_message)
+          expect(response.reason).to eq(:related_to_banned_user)
+        end
       end
     end
 

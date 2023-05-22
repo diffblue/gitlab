@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessions, :clean_gitlab_redis_rate_limiting,
 feature_category: :system_access do
   include SessionHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:unconfirmed_user) { create(:user, :unconfirmed, :arkose_verified) }
   let_it_be(:confirmed_user) { create(:user, :arkose_verified) }
@@ -139,6 +140,35 @@ feature_category: :system_access do
       do_request
 
       expect(response).to render_template('show', layout: 'minimal')
+    end
+
+    context 'with a banned user' do
+      let_it_be_with_reload(:user) { unconfirmed_user }
+
+      where(:dot_com, :error_message) do
+        true  | "Your account has been blocked. Contact https://support.gitlab.com for assistance."
+        false | "Your account has been blocked. Contact your GitLab administrator for assistance."
+      end
+
+      with_them do
+        before do
+          allow(Gitlab).to receive(:com?).and_return(dot_com)
+          stub_session(verification_user_id: user.id)
+          user.ban
+
+          do_request
+        end
+
+        it 'redirects to the sign-in page with an error message', :aggregate_failures do
+          expect(response).to have_gitlab_http_status(:redirect)
+          expect(response).to redirect_to(new_user_session_path)
+          expect(flash[:alert]).to eq(error_message)
+        end
+
+        it 'deletes the verification_user_id from the session' do
+          expect(request.session.has_key?(:verification_user_id)).to eq(false)
+        end
+      end
     end
   end
 
@@ -293,7 +323,7 @@ feature_category: :system_access do
 
       it_behaves_like 'logs and tracks the event', :phone, :failed_attempt, :reason
 
-      it 'responds with error message' do
+      it 'responds with error message', :aggregate_failures do
         do_request
 
         expect(response).to have_gitlab_http_status(:bad_request)

@@ -1,4 +1,4 @@
-import { GlForm } from '@gitlab/ui';
+import { GlForm, GlButton } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import axios from 'axios';
@@ -47,6 +47,8 @@ describe('International Phone input component', () => {
 
   const enterPhoneNumber = (value) => findPhoneNumberInput().vm.$emit('input', value);
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: jest.fn() });
+
+  const findSubmitButton = () => wrapper.findComponent(GlButton);
 
   const createMockApolloProvider = () => {
     const mockResolvers = { countriesResolver };
@@ -155,6 +157,9 @@ describe('International Phone input component', () => {
         expect(findPhoneNumberFormGroup().attributes('state')).toBe(expectedState);
 
         expect(findPhoneNumberInput().attributes('state')).toBe(expectedState);
+
+        const expectedButtonState = valid ? undefined : 'true';
+        expect(findSubmitButton().attributes('disabled')).toBe(expectedButtonState);
       },
     );
 
@@ -226,6 +231,33 @@ describe('International Phone input component', () => {
 
       it('emits the skip-verification event', () => {
         expect(wrapper.emitted('skip-verification')).toHaveLength(1);
+      });
+    });
+
+    describe('when user is related to a previously banned user', () => {
+      const errorMessage = 'Your account is blocked';
+      const reason = 'related_to_banned_user';
+
+      beforeEach(() => {
+        axiosMock
+          .onPost(SEND_CODE_PATH)
+          .reply(HTTP_STATUS_BAD_REQUEST, { message: errorMessage, reason });
+
+        enterPhoneNumber('555');
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('disables the submit button', () => {
+        expect(findSubmitButton().attributes('disabled')).toBe('true');
+      });
+
+      it('renders error message', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: errorMessage,
+          captureError: true,
+          error: expect.any(Error),
+        });
       });
     });
   });

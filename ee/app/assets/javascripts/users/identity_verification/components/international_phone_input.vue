@@ -9,7 +9,13 @@ import axios from '~/lib/utils/axios_utils';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import { validatePhoneNumber } from '../validations';
 
-import { DEFAULT_COUNTRY, DEFAULT_INTERNATIONAL_DIAL_CODE, I18N_GENERIC_ERROR } from '../constants';
+import {
+  DEFAULT_COUNTRY,
+  DEFAULT_INTERNATIONAL_DIAL_CODE,
+  I18N_GENERIC_ERROR,
+  UNKNOWN_TELESIGN_ERROR,
+  RELATED_TO_BANNED_USER,
+} from '../constants';
 
 export default {
   name: 'InternationalPhoneInput',
@@ -61,6 +67,7 @@ export default {
       countries: [],
       isLoading: false,
       alert: null,
+      relatedToBannedUser: false,
     };
   },
   computed: {
@@ -78,6 +85,9 @@ export default {
     },
     number() {
       return this.form.fields.phoneNumber.value;
+    },
+    isSubmitButtonDisabled() {
+      return this.relatedToBannedUser || !this.form.fields.phoneNumber.state;
     },
   },
   mounted() {
@@ -121,10 +131,13 @@ export default {
       });
     },
     handleError(error) {
-      if (error.response?.data?.reason === 'unknown_telesign_error') {
+      const reason = error.response?.data?.reason;
+      if (reason === UNKNOWN_TELESIGN_ERROR) {
         this.$emit('skip-verification');
         return;
       }
+
+      this.relatedToBannedUser = reason === RELATED_TO_BANNED_USER;
 
       this.alert = createAlert({
         message: error.response?.data?.message || this.$options.i18n.I18N_GENERIC_ERROR,
@@ -196,7 +209,7 @@ export default {
       type="submit"
       block
       class="gl-mt-5"
-      :disabled="!form.fields.phoneNumber.state"
+      :disabled="isSubmitButtonDisabled"
       :loading="isLoading"
     >
       {{ $options.i18n.sendCode }}

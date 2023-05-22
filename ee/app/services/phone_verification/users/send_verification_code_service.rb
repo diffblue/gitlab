@@ -4,6 +4,7 @@ module PhoneVerification
   module Users
     class SendVerificationCodeService
       include ActionView::Helpers::DateHelper
+      include ::Users::IdentityVerificationHelper
 
       TELESIGN_ERROR = :unknown_telesign_error
 
@@ -17,8 +18,13 @@ module PhoneVerification
 
       def execute
         return error_in_params unless valid?
+
+        if related_to_banned_user?
+          user.ban
+          return error_banned_user
+        end
+
         return error_rate_limited if rate_limited?
-        return error_high_risk_number if related_to_banned_user?
 
         risk_result = ::PhoneVerification::TelesignClient::RiskScoreService.new(
           phone_number: phone_number,
@@ -88,12 +94,9 @@ module PhoneVerification
         )
       end
 
-      def error_high_risk_number
+      def error_banned_user
         ServiceResponse.error(
-          message: s_(
-            'PhoneVerification|There was a problem with the phone number you entered. '\
-            'Enter a different phone number and try again.'
-          ),
+          message: user_banned_error_message,
           reason: :related_to_banned_user
         )
       end
