@@ -24,14 +24,8 @@ module Abuse
       return unless reporter.gitlab_employee?
       return unless bannable_user?
 
-      custom_attribute = {
-        user_id: user.id,
-        key: UserCustomAttribute::AUTO_BANNED_BY_ABUSE_REPORT_ID,
-        value: abuse_report.id
-      }
-
       ApplicationRecord.transaction do
-        UserCustomAttribute.upsert_custom_attributes([custom_attribute]) if user.ban!
+        UserCustomAttribute.set_banned_by_abuse_report(abuse_report) if user.ban!
       end
 
       log_event
