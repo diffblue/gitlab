@@ -76,5 +76,16 @@ RSpec.describe Audit::ExternalStatusCheckChangesAuditor do
         external_status_check_changes_auditor.execute
       end
     end
+
+    context 'when there is no audit change' do
+      it 'does not create audit event if no change in updated values' do
+        external_status_check.update!(name: external_status_check.name,
+                                      external_url: external_status_check.external_url)
+
+        expect { external_status_check_changes_auditor.execute }.to change {
+          AuditEvent.count
+        }.by(0)
+      end
+    end
   end
 end
