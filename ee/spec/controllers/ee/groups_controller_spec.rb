@@ -503,7 +503,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
     end
 
     context 'when `code_suggestions` is specified' do
-      let(:params) { { code_suggestions: '1' } }
+      let(:params) { { code_suggestions: false } }
       let(:submitted_group) { group }
 
       subject(:put_update) do
@@ -526,8 +526,10 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         end
 
         context 'when enabling' do
+          let(:params) { { code_suggestions: true } }
+
           it 'allows the parameter' do
-            expect(group.code_suggestions).to eq(false)
+            expect(group.code_suggestions).to eq(true)
 
             put_update
 
@@ -536,10 +538,8 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         end
 
         context 'when disabling' do
-          let(:params) { { code_suggestions: '0' } }
-
           it 'allows the parameter' do
-            group.update!(code_suggestions: true)
+            expect(group.code_suggestions).to eq(true)
 
             put_update
 
@@ -552,11 +552,11 @@ RSpec.describe GroupsController, feature_category: :subgroups do
           let(:submitted_group) { subgroup }
 
           it 'does not allow changes to a subgroup' do
-            expect(subgroup.code_suggestions).to eq(false)
+            expect(subgroup.code_suggestions).to eq(true)
 
             put_update
 
-            expect(subgroup.reload.code_suggestions).to eq(false)
+            expect(subgroup.reload.code_suggestions).to eq(true)
           end
         end
       end
@@ -569,7 +569,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
         it 'does not allow the parameter' do
           put_update
 
-          expect(group.reload.code_suggestions).to eq(false)
+          expect(group.reload.code_suggestions).to eq(true)
         end
       end
     end

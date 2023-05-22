@@ -4,6 +4,7 @@ module EE
     module Internal
       module Kubernetes
         extend ActiveSupport::Concern
+
         prepended do
           helpers do
             def update_configuration(agent:, config:)
@@ -29,7 +30,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                post '/reconcile', feature_category: :remote_development do
+                post '/reconcile', urgency: :low, feature_category: :remote_development do
                   unless ::Feature.enabled?(:remote_development_feature_flag)
                     forbidden!("'remote_development_feature_flag' feature flag is disabled")
                   end
