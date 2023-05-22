@@ -287,7 +287,7 @@ RSpec.describe Issues::CreateService, feature_category: :team_planning do
           end
 
           it 'creates a issue work item' do
-            expect { service.execute }.to change { Issue.where(issue_type: 'issue').count }.by(1)
+            expect { service.execute }.to change { Issue.with_issue_type(:issue).count }.by(1)
               .and change { RequirementsManagement::Requirement.count }.by(0)
           end
         end
