@@ -456,19 +456,6 @@ export const pipelineSecurityReportFinding = {
   solution: 'Some solution',
   reportType: 'reportType',
   falsePositive: false,
-  mergeRequest: {
-    id: '2',
-    iid: 2,
-    createdAt: '2022-10-16T22:42:02.975Z',
-    webUrl: 'http://gdk.test:3000/secure-ex/security-reports/-/merge_requests/2',
-    author: {
-      __typename: 'UserCore',
-      id: 'gid://gitlab/User/1',
-      username: 'admin',
-      name: 'Administrator',
-      webUrl: 'http://gdk.test:3000/root',
-    },
-  },
   remediations: [
     {
       diff: 'SGVsbG8gR2l0TGFi',
@@ -563,6 +550,19 @@ export const pipelineSecurityReportFinding = {
     userPermissions: {
       createVulnerabilityFeedback: true,
     },
+    mergeRequest: {
+      id: '2',
+      iid: 2,
+      createdAt: '2022-10-16T22:42:02.975Z',
+      webUrl: 'http://gdk.test:3000/secure-ex/security-reports/-/merge_requests/2',
+      author: {
+        __typename: 'UserCore',
+        id: 'gid://gitlab/User/1',
+        username: 'admin',
+        name: 'Administrator',
+        webUrl: 'http://gdk.test:3000/root',
+      },
+    },
   },
 };
 
@@ -579,7 +579,7 @@ export const getPipelineSecurityReportFindingResponse = ({
         id: '1',
         securityReportFinding: withoutFindingData
           ? null
-          : { ...pipelineSecurityReportFinding, ...overrides },
+          : merge({}, pipelineSecurityReportFinding, overrides),
       },
     },
   },
