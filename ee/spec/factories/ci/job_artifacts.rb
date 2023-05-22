@@ -98,16 +98,6 @@ FactoryBot.define do
       end
     end
 
-    trait :dast_14_0_2 do
-      file_format { :raw }
-      file_type { :dast }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-report-14.0.2.json'), 'application/json')
-      end
-    end
-
     trait :dast_feature_branch do
       file_format { :raw }
       file_type { :dast }
@@ -134,7 +124,7 @@ FactoryBot.define do
 
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-missing-scan.json'), 'application/json')
+          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-report-missing-scan.json'), 'application/json')
       end
     end
 
@@ -144,7 +134,7 @@ FactoryBot.define do
 
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-large-scanned-resources.json'), 'application/json')
+          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-report-large-scanned-resources.json'), 'application/json')
       end
     end
 
@@ -225,18 +215,6 @@ FactoryBot.define do
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
           Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dependency-scanning-report.json'), 'application/json')
-      end
-    end
-
-    trait :dependency_scanning_multiple_scanners do
-      file_format { :raw }
-      file_type { :dependency_scanning }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dependency-scanning-report-with-multiple-scanners.json'),
-          'application/json'
-        )
       end
     end
 

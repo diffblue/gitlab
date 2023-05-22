@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Parsers::Security::DependencyScanning do
+RSpec.describe Gitlab::Ci::Parsers::Security::DependencyScanning, feature_category: :vulnerability_management do
   using RSpec::Parameterized::TableSyntax
 
   describe '#parse!' do
@@ -12,8 +12,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyScanning do
     let(:report) { Gitlab::Ci::Reports::Security::Report.new(artifact.file_type, pipeline, 2.weeks.ago) }
 
     where(:report_format, :occurrence_count, :identifier_count, :scanner_count, :file_path, :package_name, :package_version, :version) do
-      :dependency_scanning             | 4 | 7 | 1 | 'app/pom.xml' | 'io.netty/netty' | '3.9.1.Final' | '14.1.2'
-      :dependency_scanning_remediation | 2 | 3 | 1 | 'yarn.lock'   | 'debug'          | '1.0.5'       | '14.1.2'
+      :dependency_scanning             | 4 | 7 | 1 | 'app/pom.xml' | 'io.netty/netty' | '3.9.1.Final' | '15.0.6'
+      :dependency_scanning_remediation | 2 | 3 | 1 | 'yarn.lock'   | 'debug'          | '1.0.5'       | '15.0.6'
     end
 
     with_them do

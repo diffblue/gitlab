@@ -56,33 +56,6 @@ RSpec.describe Security::Ingestion::IngestReportsService, feature_category: :vul
       ingest_reports
     end
 
-    context 'when ingesting vulnerabilities for multiple scanners' do
-      let!(:dependency_scanning_artifact) { create(:ee_ci_job_artifact, :dependency_scanning_multiple_scanners, job: build, project: project) }
-      let_it_be(:retirejs_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'retire.js') }
-      let_it_be(:gemnasium_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'gemnasium') }
-      let_it_be(:other_scanner) { create(:vulnerabilities_scanner, project: project, external_id: 'other') }
-      let(:sast_ids) { [1] }
-      let(:dependency_scanning_ids) { [3] }
-
-      before do
-        allow(Security::Ingestion::IngestReportService).to receive(:execute).with(security_scan_1).and_return(sast_ids)
-        allow(Security::Ingestion::IngestReportService).to receive(:execute).with(security_scan_3).and_return(dependency_scanning_ids)
-      end
-
-      it 'resolves the missing vulnerabilities' do
-        expect(Security::Ingestion::MarkAsResolvedService)
-          .to receive(:execute).once.with(retirejs_scanner, dependency_scanning_ids)
-
-        expect(Security::Ingestion::MarkAsResolvedService)
-          .to receive(:execute).once.with(gemnasium_scanner, dependency_scanning_ids)
-
-        expect(Security::Ingestion::MarkAsResolvedService)
-          .to receive(:execute).once.with(sast_scanner, sast_ids)
-
-        ingest_reports
-      end
-    end
-
     describe 'scheduling the AutoFix background job' do
       let(:auto_fix_dependency_scanning?) { false }
 

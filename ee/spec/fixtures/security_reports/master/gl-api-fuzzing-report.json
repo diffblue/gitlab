@@ -1,7 +1,18 @@
 {
   "scan": {
     "end_time": "2022-08-10T22:37:00",
-    "messages": [],
+    "messages": [
+
+    ],
+    "analyzer": {
+      "id": "gitlab-api-fuzzing",
+      "name": "API Fuzzing",
+      "url": "https://docs.gitlab.com/ee/user/application_security/api_fuzzing/",
+      "version": "1.6.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    },
     "scanner": {
       "id": "gitlab-api-fuzzing",
       "name": "API Fuzzing",
@@ -14,9 +25,11 @@
     "start_time": "2022-08-10T22:37:00",
     "status": "success",
     "type": "dast",
-    "scanned_resources": []
+    "scanned_resources": [
+
+    ]
   },
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
       "id": "fd7e57d8-3126-46b5-a825-b9d2d8a6e13e",

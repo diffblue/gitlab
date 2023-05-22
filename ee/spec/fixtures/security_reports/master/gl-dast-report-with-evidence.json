@@ -3,18 +3,6 @@
   "@version": "2.7.0",
   "scan": {
     "type": "dast",
-    "scanned_resources": [],
-    "start_time": "2022-08-10T22:37:00",
-    "end_time": "2022-08-10T22:37:00",
-    "status": "success",
-    "scanner": {
-      "id": "a-dast-scanner",
-      "name": "A DAST scanner",
-      "version": "1.0.0",
-      "vendor": {
-        "name": "GitLab"
-      }
-    },
     "scanned_resources": [
       {
         "method": "GET",
@@ -46,7 +34,26 @@
         "type": "url",
         "url": "http://api-server/v1/trees"
       }
-    ]
+    ],
+    "start_time": "2022-08-10T22:37:00",
+    "end_time": "2022-08-10T22:37:00",
+    "status": "success",
+    "analyzer": {
+      "id": "a-dast-scanner",
+      "name": "A DAST scanner",
+      "version": "1.0.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    },
+    "scanner": {
+      "id": "a-dast-scanner",
+      "name": "A DAST scanner",
+      "version": "1.0.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    }
   },
   "site": [
     {
@@ -591,7 +598,9 @@
           "url": "http://goat:8080"
         }
       ],
-      "urlsIoError": [],
+      "urlsIoError": [
+
+      ],
       "urlsOutOfScope": [
         "http://daneden.me/animate",
         "http://fontawesome.io/",
@@ -603,9 +612,10 @@
     },
     "state": "FINISHED"
   },
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "6a0c60f1-93b5-46c5-8951-c0908a9cdd76",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10010",

@@ -1,7 +1,8 @@
 {
-  "version": "14.0.0",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "e5643b4e-3ac0-4deb-a50f-5a02ebf4e53c",
       "category": "sast",
       "name": "Cipher with no integrity",
       "message": "Cipher with no integrity",
@@ -67,8 +68,19 @@
       }
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "scan": {
+    "analyzer": {
+      "id": "find_sec_bugs",
+      "name": "Find Security Bugs",
+      "url": "https://spotbugs.github.io",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "4.0.2"
+    },
     "scanner": {
       "id": "find_sec_bugs",
       "name": "Find Security Bugs",
