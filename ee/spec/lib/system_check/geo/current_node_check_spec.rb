@@ -22,7 +22,7 @@ RSpec.describe SystemCheck::Geo::CurrentNodeCheck, :geo, :silence_stdout, featur
   end
 
   describe '.check_pass' do
-    it 'outputs additional helpful info' do
+    it 'outputs additional helpful info', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/411332' do
       allow(GeoNode).to receive(:current_node_name).and_return('Foo')
       create(:geo_node, :primary, name: GeoNode.current_node_name)
 
