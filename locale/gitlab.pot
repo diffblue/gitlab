@@ -50639,10 +50639,10 @@ msgstr ""
 msgid "When enabled, cleanup policies execute faster but put more load on Redis."
 msgstr ""
 
-msgid "When enabled, existing access tokens may be revoked. Leave blank for no limit."
+msgid "When enabled, job logs are collected by Datadog and displayed along with pipeline execution traces."
 msgstr ""
 
-msgid "When enabled, job logs are collected by Datadog and displayed along with pipeline execution traces."
+msgid "When left blank, default value of 365 is applied. When set, value must be 365 or less. When changed, existing access tokens with an expiration date beyond the maximum allowable lifetime are revoked."
 msgstr ""
 
 msgid "When merge requests and commits in the default branch close, any issues they reference also close."
