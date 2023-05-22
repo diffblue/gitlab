@@ -17,7 +17,7 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
   let(:allowed_count) { 10 }
 
   subject(:service_result) do
-    described_class.new(pipeline: pipeline, uuids: uuids, states: states, allowed_count: allowed_count).execute
+    described_class.new(project: project, uuids: uuids, states: states, allowed_count: allowed_count).execute
   end
 
   describe '#execute' do

@@ -5,14 +5,14 @@ module Security
     class VulnerabilitiesCountService
       COUNT_BATCH_SIZE = 50
 
-      def initialize(pipeline:, uuids:, states:, allowed_count:)
-        @pipeline = pipeline
+      def initialize(project:, uuids:, states:, allowed_count:)
+        @project = project
         @uuids = uuids
         @states = states
         @allowed_count = allowed_count
       end
 
-      attr_reader :pipeline, :uuids, :states, :allowed_count
+      attr_reader :project, :uuids, :states, :allowed_count
 
       def execute
         result_count = 0
@@ -33,8 +33,7 @@ module Security
       private
 
       def count_vulnerabilities_by_uuid_and_state(uuids_batch)
-        pipeline
-          .project
+        project
           .vulnerability_reads
           .by_uuid(uuids_batch)
           .with_states(states)
