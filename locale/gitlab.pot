@@ -34810,6 +34810,9 @@ msgstr ""
 msgid "ProjectView|Readme"
 msgstr ""
 
+msgid "ProjectView|Wiki"
+msgstr ""
+
 msgid "Projects"
 msgstr ""
 
