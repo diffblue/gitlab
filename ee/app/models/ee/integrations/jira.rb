@@ -7,6 +7,11 @@ module EE
 
       MAX_URL_LENGTH = 4000
 
+      API_ENDPOINTS = {
+        create_issue: "/rest/api/2/issue",
+        find_project: "/rest/api/2/project/%s"
+      }.freeze
+
       prepended do
         validates :project_key, presence: true, if: :project_key_required?
         validates :vulnerabilities_issuetype, presence: true, if: :vulnerabilities_enabled
@@ -48,7 +53,9 @@ module EE
       def create_issue(summary, description, current_user)
         return if client_url.blank?
 
-        jira_request do
+        path = API_ENDPOINTS[:create_issue]
+
+        jira_request(path) do
           issue = client.Issue.build
           issue.save(
             fields: {
@@ -83,7 +90,7 @@ module EE
       # @return [JIRA::Resource::Project, nil] the object that represents JIRA Projects
       def jira_project
         strong_memoize(:jira_project) do
-          client_url.present? ? jira_request { client.Project.find(project_key) } : nil
+          client_url.present? ? jira_request(API_ENDPOINTS[:find_project] % project_key) { client.Project.find(project_key) } : nil
         end
       end
 
