@@ -166,11 +166,13 @@ export default {
   <gl-form @submit.prevent="onSubmit">
     <gl-form-group
       :label="$options.i18n.titleInputLabel"
+      label-for="name-input"
       :invalid-feedback="$options.i18n.titleInputInvalid"
       :state="isValidName"
       data-testid="name-input-group"
     >
       <gl-form-input
+        id="name-input"
         :value="name"
         :state="isValidName"
         data-testid="name-input"
@@ -180,11 +182,13 @@ export default {
 
     <gl-form-group
       :label="$options.i18n.descriptionInputLabel"
+      label-for="description-input"
       :invalid-feedback="$options.i18n.descriptionInputInvalid"
       :state="isValidDescription"
       data-testid="description-input-group"
     >
       <gl-form-input
+        id="description-input"
         :value="description"
         :state="isValidDescription"
         data-testid="description-input"
