@@ -1,0 +1,9 @@
+---
+name: group_lfs_enabled_updated
+description: Event triggered when a groups lfs enabled is updated.
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369323
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106079
+feature_category: subgroups
+milestone: '15.7'
+saved_to_database: true
+streamed: true
