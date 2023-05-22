@@ -47922,6 +47922,9 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
+msgid "Unauthorized to create an environment"
+msgstr ""
+
 msgid "Unauthorized to update the environment"
 msgstr ""
 
