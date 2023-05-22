@@ -29508,6 +29508,9 @@ msgstr ""
 msgid "Navigation|Context navigation"
 msgstr ""
 
+msgid "Navigation|Deploy"
+msgstr ""
+
 msgid "Navigation|Enter admin mode"
 msgstr ""
 
