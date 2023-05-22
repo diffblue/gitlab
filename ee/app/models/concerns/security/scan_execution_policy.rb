@@ -46,9 +46,11 @@ module Security
       policy_by_type(:scan_execution_policy)
     end
 
-    def active_policies_scan_actions(ref)
+    def active_policies_scan_actions_for_project(ref, project)
+      service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
+
       active_scan_execution_policies
-        .select { |policy| applicable_for_ref?(policy, ref) }
+        .select { |policy| applicable_for_ref?(policy, ref, service) }
         .flat_map { |policy| policy[:actions] }
     end
 
@@ -71,13 +73,28 @@ module Security
       end
     end
 
-    def applicable_for_ref?(policy, ref)
+    def applicable_for_ref?(policy, ref, service)
       return false unless Gitlab::Git.branch_ref?(ref)
 
-      branch_name = Gitlab::Git.ref_name(ref)
+      ref_name = Gitlab::Git.ref_name(ref)
 
+      if Feature.enabled?(:security_policies_branch_type, project)
+        applicable_for_ref_by_branches_and_branch_type?(policy, ref_name, service)
+      else
+        applicable_for_ref_by_branches?(policy, ref_name)
+      end
+    end
+
+    def applicable_for_ref_by_branches_and_branch_type?(policy, ref_name, service)
+      pipeline_rules = policy[:rules].select { |rule| rule[:type] == RULE_TYPES[:pipeline] }
+      applicable_branches = service.scan_execution_branches(pipeline_rules)
+
+      ref_name.in?(applicable_branches)
+    end
+
+    def applicable_for_ref_by_branches?(policy, ref_name)
       policy[:rules].any? do |rule|
-        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches].any? { |branch| RefMatcher.new(branch).matches?(branch_name) }
+        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches].any? { |branch| RefMatcher.new(branch).matches?(ref_name) }
       end
     end
   end

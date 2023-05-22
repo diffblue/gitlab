@@ -119,11 +119,49 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
       end
     end
 
-    context 'when the branch in rules does not exist' do
+    context 'without rules' do
+      before do
+        policy.delete(:rules)
+      end
+
+      subject(:response) { service.execute(schedule) }
+
+      it_behaves_like 'does not execute scan'
+
+      it 'fails' do
+        expect(response.to_h).to include(status: :error, message: "No rules")
+      end
+    end
+
+    context 'without scheduled rules' do
+      before do
+        policy[:rules] = [{ type: 'pipeline', branches: [] }]
+      end
+
+      subject(:response) { service.execute(schedule) }
+
+      it_behaves_like 'does not execute scan'
+
+      it 'fails' do
+        expect(response.to_h).to include(status: :error, message: "No scheduled rules")
+      end
+    end
+
+    context 'with mismatching `branches`' do
       let(:policy) do
         build(:scan_execution_policy,
                            enabled: true,
                            rules: [{ type: 'schedule', branches: %w[invalid_branch], cadence: '*/20 * * * *' }])
+      end
+
+      it_behaves_like 'does not execute scan'
+    end
+
+    context 'with mismatching `branch_type`' do
+      let(:policy) do
+        build(:scan_execution_policy,
+                           enabled: true,
+                           rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }])
       end
 
       it_behaves_like 'does not execute scan'
@@ -169,6 +207,34 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
 
           expect(service_result.message).to contain_exactly('message')
         end
+      end
+    end
+
+    describe "branch lookup" do
+      let(:policy) do
+        build(:scan_execution_policy,
+              enabled: true,
+              rules: [{ type: 'schedule', branch_type: "protected", cadence: '*/20 * * * *' }])
+      end
+
+      before do
+        project.protected_branches.create!(name: project.default_branch)
+      end
+
+      it "executes scan" do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService)
+          .to(receive(:new))
+          .and_call_original
+
+        service.execute(schedule)
+      end
+
+      context "with `branch_type` feature disabled" do
+        before do
+          stub_feature_flags(security_policies_branch_type: false)
+        end
+
+        it_behaves_like 'does not execute scan'
       end
     end
   end

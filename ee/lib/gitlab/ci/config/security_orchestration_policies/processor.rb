@@ -34,7 +34,8 @@ module Gitlab
 
           private
 
-          attr_reader :project
+          attr_reader :project,
+            :ref
 
           def valid_security_orchestration_policy_configurations
             @valid_security_orchestration_policy_configurations ||= project.all_security_orchestration_policy_configurations
@@ -103,7 +104,7 @@ module Gitlab
 
           def active_scan_actions
             scan_actions do |configuration|
-              configuration.active_policies_scan_actions(@ref)
+              configuration.active_policies_scan_actions_for_project(ref, project)
             end
           end
 

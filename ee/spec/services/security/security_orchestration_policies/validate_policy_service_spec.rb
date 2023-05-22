@@ -102,17 +102,20 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService, f
           }
         end
 
-        context 'when branches are missing' do
+        context 'when branches and branch_type are missing' do
           using RSpec::Parameterized::TableSyntax
 
-          let(:branches) { nil }
-
-          where(:policy_type, :status, :details) do
-            'scan_result_policy'    | :success | nil
-            'scan_execution_policy' | :error   | ['Policy cannot be enabled without branch information']
+          where(:policy_type, :branches, :branch_type, :status, :details) do
+            'scan_result_policy'    | nil | nil | :success | nil
+            'scan_execution_policy' | nil | nil | :error   | ['Policy cannot be enabled without branch information']
           end
 
           with_them do
+            before do
+              rule[:branches] = branches if branches
+              rule[:branch_type] = branch_type if branch_type
+            end
+
             it { expect(result[:status]).to eq(status) }
             it { expect(result[:details]).to eq(details) }
 

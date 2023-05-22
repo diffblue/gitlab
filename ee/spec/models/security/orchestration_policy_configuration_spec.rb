@@ -450,8 +450,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
           let(:rule) { { type: "foobar" } }
 
           specify do
-            expect(errors.count).to be(1)
-            expect(errors.first).to match("property '/scan_execution_policy/0/rules/0/type' is not one of")
+            expect(errors.count).to be(4)
+            expect(errors.last).to match("property '/scan_execution_policy/0/rules/0/type' is not one of")
           end
         end
 
@@ -488,6 +488,28 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
                 "property '/scan_execution_policy/0/rules/0/agents/with spaces' is invalid: error_type=schema")
             end
           end
+        end
+
+        context "with branches" do
+          let(:rule) { { type: "pipeline", branches: ["master"] } }
+
+          specify { expect(errors).to be_empty }
+
+          context "with branch_type" do
+            before do
+              rule[:branch_type] = "all"
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_execution_policy/0/rules/0' is invalid: error_type=oneOf")
+            end
+          end
+        end
+
+        context "with branch_type" do
+          let(:rule) { { type: "pipeline", branch_type: "protected" } }
+
+          specify { expect(errors).to be_empty }
         end
       end
 
@@ -1207,10 +1229,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
-  describe "#active_policies_scan_actions" do
+  describe "#active_policies_scan_actions_for_project" do
     before do
       allow(Gitlab::Git).to receive(:branch_ref?).with(default_branch).and_return(true)
       allow(Gitlab::Git).to receive(:ref_name).with(default_branch).and_return(default_branch)
+
+      allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
+        allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch]).exactly(:once)
+      end
     end
 
     let(:policy_yaml) do
@@ -1235,10 +1261,20 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       [build(:scan_result_policy)]
     end
 
-    subject { security_orchestration_policy_configuration.active_policies_scan_actions(default_branch) }
+    let(:project) { security_orchestration_policy_configuration.project }
 
-    it "returns active scan policies" do
-      expect(subject).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
+    subject(:active_scan_actions) { security_orchestration_policy_configuration.active_policies_scan_actions_for_project(default_branch, project) }
+
+    context "with matched branches" do
+      before do
+        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
+          allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch])
+        end
+      end
+
+      it "returns active scan policies" do
+        expect(active_scan_actions).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
+      end
     end
 
     context "with disabled scan policies" do
@@ -1247,11 +1283,17 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       it "filters" do
-        expect(subject).to match_array(dast_policy[:actions])
+        expect(active_scan_actions).to match_array(dast_policy[:actions])
       end
     end
 
     context "with scan policies targeting other branch" do
+      before do
+        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
+          allow(service).to receive(:scan_execution_branches).and_return(Set[default_branch], Set[])
+        end
+      end
+
       let(:container_scanning_policy) do
         build(:scan_execution_policy,
               actions: [{ scan: 'container_scanning' }],
@@ -1259,7 +1301,21 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       it "filters" do
-        expect(subject).to match_array(dast_policy[:actions])
+        expect(active_scan_actions).to match_array(dast_policy[:actions])
+      end
+    end
+
+    context "with `branch_type` feature disabled" do
+      before do
+        stub_feature_flags(security_policies_branch_type: false)
+      end
+
+      it "does not evaluate `branch_type`" do
+        allow_next_instance_of(Security::SecurityOrchestrationPolicies::PolicyBranchesService) do |service|
+          expect(service).not_to receive(:scan_execution_branches)
+        end
+
+        active_scan_actions
       end
     end
   end

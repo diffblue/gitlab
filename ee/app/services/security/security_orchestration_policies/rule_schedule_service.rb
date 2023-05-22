@@ -4,7 +4,15 @@ module Security
   module SecurityOrchestrationPolicies
     class RuleScheduleService < BaseContainerService
       def execute(schedule)
-        branches = schedule.applicable_branches(container)
+        return ServiceResponse.error(message: "No rules") unless rules = schedule&.policy&.fetch(:rules, nil)
+
+        schedule_rules = rules.select do |rule|
+          rule[:type] == Security::ScanExecutionPolicy::RULE_TYPES[:schedule]
+        end
+
+        return ServiceResponse.error(message: "No scheduled rules") if schedule_rules.empty?
+
+        branches = branches_for(schedule, rules)
         actions = actions_for(schedule)
         schedule_errors = schedule_scan(actions, branches).select { |service_result| service_result[:status] == :error }
 
@@ -23,6 +31,14 @@ module Security
         return [] if policy.blank?
 
         policy[:actions]
+      end
+
+      def branches_for(schedule, rules)
+        return schedule.applicable_branches(container) unless Feature.enabled?(:security_policies_branch_type, project)
+
+        ::Security::SecurityOrchestrationPolicies::PolicyBranchesService
+          .new(project: project)
+          .scan_execution_branches(rules)
       end
 
       def schedule_scan(actions, branches)
