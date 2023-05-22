@@ -206,3 +206,5 @@ module SaasRegistrationHelpers
     base_params.merge(glm_params)
   end
 end
+
+SaasRegistrationHelpers.prepend_mod
