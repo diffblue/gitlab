@@ -87,7 +87,7 @@ RSpec.shared_examples 'product analytics dashboards' do
 
         context 'with the correct user permissions' do
           where(:project_setting, :snowplow_feature_flag_enabled) do
-            { jitsu_key: 123 } | true
+            { jitsu_key: 123 } | false
             { product_analytics_instrumentation_key: 456 } | true
           end
 
@@ -203,7 +203,7 @@ RSpec.shared_examples 'product analytics dashboards' do
 
               context 'when the cube API returns data' do
                 before do
-                  stub_cube_proxy_success
+                  stub_cube_proxy_success(snowplow_feature_flag_enabled)
                   visit_page
                 end
 
@@ -221,7 +221,7 @@ RSpec.shared_examples 'product analytics dashboards' do
                     expect(page).to have_content(s_('ProductAnalytics|Waiting for events'))
                   end
 
-                  stub_cube_proxy_success
+                  stub_cube_proxy_success(snowplow_feature_flag_enabled)
 
                   travel_to(1.minute.from_now) do
                     expect(page).to have_content('Understand your audience')
@@ -233,7 +233,7 @@ RSpec.shared_examples 'product analytics dashboards' do
             context 'with the setup completed' do
               before do
                 project.project_setting.update!(project_setting)
-                stub_cube_proxy_success
+                stub_cube_proxy_success(snowplow_feature_flag_enabled)
               end
 
               it_behaves_like 'renders the product analytics dashboards'
@@ -283,9 +283,18 @@ RSpec.shared_examples 'product analytics dashboards' do
         .to_return(status: 200, body: query_object.to_json, headers: {})
     end
 
-    def stub_cube_proxy_success
+    def stub_cube_proxy_success(product_analytics_snowplow_support)
+      query_object = Gitlab::Json.parse(query_response_with_data)
+
+      # rubocop:disable RSpec/AvoidConditionalStatements
+      unless product_analytics_snowplow_support
+        query_object['results'][0]['data'][0]['TrackedEvents.pageViewsCount'] =
+          query_object['results'][0]['data'][0].delete('SnowplowTrackedEvents.pageViewsCount')
+      end
+      # rubocop:enable RSpec/AvoidConditionalStatements
+
       stub_request(:post, cube_api_url)
-        .to_return(status: 200, body: query_response_with_data, headers: {})
+        .to_return(status: 200, body: query_object.to_json, headers: {})
     end
   end
 end

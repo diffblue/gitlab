@@ -25,31 +25,35 @@ RSpec.describe 'Query.project(fullPath)', feature_category: :product_analytics d
 
     using RSpec::Parameterized::TableSyntax
 
-    where(:licensed, :enabled, :user_role, :jitsu_key, :output) do
-      true  | true  | :developer | 'key' | 'key'
-      true  | false | :developer | 'key' | nil
-      false | true  | :developer | 'key' | nil
-      false | false | :developer | 'key' | nil
-      true  | true  | :maintainer | 'key' | 'key'
-      true  | false | :maintainer | 'key' | nil
-      false | true  | :maintainer | 'key' | nil
-      false | false | :maintainer | 'key' | nil
-      true  | true  | :owner | 'key' | 'key'
-      true  | false | :owner | 'key' | nil
-      false | true  | :owner | 'key' | nil
-      false | false | :owner | 'key' | nil
-      true  | true  | :guest | 'key' | nil
-      true  | false | :guest | 'key' | nil
-      false | true  | :guest | 'key' | nil
-      false | false | :guest | 'key' | nil
+    where(:licensed, :enabled, :snowplow_enabled, :user_role, :jitsu_key, :snowplow_instrumentation_key, :output) do
+      true  | true | false | :developer | 'jitsu_key' | nil | 'jitsu_key'
+      true  | true | true | :developer | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
+      true  | false | false | :developer | 'jitsu_key' | nil | nil
+      false | true | false | :developer | 'jitsu_key' | nil | nil
+      false | false | false | :developer | 'jitsu_key' | nil | nil
+      true  | true | false | :maintainer | 'jitsu_key' | nil | 'jitsu_key'
+      true  | true | true | :maintainer | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
+      true  | false | false | :maintainer | 'jitsu_key' | nil | nil
+      false | true | false | :maintainer | 'jitsu_key' | nil | nil
+      false | false | false | :maintainer | 'jitsu_key' | nil | nil
+      true  | true | false | :owner | 'jitsu_key' | nil | 'jitsu_key'
+      true  | true | true | :owner | 'jitsu_key' | 'snowplow_key' | 'snowplow_key'
+      true  | false | false | :owner | 'jitsu_key' | nil | nil
+      false | true | false | :owner | 'jitsu_key' | nil | nil
+      false | false | false | :owner | 'jitsu_key' | nil | nil
+      true  | true | false | :guest | 'jitsu_key' | nil | nil
+      true  | false | false | :guest | 'jitsu_key' | nil | nil
+      false | true | false | :guest | 'jitsu_key' | nil | nil
+      false | false | false | :guest | 'jitsu_key' | nil | nil
     end
 
     with_them do
       before do
         stub_licensed_features(product_analytics: licensed)
-        stub_feature_flags(product_analytics_dashboards: enabled)
+        stub_feature_flags(product_analytics_dashboards: enabled, product_analytics_snowplow_support: snowplow_enabled)
         project.add_role(user, user_role)
         project.project_setting.update!(jitsu_key: jitsu_key)
+        project.project_setting.update!(product_analytics_instrumentation_key: snowplow_instrumentation_key)
         project.reload
       end
 
