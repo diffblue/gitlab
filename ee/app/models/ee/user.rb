@@ -516,6 +516,13 @@ module EE
       roles&.include?(:read_code)
     end
 
+    def read_vulnerability_for?(project)
+      return false unless ::Feature.enabled?(:custom_roles_vulnerability, project.root_ancestor)
+
+      roles = preloaded_member_roles_for_projects([project])[project.id]
+      roles&.include?(:read_vulnerability)
+    end
+
     override :preloaded_member_roles_for_projects
     def preloaded_member_roles_for_projects(projects)
       resource_key = "member_roles_in_projects:#{self.class}:#{self.id}"
