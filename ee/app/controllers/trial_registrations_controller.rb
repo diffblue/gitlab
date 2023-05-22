@@ -11,7 +11,7 @@ class TrialRegistrationsController < RegistrationsController
 
   layout 'minimal'
 
-  skip_before_action :require_no_authentication
+  skip_before_action :require_no_authentication_without_flash
 
   before_action :check_if_gl_com_or_dev
   before_action :redirect_to_trial, only: [:new], if: :user_signed_in?
