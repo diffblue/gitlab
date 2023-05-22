@@ -1,5 +1,5 @@
 {
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
       "id": "0e9148e513ed08ee1973cc149e939ef260cbfa1d7d2242760377c5749b953ddd",
@@ -27,8 +27,19 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "scan": {
+    "analyzer": {
+      "id": "libfuzzer",
+      "name": "libfuzzer",
+      "url": "https://docs.gitlab.com/ee/user/application_security/coverage_fuzzing",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "v2.0.46"
+    },
     "scanner": {
       "id": "libfuzzer",
       "name": "libfuzzer",

@@ -17,18 +17,6 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         solution
         reportType
         falsePositive
-        mergeRequest {
-          id
-          iid
-          createdAt
-          webUrl
-          author {
-            id
-            webUrl
-            name
-            username
-          }
-        }
         remediations {
           diff
           summary
@@ -150,6 +138,18 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           id
           userPermissions {
             createVulnerabilityFeedback
+          }
+          mergeRequest {
+            id
+            iid
+            createdAt
+            webUrl
+            author {
+              id
+              webUrl
+              name
+              username
+            }
           }
         }
       }

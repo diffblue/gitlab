@@ -1,7 +1,8 @@
 {
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "6ac8e36a-b274-4fb8-a031-9aa57de562e1",
       "category": "dependency_scanning",
       "name": "io.netty/netty - CVE-2014-3488",
       "message": "DoS by CPU exhaustion when using malicious SSL packets",
@@ -52,6 +53,7 @@
       "tool": "gemnasium"
     },
     {
+      "id": "f7b17c65-c3c2-46c1-a6be-4b17bd7bbe34",
       "category": "dependency_scanning",
       "name": "Django - CVE-2017-12794",
       "message": "Possible XSS in traceback section of technical 500 debug page",
@@ -96,6 +98,7 @@
       "tool": "gemnasium"
     },
     {
+      "id": "8f758e97-48e1-461e-99f8-7defdc377623",
       "category": "dependency_scanning",
       "name": "nokogiri - USN-3424-1",
       "message": "Vulnerabilities in libxml2",
@@ -140,6 +143,7 @@
       "tool": "gemnasium"
     },
     {
+      "id": "2aeedf08-6beb-41d0-a2ce-2a2199d7e20a",
       "category": "dependency_scanning",
       "name": "ffi - CVE-2018-1000201",
       "message": "ruby-ffi DDL loading issue on Windows OS",
@@ -178,8 +182,19 @@
       "tool": "gemnasium"
     }
   ],
-  "dependency_files": [],
+  "dependency_files": [
+
+  ],
   "scan": {
+    "analyzer": {
+      "id": "gemnasium-maven",
+      "name": "gemnasium-maven",
+      "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium-maven",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "2.18.0"
+    },
     "scanner": {
       "id": "gemnasium-maven",
       "name": "gemnasium-maven",

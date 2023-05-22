@@ -1,7 +1,8 @@
 {
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "4731b97e-f14c-4a43-81b4-82be616ec7e8",
       "category": "dependency_scanning",
       "name": "Vulnerabilities in libxml2",
       "message": "Vulnerabilities in libxml2 in nokogiri",
@@ -43,6 +44,7 @@
       ]
     },
     {
+      "id": "6baefb1f-75ca-40eb-8dbc-4d606e22948d",
       "category": "dependency_scanning",
       "name": "Infinite recursion in parameter entities",
       "message": "Infinite recursion in parameter entities in nokogiri",
@@ -93,6 +95,7 @@
       ]
     },
     {
+      "id": "c7b7227c-9c26-43d3-9109-16d88b8574c8",
       "category": "dependency_scanning",
       "name": "Denial of Service",
       "message": "Denial of Service in nokogiri",
@@ -140,6 +143,7 @@
       ]
     },
     {
+      "id": "e7a9eb7d-f96e-4d4c-b770-fefd2cc78f41",
       "category": "dependency_scanning",
       "name": "Bypass of a protection mechanism in libxslt",
       "message": "Bypass of a protection mechanism in libxslt in nokogiri",
@@ -190,6 +194,7 @@
       ]
     },
     {
+      "id": "09e400bd-c8ac-4efb-b902-18f2b69b6da6",
       "category": "dependency_scanning",
       "name": "Regular Expression Denial of Service",
       "message": "Regular Expression Denial of Service in debug",
@@ -231,6 +236,7 @@
       ]
     },
     {
+      "id": "9afc63bc-41cc-441f-a231-667d119913e2",
       "category": "dependency_scanning",
       "name": "Authentication bypass via incorrect DOM traversal and canonicalization",
       "message": "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js",
@@ -278,7 +284,9 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "dependency_files": [
     {
       "path": "rails/Gemfile.lock",
@@ -535,6 +543,15 @@
     }
   ],
   "scan": {
+    "analyzer": {
+      "id": "gemnasium",
+      "name": "Gemnasium",
+      "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "3.8.0"
+    },
     "scanner": {
       "id": "gemnasium",
       "name": "Gemnasium",
@@ -544,6 +561,8 @@
       },
       "version": "3.8.0"
     },
+    "type": "dependency_scanning",
+    "status": "success",
     "start_time": "2022-08-10T22:37:00",
     "end_time": "2022-08-10T22:37:00"
   }
