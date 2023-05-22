@@ -10415,6 +10415,9 @@ msgstr ""
 msgid "ClusterAgents|shared"
 msgstr ""
 
+msgid "ClusterAgent|An agent can have only two active tokens at a time"
+msgstr ""
+
 msgid "ClusterAgent|User has insufficient permissions to create a token for this project"
 msgstr ""
 
