@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
+  include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, name: 'CA-test-group') }
@@ -94,7 +95,7 @@ RSpec.describe 'Project > Value stream analytics', :js, feature_category: :value
         visit project_cycle_analytics_path(project)
         wait_for_requests
         find(value_stream_selector).click
-        click_button(value_stream_name, match: :first)
+        select_listbox_item(value_stream_name)
         wait_for_requests
       end
 

@@ -1,11 +1,9 @@
-import { GlDropdown } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ValueStreamSelect from 'ee/analytics/cycle_analytics/components/value_stream_select.vue';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { findDropdownItemText } from '../helpers';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import { valueStreams, defaultStageConfig } from '../mock_data';
 
 Vue.use(Vuex);
@@ -35,30 +33,28 @@ describe('ValueStreamSelect', () => {
       },
       actions: {
         deleteValueStream: deleteValueStreamMock,
+        setSelectedValueStream: jest.fn(),
       },
     });
 
-  const createComponent = ({ data = {}, initialState = {}, mountFn = shallowMount } = {}) =>
-    extendedWrapper(
-      mountFn(ValueStreamSelect, {
-        store: fakeStore({ initialState }),
-        data() {
-          return {
-            ...data,
-          };
+  const createComponent = ({ data = {}, initialState = {}, mountFn = shallowMountExtended } = {}) =>
+    mountFn(ValueStreamSelect, {
+      store: fakeStore({ initialState }),
+      data() {
+        return {
+          ...data,
+        };
+      },
+      mocks: {
+        $toast: {
+          show: mockToastShow,
         },
-        mocks: {
-          $toast: {
-            show: mockToastShow,
-          },
-        },
-      }),
-    );
+      },
+    });
 
-  const findModal = (modal) => wrapper.find(`[data-testid="${modal}-value-stream-modal"]`);
+  const findModal = (modal) => wrapper.findByTestId(`${modal}-value-stream-modal`);
   const submitModal = (modal) => findModal(modal).vm.$emit('primary', mockEvent);
-  const findSelectValueStreamDropdown = () => wrapper.findComponent(GlDropdown);
-  const findSelectValueStreamDropdownOptions = () => findDropdownItemText(wrapper);
+  const findSelectValueStreamDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findCreateValueStreamButton = () => wrapper.findByTestId('create-value-stream-button');
   const findEditValueStreamButton = () => wrapper.findByTestId('edit-value-stream');
   const findDeleteValueStreamButton = () => wrapper.findByTestId('delete-value-stream');
@@ -71,7 +67,7 @@ describe('ValueStreamSelect', () => {
     describe('default behaviour', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          mountFn: mount,
+          mountFn: mountExtended,
           initialState: {
             valueStreams,
           },
@@ -88,9 +84,17 @@ describe('ValueStreamSelect', () => {
       });
 
       it('renders each value stream including a create button', () => {
-        const opts = findSelectValueStreamDropdownOptions(wrapper);
-        [...valueStreams.map((v) => v.name), 'Create new Value Stream'].forEach((vs) => {
-          expect(opts).toContain(vs);
+        const opts = findSelectValueStreamDropdown().props('items');
+        valueStreams.forEach((vs, index) => {
+          expect(opts[index].text).toBe(vs.name);
+        });
+      });
+
+      it('tracks dropdown events', () => {
+        findSelectValueStreamDropdown().vm.$emit('select', valueStreams[0].id);
+
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_dropdown', {
+          label: 'value_stream_1',
         });
       });
     });
@@ -98,7 +102,7 @@ describe('ValueStreamSelect', () => {
     describe('with a selected value stream', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          mountFn: mount,
+          mountFn: mountExtended,
           initialState: {
             valueStreams,
             selectedValueStream: {
