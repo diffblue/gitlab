@@ -11,13 +11,19 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker, fea
     context 'when valid to generate a trial' do
       let_it_be(:namespace) { create(:namespace) }
 
-      let(:trial_user_information) { { 'namespace_id' => namespace.id } }
+      let(:trial_user_information) do
+        {
+          'namespace_id' => namespace.id,
+          'namespace' => namespace.slice(:id, :name, :path, :kind, :trial_ends_on).stringify_keys
+        }
+      end
 
       context 'when trial is successfully applied' do
         let(:service) { instance_double(GitlabSubscriptions::Trials::ApplyTrialService) }
 
         before do
-          allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service)
+          trial_params = { uid: user.id, trial_user_information: trial_user_information.deep_symbolize_keys }
+          allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(trial_params).and_return(service)
           allow(service).to receive(:execute).and_return(ServiceResponse.success)
         end
 
