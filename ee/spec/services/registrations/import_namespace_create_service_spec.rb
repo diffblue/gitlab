@@ -116,7 +116,8 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
             glm_content: 'content',
             namespace_id: group.id,
             gitlab_com_trial: true,
-            sync_to_gl: true
+            sync_to_gl: true,
+            namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on)
           }
         )
       end
