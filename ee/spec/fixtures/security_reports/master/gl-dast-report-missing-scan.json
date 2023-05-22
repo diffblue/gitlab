@@ -336,7 +336,9 @@
           "url": "http://goat:8080/"
         }
       ],
-      "urlsIoError": [],
+      "urlsIoError": [
+
+      ],
       "urlsOutOfScope": [
         "http://daneden.me/animate",
         "http://fontawesome.io/",
@@ -348,9 +350,10 @@
     },
     "state": "FINISHED"
   },
-  "version": "14.1.2",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "2cfa2bad-5235-427b-90fc-0f1ab9b1e2d5",
       "category": "dast",
       "confidence": "Medium",
       "cve": "20012",

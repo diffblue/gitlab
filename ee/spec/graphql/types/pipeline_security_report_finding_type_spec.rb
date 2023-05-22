@@ -399,13 +399,17 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
   end
 
   describe 'remediations' do
-    let_it_be(:finding_data) { { remediation_byte_offsets: [{ start_byte: 3769, end_byte: 13792 }] } }
-
     let(:response) { GitlabSchema.execute(dep_scan_query, context: { current_user: user }) }
-    let(:expected_remediation) { dep_scan_findings.flat_map(&:remediations).first.slice('summary', 'diff') }
-    let(:response_remediation) { get_findings_from_response(response).second['remediations'].first }
+    let(:remediation_finding) { dep_scan_findings.first }
+    let(:expected_remediations) { remediation_finding.remediations.map { |r| r.slice('summary', 'diff') } }
+    let(:response_remediations) { response_remediation_finding['remediations'] }
+    let(:response_remediation_finding) do
+      get_findings_from_response(response).find { |finding| finding['uuid'] == remediation_finding.uuid }
+    end
+
     let(:query_for_test) do
       %(
+        uuid
         remediations {
           summary
           diff
@@ -414,12 +418,18 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
     end
 
     before do
-      dep_scan_findings.first.finding_data = finding_data
-      dep_scan_findings.first.save!
+      # These offsets will need to be updated if the
+      # remediations/gl-dependency-scanning-report.json # fixture is modified.
+      #
+      # The offsets need to be set to the position of the opening and closing
+      # curly braces of the first element of the "remediations" array in
+      # the fixture file.
+      remediation_finding.finding_data = { remediation_byte_offsets: [{ start_byte: 3821, end_byte: 13844 }] }
+      remediation_finding.save!
     end
 
     it 'returns remediations for security findings which have one' do
-      expect(response_remediation).to match(expected_remediation)
+      expect(response_remediations).to match(expected_remediations)
     end
 
     it 'responds with an empty array for security findings which have none' do

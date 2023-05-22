@@ -38,6 +38,14 @@
     "start_time": "2022-08-10T22:37:00",
     "end_time": "2022-08-10T22:37:00",
     "status": "success",
+    "analyzer": {
+      "id": "a-dast-scanner",
+      "name": "A DAST scanner",
+      "version": "1.0.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    },
     "scanner": {
       "id": "a-dast-scanner",
       "name": "A DAST scanner",
@@ -590,7 +598,9 @@
           "url": "http://goat:8080"
         }
       ],
-      "urlsIoError": [],
+      "urlsIoError": [
+
+      ],
       "urlsOutOfScope": [
         "http://daneden.me/animate",
         "http://fontawesome.io/",
@@ -604,6 +614,7 @@
   },
   "vulnerabilities": [
     {
+      "id": "2050d548-5ca3-47bd-9df9-17383aea225c",
       "category": "dast",
       "confidence": "Medium",
       "cve": "20012",
@@ -651,6 +662,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "9d21d646-530c-4b07-8923-c42555d56df7",
       "category": "dast",
       "confidence": "Medium",
       "cve": "20012",
@@ -698,6 +710,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "2fedb476-e844-478b-9831-e9e596a69edf",
       "category": "dast",
       "confidence": "Medium",
       "cve": "20012",
@@ -745,6 +758,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "0e9c5664-75c6-42a0-8783-175aec30da3e",
       "category": "dast",
       "confidence": "Medium",
       "cve": "20012",
@@ -792,6 +806,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "9bffd6bd-8044-4dae-a10a-c5a441955003",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10202",
@@ -839,6 +854,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "70bf3814-b709-40f0-b15f-9cba8844d72d",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10202",
@@ -886,6 +902,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "69e7e2d2-3b08-46c2-8229-1de7ea34cf46",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10202",
@@ -933,6 +950,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "a4040c90-2266-4b0f-93ab-26a9c7a23b1c",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10202",
@@ -980,6 +998,7 @@
       "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
     },
     {
+      "id": "3ec90f39-d6c2-4521-a915-8ad30e8baa56",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10010",
@@ -1024,6 +1043,7 @@
       "solution": "Ensure that the HttpOnly flag is set for all cookies."
     },
     {
+      "id": "968b726f-c3df-47e4-9cb5-ad194ec4bad7",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10010",
@@ -1155,6 +1175,7 @@
       "solution": "Ensure that the HttpOnly flag is set for all cookies."
     },
     {
+      "id": "d8925531-cd60-4dc6-b3a1-a532c5d81c4e",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10054",
@@ -1199,6 +1220,7 @@
       "solution": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies."
     },
     {
+      "id": "f6071630-bc3b-4cd2-9d98-ccae1072fb19",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10054",
@@ -1243,6 +1265,7 @@
       "solution": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies."
     },
     {
+      "id": "00c6d4e7-da6f-48c9-b6ed-20075ce3110a",
       "category": "dast",
       "confidence": "Low",
       "cve": "90011",
@@ -1287,6 +1310,7 @@
       "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
     },
     {
+      "id": "69da06f7-6f38-44e7-8514-30a2dc7d4dc3",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10027",
@@ -1311,7 +1335,9 @@
           "value": "13"
         }
       ],
-      "links": [],
+      "links": [
+
+      ],
       "location": {
         "hostname": "http://goat:8080",
         "method": "GET",
@@ -1327,6 +1353,7 @@
       "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
     },
     {
+      "id": "4efe81a8-7164-4c8c-8656-ac194d47d50a",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10027",
@@ -1351,7 +1378,9 @@
           "value": "13"
         }
       ],
-      "links": [],
+      "links": [
+
+      ],
       "location": {
         "hostname": "http://goat:8080",
         "method": "GET",
@@ -1367,6 +1396,7 @@
       "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
     },
     {
+      "id": "1ad46dc2-fba4-4a08-ae9c-07fee8602c60",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10027",
@@ -1391,7 +1421,9 @@
           "value": "13"
         }
       ],
-      "links": [],
+      "links": [
+
+      ],
       "location": {
         "hostname": "http://goat:8080",
         "method": "GET",
@@ -1407,6 +1439,7 @@
       "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
     },
     {
+      "id": "284aa9d6-a5d8-416d-b9bb-090a2a44c087",
       "category": "dast",
       "confidence": "Medium",
       "cve": "10027",
@@ -1431,7 +1464,9 @@
           "value": "13"
         }
       ],
-      "links": [],
+      "links": [
+
+      ],
       "location": {
         "hostname": "http://goat:8080",
         "method": "GET",
@@ -1447,6 +1482,7 @@
       "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
     },
     {
+      "id": "9fdb6184-7f46-4beb-84bd-2bbd8210fddf",
       "category": "dast",
       "confidence": "Low",
       "cve": "90033",
@@ -1497,6 +1533,7 @@
       "solution": "Always scope cookies to a FQDN (Fully Qualified Domain Name)."
     },
     {
+      "id": "797c81e5-c580-414a-99bd-4010d4c7f49e",
       "category": "dast",
       "confidence": "Low",
       "cve": "90033",
@@ -1547,6 +1584,7 @@
       "solution": "Always scope cookies to a FQDN (Fully Qualified Domain Name)."
     },
     {
+      "id": "813448e1-8569-4cde-9872-9601d72066a9",
       "category": "dast",
       "confidence": "Low",
       "cve": "10096",
@@ -1594,6 +1632,7 @@
       "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
     },
     {
+      "id": "17e9f0b9-f71b-46eb-a57a-32f0196bf4db",
       "category": "dast",
       "confidence": "Low",
       "cve": "10096",
@@ -1641,6 +1680,7 @@
       "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
     },
     {
+      "id": "68749fe9-4cf7-4ee0-9e6f-4bf35690ec44",
       "category": "dast",
       "confidence": "Low",
       "cve": "10096",
@@ -1688,6 +1728,7 @@
       "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
     },
     {
+      "id": "732d9d0f-fc0e-42f2-954c-81ce57c10974",
       "category": "dast",
       "confidence": "Low",
       "cve": "10096",
@@ -1735,6 +1776,7 @@
       "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
     },
     {
+      "id": "6200b84f-8e87-407f-943d-5259509cf8f0",
       "category": "dast",
       "confidence": "Low",
       "cve": "10096",

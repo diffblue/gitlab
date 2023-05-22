@@ -1,7 +1,8 @@
 {
-  "version": "14.0.0",
+  "version": "15.0.6",
   "vulnerabilities": [
     {
+      "id": "509fc965-03ce-4f51-861f-75196a989402",
       "category": "sast",
       "name": "Predictable pseudorandom number generator",
       "message": "Predictable pseudorandom number generator",
@@ -19,9 +20,12 @@
         "class": "com.gitlab.security_products.tests.App",
         "method": "generateSecretToken2"
       },
-      "identifiers": []
+      "identifiers": [
+
+      ]
     },
     {
+      "id": "c2aa70d7-fd86-4a30-bb2b-02f380f81ba9",
       "category": "sast",
       "name": "Predictable pseudorandom number generator",
       "message": "Predictable pseudorandom number generator",
@@ -49,6 +53,7 @@
       ]
     },
     {
+      "id": "e0d15dbc-ad4a-4563-a4fd-5f2cb0726308",
       "category": "sast",
       "name": "ECB mode is insecure",
       "message": "ECB mode is insecure",
@@ -77,8 +82,19 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "scan": {
+    "analyzer": {
+      "id": "find_sec_bugs",
+      "name": "Find Security Bugs",
+      "url": "https://spotbugs.github.io",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "4.0.2"
+    },
     "scanner": {
       "id": "find_sec_bugs",
       "name": "Find Security Bugs",
