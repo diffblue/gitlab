@@ -2,8 +2,7 @@
 import {
   GlAlert,
   GlButton,
-  GlDropdown,
-  GlDropdownItem,
+  GlCollapsibleListbox,
   GlModal,
   GlModalDirective,
   GlSprintf,
@@ -30,8 +29,7 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlDropdown,
-    GlDropdownItem,
+    GlCollapsibleListbox,
     GlModal,
     GlSprintf,
     ValueStreamForm,
@@ -53,6 +51,11 @@ export default {
       data: 'valueStreams',
       selectedValueStream: 'selectedValueStream',
     }),
+    listBoxData() {
+      return (
+        this.data?.map(({ id: value, name: streamName }) => ({ value, text: streamName })) || []
+      );
+    },
     hasValueStreams() {
       return Boolean(this.data.length);
     },
@@ -80,7 +83,9 @@ export default {
       return Boolean(this.selectedValueStreamId && this.selectedValueStreamId === id);
     },
     onSelect(selectedId) {
-      this.setSelectedValueStream(this.data.find(({ id }) => id === selectedId));
+      const selectedItem = this.data.find(({ id }) => id === selectedId);
+      this.track('click_dropdown', { label: this.slugify(selectedItem?.name) });
+      this.setSelectedValueStream(selectedItem);
     },
     onDelete() {
       const name = this.selectedValueStreamName;
@@ -109,44 +114,43 @@ export default {
 <template>
   <div class="gl-display-flex gl-align-items-center gl-gap-3">
     <label class="gl-m-0">{{ s__('ValueStreamAnalytics|Value stream') }}</label>
-    <gl-dropdown
+    <gl-collapsible-listbox
       v-if="hasValueStreams"
       data-testid="dropdown-value-streams"
-      :text="selectedValueStreamName"
+      :items="listBoxData"
+      :toggle-text="selectedValueStreamName"
+      :selected="selectedValueStreamId"
+      @select="onSelect"
     >
-      <gl-dropdown-item
-        v-for="{ id, name: streamName } in data"
-        :key="id"
-        is-check-item
-        :is-checked="isSelected(id)"
-        data-track-action="click_dropdown"
-        :data-track-label="slugify(streamName)"
-        @click="onSelect(id)"
-        >{{ streamName }}</gl-dropdown-item
-      >
       <template #footer>
-        <gl-dropdown-item
-          v-gl-modal-directive="'value-stream-form-modal'"
-          data-testid="create-value-stream"
-          data-track-action="click_dropdown"
-          data-track-label="create_value_stream_form_open"
-          @click="onCreate"
-          >{{ $options.i18n.CREATE_VALUE_STREAM }}</gl-dropdown-item
-        >
-        <gl-dropdown-item
-          v-if="isCustomValueStream"
-          v-gl-modal-directive="'delete-value-stream-modal'"
-          variant="danger"
-          data-testid="delete-value-stream"
-          data-track-action="click_dropdown"
-          data-track-label="delete_value_stream_form_open"
-        >
-          <gl-sprintf :message="$options.i18n.DELETE_NAME">
-            <template #name>{{ selectedValueStreamName }}</template>
-          </gl-sprintf>
-        </gl-dropdown-item>
+        <div class="gl-border-t gl-p-2">
+          <gl-button
+            v-gl-modal-directive="'value-stream-form-modal'"
+            class="gl-w-full gl-justify-content-start!"
+            category="tertiary"
+            data-testid="create-value-stream"
+            data-track-action="click_dropdown"
+            data-track-label="create_value_stream_form_open"
+            @click="onCreate"
+            >{{ $options.i18n.CREATE_VALUE_STREAM }}</gl-button
+          >
+          <gl-button
+            v-if="isCustomValueStream"
+            v-gl-modal-directive="'delete-value-stream-modal'"
+            class="gl-w-full gl-justify-content-start!"
+            category="tertiary"
+            variant="danger"
+            data-testid="delete-value-stream"
+            data-track-action="click_dropdown"
+            data-track-label="delete_value_stream_form_open"
+          >
+            <gl-sprintf :message="$options.i18n.DELETE_NAME">
+              <template #name>{{ selectedValueStreamName }}</template>
+            </gl-sprintf>
+          </gl-button>
+        </div>
       </template>
-    </gl-dropdown>
+    </gl-collapsible-listbox>
     <gl-button
       v-if="isCustomValueStream"
       v-gl-modal-directive="'value-stream-form-modal'"
