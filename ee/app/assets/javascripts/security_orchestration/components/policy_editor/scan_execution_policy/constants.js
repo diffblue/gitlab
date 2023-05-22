@@ -52,7 +52,7 @@ export const SCANNER_HUMANIZED_TEMPLATE = s__(
 );
 
 export const DAST_HUMANIZED_TEMPLATE = s__(
-  'ScanExecutionPolicy|Run a %{scan} scan with %{dastProfiles} with tags %{tags}',
+  'ScanExecutionPolicy|Run a %{scan} scan with %{dastProfiles} on runner that %{tags}',
 );
 
 export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';
