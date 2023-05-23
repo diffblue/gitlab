@@ -23490,6 +23490,8 @@ CREATE TABLE user_details (
     onboarding_step_url text,
     discord text DEFAULT ''::text NOT NULL,
     provisioned_by_group_at timestamp with time zone,
+    enterprise_group_id bigint,
+    enterprise_group_associated_at timestamp with time zone,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_444573ee52 CHECK ((char_length(skype) <= 500)),
     CONSTRAINT check_466a25be35 CHECK ((char_length(twitter) <= 500)),
@@ -32802,6 +32804,8 @@ CREATE INDEX index_user_custom_attributes_on_key_and_value ON user_custom_attrib
 
 CREATE UNIQUE INDEX index_user_custom_attributes_on_user_id_and_key ON user_custom_attributes USING btree (user_id, key);
 
+CREATE INDEX index_user_details_on_enterprise_group_id ON user_details USING btree (enterprise_group_id);
+
 CREATE INDEX index_user_details_on_password_last_changed_at ON user_details USING btree (password_last_changed_at);
 
 COMMENT ON INDEX index_user_details_on_password_last_changed_at IS 'JiHu-specific index';
@@ -35499,6 +35503,9 @@ ALTER TABLE ONLY timelogs
 
 ALTER TABLE ONLY geo_event_log
     ADD CONSTRAINT fk_c4b1c1f66e FOREIGN KEY (repository_deleted_event_id) REFERENCES geo_repository_deleted_events(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY user_details
+    ADD CONSTRAINT fk_c53c794142 FOREIGN KEY (enterprise_group_id) REFERENCES namespaces(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_c63cbf6c25 FOREIGN KEY (closed_by_id) REFERENCES users(id) ON DELETE SET NULL;
