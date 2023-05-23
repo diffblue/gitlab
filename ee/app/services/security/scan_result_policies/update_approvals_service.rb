@@ -125,7 +125,7 @@ module Security
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)
         VulnerabilitiesCountService.new(
-          pipeline: pipeline,
+          project: pipeline.project,
           uuids: uuids,
           states: states_without_newly_detected(approval_rule.vulnerability_states),
           allowed_count: approval_rule.vulnerabilities_allowed
