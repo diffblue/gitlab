@@ -9,6 +9,11 @@ module EE
       def prepare_merge_request(merge_request)
         super
 
+        if current_user.project_bot?
+          log_audit_event(merge_request, 'merge_request_created_by_project_bot',
+            "Created merge request #{merge_request.title}")
+        end
+
         schedule_sync_for(merge_request)
         schedule_fetch_suggested_reviewers(merge_request)
       end

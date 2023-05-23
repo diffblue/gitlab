@@ -108,6 +108,27 @@ module EE
         ::MergeRequests::CaptureSuggestedReviewersAcceptedWorker
           .perform_async(merge_request.id, suggested_reviewer_ids)
       end
+
+      def log_audit_event(merge_request, event_name, message)
+        audit_context = {
+          name: event_name,
+          author: current_user,
+          scope: merge_request.target_project,
+          target: merge_request,
+          message: message,
+          target_details:
+            { iid: merge_request.iid,
+              id: merge_request.id,
+              source_branch: merge_request.source_branch,
+              target_branch: merge_request.target_branch }
+        }
+
+        if event_name == 'merge_request_merged_by_project_bot'
+          audit_context[:target_details][:merge_commit_sha] = merge_request.merge_commit_sha
+        end
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
     end
   end
 end

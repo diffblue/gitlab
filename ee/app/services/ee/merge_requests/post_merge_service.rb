@@ -18,6 +18,12 @@ module EE
         merge_request.approval_state.expire_unapproved_key!
 
         audit_approval_rules(merge_request)
+
+        if current_user.project_bot?
+          log_audit_event(merge_request, 'merge_request_merged_by_project_bot',
+            "Merged merge request #{merge_request.title}")
+        end
+
         sync_security_scan_orchestration_policies(target_project)
         trigger_blocked_merge_requests_merge_status_updated(merge_request)
       end

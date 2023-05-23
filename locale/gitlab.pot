@@ -48006,6 +48006,9 @@ msgstr ""
 msgid "Unauthenticated web rate limit period in seconds"
 msgstr ""
 
+msgid "Unauthorized to access the cluster agent in this project"
+msgstr ""
+
 msgid "Unauthorized to create an environment"
 msgstr ""
 

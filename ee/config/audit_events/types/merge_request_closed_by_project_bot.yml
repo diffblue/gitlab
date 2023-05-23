@@ -1,0 +1,9 @@
+---
+name: merge_request_closed_by_project_bot
+description: Triggered when a merge request is closed using a project access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/323299
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120927
+feature_category: code_review_workflow
+milestone: '16.1'
+saved_to_database: true
+streamed: true
