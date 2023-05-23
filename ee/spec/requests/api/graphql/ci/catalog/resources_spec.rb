@@ -64,7 +64,11 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
         post_query
 
         expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-          a_graphql_entity_for(resource1, :name, :description, icon: project1.avatar_path)
+          a_graphql_entity_for(
+            resource1, :name, :description,
+            icon: project1.avatar_path,
+            webPath: "/#{project1.full_path}"
+          )
         )
       end
 

@@ -6,6 +6,7 @@ module Resolvers
       class ResourcesResolver < BaseResolver
         include Gitlab::Graphql::Authorize::AuthorizeResource
         include ResolvesProject
+        include LooksAhead
 
         authorize :read_namespace_catalog
 
@@ -19,16 +20,24 @@ module Resolvers
           required: false,
           description: 'Project with the namespace catalog.'
 
-        def resolve(project_path:, sort: nil)
+        def resolve_with_lookahead(project_path:, sort: nil)
           project = authorized_find!(project_path: project_path)
 
-          ::Ci::Catalog::Listing.new(project.root_namespace, context[:current_user]).resources(sort: sort)
+          apply_lookahead(
+            ::Ci::Catalog::Listing.new(project.root_namespace, context[:current_user]).resources(sort: sort)
+          )
         end
 
         private
 
         def find_object(project_path:)
           resolve_project(full_path: project_path)
+        end
+
+        def preloads
+          {
+            web_path: { project: { namespace: :route } }
+          }
         end
       end
     end
