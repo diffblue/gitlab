@@ -11,11 +11,7 @@ module Gitlab
       # is turned off (or when Feature.enabled? returns false by chance while using `percentage of time` value)
       def call(worker, job, _queue)
         if defer_job?(worker)
-          Sidekiq.logger.info(
-            class: worker.class.name,
-            job_id: job['jid'],
-            message: "Deferring #{worker.class.name} for #{DELAY} s with arguments (#{job['args'].inspect})"
-          )
+          job['deferred'] = true # for logging job_status
           worker.class.perform_in(DELAY, *job['args'])
           return
         end

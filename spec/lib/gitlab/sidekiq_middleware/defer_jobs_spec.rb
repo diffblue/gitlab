@@ -40,12 +40,6 @@ RSpec.describe Gitlab::SidekiqMiddleware::DeferJobs, feature_category: :scalabil
       context 'for the affected worker' do
         it 'defers the job' do
           expect(TestDeferredWorker).to receive(:perform_in).with(described_class::DELAY, *job['args'])
-          expect(Sidekiq.logger).to receive(:info).with(
-            class: TestDeferredWorker.name,
-            job_id: job['jid'],
-            message: "Deferring #{TestDeferredWorker.name} for #{described_class::DELAY} s with arguments " \
-                     "(#{job['args'].inspect})"
-          )
           expect { |b| subject.call(TestDeferredWorker.new, job, queue, &b) }.not_to yield_control
         end
       end
