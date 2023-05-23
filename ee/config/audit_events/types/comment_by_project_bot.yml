@@ -1,0 +1,9 @@
+---
+name: comment_by_project_bot
+description: Triggered when a comment is added to an issue or an MR using the project access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/323299
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120927
+feature_category: team_planning
+milestone: '16.1'
+saved_to_database: false
+streamed: true
