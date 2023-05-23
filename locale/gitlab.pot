@@ -2234,6 +2234,9 @@ msgstr ""
 msgid "Access Tokens"
 msgstr ""
 
+msgid "Access denied"
+msgstr ""
+
 msgid "Access denied for your LDAP account."
 msgstr ""
 
