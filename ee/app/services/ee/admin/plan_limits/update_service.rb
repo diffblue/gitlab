@@ -6,7 +6,7 @@ module EE
       module UpdateService
         extend ::Gitlab::Utils::Override
 
-        RESTRICTED_ATTRIBUTES = %i[notification_limit].freeze
+        RESTRICTED_ATTRIBUTES = %i[notification_limit enforcement_limit].freeze
 
         private
 
