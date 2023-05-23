@@ -252,7 +252,12 @@ class MappingTest
   end
 
   def failure_message
-    "#{explanation}: #{source}: Expected #{expected_set.to_a}, got #{actual_set.to_a}."
+    <<~MESSAGE
+      #{explanation}:
+          Source #{source}
+        Expected #{expected_set.to_a}
+          Actual #{actual_set.to_a}
+    MESSAGE
   end
 
   private
@@ -273,6 +278,7 @@ failed_tests = results.select(&:failed?)
 if failed_tests.any?
   puts <<~MESSAGE
     tff mapping verification failed:
+
     #{failed_tests.map(&:failure_message).join("\n")}
   MESSAGE
 
