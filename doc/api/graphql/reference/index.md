@@ -3569,6 +3569,24 @@ Input type: `GoogleCloudLoggingConfigurationCreateInput`
 | <a id="mutationgooglecloudloggingconfigurationcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationgooglecloudloggingconfigurationcreategooglecloudloggingconfiguration"></a>`googleCloudLoggingConfiguration` | [`GoogleCloudLoggingConfigurationType`](#googlecloudloggingconfigurationtype) | configuration created. |
 
+### `Mutation.googleCloudLoggingConfigurationDestroy`
+
+Input type: `GoogleCloudLoggingConfigurationDestroyInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgooglecloudloggingconfigurationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgooglecloudloggingconfigurationdestroyid"></a>`id` | [`AuditEventsGoogleCloudLoggingConfigurationID!`](#auditeventsgooglecloudloggingconfigurationid) | ID of the google cloud logging configuration to destroy. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationgooglecloudloggingconfigurationdestroyclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationgooglecloudloggingconfigurationdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+
 ### `Mutation.groupMemberBulkUpdate`
 
 Input type: `GroupMemberBulkUpdateInput`
@@ -23457,6 +23475,7 @@ Check permissions for the current user on a work item.
 | ---- | ---- | ----------- |
 | <a id="workitempermissionsadminparentlink"></a>`adminParentLink` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_parent_link` on this resource. |
 | <a id="workitempermissionsadminworkitem"></a>`adminWorkItem` | [`Boolean!`](#boolean) | Indicates the user can perform `admin_work_item` on this resource. |
+| <a id="workitempermissionscreatenote"></a>`createNote` | [`Boolean!`](#boolean) | Indicates the user can perform `create_note` on this resource. |
 | <a id="workitempermissionsdeleteworkitem"></a>`deleteWorkItem` | [`Boolean!`](#boolean) | Indicates the user can perform `delete_work_item` on this resource. |
 | <a id="workitempermissionsreadworkitem"></a>`readWorkItem` | [`Boolean!`](#boolean) | Indicates the user can perform `read_work_item` on this resource. |
 | <a id="workitempermissionssetworkitemmetadata"></a>`setWorkItemMetadata` | [`Boolean!`](#boolean) | Indicates the user can perform `set_work_item_metadata` on this resource. |
@@ -26213,6 +26232,12 @@ An example `AppSecFuzzingCoverageCorpusID` is: `"gid://gitlab/AppSec::Fuzzing::C
 A `AuditEventsExternalAuditEventDestinationID` is a global ID. It is encoded as a string.
 
 An example `AuditEventsExternalAuditEventDestinationID` is: `"gid://gitlab/AuditEvents::ExternalAuditEventDestination/1"`.
+
+### `AuditEventsGoogleCloudLoggingConfigurationID`
+
+A `AuditEventsGoogleCloudLoggingConfigurationID` is a global ID. It is encoded as a string.
+
+An example `AuditEventsGoogleCloudLoggingConfigurationID` is: `"gid://gitlab/AuditEvents::GoogleCloudLoggingConfiguration/1"`.
 
 ### `AuditEventsInstanceExternalAuditEventDestinationID`
 
