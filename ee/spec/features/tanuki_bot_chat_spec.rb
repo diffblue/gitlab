@@ -23,7 +23,7 @@ RSpec.describe 'GitLab Chat', :js, feature_category: :global_search do
 
       wait_for_requests
 
-      page.within '[data-testid="tanuki-bot-chat-drawer"]' do
+      page.within '[data-testid="chat-component"]' do
         expect(page).to have_text('GitLab Chat')
       end
     end

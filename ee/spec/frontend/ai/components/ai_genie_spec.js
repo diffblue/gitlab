@@ -49,7 +49,7 @@ describe('AiGenie', () => {
   const userId = 'gid://gitlab/User/1';
 
   const getContainer = () => document.getElementById(containerId);
-  const createComponent = ({ propsData = { containerId }, data = {} } = {}) => {
+  const createComponent = ({ propsData = { containerId }, data = {}, glFeatures = {} } = {}) => {
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
       [explainCodeMutation, mutationHandlerMock],
@@ -58,11 +58,13 @@ describe('AiGenie', () => {
     wrapper = shallowMountExtended(AiGenie, {
       propsData,
       data() {
-        return {
-          ...data,
-        };
+        return data;
       },
-      provide: { resourceId, userId },
+      provide: {
+        resourceId,
+        userId,
+        glFeatures,
+      },
       stubs: {
         AiGenieChat,
         UserFeedback,
@@ -372,6 +374,55 @@ describe('AiGenie', () => {
       await requestExplanation();
       expect(findUserFeedback().props('eventName')).toBe(EXPLAIN_CODE_TRACKING_EVENT_NAME);
       expect(findUserFeedback().props('promptLocation')).toBe('before_content');
+    });
+  });
+
+  describe('chat', () => {
+    const messages = [
+      {
+        role: GENIE_CHAT_MODEL_ROLES.user,
+        content: 'foo',
+      },
+    ];
+
+    it.each`
+      msgs        | isFlagOn | expectedProp
+      ${[]}       | ${false} | ${false}
+      ${messages} | ${false} | ${false}
+      ${[]}       | ${true}  | ${false}
+      ${messages} | ${true}  | ${true}
+    `(
+      'sets isChatAvailable to $expectedProp when messages are $msgs and the flag is $isFlagOn',
+      async ({ msgs, isFlagOn, expectedProp }) => {
+        createComponent({
+          data: { messages: msgs, isLoading: true },
+          glFeatures: { explainCodeChat: isFlagOn },
+        });
+        await nextTick();
+        expect(findGenieChat().props('isChatAvailable')).toBe(expectedProp);
+      },
+    );
+
+    it('listens to the chat-prompt event and sends the prompt to the mutation', async () => {
+      const prompt = SELECTED_TEXT;
+      const generatedPrompt = [
+        ...messages,
+        {
+          role: GENIE_CHAT_MODEL_ROLES.user,
+          content: prompt,
+        },
+      ];
+      createComponent({ data: { messages, isLoading: true } });
+      await nextTick();
+
+      generateChatPrompt.mockReturnValue(generatedPrompt);
+      findGenieChat().vm.$emit('send-chat-prompt', prompt);
+
+      expect(generateChatPrompt).toHaveBeenCalledWith(prompt, messages);
+      expect(mutationHandlerMock).toHaveBeenCalledWith({
+        resourceId,
+        messages: generatedPrompt,
+      });
     });
   });
 });

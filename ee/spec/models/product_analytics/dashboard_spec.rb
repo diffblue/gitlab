@@ -51,7 +51,7 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
         end
 
         it 'has all dashboards included hardcoded' do
-          expect(subject.map(&:title)).to match_array(['Audience', 'Behavior', 'Dashboard Example 1'])
+          expect(subject.map(&:title)).to eq(['Audience', 'Behavior', 'Dashboard Example 1'])
         end
       end
     end

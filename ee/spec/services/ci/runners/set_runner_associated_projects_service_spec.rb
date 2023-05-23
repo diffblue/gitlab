@@ -11,6 +11,10 @@ RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', fe
   let_it_be(:new_project) { create(:project) }
   let_it_be(:project_runner) { create(:ci_runner, :project, projects: [owner_project]) }
 
+  before do
+    stub_licensed_features(audit_events: true, extended_audit_events: true)
+  end
+
   context 'with unauthorized user' do
     let(:user) { build(:user) }
 
@@ -29,15 +33,33 @@ RSpec.describe ::Ci::Runners::SetRunnerAssociatedProjectsService, '#execute', fe
     context 'with assign_to returning true' do
       it 'calls audit on Auditor and returns success response', :aggregate_failures do
         expect(project_runner).to receive(:assign_to).with(new_project, user).once.and_return(true)
+        expected_runner_url = ::Gitlab::Routing.url_helpers.project_runner_path(
+          project_runner.owner_project,
+          project_runner)
         expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
           a_hash_including(
             name: 'set_runner_associated_projects',
             author: user,
             scope: user,
-            target: project_runner
-          ))
+            target: project_runner,
+            target_details: expected_runner_url,
+            additional_details: {
+              action: :custom,
+              project_ids: [new_project.id]
+            }
+          )).and_call_original
 
         expect(execute).to be_success
+
+        event = AuditEvent.last
+        expect(event.author).to eq(user)
+        expect(event.target_id).to eq(project_runner.id)
+        expect(event.target_type).to eq(Ci::Runner.name)
+        expect(event.details).to include(
+          custom_message: 'Changed CI runner project assignments',
+          author_name: user.name,
+          action: :custom,
+          project_ids: [new_project.id])
       end
     end
 

@@ -47,39 +47,32 @@ module Dora
     def post_process_deployment_frequency!(data)
       df_metric_name = Dora::DeploymentFrequencyMetric::METRIC_NAME
 
-      if Feature.enabled?(:fix_dora_deployment_frequency_calculation, container)
-        return unless metrics.include?(df_metric_name)
+      return unless metrics.include?(df_metric_name)
 
-        interval_day_counts = case interval
-                              when Dora::DailyMetrics::INTERVAL_ALL
-                                # number of days between a date range (inclusive)
-                                { nil => (end_date - start_date).to_i + 1 }
-                              when Dora::DailyMetrics::INTERVAL_MONTHLY
-                                # Calculating the number of days monthly by iterating over the days
-                                # since date ranges can be arbitrary, for example:
-                                # 2022-01-15 - 2022-02-28
-                                #
-                                # - For January, 2022-01-01: 17 days
-                                # - For February, 2022-02-01: 28 days
-                                (start_date..end_date).each_with_object({}) do |date, hash|
-                                  beginning_of_month = date.beginning_of_month
-                                  hash[beginning_of_month] ||= 0
-                                  hash[beginning_of_month] += 1
-                                end
+      interval_day_counts = case interval
+                            when Dora::DailyMetrics::INTERVAL_ALL
+                              # number of days between a date range (inclusive)
+                              { nil => (end_date - start_date).to_i + 1 }
+                            when Dora::DailyMetrics::INTERVAL_MONTHLY
+                              # Calculating the number of days monthly by iterating over the days
+                              # since date ranges can be arbitrary, for example:
+                              # 2022-01-15 - 2022-02-28
+                              #
+                              # - For January, 2022-01-01: 17 days
+                              # - For February, 2022-02-01: 28 days
+                              (start_date..end_date).each_with_object({}) do |date, hash|
+                                beginning_of_month = date.beginning_of_month
+                                hash[beginning_of_month] ||= 0
+                                hash[beginning_of_month] += 1
                               end
+                            end
 
-        data.each do |row|
-          next if interval_day_counts.nil?
-          next if row[df_metric_name].nil?
+      data.each do |row|
+        next if interval_day_counts.nil?
+        next if row[df_metric_name].nil?
 
-          row['deployment_count'] = row[df_metric_name]
-          row[df_metric_name] = row[df_metric_name].fdiv(interval_day_counts[row['date']])
-        end
-      else
-        # make sure deployment_count is populated
-        data.each do |row|
-          row['deployment_count'] = row[df_metric_name] if row[df_metric_name]
-        end
+        row['deployment_count'] = row[df_metric_name]
+        row[df_metric_name] = row[df_metric_name].fdiv(interval_day_counts[row['date']])
       end
     end
 

@@ -1,4 +1,4 @@
-import { GlButton, GlSkeletonLoader, GlBadge, GlForm } from '@gitlab/ui';
+import { GlButton, GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -7,7 +7,7 @@ import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 describe('AiGenieChat', () => {
   let wrapper;
 
-  const createComponent = ({ propsData = {}, data = {}, slots = {}, glFeatures = {} } = {}) => {
+  const createComponent = ({ propsData = {}, data = {}, scopedSlots = {}, slots = {} } = {}) => {
     wrapper = shallowMountExtended(AiGenieChat, {
       propsData,
       data() {
@@ -15,10 +15,8 @@ describe('AiGenieChat', () => {
           ...data,
         };
       },
+      scopedSlots,
       slots,
-      provide: {
-        glFeatures,
-      },
     });
   };
 
@@ -31,7 +29,6 @@ describe('AiGenieChat', () => {
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
-  const findChatInputForm = () => wrapper.findComponent(GlForm);
   const findCloseChatButton = () => wrapper.findByTestId('chat-close-button');
 
   beforeEach(() => {
@@ -54,31 +51,71 @@ describe('AiGenieChat', () => {
 
     describe('slots', () => {
       const slotContent = 'As Gregor Samsa awoke one morning from uneasy dreams';
-      it('renders the content passed to the "feedback" slot for assistant messages only', () => {
+
+      describe('the feedback slot', () => {
+        const slotElement = `<template>${slotContent}</template>`;
         const messages = [
           {
             role: GENIE_CHAT_MODEL_ROLES.user,
-            content: 'foo',
+            content: 'User foo',
           },
           {
             role: GENIE_CHAT_MODEL_ROLES.assistant,
-            content: 'bar',
+            content: 'Assistent bar',
           },
         ];
-        createComponent({
-          propsData: {
-            messages,
-          },
-          slots: { feedback: slotContent },
+
+        it('renders the content passed to the "feedback" slot for assistant messages only', () => {
+          createComponent({
+            propsData: {
+              messages,
+            },
+            scopedSlots: { feedback: slotElement },
+          });
+          expect(findChatMessages().at(0).text()).not.toContain(slotContent);
+          expect(findChatMessages().at(1).text()).toContain(slotContent);
         });
-        expect(findChatMessages().at(0).text()).not.toContain(slotContent);
-        expect(findChatMessages().at(1).text()).toContain(slotContent);
+        it('sends correct `message` in the `slotProps` for the components users to consume', () => {
+          createComponent({
+            propsData: {
+              messages: [
+                {
+                  role: GENIE_CHAT_MODEL_ROLES.assistant,
+                  content: slotContent,
+                },
+              ],
+            },
+            scopedSlots: {
+              feedback: `<template #feedback="slotProps">
+              Hello {{ slotProps.message.content }}
+              </template>
+            `,
+            },
+          });
+          expect(wrapper.text()).toContain(`Hello ${slotContent}`);
+        });
       });
 
-      it('renders the content passed to the "hero" slot', () => {
-        createComponent({ slots: { hero: slotContent } });
-        expect(findChatComponent().text()).toContain(slotContent);
-      });
+      it.each`
+        desc                 | slot            | content        | isChatAvailable | shouldRenderSlotContent
+        ${'renders'}         | ${'hero'}       | ${slotContent} | ${true}         | ${true}
+        ${'renders'}         | ${'hero'}       | ${slotContent} | ${false}        | ${true}
+        ${'does not render'} | ${'input-help'} | ${slotContent} | ${false}        | ${false}
+        ${'renders'}         | ${'input-help'} | ${slotContent} | ${true}         | ${true}
+      `(
+        '$desc the $content passed to the $slot slot when isChatAvailable is $isChatAvailable',
+        ({ slot, content, isChatAvailable, shouldRenderSlotContent }) => {
+          createComponent({
+            propsData: { isChatAvailable },
+            slots: { [slot]: content },
+          });
+          if (shouldRenderSlotContent) {
+            expect(wrapper.text()).toContain(content);
+          } else {
+            expect(wrapper.text()).not.toContain(content);
+          }
+        },
+      );
 
       describe('subheader slot', () => {
         describe('default content', () => {
@@ -162,33 +199,14 @@ describe('AiGenieChat', () => {
     });
 
     describe('chat', () => {
-      describe('with the flag off', () => {
-        beforeEach(() => {
-          createComponent({ propsData: { messages }, glFeatures: { explainCodeChat: false } });
-        });
-
-        it('does not render prompt input even if there are messages to show', () => {
-          expect(findChatInput().exists()).toBe(false);
-        });
+      it('does not render prompt input by default', () => {
+        createComponent({ propsData: { messages } });
+        expect(findChatInput().exists()).toBe(false);
       });
-      describe('with the flag on', () => {
-        beforeEach(() => {
-          createComponent({ propsData: { messages }, glFeatures: { explainCodeChat: true } });
-        });
 
-        it('renders prompt input if there are messages to show', () => {
-          expect(findChatInput().exists()).toBe(true);
-        });
-
-        it('emits event when user submits a message', () => {
-          const prompt = 'foo';
-          findChatInput().vm.$emit('input', prompt);
-          findChatInputForm().vm.$emit('submit', {
-            preventDefault: jest.fn(),
-            stopPropagation: jest.fn(),
-          });
-          expect(wrapper.emitted('send-chat-prompt')[0]).toEqual([prompt]);
-        });
+      it('renders prompt input if `isChatAvailable` prop is `true`', () => {
+        createComponent({ propsData: { messages, isChatAvailable: true } });
+        expect(findChatInput().exists()).toBe(true);
       });
     });
   });
