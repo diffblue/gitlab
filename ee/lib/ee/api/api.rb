@@ -69,6 +69,7 @@ module EE
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
         mount ::API::Ai::Llm::GitCommand
+        mount ::API::CodeSuggestions
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations
