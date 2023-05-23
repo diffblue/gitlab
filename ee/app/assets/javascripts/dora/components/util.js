@@ -154,7 +154,19 @@ export const extractTimeSeriesTooltip = (params, seriesName, formatter = humaniz
  *
  * @returns {string} Returns a formatted string multiplied by 100
  */
-export const formatAsPercentage = (decimalValue = 0, precision = 1) => {
+export const formatAsPercentageWithoutSymbol = (decimalValue = 0, precision = 1) => {
   const parsed = Number.isNaN(Number(decimalValue)) ? 0 : decimalValue;
-  return `${(parsed * 100).toFixed(precision)}%`;
+  return (parsed * 100).toFixed(precision);
+};
+
+/**
+ * Formats any valid number as percentage
+ *
+ * @param {number|string} decimalValue Decimal value between 0 and 1 to be converted to a percentage
+ * @param {number} precision The number of decimal places to round to
+ *
+ * @returns {string} Returns a formatted string multiplied by 100
+ */
+export const formatAsPercentage = (decimalValue = 0, precision = 1) => {
+  return `${formatAsPercentageWithoutSymbol(decimalValue, precision)}%`;
 };

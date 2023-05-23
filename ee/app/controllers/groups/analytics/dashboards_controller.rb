@@ -12,6 +12,9 @@ module Groups
         destinations: %i[redis_hll snowplow]
 
       before_action { authorize_view_by_action!(:read_group_analytics_dashboards) }
+      before_action do
+        push_frontend_feature_flag(:vsd_graphql_dora_and_flow_metrics, @group)
+      end
 
       layout 'group'
 

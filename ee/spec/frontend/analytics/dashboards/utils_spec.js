@@ -17,6 +17,9 @@ import {
   generateDateRanges,
   generateChartTimePeriods,
   generateDashboardTableFields,
+  extractGraphqlDoraData,
+  extractGraphqlFlowData,
+  extractGraphqlVulnerabilitiesData,
 } from 'ee/analytics/dashboards/utils';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -45,6 +48,9 @@ import {
   MOCK_TABLE_TIME_PERIODS,
   MOCK_CHART_TIME_PERIODS,
   MOCK_DASHBOARD_TABLE_FIELDS,
+  mockDoraMetricsResponseData,
+  mockLastVulnerabilityCountData,
+  mockFlowMetricsResponseData,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -233,6 +239,80 @@ describe('Analytics Dashboards utils', () => {
     it('returns the data for each DORA metric', () => {
       expect(res).toEqual(mockMonthToDate);
       expect(extractDoraMetrics([])).toEqual({});
+    });
+  });
+
+  describe('extractGraphqlVulnerabilitiesData', () => {
+    const vulnerabilityResponse = {
+      vulnerability_critical: { identifier: 'vulnerability_critical', value: 7 },
+      vulnerability_high: { identifier: 'vulnerability_high', value: 6 },
+    };
+
+    const missingVulnerabilityResponse = {
+      vulnerability_critical: { identifier: 'vulnerability_critical', value: '-' },
+      vulnerability_high: { identifier: 'vulnerability_high', value: '-' },
+    };
+
+    it('returns each vulnerability metric', () => {
+      const keys = Object.keys(extractGraphqlVulnerabilitiesData([mockLastVulnerabilityCountData]));
+      expect(keys).toEqual(['vulnerability_critical', 'vulnerability_high']);
+    });
+
+    it('prepares each vulnerability metric for display', () => {
+      expect(extractGraphqlVulnerabilitiesData([mockLastVulnerabilityCountData])).toEqual(
+        vulnerabilityResponse,
+      );
+    });
+
+    it('returns `-` when the vulnerability metric is `0`, null or missing', () => {
+      [{}, { ...mockLastVulnerabilityCountData, critical: null, high: 0 }].forEach((badData) => {
+        expect(extractGraphqlVulnerabilitiesData([badData])).toEqual(missingVulnerabilityResponse);
+      });
+    });
+  });
+
+  describe('extractGraphqlDoraData', () => {
+    const doraResponse = {
+      change_failure_rate: { identifier: 'change_failure_rate', value: '5.7' },
+      deployment_frequency: { identifier: 'deployment_frequency', value: 23.75 },
+      lead_time_for_changes: { identifier: 'lead_time_for_changes', value: '0.3' },
+      time_to_restore_service: { identifier: 'time_to_restore_service', value: '0.8' },
+    };
+
+    it('returns each flow metric', () => {
+      const keys = Object.keys(extractGraphqlDoraData(mockDoraMetricsResponseData.metrics));
+      expect(keys).toEqual([
+        'deployment_frequency',
+        'lead_time_for_changes',
+        'time_to_restore_service',
+        'change_failure_rate',
+      ]);
+    });
+
+    it('prepares each dora metric for display', () => {
+      expect(extractGraphqlDoraData(mockDoraMetricsResponseData.metrics)).toEqual(doraResponse);
+    });
+
+    it('returns an empty object given an empty array', () => {
+      expect(extractGraphqlDoraData([])).toEqual({});
+    });
+  });
+
+  describe('extractGraphqlFlowData', () => {
+    const flowMetricsResponse = {
+      cycle_time: { identifier: 'cycle_time', value: '-' },
+      deploys: { identifier: 'deploys', value: 751 },
+      issues: { identifier: 'issues', value: 10 },
+      lead_time: { identifier: 'lead_time', value: 10 },
+    };
+
+    it('returns each flow metric', () => {
+      const keys = Object.keys(extractGraphqlFlowData(mockFlowMetricsResponseData));
+      expect(keys).toEqual(['lead_time', 'cycle_time', 'issues', 'deploys']);
+    });
+
+    it('replaces null values with `-`', () => {
+      expect(extractGraphqlFlowData(mockFlowMetricsResponseData)).toEqual(flowMetricsResponse);
     });
   });
 
