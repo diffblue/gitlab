@@ -25380,6 +25380,7 @@ State of a Sentry error.
 | <a id="servicetypebugzilla_service"></a>`BUGZILLA_SERVICE` | BugzillaService type. |
 | <a id="servicetypebuildkite_service"></a>`BUILDKITE_SERVICE` | BuildkiteService type. |
 | <a id="servicetypecampfire_service"></a>`CAMPFIRE_SERVICE` | CampfireService type. |
+| <a id="servicetypeclickup_service"></a>`CLICKUP_SERVICE` | ClickupService type. |
 | <a id="servicetypeconfluence_service"></a>`CONFLUENCE_SERVICE` | ConfluenceService type. |
 | <a id="servicetypecustom_issue_tracker_service"></a>`CUSTOM_ISSUE_TRACKER_SERVICE` | CustomIssueTrackerService type. |
 | <a id="servicetypedatadog_service"></a>`DATADOG_SERVICE` | DatadogService type. |
