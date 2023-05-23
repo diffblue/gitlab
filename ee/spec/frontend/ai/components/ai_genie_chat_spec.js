@@ -1,5 +1,6 @@
-import { GlButton, GlSkeletonLoader, GlBadge } from '@gitlab/ui';
+import { GlButton, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
@@ -17,12 +18,15 @@ describe('AiGenieChat', () => {
       },
       scopedSlots,
       slots,
+      stubs: {
+        AiGenieLoader,
+      },
     });
   };
 
   const findChatComponent = () => wrapper.findByTestId('chat-component');
   const findCloseButton = () => wrapper.findComponent(GlButton);
-  const findSceletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
+  const findCustomLoader = () => wrapper.findComponent(AiGenieLoader);
   const findChatMessages = () => wrapper.findAll('.ai-genie-chat-message');
   const findError = () => wrapper.findByTestId('chat-error');
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
@@ -38,12 +42,12 @@ describe('AiGenieChat', () => {
   describe('rendering', () => {
     describe('default', () => {
       it.each`
-        desc                                  | component             | shouldRender
-        ${'renders root component'}           | ${findChatComponent}  | ${true}
-        ${'renders experimental label'}       | ${findBadge}          | ${true}
-        ${'does not render loading skeleton'} | ${findSceletonLoader} | ${false}
-        ${'does not render chat error'}       | ${findError}          | ${false}
-        ${'does not render chat input'}       | ${findChatInput}      | ${false}
+        desc                                  | component            | shouldRender
+        ${'renders root component'}           | ${findChatComponent} | ${true}
+        ${'renders experimental label'}       | ${findBadge}         | ${true}
+        ${'does not render loading skeleton'} | ${findCustomLoader}  | ${false}
+        ${'does not render chat error'}       | ${findError}         | ${false}
+        ${'does not render chat input'}       | ${findChatInput}     | ${false}
       `('$desc', ({ component, shouldRender }) => {
         expect(component().exists()).toBe(shouldRender);
       });
@@ -174,9 +178,9 @@ describe('AiGenieChat', () => {
       expect(findChatComponent().exists()).toBe(true);
     });
 
-    it('renders skeleton when isLoading', () => {
+    it('renders custom loader when isLoading', () => {
       createComponent({ propsData: { isLoading: true } });
-      expect(findSceletonLoader().exists()).toBe(true);
+      expect(findCustomLoader().exists()).toBe(true);
     });
 
     it('renders alert if error', () => {
