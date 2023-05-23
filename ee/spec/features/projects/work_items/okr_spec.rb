@@ -6,9 +6,11 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
 
   let_it_be(:user) { create(:user) }
+  let_it_be(:user2) { create(:user, name: 'John') }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:objective) { create(:work_item, :objective, project: project) }
+  let_it_be(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let_it_be(:key_result) { create(:work_item, :key_result, project: project) }
 
   before do
@@ -102,6 +104,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
     it_behaves_like 'work items health status'
     it_behaves_like 'work items comments', :objective
     it_behaves_like 'work items description'
+    it_behaves_like 'work items award emoji'
 
     context 'in hierarchy' do
       it 'shows no children', :aggregate_failures do
