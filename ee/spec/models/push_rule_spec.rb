@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe PushRule, :saas do
+RSpec.describe PushRule, :saas, feature_category: :source_code_management do
   using RSpec::Parameterized::TableSyntax
 
   let(:global_push_rule) { create(:push_rule_sample) }
@@ -16,6 +16,26 @@ RSpec.describe PushRule, :saas do
   end
 
   describe "Validation" do
+    context 'when feature flag "add_validation_for_push_rules" is enabled' do
+      described_class::REGEX_COLUMNS.each do |column|
+        context "#{column}: length validation" do
+          it { is_expected.to validate_length_of(column).is_at_most(255) }
+        end
+      end
+    end
+
+    context 'when feature flag "add_validation_for_push_rules" is disabled' do
+      before do
+        stub_feature_flags(add_validation_for_push_rules: false)
+      end
+
+      described_class::REGEX_COLUMNS.each do |column|
+        context "#{column}: length validation" do
+          it { is_expected.not_to validate_length_of(column).is_at_most(255) }
+        end
+      end
+    end
+
     it { is_expected.to validate_numericality_of(:max_file_size).is_greater_than_or_equal_to(0).only_integer }
 
     it 'validates RE2 regex syntax' do

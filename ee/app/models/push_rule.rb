@@ -39,6 +39,11 @@ class PushRule < ApplicationRecord
 
   validates :max_file_size, numericality: { greater_than_or_equal_to: 0, only_integer: true }
   validates(*REGEX_COLUMNS, untrusted_regexp: true)
+  validates(
+    *REGEX_COLUMNS,
+    length: { maximum: 255 },
+    if: ->(record) { ::Feature.enabled?(:add_validation_for_push_rules, record.project) }
+  )
 
   before_update :convert_to_re2
 
