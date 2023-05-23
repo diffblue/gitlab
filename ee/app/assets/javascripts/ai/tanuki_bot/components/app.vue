@@ -1,28 +1,32 @@
 <script>
-import { GlDrawer, GlIcon, GlBadge, GlAlert } from '@gitlab/ui';
-import { mapActions } from 'vuex';
-import { __, s__ } from '~/locale';
+import { GlIcon, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import { mapActions, mapState } from 'vuex';
+import { __, s__, n__ } from '~/locale';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import { i18n } from 'ee/ai/constants';
 import { helpCenterState } from '~/super_sidebar/constants';
-import TanukiBotChat from './tanuki_bot_chat.vue';
-import TanukiBotChatInput from './tanuki_bot_chat_input.vue';
+import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import { SOURCE_TYPES } from '../constants';
 
 export default {
   name: 'TanukiBotChatApp',
   i18n: {
     gitlabChat: s__('TanukiBot|GitLab Chat'),
+    giveFeedback: s__('TanukiBot|Give feedback'),
+    source: __('Source'),
     experiment: __('Experiment'),
+    askAQuestion: s__('TanukiBot|Ask a question about GitLab'),
+    exampleQuestion: s__('TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?'),
+    whatIsAForkQuestion: s__('TanukiBot|What is a fork?'),
     GENIE_CHAT_LEGAL_GENERATED_BY_AI: i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI,
   },
   components: {
     GlIcon,
-    GlDrawer,
-    GlBadge,
     GlAlert,
-    TanukiBotChat,
-    TanukiBotChatInput,
+    AiGenieChat,
+    GlSprintf,
+    GlLink,
   },
   props: {
     userId: {
@@ -55,6 +59,9 @@ export default {
       helpCenterState,
     };
   },
+  computed: {
+    ...mapState(['loading', 'messages']),
+  },
   methods: {
     ...mapActions(['sendUserMessage', 'receiveTanukiBotMessage', 'tanukiBotMessageError']),
     sendMessage(question) {
@@ -75,33 +82,63 @@ export default {
     closeDrawer() {
       this.helpCenterState.showTanukiBotChatDrawer = false;
     },
+    getSourceIcon(sourceType) {
+      const currentSourceType = Object.values(SOURCE_TYPES).find(
+        ({ value }) => value === sourceType,
+      );
+
+      return currentSourceType?.icon;
+    },
+    getSourceTitle({ title, source_type: sourceType, stage, group, date, author }) {
+      if (title) {
+        return title;
+      }
+
+      if (sourceType === SOURCE_TYPES.DOC.value) {
+        if (stage && group) {
+          return `${stage} / ${group}`;
+        }
+      }
+
+      if (sourceType === SOURCE_TYPES.BLOG.value) {
+        if (date && author) {
+          return `${date} / ${author}`;
+        }
+      }
+
+      return this.$options.i18n.source;
+    },
+    messageHasSources(msg) {
+      return msg.sources?.length > 0;
+    },
+    messageSourceLabel(msg) {
+      return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.sources?.length);
+    },
   },
 };
 </script>
 
 <template>
-  <section>
-    <gl-drawer
-      data-testid="tanuki-bot-chat-drawer"
-      class="tanuki-bot-chat-drawer gl-reset-line-height"
-      :z-index="1000"
-      :open="helpCenterState.showTanukiBotChatDrawer"
-      @close="closeDrawer"
+  <div>
+    <ai-genie-chat
+      v-if="helpCenterState.showTanukiBotChatDrawer"
+      :is-loading="loading"
+      :messages="messages"
+      :full-screen="true"
+      is-chat-available
+      @send-chat-prompt="sendMessage"
+      @chat-hidden="closeDrawer"
     >
       <template #title>
-        <span class="gl-display-flex gl-align-items-center">
-          <gl-icon name="tanuki" class="gl-text-orange-500" />
-          <h3 class="gl-my-0 gl-mx-3">{{ $options.i18n.gitlabChat }}</h3>
-          <gl-badge variant="muted">{{ $options.i18n.experiment }}</gl-badge>
-        </span>
+        {{ $options.i18n.gitlabChat }}
       </template>
 
-      <template #header>
+      <template #subheader>
         <gl-alert
           :dismissible="false"
           variant="tip"
           :show-icon="false"
-          class="gl-text-center gl-mx-n5 gl-mt-5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning"
+          class="gl-text-center gl-mx-n5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning"
           role="alert"
           data-testid="chat-legal-warning"
         >
@@ -109,17 +146,49 @@ export default {
         </gl-alert>
       </template>
 
-      <tanuki-bot-chat />
-
-      <template #footer>
-        <tanuki-bot-chat-input @submit="sendMessage" />
+      <template #feedback="slotProps">
+        <div class="gl-display-flex gl-align-items-flex-end gl-mt-4">
+          <div
+            v-if="messageHasSources(slotProps.message)"
+            class="gl-mr-3 gl-text-gray-600"
+            data-testid="tanuki-bot-chat-message-sources"
+          >
+            <span>{{ messageSourceLabel(slotProps.message) }}</span>
+            <ul class="gl-pl-5 gl-my-0">
+              <li v-for="(source, index) in slotProps.message.sources" :key="index">
+                <gl-icon v-if="source.source_type" :name="getSourceIcon(source.source_type)" />
+                <gl-link :href="source.source_url">{{ getSourceTitle(source) }}</gl-link>
+              </li>
+            </ul>
+          </div>
+          <gl-link
+            class="gl-ml-auto gl-white-space-nowrap"
+            :href="$options.TANUKI_BOT_FEEDBACK_ISSUE_URL"
+            target="_blank"
+            ><gl-icon name="comment" /> {{ $options.i18n.giveFeedback }}</gl-link
+          >
+        </div>
       </template>
-    </gl-drawer>
+
+      <template #input-help>
+        <div class="gl-text-gray-500 gl-my-3">
+          <gl-sprintf :message="$options.i18n.exampleQuestion">
+            <template #link="{ content }">
+              <gl-link
+                class="gl-text-gray-500 gl-text-decoration-underline"
+                @click="sendMessage($options.i18n.whatIsAForkQuestion)"
+                >{{ content }}</gl-link
+              >
+            </template>
+          </gl-sprintf>
+        </div>
+      </template>
+    </ai-genie-chat>
     <div
       v-if="helpCenterState.showTanukiBotChatDrawer"
       class="modal-backdrop tanuki-bot-backdrop"
       data-testid="tanuki-bot-chat-drawer-backdrop"
       @click="closeDrawer"
     ></div>
-  </section>
+  </div>
 </template>
