@@ -8,6 +8,7 @@ module Llm
     data_consistency :delayed
     feature_category :team_planning
     urgency :low
+    deduplicate :until_executed
 
     def perform(user_id, resource_id, resource_class, ai_action_name, options = {})
       logger.debug(
