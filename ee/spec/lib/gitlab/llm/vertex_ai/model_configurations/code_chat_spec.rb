@@ -25,21 +25,15 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat, feature_cat
 
   describe '#url' do
     it 'returns default codechat url from application settings' do
-      url = 'https://example.com/api'
-
-      stub_application_setting(tofa_url: url)
-
-      expect(subject.url).to eq(url)
-    end
-  end
-
-  describe '#host' do
-    it 'returns default codechat host from application settings' do
       host = 'example.com'
+      project = 'llm'
 
       stub_application_setting(tofa_host: host)
+      stub_application_setting(vertex_project: project)
 
-      expect(subject.host).to eq(host)
+      expect(subject.url).to eq(
+        'https://example.com/v1/projects/llm/locations/us-central1/publishers/google/models/codechat-bison:predict'
+      )
     end
   end
 end
