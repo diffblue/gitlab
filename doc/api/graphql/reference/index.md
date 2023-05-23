@@ -74,6 +74,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="querycicatalogresourcesprojectpath"></a>`projectPath` | [`ID`](#id) | Project with the namespace catalog. |
+| <a id="querycicatalogresourcessort"></a>`sort` | [`CiCatalogResourceSort`](#cicatalogresourcesort) | Sort Catalog Resources by given criteria. |
 
 ### `Query.ciConfig`
 
@@ -23732,6 +23733,23 @@ Types of blob viewers.
 | <a id="blobviewerstypeauxiliary"></a>`auxiliary` | Auxiliary blob viewers type. |
 | <a id="blobviewerstyperich"></a>`rich` | Rich blob viewers type. |
 | <a id="blobviewerstypesimple"></a>`simple` | Simple blob viewers type. |
+
+### `CiCatalogResourceSort`
+
+Values for sorting catalog resources.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="cicatalogresourcesortcreated_asc"></a>`CREATED_ASC` | Created at ascending order. |
+| <a id="cicatalogresourcesortcreated_desc"></a>`CREATED_DESC` | Created at descending order. |
+| <a id="cicatalogresourcesortname_asc"></a>`NAME_ASC` | Name by ascending order. |
+| <a id="cicatalogresourcesortname_desc"></a>`NAME_DESC` | Name by descending order. |
+| <a id="cicatalogresourcesortupdated_asc"></a>`UPDATED_ASC` | Updated at ascending order. |
+| <a id="cicatalogresourcesortupdated_desc"></a>`UPDATED_DESC` | Updated at descending order. |
+| <a id="cicatalogresourcesortcreated_asc"></a>`created_asc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `CREATED_ASC`. |
+| <a id="cicatalogresourcesortcreated_desc"></a>`created_desc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `CREATED_DESC`. |
+| <a id="cicatalogresourcesortupdated_asc"></a>`updated_asc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `UPDATED_ASC`. |
+| <a id="cicatalogresourcesortupdated_desc"></a>`updated_desc` **{warning-solid}** | **Deprecated** in 13.5. This was renamed. Use: `UPDATED_DESC`. |
 
 ### `CiConfigIncludeType`
 
