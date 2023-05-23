@@ -150,12 +150,10 @@ export default {
 
 <template>
   <gl-disclosure-dropdown
-    ref="dropdown"
     :items="availableActions"
     placement="right"
     class="comment-template-dropdown"
     no-caret
-    @action="$refs.dropdown.close()"
   >
     <template #toggle>
       <gl-button category="tertiary" size="small" class="gl-mr-3 gl-px-2!">
