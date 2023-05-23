@@ -385,7 +385,7 @@ module EE
         ]
       )
 
-      project.authorized_users.with_state(:active).humans
+      project.authorized_users.with_state(:active).human
         .joins(Arel.sql(join_sql))
         .order('t.ord')
     end

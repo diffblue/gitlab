@@ -754,9 +754,9 @@ RSpec.describe User, feature_category: :system_access do
           SELECT "users".* FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
-          ("users"."user_type" = 0 OR "users"."user_type" IS NULL OR "users"."user_type" IN (0, 6, 4, 13))
+          "users"."user_type" IN (0, 6, 4, 13)
           AND
-          ("users"."user_type" = 0 OR "users"."user_type" IS NULL OR "users"."user_type" IN (0, 4, 5))
+          "users"."user_type" IN (0, 4, 5)
         SQL
 
         expect(users.to_sql.squish).to eq(expected_sql.squish), "query was changed. Please ensure query is covered with an index and adjust this test case"
@@ -786,9 +786,9 @@ RSpec.describe User, feature_category: :system_access do
           SELECT "users".* FROM "users"
           WHERE ("users"."state" IN ('active'))
           AND
-          ("users"."user_type" = 0 OR "users"."user_type" IS NULL OR "users"."user_type" IN (0, 6, 4, 13))
+          "users"."user_type" IN (0, 6, 4, 13)
           AND
-          ("users"."user_type" = 0 OR "users"."user_type" IS NULL OR "users"."user_type" IN (0, 4, 5))
+          "users"."user_type" IN (0, 4, 5)
           AND
           (EXISTS (SELECT 1 FROM ((SELECT "members".* FROM "members"
             WHERE (members.access_level > 10))) members
@@ -1704,12 +1704,6 @@ RSpec.describe User, feature_category: :system_access do
         it { is_expected.to be false }
       end
 
-      context 'when user is a human_deprecated' do
-        let(:user) { create(:user, user_type: :human_deprecated) }
-
-        it { is_expected.to be false }
-      end
-
       context 'when user is ghost' do
         let(:user) { create(:user, :ghost) }
 
@@ -1754,13 +1748,11 @@ RSpec.describe User, feature_category: :system_access do
       where(:is_com, :user_type, :answer) do
         true  | :service_user     | true
         true  | :alert_bot        | false
-        true  | :human_deprecated | false
         true  | :human            | false
         true  | :ghost            | false
         false | :service_user     | false
         false | :alert_bot        | false
         false | :human            | false
-        false | :human_deprecated | false
         false | :ghost            | false
       end
 
