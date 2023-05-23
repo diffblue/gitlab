@@ -58,14 +58,12 @@ export default {
           extraAttrs: { 'data-testid': 'edit-btn' },
           action: () => {
             this.setEditMode(true);
-            this.$refs.actionsDropdown.close();
           },
         },
         {
           text: this.$options.i18n.VIEW_BUTTON_LABEL,
           extraAttrs: { 'data-testid': 'view-btn' },
           action: () => {
-            this.$refs.actionsDropdown.close();
             this.$refs.tokenModal.show();
           },
         },
@@ -173,7 +171,6 @@ export default {
         </gl-badge>
       </template>
       <gl-disclosure-dropdown
-        ref="actionsDropdown"
         class="gl-ml-3"
         icon="ellipsis_v"
         :loading="isDeleting"

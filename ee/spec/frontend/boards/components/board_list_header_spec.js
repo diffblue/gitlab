@@ -5,7 +5,7 @@ import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
   boardListQueryResponse,
   epicBoardListQueryResponse,
@@ -98,7 +98,7 @@ describe('Board List Header Component', () => {
       },
     });
 
-    wrapper = shallowMountExtended(BoardListHeader, {
+    wrapper = mountExtended(BoardListHeader, {
       apolloProvider: fakeApollo,
       store,
       propsData: {
