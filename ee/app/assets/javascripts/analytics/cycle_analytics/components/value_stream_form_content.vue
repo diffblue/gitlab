@@ -292,7 +292,6 @@ export default {
       Vue.set(this.stages, activeStageIndex, updatedStage);
     },
     resetAllFieldsToDefault() {
-      this.name = '';
       Vue.set(this, 'stages', initializeStages(this.defaultStageConfig, this.selectedPreset));
       Vue.set(
         this,
