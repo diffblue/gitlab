@@ -101,6 +101,7 @@ start-review-app-pipeline:
     SCHEDULE_TYPE: $SCHEDULE_TYPE
     DAST_RUN: $DAST_RUN
     SKIP_MESSAGE: Skipping review-app due to mr containing only quarantine changes!
+    QA_RUN_TYPE: e2e-review-qa
   trigger:
     strategy: depend
     include:
