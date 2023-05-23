@@ -9,11 +9,11 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { createAlert } from '~/alert';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
-import ApprovalsFoss from '~/vue_merge_request_widget/components/approvals/approvals.vue';
 import { APPROVE_ERROR } from '~/vue_merge_request_widget/components/approvals/messages';
 import eventHub from '~/vue_merge_request_widget/event_hub';
 import approvedByQuery from 'ee/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
 import { createCanApproveResponse } from 'jest/approvals/mock_data';
+import { HTTP_STATUS_UNAUTHORIZED } from '~/lib/utils/http_status';
 
 Vue.use(VueApollo);
 
@@ -83,6 +83,7 @@ describe('MRWidget approvals', () => {
         };
   };
   const findInvalidRules = () => wrapper.findByTestId('invalid-rules');
+  const findApprovalsAuth = () => wrapper.findComponent(ApprovalsAuth);
 
   beforeEach(() => {
     service = {
@@ -143,54 +144,49 @@ describe('MRWidget approvals', () => {
         });
       });
 
-      describe('when approve action is clicked', () => {
-        describe('when project requires password to approve', () => {
-          beforeEach(async () => {
-            mr.requirePasswordToApprove = true;
-            createComponent({}, canApproveResponse);
-            await waitForPromises();
+      describe('when project requires password to approve', () => {
+        beforeEach(async () => {
+          mr.requirePasswordToApprove = true;
+          createComponent({}, canApproveResponse);
+          await waitForPromises();
+        });
+
+        describe('when approve is clicked', () => {
+          beforeEach(() => {
+            findAction().vm.$emit('click');
           });
 
-          describe('when approve is clicked', () => {
-            beforeEach(async () => {
-              findAction().vm.$emit('click');
+          it('sets isApproving', async () => {
+            findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
+            await jest.runOnlyPendingTimers();
+            expect(findApprovalsAuth().props('isApproving')).toBe(true);
+          });
 
-              await nextTick();
+          describe('when approvals-auth modal emits approve', () => {
+            beforeEach(() => {
+              jest.spyOn(service, 'approveMergeRequestWithAuth').mockRejectedValue('Error');
+              findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
             });
 
-            describe('when emits approve', () => {
-              const findApprovalsAuth = () => wrapper.findComponent(ApprovalsAuth);
+            it('calls service when emits approve', () => {
+              expect(service.approveMergeRequestWithAuth).toHaveBeenCalledWith(TEST_PASSWORD);
+            });
 
-              beforeEach(async () => {
-                jest.spyOn(service, 'approveMergeRequestWithAuth').mockRejectedValue();
-                jest.spyOn(service, 'approveMergeRequest').mockReturnValue(new Promise(() => {}));
+            it('shows alert if general error', () => {
+              expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
+            });
+          });
 
-                findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
+          describe('handling unautharised error', () => {
+            beforeEach(() => {
+              jest
+                .spyOn(service, 'approveMergeRequestWithAuth')
+                .mockRejectedValue({ response: { status: HTTP_STATUS_UNAUTHORIZED } });
+              findApprovalsAuth().vm.$emit('approve', TEST_PASSWORD);
+            });
 
-                await nextTick();
-              });
-
-              it('calls service when emits approve', () => {
-                expect(service.approveMergeRequestWithAuth).toHaveBeenCalledWith(TEST_PASSWORD);
-              });
-
-              it('sets isApproving', async () => {
-                wrapper.findComponent(ApprovalsFoss).setData({ isApproving: true });
-
-                await nextTick();
-                expect(findApprovalsAuth().props('isApproving')).toBe(true);
-              });
-
-              it('sets hasError when auth fails', async () => {
-                wrapper.findComponent(ApprovalsFoss).setData({ hasApprovalAuthError: true });
-
-                await nextTick();
-                expect(findApprovalsAuth().props('hasError')).toBe(true);
-              });
-
-              it('shows alert if general error', () => {
-                expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
-              });
+            it('sets hasError when auth fails', () => {
+              expect(findApprovalsAuth().props('hasError')).toBe(true);
             });
           });
         });
