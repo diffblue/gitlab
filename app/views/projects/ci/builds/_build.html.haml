@@ -110,8 +110,7 @@
             = link_to cancel_project_job_path(job.project, job, continue: { to: request.fullpath }), method: :post, title: _('Cancel'), class: 'gl-button btn btn-default btn-icon' do
               = sprite_icon('cancel', css_class: 'gl-icon')
           - elsif job.scheduled?
-            .gl-button.btn.btn-default.btn-icon.disabled{ disabled: true }
-              = sprite_icon('planning', css_class: 'gl-icon')
+            = render Pajamas::ButtonComponent.new(disabled: true, icon: 'planning') do
               %time.js-remaining-time{ datetime: job.scheduled_at.utc.iso8601 }
                 = duration_in_numbers(job.execute_in)
             - confirmation_message = s_("DelayedJobs|Are you sure you want to run %{job_name} immediately? This job will run automatically after it's timer finishes.") % { job_name: job.name }
