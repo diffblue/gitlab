@@ -41,14 +41,14 @@ RSpec.describe Analytics::DoraMetricsAggregator, feature_category: :devops_repor
     end
 
     it 'returns the aggregated data' do
-      expect(subject).to match_array([{ 'date' => Time.current.to_date.to_s, metric => 2 }])
+      expect(subject).to match_array([{ 'date' => Time.current.to_date, metric => 2 }])
     end
 
     context 'when interval is monthly' do
       let(:extra_params) { { interval: Dora::DailyMetrics::INTERVAL_MONTHLY } }
 
       it 'returns the aggregated data' do
-        expect(subject).to match_array([{ 'date' => Time.current.beginning_of_month.to_date.to_s, metric => 2 }])
+        expect(subject).to match_array([{ 'date' => Time.current.beginning_of_month.to_date, metric => 2 }])
       end
     end
 
@@ -64,7 +64,7 @@ RSpec.describe Analytics::DoraMetricsAggregator, feature_category: :devops_repor
       let(:extra_params) { { environment_tiers: ['staging'] } }
 
       it 'returns the aggregated data' do
-        expect(subject).to match_array([{ 'date' => Time.current.to_date.to_s, metric => 1 }])
+        expect(subject).to match_array([{ 'date' => Time.current.to_date, metric => 1 }])
       end
     end
   end

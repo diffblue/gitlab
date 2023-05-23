@@ -14,12 +14,19 @@ module Analytics
           from = FIT_TIMESPAN.ago.to_date
           to = end_date
 
-          metrics = Dora::DailyMetrics.for_project_production(context)
-                                      .in_range_of(from, to)
-                                      .order(:date)
-                                      .pluck(:date, :deployment_frequency).to_h
+          metrics = DoraMetricsAggregator.aggregate_for(
+            projects: [context],
+            environment_tiers: ['production'],
+            start_date: from,
+            end_date: to,
+            metrics: ['deployment_frequency'],
+            interval: 'daily').to_h { |v| [v['date'], v['deployment_frequency']] }
 
-          fill_missing_values!(metrics, from: from, to: to)
+          Gitlab::Analytics::DateFiller.new(metrics,
+            from: from,
+            to: to,
+            default_value: 0
+          ).fill
         end
       end
 

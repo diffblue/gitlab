@@ -12,6 +12,7 @@ RSpec.describe Analytics::Forecasting::DeploymentFrequencyForecast, feature_cate
   let(:horizon) { 30 }
   let_it_be(:project) { create(:project) }
   let_it_be(:production_env) { create(:environment, :production, project: project) }
+  let_it_be(:production_env_2) { create(:environment, :production, project: project, name: 'production_2') }
 
   subject { described_class.new(context: project, horizon: horizon, type: forecast_type) }
 
@@ -44,7 +45,7 @@ RSpec.describe Analytics::Forecasting::DeploymentFrequencyForecast, feature_cate
         next unless value
 
         create(:dora_daily_metrics,
-          environment: production_env,
+          environment: i.odd? ? production_env : production_env_2,
           deployment_frequency: value,
           date: 1.year.ago.to_date + i)
       end
