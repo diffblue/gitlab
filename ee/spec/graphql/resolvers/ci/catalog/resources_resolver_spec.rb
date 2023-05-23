@@ -6,21 +6,40 @@ RSpec.describe Resolvers::Ci::Catalog::ResourcesResolver, feature_category: :pip
   include GraphqlHelpers
 
   let_it_be(:namespace) { create(:group) }
-  let_it_be(:project_1) { create(:project, name: 'Component Repository 1', namespace: namespace) }
-  let_it_be(:project_2) { create(:project, name: 'Component Repository 2', namespace: namespace) }
+  let_it_be(:project_1) { create(:project, name: 'Z', namespace: namespace) }
+  let_it_be(:project_2) { create(:project, name: 'A', namespace: namespace) }
+  let_it_be(:project_3) { create(:project, name: 'L', namespace: namespace) }
   let_it_be(:resource_1) { create(:catalog_resource, project: project_1) }
   let_it_be(:resource_2) { create(:catalog_resource, project: project_2) }
+  let_it_be(:resource_3) { create(:catalog_resource, project: project_3) }
   let_it_be(:user) { create(:user) }
 
   describe '#resolve' do
-    it 'returns all CI Catalog resources visible to the current user in the namespace' do
-      stub_licensed_features(ci_namespace_catalog: true)
-      namespace.add_owner(user)
+    context 'with an authorized user' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+        namespace.add_owner(user)
+      end
 
-      result = resolve(described_class, ctx: { current_user: user }, args: { project_path: project_1.full_path })
+      it 'returns all CI Catalog resources visible to the current user in the namespace' do
+        result = resolve(described_class, ctx: { current_user: user }, args: { project_path: project_1.full_path })
 
-      expect(result.items.count).to be(2)
-      expect(result.items.pluck(:name)).to contain_exactly('Component Repository 1', 'Component Repository 2')
+        expect(result.items.count).to be(3)
+        expect(result.items.pluck(:name)).to contain_exactly('Z', 'A', 'L')
+      end
+
+      it 'returns all resources sorted by descending created date when given no sort param' do
+        result = resolve(described_class, ctx: { current_user: user }, args: { project_path: project_1.full_path })
+
+        expect(result.items.pluck(:name)).to eq(%w[L A Z])
+      end
+
+      it 'returns all CI Catalog resources sorted by descending name when there is a sort parameter' do
+        result = resolve(described_class, ctx: { current_user: user }, args: { project_path: project_1.full_path, sort:
+        'NAME_DESC' })
+
+        expect(result.items.pluck(:name)).to eq(%w[Z L A])
+      end
     end
 
     context 'when the current user cannot read the namespace catalog' do
