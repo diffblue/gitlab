@@ -7,11 +7,12 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
   let(:body) { { 'test' => 'test' } }
   let(:token) { create(:personal_access_token, user: current_user) }
   let(:response_double) { instance_double(HTTParty::Response, code: 200, success?: true, body: body.to_json) }
+  let(:host) { 'example.com' }
   let(:header) do
     {
       'Accept' => ['application/json'],
       'Authorization' => ["Bearer #{token}"],
-      'Host' => [nil],
+      'Host' => [host],
       'Content-Type' => ['application/json']
     }
   end
@@ -23,6 +24,8 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
 
     stub_feature_flags(explain_vulnerability_vertex: true)
     stub_feature_flags(ai_experimentation_api: current_user)
+    stub_application_setting(tofa_host: host)
+    stub_application_setting(vertex_project: 'llm')
   end
 
   shared_examples 'invalid request' do

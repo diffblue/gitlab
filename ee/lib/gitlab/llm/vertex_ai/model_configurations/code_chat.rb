@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       module ModelConfigurations
         class CodeChat < Base
-          NAME = 'codechat-bison-001'
+          NAME = 'codechat-bison'
 
           def payload(content)
             {
@@ -21,14 +21,6 @@ module Gitlab
               ],
               parameters: Configuration.default_payload_parameters
             }
-          end
-
-          def url
-            tofa_url
-          end
-
-          def host
-            tofa_host
           end
         end
       end
