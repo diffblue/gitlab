@@ -10,7 +10,6 @@ import {
   GlIcon,
 } from '@gitlab/ui';
 import { renderMarkdown } from '~/notes/utils';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { i18n, GENIE_CHAT_MODEL_ROLES } from '../constants';
 
@@ -29,7 +28,6 @@ export default {
   directives: {
     SafeHtml,
   },
-  mixins: [glFeatureFlagsMixin()],
   props: {
     messages: {
       type: Array,
@@ -51,17 +49,17 @@ export default {
       required: false,
       default: false,
     },
+    isChatAvailable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       isHidden: false,
       prompt: '',
     };
-  },
-  computed: {
-    isChatAvaiable() {
-      return this.glFeatures.explainCodeChat && this.messages.length;
-    },
   },
   watch: {
     async isLoading() {
@@ -90,6 +88,9 @@ export default {
     getPromptLocation(index) {
       return index ? 'after_content' : 'before_content';
     },
+    isLastMessage(index) {
+      return index === this.messages.length - 1;
+    },
     renderMarkdown,
   },
   i18n,
@@ -104,7 +105,7 @@ export default {
     role="complementary"
     data-testid="chat-component"
   >
-    <header class="gl-drawer-header gl-drawer-header-sticky gl-z-index-200 gl-p-0!">
+    <header class="gl-drawer-header gl-drawer-header-sticky gl-z-index-200 gl-p-0! gl-border-b-0">
       <div
         class="drawer-title gl-display-flex gl-justify-content-start gl-align-items-center gl-p-5"
       >
@@ -157,14 +158,14 @@ export default {
           <div
             v-for="(message, index) in messages"
             :key="`${message.role}-${index}`"
-            :ref="index === messages.length - 1 ? 'lastMessage' : undefined"
+            :ref="isLastMessage(index) ? 'lastMessage' : undefined"
             class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg ai-genie-chat-message gl-shadow-sm"
             :class="{
               'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
                 message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
               'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50':
                 message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant,
-              'gl-mb-0!': index === messages.length - 1,
+              'gl-mb-0!': isLastMessage(index) && !isLoading,
             }"
           >
             <div v-safe-html="renderMarkdown(message.content)"></div>
@@ -172,6 +173,7 @@ export default {
               v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
               name="feedback"
               :prompt-location="getPromptLocation(index)"
+              :message="message"
             ></slot>
           </div>
           <gl-alert
@@ -193,7 +195,7 @@ export default {
       </section>
     </div>
     <footer
-      v-if="isChatAvaiable"
+      v-if="isChatAvailable"
       class="gl-drawer-footer gl-drawer-footer-sticky gl-drawer-body-scrim-on-footer gl-p-5 gl-border-t gl-bg-white"
     >
       <gl-form @submit.stop.prevent="sendChatPrompt">
@@ -215,6 +217,7 @@ export default {
             />
           </template>
         </gl-form-input-group>
+        <slot name="input-help"></slot>
       </gl-form>
     </footer>
   </aside>

@@ -5,6 +5,7 @@ import SafeHtml from '~/vue_shared/directives/safe_html';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { renderMarkdown } from '~/notes/utils';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -32,6 +33,7 @@ export default {
     SafeHtml,
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['resourceId', 'userId'],
   props: {
     containerId: {
@@ -100,7 +102,10 @@ export default {
       return { top: `${this.top}px` };
     },
     filteredMessages() {
-      return this.messages.slice(2); // drop the `system` and the first `user` prompts
+      return this.messages.slice(2) || []; // drop the `system` and the first `user` prompts
+    },
+    isChatAvailable() {
+      return this.glFeatures.explainCodeChat && this.messages.length > 0;
     },
   },
   created() {
@@ -111,7 +116,6 @@ export default {
   },
   beforeDestroy() {
     document.removeEventListener('selectionchange', this.debouncedSelectionChangeHandler);
-    this.messages = [];
   },
   methods: {
     handleSelectionChange() {
@@ -193,6 +197,7 @@ export default {
     />
     <ai-genie-chat
       v-if="shouldShowChat"
+      :is-chat-available="isChatAvailable"
       :is-loading="isLoading"
       :messages="filteredMessages"
       :error="codeExplanationError"
