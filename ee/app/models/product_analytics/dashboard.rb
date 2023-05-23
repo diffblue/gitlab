@@ -14,9 +14,9 @@ module ProductAnalytics
 
       root_trees = config_project.repository.tree(:head, DASHBOARD_ROOT_LOCATION)
 
-      dashboards << local_dashboards(config_project, root_trees.trees) if root_trees&.trees
-
       dashboards << builtin_dashboards(project) if product_analytics_available?(project)
+
+      dashboards << local_dashboards(config_project, root_trees.trees) if root_trees&.trees
 
       dashboards.flatten
     end
