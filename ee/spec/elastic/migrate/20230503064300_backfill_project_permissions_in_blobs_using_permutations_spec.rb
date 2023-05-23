@@ -49,14 +49,10 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
     context 'when permutation_idx is out of bounds of permissions matrix' do
       let(:permutation_idx) { 9000 }
 
-      it 'has nil values' do
-        expect(migration.visibility_level).to be_nil
-        expect(migration.repository_access_level).to be_nil
-      end
-
-      it 'makes the migration a noop' do
+      it 'migration is a NOOP and is completed' do
         expect(migration).not_to receive(:update_by_query)
         expect(migration).not_to receive(:set_migration_state)
+        expect(migration).to be_completed
         migration.migrate
       end
     end
@@ -259,6 +255,11 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
         ensure_elasticsearch_index!
         remove_visibility_level_for_blobs(project)
         set_elasticsearch_migration_to(version, including: false)
+        migration.set_migration_state(
+          retry_attempt: 0,
+          permutation_idx: 0,
+          documents_remaining: 0
+        )
       end
 
       it 'is not completed' do
@@ -337,6 +338,8 @@ RSpec.describe BackfillProjectPermissionsInBlobsUsingPermutations, :elastic_clea
           documents_remaining: 0,
           documents_remaining_for_permutation: 0
         )
+        expect(migration).to receive(:log).with("State before the migrate method",
+          { migration_state: { "documents_remaining" => 0, "permutation_idx" => 0, "retry_attempt" => 0 } })
         expect(migration).to receive(:log).with("Task completion check",
           { permutation_idx: 0, task_id: task_id, task_status: false })
         expect(migration).to receive(:log).with("Update is still in progress", { permutation_idx: 0, task_id: task_id })

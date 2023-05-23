@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Do not use this migration to gate any logic, use `BackfillProjectPermissionsInBlobs` instead
 class BackfillProjectPermissionsInBlobsUsingPermutations < Elastic::Migration
   batched!
   batch_size 10_000
@@ -12,6 +13,7 @@ class BackfillProjectPermissionsInBlobsUsingPermutations < Elastic::Migration
   MAX_ATTEMPTS_PER_IDX = 30
 
   def migrate
+    log("State before the migrate method", migration_state: migration_state)
     return setup unless permutation_idx.present?
     return handle_failure if failed?
     return unless visibility_level.present?
@@ -20,6 +22,7 @@ class BackfillProjectPermissionsInBlobsUsingPermutations < Elastic::Migration
     return handle_ongoing_task if task_id.present?
 
     launch_task
+    log("State after the migrate method", migration_state: migration_state)
   rescue StandardError => e
     log("Update failed.", permutation_idx: permutation_idx, error: e.message)
 
@@ -37,7 +40,9 @@ class BackfillProjectPermissionsInBlobsUsingPermutations < Elastic::Migration
   def completed?
     doc_count = documents_remaining
     log("Checking if there are blobs without permissions set", documents_remaining: doc_count)
-    doc_count == 0
+    # report migration as completed if the permutation_idx is out of bounds.
+    # Future migration will clean up remaining items
+    doc_count == 0 || permutation_idx > LAST_PERMUTATION_IDX
   end
 
   def permutation_completed?
