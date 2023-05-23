@@ -1,7 +1,6 @@
 <script>
 import {
   GlButton,
-  GlSkeletonLoader,
   GlAlert,
   GlBadge,
   GlFormInputGroup,
@@ -12,6 +11,7 @@ import {
 import { renderMarkdown } from '~/notes/utils';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { i18n, GENIE_CHAT_MODEL_ROLES } from '../constants';
+import AiGenieLoader from './ai_genie_loader.vue';
 
 export default {
   name: 'AiGenieChat',
@@ -19,11 +19,11 @@ export default {
     GlButton,
     GlAlert,
     GlBadge,
-    GlSkeletonLoader,
     GlFormInputGroup,
     GlFormInput,
     GlForm,
     GlIcon,
+    AiGenieLoader,
   },
   directives: {
     SafeHtml,
@@ -188,9 +188,7 @@ export default {
           ></gl-alert>
         </transition-group>
         <transition name="loader">
-          <div v-if="isLoading" class="gl-pt-0!">
-            <gl-skeleton-loader />
-          </div>
+          <ai-genie-loader v-if="isLoading" />
         </transition>
       </section>
     </div>

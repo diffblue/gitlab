@@ -36,3 +36,38 @@
     margin-bottom: 0;
   }
 }
+
+// Let's make this a GitLab UI component afterwards.
+.ai-genie-loader {
+  max-width: unset;
+
+  &__dot {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    background-color: $gray-400;
+    border-radius: 100%;
+    animation: AIGenieLoading 1400ms ease-in-out infinite;
+    animation-fill-mode: both;
+  }
+
+  &__dot--1 {
+    animation-delay: -0.3s;
+  }
+
+  &__dot--2 {
+    animation-delay: -0.15s;
+  }
+}
+
+@keyframes AIGenieLoading {
+  0%,
+  80%,
+  100% {
+    transform: scale(0);
+  }
+
+  40% {
+    transform: scale(1);
+  }
+}
