@@ -69,15 +69,16 @@ describe('Filter component', () => {
 
       createWrapper({ mountFn: mount });
       await nextTick();
+
       // The other filters will trigger the mock as well, so we'll clear it before clicking on a
       // scanner filter item.
       mock.mockClear();
 
       const filterId = 'severity';
       const optionId = 'MEDIUM';
-      const option = wrapper.findByTestId(optionId);
-      option.vm.$emit('click');
-      await nextTick();
+      const option = wrapper.findByTestId(`listbox-item-${optionId}`);
+
+      await option.trigger('click');
 
       expect(mock).toHaveBeenCalledTimes(1);
       expect(mock).toHaveBeenCalledWith(expect.any(Object), { [filterId]: [optionId] });
