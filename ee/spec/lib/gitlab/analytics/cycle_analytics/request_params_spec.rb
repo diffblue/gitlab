@@ -162,20 +162,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
       end
     end
 
-    describe 'use_aggregated_data_collector param' do
-      subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
-
-      it { is_expected.to eq(true) }
-
-      context 'when the vsa_group_and_project_parity FF is off' do
-        before do
-          stub_feature_flags(vsa_group_and_project_parity: false)
-        end
-
-        it { is_expected.to eq(true) }
-      end
-    end
-
     describe 'feature availablity data attributes' do
       subject(:value) { described_class.new(params).to_data_attributes }
 
@@ -203,14 +189,6 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::RequestParams, feature_categor
           subject(:value) { described_class.new(params).to_data_collector_params[:use_aggregated_data_collector] }
 
           it { is_expected.to eq(true) }
-
-          context 'when the vsa_group_and_project_parity FF is off' do
-            before do
-              stub_feature_flags(vsa_group_and_project_parity: false)
-            end
-
-            it { is_expected.to eq(false) }
-          end
         end
       end
     end
