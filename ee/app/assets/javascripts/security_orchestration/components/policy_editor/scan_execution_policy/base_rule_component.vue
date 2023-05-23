@@ -7,8 +7,11 @@ import { SCAN_EXECUTION_RULES_LABELS, SCAN_EXECUTION_RULES_PIPELINE_KEY } from '
 export default {
   SCAN_EXECUTION_RULES_LABELS,
   i18n: {
-    scanExecutionRuleCopy: s__(
-      'ScanExecutionPolicy|%{rules} actions for the %{scopes} %{branches} %{agents} %{namespaces}',
+    pipelineRule: s__(
+      'ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{agents} %{namespaces}',
+    ),
+    scheduleRule: s__(
+      'ScanExecutionPolicy|%{rules} %{period} for %{scopes} %{branches} %{agents} %{namespaces}',
     ),
     selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
   },
@@ -22,10 +25,6 @@ export default {
   props: {
     initRule: {
       type: Object,
-      required: true,
-    },
-    ruleLabel: {
-      type: String,
       required: true,
     },
     defaultSelectedRule: {
@@ -72,6 +71,11 @@ export default {
         this.$emit('changed', { ...this.initRule, branches });
       },
     },
+    message() {
+      return this.initRule.type === SCAN_EXECUTION_RULES_PIPELINE_KEY
+        ? this.$options.i18n.pipelineRule
+        : this.$options.i18n.scheduleRule;
+    },
   },
   methods: {
     setSelectedRule(key) {
@@ -87,18 +91,13 @@ export default {
   <div
     class="security-policies-bg-gray-10 gl-display-flex gl-gap-3 gl-rounded-base gl-p-5 gl-relative"
   >
-    <div class="gl-min-w-7">
-      <label
-        for="scanners"
-        class="text-uppercase gl-font-lg gl-w-6 gl-pl-2"
-        data-testid="rule-component-label"
-        >{{ ruleLabel }}</label
-      >
-    </div>
-
     <div class="gl-flex-grow-1">
       <div class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
-        <gl-sprintf :message="$options.i18n.scanExecutionRuleCopy">
+        <gl-sprintf :message="message">
+          <template #period>
+            <slot name="period"></slot>
+          </template>
+
           <template #scopes>
             <slot name="scopes"></slot>
           </template>
@@ -135,8 +134,6 @@ export default {
           </template>
         </gl-sprintf>
       </div>
-
-      <slot name="content"></slot>
     </div>
 
     <div class="gl-min-w-7 gl-ml-4">

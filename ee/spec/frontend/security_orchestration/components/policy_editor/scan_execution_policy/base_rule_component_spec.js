@@ -1,19 +1,15 @@
 import { nextTick } from 'vue';
 import { GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
-import { s__ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import {
   SCAN_EXECUTION_SCHEDULE_RULE,
-  SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_RULES_PIPELINE_KEY,
-  SCAN_EXECUTION_RULES_SCHEDULE_KEY,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 
 describe('BaseRuleComponent', () => {
   let wrapper;
-  const ruleLabel = s__('ScanExecutionPolicy|if');
   const initRule = {
     type: SCAN_EXECUTION_SCHEDULE_RULE,
     branches: [],
@@ -23,7 +19,6 @@ describe('BaseRuleComponent', () => {
     wrapper = shallowMountExtended(BaseRuleComponent, {
       propsData: {
         initRule,
-        ruleLabel,
         ...options,
       },
       stubs: {
@@ -34,7 +29,6 @@ describe('BaseRuleComponent', () => {
 
   const findDeleteButton = () => wrapper.findByTestId('remove-rule');
   const findRuleTypeDropDown = () => wrapper.findComponent(GlCollapsibleListbox);
-  const findRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
   const findBranchesLabel = () => wrapper.findByTestId('rule-branches-label');
 
@@ -43,31 +37,29 @@ describe('BaseRuleComponent', () => {
     await nextTick();
   };
 
-  describe('default', () => {
+  describe('rendering', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('should render pipeline rule by default', () => {
-      expect(findRuleLabel().text()).toEqual(ruleLabel);
+    it('renders pipeline rule by default', () => {
       expect(findRuleTypeDropDown().props('selected')).toBe(SCAN_EXECUTION_RULES_PIPELINE_KEY);
     });
 
-    it('should render pipeline rule component by default', () => {
-      expect(findRuleLabel().text()).toEqual(ruleLabel);
+    it('renders pipeline rule component by default', () => {
       expect(findRuleTypeDropDown().props('selected')).toBe(SCAN_EXECUTION_RULES_PIPELINE_KEY);
       expect(findBranchesInputField().attributes('value')).toBe('');
     });
 
-    it('should select pipeline rule', async () => {
-      findRuleTypeDropDown().vm.$emit('select', SCAN_EXECUTION_RULES_SCHEDULE_KEY);
+    it('selects pipeline rule', async () => {
+      findRuleTypeDropDown().vm.$emit('select', SCAN_EXECUTION_RULES_PIPELINE_KEY);
       await nextTick();
       const [eventPayload] = wrapper.emitted()['select-rule'];
 
-      expect(eventPayload[0]).toEqual(SCAN_EXECUTION_RULES_LABELS.schedule.toLowerCase());
+      expect(eventPayload[0]).toEqual(SCAN_EXECUTION_RULES_PIPELINE_KEY);
     });
 
-    it('should select list of branches', async () => {
+    it('selects list of branches', async () => {
       const branches = 'main,branch1,branch2';
 
       await selectBranches(branches);
@@ -83,13 +75,13 @@ describe('BaseRuleComponent', () => {
       isBranchScope | expectedResult
       ${true}       | ${true}
       ${false}      | ${false}
-    `('should render branches input', ({ isBranchScope, expectedResult }) => {
+    `('renders branches input', ({ isBranchScope, expectedResult }) => {
       createComponent({ isBranchScope });
 
       expect(findBranchesInputField().exists()).toBe(expectedResult);
     });
 
-    it('should emit array of branches and correct type', async () => {
+    it('emits array of branches and correct type', async () => {
       await selectBranches('main, branch');
 
       expect(wrapper.emitted()).toEqual({
@@ -97,7 +89,7 @@ describe('BaseRuleComponent', () => {
       });
     });
 
-    it('should trim branch names from white spaces', async () => {
+    it('trims branch names from white spaces', async () => {
       await selectBranches('main , branch  ,    branch2    ');
 
       expect(wrapper.emitted()).toEqual({
@@ -107,7 +99,7 @@ describe('BaseRuleComponent', () => {
       });
     });
 
-    it('should select correct rule', async () => {
+    it('selects correct rule', async () => {
       findRuleTypeDropDown().vm.$emit('select', SCAN_EXECUTION_RULES_PIPELINE_KEY);
 
       await nextTick();
@@ -117,7 +109,7 @@ describe('BaseRuleComponent', () => {
       });
     });
 
-    it('should remove rule', async () => {
+    it('removes rule', async () => {
       findDeleteButton().vm.$emit('click');
 
       await nextTick();

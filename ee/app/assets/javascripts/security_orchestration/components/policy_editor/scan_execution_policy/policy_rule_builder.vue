@@ -1,6 +1,6 @@
 <script>
 import { s__ } from '~/locale';
-import { RULE_IF_LABEL, RULE_OR_LABEL } from '../constants';
+import { RULE_OR_LABEL } from '../constants';
 import BaseRuleComponent from './base_rule_component.vue';
 import ScheduleRuleComponent from './schedule_rule_component.vue';
 import { RULE_KEY_MAP } from './lib';
@@ -15,7 +15,6 @@ export default {
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_RULES_PIPELINE_KEY,
   name: 'PolicyRuleBuilder',
-  RULE_IF_LABEL,
   RULE_OR_LABEL,
   i18n: {
     scheduleComponentPlaceholder: s__('ScanExecutionPolicy|Schedule rule component'),
@@ -42,8 +41,8 @@ export default {
     isScheduleRule() {
       return this.initRule.type === SCAN_EXECUTION_SCHEDULE_RULE;
     },
-    ruleLabel() {
-      return this.ruleIndex === 0 ? this.$options.RULE_IF_LABEL : this.$options.RULE_OR_LABEL;
+    isFirstRule() {
+      return this.ruleIndex === 0;
     },
   },
   methods: {
@@ -56,18 +55,19 @@ export default {
 
 <template>
   <div>
+    <div v-if="!isFirstRule" class="gl-text-gray-500 gl-mb-4 gl-ml-5" data-testid="rule-separator">
+      {{ $options.RULE_OR_LABEL }}
+    </div>
     <base-rule-component
       v-if="isPipelineRule"
       :default-selected-rule="$options.SCAN_EXECUTION_RULES_PIPELINE_KEY"
       :init-rule="initRule"
-      :rule-label="ruleLabel"
       v-on="$listeners"
       @select-rule="selectRuleType"
     />
     <schedule-rule-component
       v-else-if="isScheduleRule"
       :init-rule="initRule"
-      :rule-label="ruleLabel"
       @select-rule="selectRuleType"
       v-on="$listeners"
     />
