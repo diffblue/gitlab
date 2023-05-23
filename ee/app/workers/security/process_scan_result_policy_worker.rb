@@ -19,13 +19,7 @@ module Security
       active_scan_result_policies = configuration.active_scan_result_policies
       return if active_scan_result_policies.empty?
 
-      if Feature.enabled?(:remove_scan_result_policy_transaction, project)
-        sync_policies(project, configuration, active_scan_result_policies)
-      else
-        configuration.transaction do
-          sync_policies(project, configuration, active_scan_result_policies)
-        end
-      end
+      sync_policies(project, configuration, active_scan_result_policies)
 
       if Feature.enabled?(:sync_mr_approval_rules_security_policies, @project)
         Security::ScanResultPolicies::SyncOpenedMergeRequestsWorker.perform_async(project_id, configuration_id)
