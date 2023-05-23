@@ -513,20 +513,6 @@ RSpec.describe Project, feature_category: :projects do
           no_plan_public_project
         )
       end
-
-      context 'when the feature flag `optimize_scope_projects_with_feature_available` is turned off' do
-        before do
-          stub_feature_flags(optimize_scope_projects_with_feature_available: false)
-        end
-
-        it 'does not include projects from paid subgroups' do
-          is_expected.to contain_exactly(
-            premium_project,
-            ultimate_project,
-            no_plan_public_project
-          )
-        end
-      end
     end
 
     describe '.with_project_setting' do
