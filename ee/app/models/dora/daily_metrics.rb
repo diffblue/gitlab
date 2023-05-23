@@ -24,12 +24,6 @@ module Dora
       where(date: after..before)
     end
 
-    scope :for_project_production, -> (project) do
-      environment = project.environments.production.limit(1)
-
-      for_environments(environment)
-    end
-
     class << self
       def aggregate_for!(metrics, interval)
         select_query_part = metrics.map do |metric|
@@ -87,9 +81,9 @@ module Dora
       private
 
       def transform_aggregated_row(row, metrics)
-        result = { 'date' => row['interval_date']&.to_s }
+        result = { 'date' => row['interval_date'] }
         metrics.each do |key|
-          result[key.to_s] = row["metric_#{key}"]
+          result[key] = row["metric_#{key}"]
         end
 
         result

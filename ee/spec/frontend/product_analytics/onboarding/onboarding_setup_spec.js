@@ -21,6 +21,10 @@ describe('ProductAnalyticsSetupView', () => {
   let wrapper;
 
   const fatalError = new Error('GraphQL networkError');
+  const defaultProps = {
+    isInitialSetup: false,
+    dashboardsPath: '/path/to/dashboard',
+  };
 
   const mockApolloFatalError = jest.fn().mockRejectedValue(fatalError);
   const mockApolloSuccess = jest.fn().mockResolvedValue(getTrackingKeyResponse(TEST_TRACKING_KEY));
@@ -37,7 +41,7 @@ describe('ProductAnalyticsSetupView', () => {
     wrapper = mountExtended(ProductAnalyticsSetupView, {
       apolloProvider: createMockApollo([[getProjectJitsuKeyQuery, apolloMock]]),
       propsData: {
-        isInitialSetup: false,
+        ...defaultProps,
         ...props,
       },
       provide: {

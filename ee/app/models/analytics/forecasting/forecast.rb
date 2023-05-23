@@ -53,16 +53,6 @@ module Analytics
 
       attr_reader :end_date
 
-      def fill_missing_values!(metrics, from:, to:)
-        current_date = from
-        while current_date <= to
-          metrics[current_date] ||= 0
-          current_date += 1
-        end
-
-        metrics.sort.to_h
-      end
-
       def good_fit?
         model && model.r2_score >= MINIMAL_SCORE_THRESHOLD
       end

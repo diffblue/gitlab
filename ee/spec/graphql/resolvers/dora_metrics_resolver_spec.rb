@@ -80,14 +80,14 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
         it 'returns metrics rows with added deprecated "value" field' do
           expect(resolve_metrics).to eq(
             [
-              { 'date' => '2021-03-01', 'deployment_frequency' => 18, 'value' => 18 },
-              { 'date' => '2021-04-01', 'deployment_frequency' => 17, 'value' => 17 },
-              { 'date' => '2021-04-02', 'deployment_frequency' => 16, 'value' => 16 },
-              { 'date' => '2021-04-03', 'deployment_frequency' => 15, 'value' => 15 },
-              { 'date' => '2021-04-04', 'deployment_frequency' => 14, 'value' => 14 },
-              { 'date' => '2021-04-05', 'deployment_frequency' => 13, 'value' => 13 },
-              { 'date' => '2021-04-06', 'deployment_frequency' => 12, 'value' => 12 },
-              { 'date' => '2021-04-07', 'deployment_frequency' => nil, 'value' => nil }
+              { 'date' => Date.parse('2021-03-01'), 'deployment_frequency' => 18, 'value' => 18 },
+              { 'date' => Date.parse('2021-04-01'), 'deployment_frequency' => 17, 'value' => 17 },
+              { 'date' => Date.parse('2021-04-02'), 'deployment_frequency' => 16, 'value' => 16 },
+              { 'date' => Date.parse('2021-04-03'), 'deployment_frequency' => 15, 'value' => 15 },
+              { 'date' => Date.parse('2021-04-04'), 'deployment_frequency' => 14, 'value' => 14 },
+              { 'date' => Date.parse('2021-04-05'), 'deployment_frequency' => 13, 'value' => 13 },
+              { 'date' => Date.parse('2021-04-06'), 'deployment_frequency' => 12, 'value' => 12 },
+              { 'date' => Date.parse('2021-04-07'), 'deployment_frequency' => nil, 'value' => nil }
             ])
         end
       end
@@ -242,6 +242,8 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
   end
 
   def metric_row(**extra)
-    Dora::DailyMetrics::AVAILABLE_METRICS.index_with { |_key| nil }.merge(extra)
+    row = Dora::DailyMetrics::AVAILABLE_METRICS.index_with { |_key| nil }.merge(extra)
+    row['date'] = Date.parse(row['date']) if row['date'].is_a?(String)
+    row
   end
 end

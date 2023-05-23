@@ -38,6 +38,30 @@ RSpec.describe ProtectedEnvironments::DeployAccessLevel do
       expect(deploy_access_level.errors[:base])
         .to include('Only one of the Group ID, User ID or Access Level must be specified.')
     end
+
+    it 'passes the validation when a valid group_id is set' do
+      group = create(:group)
+
+      deploy_access_level = build(:protected_environment_deploy_access_level)
+      deploy_access_level.user_id = nil
+      deploy_access_level.group_id = group.id
+      deploy_access_level.access_level = nil
+
+      expect(deploy_access_level).to be_valid
+    end
+
+    it 'fails the validation when an invalid group_id is set' do
+      namespace = create(:namespace)
+
+      deploy_access_level = build(:protected_environment_deploy_access_level)
+      deploy_access_level.user_id = nil
+      deploy_access_level.group_id = namespace.id
+      deploy_access_level.access_level = nil
+
+      expect(deploy_access_level).not_to be_valid
+      expect(deploy_access_level.errors[:base])
+        .to include('There is no corresponding group to the specified Group ID.')
+    end
   end
 
   it_behaves_like 'authorizable for protected environments',

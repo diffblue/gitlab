@@ -11,6 +11,9 @@ milestone: "13.2"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/33881
 time_frame: 28d
 data_source: database
+instrumentation_class: CountUsersCreatingCiBuildsMetric
+options:
+  secure_type: all
 distribution:
 - ee
 tier:

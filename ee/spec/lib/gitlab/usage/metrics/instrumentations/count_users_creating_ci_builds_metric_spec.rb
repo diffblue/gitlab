@@ -30,6 +30,20 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBui
       end
     end
 
+    context 'with secure_type all' do
+      let(:secure_type) { 'all' }
+      let(:build_names) { "(#{described_class::SECURE_PRODUCT_TYPES.map { |e| "'#{e}'" }.join(', ')})" }
+      let(:expected_query) do
+        if params[:time_frame] == '28d'
+          %{SELECT COUNT(DISTINCT "ci_builds"."user_id") FROM "ci_builds" WHERE "ci_builds"."type" = 'Ci::Build' AND "ci_builds"."created_at" BETWEEN '#{start}' AND '#{finish}' AND "ci_builds"."name" IN #{build_names}}
+        else
+          %{SELECT COUNT(DISTINCT "ci_builds"."user_id") FROM "ci_builds" WHERE "ci_builds"."type" = 'Ci::Build' AND "ci_builds"."name" IN #{build_names}}
+        end
+      end
+
+      it_behaves_like 'a correct instrumented metric value and query', { time_frame: params[:time_frame], data_source: 'database', options: { secure_type: 'all' } }
+    end
+
     context 'with secure_type container_scanning' do
       let(:secure_type) { 'container_scanning' }
 

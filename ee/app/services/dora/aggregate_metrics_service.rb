@@ -62,7 +62,7 @@ module Dora
                                 # - For January, 2022-01-01: 17 days
                                 # - For February, 2022-02-01: 28 days
                                 (start_date..end_date).each_with_object({}) do |date, hash|
-                                  beginning_of_month = date.beginning_of_month.to_s
+                                  beginning_of_month = date.beginning_of_month
                                   hash[beginning_of_month] ||= 0
                                   hash[beginning_of_month] += 1
                                 end
