@@ -1,0 +1,21 @@
+#import "./flow_metric_item.fragment.graphql"
+
+query projectFlowMetricsQuery($fullPath: ID!, $startDate: Time!, $endDate: Time!) {
+  namespace: project(fullPath: $fullPath) {
+    id
+    flowMetrics {
+      issues: issueCount(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
+      cycle_time: cycleTime(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
+      lead_time: leadTime(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
+      deploys: deploymentCount(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
+    }
+  }
+}

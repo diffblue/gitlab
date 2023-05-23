@@ -1,4 +1,5 @@
 import { nMonthsBefore } from '~/lib/utils/datetime_utility';
+import { DORA_METRICS } from '~/analytics/shared/constants';
 
 const mockMetrics = ([
   leadTimeForChanges,
@@ -527,4 +528,91 @@ export const mockChartData = {
     ],
     tooltipLabel: undefined,
   },
+};
+
+export const mockLastVulnerabilityCountData = {
+  date: '2020-05-20',
+  critical: 7,
+  high: 6,
+  medium: 5,
+  low: 4,
+};
+
+export const mockDoraMetricsResponseData = {
+  metrics: [
+    {
+      date: null,
+      deployment_frequency: 23.75,
+      change_failure_rate: 0.056578947368421055,
+      lead_time_for_changes: 23508,
+      time_to_restore_service: 72080,
+      __typename: 'DoraMetric',
+    },
+  ],
+  __typename: 'Dora',
+};
+
+export const mockFlowMetricsResponseData = {
+  issues: {
+    unit: null,
+    value: 10,
+    identifier: 'issues',
+    links: [],
+    title: 'New Issues',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
+  cycle_time: {
+    unit: 'days',
+    value: null,
+    identifier: 'cycle_time',
+    links: [],
+    title: 'Cycle Time',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
+  lead_time: {
+    unit: 'days',
+    value: 10,
+    identifier: 'lead_time',
+    links: [
+      {
+        label: 'Dashboard',
+        name: 'Lead Time',
+        docsLink: null,
+        url: '/groups/test-graphql-dora/-/issues_analytics',
+        __typename: 'ValueStreamMetricLinkType',
+      },
+      {
+        label: 'Go to docs',
+        name: 'Lead Time',
+        docsLink: true,
+        url: '/help/user/analytics/index#definitions',
+        __typename: 'ValueStreamMetricLinkType',
+      },
+    ],
+    title: 'Lead Time',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
+  deploys: {
+    unit: null,
+    value: 751,
+    identifier: 'deploys',
+    links: [],
+    title: 'Deploys',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
+  __typename: 'GroupValueStreamAnalyticsFlowMetrics',
+};
+
+export const mockExcludeMetrics = [
+  DORA_METRICS.DEPLOYMENT_FREQUENCY,
+  DORA_METRICS.LEAD_TIME_FOR_CHANGES,
+];
+
+export const mockEmptyVulnerabilityResponse = [{ date: null, critical: null, high: null }];
+export const mockEmptyDoraResponse = { metrics: [] };
+export const mockEmptyFlowMetricsResponse = {
+  issues: null,
+  deploys: null,
+  cycle_time: null,
+  lead_time: null,
 };

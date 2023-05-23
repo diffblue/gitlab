@@ -1,0 +1,1 @@
+export const BUCKETING_INTERVAL_ALL = 'ALL';

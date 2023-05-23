@@ -1,5 +1,6 @@
 import { parse } from 'yaml';
 import Api from '~/api';
+import { formatAsPercentageWithoutSymbol, secondsToDays } from 'ee/dora/components/util';
 import { s__, __ } from '~/locale';
 import { isNumeric } from '~/lib/utils/number_utils';
 import {
@@ -12,6 +13,7 @@ import {
 } from '~/lib/utils/datetime_utility';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
+import { VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import {
@@ -127,6 +129,153 @@ export const extractDoraMetrics = (metrics = []) =>
         [curr.identifier]: curr,
       };
     }, {});
+
+/**
+ * @typedef {Object} ValueStreamDashboardTableMetric
+ * @property {String} identifier - Identifier for the specified metric
+ * @property {String} value - Display friendly value
+ */
+
+/**
+ * @typedef {Object} VulnerabilityCountItem
+ * @property {String} date - ISO 8601 date
+ * @property {Integer} critical - Critical vulnerabilites at that point in time
+ * @property {Integer} high - High vulnerabilites at that point in time
+ */
+
+/**
+ * @typedef {Object} VulnerabilityCountResponseItem
+ * @property {ValueStreamDashboardTableMetric} vulnerability_critical - Critical vulnerability count
+ * @property {ValueStreamDashboardTableMetric} vulnerability_high - High vulnerability count
+ */
+
+/**
+ * Takes the raw Query.vulnerabilitiesCountByDay graphql response and prepares the data for display
+ * in the Value streams dashboard.
+ *
+ * An array is returned, but we only want the first value (the latest date) if there are multiple
+ *
+ * @param {VulnerabilityCountItem[]} data
+ * @returns {VulnerabilityCountResponseItem} Vulnerability metric data ready for rendering in the value stream dashboard
+ */
+export const extractGraphqlVulnerabilitiesData = (rawVulnerabilityData = []) => {
+  const [selectedCount] = rawVulnerabilityData;
+  return {
+    [VULNERABILITY_METRICS.CRITICAL]: {
+      identifier: VULNERABILITY_METRICS.CRITICAL,
+      value: selectedCount?.critical || '-',
+    },
+    [VULNERABILITY_METRICS.HIGH]: {
+      identifier: VULNERABILITY_METRICS.HIGH,
+      value: selectedCount?.high || '-',
+    },
+  };
+};
+
+const scaledValueForDisplay = (value, units) => {
+  if (units === UNITS.PERCENT) {
+    return formatAsPercentageWithoutSymbol(value);
+  }
+  if (units === UNITS.DAYS) {
+    return secondsToDays(value);
+  }
+  return value;
+};
+
+/**
+ * @typedef {Object} DoraMetricItem
+ * @property {String} date - ISO 8601 date
+ * @property {Float} change_failure_rate - Float represention to be converted to percentage
+ * @property {Float} deployment_frequency - Per day deployments
+ * @property {Float} lead_time_for_changes - Time in seconds
+ * @property {Float} time_to_restore_service - Time in seconds
+ */
+
+/**
+ * @typedef {Object} DoraMetricResponseItem
+ * @property {ValueStreamDashboardTableMetric} change_failure_rate - String represention to be converted to percentage
+ * @property {ValueStreamDashboardTableMetric} deployment_frequency - Float per day deployments value
+ * @property {ValueStreamDashboardTableMetric} lead_time_for_changes - String time in days
+ * @property {ValueStreamDashboardTableMetric} time_to_restore_service - String time in days
+ */
+
+/**
+ * Takes the raw Query.dora graphql response and prepares the data for display
+ * in the Value streams dashboard. Assumes that you've used `BUCKETING_INTERVAL_ALL` so
+ * there will only be a single data point returned.
+ *
+ * The DORA endpoint does not include metadata about each of the metrics (label
+ * links to docs etc), so we need to mix this data in from the TABLE_METRICS constant
+ * to determine the units used to display each metric.
+ *
+ * @param {DoraMetricItem[]} data
+ * @returns {DoraMetricResponseItem} Dora metrics ready for rendering in the value stream dashboard
+ */
+export const extractGraphqlDoraData = (data = []) => {
+  const [bucketedData] = data;
+  if (bucketedData && !Object.keys(bucketedData).length) return {};
+
+  return Object.entries(TABLE_METRICS).reduce(
+    (acc, [identifier, tmValue]) =>
+      bucketedData && bucketedData[identifier]
+        ? {
+            ...acc,
+            [identifier]: {
+              identifier,
+              value: scaledValueForDisplay(bucketedData[identifier], tmValue.units),
+            },
+          }
+        : acc,
+    {},
+  );
+};
+
+/**
+ * @typedef {Object} ValueStreamFlowMetrics
+ * @property {String} identifier - Identifier for the specified metric
+ * @property {String} title - Display friendly name for the metric
+ * @property {String} unit - String name units for the measurement
+ * @property {Float} value - Float value for the measurement, scaled ready to be used for display
+ * @property {Array} links - Array of links to render for more information
+ */
+
+/**
+ * @typedef {Object} FlowMetricItem
+ * @property {ValueStreamFlowMetrics} cycle_time - ValueStreamFlowMetrics represention to be converted to percentage
+ * @property {ValueStreamFlowMetrics} deploys - Per day deployments
+ * @property {ValueStreamFlowMetrics} issues - Time in seconds
+ * @property {ValueStreamFlowMetrics} lead_time - Time in seconds
+ */
+
+/**
+ * @typedef {Object} FlowMetricResponseItem
+ * @property {ValueStreamDashboardTableMetric} cycle_time - ValueStreamDashboardTableMetric represention to be converted to percentage
+ * @property {ValueStreamDashboardTableMetric} deploys - Per day deployments
+ * @property {ValueStreamDashboardTableMetric} issues - Time in seconds
+ * @property {ValueStreamDashboardTableMetric} lead_time - Time in seconds
+ */
+
+/**
+ * Takes the raw Query.flowMetrics graphql response and prepares the data for display
+ * removing some unnecessary fields and replacing null values with `-`.
+ *
+ * @param {FlowMetricItem} data
+ * @returns {FlowMetricResponseItem} Flow metrics ready for rendering in the value stream dashboard
+ */
+export const extractGraphqlFlowData = (data = {}) =>
+  Object.entries(TABLE_METRICS).reduce(
+    (acc, [identifier]) =>
+      data && data[identifier]
+        ? {
+            ...acc,
+            [identifier]: {
+              identifier,
+              value: data[identifier].value ? data[identifier].value : '-',
+            },
+          }
+        : acc,
+    {},
+  );
 
 /**
  * Fetches and merges DORA metrics into the given timePeriod objects.
