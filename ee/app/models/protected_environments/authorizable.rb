@@ -7,6 +7,8 @@ module ProtectedEnvironments
     included do
       belongs_to :user
       belongs_to :group
+
+      validate :validate_group_id
     end
 
     GROUP_INHERITANCE_TYPE = {
@@ -71,6 +73,13 @@ module ProtectedEnvironments
       return group.name if group_type?
 
       HUMAN_ACCESS_LEVELS[access_level]
+    end
+
+    def validate_group_id
+      return unless group_type?
+      return if ::Group.exists?(id: group_id)
+
+      errors.add(:base, 'There is no corresponding group to the specified Group ID.')
     end
   end
 end
