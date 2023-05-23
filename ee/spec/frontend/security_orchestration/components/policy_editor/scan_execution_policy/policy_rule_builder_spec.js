@@ -1,5 +1,4 @@
 import { nextTick } from 'vue';
-import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
@@ -13,8 +12,6 @@ import { CRON_DEFAULT_TIME } from 'ee/security_orchestration/components/policy_e
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
-  const ruleIfLabel = __('if');
-  const ruleOrLabel = __('or');
 
   const initRule = {
     type: SCAN_EXECUTION_PIPELINE_RULE,
@@ -30,27 +27,25 @@ describe('PolicyRuleBuilder', () => {
     });
   };
 
-  const findPipelineRuleComponentLabel = () => wrapper.findByTestId('rule-component-label');
   const findBaseRuleComponent = () => wrapper.findComponent(BaseRuleComponent);
   const findScheduleRuleComponent = () => wrapper.findComponent(ScheduleRuleComponent);
+  const findRuleSeperator = () => wrapper.findByTestId('rule-separator');
 
   it.each`
     ruleIndex | expectedResult
-    ${0}      | ${ruleIfLabel}
-    ${1}      | ${ruleOrLabel}
-    ${2}      | ${ruleOrLabel}
-  `('should display correct label based on rule order', ({ ruleIndex, expectedResult }) => {
+    ${0}      | ${false}
+    ${1}      | ${true}
+  `('displays correct label based on rule order', ({ ruleIndex, expectedResult }) => {
     createComponent({ ruleIndex });
 
-    expect(findPipelineRuleComponentLabel().text()).toContain(expectedResult);
-    expect(findBaseRuleComponent().props('ruleLabel')).toEqual(expectedResult);
+    expect(findRuleSeperator().exists()).toBe(expectedResult);
   });
 
   it.each`
     type                            | expectedRule
     ${SCAN_EXECUTION_SCHEDULE_RULE} | ${RULE_KEY_MAP[SCAN_EXECUTION_SCHEDULE_RULE]}
     ${SCAN_EXECUTION_PIPELINE_RULE} | ${RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE]}
-  `('should change rules', async ({ type, expectedRule }) => {
+  `('changes rules', async ({ type, expectedRule }) => {
     createComponent();
 
     findBaseRuleComponent().vm.$emit('select-rule', type);
@@ -62,7 +57,7 @@ describe('PolicyRuleBuilder', () => {
     });
   });
 
-  it('should select correct schedule rule', async () => {
+  it('selects correct schedule rule', async () => {
     createComponent({
       initRule: {
         type: SCAN_EXECUTION_SCHEDULE_RULE,

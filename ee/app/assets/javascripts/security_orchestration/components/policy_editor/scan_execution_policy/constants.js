@@ -8,8 +8,8 @@ export const SCAN_EXECUTION_RULES_PIPELINE_KEY = 'pipeline';
 export const SCAN_EXECUTION_RULES_SCHEDULE_KEY = 'schedule';
 
 export const SCAN_EXECUTION_RULES_LABELS = {
-  [SCAN_EXECUTION_RULES_PIPELINE_KEY]: s__('ScanExecutionPolicy|A pipeline is run'),
-  [SCAN_EXECUTION_RULES_SCHEDULE_KEY]: s__('ScanExecutionPolicy|Schedule'),
+  [SCAN_EXECUTION_RULES_PIPELINE_KEY]: s__('ScanExecutionPolicy|Triggers:'),
+  [SCAN_EXECUTION_RULES_SCHEDULE_KEY]: s__('ScanExecutionPolicy|Schedules:'),
 };
 
 export const ADD_CONDITION_LABEL = s__('ScanExecutionPolicy|Add condition');

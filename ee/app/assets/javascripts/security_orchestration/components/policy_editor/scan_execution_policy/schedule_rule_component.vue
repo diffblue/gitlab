@@ -33,7 +33,7 @@ export default {
   HOUR_MINUTE_LIST,
   DAYS,
   i18n: {
-    scanResultExecutionPeriod: s__('ScanExecutionPolicy|%{period} %{days} at %{time}'),
+    schedulePeriod: s__('ScanExecutionPolicy|%{period} %{days} at %{time}'),
     selectedAgentsPlaceholder: s__('ScanExecutionPolicy|Select agent'),
     selectedNamespacesPlaceholder: s__('ScanExecutionPolicy|Select namespaces'),
     namespaceLabel: s__('ScanExecutionPolicy|in namespaces'),
@@ -48,10 +48,6 @@ export default {
   props: {
     initRule: {
       type: Object,
-      required: true,
-    },
-    ruleLabel: {
-      type: String,
       required: true,
     },
   },
@@ -168,7 +164,6 @@ export default {
   <base-rule-component
     :default-selected-rule="$options.SCAN_EXECUTION_RULES_SCHEDULE_KEY"
     :init-rule="initRule"
-    :rule-label="ruleLabel"
     :is-branch-scope="isBranchScope"
     v-on="$listeners"
   >
@@ -208,9 +203,9 @@ export default {
       />
     </template>
 
-    <template #content>
-      <div class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
-        <gl-sprintf :message="$options.i18n.scanResultExecutionPeriod">
+    <template #period>
+      <span class="gl-display-flex gl-align-items-center gl-flex-wrap">
+        <gl-sprintf :message="$options.i18n.schedulePeriod">
           <template #period>
             <gl-collapsible-listbox
               class="gl-mr-3"
@@ -236,7 +231,7 @@ export default {
 
           <template #time>
             <gl-collapsible-listbox
-              class="gl-ml-3 gl-mr-3"
+              class="gl-ml-3"
               data-testid="rule-component-time"
               :items="convertToListboxItems($options.HOUR_MINUTE_LIST)"
               :toggle-text="selectedTime"
@@ -245,7 +240,7 @@ export default {
             />
           </template>
         </gl-sprintf>
-      </div>
+      </span>
     </template>
   </base-rule-component>
 </template>
