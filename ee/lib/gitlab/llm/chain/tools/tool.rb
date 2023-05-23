@@ -11,6 +11,10 @@ module Gitlab
             @name = name
             @description = description
           end
+
+          def execute(context, options)
+            raise NotImplementedError
+          end
         end
       end
     end
