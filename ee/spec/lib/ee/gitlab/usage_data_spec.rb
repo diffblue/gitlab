@@ -579,8 +579,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
         coverage_fuzzing_scans: 0,
         api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0,
-        user_unique_users_all_secure_scanners: 1
+        api_fuzzing_scans: 0
       )
     end
 
@@ -601,7 +600,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       end
 
       expect(described_class.usage_activity_by_stage_secure({})).to include(
-        user_unique_users_all_secure_scanners: 1,
         sast_scans: 2,
         dependency_scanning_scans: 6,
         container_scanning_scans: 2,
@@ -618,7 +616,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         secret_detection_pipeline: be_within(error_rate).percent_of(1),
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
         api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        user_unique_users_all_secure_scanners: 1,
         sast_scans: 1,
         dependency_scanning_scans: 3,
         container_scanning_scans: 1,
@@ -650,8 +647,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
         coverage_fuzzing_scans: 0,
         api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0,
-        user_unique_users_all_secure_scanners: 3
+        api_fuzzing_scans: 0
       )
     end
 
@@ -674,8 +670,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
         coverage_fuzzing_scans: 0,
         api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0,
-        user_unique_users_all_secure_scanners: 1
+        api_fuzzing_scans: 0
       )
     end
 
@@ -720,8 +715,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
             coverage_fuzzing_pipeline: -1,
             coverage_fuzzing_scans: -1,
             api_fuzzing_pipeline: -1,
-            api_fuzzing_scans: -1,
-            user_unique_users_all_secure_scanners: -1
+            api_fuzzing_scans: -1
           )
         end
       end
