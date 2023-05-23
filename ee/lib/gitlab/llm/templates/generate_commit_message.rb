@@ -7,7 +7,7 @@ module Gitlab
         include Gitlab::Utils::StrongMemoize
 
         GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+(,\d+)? )@@/
-        MAX_TOKENS = 3_000
+        MAX_TOKENS = 1000
 
         def initialize(merge_request)
           @merge_request = merge_request
