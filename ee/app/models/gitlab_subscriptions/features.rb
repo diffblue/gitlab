@@ -182,6 +182,7 @@ module GitlabSubscriptions
       api_fuzzing
       auto_rollback
       breach_and_attack_simulation
+      fill_in_merge_request_template
       no_code_automation
       ci_namespace_catalog
       cluster_image_scanning

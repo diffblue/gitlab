@@ -14,7 +14,8 @@ module Llm
       generate_test_file: Llm::GenerateTestFileService,
       generate_description: Llm::GenerateDescriptionService,
       generate_commit_message: Llm::GenerateCommitMessageService,
-      chat: Llm::ChatService
+      chat: Llm::ChatService,
+      fill_in_merge_request_template: Llm::FillInMergeRequestTemplateService
     }.freeze
 
     def initialize(user, resource, method, options = {})
