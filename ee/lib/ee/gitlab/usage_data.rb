@@ -17,39 +17,6 @@ module EE
         merge_request_maximum_id
       ).freeze
 
-      SECURE_PRODUCT_TYPES = {
-        container_scanning: {
-          name: :container_scanning_jobs
-        },
-        dast: {
-          name: :dast_jobs
-        },
-        dependency_scanning: {
-          name: :dependency_scanning_jobs
-        },
-        license_management: {
-          name: :license_management_jobs
-        },
-        license_scanning: {
-          name: :license_scanning_jobs
-        },
-        sast: {
-          name: :sast_jobs
-        },
-        secret_detection: {
-          name: :secret_detection_jobs
-        },
-        coverage_fuzzing: {
-          name: :coverage_fuzzing_jobs
-        },
-        apifuzzer_fuzz: {
-          name: :api_fuzzing_jobs
-        },
-        apifuzzer_fuzz_dnd: {
-          name: :api_fuzzing_dnd_jobs
-        }
-      }.freeze
-
       class_methods do
         extend ::Gitlab::Utils::Override
 
@@ -354,12 +321,10 @@ module EE
         # Once https://gitlab.com/gitlab-org/gitlab/merge_requests/17568 is merged, this might be doable
         override :usage_activity_by_stage_secure
         def usage_activity_by_stage_secure(time_period)
-          prefix = 'user_'
-
           results = count_secure_pipelines(time_period)
           results.merge!(count_secure_scans(time_period))
 
-          results[:"#{prefix}unique_users_all_secure_scanners"] = distinct_count(::Ci::Build.where(name: SECURE_PRODUCT_TYPES.keys).where(time_period), :user_id)
+          prefix = 'user_'
 
           # handle license rename https://gitlab.com/gitlab-org/gitlab/issues/8911
           combined_license_key = "#{prefix}license_management_jobs".to_sym
