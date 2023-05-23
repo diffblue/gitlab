@@ -330,6 +330,94 @@ RSpec.describe MergeRequestPolicy, feature_category: :code_review_workflow do
     end
   end
 
+  describe "summarize_draft_code_review", :saas do
+    let_it_be(:reviewer) { create(:user) }
+    let_it_be(:ultimate_group) do
+      create(
+        :group_with_plan,
+        :public,
+        plan: :ultimate_plan,
+        third_party_ai_features_enabled: true,
+        experiment_features_enabled: true
+      )
+    end
+
+    let_it_be(:ultimate_project) { create(:project, :public, group: ultimate_group) }
+    let_it_be(:merge_request) do
+      create(
+        :merge_request,
+        source_project: ultimate_project,
+        target_project: ultimate_project,
+        author: reviewer
+      )
+    end
+
+    let(:policy_under_test) { described_class.new(reviewer, merge_request) }
+
+    subject { policy_for(reviewer) }
+
+    before do
+      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_licensed_features(
+        summarize_my_mr_code_review: true,
+        ai_features: true
+      )
+
+      project.add_maintainer(reviewer)
+      ultimate_group.namespace_settings.update!(
+        third_party_ai_features_enabled: true,
+        experiment_features_enabled: true
+      )
+    end
+
+    context "when all settings enabled and restrictions are fulfilled" do
+      it "allows" do
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(true)
+      end
+    end
+
+    context "when namespace isn't available" do
+      it "does not allow" do
+        expect(merge_request.project.group).to receive(:root_ancestor).and_return(nil)
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      end
+    end
+
+    context "when summarize_my_code_review feature flag is disabled" do
+      before do
+        stub_feature_flags(summarize_my_code_review: false)
+      end
+
+      it "does not allow" do
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      end
+    end
+
+    context "when namespace isn't a group namespace" do
+      it "does not allow" do
+        expect(merge_request.project.group.root_ancestor).to receive(:group_namespace?).and_return(false)
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      end
+    end
+
+    context "when summarize_my_mr_code_review licensed feature is disabled" do
+      before do
+        stub_licensed_features(summarize_my_mr_code_review: false)
+      end
+
+      it "does not allow" do
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      end
+    end
+
+    context "when ::Gitlab::Llm::StageCheck.available? returns false" do
+      it "does not allow" do
+        expect(::Gitlab::Llm::StageCheck).to receive(:available?).and_return(false)
+        expect(policy_under_test.allowed?(:summarize_draft_code_review)).to be(false)
+      end
+    end
+  end
+
   describe 'create_visual_review_note rules' do
     let(:non_member) { build(:user) }
     let(:unauthenticated) { nil }

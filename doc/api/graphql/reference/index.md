@@ -1025,6 +1025,7 @@ Input type: `AiActionInput`
 | <a id="mutationaiactiongeneratetestfile"></a>`generateTestFile` | [`GenerateTestFileInput`](#generatetestfileinput) | Input for generate_test_file AI action. |
 | <a id="mutationaiactionmarkupformat"></a>`markupFormat` | [`MarkupFormat`](#markupformat) | Indicates the response format. |
 | <a id="mutationaiactionsummarizecomments"></a>`summarizeComments` | [`AiSummarizeCommentsInput`](#aisummarizecommentsinput) | Input for summarize_comments AI action. |
+| <a id="mutationaiactionsummarizereview"></a>`summarizeReview` | [`AiSummarizeReviewInput`](#aisummarizereviewinput) | Input for summarize_review AI action. |
 | <a id="mutationaiactiontanukibot"></a>`tanukiBot` | [`AiTanukiBotInput`](#aitanukibotinput) | Input for tanuki_bot AI action. |
 
 #### Fields
@@ -27713,6 +27714,14 @@ see the associated mutation type above.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="aisummarizecommentsinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
+
+### `AiSummarizeReviewInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="aisummarizereviewinputresourceid"></a>`resourceId` | [`AiModelID!`](#aimodelid) | Global ID of the resource to mutate. |
 
 ### `AiTanukiBotInput`
 
