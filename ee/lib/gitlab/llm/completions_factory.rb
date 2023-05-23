@@ -12,6 +12,10 @@ module Gitlab
           service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeAllOpenNotes,
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes
         },
+        summarize_review: {
+          service_class: ::Gitlab::Llm::OpenAi::Completions::SummarizeReview,
+          prompt_class: ::Gitlab::Llm::OpenAi::Templates::SummarizeReview
+        },
         explain_code: {
           service_class: ::Gitlab::Llm::OpenAi::Completions::ExplainCode,
           prompt_class: ::Gitlab::Llm::OpenAi::Templates::ExplainCode

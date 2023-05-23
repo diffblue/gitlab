@@ -7,6 +7,7 @@ module Llm
     METHODS = {
       explain_vulnerability: ::Llm::ExplainVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
+      summarize_review: Llm::MergeRequests::SummarizeReviewService,
       explain_code: Llm::ExplainCodeService,
       tanuki_bot: Llm::TanukiBotService,
       generate_test_file: Llm::GenerateTestFileService,

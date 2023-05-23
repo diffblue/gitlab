@@ -11,6 +11,18 @@ module EE
         @subject.target_project&.can_override_approvers?
       end
 
+      with_scope :subject
+      condition(:summarize_draft_code_review_enabled) do
+        namespace = @subject&.project&.group&.root_ancestor
+
+        next if namespace.nil?
+
+        ::Feature.enabled?(:summarize_my_code_review, @user) &&
+          namespace.group_namespace? &&
+          namespace.licensed_feature_available?(:summarize_my_mr_code_review) &&
+          ::Gitlab::Llm::StageCheck.available?(namespace, :summarize_my_mr_code_review)
+      end
+
       condition(:external_status_checks_enabled) do
         @subject.target_project&.licensed_feature_available?(:external_status_checks) &&
           can?(:developer_access, @subject.target_project)
@@ -46,6 +58,8 @@ module EE
       rule { can?(:update_merge_request) }.policy do
         enable :update_approvers
       end
+
+      rule { summarize_draft_code_review_enabled }.enable :summarize_draft_code_review
 
       rule { merge_request_group_approver }.policy do
         enable :approve_merge_request
