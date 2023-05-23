@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_failures do
+RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_failures, feature_category: :value_stream_management do
   let_it_be_with_refind(:group) { create(:group) }
   let_it_be_with_refind(:subgroup) { create(:group, parent: group) }
 
@@ -27,9 +27,11 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
         expect(service_response).to be_success
         expect(service_response.payload[:reason]).to eq(:group_processed)
 
-        all_stage_events = event_model.all
-        expect(all_stage_events.size).to eq(1)
-        expect(all_stage_events.first[event_model.issuable_id_column]).to eq(record2.id)
+        # stage events where the end criteria are not met are excluded.
+        # See https://gitlab.com/gitlab-org/gitlab/-/issues/408320
+        target_stage_events = event_model.where.not(end_event_timestamp: nil)
+        expect(target_stage_events.size).to eq(1)
+        expect(target_stage_events.first[event_model.issuable_id_column]).to eq(record2.id)
       end
 
       context 'when running out of allotted time' do
@@ -69,9 +71,11 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
             }
           end
 
-          all_stage_events = event_model.all
-          expect(all_stage_events.size).to eq(1)
-          expect(all_stage_events.first[event_model.issuable_id_column]).to eq(record2.id)
+          # stage events where the end criteria are not met are excluded.
+          # See https://gitlab.com/gitlab-org/gitlab/-/issues/408320
+          target_stage_events = event_model.where.not(end_event_timestamp: nil)
+          expect(target_stage_events.size).to eq(1)
+          expect(target_stage_events.first[event_model.issuable_id_column]).to eq(record2.id)
         end
       end
     end

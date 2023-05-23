@@ -46706,6 +46706,9 @@ msgstr ""
 msgid "Time spent must be formatted correctly. For example: 1h 30m."
 msgstr ""
 
+msgid "Time to Merge"
+msgstr ""
+
 msgid "Time to Restore Service"
 msgstr ""
 
@@ -49395,6 +49398,9 @@ msgid "ValueStreamAnalytics|Median time from issue created to issue closed."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Median time from the earliest commit of a linked issue's merge request to when that issue is closed."
+msgstr ""
+
+msgid "ValueStreamAnalytics|Merge request analytics"
 msgstr ""
 
 msgid "ValueStreamAnalytics|New Value Stream"

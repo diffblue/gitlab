@@ -19,8 +19,8 @@ module Gitlab
       # Stage 1, Stage 2
       #
       # The class also adds two "in-memory" stages into the distinct calculation which
-      # represent the CycleTime and LeadTime metrics. These metrics are calculated as
-      # pre-defined VSA stages.
+      # represent the CycleTime and LeadTime metric for issues and TimeToMerge metric for MRs.
+      # These metrics are calculated as pre-defined VSA stages.
       class DistinctStageLoader
         def initialize(group:)
           @group = group
@@ -29,8 +29,7 @@ module Gitlab
         def stages
           [
             *persisted_stages,
-            add_stage_event_hash_id(in_memory_lead_time_stage),
-            add_stage_event_hash_id(in_memory_cycle_time_stage)
+            *in_memory_stages.map { |stage| add_stage_event_hash_id(stage) }
           ].uniq(&:stage_event_hash_id)
         end
 
@@ -40,6 +39,14 @@ module Gitlab
 
         def persisted_stages
           @persisted_stages ||= ::Analytics::CycleAnalytics::Stage.distinct_stages_within_hierarchy(group)
+        end
+
+        def in_memory_stages
+          [
+            in_memory_lead_time_stage,
+            in_memory_cycle_time_stage,
+            in_memory_time_to_merge_stage
+          ]
         end
 
         def in_memory_lead_time_stage
@@ -56,6 +63,15 @@ module Gitlab
             name: 'cycle time',
             start_event_identifier: Summary::CycleTime.start_event_identifier,
             end_event_identifier: Summary::CycleTime.end_event_identifier,
+            namespace: group
+          )
+        end
+
+        def in_memory_time_to_merge_stage
+          ::Analytics::CycleAnalytics::Stage.new(
+            name: 'time to merge',
+            start_event_identifier: Summary::TimeToMerge.start_event_identifier,
+            end_event_identifier: Summary::TimeToMerge.end_event_identifier,
             namespace: group
           )
         end

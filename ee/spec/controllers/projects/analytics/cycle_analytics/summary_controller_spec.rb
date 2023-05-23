@@ -41,11 +41,12 @@ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController, feature_c
       end
 
       it 'returns correct value' do
-        expected_cycle_time = (closed_at - first_mentioned_in_commit_at).to_i
+        expected_cycle_time = (closed_at - first_mentioned_in_commit_at).to_f
 
         subject
 
-        expect(json_response.last["value"].to_i).to eq(expected_cycle_time)
+        lead_time = json_response.find { |result| result['identifier'] == 'cycle_time' }.symbolize_keys
+        expect(lead_time).to include({ value: expected_cycle_time.to_s, title: 'Cycle Time', unit: 'days' })
       end
 
       context 'when analytics_disabled features are disabled' do
