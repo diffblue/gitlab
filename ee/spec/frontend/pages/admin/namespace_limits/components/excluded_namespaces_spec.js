@@ -58,6 +58,13 @@ describe('ExcludedNamespaces', () => {
   });
 
   describe('exclusion table', () => {
+    it('calls the exclusion list endpoint on component mount', async () => {
+      axiosMock.onGet(listExclusionsEndpoint).replyOnce(HTTP_STATUS_OK, mockData);
+      createComponent();
+      await waitForPromises();
+      expect(axiosMock.history.get.length).toBe(1);
+    });
+
     it('renders an error if there is a problem fetching the list', async () => {
       axiosMock.onGet(listExclusionsEndpoint).replyOnce(HTTP_STATUS_BAD_REQUEST);
       createComponent();
