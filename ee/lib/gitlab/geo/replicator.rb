@@ -204,7 +204,7 @@ module Gitlab
         ::Geo::EventLog.transaction do
           results = ::Geo::Event.insert_all!(events)
 
-          break if results.rows.empty?
+          next if results.rows.empty?
 
           ids = results.map { |result| { geo_event_id: result['id'], created_at: Time.current } }
           ::Geo::EventLog.insert_all!(ids)
