@@ -50,6 +50,17 @@ module EE
           ::Feature.enabled?(:ff_external_audit_events)
       end
 
+      condition(:code_suggestions_enabled) do
+        @user&.code_suggestions_enabled?
+      end
+
+      condition(:code_suggestions_disabled_by_group) do
+        next false unless @user
+
+        accessible_root_groups = @user.groups.by_parent(nil)
+        accessible_root_groups.reject(&:code_suggestions_enabled?).any?
+      end
+
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
 
       rule { ~anonymous & remote_development_available }.enable :read_workspace
@@ -92,6 +103,9 @@ module EE
       rule { admin & instance_external_audit_events_enabled }.policy do
         enable :admin_instance_external_audit_events
       end
+
+      rule { code_suggestions_enabled }.enable :access_code_suggestions
+      rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
     end
   end
 end
