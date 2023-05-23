@@ -1,0 +1,8 @@
+name: create_event_streaming_destination
+description: Event triggered when an external audit event destination is created
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/344664
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/74632
+feature_category: audit_events
+milestone: "14.6"
+saved_to_database: true
+streamed: true
