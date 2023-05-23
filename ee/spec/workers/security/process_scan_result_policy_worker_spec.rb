@@ -91,25 +91,11 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
       end
     end
 
-    context 'with transaction' do
-      context 'when remove_scan_result_policy_transaction is disabled' do
-        before do
-          stub_feature_flags(remove_scan_result_policy_transaction: false)
-        end
+    context 'without transaction' do
+      it 'does not wrap the execution within transaction' do
+        expect(Security::OrchestrationPolicyConfiguration).not_to receive(:transaction).and_yield
 
-        it 'wraps the execution within transaction' do
-          expect(Security::OrchestrationPolicyConfiguration).to receive(:transaction).and_yield
-
-          worker.perform(configuration.project_id, configuration.id)
-        end
-      end
-
-      context 'when remove_scan_result_policy_transaction is enabled' do
-        it 'does not wrap the execution within transaction' do
-          expect(Security::OrchestrationPolicyConfiguration).not_to receive(:transaction).and_yield
-
-          worker.perform(configuration.project_id, configuration.id)
-        end
+        worker.perform(configuration.project_id, configuration.id)
       end
     end
 
