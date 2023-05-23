@@ -26,7 +26,8 @@ module EE
             target_details: runner_path,
             message: 'Changed CI runner project assignments',
             additional_details: {
-              action: :custom
+              action: :custom,
+              project_ids: project_ids
             }
           }
           ::Gitlab::Audit::Auditor.audit(audit_context)
