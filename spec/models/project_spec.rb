@@ -76,6 +76,7 @@ RSpec.describe Project, factory_default: :keep, feature_category: :projects do
     it { is_expected.to have_one(:harbor_integration) }
     it { is_expected.to have_one(:redmine_integration) }
     it { is_expected.to have_one(:youtrack_integration) }
+    it { is_expected.to have_one(:clickup_integration) }
     it { is_expected.to have_one(:custom_issue_tracker_integration) }
     it { is_expected.to have_one(:bugzilla_integration) }
     it { is_expected.to have_one(:ewm_integration) }
