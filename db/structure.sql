@@ -20324,7 +20324,7 @@ CREATE TABLE postgres_async_indexes (
     CONSTRAINT check_083b21157b CHECK ((char_length(definition) <= 2048)),
     CONSTRAINT check_45dc23c315 CHECK ((char_length(last_error) <= 10000)),
     CONSTRAINT check_b732c6cd1d CHECK ((char_length(name) <= 63)),
-    CONSTRAINT check_e64ff4359e CHECK ((char_length(table_name) <= 63))
+    CONSTRAINT check_schema_and_name_length CHECK ((char_length(table_name) <= 127))
 );
 
 CREATE SEQUENCE postgres_async_indexes_id_seq
