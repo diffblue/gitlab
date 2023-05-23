@@ -171,53 +171,6 @@ RSpec.describe Dora::AggregateMetricsService, feature_category: :value_stream_ma
         end
       end
 
-      context 'when fix_dora_deployment_frequency_calculation FF is off' do
-        before do
-          stub_feature_flags(fix_dora_deployment_frequency_calculation: false)
-        end
-
-        it 'returns the aggregated data' do
-          expect(subject[:status]).to eq(:success)
-          expect(subject[:data]).to eq([
-            { 'date' => Date.parse('2022-01-25'), 'deployment_count' => 2, metric => 2 },
-            { 'date' => Date.parse('2022-01-28'), 'deployment_count' => 5, metric => 5 },
-            { 'date' => Date.parse('2022-02-07'), 'deployment_count' => 9, metric => 9 },
-            { 'date' => Date.parse('2022-03-01'), 'deployment_count' => 1, metric => 1 }
-          ])
-        end
-
-        context 'when interval is monthly' do
-          let(:extra_params) { { interval: Dora::DailyMetrics::INTERVAL_MONTHLY } }
-
-          it 'returns the aggregated data' do
-            expect(subject[:status]).to eq(:success)
-            expect(subject[:data]).to eq([
-              { 'date' => Date.parse('2022-01-01'), 'deployment_count' => 7, metric => 7 },
-              { 'date' => Date.parse('2022-02-01'), 'deployment_count' => 9, metric => 9 },
-              { 'date' => Date.parse('2022-03-01'), 'deployment_count' => 1, metric => 1 }
-            ])
-          end
-        end
-
-        context 'when interval is all' do
-          let(:extra_params) { { interval: Dora::DailyMetrics::INTERVAL_ALL } }
-
-          it 'returns the aggregated data' do
-            expect(subject[:status]).to eq(:success)
-            expect(subject[:data]).to eq([{ 'date' => nil, 'deployment_count' => 17, metric => 17 }])
-          end
-        end
-
-        context 'when environment tiers are changed' do
-          let(:extra_params) { { environment_tiers: ['staging'] } }
-
-          it 'returns the aggregated data' do
-            expect(subject[:status]).to eq(:success)
-            expect(subject[:data]).to eq([{ 'date' => Date.parse('2022-02-05'), 'deployment_count' => 1, metric => 1 }])
-          end
-        end
-      end
-
       context 'when group_project_ids parameter is given' do
         let(:extra_params) { { interval: Dora::DailyMetrics::INTERVAL_ALL, group_project_ids: [1] } }
 
