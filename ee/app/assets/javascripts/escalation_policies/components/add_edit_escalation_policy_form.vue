@@ -146,9 +146,7 @@ export default {
           id="escalation-policy-name"
           data-qa-selector="escalation_policy_name_field"
           :value="form.name"
-          @blur="
-            $emit('update-escalation-policy-form', { field: 'name', value: $event.target.value })
-          "
+          @input="$emit('update-escalation-policy-form', { field: 'name', value: $event })"
         />
         <span class="form-text text-muted">{{ $options.i18n.fields.name.help }}</span>
       </gl-form-group>
@@ -161,10 +159,10 @@ export default {
         <gl-form-input
           id="escalation-policy-description"
           :value="form.description"
-          @blur="
+          @input="
             $emit('update-escalation-policy-form', {
               field: 'description',
-              value: $event.target.value,
+              value: $event,
             })
           "
         />

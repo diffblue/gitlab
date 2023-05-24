@@ -127,7 +127,7 @@ describe('AddEditsEscalationPolicyModal', () => {
     it('clears the validation state on modal cancel', async () => {
       const form = findEscalationPolicyForm();
       const getNameValidationState = () => form.props('validationState').name;
-      expect(getNameValidationState()).toBe(null);
+      expect(getNameValidationState()).toBe(false);
 
       form.vm.$emit('update-escalation-policy-form', {
         field: 'name',
@@ -138,7 +138,7 @@ describe('AddEditsEscalationPolicyModal', () => {
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
       await nextTick();
-      expect(getNameValidationState()).toBe(null);
+      expect(getNameValidationState()).toBe(false);
     });
   });
 
@@ -202,9 +202,9 @@ describe('AddEditsEscalationPolicyModal', () => {
     it('clears the validation state on modal cancel', async () => {
       const form = findEscalationPolicyForm();
       const getNameValidationState = () => form.props('validationState').name;
-      expect(getNameValidationState()).toBe(null);
+      expect(getNameValidationState()).toBe(true);
 
-      expect(wrapper.vm.validationState.name).toBe(null);
+      expect(wrapper.vm.validationState.name).toBe(true);
 
       form.vm.$emit('update-escalation-policy-form', {
         field: 'name',
@@ -215,7 +215,7 @@ describe('AddEditsEscalationPolicyModal', () => {
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
       await nextTick();
-      expect(getNameValidationState()).toBe(null);
+      expect(getNameValidationState()).toBe(true);
     });
   });
 
