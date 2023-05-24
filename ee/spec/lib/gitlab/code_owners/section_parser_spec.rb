@@ -36,6 +36,7 @@ RSpec.describe Gitlab::CodeOwners::SectionParser, feature_category: :source_code
         '[Doc] @doc @rrr.dev @dev' | 'Doc' | false | 0 | '@doc @rrr.dev @dev' | {} | []
         '^[Doc] @doc @rrr.dev @dev' | 'Doc' | true | 0 | '@doc @rrr.dev @dev' | {} | []
         '[Doc][2] @doc @rrr.dev @dev' | 'Doc' | false | 2 | '@doc @rrr.dev @dev' | {} | []
+        '[Doc] malformed' | 'Doc' | false | 0 | 'malformed' | {} | [:invalid_section_owner_format]
       end
 
       with_them do

@@ -461,6 +461,9 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
         *.txt @user
 
         [Invalid section
+
+        [OK section header]
+        some_entry not_a_user_not_an_email
         CONTENT
       end
 
@@ -472,7 +475,9 @@ RSpec.describe Gitlab::CodeOwners::File, feature_category: :source_code_manageme
             Gitlab::CodeOwners::Error.new(message: :missing_entry_owner, line_number: 1, path: 'CODEOWNERS'),
             Gitlab::CodeOwners::Error.new(message: :missing_section_name, line_number: 3, path: 'CODEOWNERS'),
             Gitlab::CodeOwners::Error.new(message: :invalid_approval_requirement, line_number: 6, path: 'CODEOWNERS'),
-            Gitlab::CodeOwners::Error.new(message: :invalid_section_format, line_number: 9, path: 'CODEOWNERS')
+            Gitlab::CodeOwners::Error.new(message: :invalid_section_format, line_number: 9, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_entry_owner_format, line_number: 9, path: 'CODEOWNERS'),
+            Gitlab::CodeOwners::Error.new(message: :invalid_entry_owner_format, line_number: 12, path: 'CODEOWNERS')
           ]
         )
       end

@@ -122,6 +122,10 @@ module Gitlab
         pattern, _separator, entry_owners = line.partition(/(?<!\\)\s+/)
         normalized_pattern = normalize_pattern(pattern)
 
+        if entry_owners.present? && ReferenceExtractor.new(entry_owners).references.blank?
+          add_error(Error::INVALID_ENTRY_OWNER_FORMAT, line_number)
+        end
+
         owners = entry_owners.presence || section.default_owners
 
         add_error(Error::MISSING_ENTRY_OWNER, line_number) if owners.blank?

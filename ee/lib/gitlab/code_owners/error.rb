@@ -3,7 +3,9 @@
 module Gitlab
   module CodeOwners
     class Error
+      INVALID_SECTION_OWNER_FORMAT = :invalid_section_owner_format
       MISSING_ENTRY_OWNER = :missing_entry_owner
+      INVALID_ENTRY_OWNER_FORMAT = :invalid_entry_owner_format
       MISSING_SECTION_NAME = :missing_section_name
       INVALID_APPROVAL_REQUIREMENT = :invalid_approval_requirement
       INVALID_SECTION_FORMAT = :invalid_section_format
