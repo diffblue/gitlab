@@ -6,10 +6,20 @@ RSpec.describe Gitlab::CircuitBreaker::Notifier, feature_category: :shared do
   subject { described_class.new }
 
   describe '#notify' do
-    it 'sends an exception to Gitlab::ErrorTracking' do
-      expect(Gitlab::ErrorTracking).to receive(:track_exception)
+    context 'when event is failure' do
+      it 'sends an exception to Gitlab::ErrorTracking' do
+        expect(Gitlab::ErrorTracking).to receive(:track_exception)
 
-      subject.notify('test_service', 'test_event')
+        subject.notify('test_service', 'failure')
+      end
+    end
+
+    context 'when event is not failure' do
+      it 'does not send an exception to Gitlab::ErrorTracking' do
+        expect(Gitlab::ErrorTracking).not_to receive(:track_exception)
+
+        subject.notify('test_service', 'test_event')
+      end
     end
   end
 

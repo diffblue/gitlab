@@ -6,6 +6,8 @@ module Gitlab
       CircuitBreakerError = Class.new(RuntimeError)
 
       def notify(service_name, event)
+        return unless event == 'failure'
+
         exception = CircuitBreakerError.new("Service #{service_name}: #{event}")
         exception.set_backtrace(Gitlab::BacktraceCleaner.clean_backtrace(caller))
 
