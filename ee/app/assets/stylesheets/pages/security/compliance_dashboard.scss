@@ -1,9 +1,3 @@
-.compliance-filter-dropdown-input {
-  @include media-breakpoint-up(md) {
-    width: 11rem;
-  }
-}
-
 .compliance-report-table {
   .view-details {
     background-color: $gray-10;
