@@ -12,6 +12,7 @@ module Types
         ::Geo::ContainerRepositoryRegistry => Types::Geo::ContainerRepositoryRegistryType,
         ::Geo::DependencyProxyBlobRegistry => Types::Geo::DependencyProxyBlobRegistryType,
         ::Geo::DependencyProxyManifestRegistry => Types::Geo::DependencyProxyManifestRegistryType,
+        ::Geo::DesignManagementRepositoryRegistry => Types::Geo::DesignManagementRepositoryRegistryType,
         ::Geo::JobArtifactRegistry => Types::Geo::JobArtifactRegistryType,
         ::Geo::LfsObjectRegistry => Types::Geo::LfsObjectRegistryType,
         ::Geo::MergeRequestDiffRegistry => Types::Geo::MergeRequestDiffRegistryType,

@@ -27072,6 +27072,7 @@ One of:
 - [`ContainerRepositoryRegistry`](#containerrepositoryregistry)
 - [`DependencyProxyBlobRegistry`](#dependencyproxyblobregistry)
 - [`DependencyProxyManifestRegistry`](#dependencyproxymanifestregistry)
+- [`DesignManagementRepositoryRegistry`](#designmanagementrepositoryregistry)
 - [`JobArtifactRegistry`](#jobartifactregistry)
 - [`LfsObjectRegistry`](#lfsobjectregistry)
 - [`MergeRequestDiffRegistry`](#mergerequestdiffregistry)
