@@ -76,7 +76,12 @@ export default {
         @close="$emit('close')"
       />
     </span>
-    <gl-badge v-if="showDefaultBadge" :size="size" variant="info" data-qa-selector="framework_badge"
+    <gl-badge
+      v-if="showDefaultBadge"
+      :size="size"
+      class="gl-display-flex gl-w-max-content gl-mt-2"
+      variant="info"
+      data-qa-selector="framework_badge"
       >{{ $options.i18n.default }}
     </gl-badge>
   </div>

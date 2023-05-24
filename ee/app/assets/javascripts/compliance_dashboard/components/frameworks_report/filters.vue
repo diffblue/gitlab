@@ -73,7 +73,7 @@ export default {
 </script>
 
 <template>
-  <div class="row-content-block gl-mb-5 gl-relative">
+  <div class="row-content-block gl-relative gl-border-0">
     <gl-popover
       ref="popover"
       :target="() => $refs.popoverTarget"
