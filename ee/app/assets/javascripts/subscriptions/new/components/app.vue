@@ -41,7 +41,7 @@ export default {
 };
 </script>
 <template>
-  <div>
+  <div data-testid="subscription_app">
     <error-alert v-if="error" class="gl-mb-4" :error="error" />
     <step-order-app>
       <template #checkout>

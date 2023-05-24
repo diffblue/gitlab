@@ -47,8 +47,18 @@ RSpec.shared_context 'with saas sso settings for registration flows', shared_con
   end
 end
 
+RSpec.shared_context 'with saas settings for subscription registration flows', shared_context: :metadata do # rubocop: disable RSpec/SharedGroupsMetadata
+  include SubscriptionPortalHelpers
+
+  before do
+    stub_signing_key
+  end
+end
+
 RSpec.configure do |rspec|
   rspec.include_context 'with saas settings for registration flows', saas_registration: true
   rspec.include_context 'with saas settings for registration flows', saas_sso_registration: true
   rspec.include_context 'with saas sso settings for registration flows', saas_sso_registration: true
+  rspec.include_context 'with saas settings for registration flows', saas_subscription_registration: true
+  rspec.include_context 'with saas settings for subscription registration flows', saas_subscription_registration: true
 end

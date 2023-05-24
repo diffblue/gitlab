@@ -91,6 +91,11 @@ module EE
       def welcome_update_params
         glm_tracking_params
       end
+
+      override :finish_onboarding_if_in_subscription_flow
+      def finish_onboarding_if_in_subscription_flow
+        finish_onboarding(current_user) if helpers.in_subscription_flow?
+      end
     end
   end
 end
