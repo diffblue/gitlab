@@ -246,30 +246,6 @@ packages:
 # ------------------------------------------
 # Non parallel jobs
 # ------------------------------------------
-update-minor:
-  extends:
-    - .qa
-    - .update-script
-  variables:
-    UPDATE_TYPE: minor
-    QA_RSPEC_TAGS: --tag smoke
-  rules:
-    - !reference [.rules:test:update, rules]
-    - if: $QA_SUITES =~ /Test::Instance::Smoke/
-    - !reference [.rules:test:manual, rules]
-
-update-major:
-  extends:
-    - .qa
-    - .update-script
-  variables:
-    UPDATE_TYPE: major
-    QA_RSPEC_TAGS: --tag smoke
-  rules:
-    - !reference [.rules:test:update, rules]
-    - if: $QA_SUITES =~ /Test::Instance::Smoke/
-    - !reference [.rules:test:manual, rules]
-
 gitlab-pages:
   extends: .qa
   variables:
@@ -489,6 +465,47 @@ importers:
   rules:
     - !reference [.rules:test:qa, rules]
     - if: $QA_SUITES =~ /Test::Integration::Import/
+    - !reference [.rules:test:manual, rules]
+
+# ------------------------------------------
+# Update jobs
+# ------------------------------------------
+update-minor:
+  extends:
+    - .qa
+    - .update-script
+  variables:
+    UPDATE_TYPE: minor
+    QA_RSPEC_TAGS: --tag smoke
+  rules:
+    - !reference [.rules:test:update, rules]
+    - if: $QA_SUITES =~ /Test::Instance::Smoke/
+    - !reference [.rules:test:manual, rules]
+
+update-major:
+  extends:
+    - .qa
+    - .update-script
+  variables:
+    UPDATE_TYPE: major
+    QA_RSPEC_TAGS: --tag smoke
+  rules:
+    - !reference [.rules:test:update, rules]
+    - if: $QA_SUITES =~ /Test::Instance::Smoke/
+    - !reference [.rules:test:manual, rules]
+
+update-ee-to-ce:
+  extends:
+    - .qa
+    - .update-script
+  variables:
+    UPDATE_TYPE: minor
+    UPDATE_FROM_EDITION: ee
+    QA_RSPEC_TAGS: --tag smoke
+  rules:
+    - !reference [.rules:test:ce-only, rules]
+    - !reference [.rules:test:update, rules]
+    - if: $QA_SUITES =~ /Test::Instance::Smoke/
     - !reference [.rules:test:manual, rules]
 
 # ==========================================
