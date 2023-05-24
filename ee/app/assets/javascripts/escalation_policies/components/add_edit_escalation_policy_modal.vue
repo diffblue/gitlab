@@ -49,7 +49,7 @@ export default {
       form: this.getInitialState(),
       initialState: this.getInitialState(),
       validationState: {
-        name: null,
+        name: this.isEditMode,
         rules: [],
       },
       error: null,
@@ -202,9 +202,10 @@ export default {
     },
     resetForm() {
       this.form = this.getInitialState();
+      this.initialState = this.getInitialState();
 
       this.validationState = {
-        name: null,
+        name: this.isEditMode,
         rules: [],
       };
       this.hideErrorAlert();
