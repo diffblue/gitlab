@@ -25,18 +25,19 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileValidator, feature_
 
       # rubocop:disable Layout/LineLength
       where(:devfile_name, :error_str) do
-        'example.invalid-restricted-prefix-command-apply-component-name-devfile.yaml'      | "Component name 'gl-example' for command id 'example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-command-exec-component-name-devfile.yaml'       | "Component name 'gl-example' for command id 'example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-command-name-devfile.yaml'                      | "Command id 'gl-example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-component-container-endpoint-name-devfile.yaml' | "Endpoint name 'gl-example' of component 'example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-component-name-devfile.yaml'                    | "Component name 'gl-example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-event-type-prestart-name-devfile.yaml'          | "Event 'gl-example' of type 'preStart' starts with 'gl-'"
-        'example.invalid-restricted-prefix-variable-name-devfile.yaml'                     | "Variable name 'gl-example' starts with 'gl-'"
-        'example.invalid-restricted-prefix-variable-name-with-underscore-devfile.yaml'     | "Variable name 'gl_example' starts with 'gl_'"
+        'example.invalid-restricted-prefix-command-apply-component-name-devfile.yaml'      | "Component name 'gl-example' for command id 'example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-command-exec-component-name-devfile.yaml'       | "Component name 'gl-example' for command id 'example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-command-name-devfile.yaml'                      | "Command id 'gl-example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-component-container-endpoint-name-devfile.yaml' | "Endpoint name 'gl-example' of component 'example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-component-name-devfile.yaml'                    | "Component name 'gl-example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-event-type-prestart-name-devfile.yaml'          | "Event 'gl-example' of type 'preStart' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-variable-name-devfile.yaml'                     | "Variable name 'gl-example' must not start with 'gl-'"
+        'example.invalid-restricted-prefix-variable-name-with-underscore-devfile.yaml'     | "Variable name 'gl_example' must not start with 'gl_'"
         'example.invalid-unsupported-component-type-image-devfile.yaml'                    | "Component type 'image' is not yet supported"
         'example.invalid-unsupported-component-type-kubernetes-devfile.yaml'               | "Component type 'kubernetes' is not yet supported"
         'example.invalid-unsupported-component-type-openshift-devfile.yaml'                | "Component type 'openshift' is not yet supported"
-        'example.invalid-no-components-devfile.yaml'                                       | "No components present in the devfile"
+        'example.invalid-no-components-devfile.yaml'                                       | "No components present in devfile"
+        'example.invalid-component-missing-name.yaml'                                      | "Components must have a 'name'"
         'example.invalid-attributes-editor-injector-absent-devfile.yaml'                   | "No component has 'gl/inject-editor' attribute"
         'example.invalid-attributes-editor-injector-multiple-devfile.yaml'                 | "Multiple components([\"tooling-container\", \"tooling-container-2\"]) have 'gl/inject-editor' attribute"
         'example.invalid-unsupported-component-container-dedicated-pod-devfile.yaml'       | "Property 'dedicatedPod' of component 'example' is not yet supported"
@@ -58,11 +59,17 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileValidator, feature_
     context 'for devfiles containing pre flatten violations' do
       using RSpec::Parameterized::TableSyntax
 
+      # rubocop:disable Layout/LineLength
       where(:devfile_name, :error_str) do
         'example.invalid-unsupported-parent-inheritance-devfile.yaml' | "Inheriting from 'parent' is not yet supported"
+        'example.invalid-unsupported-schema-version-devfile.yaml'     | "'schemaVersion' '2.0.0' is not supported, it must be '2.2.0'"
+        'example.invalid-invalid-schema-version-devfile.yaml'         | "Invalid 'schemaVersion' 'example'"
       end
+      # rubocop:enable Layout/LineLength
+
       with_them do
         it 'raises an error' do
+          # noinspection RubyResolve
           expect { subject.pre_flatten_validate(devfile: devfile) }.to raise_error(ArgumentError, error_str)
         end
       end

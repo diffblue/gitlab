@@ -26,7 +26,7 @@ RSpec.describe RemoteDevelopment::Workspaces::Create::DevfileProcessor, feature_
     it 'returns expected processed devfile yaml' do
       # noinspection RubyResolve
       processed_devfile_yaml = subject.process(
-        devfile: workspace.devfile,
+        devfile_yaml_string: workspace.devfile,
         editor: workspace.editor,
         project: project,
         workspace_root: workspace_root
