@@ -55,10 +55,6 @@ export default {
     toggleText() {
       return getSelectedOptionsText(this.images, this.selected, this.$options.i18n.allItemsText);
     },
-    selectedItemNames() {
-      // Return the selected items, or all items if nothing is selected.
-      return this.selected.length ? this.selected : [this.$options.i18n.allItemsText];
-    },
     isLoading() {
       return this.$apollo.queries.images.loading;
     },
@@ -81,12 +77,12 @@ export default {
     },
   },
   methods: {
-    handleSelect(selected) {
+    updateSelected(selected) {
       if (selected?.at(-1) === ALL_ID) {
         this.selected = [];
-      } else {
-        this.selected = selected.filter((value) => value !== ALL_ID);
+        return;
       }
+      this.selected = selected.filter((value) => value !== ALL_ID);
     },
   },
   i18n: {
@@ -111,7 +107,7 @@ export default {
       fluid-width
       multiple
       block
-      @select="handleSelect"
+      @select="updateSelected"
     >
       <template #list-item="{ item }">
         <gl-truncate position="middle" :text="item.text" />
