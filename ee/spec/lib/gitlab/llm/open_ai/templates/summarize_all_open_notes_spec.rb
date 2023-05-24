@@ -7,14 +7,14 @@ RSpec.describe Gitlab::Llm::OpenAi::Templates::SummarizeAllOpenNotes, feature_ca
 
   let(:content) { "some random content" }
   let(:template) do
-    "Create a markdown header with main text idea followed by a summary of the following text, in at most 10 bullet"
+    "You are an assistant that extracts the most important information from the comments in maximum 10 bullet points."
   end
 
   subject { described_class.get_options(content) }
 
   describe '.get_options' do
     it 'returns correct parameters' do
-      expect(subject[:messages]).to include({ role: "user", content: content })
+      expect(subject[:content]).to include(template)
     end
   end
 end
