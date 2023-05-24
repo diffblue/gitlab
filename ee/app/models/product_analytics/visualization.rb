@@ -13,8 +13,8 @@ module ProductAnalytics
       return new(config: config) if config
 
       file = Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations', "#{data}.yaml")
-      Gitlab::Utils.check_path_traversal!(data)
-      Gitlab::Utils.check_allowed_absolute_path!(
+      Gitlab::PathTraversal.check_path_traversal!(data)
+      Gitlab::PathTraversal.check_allowed_absolute_path!(
         file.to_s, [Rails.root.join('ee/lib/gitlab/analytics/product_analytics/visualizations').to_s]
       )
       new(config: File.read(file))

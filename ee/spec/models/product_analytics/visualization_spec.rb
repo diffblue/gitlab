@@ -43,7 +43,7 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     let(:dashboard) { dashboards.find { |d| d.title == 'Dashboard Example 1' } }
 
     it 'raises an error' do
-      expect { dashboard.panels.first.visualization }.to raise_error(Gitlab::Utils::PathTraversalAttackError)
+      expect { dashboard.panels.first.visualization }.to raise_error(Gitlab::PathTraversal::PathTraversalAttackError)
     end
   end
 end
