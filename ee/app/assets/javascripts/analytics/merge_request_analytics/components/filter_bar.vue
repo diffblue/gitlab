@@ -177,6 +177,7 @@ export default {
       :tokens="tokens"
       :initial-filter-value="initialFilterValue"
       suggestions-list-class="gl-z-index-9999"
+      terms-as-tokens
       @onFilter="handleFilter"
     />
     <url-sync :query="query" />
