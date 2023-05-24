@@ -41725,6 +41725,15 @@ msgstr ""
 msgid "ServiceAccount|User does not have permission to create a service account."
 msgstr ""
 
+msgid "ServiceDesk|Custom email address could not be verified."
+msgstr ""
+
+msgid "ServiceDesk|Custom email address has already been verified."
+msgstr ""
+
+msgid "ServiceDesk|Custom email address verification has already been processed and failed."
+msgstr ""
+
 msgid "ServiceDesk|Enable Service Desk"
 msgstr ""
 
@@ -41740,10 +41749,19 @@ msgstr ""
 msgid "ServiceDesk|Service Desk is not supported"
 msgstr ""
 
+msgid "ServiceDesk|Service Desk setting missing"
+msgstr ""
+
+msgid "ServiceDesk|Service Desk setting or verification object missing"
+msgstr ""
+
 msgid "ServiceDesk|To enable Service Desk on this instance, an instance administrator must first set up incoming email."
 msgstr ""
 
 msgid "ServiceDesk|Use Service Desk to connect with your users and offer customer support through email right inside GitLab"
+msgstr ""
+
+msgid "ServiceDesk|User cannot manage project."
 msgstr ""
 
 msgid "ServiceDesk|Your users can send emails to this address:"
