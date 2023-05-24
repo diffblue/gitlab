@@ -4,10 +4,8 @@ import DastProfilesDrawer from 'ee/security_configuration/dast_profiles/dast_pro
 import { s__ } from '~/locale';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import { SCANNER_TYPE, SITE_TYPE, DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
-import { CONTENT_WRAPPER_CONTAINER_CLASS } from './constants';
 
 export default {
-  CONTENT_WRAPPER_CONTAINER_CLASS,
   SITE_TYPE,
   SCANNER_TYPE,
   DRAWER_VIEW_MODE,
@@ -123,7 +121,6 @@ export default {
 
     <dast-profiles-drawer
       :active-profile="activeProfile"
-      :container-class="$options.CONTENT_WRAPPER_CONTAINER_CLASS"
       :open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       :profiles="selectedProfiles"
