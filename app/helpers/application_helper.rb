@@ -464,6 +464,73 @@ module ApplicationHelper
     form_with(**args.merge({ builder: ::Gitlab::FormBuilders::GitlabUiFormBuilder }), &block)
   end
 
+  # Creates a link that looks like a button.
+  #
+  # It renders a Pajamas::ButtonComponent.
+  #
+  # It has the same API as `link_to`, but with some additional options
+  # specific to button rendering.
+  #
+  # Examples:
+  #   # Default button
+  #   link_button_to _('Foo'), some_path
+  #
+  #   # Default button using a block
+  #   link_button_to some_path do
+  #     _('Foo')
+  #   end
+  #
+  #   # Confirm variant
+  #   link_button_to _('Foo'), some_path, variant: :confirm
+  #
+  #   # With icon
+  #   link_button_to _('Foo'), some_path, icon: 'pencil'
+  #
+  #   # Icon-only
+  #   # NOTE: The content must be `nil` in order to correctly render. Use aria-label
+  #   # to ensure the link is accessible.
+  #   link_button_to nil, some_path, icon: 'pencil', 'aria-label': _('Foo')
+  #
+  #   # Small button
+  #   link_button_to _('Foo'), some_path, size: :small
+  #
+  #   # Secondary category danger button
+  #   link_button_to _('Foo'), some_path, variant: :danger, category: :secondary
+  #
+  # For accessibility, ensure that icon-only links have aria-label set.
+  def link_button_to(name = nil, options = nil, html_options = nil, &block)
+    if block
+      html_options = options
+      options = name
+      name = block
+    end
+
+    html_options ||= {}
+
+    # Ignore args that don't make sense for links, like disabled, loading, etc.
+    options_for_button = %i[
+      category
+      variant
+      size
+      block
+      selected
+      icon
+      target
+      method
+    ]
+
+    args = html_options.slice(*options_for_button)
+    html_options = html_options.except(*options_for_button)
+
+    if block
+      render Pajamas::ButtonComponent.new(href: options, **args, button_options: html_options), &block
+    else
+      render Pajamas::ButtonComponent.new(href: options, **args, button_options: html_options) do
+        name
+      end
+    end
+  end
+
   private
 
   def browser_id
