@@ -85,12 +85,16 @@ module QA
           end
 
           def filter_by_activity(activity_name)
-            # Even though we can add a selector here it's not enough on it's own because it appears on several elements
-            # We use the `> button` selector to avoid an ambiguous match error
-            selector = "[data-qa-selector='filter_activity_dropdown'] > button"
-            act_via_capybara(:find, selector, wait: 30).click
-            click_element("filter_#{activity_name.downcase.tr(" ", "_")}_dropdown_item")
-            act_via_capybara(:find, selector).click
+            find(activity_dropdown_button_selector, wait: 5).click
+            find(activity_item_selector(activity_name)).click
+          end
+
+          def activity_dropdown_button_selector
+            "[data-qa-selector='filter_activity_dropdown'] > button"
+          end
+
+          def activity_item_selector(activity_name)
+            "[data-testid='listbox-item-#{activity_name}']"
           end
 
           def has_vulnerability?(name)
