@@ -15,13 +15,17 @@ module Security
       end
 
       def execute
-        return if scan_removed?
+        return if scan_removed? && Feature.disabled?(:security_policy_approval_notification, pipeline.project)
 
-        unviolated_rules = merge_request.approval_rules.scan_finding.reject do |approval_rule|
+        violated_rules, unviolated_rules = merge_request.approval_rules.scan_finding.partition do |approval_rule|
           approval_rule = approval_rule.source_rule if approval_rule.source_rule
 
           violates_approval_rule?(approval_rule)
         end
+
+        generate_policy_bot_comment(violated_rules.any? || scan_removed?)
+
+        return if scan_removed?
 
         ApprovalMergeRequestRule.remove_required_approved(unviolated_rules) if unviolated_rules.any?
       end
@@ -39,6 +43,13 @@ module Security
 
       def scan_removed?
         (Array.wrap(target_pipeline&.security_scan_types) - pipeline.security_scan_types).any?
+      end
+      strong_memoize_attr :scan_removed?
+
+      def generate_policy_bot_comment(violated_policy)
+        return if Feature.disabled?(:security_policy_approval_notification, pipeline.project)
+
+        Security::GeneratePolicyViolationCommentWorker.perform_async(merge_request.id, violated_policy)
       end
 
       def target_pipeline_security_findings
