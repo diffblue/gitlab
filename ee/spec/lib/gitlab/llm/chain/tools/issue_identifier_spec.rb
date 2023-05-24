@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
       allow(context).to receive(:ai_client).and_return(ai_client)
 
       response = "I now have the JSON information about the issue ##{resource_iid}."
-      expect(tool.execute(context, input_variables).content).to eq(response)
+      expect(tool.execute.content).to eq(response)
     end
   end
 
@@ -19,27 +19,28 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
       allow(tool).to receive(:request).and_return(ai_response)
 
       response = "I am sorry, I am unable to find the issue you are looking for."
-      expect(tool.execute(context, input_variables).content).to eq(response)
+      expect(tool.execute.content).to eq(response)
     end
   end
 
   describe '#name' do
     it 'returns tool name' do
-      expect(described_class.new.name).to eq(described_class::NAME)
+      expect(described_class::NAME).to eq('IssueIdentifier')
     end
   end
 
   describe '#description' do
     it 'returns tool description' do
-      expect(described_class.new.description).to eq(described_class::DESCRIPTION)
+      expect(described_class::DESCRIPTION)
+        .to include('Useful tool for when you need to identify and fetch information')
     end
   end
 
   describe '#execute' do
     context 'when ai response has invalid JSON' do
       it 'retries the ai call' do
-        tool = described_class.new
         input_variables = { input: "user input", suggestions: "" }
+        tool = described_class.new(context: double, options: input_variables)
 
         allow(tool).to receive(:request).and_return("random string")
         allow(Gitlab::Json).to receive(:parse).and_raise(JSON::ParserError)
@@ -47,18 +48,18 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
         expect(tool).to receive(:request).exactly(3).times
 
         response = "I am sorry, I am unable to find the issue you are looking for."
-        expect(tool.execute(double, input_variables).content).to eq(response)
+        expect(tool.execute.content).to eq(response)
       end
     end
 
     context 'when there is a StandardError' do
       it 'returns an error' do
-        tool = described_class.new
         input_variables = { input: "user input", suggestions: "" }
+        tool = described_class.new(context: double, options: input_variables)
 
         allow(tool).to receive(:request).and_raise(StandardError)
 
-        expect(tool.execute(double, input_variables).content).to eq("Unexpected error")
+        expect(tool.execute.content).to eq("Unexpected error")
       end
     end
 
@@ -77,7 +78,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
         )
       end
 
-      let(:tool) { described_class.new }
+      let(:tool) { described_class.new(context: context, options: input_variables) }
       let(:input_variables) do
         { input: "user input", suggestions: "Action: IssueIdentifier\nActionInput: #{issue1.iid}" }
       end
@@ -207,7 +208,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
             allow(context).to receive(:ai_client).and_return(ai_client)
 
             response = "You already have identified the issue ##{context.resource.iid}, read carefully."
-            expect(tool.execute(context, input_variables).content).to eq(response)
+            expect(tool.execute.content).to eq(response)
           end
         end
       end
