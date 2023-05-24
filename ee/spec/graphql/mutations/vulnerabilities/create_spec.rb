@@ -58,7 +58,6 @@ RSpec.describe Mutations::Vulnerabilities::Create, feature_category: :vulnerabil
         expect(mutated_vulnerability).to be_detected
         expect(mutated_vulnerability.description).to eq(attributes.dig(:description))
         expect(mutated_vulnerability.finding_description).to eq(attributes.dig(:description))
-        expect(mutated_vulnerability.finding_message).to eq(nil)
         expect(mutated_vulnerability.solution).to eq(attributes.dig(:solution))
         expect(subject[:errors]).to be_empty
       end

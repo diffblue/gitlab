@@ -499,7 +499,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'], feature_cate
       # The offsets need to be set to the position of the opening and closing
       # curly braces of the first element of the "remediations" array in
       # the fixture file.
-      remediation_finding.finding_data = { remediation_byte_offsets: [{ start_byte: 3821, end_byte: 13844 }] }
+      remediation_finding.finding_data = { remediation_byte_offsets: [{ start_byte: 3730, end_byte: 13753 }] }
       remediation_finding.save!
     end
 

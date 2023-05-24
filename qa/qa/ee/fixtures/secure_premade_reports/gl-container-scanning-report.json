@@ -4,7 +4,7 @@
     {
       "id": "52018b6745ad5b362900a790b63ad146fc9aea9e",
       "category": "container_scanning",
-      "message": "CVE-2017-18269 in glibc",
+      "name": "CVE-2017-18269 in glibc",
       "description": "Short description to match in specs",
       "cve": "debian:9:glibc:CVE-2017-18269",
       "severity": "Critical",
@@ -293,7 +293,9 @@
       ]
     }
   ],
-  "remediations": [],
+  "remediations": [
+
+  ],
   "scan": {
     "scanner": {
       "id": "trivy",

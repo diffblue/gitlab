@@ -8,6 +8,7 @@ module Vulnerabilities
     include ::VulnerabilityFindingHelpers
     include IgnorableColumns
     ignore_column :uuid_convert_string_to_uuid, remove_with: '15.6', remove_after: '2022-11-22'
+    ignore_column :message, remove_with: '16.3', remove_after: '2023-07-22'
 
     # https://gitlab.com/groups/gitlab-org/-/epics/3148
     # https://gitlab.com/gitlab-org/gitlab/-/issues/214563#note_370782508 is why the table names are not renamed
@@ -84,7 +85,6 @@ module Vulnerabilities
     validates :details, json_schema: { filename: 'vulnerability_finding_details', draft: 7 }
 
     validates :description, length: { maximum: 15000 }
-    validates :message, length: { maximum: 3000 }
     validates :solution, length: { maximum: 7000 }
     validates :cve, length: { maximum: 48400 }
 
@@ -315,10 +315,6 @@ module Vulnerabilities
         source: build_evidence_source(evidence_data&.dig('source')),
         supporting_messages: build_evidence_supporting_messages(evidence_data&.dig('supporting_messages'))
       }
-    end
-
-    def message
-      super.presence || metadata.dig('message')
     end
 
     def cve_value

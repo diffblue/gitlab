@@ -46,8 +46,7 @@
     {
       "id": "756a4302f62d4b44d8d64e1a925d7a076fcc80918b7319e62bb28d4d4baa2bc4",
       "category": "dependency_scanning",
-      "name": "Authentication bypass via incorrect DOM traversal and canonicalization",
-      "message": "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js",
+      "name": "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js",
       "description": "Some XML DOM traversal and canonicalization APIs may be inconsistent in handling of comments within XML nodes. Incorrect use of these APIs by some SAML libraries results in incorrect parsing of the inner text of XML nodes such that any inner text after the comment is lost prior to cryptographically signing the SAML message. Text after the comment therefore has no impact on the signature on the SAML message.\r\n\r\nA remote attacker can modify SAML content for a SAML service provider without invalidating the cryptographic signature, which may allow attackers to bypass primary authentication for the affected SAML service provider.",
       "cve": "yarn.lock:saml2-js:gemnasium:9952e574-7b5b-46fa-a270-aeb694198a98",
       "severity": "Unknown",

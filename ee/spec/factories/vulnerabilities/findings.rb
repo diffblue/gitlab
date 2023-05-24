@@ -78,7 +78,6 @@ FactoryBot.define do
     raw_metadata do
       {
         description: 'The cipher does not provide data integrity update 1',
-        message: 'The cipher does not provide data integrity',
         cve: '818bf5dacb291e15d9e6dc3c5ac32178:CIPHER',
         solution: 'GCM mode introduces an HMAC into the resulting encrypted data, providing integrity of the result.',
         location: {
@@ -203,7 +202,6 @@ FactoryBot.define do
         finding.raw_metadata =
           { category: "secret_detection",
             name: "AWS API key",
-            message: "AWS API key",
             description: "Amazon Web Services API key detected; please remove and revoke it if this is a leak.",
             cve: "aws-key.py:fac8c3618ca3c0b55431402635743c0d6884016058f696be4a567c4183c66cfd:AWS",
             severity: "Critical",
@@ -231,7 +229,6 @@ FactoryBot.define do
         finding.raw_metadata =
           { category: "secret_detection",
             name: "AWS API key",
-            message: "AWS API key",
             description: "Amazon Web Services API key detected; please remove and revoke it if this is a leak.",
             cve: "aws-key.py:fac8c3618ca3c0b55431402635743c0d6884016058f696be4a567c4183c66cfd:AWS",
             severity: "Critical",
@@ -504,12 +501,10 @@ FactoryBot.define do
       after(:build) do |finding, evaluator|
         finding.report_type = "dependency_scanning"
         finding.name = "Vulnerabilities in libxml2"
-        finding.message = "Vulnerabilities in libxml2 in nokogiri"
         finding.metadata_version = "2.1"
         finding.raw_metadata = {
           "category": "dependency_scanning",
           "name": "Vulnerabilities in libxml2",
-          "message": "Vulnerabilities in libxml2 in nokogiri",
           "description": "  The version of libxml2 packaged with Nokogiri contains several vulnerabilities.",
           "cve": "rails/Gemfile.lock:nokogiri:gemnasium:06565b64-486d-4326-b906-890d9915804d",
           "severity": evaluator.raw_severity,
@@ -562,7 +557,6 @@ FactoryBot.define do
       after(:build) do |finding, evaluator|
         finding.report_type = "container_scanning"
         finding.name = "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1"
-        finding.message = "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints."
         finding.metadata_version = "2.1"
         finding.location = {
           "image": evaluator.image,
@@ -577,7 +571,6 @@ FactoryBot.define do
         finding.raw_metadata = {
           "category": "container_scanning",
           "name": "CVE-2021-44228 in org.apache.logging.log4j:log4j-api-2.14.1",
-          "message": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
           "description": "Apache Log4j2 <=2.14.1 JNDI features used in configuration, log messages, and parameters do not protect against attacker controlled LDAP and other JNDI related endpoints.",
           "severity": evaluator.raw_severity,
           "scanner": {

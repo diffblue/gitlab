@@ -151,7 +151,6 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding, feature_category: :vulner
         details: occurrence.details,
         cve: occurrence.compare_key,
         description: occurrence.description,
-        message: occurrence.message,
         solution: occurrence.solution,
         signatures: []
       })
