@@ -87,4 +87,46 @@ RSpec.describe 'getting merge request information nested in a project', feature_
       include_examples 'feature unavailable'
     end
   end
+
+  describe 'diffLlmSummaries' do
+    let(:mr_fields) { "diffLlmSummaries { nodes { mergeRequestDiffId content } }" }
+
+    context 'when there are MergeRequest::DiffLlmSummary records associated to MR' do
+      let!(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
+      let!(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request) }
+      let!(:mr_diff_summary_1) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_1) }
+      let!(:mr_diff_summary_2) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_2) }
+
+      it 'returns the diff summaries' do
+        post_graphql(query, current_user: current_user)
+
+        expect(merge_request_graphql_data).to eq({
+          'diffLlmSummaries' => {
+            'nodes' => [
+              {
+                'mergeRequestDiffId' => mr_diff_2.id.to_s,
+                'content' => mr_diff_summary_2.content
+              },
+              {
+                'mergeRequestDiffId' => mr_diff_1.id.to_s,
+                'content' => mr_diff_summary_1.content
+              }
+            ]
+          }
+        })
+      end
+    end
+
+    context 'when there are no MergeRequest::DiffLlmSummary records associated to MR' do
+      it 'returns empty nodes' do
+        post_graphql(query, current_user: current_user)
+
+        expect(merge_request_graphql_data).to eq({
+          'diffLlmSummaries' => {
+            'nodes' => []
+          }
+        })
+      end
+    end
+  end
 end
