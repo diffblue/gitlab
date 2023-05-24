@@ -97,7 +97,7 @@ export default {
       </template>
     </report-header>
 
-    <gl-tabs :value="tabIndex" content-class="gl-pt-5" lazy>
+    <gl-tabs :value="tabIndex" content-class="gl-p-0" lazy>
       <gl-tab
         :title="$options.i18n.violationsTab"
         data-testid="violations-tab"

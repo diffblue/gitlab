@@ -128,9 +128,7 @@ export default {
 </script>
 
 <template>
-  <section
-    class="gl-border-gray-100 gl-border-solid gl-border-1 gl-p-5 gl-display-flex gl-align-items-center"
-  >
+  <section class="gl-border-gray-100 gl-border-t gl-p-5 gl-display-flex gl-align-items-center">
     <span class="gl-border-0 gl-border-r-1 gl-border-gray-100 gl-border-solid gl-pr-5">
       <gl-sprintf :message="__('%{count} selected')">
         <template #count>
