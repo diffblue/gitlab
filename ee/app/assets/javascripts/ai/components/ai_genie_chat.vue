@@ -1,5 +1,7 @@
 <script>
+import emptySvg from '@gitlab/svgs/dist/illustrations/empty-state/empty-activity-md.svg?raw';
 import {
+  GlEmptyState,
   GlButton,
   GlAlert,
   GlBadge,
@@ -16,6 +18,7 @@ import AiGenieLoader from './ai_genie_loader.vue';
 export default {
   name: 'AiGenieChat',
   components: {
+    GlEmptyState,
     GlButton,
     GlAlert,
     GlBadge,
@@ -60,6 +63,14 @@ export default {
       isHidden: false,
       prompt: '',
     };
+  },
+  computed: {
+    emptySvgPath() {
+      return `data:image/svg+xml;utf8,${encodeURIComponent(emptySvg)}`;
+    },
+    hasMessages() {
+      return this.messages.length > 0;
+    },
   },
   watch: {
     async isLoading() {
@@ -153,28 +164,45 @@ export default {
         <transition-group
           tag="div"
           name="message"
-          class="gl-display-flex gl-flex-direction-column gl-justify-content-end gl-h-auto"
+          class="gl-display-flex gl-flex-direction-column gl-justify-content-end"
+          :class="[
+            {
+              'gl-h-full': !hasMessages,
+              'gl-h-auto': hasMessages,
+            },
+          ]"
         >
-          <div
-            v-for="(message, index) in messages"
-            :key="`${message.role}-${index}`"
-            :ref="isLastMessage(index) ? 'lastMessage' : undefined"
-            class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
-            :class="{
-              'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
-                message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
-              'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50':
-                message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant,
-              'gl-mb-0!': isLastMessage(index) && !isLoading,
-            }"
-          >
-            <div v-safe-html="renderMarkdown(message.content)"></div>
-            <slot
-              v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
-              name="feedback"
-              :prompt-location="getPromptLocation(index)"
-              :message="message"
-            ></slot>
+          <template v-if="hasMessages">
+            <div
+              v-for="(message, index) in messages"
+              :key="`${message.role}-${index}`"
+              :ref="isLastMessage(index) ? 'lastMessage' : undefined"
+              class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
+              :class="{
+                'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
+                  message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
+                'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50':
+                  message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant,
+                'gl-mb-0!': isLastMessage(index) && !isLoading,
+              }"
+            >
+              <div v-safe-html="renderMarkdown(message.content)"></div>
+              <slot
+                v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
+                name="feedback"
+                :prompt-location="getPromptLocation(index)"
+                :message="message"
+              ></slot>
+            </div>
+          </template>
+          <div v-else key="empty-state" class="gl-display-flex gl-flex-grow-1">
+            <gl-empty-state
+              :svg-path="emptySvgPath"
+              :svg-height="145"
+              :title="$options.i18n.GENIE_CHAT_EMPTY_STATE_TITLE"
+              :description="$options.i18n.GENIE_CHAT_EMPTY_STATE_DESC"
+              class="gl-align-self-center"
+            />
           </div>
           <gl-alert
             v-if="error"

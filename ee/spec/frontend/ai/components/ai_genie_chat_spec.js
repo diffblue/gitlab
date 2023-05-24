@@ -1,4 +1,4 @@
-import { GlButton, GlBadge } from '@gitlab/ui';
+import { GlEmptyState, GlButton, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
@@ -32,6 +32,7 @@ describe('AiGenieChat', () => {
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findWarning = () => wrapper.findByTestId('chat-legal-warning');
   const findBadge = () => wrapper.findComponent(GlBadge);
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
   const findCloseChatButton = () => wrapper.findByTestId('chat-close-button');
 
@@ -45,6 +46,7 @@ describe('AiGenieChat', () => {
         desc                                  | component            | shouldRender
         ${'renders root component'}           | ${findChatComponent} | ${true}
         ${'renders experimental label'}       | ${findBadge}         | ${true}
+        ${'does render empty state'}          | ${findEmptyState}    | ${true}
         ${'does not render loading skeleton'} | ${findCustomLoader}  | ${false}
         ${'does not render chat error'}       | ${findError}         | ${false}
         ${'does not render chat input'}       | ${findChatInput}     | ${false}
@@ -79,6 +81,7 @@ describe('AiGenieChat', () => {
           expect(findChatMessages().at(0).text()).not.toContain(slotContent);
           expect(findChatMessages().at(1).text()).toContain(slotContent);
         });
+
         it('sends correct `message` in the `slotProps` for the components users to consume', () => {
           createComponent({
             propsData: {
@@ -200,6 +203,11 @@ describe('AiGenieChat', () => {
       findCloseChatButton().vm.$emit('click');
       expect(wrapper.vm.$data.isHidden).toBe(true);
       expect(wrapper.emitted('chat-hidden')).toBeDefined();
+    });
+
+    it('does not render the empty state when there are messages available', () => {
+      createComponent({ propsData: { messages } });
+      expect(findEmptyState().exists()).toBe(false);
     });
 
     describe('chat', () => {

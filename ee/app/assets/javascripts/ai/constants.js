@@ -23,6 +23,8 @@ export const i18n = {
   ),
   GENIE_CHAT_PROMPT_PLACEHOLDER: s__('AI|You can ask AI for more information.'),
   GENIE_CHAT_SUBMIT_LABEL: s__('AI|Send chat message.'),
+  GENIE_CHAT_EMPTY_STATE_TITLE: s__('AI|Ask a question'),
+  GENIE_CHAT_EMPTY_STATE_DESC: s__('AI|AI generated explanations will appear here.'),
 };
 export const TOO_LONG_ERROR_TYPE = 'too-long';
 export const AI_GENIE_DEBOUNCE = 300;
