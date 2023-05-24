@@ -49,6 +49,10 @@ module Geo
       def data_type_title
         _('Container Repository')
       end
+
+      def data_type_sort_order
+        2
+      end
     end
 
     # Called by Gitlab::Geo::Replicator#consume

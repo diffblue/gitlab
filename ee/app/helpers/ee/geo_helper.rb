@@ -168,6 +168,7 @@ module EE
         {
           data_type: 'repository',
           data_type_title: _('Git'),
+          data_type_sort_order: 0,
           title: _('Repository'),
           title_plural: _('Repositories'),
           name: 'repository',
@@ -178,6 +179,7 @@ module EE
         {
           data_type: 'repository',
           data_type_title: _('Git'),
+          data_type_sort_order: 0,
           title: _('Wiki'),
           title_plural: _('Wikis'),
           name: 'wiki',
@@ -188,6 +190,7 @@ module EE
         {
           data_type: 'repository',
           data_type_title: _('Git'),
+          data_type_sort_order: 0,
           title: _('Design repository'),
           title_plural: _('Design repositories'),
           name: 'design_repository',
@@ -208,6 +211,7 @@ module EE
           {
             data_type: replicator_class.data_type,
             data_type_title: replicator_class.data_type_title,
+            data_type_sort_order: replicator_class.data_type_sort_order,
             title: replicator_class.replicable_title,
             title_plural: replicator_class.replicable_title_plural,
             name: replicator_class.replicable_name,

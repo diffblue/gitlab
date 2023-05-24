@@ -2,10 +2,11 @@ export const MOCK_NEW_SITE_URL = 'http://localhost:3000/admin/geo/sites/new';
 
 export const MOCK_EMPTY_STATE_SVG = 'illustrations/empty-state/geo-empty.svg';
 
-export const MOCK_REPLICABLE_TYPES = [
+export const MOCK_UNSORTED_REPLICABLE_TYPES = [
   {
     dataType: 'repository',
     dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
     title: 'Repository',
     titlePlural: 'Repositories',
     name: 'repository',
@@ -16,15 +17,7 @@ export const MOCK_REPLICABLE_TYPES = [
   {
     dataType: 'repository',
     dataTypeTitle: 'Git',
-    title: 'Wiki',
-    titlePlural: 'Wikis',
-    name: 'wiki',
-    namePlural: 'wikis',
-    noReplicationView: true,
-  },
-  {
-    dataType: 'repository',
-    dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
     title: 'Design',
     titlePlural: 'Designs',
     name: 'design',
@@ -32,8 +25,72 @@ export const MOCK_REPLICABLE_TYPES = [
     customReplicationUrl: 'admin/geo/replication/designs',
   },
   {
+    dataType: 'container_repository',
+    dataTypeTitle: 'Container repository',
+    dataTypeSortOrder: 2,
+    title: 'Container repository',
+    titlePlural: 'Container repositories',
+    name: 'container_repository',
+    namePlural: 'container_repositories',
+    noReplicationView: true,
+  },
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
+    title: 'Wiki',
+    titlePlural: 'Wikis',
+    name: 'wiki',
+    namePlural: 'wikis',
+    noReplicationView: true,
+  },
+  {
     dataType: 'blob',
     dataTypeTitle: 'File',
+    dataTypeSortOrder: 1,
+    title: 'Package File',
+    titlePlural: 'Package Files',
+    name: 'package_file',
+    namePlural: 'package_files',
+  },
+];
+
+export const MOCK_SORTED_REPLICABLE_TYPES = [
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
+    title: 'Design',
+    titlePlural: 'Designs',
+    name: 'design',
+    namePlural: 'designs',
+    customReplicationUrl: 'admin/geo/replication/designs',
+  },
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
+    title: 'Repository',
+    titlePlural: 'Repositories',
+    name: 'repository',
+    namePlural: 'repositories',
+    customReplicationUrl: 'admin/geo/replication/projects',
+    verificationEnabled: true,
+  },
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
+    dataTypeSortOrder: 0,
+    title: 'Wiki',
+    titlePlural: 'Wikis',
+    name: 'wiki',
+    namePlural: 'wikis',
+    noReplicationView: true,
+  },
+  {
+    dataType: 'blob',
+    dataTypeTitle: 'File',
+    dataTypeSortOrder: 1,
     title: 'Package File',
     titlePlural: 'Package Files',
     name: 'package_file',
@@ -42,6 +99,7 @@ export const MOCK_REPLICABLE_TYPES = [
   {
     dataType: 'container_repository',
     dataTypeTitle: 'Container repository',
+    dataTypeSortOrder: 2,
     title: 'Container repository',
     titlePlural: 'Container repositories',
     name: 'container_repository',
@@ -101,6 +159,16 @@ export const MOCK_SECONDARY_SYNC_INFO = [
   {
     dataType: 'repository',
     dataTypeTitle: 'Git',
+    title: 'Designs',
+    values: {
+      total: 12,
+      success: 0,
+      failed: 0,
+    },
+  },
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
     title: 'Repositories',
     values: {
       total: 12,
@@ -116,16 +184,6 @@ export const MOCK_SECONDARY_SYNC_INFO = [
       total: 12,
       success: 6,
       failed: 6,
-    },
-  },
-  {
-    dataType: 'repository',
-    dataTypeTitle: 'Git',
-    title: 'Designs',
-    values: {
-      total: 12,
-      success: 0,
-      failed: 0,
     },
   },
   {

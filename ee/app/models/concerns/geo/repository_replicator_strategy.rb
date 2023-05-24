@@ -26,6 +26,10 @@ module Geo
         _('Git')
       end
 
+      def data_type_sort_order
+        0
+      end
+
       # Override this to disable git housekeeping
       def housekeeping_enabled?
         true

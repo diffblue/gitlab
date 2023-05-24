@@ -3,11 +3,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GeoSiteCoreDetails from 'ee/geo_sites/components/details/geo_site_core_details.vue';
-import {
-  MOCK_REPLICABLE_TYPES,
-  MOCK_PRIMARY_SITE,
-  MOCK_SECONDARY_SITE,
-} from 'ee_jest/geo_sites/mock_data';
+import { MOCK_PRIMARY_SITE, MOCK_SECONDARY_SITE } from 'ee_jest/geo_sites/mock_data';
 
 Vue.use(Vuex);
 
@@ -24,9 +20,6 @@ describe('GeoSiteCoreDetails', () => {
 
   const createComponent = (props, getters) => {
     const store = new Vuex.Store({
-      state: {
-        replicableTypes: MOCK_REPLICABLE_TYPES,
-      },
       getters: {
         ...defaultGetters,
         ...getters,

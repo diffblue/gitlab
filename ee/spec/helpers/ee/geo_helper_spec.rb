@@ -148,6 +148,12 @@ RSpec.describe EE::GeoHelper, feature_category: :geo_replication do
 
       expect(data_type_titles).to include(*expected_data_type_titles)
     end
+
+    it 'includes replicator data type sort order' do
+      helper.replicable_types.each { |t| expect(t[:data_type_sort_order]).to be_present }
+
+      expect(helper.replicable_types.size >= helper.enabled_replicator_classes.size).to be_truthy
+    end
   end
 
   describe '#geo_filter_nav_options' do

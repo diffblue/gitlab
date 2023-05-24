@@ -25,6 +25,10 @@ module Geo
         _('File')
       end
 
+      def data_type_sort_order
+        1
+      end
+
       def bulk_create_delete_events_async(deleted_records)
         return unless deleted_records.any?
         raise 'This method can only be called for a child class of Gitlab::Geo::Replicator' if replicable_name.nil?

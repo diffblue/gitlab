@@ -7,7 +7,7 @@ import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
-  MOCK_REPLICABLE_TYPES,
+  MOCK_SORTED_REPLICABLE_TYPES,
   MOCK_SITES,
   MOCK_SITES_RES,
   MOCK_SITE_STATUSES_RES,
@@ -21,7 +21,7 @@ describe('GeoSites Store Actions', () => {
 
   beforeEach(() => {
     state = createState({
-      replicableTypes: MOCK_REPLICABLE_TYPES,
+      replicableTypes: MOCK_SORTED_REPLICABLE_TYPES,
     });
     mock = new MockAdapter(axios);
   });

@@ -1,6 +1,20 @@
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 
-export const verificationInfo = (state) => (id) => {
+export const sortedReplicableTypes = (state) => {
+  const replicableTypes = [...state.replicableTypes];
+
+  replicableTypes.sort((a, b) => {
+    if (a.dataTypeSortOrder === b.dataTypeSortOrder) {
+      return a.name.localeCompare(b.name);
+    }
+
+    return a.dataTypeSortOrder - b.dataTypeSortOrder;
+  });
+
+  return replicableTypes;
+};
+
+export const verificationInfo = (state, getters) => (id) => {
   const site = state.sites.find((n) => n.id === id);
   const variables = {};
 
@@ -14,7 +28,7 @@ export const verificationInfo = (state) => (id) => {
     variables.failed = 'VerificationFailedCount';
   }
 
-  return state.replicableTypes
+  return getters.sortedReplicableTypes
     .filter(({ verificationEnabled }) => verificationEnabled)
     .map((replicable) => {
       const camelCaseName = convertToCamelCase(replicable.namePlural);
@@ -32,10 +46,10 @@ export const verificationInfo = (state) => (id) => {
     });
 };
 
-export const syncInfo = (state) => (id) => {
+export const syncInfo = (state, getters) => (id) => {
   const site = state.sites.find((n) => n.id === id);
 
-  return state.replicableTypes.map((replicable) => {
+  return getters.sortedReplicableTypes.map((replicable) => {
     const camelCaseName = convertToCamelCase(replicable.namePlural);
 
     return {
@@ -51,8 +65,8 @@ export const syncInfo = (state) => (id) => {
   });
 };
 
-export const dataTypes = (state) => {
-  return state.replicableTypes.reduce((acc, replicable) => {
+export const dataTypes = (_, getters) => {
+  return getters.sortedReplicableTypes.reduce((acc, replicable) => {
     if (acc.some((type) => type.dataType === replicable.dataType)) {
       return acc;
     }
