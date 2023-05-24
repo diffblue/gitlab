@@ -26,7 +26,7 @@ For error tracking to work, you need:
   Whatever backend you choose, the [error tracking UI](#error-tracking-list)
   is the same.
 
-## Integrated error tracking
+## Integrated error tracking **(FREE SAAS)**
 
 This guide provides you with basics of setting up error tracking for your project, using examples from different languages.
 
