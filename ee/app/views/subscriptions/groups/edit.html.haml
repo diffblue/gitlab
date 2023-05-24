@@ -13,7 +13,7 @@
 
       = render Pajamas::CardComponent.new do |c|
         - c.with_body do
-          = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors gl-w-full gl-p-5' } do |f|
+          = gitlab_ui_form_for [:subscriptions, @group], html: { class: 'gl-show-field-errors gl-w-full gl-p-5', 'data-testid': 'subscription-group-edit-form' } do |f|
             = hidden_field_tag :new_user, params[:new_user]
             = form_errors(@group)
             .row
