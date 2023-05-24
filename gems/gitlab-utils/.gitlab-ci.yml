@@ -4,7 +4,6 @@
 # Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
 # Note that environment variables can be set in several places
 # See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
-
 workflow:
   rules:
     - if: $CI_MERGE_REQUEST_ID
@@ -12,11 +11,11 @@ workflow:
 rspec:
   image: "ruby:${RUBY_VERSION}"
   cache:
-    key: gitlab-rspec-${RUBY_VERSION}
+    key: gitlab-utils-${RUBY_VERSION}
     paths:
-      - gitlab-rspec/vendor/ruby
+      - gitlab-utils/vendor/ruby
   before_script:
-    - cd gems/gitlab-rspec
+    - cd gems/gitlab-utils
     - ruby -v                                   # Print out ruby version for debugging
     - gem install bundler --no-document         # Bundler is not installed with the image
     - bundle config set --local path 'vendor'   # Install dependencies into ./vendor/ruby
