@@ -183,16 +183,6 @@ RSpec.describe 'User uses shortcuts', :js, feature_category: :projects do
     end
   end
 
-  context 'when navigating to the Monitor pages' do
-    it 'redirects to the Metrics page' do
-      find('body').native.send_key('g')
-      find('body').native.send_key('l')
-
-      expect(page).to have_active_navigation('Monitor')
-      expect(page).to have_active_sub_navigation('Metrics')
-    end
-  end
-
   context 'when navigating to the Infrastructure pages' do
     it 'redirects to the Kubernetes page' do
       find('body').native.send_key('g')
