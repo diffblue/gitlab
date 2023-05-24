@@ -145,6 +145,14 @@ module EE
       # Note: When adding an option, it's value MUST equal to the last value + 1.
       enum group_view: { details: 1, security_dashboard: 2 }, _prefix: true
       scope :group_view_details, -> { where('group_view = ? OR group_view IS NULL', group_view[:details]) }
+
+      # If user cap is reached any user that is getting marked :active from :deactivated
+      # should get blocked pending approval
+      state_machine :state do
+        after_transition deactivated: :active do |user|
+          user.block_pending_approval if ::User.user_cap_reached?
+        end
+      end
     end
 
     class_methods do
