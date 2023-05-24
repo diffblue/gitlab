@@ -24,4 +24,24 @@ RSpec.describe NotesHelper do
       it { is_expected.to eq("/#{vulnerability.project.full_path}/-/security/vulnerabilities/#{vulnerability.id}/discussions.json") }
     end
   end
+
+  describe '#notes_data' do
+    let_it_be(:epic) { create(:epic) }
+
+    let(:notes_data) { helper.notes_data(epic) }
+
+    before do
+      @group = epic.group
+      @noteable = @epic = epic
+
+      allow(helper).to receive(:current_user).and_return(epic.author)
+    end
+
+    it 'includes info about the noteable', :aggregate_failures do
+      expect(notes_data[:noteableType]).to eq('epic')
+      expect(notes_data[:noteableId]).to eq(epic.id)
+      expect(notes_data[:projectId]).to be_nil
+      expect(notes_data[:groupId]).to eq(epic.group_id)
+    end
+  end
 end
