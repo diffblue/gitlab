@@ -54137,7 +54137,9 @@ msgid "closed %{timeago}"
 msgstr ""
 
 msgid "closed issue"
-msgstr ""
+msgid_plural "closed issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "collect usage information"
 msgstr ""
@@ -55195,7 +55197,9 @@ msgid "only supports valid HTTP(S) URLs"
 msgstr ""
 
 msgid "open issue"
-msgstr ""
+msgid_plural "open issues"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "or"
 msgstr ""
