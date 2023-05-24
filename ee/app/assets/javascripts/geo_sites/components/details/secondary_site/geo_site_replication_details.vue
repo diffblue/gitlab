@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlButton, GlSprintf } from '@gitlab/ui';
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import { GEO_REPLICATION_SUPPORTED_TYPES_URL } from 'ee/geo_sites/constants';
 import { s__ } from '~/locale';
 import GeoSiteReplicationDetailsResponsive from './geo_site_replication_details_responsive.vue';
@@ -33,13 +33,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(['replicableTypes']),
-    ...mapGetters(['verificationInfo', 'syncInfo']),
+    ...mapGetters(['verificationInfo', 'syncInfo', 'sortedReplicableTypes']),
     replicationItems() {
       const syncInfoData = this.syncInfo(this.site.id);
       const verificationInfoData = this.verificationInfo(this.site.id);
 
-      return this.replicableTypes.map((replicable) => {
+      return this.sortedReplicableTypes.map((replicable) => {
         const replicableSyncInfo = syncInfoData.find((r) => r.title === replicable.titlePlural);
 
         const replicableVerificationInfo = verificationInfoData.find(

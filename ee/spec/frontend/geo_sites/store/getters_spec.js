@@ -1,7 +1,8 @@
 import * as getters from 'ee/geo_sites/store/getters';
 import createState from 'ee/geo_sites/store/state';
 import {
-  MOCK_REPLICABLE_TYPES,
+  MOCK_UNSORTED_REPLICABLE_TYPES,
+  MOCK_SORTED_REPLICABLE_TYPES,
   MOCK_SITES,
   MOCK_PRIMARY_VERIFICATION_INFO,
   MOCK_SECONDARY_VERIFICATION_INFO,
@@ -17,18 +18,28 @@ describe('GeoSites Store Getters', () => {
 
   beforeEach(() => {
     state = createState({
-      replicableTypes: MOCK_REPLICABLE_TYPES,
+      replicableTypes: MOCK_UNSORTED_REPLICABLE_TYPES,
+    });
+  });
+
+  describe('sortedReplicableTypes', () => {
+    it('returns a properly sorted array of replicable types', () => {
+      expect(getters.sortedReplicableTypes(state)).toStrictEqual(MOCK_SORTED_REPLICABLE_TYPES);
     });
   });
 
   describe('verificationInfo', () => {
+    const mockGetters = {
+      sortedReplicableTypes: MOCK_SORTED_REPLICABLE_TYPES,
+    };
+
     beforeEach(() => {
       state.sites = MOCK_SITES;
     });
 
     describe('on primary site', () => {
       it('returns only replicable types that have checksum data', () => {
-        expect(getters.verificationInfo(state)(MOCK_PRIMARY_SITE.id)).toStrictEqual(
+        expect(getters.verificationInfo(state, mockGetters)(MOCK_PRIMARY_SITE.id)).toStrictEqual(
           MOCK_PRIMARY_VERIFICATION_INFO,
         );
       });
@@ -36,7 +47,7 @@ describe('GeoSites Store Getters', () => {
 
     describe('on secondary site', () => {
       it('returns only replicable types that have verification data', () => {
-        expect(getters.verificationInfo(state)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
+        expect(getters.verificationInfo(state, mockGetters)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
           MOCK_SECONDARY_VERIFICATION_INFO,
         );
       });
@@ -44,12 +55,16 @@ describe('GeoSites Store Getters', () => {
   });
 
   describe('syncInfo', () => {
+    const mockGetters = {
+      sortedReplicableTypes: MOCK_SORTED_REPLICABLE_TYPES,
+    };
+
     beforeEach(() => {
       state.sites = MOCK_SITES;
     });
 
     it('returns the sites sync information', () => {
-      expect(getters.syncInfo(state)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
+      expect(getters.syncInfo(state, mockGetters)(MOCK_SECONDARY_SITE.id)).toStrictEqual(
         MOCK_SECONDARY_SYNC_INFO,
       );
     });
@@ -122,8 +137,12 @@ describe('GeoSites Store Getters', () => {
   });
 
   describe('dataTypes', () => {
+    const mockGetters = {
+      sortedReplicableTypes: MOCK_SORTED_REPLICABLE_TYPES,
+    };
+
     it('returns the expected array of dataTypes based on the replicableTypes', () => {
-      expect(getters.dataTypes(state)).toStrictEqual(MOCK_DATA_TYPES);
+      expect(getters.dataTypes(state, mockGetters)).toStrictEqual(MOCK_DATA_TYPES);
     });
   });
 

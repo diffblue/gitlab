@@ -1,13 +1,13 @@
 import * as types from 'ee/geo_sites/store/mutation_types';
 import mutations from 'ee/geo_sites/store/mutations';
 import createState from 'ee/geo_sites/store/state';
-import { MOCK_REPLICABLE_TYPES, MOCK_SITES } from '../mock_data';
+import { MOCK_SORTED_REPLICABLE_TYPES, MOCK_SITES } from '../mock_data';
 
 describe('GeoSites Store Mutations', () => {
   let state;
   beforeEach(() => {
     state = createState({
-      replicableTypes: MOCK_REPLICABLE_TYPES,
+      replicableTypes: MOCK_SORTED_REPLICABLE_TYPES,
     });
   });
 
