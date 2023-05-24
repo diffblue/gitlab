@@ -29,6 +29,10 @@ module Gitlab
           errors << Error::MISSING_SECTION_NAME if section.name.blank?
           errors << Error::INVALID_APPROVAL_REQUIREMENT if section.optional && section.approvals > 0
 
+          if section.default_owners.present? && ReferenceExtractor.new(section.default_owners).references.blank?
+            errors << Error::INVALID_SECTION_OWNER_FORMAT
+          end
+
           return section
         end
 
