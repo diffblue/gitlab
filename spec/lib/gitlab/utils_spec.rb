@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Utils do
   using RSpec::Parameterized::TableSyntax
 
   delegate :to_boolean, :boolean_to_yes_no, :slugify, :which,
-           :ensure_array_from_string, :to_exclusive_sentence, :bytes_to_megabytes,
+           :ensure_array_from_string, :bytes_to_megabytes,
            :append_path, :remove_leading_slashes, :allowlisted?,
            :decode_path, :ms_to_round_sec, to: :described_class
 
@@ -67,36 +67,6 @@ RSpec.describe Gitlab::Utils do
       it "returns rounded seconds" do
         expect(ms_to_round_sec(original)).to eq(expected)
       end
-    end
-  end
-
-  describe '.to_exclusive_sentence' do
-    it 'calls #to_sentence on the array' do
-      array = double
-
-      expect(array).to receive(:to_sentence)
-
-      to_exclusive_sentence(array)
-    end
-
-    it 'joins arrays with two elements correctly' do
-      array = %w(foo bar)
-
-      expect(to_exclusive_sentence(array)).to eq('foo or bar')
-    end
-
-    it 'joins arrays with more than two elements correctly' do
-      array = %w(foo bar baz)
-
-      expect(to_exclusive_sentence(array)).to eq('foo, bar, or baz')
-    end
-
-    it 'localizes the connector words' do
-      array = %w(foo bar baz)
-
-      expect(described_class).to receive(:_).with(' or ').and_return(' <1> ')
-      expect(described_class).to receive(:_).with(', or ').and_return(', <2> ')
-      expect(to_exclusive_sentence(array)).to eq('foo, bar, <2> baz')
     end
   end
 
