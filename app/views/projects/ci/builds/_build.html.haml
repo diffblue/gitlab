@@ -103,12 +103,10 @@
     .gl-text-right
       .btn-group
         - if can?(current_user, :read_job_artifacts, job) && job.artifacts?
-          = link_to download_project_job_artifacts_path(job.project, job), rel: 'nofollow', download: '', title: _('Download artifacts'), class: 'gl-button btn btn-default btn-icon' do
-            = sprite_icon('download', css_class: 'gl-icon')
+          = link_button_to nil, download_project_job_artifacts_path(job.project, job), rel: 'nofollow', download: '', title: _('Download artifacts'), icon: 'download'
         - if can?(current_user, :update_build, job)
           - if job.active?
-            = link_to cancel_project_job_path(job.project, job, continue: { to: request.fullpath }), method: :post, title: _('Cancel'), class: 'gl-button btn btn-default btn-icon' do
-              = sprite_icon('cancel', css_class: 'gl-icon')
+            = link_button_to nil, cancel_project_job_path(job.project, job, continue: { to: request.fullpath }), method: :post, title: _('Cancel'), icon: 'cancel'
           - elsif job.scheduled?
             = render Pajamas::ButtonComponent.new(disabled: true, icon: 'planning') do
               %time.js-remaining-time{ datetime: job.scheduled_at.utc.iso8601 }
@@ -127,8 +125,6 @@
               = sprite_icon('time-out', css_class: 'gl-icon')
           - elsif allow_retry
             - if job.playable? && !admin && can?(current_user, :update_build, job)
-              = link_to play_project_job_path(job.project, job, return_to: request.original_url), method: :post, title: _('Play'), class: 'gl-button btn btn-default btn-icon' do
-                = sprite_icon('play', css_class: 'gl-icon')
+              = link_button_to nil, play_project_job_path(job.project, job, return_to: request.original_url), method: :post, title: _('Play'), icon: 'play'
             - elsif job.retryable?
-              = link_to retry_project_job_path(job.project, job, return_to: request.original_url), method: :post, title: _('Retry'), class: 'gl-button btn btn-default btn-icon' do
-                = sprite_icon('retry', css_class: 'gl-icon')
+              = link_button_to nil, retry_project_job_path(job.project, job, return_to: request.original_url), method: :post, title: _('Retry'), icon: 'retry'

@@ -7,5 +7,5 @@
       = _('Unlock more features with GitLab Ultimate')
     %p
       = _('GitLab is free to use. Many features for larger teams are part of our %{link_start}paid products%{link_end}. You can try Ultimate for free without any obligation or payment details.').html_safe % { link_start: '<a href="https://about.gitlab.com/pricing/">'.html_safe, link_end: '</a>'.html_safe }
-    = link_to new_trial_url, class: "gl-button btn btn-confirm" do
+    = link_button_to new_trial_url, variant: :confirm do
       = _('Start free trial')
