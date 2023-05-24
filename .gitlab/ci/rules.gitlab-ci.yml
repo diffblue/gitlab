@@ -1485,7 +1485,7 @@
     - <<: *if-dot-com-gitlab-org-schedule
       allow_failure: true
       variables:
-        SKIP_REPORT_IN_ISSUES: "false"
+        CREATE_TEST_FAILURE_ISSUES: "true"
         PROCESS_TEST_RESULTS: "true"
         KNAPSACK_GENERATE_REPORT: "true"
         UPDATE_QA_CACHE: "true"
@@ -1514,7 +1514,7 @@
     - <<: *if-default-branch-schedule-nightly
       allow_failure: true
       variables:
-        SKIP_REPORT_IN_ISSUES: "false"
+        CREATE_TEST_FAILURE_ISSUES: "true"
         PROCESS_TEST_RESULTS: "true"
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false"
@@ -1542,7 +1542,7 @@
     - <<: *if-default-branch-schedule-nightly
       allow_failure: true
       variables:
-        SKIP_REPORT_IN_ISSUES: "false"
+        CREATE_TEST_FAILURE_ISSUES: "true"
         PROCESS_TEST_RESULTS: "true"
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false"
@@ -1554,7 +1554,7 @@
       variables:
         KNAPSACK_GENERATE_REPORT: "true"
         PROCESS_TEST_RESULTS: "true"
-        SKIP_REPORT_IN_ISSUES: "false"
+        CREATE_TEST_FAILURE_ISSUES: "true"
         QA_SAVE_TEST_METRICS: "true"
         QA_EXPORT_TEST_METRICS: "false"
 
