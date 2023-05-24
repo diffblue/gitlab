@@ -335,11 +335,11 @@ gem 'sentry-sidekiq', '~> 5.8.0'
 
 # PostgreSQL query parsing
 #
-gem 'pg_query', '~> 2.2', '>= 2.2.1'
+gem 'pg_query', '~> 4.2.1'
 
 gem 'premailer-rails', '~> 1.10.3'
 
-gem 'gitlab-labkit', '~> 0.32.0'
+gem 'gitlab-labkit', '~> 0.33.0'
 gem 'thrift', '>= 0.16.0'
 
 # I18n
