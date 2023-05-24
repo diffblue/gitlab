@@ -2118,7 +2118,7 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
-  describe '#read_code_for?', :request_store do
+  describe '#custom_permission_for?', :request_store do
     let_it_be(:project) { create(:project, :in_group) }
     let_it_be(:user) { create(:user) }
 
@@ -2132,6 +2132,7 @@ RSpec.describe User, feature_category: :system_access do
         :member_role,
         :guest,
         read_code: true,
+        read_vulnerability: false,
         members: [project_member],
         namespace: project.group
       )
@@ -2139,84 +2140,21 @@ RSpec.describe User, feature_category: :system_access do
 
     context 'when read_code present in preloaded custom roles' do
       before do
-        user.read_code_for?(project)
+        user.custom_permission_for?(project, :read_code)
       end
 
       it 'returns true' do
-        expect(user.read_code_for?(project)).to be true
+        expect(user.custom_permission_for?(project, :read_code)).to be true
       end
 
       it 'does not perform extra queries when asked for projects have already been preloaded' do
-        expect { user.read_code_for?(project) }.not_to exceed_query_limit(0)
+        expect { user.custom_permission_for?(project, :read_code) }.not_to exceed_query_limit(0)
       end
     end
 
     context 'when project not present in preloaded custom roles' do
       it 'loads the custom role' do
-        expect(user.read_code_for?(project)).to be true
-      end
-    end
-  end
-
-  describe '#read_vulnerability_for?', :request_store do
-    let_it_be(:project) { create(:project, :in_group) }
-    let_it_be(:user) { create(:user) }
-    let_it_be(:another_user) { create(:user) }
-
-    before do
-      stub_licensed_features(custom_roles: true)
-    end
-
-    before_all do
-      project_member = create(:project_member, :reporter, user: user, source: project)
-      create(
-        :member_role,
-        :reporter,
-        read_vulnerability: true,
-        members: [project_member],
-        namespace: project.group
-      )
-    end
-
-    context 'with custom_roles_vulnerability FF enabled' do
-      before do
-        stub_feature_flags(custom_roles_vulnerability: [project.group])
-      end
-
-      context 'when read_vulnerability present in preloaded custom roles' do
-        before do
-          user.read_vulnerability_for?(project)
-        end
-
-        it 'returns true' do
-          expect(user.read_vulnerability_for?(project)).to be true
-        end
-
-        it 'does not perform extra queries when asked for projects have already been preloaded' do
-          expect { user.read_vulnerability_for?(project) }.not_to exceed_query_limit(0)
-        end
-      end
-
-      context 'when project not present in preloaded custom roles' do
-        it 'loads the custom role' do
-          expect(user.read_vulnerability_for?(project)).to be true
-        end
-      end
-
-      context 'when a user is not assigned to the custom role' do
-        it 'returns false' do
-          expect(another_user.read_vulnerability_for?(project)).to be false
-        end
-      end
-    end
-
-    context 'with custom_roles_vulnerability FF disabled' do
-      before do
-        stub_feature_flags(custom_roles_vulnerability: false)
-      end
-
-      it 'returns false' do
-        expect(user.read_vulnerability_for?(project)).to be false
+        expect(user.custom_permission_for?(project, :read_code)).to be true
       end
     end
   end
@@ -2329,7 +2267,7 @@ RSpec.describe User, feature_category: :system_access do
       it 'does not perform extra queries when asked for projects have already been preloaded' do
         user.preloaded_member_roles_for_projects([project])
 
-        expect { user.read_code_for?(project) }.not_to exceed_query_limit(0)
+        expect { user.custom_permission_for?(project, :read_code) }.not_to exceed_query_limit(0)
       end
     end
   end
