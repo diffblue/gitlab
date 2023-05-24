@@ -26,6 +26,8 @@ RSpec.describe LicensesListEntity do
     let!(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
     before do
+      stub_feature_flags(compressed_package_metadata_query: false)
+
       create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem",
         version: "5.1.4", license_name: "New BSD")
     end

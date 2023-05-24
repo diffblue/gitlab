@@ -288,6 +288,8 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       subject(:policies) { license_compliance.policies }
 
       before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+
         create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
@@ -560,6 +562,8 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       let!(:other_license_policy) { create(:software_license_policy, :allowed, software_license: other_license, project: project) }
 
       before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+
         create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
@@ -783,6 +787,8 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
       let(:license_scan_build) { create(:ee_ci_build, :cyclonedx, :success) }
 
       before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+
         create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
@@ -955,6 +961,8 @@ RSpec.describe SCA::LicenseCompliance, feature_category: :software_composition_a
 
     context "when the license_scanning_sbom_scanner feature flag is enabled" do
       before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+
         create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")

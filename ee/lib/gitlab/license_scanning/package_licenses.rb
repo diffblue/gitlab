@@ -6,12 +6,61 @@ module Gitlab
       BATCH_SIZE = 700
       UNKNOWN_LICENSE = "unknown"
 
-      def initialize(components:)
+      def initialize(project:, components:)
         @components = components
+        # component_versions keeps track of the requested versions for each component, to
+        # facilitate faster lookups by avoiding an O(n^2) search against the components array
+        @component_versions = Hash.new { |h, k| h[k] = [] }
+        @project = project
         @all_records = {}
+        @cached_licenses = []
       end
 
       def fetch
+        return compressed_fetch if Feature.enabled?(:compressed_package_metadata_query, project)
+
+        uncompressed_fetch
+      end
+
+      private
+
+      attr_reader :components, :component_versions, :all_records, :project, :cached_licenses
+
+      # obtains licenses by using data from the `licenses` jsonb column in the pm_packages table to query
+      # data from the pm_licenses table
+      def compressed_fetch
+        use_replica_if_available do
+          # build caches for faster lookups of licenses and component_version data
+          build_component_versions_cache
+          build_licenses_cache
+
+          # For each batch of components, we execute two queries:
+          #
+          # 1. Retrieve the packages for the components by querying the pm_packages table
+          # 2. Use the data in the `licenses` jsonb column of the pm_packages table to
+          #    lookup the corresponding licenses. This query is executed by the
+          #    `package.licenses_for` method.
+          components.each_slice(BATCH_SIZE).each do |components_batch|
+            packages_for_batch = ::PackageMetadata::Package.packages_for(components: components_batch)
+
+            packages_for_batch.each do |package|
+              requested_versions_for_package(package).each do |version|
+                license_ids = package.license_ids_for(version: version)
+
+                add_record_with_known_licenses(purl_type: package.purl_type, name: package.name,
+                  version: version, licenses: spdx_ids(license_ids: license_ids))
+              end
+            end
+          end
+
+          add_records_with_unknown_licenses
+          all_records.values
+        end
+      end
+
+      # obtains licenses by querying the pm_packages, pm_package_versions, pm_package_version_licenses
+      # and pm_licenses tables
+      def uncompressed_fetch
         use_replica_if_available do
           # For each batch of components, we execute two queries:
           #
@@ -30,17 +79,53 @@ module Gitlab
         end
       end
 
-      private
+      def component_key(name:, version:, purl_type:)
+        "#{name}/#{version}/#{purl_type}"
+      end
 
-      attr_reader :components, :all_records
+      def component_versions_key(name:, purl_type:)
+        "#{name}/#{purl_type}"
+      end
+
+      # we fetch package details from the pm_packages table which only contains the
+      # purl_type and name. We need a way to know which versions were requested for
+      # each purl_type and name, so we use a hash to store this data for faster lookups.
+      def build_component_versions_cache
+        components.each do |component|
+          component_versions[component_versions_key(name: component.name, purl_type: component.purl_type)] <<
+            component.version
+        end
+      end
+
+      # there's only about 500 licenses in the pm_licenses table, and the data doesn't change often,
+      # so we use a cache to avoid a separate sql query for every spdx identifier.
+      def build_licenses_cache
+        @cached_licenses = ::PackageMetadata::License.all.to_h { |license| [license.id, license.spdx_identifier] }
+      end
+
+      def spdx_ids(license_ids:)
+        return [UNKNOWN_LICENSE] if license_ids.blank?
+
+        license_ids.map { |license_id| cached_licenses[license_id] }
+      end
+
+      def requested_versions_for_package(package)
+        component_versions[component_versions_key(name: package.name, purl_type: package.purl_type)]
+      end
 
       # Every time a license is encountered for a component, we record it.
       # This allows us to determine which components do not have licenses.
+      # Adds a single record with known licenses. This method is used by both the
+      # uncompressed and compressed queries.
+      def add_record_with_known_licenses(purl_type:, name:, version:, licenses:)
+        all_records[component_key(name: name, version: version, purl_type: purl_type)] =
+          Hashie::Mash.new(purl_type: purl_type, name: name, version: version, licenses: licenses)
+      end
+
+      # Adds multiple records with known licenses
       def add_records_with_known_licenses(records)
         records.each do |purl_type, name, version, licenses|
-          component_key = File.join(name, version, purl_type)
-          all_records[component_key] =
-            Hashie::Mash.new(purl_type: purl_type, name: name, version: version, licenses: licenses)
+          add_record_with_known_licenses(purl_type: purl_type, name: name, version: version, licenses: licenses)
         end
       end
 
@@ -48,16 +133,14 @@ module Gitlab
       # components that do not have a license.
       def add_records_with_unknown_licenses
         components.each do |component|
-          component_key = File.join(component.name || '', component.version || '', component.purl_type || '')
-          next if all_records[component_key]
+          key = component_key(name: component.name, version: component.version, purl_type: component.purl_type)
+          next if all_records[key]
 
           # record unknown license if the license data for the component wasn't found in the db
-          all_records[component_key] = Hashie::Mash.new(purl_type: component.purl_type,
+          all_records[key] = Hashie::Mash.new(purl_type: component.purl_type,
             name: component.name, version: component.version, licenses: [UNKNOWN_LICENSE])
         end
       end
-
-      # rubocop: disable CodeReuse/ActiveRecord
 
       # Takes an array of components containing purl_type, name, and version fields and returns an array
       # containing package_id, version fields for each matching purl_type and name.
@@ -80,6 +163,7 @@ module Gitlab
             name: Arel.sql('needed_package_versions(purl_type, name, version)')), component_values_list
         )
 
+        # rubocop: disable CodeReuse/ActiveRecord
         package_ids_and_versions_query = needed_package_versions_table
           .project(pm_packages_table[:id], needed_package_versions_table[:version])
           .with(cte_query)
@@ -90,6 +174,7 @@ module Gitlab
               .and(
                 pm_packages_table[:name].eq(needed_package_versions_table[:name]))
           )
+        # rubocop: enable CodeReuse/ActiveRecord
 
         package_ids_and_versions = ApplicationRecord.connection.execute(package_ids_and_versions_query.to_sql)
 
@@ -117,6 +202,7 @@ module Gitlab
           ::PackageMetadata::PackageVersion.arel_table[:version]
         ]
 
+        # rubocop: disable CodeReuse/ActiveRecord
         ::PackageMetadata::Package
           .joins(package_versions: :licenses)
           .where(
@@ -127,8 +213,8 @@ module Gitlab
           )
           .group(search_fields)
           .pluck(*search_fields, "ARRAY_AGG(pm_licenses.spdx_identifier)")
+        # rubocop: enable CodeReuse/ActiveRecord
       end
-      # rubocop: enable CodeReuse/ActiveRecord
 
       def use_replica_if_available(&block)
         ::Gitlab::Database::LoadBalancing::Session.current.use_replicas_for_read_queries(&block)

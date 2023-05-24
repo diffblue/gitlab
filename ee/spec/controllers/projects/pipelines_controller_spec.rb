@@ -217,6 +217,8 @@ RSpec.describe Projects::PipelinesController do
       let_it_be(:report) { create(:ee_ci_job_artifact, :cyclonedx, job: build) }
 
       before do
+        stub_feature_flags(compressed_package_metadata_query: false)
+
         create(:pm_package_version_license, :with_all_relations, name: "esutils", purl_type: "npm", version: "2.0.3", license_name: "BSD-2-Clause")
         create(:pm_package_version_license, :with_all_relations, name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0", license_name: "Apache-2.0")
         create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "MIT")

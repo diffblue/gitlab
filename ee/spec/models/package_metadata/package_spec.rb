@@ -26,24 +26,58 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
     it { is_expected.to define_enum_for(:purl_type).with_values(purl_types) }
   end
 
+  describe '#license_ids_for' do
+    context 'when licenses are present' do
+      let(:default) { [5, 7] }
+      let(:highest) { '0.0.2' }
+      let(:lowest) { '0.0.1' }
+      let(:other) { [[[2, 4], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
+
+      subject(:package) do
+        build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: [default, lowest, highest, other])
+      end
+
+      context 'and the given version exactly matches one of the versions in other licenses' do
+        it 'returns the other licenses' do
+          expect(package.license_ids_for(version: "v0.0.4")).to eq([2, 4])
+        end
+      end
+
+      context 'and the given version does not match any of the versions in other licenses' do
+        it 'returns the default licenses' do
+          expect(package.license_ids_for(version: "9.9.9")).to eq(default)
+        end
+      end
+    end
+
+    context 'when licenses are not present' do
+      where(:test_case_name, :licenses) do
+        'licenses are nil'   | nil
+        'licenses are empty' | []
+      end
+
+      with_them do
+        subject(:package) { build_stubbed(:pm_package, name: "cliui", purl_type: "npm", licenses: licenses) }
+
+        it 'returns an empty array' do
+          expect(package.license_ids_for(version: "1.0.0")).to eq([])
+        end
+      end
+    end
+  end
+
   describe 'validation' do
     it { is_expected.to validate_presence_of(:purl_type) }
     it { is_expected.to validate_length_of(:name).is_at_most(255) }
     it { is_expected.to validate_presence_of(:name) }
 
     describe 'for licenses' do
-      subject(:package) { build(:pm_package, licenses: licenses) }
+      subject(:package) { build_stubbed(:pm_package, licenses: licenses) }
 
       let(:default) { [1] }
       let(:highest) { '0.0.2' }
       let(:lowest) { '0.0.1' }
-      let(:non_default) { [[[1, 2], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
-
-      context 'when non_default licenses are empty' do
-        let(:licenses) { [default, lowest, highest, []] }
-
-        it { is_expected.to be_valid }
-      end
+      let(:other) { [[[1, 2], ['v0.0.3', 'v0.0.4']], [[3], ['v0.0.5']]] }
 
       context 'when field is an empty array' do
         let(:licenses) { [] }
@@ -52,23 +86,21 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
       end
 
       context 'with different field value permutations' do
-        using RSpec::Parameterized::TableSyntax
-
-        where(:test_case_name, :valid, :default_licenses, :lowest_version, :highest_version, :non_default_licenses) do
-          'all valid'           | true  | default    | lowest      | highest     | non_default
-          'nil'                 | false | nil        | lowest      | highest     | non_default
-          'string'              | false | 's'        | lowest      | highest     | non_default
-          'array with string'   | false | ['s']      | lowest      | highest     | non_default
-          'empty array'         | false | []         | lowest      | highest     | non_default
-          'more than max items' | false | ([1] * 11) | lowest      | highest     | non_default
-          'nil'                 | true  | default    | nil         | highest     | non_default
-          'int value'           | false | default    | 1           | highest     | non_default
-          'empty string'        | false | default    | ''          | highest     | non_default
-          'exceeds max chars'   | false | default    | ('v' * 256) | highest     | non_default
-          'nil'                 | true  | default    | lowest      | nil         | non_default
-          'int value'           | false | default    | lowest      | 1           | non_default
-          'empty string'        | false | default    | lowest      | ''          | non_default
-          'exceeds max chars'   | false | default    | lowest      | ('v' * 256) | non_default
+        where(:test_case_name, :valid, :default_licenses, :lowest_version, :highest_version, :other_licenses) do
+          'all valid'           | true  | default    | lowest      | highest     | other
+          'nil'                 | false | nil        | lowest      | highest     | other
+          'string'              | false | 's'        | lowest      | highest     | other
+          'array with string'   | false | ['s']      | lowest      | highest     | other
+          'empty array'         | false | []         | lowest      | highest     | other
+          'more than max items' | false | ([1] * 11) | lowest      | highest     | other
+          'nil'                 | true  | default    | nil         | highest     | other
+          'int value'           | false | default    | 1           | highest     | other
+          'empty string'        | false | default    | ''          | highest     | other
+          'exceeds max chars'   | false | default    | ('v' * 256) | highest     | other
+          'nil'                 | true  | default    | lowest      | nil         | other
+          'int value'           | false | default    | lowest      | 1           | other
+          'empty string'        | false | default    | lowest      | ''          | other
+          'exceeds max chars'   | false | default    | lowest      | ('v' * 256) | other
           'empty array'         | true  | default    | lowest      | highest     | []
           'nil'                 | false | default    | lowest      | highest     | nil
           'elts not arrays'     | false | default    | lowest      | highest     | [[1, 'v1.0']]
@@ -82,7 +114,7 @@ RSpec.describe PackageMetadata::Package, type: :model, feature_category: :softwa
         end
 
         with_them do
-          let(:licenses) { [default_licenses, lowest_version, highest_version, non_default_licenses] }
+          let(:licenses) { [default_licenses, lowest_version, highest_version, other_licenses] }
 
           specify { expect(package.valid?).to eq(valid) }
         end

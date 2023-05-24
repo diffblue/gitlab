@@ -13,7 +13,7 @@ module Gitlab
         return empty_report if pipeline.blank?
 
         components = PipelineComponents.new(pipeline: pipeline).fetch
-        package_licenses = PackageLicenses.new(components: components).fetch
+        package_licenses = PackageLicenses.new(project: project, components: components).fetch
 
         ::Gitlab::Ci::Reports::LicenseScanning::Report.new.tap do |license_scanning_report|
           package_licenses.each do |package_license|
