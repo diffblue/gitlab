@@ -54,6 +54,8 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
         before do
+          stub_feature_flags(compressed_package_metadata_query: false)
+
           create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
         end
 
@@ -100,6 +102,8 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         let(:forked_project) { fork_project(project, contributor, namespace: contributor.namespace) }
 
         before do
+          stub_feature_flags(compressed_package_metadata_query: false)
+
           create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
         end
 
@@ -145,6 +149,8 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
         let!(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
         before do
+          stub_feature_flags(compressed_package_metadata_query: false)
+
           create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "BSD")
           create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem", version: "1.8.0", license_name: "MIT")
           create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi", version: "1.11.4", license_name: "BSD")

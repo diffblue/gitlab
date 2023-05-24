@@ -25,6 +25,7 @@ RSpec.describe 'EE > Projects > Licenses > Maintainer views licenses', :js, feat
   end
 
   before do
+    stub_feature_flags(compressed_package_metadata_query: false)
     stub_licensed_features(license_scanning: true)
 
     sign_in(maintainer)

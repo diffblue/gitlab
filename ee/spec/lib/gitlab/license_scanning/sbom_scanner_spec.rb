@@ -9,6 +9,7 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
   subject(:scanner) { described_class.new(project, pipeline) }
 
   before do
+    stub_feature_flags(compressed_package_metadata_query: false)
     stub_licensed_features(license_scanning: true)
   end
 
