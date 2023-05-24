@@ -368,6 +368,17 @@ RSpec.describe API::RelatedEpicLinks, feature_category: :portfolio_management do
           perform_request(user, target_group_id: target_group.full_path, target_epic_iid: target_epic.iid, link_type: 'blocks')
 
           expect_link_response(link_type: 'blocks')
+          expect(json_response['source_epic']['id']).to eq(epic.id)
+          expect(json_response['target_epic']['id']).to eq(target_epic.id)
+        end
+
+        it 'returns 201 status for is_blocked_by link and contains the expected link response' do
+          perform_request(user, target_group_id: target_group.full_path, target_epic_iid: target_epic.iid, link_type: 'is_blocked_by')
+
+          # For `is_blocked_by` we swap the source and target and use `block` as type.
+          expect_link_response(link_type: 'blocks')
+          expect(json_response['source_epic']['id']).to eq(target_epic.id)
+          expect(json_response['target_epic']['id']).to eq(epic.id)
         end
 
         context 'when target epic is not found' do

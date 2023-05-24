@@ -133,7 +133,7 @@ module API
           documentation: { example: 1 }
         optional :link_type,
           type: String,
-          values: ::Epic::RelatedEpicLink.link_types.keys,
+          values: ::Epic::RelatedEpicLink.available_link_types,
           desc: 'The type of the relation',
           documentation: { example: 'relates_to' }
       end
