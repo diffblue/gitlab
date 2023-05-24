@@ -21,170 +21,199 @@ module RemoteDevelopment
         # Currently, we only support 'exec' and 'apply' for validation
         SUPPORTED_COMMAND_TYPES = %w[exec apply].freeze
 
+        # Currently, we only support `preStart` events
+        SUPPORTED_EVENTS = %w[preStart].freeze
+
+        # We must ensure that devfiles are not created with a schema version different than the required version
+        REQUIRED_DEVFILE_SCHEMA_VERSION = '2.2.0'
+
         def pre_flatten_validate(devfile:)
+          validate_schema_version(devfile: devfile)
           validate_parent(devfile: devfile)
         end
 
         def post_flatten_validate(flattened_devfile:)
           validate_projects(flattened_devfile: flattened_devfile)
           validate_components(
-            flattened_devfile: flattened_devfile,
-            restricted_prefix: RESTRICTED_PREFIX,
-            unsupported_component_types: UNSUPPORTED_COMPONENT_TYPES
+            flattened_devfile: flattened_devfile
           )
           validate_commands(
-            flattened_devfile: flattened_devfile,
-            restricted_prefix: RESTRICTED_PREFIX,
-            supported_command_types: SUPPORTED_COMMAND_TYPES
+            flattened_devfile: flattened_devfile
           )
-          validate_events(flattened_devfile: flattened_devfile, restricted_prefix: RESTRICTED_PREFIX)
-          validate_variables(flattened_devfile: flattened_devfile, restricted_prefix: RESTRICTED_PREFIX)
+          validate_events(flattened_devfile: flattened_devfile)
+          validate_variables(flattened_devfile: flattened_devfile)
         end
 
         private
 
+        def validate_schema_version(devfile:)
+          minimum_schema_version = Gem::Version.new(REQUIRED_DEVFILE_SCHEMA_VERSION)
+          devfile_schema_version_string = devfile.fetch('schemaVersion')
+          devfile_schema_version = nil
+          begin
+            devfile_schema_version = Gem::Version.new(devfile_schema_version_string)
+          rescue ArgumentError
+            arg_err!(_("Invalid 'schemaVersion' '%s'"), devfile_schema_version_string)
+          end
+          return if devfile_schema_version == minimum_schema_version
+
+          arg_err!(
+            _("'schemaVersion' '%{given_version}' is not supported, it must be '%{required_version}'"),
+            given_version: devfile_schema_version_string,
+            required_version: REQUIRED_DEVFILE_SCHEMA_VERSION)
+        end
+
         def validate_parent(devfile:)
-          raise ArgumentError, _("Inheriting from 'parent' is not yet supported") if devfile['parent']
+          arg_err!(_("Inheriting from 'parent' is not yet supported")) if devfile['parent']
         end
 
         def validate_projects(flattened_devfile:)
-          raise ArgumentError, _("'starterProjects' is not yet supported") if flattened_devfile['starterProjects']
+          arg_err!(_("'starterProjects' is not yet supported")) if flattened_devfile['starterProjects']
 
-          raise ArgumentError, _("'projects' is not yet supported") if flattened_devfile['projects']
+          arg_err!(_("'projects' is not yet supported")) if flattened_devfile['projects']
         end
 
-        # rubocop:disable Metrics/CyclomaticComplexity
-        def validate_components(flattened_devfile:, restricted_prefix:, unsupported_component_types:)
+        def validate_components(flattened_devfile:)
           components = flattened_devfile['components']
 
-          raise ArgumentError, _('No components present in the devfile') if components.nil?
+          arg_err!(_('No components present in devfile')) if components.nil?
 
           inject_editor_components = components.select do |component|
             component.dig('attributes', 'gl/inject-editor')
           end
 
-          raise ArgumentError, _("No component has 'gl/inject-editor' attribute") if inject_editor_components.empty?
+          arg_err!(_("No component has 'gl/inject-editor' attribute")) if inject_editor_components.empty?
 
           if inject_editor_components.length > 1
-            error_str = format(
-              "Multiple components(%s) have 'gl/inject-editor' attribute",
-              inject_editor_components.pluck('name') # rubocop:disable CodeReuse/ActiveRecord - Oh you silly CodeReuse/ActiveRecord, this pluck isn't even from ActiveRecord, it's from ActiveSupport!!!
-            )
-            raise ArgumentError, _(error_str)
+            arg_err!(_("Multiple components(%s) have 'gl/inject-editor' attribute"),
+              inject_editor_components.pluck('name')) # rubocop:disable CodeReuse/ActiveRecord - this pluck isn't from ActiveRecord, it's from ActiveSupport
           end
+
+          arg_err!(_("Components must have a 'name'")) unless components.all? { |component| component['name'].present? }
 
           # Ensure no component name starts with restricted_prefix
           components.each do |component|
-            component_name = component['name']
-            if component_name.downcase.start_with?(restricted_prefix)
-              error_str = format("Component name '%s' starts with '%s'", component_name, restricted_prefix)
-              raise ArgumentError, _(error_str)
+            component_name = component.fetch('name')
+            if component_name.downcase.start_with?(RESTRICTED_PREFIX)
+              arg_err!(
+                _("Component name '%{component}' must not start with '%{prefix}'"),
+                component: component_name,
+                prefix: RESTRICTED_PREFIX)
             end
 
-            unsupported_component_types.each do |unsupported_component_type|
-              unless component[unsupported_component_type].nil?
-                error_str = format("Component type '%s' is not yet supported", unsupported_component_type)
-                raise ArgumentError, _(error_str)
+            UNSUPPORTED_COMPONENT_TYPES.each do |unsupported_component_type|
+              if component[unsupported_component_type]
+                arg_err!(_("Component type '%s' is not yet supported"), unsupported_component_type)
               end
             end
 
-            container = component['container']
-            # Choosing to disable rubocop rule since we might add validations for other component types in the future.
-            # Add adding a guard clause now might create a regression later
-            # since we have only validate each component type if they are present.
-            # rubocop:disable Style/Next
-            unless container.nil?
-              if container['dedicatedPod']
-                error_str = format(
-                  "Property 'dedicatedPod' of component '%s' is not yet supported",
-                  component_name
-                )
-                raise ArgumentError, _(error_str)
-              end
-
-              next if container['endpoints'].nil?
-
-              container['endpoints'].map do |endpoint|
-                endpoint_name = endpoint['name']
-                if endpoint_name.downcase.start_with?(restricted_prefix)
-                  error_str = format(
-                    "Endpoint name '%s' of component '%s' starts with '%s'",
-                    endpoint_name, component_name, restricted_prefix
-                  )
-                  raise ArgumentError, _(error_str)
-                end
-              end
-            end
-            # rubocop:enable Style/Next
+            validate_container(component: component)
           end
         end
-        # rubocop:enable Metrics/CyclomaticComplexity
 
-        def validate_commands(flattened_devfile:, restricted_prefix:, supported_command_types:)
+        def validate_container(component:)
+          container = component['container']
+          return unless container
+
+          component_name = component.fetch('name')
+
+          if container['dedicatedPod']
+            arg_err!(_("Property 'dedicatedPod' of component '%s' is not yet supported"), component_name)
+          end
+
+          validate_endpoints(component_name: component_name, container: container)
+        end
+
+        def validate_endpoints(component_name:, container:)
+          return unless container['endpoints']
+
+          container.fetch('endpoints').map do |endpoint|
+            endpoint_name = endpoint['name']
+            next unless endpoint_name.downcase.start_with?(RESTRICTED_PREFIX)
+
+            arg_err!(
+              _("Endpoint name '%{endpoint}' of component '%{component}' must not start with '%{prefix}'"),
+              endpoint: endpoint_name,
+              component: component_name,
+              prefix: RESTRICTED_PREFIX)
+          end
+        end
+
+        def validate_commands(flattened_devfile:)
           commands = flattened_devfile['commands']
           return if commands.nil?
 
           # Ensure no command name starts with restricted_prefix
           commands.each do |command|
-            command_id = command['id']
-            if command_id.downcase.start_with?(restricted_prefix)
-              error_str = format("Command id '%s' starts with '%s'", command_id, restricted_prefix)
-              raise ArgumentError, _(error_str)
+            command_id = command.fetch('id')
+            if command_id.downcase.start_with?(RESTRICTED_PREFIX)
+              arg_err!(
+                _("Command id '%{command}' must not start with '%{prefix}'"),
+                command: command_id,
+                prefix: RESTRICTED_PREFIX)
             end
 
             # Ensure no command is referring to a component with restricted_prefix
-            supported_command_types.each do |supported_command_type|
+            SUPPORTED_COMMAND_TYPES.each do |supported_command_type|
               command_type = command[supported_command_type]
               next if command_type.nil?
 
               component_name = command_type['component']
-              next unless component_name.downcase.start_with?(restricted_prefix)
+              next unless component_name.downcase.start_with?(RESTRICTED_PREFIX)
 
-              error_str = format(
-                "Component name '%s' for command id '%s' starts with '%s'",
-                component_name, command_id, restricted_prefix
-              )
-              raise ArgumentError, _(error_str)
+              arg_err!(
+                _("Component name '%{component}' for command id '%{command}' must not start with '%{prefix}'"),
+                component: component_name,
+                command: command_id,
+                prefix: RESTRICTED_PREFIX)
             end
           end
         end
 
-        def validate_events(flattened_devfile:, restricted_prefix:)
+        def validate_events(flattened_devfile:)
           events = flattened_devfile['events']
           return if events.nil?
 
           events.map do |event_type, event_type_events|
             # Ensure no event type other than "preStart" are allowed
-            unless event_type == 'preStart'
-              error_str = format("Event type '%s' is not yet supported", event_type)
-              raise ArgumentError, _(error_str)
-            end
+
+            arg_err!(_("Event type '%s' is not yet supported"), event_type) unless SUPPORTED_EVENTS.include?(event_type)
 
             # Ensure no event starts with restricted_prefix
             event_type_events.each do |event|
-              if event.downcase.start_with?(restricted_prefix)
-                error_str = format("Event '%s' of type '%s' starts with '%s'", event, event_type, restricted_prefix)
-                raise ArgumentError, _(error_str)
-              end
+              next unless event.downcase.start_with?(RESTRICTED_PREFIX)
+
+              arg_err!(
+                _("Event '%{event}' of type '%{event_type}' must not start with '%{prefix}'"),
+                event: event,
+                event_type: event_type,
+                prefix: RESTRICTED_PREFIX)
             end
           end
         end
 
-        def validate_variables(flattened_devfile:, restricted_prefix:)
+        def validate_variables(flattened_devfile:)
           variables = flattened_devfile['variables']
           return if variables.nil?
 
-          restricted_prefix_underscore = restricted_prefix.tr("-", "_")
+          restricted_prefix_underscore = RESTRICTED_PREFIX.tr("-", "_")
 
           # Ensure no variables name starts with restricted_prefix
           variables.map do |variable, _|
-            [restricted_prefix, restricted_prefix_underscore].each do |prefix|
-              if variable.downcase.start_with?(prefix)
-                error_str = format("Variable name '%s' starts with '%s'", variable, prefix)
-                raise ArgumentError, _(error_str)
-              end
+            [RESTRICTED_PREFIX, restricted_prefix_underscore].each do |prefix|
+              next unless variable.downcase.start_with?(prefix)
+
+              arg_err!(
+                _("Variable name '%{variable}' must not start with '%{prefix}'"),
+                variable: variable,
+                prefix: prefix)
             end
           end
+        end
+
+        def arg_err!(msg, *format_args)
+          msg = format(msg, *format_args) unless format_args.empty?
+          raise ArgumentError, msg
         end
       end
     end

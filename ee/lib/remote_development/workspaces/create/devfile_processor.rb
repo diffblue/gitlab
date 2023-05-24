@@ -8,10 +8,11 @@ module RemoteDevelopment
       class DevfileProcessor
         WORKSPACE_VOLUME = 'gl-workspace-data'
 
-        def process(devfile:, editor:, project:, workspace_root:)
+        def process(devfile_yaml_string:, editor:, project:, workspace_root:)
           devfile_validator = DevfileValidator.new
+          devfile = YAML.safe_load(devfile_yaml_string)
           devfile_validator.pre_flatten_validate(devfile: devfile)
-          flattened_devfile_yaml = Devfile::Parser.flatten(devfile)
+          flattened_devfile_yaml = Devfile::Parser.flatten(devfile_yaml_string)
           flattened_devfile = YAML.safe_load(flattened_devfile_yaml)
           devfile_validator.post_flatten_validate(flattened_devfile: flattened_devfile)
 

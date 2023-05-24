@@ -38,7 +38,7 @@ module RemoteDevelopment
 
           begin
             processed_devfile = DevfileProcessor.new.process(
-              devfile: devfile,
+              devfile_yaml_string: devfile,
               editor: params.fetch(:editor),
               project: project,
               workspace_root: workspace_root

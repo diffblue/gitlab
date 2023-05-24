@@ -40,7 +40,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::CreateProcessor, :freeze
           allow_next_instance_of(RemoteDevelopment::Workspaces::Create::DevfileProcessor) do |processor|
             allow(processor)
               .to receive(:process).with(
-                devfile: fake_devfile,
+                devfile_yaml_string: fake_devfile,
                 editor: editor,
                 project: project,
                 workspace_root: workspace_root
@@ -84,7 +84,7 @@ RSpec.describe ::RemoteDevelopment::Workspaces::Create::CreateProcessor, :freeze
         it 'returns an error' do
           payload, error = subject.process(params: params)
           expect(payload).to be_nil
-          expect(error.message).to eq('Invalid devfile: No components present in the devfile')
+          expect(error.message).to eq('Invalid devfile: No components present in devfile')
           expect(error.reason).to eq(:bad_request)
         end
       end
