@@ -11,7 +11,7 @@ export {
   SCAN_FINDING,
   LICENSE_FINDING,
 } from './rules';
-export { approversOutOfSyncV2, APPROVER_TYPE_DICT, APPROVER_TYPE_LIST_ITEMS } from './actions';
+export { approversOutOfSync, APPROVER_TYPE_DICT, APPROVER_TYPE_LIST_ITEMS } from './actions';
 export * from './humanize';
 export * from './vulnerability_states';
 

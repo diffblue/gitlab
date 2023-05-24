@@ -27,7 +27,7 @@ import {
   PARSING_ERROR_MESSAGE,
 } from 'ee/security_orchestration/components/policy_editor/constants';
 import DimDisableContainer from 'ee/security_orchestration/components/policy_editor/dim_disable_container.vue';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder_v2.vue';
+import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_result_policy/lib', () => ({

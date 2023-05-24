@@ -15,16 +15,13 @@ export const getPolicyType = (typeName = '') => {
   )?.value;
 };
 
-// TODO rename this method to `decomposeApprovers` with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
 /**
  * Separate existing approvers by type
  * @param {Array} existingApprovers all approvers
  * @returns {Object} approvers separated by type
  */
-export const decomposeApproversV2 = (existingApprovers) => {
-  // TODO remove groupUniqKeys with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
-  const GROUP_TYPE_UNIQ_KEY = 'full_name';
-  const GROUP_TYPE_UNIQ_KEY_V2 = 'fullName';
+export const decomposeApprovers = (existingApprovers) => {
+  const GROUP_TYPE_UNIQ_KEY = 'fullName';
 
   return existingApprovers.reduce((acc, approver) => {
     if (typeof approver === 'string') {
@@ -42,10 +39,7 @@ export const decomposeApproversV2 = (existingApprovers) => {
     let type = USER_TYPE;
     let value = convertToGraphQLId(TYPENAME_USER, approver.id);
 
-    if (
-      approverKeys.includes(GROUP_TYPE_UNIQ_KEY) ||
-      approverKeys.includes(GROUP_TYPE_UNIQ_KEY_V2)
-    ) {
+    if (approverKeys.includes(GROUP_TYPE_UNIQ_KEY)) {
       type = GROUP_TYPE;
       value = convertToGraphQLId(TYPENAME_GROUP, approver.id);
     }
