@@ -9,7 +9,7 @@ import { GROUP_TYPE } from 'ee/security_orchestration/constants';
 
 const createGroupObject = (group) => ({
   ...group,
-  text: group.fullName || group.full_name,
+  text: group.fullName,
   value: group.value || group.id,
 });
 
@@ -120,10 +120,10 @@ export default {
       <gl-avatar-labeled
         shape="circle"
         :size="32"
-        :src="item.avatarUrl || item.avatar_url"
+        :src="item.avatarUrl"
         :entity-name="item.text"
         :label="item.text"
-        :sub-label="item.fullPath || item.full_path"
+        :sub-label="item.fullPath"
       />
     </template>
   </gl-collapsible-listbox>

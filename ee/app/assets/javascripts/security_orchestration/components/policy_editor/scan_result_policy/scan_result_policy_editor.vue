@@ -18,7 +18,7 @@ import {
 import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
-import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
+import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 
 import {
@@ -28,7 +28,7 @@ import {
   fromYaml,
   toYaml,
   emptyBuildRule,
-  approversOutOfSyncV2,
+  approversOutOfSync,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
@@ -54,7 +54,7 @@ export default {
   components: {
     GlEmptyState,
     GlButton,
-    PolicyActionBuilderV2,
+    PolicyActionBuilder,
     PolicyRuleBuilder,
     PolicyEditorLayout,
     DimDisableContainer,
@@ -234,7 +234,7 @@ export default {
       this.existingApprovers = values;
     },
     invalidForRuleMode() {
-      const invalidApprovers = approversOutOfSyncV2(this.policy.actions[0], this.existingApprovers);
+      const invalidApprovers = approversOutOfSync(this.policy.actions[0], this.existingApprovers);
 
       return (
         invalidApprovers ||
@@ -306,7 +306,7 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <policy-action-builder-v-2
+        <policy-action-builder
           v-for="(action, index) in policy.actions"
           :key="index"
           class="gl-mb-4"

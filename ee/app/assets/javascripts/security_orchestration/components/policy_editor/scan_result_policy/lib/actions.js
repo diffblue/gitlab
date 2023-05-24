@@ -1,7 +1,4 @@
-import { omitBy, isEmpty } from 'lodash';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { n__, s__ } from '~/locale';
-import { TYPENAME_USER } from '~/graphql_shared/constants';
 import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 
 export const APPROVER_TYPE_DICT = {
@@ -18,61 +15,16 @@ export const APPROVER_TYPE_LIST_ITEMS = [
   { text: s__('SecurityOrchestration|Groups'), value: GROUP_TYPE },
 ];
 
-/*
-  Return the ids for all approvers of the group type.
-*/
-export function groupIds(approvers) {
-  return approvers
-    .filter((approver) => approver.type === GROUP_TYPE)
-    .map((approver) => approver.id);
-}
+const mapIds = (approvers, namespaceType) =>
+  approvers.filter(({ type }) => type === namespaceType).map(({ id }) => id);
 
-/*
-  Return the ids for all approvers of the user type.
-*/
-export function userIds(approvers) {
-  return approvers.filter((approver) => approver.type === USER_TYPE).map((approver) => approver.id);
-}
+const userIds = (approvers) => {
+  return mapIds(approvers, USER_TYPE);
+};
 
-// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
-/*
-  Group existing approvers into a single array.
-*/
-export function groupApprovers(existingApprovers) {
-  const userUniqKeys = ['state', 'username'];
-  const groupUniqKeys = ['full_name', 'full_path'];
-
-  return existingApprovers.map((approver) => {
-    const approverKeys = Object.keys(approver);
-
-    if (approverKeys.includes(...groupUniqKeys)) {
-      return { ...approver, type: GROUP_TYPE };
-    } else if (approverKeys.includes(...userUniqKeys)) {
-      return {
-        ...approver,
-        type: USER_TYPE,
-        value: convertToGraphQLId(TYPENAME_USER, approver.id),
-      };
-    }
-    return approver;
-  });
-}
-
-// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
-/*
-  Convert approvers into yaml fields (user_approvers, users_approvers_ids) in relation to action.
-*/
-export function decomposeApprovers(action, approvers) {
-  const newAction = { type: action.type, approvals_required: action.approvals_required };
-  const approversInfo = omitBy(
-    {
-      user_approvers_ids: userIds(approvers),
-      group_approvers_ids: groupIds(approvers),
-    },
-    isEmpty,
-  );
-  return { ...newAction, ...approversInfo };
-}
+const groupIds = (approvers) => {
+  return mapIds(approvers, GROUP_TYPE);
+};
 
 export const removeAvailableApproverType = (array, type) =>
   array.filter(({ value }) => value !== type);
@@ -101,10 +53,10 @@ export const createActionFromApprovers = ({ type, approvals_required }, approver
 /*
   Check if users are present in approvers
 */
-function usersOutOfSync(action, users) {
-  const usersIDs =
-    action?.user_approvers_ids?.some((id) => !users.find((approver) => approver.id === id)) ||
-    false;
+const usersOutOfSync = (action, users) => {
+  const usersIDs = action?.user_approvers_ids?.some(
+    (id) => !users.find((approver) => approver.id === id),
+  );
   const usersNames =
     action?.user_approvers?.some(
       (userName) => !users.find((approver) => approver.username === userName),
@@ -113,31 +65,31 @@ function usersOutOfSync(action, users) {
     (action?.user_approvers?.length || 0) + (action?.user_approvers_ids?.length || 0);
 
   return usersIDs || usersNames || userLength !== users.length;
-}
+};
 
 /*
   Check if groups are present in approvers
 */
-function groupsOutOfSync(action, groups) {
-  const groupsIDs =
-    action?.group_approvers_ids?.some((id) => !groups.find((approver) => approver.id === id)) ||
-    false;
+const groupsOutOfSync = (action, groups) => {
+  const groupsIDs = action?.group_approvers_ids?.some(
+    (id) => !groups.find((approver) => approver.id === id),
+  );
   const groupsPaths =
     action?.group_approvers?.some(
-      (path) => !groups.find((approver) => approver.full_path === path),
+      (path) => !groups.find((approver) => approver.fullPath === path),
     ) || false;
   const groupLength =
     (action?.group_approvers?.length || 0) + (action?.group_approvers_ids?.length || 0);
 
   return groupsIDs || groupsPaths || groupLength !== groups.length;
-}
+};
 
 /*
   Check if yaml is out of sync with available approvers
 */
-export function approversOutOfSyncV2(action, { user = [], group = [] }) {
+export const approversOutOfSync = (action, { user = [], group = [] }) => {
   return usersOutOfSync(action, user) || groupsOutOfSync(action, group);
-}
+};
 
 export const getDefaultHumanizedTemplate = (numOfApproversRequired) => {
   return n__(

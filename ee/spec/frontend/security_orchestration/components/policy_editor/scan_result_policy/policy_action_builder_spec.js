@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
-import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder_v2.vue';
+import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
 import PolicyActionApprovers from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_approvers.vue';
 import { APPROVER_TYPE_LIST_ITEMS } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
 

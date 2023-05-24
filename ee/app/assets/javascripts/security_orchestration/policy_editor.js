@@ -3,7 +3,7 @@ import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_
 import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
 import NewPolicyApp from './components/policy_editor/new_policy.vue';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from './constants';
-import { decomposeApproversV2 } from './utils';
+import { decomposeApprovers } from './utils';
 
 export default (el, namespaceType) => {
   const {
@@ -26,10 +26,17 @@ export default (el, namespaceType) => {
 
   const policyProject = JSON.parse(assignedPolicyProject);
 
-  // TODO use convertToCamelCase on the approvers with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
-  const scanResultPolicyApprovers = scanResultApprovers
-    ? decomposeApproversV2(JSON.parse(scanResultApprovers))
-    : {};
+  let scanResultPolicyApprovers;
+
+  try {
+    scanResultPolicyApprovers = decomposeApprovers(
+      JSON.parse(scanResultApprovers).map((approver) => {
+        return typeof approver === 'object' ? convertObjectPropsToCamelCase(approver) : approver;
+      }),
+    );
+  } catch {
+    scanResultPolicyApprovers = {};
+  }
 
   return new Vue({
     el,
