@@ -19,6 +19,7 @@ Object {
   "hasScopedLabelsFeature": false,
   "initialFilterValue": Array [],
   "initialSortBy": "created_desc",
+  "isGridView": false,
   "isManualOrdering": false,
   "issuableSymbol": "#",
   "issuables": Array [
