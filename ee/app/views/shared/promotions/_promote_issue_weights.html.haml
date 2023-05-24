@@ -32,4 +32,4 @@
               = s_('Promotions|Improve issues management with Issue weight and GitLab Enterprise Edition.')
           %div
             = render 'shared/promotions/promotion_link_project', short_form: true, target_blank: false, location: :issue_weights
-            = link_to s_("Promotions|Not now, thanks!"), '#', class: 'gl-button btn js-close js-close-callout gl-mt-3 js-close-session tr-issue-weights-not-now-cta'
+            = link_button_to s_("Promotions|Not now, thanks!"), '#', class: 'js-close js-close-callout gl-mt-3 js-close-session tr-issue-weights-not-now-cta'

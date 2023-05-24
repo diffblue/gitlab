@@ -7,7 +7,7 @@
             = sprite_icon('warning-solid', css_class: 'gl-mr-2 gl-text-orange-600')
             = _("Something went wrong while obtaining the Let's Encrypt certificate.")
           .row.gl-mx-0.gl-mt-3
-            = link_to _('Retry'), retry_auto_ssl_group_settings_domain_verification_path(group, domain_presenter), class: "gl-button btn btn-default btn-sm btn-grouped", method: :post
+            = link_button_to _('Retry'), retry_auto_ssl_group_settings_domain_verification_path(group, domain_presenter), class: 'btn-grouped', method: :post, size: :small
     - elsif !domain_presenter.certificate_gitlab_provided?
       .form-group.gl-form-group.js-shown-if-auto-ssl{ class: ("gl-display-none" unless auto_ssl_available_and_enabled) }
         .bs-callout.bs-callout-info.gl-mt-0

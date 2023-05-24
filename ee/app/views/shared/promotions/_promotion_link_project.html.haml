@@ -5,7 +5,7 @@
   -# EE:SaaS
   - namespace = @project&.namespace || @group
   - if can?(current_user, :admin_namespace, namespace)
-    = link_to s_('Promotions|Try it for free'), new_trial_registration_path(glm_source: glm_source, glm_content: location), class: 'btn gl-button btn-confirm promotion-trial-cta', target: target_blank ? '_blank' : '_self'
+    = link_button_to s_('Promotions|Try it for free'), new_trial_registration_path(glm_source: glm_source, glm_content: location), class: 'promotion-trial-cta', target: target_blank ?'_blank' : '_self', variant: :confirm
   - elsif namespace.is_a?(Group)
     %p= s_('Promotions|Contact an owner of group %{namespace_name} to upgrade the plan.') % { namespace_name: namespace.name }
   - else
@@ -15,8 +15,8 @@
 - elsif current_user&.admin?
   -# EE:Self Managed
   - if License.current&.expired?
-    = link_to (!short_form ? s_('Promotions|Buy GitLab Enterprise Edition') : s_('Promotions|Buy EE')), Gitlab::Saas.about_pricing_url, class: 'btn gl-button btn-confirm'
+    = link_button_to (!short_form ? s_('Promotions|Buy GitLab Enterprise Edition') : s_('Promotions|Buy EE')), Gitlab::Saas.about_pricing_url, variant: :confirm
   - else
-    = link_to s_('Promotions|Start GitLab Ultimate trial'), new_trial_url, class: 'gl-button btn btn-confirm gl-mb-3'
+    = link_button_to s_('Promotions|Start GitLab Ultimate trial'), new_trial_url, class: 'gl-mb-3', variant: :confirm
 - else
   %p= s_('Promotions|Contact your Administrator to upgrade your license.')

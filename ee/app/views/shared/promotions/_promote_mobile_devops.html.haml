@@ -9,4 +9,4 @@
     %p
       = s_('Promotions|Use GitLab Mobile DevOps to quickly build, sign, and release native and cross-platform mobile apps for Android and iOS using GitLab CI/CD.')
     - c.with_primary_action do
-      = link_to s_('Promotions|Get started with GitLab Mobile DevOps'), help_page_path('ci/mobile_devops.md'), class: 'gl-button btn btn-confirm gl-mb-3'
+      = link_button_to s_('Promotions|Get started with GitLab Mobile DevOps'), help_page_path('ci/mobile_devops.md'), class: 'gl-mb-3', variant: :confirm

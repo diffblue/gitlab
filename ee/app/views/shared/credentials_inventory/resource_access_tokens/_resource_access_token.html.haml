@@ -44,6 +44,6 @@
     .table-mobile-header{ role: 'rowheader' }
     .table-mobile-content
       - if project
-        = link_to _('Revoke'), admin_credential_resource_revoke_path(credential_id: resource_access_token, resource_id: project.id, resource_type: 'Project'), method: :put, data: { confirm: _('Are you sure you want to revoke this project access token? This action cannot be undone.') }, class: 'btn btn-danger btn-danger-secondary btn-md btn-secondary gl-button'
+        = link_button_to _('Revoke'), admin_credential_resource_revoke_path(credential_id: resource_access_token, resource_id: project.id, resource_type: 'Project'), method: :put, data: { confirm: _('Are you sure you want to revoke this project access token? This action cannot be undone.') }, variant: :danger, category: :secondary
       - else
-        = link_to _('Revoke'), admin_credential_resource_revoke_path(credential_id: resource_access_token, resource_id: group.id, resource_type: 'Group'), method: :put, data: { confirm: _('Are you sure you want to revoke this group access token? This action cannot be undone.') }, class: 'btn btn-danger btn-danger-secondary btn-md btn-secondary gl-button'
+        = link_button_to _('Revoke'), admin_credential_resource_revoke_path(credential_id: resource_access_token, resource_id: group.id, resource_type: 'Group'), method: :put, data: { confirm: _('Are you sure you want to revoke this group access token? This action cannot be undone.') }, variant: :danger, category: :secondary

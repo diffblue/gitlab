@@ -31,7 +31,7 @@
                   = link_to _('Learn more.'), help_page_path('integration/advanced_search/elasticsearch', anchor: 'advanced-search-migrations')
                 - c.with_actions do
                   - migration = Elastic::DataMigrationService.halted_migration
-                  = link_to _('Retry migration'), admin_elasticsearch_retry_migration_path(version: migration.version), class: 'btn gl-alert-action btn-confirm gl-button', disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to retry this migration?') }, method: :post
+                  = link_button_to _('Retry migration'), admin_elasticsearch_retry_migration_path(version: migration.version), class: 'gl-alert-action', disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to retry this migration?') }, method: :post, variant: :confirm
 
             .form-group
               - unless Gitlab::CurrentSettings.elasticsearch_indexing?
