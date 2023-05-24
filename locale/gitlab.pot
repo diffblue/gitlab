@@ -2114,6 +2114,27 @@ msgstr ""
 msgid "Abuse reports notification email"
 msgstr ""
 
+msgid "AbuseReportEvent|Successfully banned the user"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully banned the user and closed the report"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully blocked the user"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully blocked the user and closed the report"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully closed the report"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully scheduled the user for deletion"
+msgstr ""
+
+msgid "AbuseReportEvent|Successfully scheduled the user for deletion and closed the report"
+msgstr ""
+
 msgid "AbuseReports|%{reportedUser} reported for %{category} by %{reporter}"
 msgstr ""
 
@@ -2129,19 +2150,67 @@ msgstr ""
 msgid "AbuseReport|Abuse reports"
 msgstr ""
 
+msgid "AbuseReport|Abuse unconfirmed"
+msgstr ""
+
+msgid "AbuseReport|Action"
+msgstr ""
+
+msgid "AbuseReport|Actions"
+msgstr ""
+
 msgid "AbuseReport|Activity"
 msgstr ""
 
 msgid "AbuseReport|Admin profile"
 msgstr ""
 
+msgid "AbuseReport|Ban user"
+msgstr ""
+
+msgid "AbuseReport|Block user"
+msgstr ""
+
 msgid "AbuseReport|Card matches %{cardMatchesLinkStart}%{count} accounts%{cardMatchesLinkEnd}"
+msgstr ""
+
+msgid "AbuseReport|Close report"
+msgstr ""
+
+msgid "AbuseReport|Comment"
 msgstr ""
 
 msgid "AbuseReport|Comments"
 msgstr ""
 
+msgid "AbuseReport|Confirm"
+msgstr ""
+
+msgid "AbuseReport|Confirmed crypto mining"
+msgstr ""
+
+msgid "AbuseReport|Confirmed offensive or abusive behavior"
+msgstr ""
+
+msgid "AbuseReport|Confirmed phishing"
+msgstr ""
+
+msgid "AbuseReport|Confirmed posting of malware"
+msgstr ""
+
+msgid "AbuseReport|Confirmed posting of personal information or credentials"
+msgstr ""
+
+msgid "AbuseReport|Confirmed spam"
+msgstr ""
+
+msgid "AbuseReport|Confirmed violation of a copyright or a trademark"
+msgstr ""
+
 msgid "AbuseReport|Credit card"
+msgstr ""
+
+msgid "AbuseReport|Delete user"
 msgstr ""
 
 msgid "AbuseReport|Email"
@@ -2171,6 +2240,9 @@ msgstr ""
 msgid "AbuseReport|Member since"
 msgstr ""
 
+msgid "AbuseReport|No action"
+msgstr ""
+
 msgid "AbuseReport|No user found"
 msgstr ""
 
@@ -2178,6 +2250,9 @@ msgid "AbuseReport|Normal location"
 msgstr ""
 
 msgid "AbuseReport|Phone"
+msgstr ""
+
+msgid "AbuseReport|Reason"
 msgstr ""
 
 msgid "AbuseReport|Registered with name %{name}."
@@ -2208,6 +2283,9 @@ msgid "AbuseReport|Screenshot of reported abuse"
 msgstr ""
 
 msgid "AbuseReport|Snippets"
+msgstr ""
+
+msgid "AbuseReport|Something else"
 msgstr ""
 
 msgid "AbuseReport|Tier"
