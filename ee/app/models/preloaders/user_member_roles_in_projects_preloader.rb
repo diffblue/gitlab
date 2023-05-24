@@ -25,28 +25,33 @@ module Preloaders
 
       value_list = Arel::Nodes::ValuesList.new(sql_values_array)
 
+      permissions = MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS.keys
+      permission_select = permissions.map { |p| "bool_or(custom_permissions.#{p}) AS #{p}" }.join(', ')
+      permission_condition = permissions.map { |p| "member_roles.#{p} = true" }.join(' OR ')
+      result_default = permissions.map { |p| "false AS #{p}" }.join(', ')
+
       sql = <<~SQL
-      SELECT project_ids.project_id, bool_or(custom_permissions.read_code) as read_code, bool_or(custom_permissions.read_vulnerability) as read_vulnerability
+      SELECT project_ids.project_id, #{permission_select}
         FROM (#{value_list.to_sql}) AS project_ids (project_id, namespace_ids),
         LATERAL (
           (
-           #{Member.select('read_code, read_vulnerability')
+           #{Member.select(permissions.join(', '))
               .left_outer_joins(:member_role)
               .where("members.source_type = 'Project' AND members.source_id = project_ids.project_id")
               .with_user(user)
-              .where('member_roles.read_code = true OR member_roles.read_vulnerability = true')
+              .where(permission_condition)
               .limit(1).to_sql}
           ) UNION ALL
           (
-           #{Member.select('read_code, read_vulnerability')
+            #{Member.select(permissions.join(', '))
               .left_outer_joins(:member_role)
               .where("members.source_type = 'Namespace' AND members.source_id IN (SELECT UNNEST(project_ids.namespace_ids) as ids)")
               .with_user(user)
-              .where('member_roles.read_code = true OR member_roles.read_vulnerability = true')
+              .where(permission_condition)
               .limit(1).to_sql}
           ) UNION ALL
           (
-            SELECT false AS read_code, false AS read_vulnerability
+            SELECT #{result_default}
           )
           LIMIT 1
         ) AS custom_permissions
@@ -58,14 +63,9 @@ module Preloaders
       end
 
       grouped_by_project.transform_values do |value|
-        custom_attributes = []
-        custom_attributes << :read_code if value.find { |custom_role| custom_role["read_code"] == true }
-
-        if value.find { |custom_role| custom_role["read_vulnerability"] == true }
-          custom_attributes << :read_vulnerability
+        permissions.filter_map do |permission|
+          permission if value.find { |custom_role| custom_role[permission.to_s] == true }
         end
-
-        custom_attributes
       end
     end
 

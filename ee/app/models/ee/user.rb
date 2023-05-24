@@ -511,16 +511,9 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
-    def read_code_for?(project)
+    def custom_permission_for?(project, permission)
       roles = preloaded_member_roles_for_projects([project])[project.id]
-      roles&.include?(:read_code)
-    end
-
-    def read_vulnerability_for?(project)
-      return false unless ::Feature.enabled?(:custom_roles_vulnerability, project.root_ancestor)
-
-      roles = preloaded_member_roles_for_projects([project])[project.id]
-      roles&.include?(:read_vulnerability)
+      roles&.include?(permission)
     end
 
     override :preloaded_member_roles_for_projects

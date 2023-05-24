@@ -215,14 +215,14 @@ module EE
       condition(:role_enables_read_code) do
         next unless @user.is_a?(User)
 
-        @user.read_code_for?(project)
+        @user.custom_permission_for?(project, :read_code)
       end
 
       desc "Custom role on project that enables read vulnerability"
       condition(:role_enables_read_vulnerability) do
         next unless @user.is_a?(User)
 
-        @user.read_vulnerability_for?(project)
+        @user.custom_permission_for?(project, :read_vulnerability)
       end
 
       with_scope :subject
