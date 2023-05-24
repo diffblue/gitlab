@@ -18,8 +18,8 @@
           = link_to truncate(title, length: 40), browse_project_job_artifacts_path(@project, @build, path)
 
     .tree-controls<
-      = link_button_to nil, download_project_job_artifacts_path(@project, @build), rel: 'nofollow', download: '', class: 'download', icon: 'download'
-        Download artifacts archive
+      = link_button_to download_project_job_artifacts_path(@project, @build), rel: 'nofollow', download: '', class: 'download', icon: 'download' do
+        = _('Download artifacts archive')
 
   .tree-content-holder
     %table.table.tree-table

@@ -16529,6 +16529,9 @@ msgstr ""
 msgid "Download artifacts"
 msgstr ""
 
+msgid "Download artifacts archive"
+msgstr ""
+
 msgid "Download codes"
 msgstr ""
 

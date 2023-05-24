@@ -18,7 +18,7 @@
       .tree-controls
         - if @merge_request.present?
           .control.d-none.d-md-block
-            = link_to _("View open merge request"), project_merge_request_path(@project, @merge_request), class: 'btn gl-button'
+            = link_button_to _("View open merge request"), project_merge_request_path(@project, @merge_request)
         - elsif create_mr_button?(from: @ref, source_project: @project)
           .control.d-none.d-md-block
             = render Pajamas::ButtonComponent.new(variant: :confirm, href: create_mr_path(from: @ref, source_project: @project)) do

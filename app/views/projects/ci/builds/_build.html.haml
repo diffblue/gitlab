@@ -112,17 +112,17 @@
               %time.js-remaining-time{ datetime: job.scheduled_at.utc.iso8601 }
                 = duration_in_numbers(job.execute_in)
             - confirmation_message = s_("DelayedJobs|Are you sure you want to run %{job_name} immediately? This job will run automatically after it's timer finishes.") % { job_name: job.name }
-            = link_to play_project_job_path(job.project, job, return_to: request.original_url),
+            = link_button_to nil, play_project_job_path(job.project, job, return_to: request.original_url),
               method: :post,
               title: s_('DelayedJobs|Start now'),
-              class: 'gl-button btn btn-default btn-icon has-tooltip',
-              data: { confirm: confirmation_message } do
-              = sprite_icon('play', css_class: 'gl-icon')
-            = link_to unschedule_project_job_path(job.project, job, return_to: request.original_url),
+              class: 'has-tooltip',
+              data: { confirm: confirmation_message },
+              icon: 'play'
+            = link_button_to nil, unschedule_project_job_path(job.project, job, return_to: request.original_url),
               method: :post,
               title: s_('DelayedJobs|Unschedule'),
-              class: 'gl-button btn btn-default btn-icon has-tooltip' do
-              = sprite_icon('time-out', css_class: 'gl-icon')
+              class: 'has-tooltip',
+              icon: 'time-out'
           - elsif allow_retry
             - if job.playable? && !admin && can?(current_user, :update_build, job)
               = link_button_to nil, play_project_job_path(job.project, job, return_to: request.original_url), method: :post, title: _('Play'), icon: 'play'
