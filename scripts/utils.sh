@@ -114,6 +114,8 @@ function yarn_install_script() {
 
   retry yarn install --frozen-lockfile
 
+  retry yarn storybook:install --frozen-lockfile
+
   section_end "yarn-install"
 }
 
