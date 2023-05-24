@@ -1077,6 +1077,9 @@ msgid_plural "%{selectedProjectsCount} projects"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%{size} B"
+msgstr ""
+
 msgid "%{size} GiB"
 msgstr ""
 
@@ -1084,9 +1087,6 @@ msgid "%{size} KiB"
 msgstr ""
 
 msgid "%{size} MiB"
-msgstr ""
-
-msgid "%{size} bytes"
 msgstr ""
 
 msgid "%{sourceBranch} into %{targetBranch}"
@@ -1531,7 +1531,7 @@ msgstr ""
 msgid "/day"
 msgstr ""
 
-msgid "0 bytes"
+msgid "0 B"
 msgstr ""
 
 msgid "1 Code quality finding"
