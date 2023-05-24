@@ -226,6 +226,35 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe 'reactivating a deactivated user' do
+    let(:user) { create(:user, name: 'John Smith') }
+
+    context 'a deactivated user' do
+      before do
+        user.deactivate
+      end
+
+      it 'can be activated' do
+        user.activate
+
+        expect(user.active?).to be_truthy
+      end
+
+      context 'when user cap is reached' do
+        before do
+          allow(described_class).to receive(:user_cap_reached?).and_return true
+        end
+
+        it 'cannot be activated' do
+          user.activate
+
+          expect(user.active?).not_to be_truthy
+          expect(user.blocked_pending_approval?).to be_truthy
+        end
+      end
+    end
+  end
+
   describe 'the GitLab_Auditor_User add-on' do
     context 'creating an auditor user' do
       it "does not allow creating an auditor user if the addon isn't enabled" do
