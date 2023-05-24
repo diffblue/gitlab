@@ -159,7 +159,7 @@ export default {
             v-for="(message, index) in messages"
             :key="`${message.role}-${index}`"
             :ref="isLastMessage(index) ? 'lastMessage' : undefined"
-            class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg ai-genie-chat-message"
+            class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
             :class="{
               'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
                 message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
