@@ -67,7 +67,8 @@ describe('ProjectList', () => {
 
       describe.each(projects)('$name', (project) => {
         it('renders project name with namespace', () => {
-          expect(tableText).toContain(project.nameWithNamespace);
+          const relativeProjectPath = project.nameWithNamespace.split(' / ').slice(1).join(' / ');
+          expect(tableText).toContain(relativeProjectPath);
         });
 
         it.each(storageTypes)('$key', ({ key }) => {

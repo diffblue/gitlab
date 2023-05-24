@@ -50,6 +50,14 @@ export default {
     getUsageQuotasUrl(projectUrl) {
       return `${projectUrl}/-/usage_quotas`;
     },
+    /**
+     * Creates a relative path from a full project path.
+     * E.g. input `namespace / subgroup / project`
+     * results in `subgroup / project`
+     */
+    getProjectRelativePath(fullPath) {
+      return fullPath.replace(/.*?\s?\/\s?/, '');
+    },
   },
   fields: [
     { key: 'name', label: __('Project') },
@@ -137,8 +145,9 @@ export default {
         :href="getUsageQuotasUrl(project.webUrl)"
         class="gl-text-gray-900! js-project-link gl-word-break-word"
         data-testid="project-link"
-        >{{ project.nameWithNamespace }}</gl-link
       >
+        {{ getProjectRelativePath(project.nameWithNamespace) }}
+      </gl-link>
     </template>
 
     <template #cell(storage)="{ item: project }">
