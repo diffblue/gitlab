@@ -47183,6 +47183,9 @@ msgstr ""
 msgid "To update Snippets with multiple files, you must use the `files` parameter"
 msgstr ""
 
+msgid "To use Service Desk in this project, you must %{linkStart}activate the issue tracker%{linkEnd}."
+msgstr ""
+
 msgid "To use the additional formats, you must start the required %{container_link_start}companion containers%{container_link_end}."
 msgstr ""
 
