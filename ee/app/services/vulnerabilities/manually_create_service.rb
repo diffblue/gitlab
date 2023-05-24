@@ -27,7 +27,6 @@ module Vulnerabilities
         vulnerability: vulnerability,
         identifiers: identifiers,
         scanner: scanner,
-        message: @params[:vulnerability][:message],
         description: @params[:vulnerability][:description],
         solution: @params[:vulnerability][:solution]
       )

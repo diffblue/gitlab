@@ -4,8 +4,7 @@
     {
       "id": "756a4302f62d4b44d8d64e1a925d7a076fcc80918b7319e62bb28d4d4baa2bc1",
       "category": "dependency_scanning",
-      "name": "Prototype pollution attack",
-      "message": "Prototype pollution attack in mixin-deep",
+      "name": "Prototype pollution attack in mixin-deep",
       "cve": "package.json:mixin-deep:cve:CVE-2019-10746",
       "severity": "High",
       "scanner": {
@@ -78,8 +77,7 @@
     {
       "id": "756a4302f62d4b44d8d64e1a925d7a076fcc80918b7319e62bb28d4d4baa2bc3",
       "category": "dependency_scanning",
-      "name": "Regular Expression Denial of Service",
-      "message": "Regular Expression Denial of Service in debug",
+      "name": "Regular Expression Denial of Service in debug",
       "description": "The debug module is vulnerable to regular expression denial of service when untrusted user input is passed into the `o` formatter. It takes around 50k characters to block for 2 seconds making this a low severity issue.",
       "cve": "yarn.lock:debug:gemnasium:37283ed4-0380-40d7-ada7-2d994afcc62a",
       "severity": "Unknown",

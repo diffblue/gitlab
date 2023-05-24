@@ -99,7 +99,7 @@ module Vulnerabilities
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
-    def initialize_finding(vulnerability:, identifiers:, scanner:, message:, description:, solution:)
+    def initialize_finding(vulnerability:, identifiers:, scanner:, description:, solution:)
       location = @params[:vulnerability][:location]
       loc_fingerprint = location_fingerprint(location)
       uuid = ::Security::VulnerabilityUUID.generate(
@@ -132,7 +132,6 @@ module Vulnerabilities
         raw_metadata: raw_metadata.to_json,
         scanner: scanner,
         uuid: uuid,
-        message: message,
         description: description,
         solution: solution
       )

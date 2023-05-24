@@ -34,8 +34,7 @@
     {
       "id": "fd7e57d8-3126-46b5-a825-b9d2d8a6e13e",
       "category": "API Fuzzing",
-      "name": "CORS",
-      "message": "CORS misconfiguration at 'http://127.0.0.1:7777/api/users'",
+      "name": "CORS misconfiguration at 'http://127.0.0.1:7777/api/users'",
       "description": "A misconfigured CORS implementation may be overly permissive in which domains should be trusted and at what level of trust.  This could allow an untrusted domain to forge the Origin header and launch various types of attacks such as cross-site request forgery or cross-site scripting.  An attacker could potentially steal a victim's credentials or send malicious requests on behalf of a victim.  The victim may not even be aware that an attack is being launched.\n\n\n",
       "cve": "check:CORS",
       "severity": "Unknown",

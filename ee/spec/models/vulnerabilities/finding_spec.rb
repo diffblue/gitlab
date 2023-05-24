@@ -52,7 +52,6 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       it { is_expected.to validate_presence_of(:detection_method) }
 
       it { is_expected.to validate_length_of(:description).is_at_most(15000) }
-      it { is_expected.to validate_length_of(:message).is_at_most(3000) }
       it { is_expected.to validate_length_of(:solution).is_at_most(7000) }
       it { is_expected.to validate_length_of(:cve).is_at_most(48400) }
 
@@ -865,23 +864,6 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
         end
 
         include_examples 'evidence schema'
-      end
-    end
-
-    describe '#message' do
-      let(:finding) { build(:vulnerabilities_finding) }
-      let(:expected_message) { finding.metadata['message'] }
-
-      subject { finding.message }
-
-      context 'when message metadata key is present' do
-        it { is_expected.to eql(expected_message) }
-      end
-
-      context 'when message data is present' do
-        let(:finding) { build(:vulnerabilities_finding, message: 'Vulnerability message') }
-
-        it { is_expected.to eq('Vulnerability message') }
       end
     end
 
