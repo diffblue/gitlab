@@ -13,11 +13,14 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
     ensure_elasticsearch_index!
   end
 
-  subject { included_class.new(project.repository) }
+  subject { included_class.new(project.repository.class) }
 
   describe '#elastic_search' do
     context 'if type is wiki_blob' do
       let_it_be(:wiki_project) { create(:project, :wiki_repo, visibility_level: 0, wiki_access_level: 0) }
+      let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
+
+      subject { included_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
 
       context 'if migrate_wikis_to_separate_index is not finished' do
         before do
@@ -219,6 +222,18 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
 
     assert_named_queries('doc:is_a:blob',
                          'blob:match:search_terms')
+  end
+
+  context 'when use_base_class_in_proxy_util is disabled' do
+    before do
+      stub_feature_flags(use_base_class_in_proxy_util: false)
+    end
+
+    it "names elasticsearch queries" do
+      subject.elastic_search_as_found_blob('*')
+
+      assert_named_queries('doc:is_a:blob', 'blob:match:search_terms')
+    end
   end
 
   context 'when backfilling migration is complete' do

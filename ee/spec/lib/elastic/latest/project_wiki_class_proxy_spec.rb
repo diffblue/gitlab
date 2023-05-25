@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::ProjectWikiClassProxy, :elastic do
+RSpec.describe Elastic::Latest::ProjectWikiClassProxy, :elastic, feature_category: :global_search do
   let(:project) { create(:project, :wiki_repo) }
 
-  subject { described_class.new(project.wiki.repository) }
+  subject { described_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
 
   describe '#elastic_search_as_wiki_page' do
     let!(:page) { create(:wiki_page, wiki: project.wiki) }
@@ -35,7 +35,18 @@ RSpec.describe Elastic::Latest::ProjectWikiClassProxy, :elastic do
   it 'names elasticsearch queries' do
     subject.elastic_search_as_wiki_page('*')
 
-    assert_named_queries('doc:is_a:wiki_blob',
-                         'blob:match:search_terms')
+    assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms')
+  end
+
+  context 'when use_base_class_in_proxy_util is disabled' do
+    before do
+      stub_feature_flags(use_base_class_in_proxy_util: false)
+    end
+
+    it 'names elasticsearch queries' do
+      subject.elastic_search_as_wiki_page('*')
+
+      assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms')
+    end
   end
 end

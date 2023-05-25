@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::ProjectWikiInstanceProxy do
+RSpec.describe Elastic::Latest::ProjectWikiInstanceProxy, feature_category: :global_search do
   let_it_be(:project) { create(:project, :wiki_repo) }
 
-  subject { described_class.new(project.wiki) }
+  subject { described_class.new(project.wiki, use_separate_indices: true) }
 
   describe '#elastic_search_as_wiki_page' do
     let(:params) do
@@ -31,6 +31,20 @@ RSpec.describe Elastic::Latest::ProjectWikiInstanceProxy do
       expect(subject.class).to receive(:elastic_search_as_wiki_page).with('foo', params)
 
       subject.elastic_search_as_wiki_page('foo', **params)
+    end
+
+    context 'when use_base_class_in_proxy_util is disabled' do
+      before do
+        stub_feature_flags(use_base_class_in_proxy_util: false)
+      end
+
+      it 'uses provided repository_id' do
+        params[:options][:repository_id] = "wiki_63"
+
+        expect(subject.class).to receive(:elastic_search_as_wiki_page).with('foo', params)
+
+        subject.elastic_search_as_wiki_page('foo', **params)
+      end
     end
   end
 end

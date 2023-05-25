@@ -5,9 +5,9 @@ require 'spec_helper'
 
 RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
   let_it_be(:wiki_project) { create(:project, :wiki_repo) }
-  let(:included_class) { Elastic::Latest::RepositoryClassProxy }
+  let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
 
-  subject { included_class.new(wiki_project.repository) }
+  subject { included_class.new(wiki_project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
 
   it 'fetches the results considering new and old format of rid' do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
