@@ -6,7 +6,7 @@ import {
   DASHBOARD_DESCRIPTION,
   DASHBOARD_DOCS_LINK,
 } from 'ee/analytics/dashboards/constants';
-import * as utils from 'ee/analytics/dashboards/utils';
+import * as api from 'ee/analytics/dashboards/api';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import DoraVisualization from 'ee/analytics/dashboards/components/dora_visualization.vue';
 
@@ -86,7 +86,7 @@ describe('Executive dashboard app', () => {
     ];
 
     it('falls back to the default config with an alert if it fails to fetch', async () => {
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue(null);
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue(null);
       await createWrapper({ props: { yamlConfigProject } });
       expect(findAlert().exists()).toBe(true);
       expect(findAlert().text()).toBe('Failed to load YAML config from Project: group/project');
@@ -94,21 +94,21 @@ describe('Executive dashboard app', () => {
 
     it('renders a custom page title', async () => {
       const title = 'TEST TITLE';
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ title });
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ title });
       await createWrapper({ props: { yamlConfigProject } });
       expect(findTitle().text()).toBe(title);
     });
 
     it('renders a custom description', async () => {
       const description = 'TEST DESCRIPTION';
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ description });
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ description });
       await createWrapper({ props: { yamlConfigProject } });
       expect(findDescription().text()).toBe(description);
       expect(findDescription().findComponent(GlLink).exists()).toBe(false);
     });
 
     it('renders a visualization for each panel', async () => {
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels });
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ panels });
       await createWrapper({ props: { yamlConfigProject } });
 
       const charts = findDoraVisualizations();
@@ -119,7 +119,7 @@ describe('Executive dashboard app', () => {
     });
 
     it('does not render more than 4 visualizations', async () => {
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels: tooManyPanels });
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ panels: tooManyPanels });
       await createWrapper({ props: { yamlConfigProject } });
 
       const charts = findDoraVisualizations();
@@ -129,7 +129,7 @@ describe('Executive dashboard app', () => {
     it('queryPaths override the panels list', async () => {
       const queryPaths = ['group/one', 'group/two', 'group/three'];
 
-      jest.spyOn(utils, 'fetchYamlConfig').mockResolvedValue({ panels });
+      jest.spyOn(api, 'fetchYamlConfig').mockResolvedValue({ panels });
       await createWrapper({ props: { yamlConfigProject, queryPaths } });
 
       const charts = findDoraVisualizations();

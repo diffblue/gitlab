@@ -15,16 +15,18 @@ import { BUCKETING_INTERVAL_ALL } from '../graphql/constants';
 import { DASHBOARD_LOADING_FAILURE, DASHBOARD_NO_DATA, CHART_LOADING_FAILURE } from '../constants';
 import {
   fetchMetricsForTimePeriods,
+  extractGraphqlVulnerabilitiesData,
+  extractGraphqlDoraData,
+  extractDoraMetrics,
+  extractGraphqlFlowData,
+} from '../api';
+import {
   hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
   generateSparklineCharts,
   mergeSparklineCharts,
   generateDateRanges,
   generateChartTimePeriods,
-  extractGraphqlVulnerabilitiesData,
-  extractGraphqlDoraData,
-  extractDoraMetrics,
-  extractGraphqlFlowData,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
