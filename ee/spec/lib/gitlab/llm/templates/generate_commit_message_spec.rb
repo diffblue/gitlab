@@ -28,10 +28,6 @@ RSpec.describe Gitlab::Llm::Templates::GenerateCommitMessage, feature_category: 
   end
 
   describe '#to_prompt' do
-    it 'includes merge request title' do
-      expect(subject.to_prompt).to include(merge_request.title)
-    end
-
     it 'includes raw diff' do
       diff_file = merge_request.raw_diffs.to_a[0]
 

@@ -7,7 +7,7 @@ module Gitlab
         include Gitlab::Utils::StrongMemoize
 
         GIT_DIFF_PREFIX_REGEX = /\A@@( -\d+,\d+ \+\d+(,\d+)? )@@/
-        MAX_TOKENS = 1000
+        MAX_TOKENS = 500
 
         def initialize(merge_request)
           @merge_request = merge_request
@@ -32,7 +32,6 @@ module Gitlab
           and explain why the change was done for the above code diff.
           Add a short description of why the changes are done after the commit message,
           just describe the changes.
-          The title of the merge request is #{merge_request.title}
 
           Provide the response with a maximum line length of 72 characters.
           Do not include any code in the response.
