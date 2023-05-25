@@ -35,21 +35,16 @@ RSpec.describe Llm::TanukiBot::RecreateRecordsWorker, feature_category: :global_
     describe 'checks' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:openai_experimentation_enabled, :tanuki_bot_enabled, :tanuki_bot_indexing_enabled, :feature_available) do
-        false | false | false | false
-        false | false | true | false
-        false | true | false | false
-        true | false | false | false
-        false | true | true | false
-        true | true | false | false
-        true | false | true | false
+      where(:openai_experimentation_enabled, :tanuki_bot_enabled, :feature_available) do
+        false | false | false
+        false | true | false
+        true | false | false
       end
 
       with_them do
         before do
           stub_feature_flags(openai_experimentation: openai_experimentation_enabled)
           stub_feature_flags(tanuki_bot: tanuki_bot_enabled)
-          stub_feature_flags(tanuki_bot_indexing: tanuki_bot_indexing_enabled)
           allow(License).to receive(:feature_available?).with(:ai_tanuki_bot).and_return(feature_available)
         end
 

@@ -19,7 +19,6 @@ module Llm
       def perform
         return unless Feature.enabled?(:openai_experimentation)
         return unless Feature.enabled?(:tanuki_bot)
-        return unless Feature.enabled?(:tanuki_bot_indexing)
         return unless ::License.feature_available?(:ai_tanuki_bot)
 
         in_lock("#{self.class.name.underscore}/version/#{version}", ttl: 10.minutes, sleep_sec: 1) do
