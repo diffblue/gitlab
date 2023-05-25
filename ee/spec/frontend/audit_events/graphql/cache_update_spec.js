@@ -8,11 +8,15 @@ import {
   removeEventTypeFilters,
 } from 'ee/audit_events/graphql/cache_update';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
+import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
 import {
   mockExternalDestinations,
   destinationDataPopulator,
   destinationCreateMutationPopulator,
   destinationHeaderCreateMutationPopulator,
+  mockInstanceExternalDestinations,
+  instanceDestinationDataPopulator,
+  destinationInstanceCreateMutationPopulator,
 } from '../mock_data';
 
 describe('Audit Events GraphQL cache updates', () => {
@@ -26,11 +30,21 @@ describe('Audit Events GraphQL cache updates', () => {
       mockExternalDestinations.map((record) => ({ ...record, id: `${record.id}-set-${id}` })),
     );
 
+  const getMockInstanceDestination = () =>
+    instanceDestinationDataPopulator(
+      mockInstanceExternalDestinations.map((record) => ({ ...record, id: `${record.id}-set` })),
+    );
+
   const getDestinations = (fullPath) =>
     cache.readQuery({
       query: externalDestinationsQuery,
       variables: { fullPath },
     }).group.externalAuditEventDestinations.nodes;
+
+  const getInstanceDestinations = () =>
+    cache.readQuery({
+      query: instanceExternalDestinationsQuery,
+    }).instanceExternalAuditEventDestinations.nodes;
 
   beforeEach(() => {
     cache = new InMemoryCache();
@@ -45,6 +59,11 @@ describe('Audit Events GraphQL cache updates', () => {
       query: externalDestinationsQuery,
       variables: { fullPath: GROUP2_PATH },
       data: getMockDestination(GROUP2_PATH).data,
+    });
+
+    cache.writeQuery({
+      query: instanceExternalDestinationsQuery,
+      data: getMockInstanceDestination().data,
     });
   });
 
@@ -221,6 +240,66 @@ describe('Audit Events GraphQL cache updates', () => {
           store: cache,
           destinationId: 'non-existing-id',
           filtersToRemove: [],
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe('addInstanceAuditEventsStreamingDestination', () => {
+    const {
+      instanceExternalAuditEventDestination: newDestination,
+    } = destinationInstanceCreateMutationPopulator().data.instanceExternalAuditEventDestinationCreate;
+
+    it('adds new destination to list of destinations for specific fullPath', () => {
+      const { length: originalInstanceDestinationsLength } = getInstanceDestinations();
+
+      addAuditEventsStreamingDestination({
+        store: cache,
+        fullPath: 'instance',
+        newDestination,
+      });
+
+      expect(getInstanceDestinations()).toHaveLength(originalInstanceDestinationsLength + 1);
+      expect(getInstanceDestinations()).toStrictEqual(
+        expect.arrayContaining([expect.objectContaining({ id: newDestination.id })]),
+      );
+    });
+
+    it('does not throw on non-existing fullPath', () => {
+      expect(() =>
+        addAuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          newDestination,
+        }),
+      ).not.toThrow();
+    });
+  });
+
+  describe('removeInstanceAuditEventsStreamingDestination', () => {
+    it('removes new destination to list of destinations for specific fullPath', () => {
+      const [firstDestination, ...restDestinations] = getInstanceDestinations();
+      const { length: originalInstanceDestinationsLength } = getInstanceDestinations();
+
+      removeAuditEventsStreamingDestination({
+        store: cache,
+        fullPath: 'instance',
+        destinationId: firstDestination.id,
+      });
+
+      expect(getInstanceDestinations()).toHaveLength(restDestinations.length);
+      expect(getInstanceDestinations()).not.toStrictEqual(
+        expect.arrayContaining([expect.objectContaining({ id: firstDestination.id })]),
+      );
+      expect(getInstanceDestinations()).toHaveLength(originalInstanceDestinationsLength - 1);
+    });
+
+    it('does not throw on non-existing fullPath', () => {
+      expect(() =>
+        removeAuditEventsStreamingDestination({
+          store: cache,
+          fullPath: 'instance',
+          destinationId: 'fake-id',
         }),
       ).not.toThrow();
     });

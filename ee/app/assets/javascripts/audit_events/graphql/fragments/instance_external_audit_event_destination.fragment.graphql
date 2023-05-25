@@ -1,0 +1,5 @@
+fragment InstanceExternalAuditEventDestinationFragment on InstanceExternalAuditEventDestination {
+  id
+  destinationUrl
+  verificationToken
+}

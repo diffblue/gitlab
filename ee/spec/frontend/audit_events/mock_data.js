@@ -28,6 +28,12 @@ const populateEvent = (user, hasAuthorUrl = true, hasObjectUrl = true) => {
   };
 };
 
+const verification = [
+  'id5hzCbERzSkQ82tAs16tH5Y',
+  'JsSQtg86au6buRtX9j98sYa8',
+  'Cr28SHnrJtgpSXUEGfictGMS',
+];
+
 export default () => [
   populateEvent('User'),
   populateEvent('User 2', false),
@@ -54,7 +60,7 @@ export const mockExternalDestinations = [
     __typename: 'ExternalAuditEventDestination',
     id: 'test_id1',
     destinationUrl: mockExternalDestinationUrl,
-    verificationToken: 'id5hzCbERzSkQ82tAs16tH5Y',
+    verificationToken: verification[0],
     headers: {
       nodes: [],
     },
@@ -64,7 +70,7 @@ export const mockExternalDestinations = [
     __typename: 'ExternalAuditEventDestination',
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
-    verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
+    verificationToken: verification[1],
     eventTypeFilters: ['repository_download_operation', 'update_merge_approval_rule'],
     headers: {
       nodes: [makeHeader(), makeHeader()],
@@ -72,13 +78,36 @@ export const mockExternalDestinations = [
   },
 ];
 
+export const mockInstanceExternalDestinations = [
+  {
+    __typename: 'InstanceExternalAuditEventDestination',
+    id: 'test_id1',
+    destinationUrl: mockExternalDestinationUrl,
+    verificationToken: verification[0],
+  },
+  {
+    __typename: 'InstanceExternalAuditEventDestination',
+    id: 'test_id2',
+    destinationUrl: 'https://apiv2.gitlab.com',
+    verificationToken: verification[1],
+  },
+];
+
 export const groupPath = 'test-group';
+
+export const instanceGroupPath = 'instance';
 
 export const testGroupId = 'test-group-id';
 
 export const destinationDataPopulator = (nodes) => ({
   data: {
     group: { id: testGroupId, externalAuditEventDestinations: { nodes } },
+  },
+});
+
+export const instanceDestinationDataPopulator = (nodes) => ({
+  data: {
+    instanceExternalAuditEventDestinations: { nodes },
   },
 });
 
@@ -89,7 +118,7 @@ export const destinationCreateMutationPopulator = (errors = []) => {
       __typename: 'ExternalAuditEventDestination',
       id: 'test-create-id',
       destinationUrl: mockExternalDestinationUrl,
-      verificationToken: 'Cr28SHnrJtgpSXUEGfictGMS',
+      verificationToken: verification[2],
       group: {
         name: groupPath,
         id: testGroupId,
@@ -179,6 +208,41 @@ export const destinationFilterUpdateMutationPopulator = (errors = [], eventTypeF
     auditEventsStreamingDestinationEventsAdd: {
       errors,
       eventTypeFilters,
+    },
+  },
+});
+
+export const destinationInstanceCreateMutationPopulator = (errors = []) => {
+  const correctData = {
+    errors,
+    instanceExternalAuditEventDestination: {
+      __typename: 'InstanceExternalAuditEventDestination',
+      id: 'test-create-id',
+      destinationUrl: mockExternalDestinationUrl,
+      verificationToken: verification[2],
+      group: {
+        name: groupPath,
+        id: testGroupId,
+      },
+    },
+  };
+
+  const errorData = {
+    errors,
+    instanceExternalAuditEventDestination: null,
+  };
+
+  return {
+    data: {
+      instanceExternalAuditEventDestinationCreate: errors.length > 0 ? errorData : correctData,
+    },
+  };
+};
+
+export const destinationInstanceDeleteMutationPopulator = (errors = []) => ({
+  data: {
+    instanceExternalAuditEventDestinationDestroy: {
+      errors,
     },
   },
 });

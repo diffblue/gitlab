@@ -6,6 +6,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import externalDestinationsQuery from 'ee/audit_events/graphql/queries/get_external_destinations.query.graphql';
+import instanceExternalDestinationsQuery from 'ee/audit_events/graphql/queries/get_instance_external_destinations.query.graphql';
 import {
   AUDIT_STREAMS_NETWORK_ERRORS,
   ADD_STREAM_MESSAGE,
@@ -15,23 +16,30 @@ import AuditEventsStream from 'ee/audit_events/components/audit_events_stream.vu
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamEmptyState from 'ee/audit_events/components/stream/stream_empty_state.vue';
-import { mockExternalDestinations, groupPath, destinationDataPopulator } from '../mock_data';
+import {
+  mockExternalDestinations,
+  groupPath,
+  destinationDataPopulator,
+  mockInstanceExternalDestinations,
+  instanceGroupPath,
+  instanceDestinationDataPopulator,
+} from '../mock_data';
 
 jest.mock('~/alert');
 Vue.use(VueApollo);
 
 describe('AuditEventsStream', () => {
   let wrapper;
+  let providedGroupPath = groupPath;
 
   const externalDestinationsQuerySpy = jest
     .fn()
     .mockResolvedValue(destinationDataPopulator(mockExternalDestinations));
 
-  const createComponent = (destinationQuerySpy = externalDestinationsQuerySpy) => {
-    const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+  const createComponent = (mockApollo) => {
     wrapper = shallowMountExtended(AuditEventsStream, {
       provide: {
-        groupPath,
+        groupPath: providedGroupPath,
       },
       apolloProvider: mockApollo,
     });
@@ -49,113 +57,270 @@ describe('AuditEventsStream', () => {
     externalDestinationsQuerySpy.mockClear();
   });
 
-  describe('when initialized', () => {
-    it('should render the loading icon while waiting for data to be returned', () => {
-      const destinationQuerySpy = jest.fn();
-      createComponent(destinationQuerySpy);
+  describe('Group AuditEventsStream', () => {
+    describe('when initialized', () => {
+      it('should render the loading icon while waiting for data to be returned', () => {
+        const destinationQuerySpy = jest.fn();
+        const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+        createComponent(mockApollo);
 
-      expect(findLoadingIcon().exists()).toBe(true);
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
+
+      it('should render empty state when no data is returned', async () => {
+        const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
+        const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamEmptyState().exists()).toBe(true);
+      });
+
+      it('should report error when server error occurred', async () => {
+        const destinationQuerySpy = jest.fn().mockRejectedValue({});
+        const mockApollo = createMockApollo([[externalDestinationsQuery, destinationQuerySpy]]);
+        createComponent(mockApollo);
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(createAlert).toHaveBeenCalledWith({
+          message: AUDIT_STREAMS_NETWORK_ERRORS.FETCHING_ERROR,
+        });
+      });
     });
 
-    it('should render empty state when no data is returned', async () => {
-      const destinationQuerySpy = jest.fn().mockResolvedValue(destinationDataPopulator([]));
-      createComponent(destinationQuerySpy);
-      await waitForPromises();
+    describe('when edit mode entered', () => {
+      beforeEach(() => {
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, externalDestinationsQuerySpy],
+        ]);
+        createComponent(mockApollo);
 
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findStreamEmptyState().exists()).toBe(true);
+        return waitForPromises();
+      });
+
+      it('shows destination editor', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamDestinationEditor().exists()).toBe(false);
+
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        expect(findStreamDestinationEditor().exists()).toBe(true);
+      });
+
+      it('exits edit mode when an external destination is added', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamDestinationEditor().exists()).toBe(false);
+
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        const streamDestinationEditorComponent = findStreamDestinationEditor();
+
+        expect(streamDestinationEditorComponent.exists()).toBe(true);
+
+        streamDestinationEditorComponent.vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      });
+
+      it('clears the success message if an error occurs afterwards', async () => {
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        findStreamDestinationEditor().vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        findStreamDestinationEditor().vm.$emit('error');
+        await waitForPromises();
+
+        expect(findSuccessMessage().exists()).toBe(false);
+      });
     });
 
-    it('should report error when server error occurred', async () => {
-      const destinationQuerySpy = jest.fn().mockRejectedValue({});
-      createComponent(destinationQuerySpy);
-      await waitForPromises();
+    describe('Streaming items', () => {
+      beforeEach(() => {
+        const mockApollo = createMockApollo([
+          [externalDestinationsQuery, externalDestinationsQuerySpy],
+        ]);
+        createComponent(mockApollo);
 
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(createAlert).toHaveBeenCalledWith({
-        message: AUDIT_STREAMS_NETWORK_ERRORS.FETCHING_ERROR,
+        return waitForPromises();
+      });
+
+      it('shows the items', () => {
+        expect(findStreamItems()).toHaveLength(2);
+
+        expect(findStreamItems().at(0).props('item')).toStrictEqual(mockExternalDestinations[0]);
+        expect(findStreamItems().at(1).props('item')).toStrictEqual(mockExternalDestinations[1]);
+      });
+
+      it('updates list when destination is removed', async () => {
+        await waitForPromises();
+
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+
+        const currentLength = findStreamItems().length;
+        findStreamItems().at(0).vm.$emit('deleted');
+        await waitForPromises();
+        expect(findStreamItems()).toHaveLength(currentLength - 1);
+        expect(findSuccessMessage().text()).toBe(DELETE_STREAM_MESSAGE);
       });
     });
   });
 
-  describe('when edit mode entered', () => {
+  describe('Instance AuditEventsStream', () => {
     beforeEach(() => {
-      createComponent();
-
-      return waitForPromises();
+      providedGroupPath = instanceGroupPath;
     });
 
-    it('shows destination editor', async () => {
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findStreamDestinationEditor().exists()).toBe(false);
+    const externalInstanceDestinationsQuerySpy = jest
+      .fn()
+      .mockResolvedValue(instanceDestinationDataPopulator(mockInstanceExternalDestinations));
 
-      findAddDestinationButton().vm.$emit('click');
-      await nextTick();
-
-      expect(findStreamDestinationEditor().exists()).toBe(true);
+    afterEach(() => {
+      createAlert.mockClear();
+      externalInstanceDestinationsQuerySpy.mockClear();
     });
 
-    it('exits edit mode when an external destination is added', async () => {
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(findStreamDestinationEditor().exists()).toBe(false);
+    describe('when initialized', () => {
+      it('should render the loading icon while waiting for data to be returned', () => {
+        const instanceDestinationQuerySpy = jest.fn();
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, instanceDestinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
 
-      findAddDestinationButton().vm.$emit('click');
-      await nextTick();
+        expect(findLoadingIcon().exists()).toBe(true);
+      });
 
-      const streamDestinationEditorComponent = findStreamDestinationEditor();
+      it('should render empty state when no data is returned', async () => {
+        const instanceDestinationQuerySpy = jest
+          .fn()
+          .mockResolvedValue(instanceDestinationDataPopulator([]));
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, instanceDestinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
 
-      expect(streamDestinationEditorComponent.exists()).toBe(true);
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamEmptyState().exists()).toBe(true);
+      });
 
-      streamDestinationEditorComponent.vm.$emit('added');
-      await waitForPromises();
+      it('should report error when server error occurred', async () => {
+        const instanceDestinationQuerySpy = jest.fn().mockRejectedValue({});
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, instanceDestinationQuerySpy],
+        ]);
+        createComponent(mockApollo);
+        await waitForPromises();
 
-      expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(createAlert).toHaveBeenCalledWith({
+          message: AUDIT_STREAMS_NETWORK_ERRORS.FETCHING_ERROR,
+        });
+      });
     });
 
-    it('clears the success message if an error occurs afterwards', async () => {
-      findAddDestinationButton().vm.$emit('click');
-      await nextTick();
+    describe('when edit mode entered', () => {
+      beforeEach(() => {
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, externalInstanceDestinationsQuerySpy],
+        ]);
+        createComponent(mockApollo);
 
-      findStreamDestinationEditor().vm.$emit('added');
-      await waitForPromises();
+        return waitForPromises();
+      });
 
-      expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      it('shows destination editor', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamDestinationEditor().exists()).toBe(false);
 
-      findAddDestinationButton().vm.$emit('click');
-      await nextTick();
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
 
-      findStreamDestinationEditor().vm.$emit('error');
-      await waitForPromises();
+        expect(findStreamDestinationEditor().exists()).toBe(true);
+      });
 
-      expect(findSuccessMessage().exists()).toBe(false);
+      it('exits edit mode when an external destination is added', async () => {
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(findStreamDestinationEditor().exists()).toBe(false);
+
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        const streamDestinationEditorComponent = findStreamDestinationEditor();
+
+        expect(streamDestinationEditorComponent.exists()).toBe(true);
+
+        streamDestinationEditorComponent.vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+      });
+
+      it('clears the success message if an error occurs afterwards', async () => {
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        findStreamDestinationEditor().vm.$emit('added');
+        await waitForPromises();
+
+        expect(findSuccessMessage().text()).toBe(ADD_STREAM_MESSAGE);
+
+        findAddDestinationButton().vm.$emit('click');
+        await nextTick();
+
+        findStreamDestinationEditor().vm.$emit('error');
+        await waitForPromises();
+
+        expect(findSuccessMessage().exists()).toBe(false);
+      });
     });
-  });
 
-  describe('Streaming items', () => {
-    beforeEach(() => {
-      createComponent();
+    describe('Streaming items', () => {
+      beforeEach(() => {
+        const mockApollo = createMockApollo([
+          [instanceExternalDestinationsQuery, externalInstanceDestinationsQuerySpy],
+        ]);
+        createComponent(mockApollo);
 
-      return waitForPromises();
-    });
+        return waitForPromises();
+      });
 
-    it('shows the items', () => {
-      expect(findStreamItems()).toHaveLength(2);
+      it('shows the items', () => {
+        expect(findStreamItems()).toHaveLength(2);
 
-      expect(findStreamItems().at(0).props('item')).toStrictEqual(mockExternalDestinations[0]);
-      expect(findStreamItems().at(1).props('item')).toStrictEqual(mockExternalDestinations[1]);
-    });
+        expect(findStreamItems().at(0).props('item')).toStrictEqual(
+          mockInstanceExternalDestinations[0],
+        );
+        expect(findStreamItems().at(1).props('item')).toStrictEqual(
+          mockInstanceExternalDestinations[1],
+        );
+      });
 
-    it('updates list when destination is removed', async () => {
-      await waitForPromises();
+      it('updates list when destination is removed', async () => {
+        await waitForPromises();
 
-      expect(findLoadingIcon().exists()).toBe(false);
-      expect(externalDestinationsQuerySpy).toHaveBeenCalledTimes(1);
+        expect(findLoadingIcon().exists()).toBe(false);
+        expect(externalInstanceDestinationsQuerySpy).toHaveBeenCalledTimes(1);
 
-      const currentLength = findStreamItems().length;
-      findStreamItems().at(0).vm.$emit('deleted');
-      await waitForPromises();
-      expect(findStreamItems()).toHaveLength(currentLength - 1);
-      expect(findSuccessMessage().text()).toBe(DELETE_STREAM_MESSAGE);
+        const currentLength = findStreamItems().length;
+        findStreamItems().at(0).vm.$emit('deleted');
+        await waitForPromises();
+        expect(findStreamItems()).toHaveLength(currentLength - 1);
+        expect(findSuccessMessage().text()).toBe(DELETE_STREAM_MESSAGE);
+      });
     });
   });
 });
