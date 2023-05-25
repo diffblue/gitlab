@@ -2,8 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/347078',
-                            feature_category: :global_search do
+RSpec.describe API::Search, :clean_gitlab_redis_rate_limiting, factory_default: :keep, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:namespace) { create_default(:namespace).freeze }
@@ -22,7 +21,6 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
   shared_examples 'pagination' do |scope:, search: '*'|
     it 'returns a different result for each page' do
       get api(endpoint, user), params: { scope: scope, search: search, page: 1, per_page: 1 }
-
       expect(response).to have_gitlab_http_status(:success)
       expect(json_response.count).to eq(1)
 
@@ -314,13 +312,15 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
 
     context 'for users scope', :sidekiq_might_not_need_inline do
       before do
-        create_list(:user, 2).each do |user|
+        create_list(:user, 2).each_with_index do |user, index|
+          user.update!(name: "foo_#{index}")
           project.add_developer(user)
           group.add_developer(user)
         end
+        ensure_elasticsearch_index!
       end
 
-      it_behaves_like 'pagination', scope: 'users', search: ''
+      it_behaves_like 'pagination', scope: 'users', search: 'foo_'
 
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new { get api(endpoint, user), params: { scope: 'users', search: '*' } }
@@ -389,7 +389,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
             stub_ee_application_setting(elasticsearch_limit_indexing: true)
           end
 
-          context 'and namespace is indexed' do
+          context 'and namespace is indexed', :elastic_clean do
             before do
               create :elasticsearch_indexed_namespace, namespace: group
             end
@@ -398,7 +398,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
           end
         end
 
-        context 'when elasticsearch_limit_indexing off' do
+        context 'when elasticsearch_limit_indexing off', :elastic_clean do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
@@ -451,7 +451,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
           end
         end
 
-        context 'when elasticsearch_limit_indexing off' do
+        context 'when elasticsearch_limit_indexing off', :elastic_clean do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
@@ -554,7 +554,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
           end
         end
 
-        context 'when elasticsearch_limit_indexing off' do
+        context 'when elasticsearch_limit_indexing off', :elastic_clean do
           before do
             stub_ee_application_setting(elasticsearch_limit_indexing: false)
           end
