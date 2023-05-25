@@ -4,7 +4,7 @@ import {
   GlAlert,
   GlBadge,
   GlFormInputGroup,
-  GlFormInput,
+  GlFormTextarea,
   GlForm,
   GlIcon,
 } from '@gitlab/ui';
@@ -20,7 +20,7 @@ export default {
     GlAlert,
     GlBadge,
     GlFormInputGroup,
-    GlFormInput,
+    GlFormTextarea,
     GlForm,
     GlIcon,
     AiGenieLoader,
@@ -198,18 +198,25 @@ export default {
     >
       <gl-form @submit.stop.prevent="sendChatPrompt">
         <gl-form-input-group>
-          <gl-form-input
-            v-model="prompt"
-            data-testid="chat-prompt-input"
-            :placeholder="$options.i18n.GENIE_CHAT_PROMPT_PLACEHOLDER"
-            :disabled="isLoading"
-          />
+          <div
+            class="ai-genie-chat-input gl-flex-grow-1 gl-vertical-align-top gl-max-w-full gl-min-h-8 gl-inset-border-1-gray-400 gl-rounded-base"
+            :data-value="prompt"
+          >
+            <gl-form-textarea
+              v-model="prompt"
+              data-testid="chat-prompt-input"
+              class="gl-absolute gl-h-full! gl-py-4! gl-bg-transparent! gl-rounded-top-right-none gl-rounded-bottom-right-none gl-shadow-none!"
+              :placeholder="$options.i18n.GENIE_CHAT_PROMPT_PLACEHOLDER"
+              :disabled="isLoading"
+              @keydown.enter.exact.prevent="sendChatPrompt"
+            />
+          </div>
           <template #append>
             <gl-button
               icon="paper-airplane"
               category="primary"
               variant="info"
-              class="gl-border-l-0"
+              class="gl-absolute! gl-bottom-2 gl-right-2 gl-rounded-top-left-base!"
               type="submit"
               :disabled="isLoading"
             />

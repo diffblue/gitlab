@@ -73,3 +73,29 @@
     transform: scale(1);
   }
 }
+
+.ai-genie-chat-input {
+  display: inline-grid;
+
+  &:focus-within {
+    @include gl-focus($color: $gray-900);
+  }
+
+  .gl-form-textarea.form-control,
+  &::after {
+    grid-area: 2/1;
+    resize: none;
+    max-height: 240px;
+  }
+
+  .gl-form-textarea.form-control {
+    width: calc(100% - 40px);
+  }
+
+  &::after {
+    content: attr(data-value) ' ';
+    @include gl-visibility-hidden;
+    @include gl-white-space-pre-wrap;
+    @include gl-py-4;
+  }
+}
