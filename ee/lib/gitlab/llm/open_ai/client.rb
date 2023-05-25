@@ -155,7 +155,6 @@ module Gitlab
         end
 
         def should_moderate?(type, moderation_value)
-          return false if Feature.disabled?(:openai_moderation)
           return false if moderation_value == false
           return true if moderation_value == true
           return true if type == :input && moderation_value == :input

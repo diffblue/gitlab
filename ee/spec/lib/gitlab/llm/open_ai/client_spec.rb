@@ -195,23 +195,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
             .to raise_error(described_class::InputModerationError, "Provided input violates OpenAI's Content Policy")
         end
       end
-
-      context 'when openai_moderation feature flag is disabled' do
-        it 'does not moderate input' do
-          stub_feature_flags(openai_moderation: false)
-
-          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
-            expect(open_ai_client)
-              .to receive(:public_send)
-              .with(method, anything)
-              .and_return(response_double)
-
-            expect(open_ai_client).not_to receive(:moderations)
-          end
-
-          subject
-        end
-      end
     end
 
     context 'when moderation flag is false' do
@@ -287,23 +270,6 @@ RSpec.describe Gitlab::Llm::OpenAi::Client, feature_category: :not_owned do # ru
         it 'raises TextModerationError' do
           expect { subject }
             .to raise_error(described_class::OutputModerationError, "Provided output violates OpenAI's Content Policy")
-        end
-      end
-
-      context 'when openai_moderation feature flag is disabled' do
-        it 'does not moderate output' do
-          stub_feature_flags(openai_moderation: false)
-
-          expect_next_instance_of(::OpenAI::Client) do |open_ai_client|
-            expect(open_ai_client)
-              .to receive(:public_send)
-              .with(method, anything)
-              .and_return(response_double)
-
-            expect(open_ai_client).not_to receive(:moderations)
-          end
-
-          subject
         end
       end
     end
