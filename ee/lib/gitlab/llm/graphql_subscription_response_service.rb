@@ -20,7 +20,8 @@ module Gitlab
           model_name: resource.class.name,
           # todo: do we need to sanitize/refine this response in any ways?
           response_body: generate_response_body(response_modifier.response_body),
-          errors: response_modifier.errors
+          errors: response_modifier.errors,
+          role: 'assistant'
         }
 
         logger.debug(
@@ -28,7 +29,9 @@ module Gitlab
           data: data
         )
 
-        Gitlab::Llm::Cache.new(user).add(data.slice(:request_id, :response_body, :errors))
+        Gitlab::Llm::Cache.new(user).add(
+          data.slice(:request_id, :errors, :role).merge(content: data[:response_body])
+        )
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)
       end
 
