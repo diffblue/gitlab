@@ -2,17 +2,19 @@
 
 module Namespaces
   module Storage
-    class Enforcement
-      def self.enforce_limit?(namespace)
+    module Enforcement
+      extend self
+
+      def enforce_limit?(namespace)
         root_namespace = namespace.root_ancestor
 
         ::Gitlab::CurrentSettings.enforce_namespace_storage_limit? &&
           ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation? &&
           ::Feature.enabled?(:namespace_storage_limit, root_namespace) &&
-          enforceable_plan?(root_namespace)
+          enforceable_namespace?(root_namespace)
       end
 
-      def self.show_pre_enforcement_alert?(namespace)
+      def show_pre_enforcement_alert?(namespace)
         root_namespace = namespace.root_ancestor
 
         if ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
@@ -25,7 +27,7 @@ module Namespaces
         false
       end
 
-      def self.reached_pre_enforcement_notification_limit?(root_namespace)
+      def reached_pre_enforcement_notification_limit?(root_namespace)
         return false if root_namespace.storage_limit_exclusion.present?
 
         notification_limit = root_namespace.actual_plan.actual_limits.notification_limit.megabytes
@@ -37,14 +39,34 @@ module Namespaces
         total_storage >= (notification_limit + purchased_storage)
       end
 
-      private_class_method def self.enforceable_plan?(root_namespace)
-        return false if root_namespace.opensource_plan?
+      def enforceable_storage_limit(root_namespace)
+        # no limit for excluded namespaces
+        return 0 if root_namespace.storage_limit_exclusion.present?
 
-        if root_namespace.paid?
-          ::Feature.enabled?(:enforce_storage_limit_for_paid, root_namespace)
-        else
-          ::Feature.enabled?(:enforce_storage_limit_for_free, root_namespace)
-        end
+        plan_limit = root_namespace.actual_limits
+
+        # use dashboard limit (storage_size_limit) if:
+        # - enabled (determined by timestamp)
+        # - namespace was created after the timestamp
+        return plan_limit.storage_size_limit if dashboard_limit_applicable?(root_namespace, plan_limit)
+
+        # otherwise, we use enforcement limit as it's either not set (default db value is 0)
+        # or it has value to enforce
+        plan_limit.enforcement_limit
+      end
+
+      private
+
+      def enforceable_namespace?(root_namespace)
+        return false if root_namespace.opensource_plan?
+        return false if root_namespace.paid?
+
+        enforceable_storage_limit(root_namespace) > 0
+      end
+
+      def dashboard_limit_applicable?(root_namespace, plan_limit)
+        plan_limit.dashboard_storage_limit_enabled? &&
+          root_namespace.created_at > plan_limit.dashboard_limit_enabled_at
       end
     end
   end

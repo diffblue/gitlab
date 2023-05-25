@@ -14,10 +14,11 @@ RSpec.describe Namespaces::Storage::LimitAlertComponentBuilder, :saas, feature_c
   subject(:component) { described_class.build(context: group, user: nil) }
 
   describe '#build' do
+    include NamespaceStorageHelpers
+
     context 'when namespace limit is enforced' do
       before do
-        stub_ee_application_setting(enforce_namespace_storage_limit: true)
-        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+        enforce_namespace_storage_limit(group)
       end
 
       it 'builds a LimitAlertComponent' do

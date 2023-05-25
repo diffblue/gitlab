@@ -3,15 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :experimentation_conversion do
-  let_it_be(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
-  let_it_be(:plan_limits) do
-    create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: 100)
-  end
+  let_it_be(:namespace, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   let(:model) { described_class.new(namespace) }
   let(:current_size) { 50.megabytes }
 
   before do
+    create(:plan_limits, plan: namespace.gitlab_subscription.hosted_plan, storage_size_limit: 100)
     create(:namespace_root_storage_statistics, namespace: namespace, storage_size: current_size)
   end
 
@@ -45,6 +43,36 @@ RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :expe
         let(:disable_storage_check?) { true }
 
         it { is_expected.to eq(false) }
+      end
+    end
+  end
+
+  describe '#limit' do
+    subject { model.limit }
+
+    context 'when there is additional purchased storage and a plan' do
+      before do
+        namespace.update!(additional_purchased_storage_size: 10_000)
+      end
+
+      it { is_expected.to eq(10_100.megabytes) }
+    end
+
+    context 'when there is no additional purchased storage' do
+      before do
+        namespace.update!(additional_purchased_storage_size: 0)
+      end
+
+      it { is_expected.to eq(100.megabytes) }
+    end
+
+    context 'with cached values', :use_clean_rails_memory_store_caching do
+      it 'caches the value' do
+        key = described_class::LIMIT_CACHE_NAME
+
+        subject
+
+        expect(Rails.cache.read(['namespaces', namespace.id, key])).to eq(100.megabytes)
       end
     end
   end

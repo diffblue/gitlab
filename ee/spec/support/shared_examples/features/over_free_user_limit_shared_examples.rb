@@ -11,10 +11,12 @@ RSpec.shared_examples_for 'over the free user limit alert' do
   end
 
   shared_context 'with over storage limit setup' do
+    include NamespaceStorageHelpers
+
     before do
       limit = 100
       group.add_developer(new_user)
-      create(:plan_limits, plan: group.gitlab_subscription.hosted_plan, storage_size_limit: limit)
+      set_dashboard_limit(group.reload, megabytes: limit)
       create(:namespace_root_storage_statistics, namespace: group, storage_size: (limit + 1).megabytes)
     end
   end
