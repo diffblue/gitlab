@@ -2,8 +2,8 @@
 key_path: usage_activity_by_stage_monthly.release.protected_environments_average_required_approvals
 description: Count average of required approvals in protected environments that has one or more required approvals (unified approval setting)
 product_section: ops
-product_stage: release
-product_group: release
+product_stage: deploy
+product_group: environments
 value_type: number
 status: active
 milestone: "15.2"
