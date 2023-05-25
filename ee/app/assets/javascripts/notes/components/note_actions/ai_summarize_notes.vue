@@ -75,7 +75,7 @@ export default {
     },
   },
   i18n: {
-    button: s__('AISummary|See summary'),
+    button: s__('AISummary|View summary'),
     badge: s__('AISummary|Experiment'),
     tooltip: s__('AISummary|Generates a summary of all comments'),
   },
