@@ -98,7 +98,7 @@ module Features
       lead_result = if lead_success
                       ServiceResponse.success
                     else
-                      ServiceResponse.error(message: '_lead_fail_')
+                      ServiceResponse.error(message: '_lead_fail_', reason: :lead_failed)
                     end
 
       expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|

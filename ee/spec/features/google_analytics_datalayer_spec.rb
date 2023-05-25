@@ -69,7 +69,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js, feature_category: :
   context 'on trial group select page' do
     it 'tracks create group events' do
       sign_in user
-      visit select_trials_path
+      visit new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL)
 
       prevent_submit_for('.js-saas-trial-group')
 

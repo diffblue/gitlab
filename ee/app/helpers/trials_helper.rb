@@ -5,7 +5,7 @@ module TrialsHelper
 
   def create_lead_form_data
     {
-      submit_path: create_lead_trials_path(
+      submit_path: trials_path(
         step: GitlabSubscriptions::Trials::CreateService::LEAD, **params.permit(:namespace_id).merge(glm_params)
       ),
       first_name: current_user.first_name,

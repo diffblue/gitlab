@@ -3,7 +3,6 @@
 # EE:SaaS
 # TODO: namespace https://gitlab.com/gitlab-org/gitlab/-/issues/338394
 class TrialsController < ApplicationController
-  include ActionView::Helpers::SanitizeHelper
   include OneTrustCSP
   include GoogleAnalyticsCSP
   include RegistrationsTracking
@@ -13,18 +12,24 @@ class TrialsController < ApplicationController
   skip_before_action :set_confirm_warning
   before_action :check_if_gl_com_or_dev
   before_action :authenticate_user!
-  before_action only: :select do
+  before_action only: :new do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
   end
 
   feature_category :purchase
   urgency :low
 
-  def new; end
-
-  def select; end
+  def new
+    render :select_namespace_form if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
+  end
 
   def create_lead
+    # soft landing for stale pages during release of new code/routes, cannot redirect a post
+    # remove with https://gitlab.com/gitlab-org/gitlab/-/issues/393969
+    redirect_to new_trial_path(glm_tracking_params)
+  end
+
+  def create
     result = GitlabSubscriptions::Trials::CreateService.new(
       step: params[:step], lead_params: lead_params, trial_params: trial_params, user: current_user
     ).execute
@@ -34,43 +39,26 @@ class TrialsController < ApplicationController
       redirect_to trial_success_path(result.payload[:namespace])
     elsif result.reason == :no_single_namespace
       # lead created, but we now need to select namespace and then apply a trial
-      redirect_to select_trials_path(params.permit(:namespace_id).merge(glm_tracking_params))
-    elsif result.reason == :lead_failed
-      @create_errors = result.errors.to_sentence
-
-      render :new
-    else
-      # trial failed
-      @create_errors = result.errors.to_sentence
-      params[:namespace_id] = result.payload[:namespace_id]
-
-      render :select
-    end
-  end
-
-  def apply
-    # We only get to this action after the `create_lead` action has at least been tried, so the lead is captured
-    # already.
-    result = GitlabSubscriptions::Trials::CreateService.new(
-      step: GitlabSubscriptions::Trials::CreateService::TRIAL,
-      lead_params: lead_params,
-      trial_params: trial_params,
-      user: current_user
-    ).execute
-
-    if result.success?
-      # trial created
-      redirect_to trial_success_path(result.payload[:namespace])
+      redirect_to new_trial_path(result.payload[:trial_selection_params])
     elsif result.reason == :not_found
       # namespace not found/not permitted to create
       render_404
+    elsif result.reason == :lead_failed
+      @create_errors = result.errors.to_sentence
+      render :new
     else
       # namespace creation or trial failed
       @create_errors = result.errors.to_sentence
       params[:namespace_id] = result.payload[:namespace_id]
 
-      render :select
+      render :select_namespace_form
     end
+  end
+
+  def apply
+    # soft landing for stale pages during release of new code/routes, cannot redirect a post
+    # remove with https://gitlab.com/gitlab-org/gitlab/-/issues/393969
+    redirect_to new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL, **glm_tracking_params)
   end
 
   private

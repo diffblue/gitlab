@@ -14,7 +14,7 @@
 
     .js-error-alert{ data: { errors: @create_errors } }
 
-    = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group', data: { testid: 'trial-form' } do
+    = form_tag trials_path(**glm_params, step: GitlabSubscriptions::Trials::CreateService::TRIAL), method: :post, class: 'js-saas-trial-group', data: { testid: 'trial-form' } do
       .js-namespace-selector{ data: { any_trial_eligible_namespaces: any_trial_eligible_namespaces?.to_s, new_group_name: params[:new_group_name],
         items: namespace_options_for_listbox.to_json, initial_value: params[:namespace_id] } }
       - if should_ask_company_question?

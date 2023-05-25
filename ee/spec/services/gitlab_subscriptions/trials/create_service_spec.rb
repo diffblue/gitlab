@@ -4,16 +4,19 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :purchase do
   let_it_be(:user, reload: true) { create(:user) }
-  let(:step) { 'lead' }
+  let(:step) { described_class::LEAD }
 
   describe '#execute' do
     let(:trial_params) { {} }
+    let(:extra_lead_params) { {} }
     let(:trial_user_params) do
-      { trial_user: lead_params(user) }
+      { trial_user: lead_params(user, extra_lead_params) }
     end
 
     subject(:execute) do
-      described_class.new(step: step, lead_params: lead_params(user), trial_params: trial_params, user: user).execute
+      described_class.new(
+        step: step, lead_params: lead_params(user, extra_lead_params), trial_params: trial_params, user: user
+      ).execute
     end
 
     context 'when on the lead step' do
@@ -45,11 +48,19 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
 
         context 'when there are no trial eligible namespaces' do
           it 'does not create a trial and returns that there is no namespace' do
-            expect_create_lead_success(trial_user_params)
-            expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
+            stub_lead_without_trial(trial_user_params)
 
-            expect(execute).to be_error
-            expect(execute.reason).to eq(:no_single_namespace)
+            expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
+          end
+
+          context 'with glm params' do
+            let(:extra_lead_params) { { glm_content: '_glm_content_', glm_source: '_glm_source_' } }
+
+            it 'does not create a trial and returns that there is no namespace' do
+              stub_lead_without_trial(trial_user_params)
+
+              expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
+            end
           end
         end
 
@@ -60,12 +71,44 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
           end
 
           it 'does not create a trial and returns that there is no namespace' do
-            expect_create_lead_success(trial_user_params)
-            expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
+            stub_lead_without_trial(trial_user_params)
 
-            expect(execute).to be_error
-            expect(execute.reason).to eq(:no_single_namespace)
+            expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
           end
+
+          context 'with glm params' do
+            let(:extra_lead_params) { { glm_content: '_glm_content_', glm_source: '_glm_source_' } }
+
+            it 'does not create a trial and returns that there is no namespace' do
+              stub_lead_without_trial(trial_user_params)
+
+              expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
+            end
+          end
+
+          context 'when lead was submitted with an intended namespace' do
+            let(:trial_params) { { namespace_id: non_existing_record_id.to_s } }
+
+            it 'does not create a trial and returns that there is no namespace' do
+              stub_lead_without_trial(trial_user_params)
+
+              expect_to_trigger_trial_step(execute, extra_lead_params, trial_params)
+            end
+          end
+        end
+
+        def stub_lead_without_trial(trial_user_params)
+          expect_create_lead_success(trial_user_params)
+          expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
+        end
+
+        def expect_to_trigger_trial_step(execution, lead_payload_params, trial_payload_params)
+          expect(execution).to be_error
+          expect(execution.reason).to eq(:no_single_namespace)
+          trial_selection_params = {
+            step: described_class::TRIAL
+          }.merge(lead_payload_params).merge(trial_payload_params.slice(:namespace_id))
+          expect(execution.payload).to match(trial_selection_params: trial_selection_params)
         end
       end
 
@@ -81,7 +124,7 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
     end
 
     context 'when on trial step' do
-      let(:step) { 'trial' }
+      let(:step) { described_class::TRIAL }
 
       context 'in the existing namespace flow' do
         let_it_be(:group) { create(:group, name: 'gitlab').tap { |record| record.add_owner(user) } }
@@ -343,7 +386,7 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
     end
   end
 
-  def lead_params(user)
+  def lead_params(user, extra_lead_params)
     {
       company_name: 'GitLab',
       company_size: '1-99',
@@ -359,6 +402,6 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
       provider: 'gitlab',
       newsletter_segment: user.email_opted_in,
       state: 'CA'
-    }
+    }.merge(extra_lead_params)
   end
 end
