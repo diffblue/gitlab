@@ -18649,6 +18649,7 @@ Represents the network policy.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="noteauthor"></a>`author` | [`UserCore!`](#usercore) | User who wrote this note. |
+| <a id="noteawardemoji"></a>`awardEmoji` | [`AwardEmojiConnection`](#awardemojiconnection) | List of award emojis associated with the note. (see [Connections](#connections)) |
 | <a id="notebody"></a>`body` | [`String!`](#string) | Content of the note. |
 | <a id="notebodyhtml"></a>`bodyHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `note`. |
 | <a id="noteconfidential"></a>`confidential` **{warning-solid}** | [`Boolean`](#boolean) | **Deprecated** in 15.5. This was renamed. Use: `internal`. |
