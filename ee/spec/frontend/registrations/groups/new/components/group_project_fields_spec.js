@@ -5,14 +5,9 @@ import { GlBreakpointInstance } from '@gitlab/ui/dist/utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import waitForPromises from 'helpers/wait_for_promises';
-import GroupProjectFields from 'ee/registrations/groups_projects/new/components/group_project_fields.vue';
-import createStore from 'ee/registrations/groups_projects/new/store';
-
-import {
-  DEFAULT_GROUP_PATH,
-  DEFAULT_PROJECT_PATH,
-} from 'ee/registrations/groups_projects/new/constants';
-
+import GroupProjectFields from 'ee/registrations/groups/new/components/group_project_fields.vue';
+import createStore from 'ee/registrations/groups/new/store';
+import { DEFAULT_GROUP_PATH, DEFAULT_PROJECT_PATH } from 'ee/registrations/groups/new/constants';
 import { createAlert } from '~/alert';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_INTERNAL_SERVER_ERROR, HTTP_STATUS_OK } from '~/lib/utils/http_status';

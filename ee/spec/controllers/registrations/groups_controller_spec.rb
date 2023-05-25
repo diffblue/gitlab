@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_category: :onboarding do
+RSpec.describe Registrations::GroupsController, :experiment, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }

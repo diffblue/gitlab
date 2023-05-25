@@ -1,6 +1,6 @@
 /* eslint-disable no-new */
 
-import mountComponents from 'ee/registrations/groups_projects/new';
+import mountComponents from 'ee/registrations/groups/new';
 import Group from '~/group';
 import { trackCombinedGroupProjectForm, trackProjectImport } from '~/google_tag_manager';
 

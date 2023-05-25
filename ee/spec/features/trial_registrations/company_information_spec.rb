@@ -33,8 +33,8 @@ RSpec.describe 'Company Information', :js, feature_category: :experimentation_ad
     end
 
     where(:service_response, :current_path, :page_content) do
-      ServiceResponse.success                   | new_users_sign_up_groups_project_path | 'Create or import your first project'
-      ServiceResponse.error(message: 'failed')  | users_sign_up_company_path            | 'failed'
+      ServiceResponse.success                   | new_users_sign_up_group_path | 'Create or import your first project'
+      ServiceResponse.error(message: 'failed')  | users_sign_up_company_path   | 'failed'
     end
 
     with_them do

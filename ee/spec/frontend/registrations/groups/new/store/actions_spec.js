@@ -1,11 +1,7 @@
 import testAction from 'helpers/vuex_action_helper';
-import * as types from 'ee/registrations/groups_projects/new/store/mutation_types';
-import state from 'ee/registrations/groups_projects/new/store/state';
-
-import {
-  setStoreGroupName,
-  setStoreGroupPath,
-} from 'ee/registrations/groups_projects/new/store/actions';
+import * as types from 'ee/registrations/groups/new/store/mutation_types';
+import state from 'ee/registrations/groups/new/store/state';
+import { setStoreGroupName, setStoreGroupPath } from 'ee/registrations/groups/new/store/actions';
 
 describe('Actions', () => {
   let mockedState;

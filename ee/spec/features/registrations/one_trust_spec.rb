@@ -22,9 +22,9 @@ RSpec.describe 'OneTrust in the sign up flow', feature_category: :system_access 
     end
   end
 
-  context 'when user visits /users/sign_up/groups_projects/new' do
+  context 'when user visits /users/sign_up/groups/new' do
     before do
-      visit new_users_sign_up_groups_project_path
+      visit new_users_sign_up_group_path
     end
 
     it_behaves_like 'one trust settings'

@@ -1,5 +1,5 @@
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
-import mountComponents from 'ee/registrations/groups_projects/new';
+import mountComponents from 'ee/registrations/groups/new';
 
 const setup = () => {
   const fixture = `

@@ -2,8 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project creation via Registrations::GroupsProjectsController', type: :request,
-                                                                               feature_category: :projects do
+RSpec.describe 'Project creation via Registrations::GroupsController',
+  type: :request,
+  feature_category: :projects do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -37,7 +38,7 @@ RSpec.describe 'Project creation via Registrations::GroupsProjectsController', t
           # 204 before creating learn gitlab in worker
           allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(153)
 
-          expect { post users_sign_up_groups_projects_path, params: params }.to change { Group.count }.by(1)
+          expect { post users_sign_up_groups_path, params: params }.to change { Group.count }.by(1)
         end
       end
 
@@ -50,7 +51,7 @@ RSpec.describe 'Project creation via Registrations::GroupsProjectsController', t
 
         it 'creates a project' do
           # queries: core project is 78 and learn gitlab is 76, which is now in background
-          expect { post users_sign_up_groups_projects_path, params: params }.to change { Project.count }.by(1)
+          expect { post users_sign_up_groups_path, params: params }.to change { Project.count }.by(1)
         end
       end
     end

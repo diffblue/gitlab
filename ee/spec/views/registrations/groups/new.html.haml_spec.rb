@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/groups_projects/new' do
+RSpec.describe 'registrations/groups/new', feature_category: :onboarding do
   let(:google_tag_manager_id) { 'GTM-WWKMTWS' }
 
   let_it_be(:user, reload: true) { create(:user) }
