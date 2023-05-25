@@ -40200,6 +40200,9 @@ msgstr ""
 msgid "ScanResultPolicy|Choose criteria type"
 msgstr ""
 
+msgid "ScanResultPolicy|Clear all"
+msgstr ""
+
 msgid "ScanResultPolicy|Except"
 msgstr ""
 
@@ -40233,7 +40236,13 @@ msgstr ""
 msgid "ScanResultPolicy|Select a scan type before adding criteria"
 msgstr ""
 
+msgid "ScanResultPolicy|Select all"
+msgstr ""
+
 msgid "ScanResultPolicy|Select license types"
+msgstr ""
+
+msgid "ScanResultPolicy|Select licenses"
 msgstr ""
 
 msgid "ScanResultPolicy|Severity is:"
