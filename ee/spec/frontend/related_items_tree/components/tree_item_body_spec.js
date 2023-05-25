@@ -1,4 +1,4 @@
-import { GlButton, GlLabel, GlLink, GlIcon } from '@gitlab/ui';
+import { GlButton, GlLabel, GlLink, GlIcon, GlTooltip } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -33,6 +33,7 @@ import {
 Vue.use(Vuex);
 
 let mockItem;
+let store;
 
 const createIssueItem = (mockIssue = mockIssue1) => {
   return {
@@ -54,141 +55,142 @@ const createEpicItem = (mockEpic = mockOpenEpic, mockEpicMeta = mockEpicMeta1) =
   };
 };
 
-const createComponent = (parentItem = mockParentItem, item = mockItem) => {
-  const store = createDefaultStore();
-  const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
-
-  store.dispatch('setInitialParentItem', mockParentItem);
-  store.dispatch('setInitialConfig', mockInitialConfig);
-  store.dispatch('setItemChildren', {
-    parentItem: mockParentItem,
-    isSubItem: false,
-    children,
-  });
-  store.dispatch('setItemChildrenFlags', {
-    isSubItem: false,
-    children,
-  });
-
-  return shallowMount(TreeItemBody, {
-    store,
-    propsData: {
-      parentItem,
-      item,
-    },
-  });
-};
-
 describe('RelatedItemsTree', () => {
   describe('TreeItemBody', () => {
     let wrapper;
 
+    const createComponent = ({ parentItem = mockParentItem, item = mockItem } = {}) => {
+      store = createDefaultStore();
+      const children = epicUtils.processQueryResponse(mockQueryResponse.data.group);
+
+      store.dispatch('setInitialParentItem', mockParentItem);
+      store.dispatch('setInitialConfig', mockInitialConfig);
+      store.dispatch('setItemChildren', {
+        parentItem: mockParentItem,
+        isSubItem: false,
+        children,
+      });
+      store.dispatch('setItemChildrenFlags', {
+        isSubItem: false,
+        children,
+      });
+
+      wrapper = shallowMount(TreeItemBody, {
+        store,
+        propsData: {
+          parentItem,
+          item,
+        },
+      });
+    };
+
+    const findStateTooltip = () => wrapper.findAllComponents(StateTooltip);
+    const findRemoveButton = () => wrapper.findComponent(GlButton);
     const findChildLabels = () => wrapper.findAllComponents(GlLabel);
+    const findTooltip = () => wrapper.findComponent(GlTooltip);
+    const findItemMilestone = () => wrapper.findComponent(ItemMilestone);
+    const findItemAssignees = () => wrapper.findComponent(ItemAssignees);
+    const findAllIcons = () => wrapper.findAllComponents(GlIcon);
     const findCountBadge = () => wrapper.findComponent({ ref: 'countBadge' });
     const findEpicHealthStatus = () => wrapper.find('[data-testid="epic-health-status"]');
     const findIssueHealthStatus = () => wrapper.find('[data-testid="issue-health-status"]');
     const findIssueIcon = () => wrapper.findComponent({ ref: 'stateIconMd' });
     const findLink = () => wrapper.findComponent(GlLink);
     const enableHealthStatus = () => {
-      wrapper.vm.$store.commit('SET_INITIAL_CONFIG', {
+      store.commit('SET_INITIAL_CONFIG', {
         ...mockInitialConfig,
         allowIssuableHealthStatus: true,
       });
     };
     const setShowLabels = async (isShowingLabels) => {
-      wrapper.vm.$store.dispatch('setShowLabels', isShowingLabels);
+      store.dispatch('setShowLabels', isShowingLabels);
 
       await nextTick();
     };
 
     beforeEach(() => {
       mockItem = createIssueItem();
-      wrapper = createComponent();
+      createComponent();
     });
 
-    describe('computed', () => {
+    describe('Component state', () => {
       describe('itemReference', () => {
-        it('returns value of `item.reference` prop', () => {
-          expect(wrapper.vm.itemReference).toBe(mockItem.reference);
+        it('renders value of `item.reference` prop in tooltip path', () => {
+          expect(findStateTooltip().at(0).props('path')).toBe(mockItem.reference);
         });
       });
 
-      describe('itemWebPath', () => {
+      describe('WebPath', () => {
         const mockPath = '/foo/bar';
 
-        it('returns value of `item.path`', async () => {
-          wrapper.setProps({
+        it('renders value of `item.path` for a link', () => {
+          createComponent({
             item: { ...mockItem, path: mockPath, webPath: undefined },
           });
 
-          await nextTick();
-          expect(wrapper.vm.itemWebPath).toBe(mockPath);
+          expect(findLink().attributes('href')).toBe(mockPath);
         });
 
-        it('returns value of `item.webPath` when `item.path` is undefined', async () => {
-          wrapper.setProps({
-            item: { ...mockItem, path: undefined, webPath: mockPath },
+        it('renders value of `item.webPath` when `item.path` is undefined for a link', () => {
+          createComponent({
+            item: { ...mockItem, path: mockPath, webPath: undefined },
           });
 
-          await nextTick();
-          expect(wrapper.vm.itemWebPath).toBe(mockPath);
+          expect(findLink().attributes('href')).toBe(mockPath);
         });
       });
 
       describe('isOpen', () => {
-        it('returns true when `item.state` value is `opened`', async () => {
-          wrapper.setProps({
+        it('correctly sets icon name attribute when `item.state` value is `opened`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_OPEN },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('name')).toBe('issues');
         });
       });
 
       describe('isBlocked', () => {
-        it('returns true when `item.blocked` value is `true`', async () => {
-          wrapper.setProps({
+        it('correctly sets icon name attribute issue-block when `item.blocked` value is `true`', () => {
+          createComponent({
             item: { ...mockItem, blocked: true },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('name')).toBe('issue-block');
         });
       });
 
       describe('isClosed', () => {
-        it('returns true when `item.state` value is `closed`', async () => {
-          wrapper.setProps({
+        it('correctly sets icon name attribute when `item.state` value is `closed`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_CLOSED },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('name')).toBe('issue-closed');
         });
       });
 
-      describe('hasMilestone', () => {
-        it('returns true when `item.milestone` is defined and has values', () => {
-          expect(wrapper.vm.hasMilestone).toBe(true);
+      describe('milestones', () => {
+        it('renders milestone component `item.milestone` is defined and has values', () => {
+          expect(findItemMilestone().exists()).toBe(true);
         });
       });
 
-      describe('hasAssignees', () => {
-        it('returns true when `item.assignees` is defined and has values', () => {
-          expect(wrapper.vm.hasAssignees).toBe(true);
+      describe('assignees', () => {
+        it('renders assignees component when assignees defined and has values', () => {
+          expect(findItemAssignees().exists()).toBe(true);
         });
       });
 
       describe('when toggling labels on', () => {
-        it('returns true when `item.labels` is defined and has values', async () => {
-          expect(findChildLabels().length).toBe(0);
+        it('renders labels `item.labels` is defined and has values', async () => {
+          expect(findChildLabels()).toHaveLength(0);
 
           await setShowLabels(true);
 
           const labels = findChildLabels();
 
-          expect(labels.length).toBe(1);
+          expect(labels).toHaveLength(1);
 
           const firstLabel = labels.at(0);
 
@@ -199,64 +201,59 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('when toggling labels off', () => {
-        it('returns true when `item.labels` is defined and has values', async () => {
+        it('does not render labels when `item.labels` is defined and has values', async () => {
           await setShowLabels(true);
 
-          expect(findChildLabels().length).toBe(1);
+          expect(findChildLabels()).toHaveLength(1);
 
           await setShowLabels(false);
 
-          expect(findChildLabels().length).toBe(0);
+          expect(findChildLabels()).toHaveLength(0);
         });
       });
 
-      describe('stateText', () => {
-        it('returns string `Created` when `item.state` value is `created`', async () => {
-          wrapper.setProps({
+      describe('state text', () => {
+        it('renders `Created` aria label for an icon when `item.state` value is `created`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_OPEN },
           });
 
-          await nextTick();
           expect(findIssueIcon().props('ariaLabel')).toBe('Created');
         });
 
-        it('returns string `Closed` when `item.state` value is `closed`', async () => {
-          wrapper.setProps({
+        it('renders `Closed` aria label for an icon when `item.state` value is `closed`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_CLOSED },
           });
 
-          await nextTick();
           expect(findIssueIcon().props('ariaLabel')).toBe('Closed');
         });
       });
 
-      describe('stateIconClass', () => {
-        it('returns string `issue-token-state-icon-open gl-text-green-500` when `item.state` value is `opened`', async () => {
-          wrapper.setProps({
+      describe('icons', () => {
+        it('applies correct icon styling when `item.state` value is `opened`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_OPEN },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('class')).toContain(
             'issue-token-state-icon-open gl-text-green-500',
           );
         });
 
-        it('return string `gl-text-red-500` when `item.blocked` value is `true`', async () => {
-          wrapper.setProps({
+        it('applies correct icon styling when `item.blocked` value is `true`', () => {
+          createComponent({
             item: { ...mockItem, blocked: true },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('class')).toContain('gl-text-red-500');
         });
 
-        it('returns string `issue-token-state-icon-closed gl-text-blue-500` when `item.state` value is `closed`', async () => {
-          wrapper.setProps({
+        it('applies correct icon styling when `item.state` value is `closed`', () => {
+          createComponent({
             item: { ...mockItem, state: STATUS_CLOSED },
           });
 
-          await nextTick();
           expect(findIssueIcon().attributes('class')).toContain(
             'issue-token-state-icon-closed gl-text-blue-500',
           );
@@ -264,23 +261,21 @@ describe('RelatedItemsTree', () => {
       });
 
       describe('itemHierarchy', () => {
-        it('returns string containing item id and item path', () => {
-          const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
-          expect(stateTooltip.props('path')).toBe('gitlab-org/gitlab-shell#8');
+        it('renders correct tooltip path', () => {
+          expect(findStateTooltip().at(0).props('path')).toBe('gitlab-org/gitlab-shell#8');
         });
       });
 
       describe('computedPath', () => {
-        it('returns value of `itemWebPath` when it is defined', () => {
+        it('renders `itemWebPath` as tooltip path when path it is defined', () => {
           expect(findLink().attributes('href')).toBe(mockItem.webPath);
         });
 
-        it('returns `null` when `itemWebPath` is empty', async () => {
-          wrapper.setProps({
+        it('does not render href when both `path` and `itemWebPath` are not defined', () => {
+          createComponent({
             item: { ...mockItem, webPath: '' },
           });
 
-          await nextTick();
           expect(findLink().attributes('href')).toBeUndefined();
         });
       });
@@ -292,12 +287,12 @@ describe('RelatedItemsTree', () => {
       `(`when dependent on item type`, ({ createItem, isEpic, itemType }) => {
         beforeEach(() => {
           mockItem = createItem();
-          wrapper = createComponent();
+          createComponent();
         });
 
         describe('isEpic', () => {
-          it(`returns ${isEpic} when item type is ${itemType}`, () => {
-            expect(wrapper.vm.isEpic).toBe(isEpic);
+          it(`renders tooltip when item type is ${itemType}`, () => {
+            expect(findTooltip().exists()).toBe(isEpic);
           });
         });
       });
@@ -314,12 +309,10 @@ describe('RelatedItemsTree', () => {
         });
 
         describe('stateIconName', () => {
-          it(`returns string \`${stateIconName}\` when ${testDesc}`, async () => {
-            wrapper.setProps({
+          it(`renders \`${stateIconName}\` as icon name when ${testDesc}`, () => {
+            createComponent({
               item: mockItem,
             });
-
-            await nextTick();
 
             expect(findIssueIcon().props('name')).toBe(stateIconName);
           });
@@ -327,14 +320,13 @@ describe('RelatedItemsTree', () => {
       });
     });
 
-    describe('methods', () => {
-      describe('handleRemoveClick', () => {
+    describe('interactions', () => {
+      describe('removing', () => {
         it('calls `setRemoveItemModalProps` action with params `parentItem` and `item`', () => {
-          jest.spyOn(wrapper.vm, 'setRemoveItemModalProps');
+          jest.spyOn(store, 'dispatch');
+          findRemoveButton().vm.$emit('click');
 
-          wrapper.vm.handleRemoveClick();
-
-          expect(wrapper.vm.setRemoveItemModalProps).toHaveBeenCalledWith({
+          expect(store.dispatch).toHaveBeenCalledWith('setRemoveItemModalProps', {
             parentItem: mockParentItem,
             item: mockItem,
           });
@@ -345,14 +337,18 @@ describe('RelatedItemsTree', () => {
         createItem         | expectedFilterUrl                                         | itemType
         ${createEpicItem}  | ${`${mockInitialConfig.epicsWebUrl}?label_name[]=Label`}  | ${'epic'}
         ${createIssueItem} | ${`${mockInitialConfig.issuesWebUrl}?label_name[]=Label`} | ${'issue'}
-      `('labelFilterUrl', ({ createItem, expectedFilterUrl, itemType }) => {
-        beforeEach(() => {
+      `('labels', ({ createItem, expectedFilterUrl, itemType }) => {
+        beforeEach(async () => {
           mockItem = createItem();
-          wrapper = createComponent();
+          createComponent({
+            item: createItem(),
+          });
+
+          await setShowLabels(true);
         });
 
-        it(`filterURL for ${itemType} should be ${expectedFilterUrl}`, () => {
-          expect(wrapper.vm.labelFilterUrl(mockItem.labels[0])).toBe(expectedFilterUrl);
+        it(`label target for ${itemType} should be ${expectedFilterUrl}`, () => {
+          expect(findChildLabels().at(0).props('target')).toBe(expectedFilterUrl);
         });
       });
     });
@@ -367,29 +363,22 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item state icon for large screens', () => {
-        const statusIcon = wrapper.findAllComponents(GlIcon).at(0);
-
-        expect(statusIcon.props('name')).toBe('issues');
+        expect(findAllIcons().at(0).props('name')).toBe('issues');
       });
 
       it('renders item state tooltip for large screens', () => {
-        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
-
-        expect(stateTooltip.props('state')).toBe(mockItem.state);
+        expect(findStateTooltip().at(0).props('state')).toBe(mockItem.state);
       });
 
       it('renders item path in tooltip for large screens', () => {
-        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
+        const path = 'gitlab-org/gitlab-shell#8';
 
-        const { itemPath, itemId } = wrapper.vm;
-        const path = itemPath + mockItem.pathIdSeparator + itemId;
-
-        expect(stateTooltip.props('path')).toBe(path);
+        expect(findStateTooltip().at(0).props('path')).toBe(path);
         expect(path).toContain('gitlab-org/gitlab-shell');
       });
 
       it('renders confidential icon when `item.confidential` is true', () => {
-        const confidentialIcon = wrapper.findAllComponents(GlIcon).at(1);
+        const confidentialIcon = findAllIcons().at(1);
 
         expect(confidentialIcon.isVisible()).toBe(true);
         expect(confidentialIcon.props('name')).toBe('eye-slash');
@@ -401,15 +390,11 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item state tooltip for medium and small screens', () => {
-        const stateTooltip = wrapper.findAllComponents(StateTooltip).at(0);
-
-        expect(stateTooltip.props('state')).toBe(mockItem.state);
+        expect(findStateTooltip().at(0).props('state')).toBe(mockItem.state);
       });
 
       it('renders item milestone when it has milestone', () => {
-        const milestone = wrapper.findComponent(ItemMilestone);
-
-        expect(milestone.isVisible()).toBe(true);
+        expect(findItemMilestone().isVisible()).toBe(true);
       });
 
       it('renders item due date when it has due date', () => {
@@ -418,15 +403,13 @@ describe('RelatedItemsTree', () => {
         expect(dueDate.isVisible()).toBe(true);
       });
 
-      it('does not render red icon for overdue issue that is closed', async () => {
-        wrapper.setProps({
+      it('does not render red icon for overdue issue that is closed', () => {
+        createComponent({
           item: {
             ...mockItem,
             closedAt: '2018-12-01T00:00:00.00Z',
           },
         });
-
-        await nextTick();
 
         expect(wrapper.findComponent(ItemDueDate).props('closed')).toBe(true);
       });
@@ -437,15 +420,13 @@ describe('RelatedItemsTree', () => {
         expect(weight.isVisible()).toBe(true);
       });
 
-      it('renders item weight when it has weight of 0', async () => {
-        wrapper.setProps({
+      it('renders item weight when it has weight of 0', () => {
+        createComponent({
           item: {
             ...mockItem,
             weight: 0,
           },
         });
-
-        await nextTick();
 
         const weight = wrapper.findComponent(ItemWeight);
 
@@ -454,16 +435,12 @@ describe('RelatedItemsTree', () => {
       });
 
       it('renders item assignees when it has assignees', () => {
-        const assignees = wrapper.findComponent(ItemAssignees);
-
-        expect(assignees.isVisible()).toBe(true);
+        expect(findItemAssignees().isVisible()).toBe(true);
       });
 
       it('renders item remove button when `item.userPermissions.canAdminRelation` is true', () => {
-        const removeButton = wrapper.findComponent(GlButton);
-
-        expect(removeButton.isVisible()).toBe(true);
-        expect(removeButton.attributes('title')).toBe('Remove');
+        expect(findRemoveButton().isVisible()).toBe(true);
+        expect(findRemoveButton().attributes('title')).toBe('Remove');
       });
 
       describe.each`
@@ -473,7 +450,7 @@ describe('RelatedItemsTree', () => {
       `('issue count badge', ({ createItem, countBadgeExists, itemType }) => {
         beforeEach(() => {
           mockItem = createItem();
-          wrapper = createComponent();
+          createComponent();
         });
 
         it(`${
@@ -501,7 +478,7 @@ describe('RelatedItemsTree', () => {
         `("for '$mockIssue.state' issue", ({ mockIssue, showHealthStatus }) => {
           beforeEach(() => {
             mockItem = createIssueItem(mockIssue);
-            wrapper = createComponent();
+            createComponent();
             enableHealthStatus();
           });
 
@@ -523,7 +500,7 @@ describe('RelatedItemsTree', () => {
             beforeEach(() => {
               mockItem = createEpicItem(mockEpic, mockEpicMeta);
 
-              wrapper = createComponent();
+              createComponent();
               enableHealthStatus();
             });
 
