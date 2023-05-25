@@ -22,7 +22,7 @@ module Gitlab
         def to_prompt
           <<~PROMPT
           ```
-          #{extracted_diff.truncate_words(2000)}"
+          #{extracted_diff.truncate_words(1500)}"
           ```
 
           You are a software developer.
