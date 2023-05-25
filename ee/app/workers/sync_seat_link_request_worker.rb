@@ -10,7 +10,7 @@ class SyncSeatLinkRequestWorker
   # Retry for up to approximately 2 days
   sidekiq_options retry: 20
   sidekiq_retry_in do |count, _exception|
-    30.minutes + rand(20.minutes)
+    1.hour + rand(20.minutes)
   end
 
   idempotent!
