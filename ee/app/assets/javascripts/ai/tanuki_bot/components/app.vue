@@ -139,7 +139,7 @@ export default {
           :dismissible="false"
           variant="tip"
           :show-icon="false"
-          class="gl-text-center gl-mx-n5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning"
+          class="gl-text-center gl-mx-n5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning gl-max-w-full"
           role="alert"
           data-testid="chat-legal-warning"
         >
