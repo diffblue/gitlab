@@ -5,6 +5,8 @@ module Vulnerabilities
     include EachBatch
     include UnnestedInFilters::Dsl
 
+    declarative_enum DismissalReasonEnum
+
     self.table_name = "vulnerability_reads"
     self.primary_key = :vulnerability_id
 
