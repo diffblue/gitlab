@@ -1,0 +1,9 @@
+#import "../fragments/instance_external_audit_event_destination.fragment.graphql"
+
+query getInstanceExternalDestinations {
+  instanceExternalAuditEventDestinations {
+    nodes {
+      ...InstanceExternalAuditEventDestinationFragment
+    }
+  }
+}

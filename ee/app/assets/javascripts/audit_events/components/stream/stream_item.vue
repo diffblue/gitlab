@@ -13,6 +13,7 @@ import { __, sprintf } from '~/locale';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
+import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from '../../constants';
 import StreamDestinationEditor from './stream_destination_editor.vue';
 
@@ -31,6 +32,7 @@ export default {
   directives: {
     GlTooltip,
   },
+  inject: ['groupPath'],
   props: {
     item: {
       type: Object,
@@ -93,6 +95,12 @@ export default {
     isItemFiltered() {
       return Boolean(this.item?.eventTypeFilters?.length);
     },
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
+    destinationDestroyMutation() {
+      return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
+    },
   },
   methods: {
     setEditMode(state) {
@@ -105,20 +113,29 @@ export default {
     onEditorError() {
       this.$emit('error');
     },
+    getQueryResponse(queryData) {
+      return this.isInstance
+        ? queryData.externalAuditEventDestinationCreate
+        : queryData.group.externalAuditEventDestinationCreate;
+    },
     async deleteDestination() {
       this.isDeleting = true;
       try {
         const { data } = await this.$apollo.mutate({
-          mutation: deleteExternalDestination,
+          mutation: this.destinationDestroyMutation,
           variables: {
             id: this.item.id,
+            isInstance: this.isInstance,
           },
           context: {
             isSingleRequest: true,
           },
         });
 
-        const { errors } = data.externalAuditEventDestinationDestroy;
+        const errors = this.isInstance
+          ? data.instanceExternalAuditEventDestinationDestroy.errors
+          : data.externalAuditEventDestinationDestroy.errors;
+
         if (errors.length > 0) {
           createAlert({
             message: errors[0],

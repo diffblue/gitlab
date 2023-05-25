@@ -23,6 +23,8 @@ import externalAuditEventDestinationHeaderUpdate from '../../graphql/mutations/u
 import externalAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_external_destination_header.mutation.graphql';
 import deleteExternalDestinationFilters from '../../graphql/mutations/delete_external_destination_filters.mutation.graphql';
 import updateExternalDestinationFilters from '../../graphql/mutations/update_external_destination_filters.mutation.graphql';
+import instanceExternalAuditEventDestinationCreate from '../../graphql/mutations/create_instance_external_destination.mutation.graphql';
+import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import {
   ADD_STREAM_EDITOR_I18N,
   AUDIT_STREAMS_NETWORK_ERRORS,
@@ -117,6 +119,17 @@ export default {
     itemFilters() {
       return this.item?.eventTypeFilters || [];
     },
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
+    destinationCreateMutation() {
+      return this.isInstance
+        ? instanceExternalAuditEventDestinationCreate
+        : externalAuditEventDestinationCreate;
+    },
+    destinationDestroyMutation() {
+      return this.isInstance ? deleteInstanceExternalDestination : deleteExternalDestination;
+    },
   },
   mounted() {
     const existingHeaders = mapItemHeadersToFormData(this.item);
@@ -135,30 +148,55 @@ export default {
     clearError(index) {
       this.errors.splice(index, 1);
     },
+    getDestinationCreateErrors(data) {
+      return this.isInstance
+        ? data.instanceExternalAuditEventDestinationCreate.errors
+        : data.externalAuditEventDestinationCreate.errors;
+    },
+    getCreateDestination(data) {
+      return this.isInstance
+        ? data.instanceExternalAuditEventDestinationCreate.instanceExternalAuditEventDestination
+        : data.externalAuditEventDestinationCreate.externalAuditEventDestination;
+    },
     async addDestinationUrl() {
       const { data } = await this.$apollo.mutate({
-        mutation: externalAuditEventDestinationCreate,
+        mutation: this.destinationCreateMutation,
         variables: {
           destinationUrl: this.destinationUrl,
           fullPath: this.groupPath,
+          isInstance: this.isInstance,
         },
         context: {
           isSingleRequest: true,
         },
         update(cache, { data: updateData }, args) {
-          if (updateData.externalAuditEventDestinationCreate.errors.length) {
+          const errors = args.variables.isInstance
+            ? updateData.instanceExternalAuditEventDestinationCreate.errors
+            : updateData.externalAuditEventDestinationCreate.errors;
+          if (errors.length) {
             return;
           }
+
+          const newDestination = args.variables.isInstance
+            ? updateData.instanceExternalAuditEventDestinationCreate
+                .instanceExternalAuditEventDestination
+            : updateData.externalAuditEventDestinationCreate.externalAuditEventDestination;
+
           addAuditEventsStreamingDestination({
             store: cache,
             fullPath: args.variables.fullPath,
-            newDestination:
-              updateData.externalAuditEventDestinationCreate.externalAuditEventDestination,
+            newDestination,
           });
         },
       });
 
-      return data.externalAuditEventDestinationCreate;
+      const errors = this.getDestinationCreateErrors(data);
+      const externalAuditEventDestination = this.getCreateDestination(data);
+
+      return {
+        errors,
+        externalAuditEventDestination,
+      };
     },
     async addDestinationHeaders(destinationId, headers) {
       const mutations = headers
@@ -232,15 +270,20 @@ export default {
     async deleteCreatedDestination(destinationId) {
       const { groupPath: fullPath } = this;
       return this.$apollo.mutate({
-        mutation: deleteExternalDestination,
+        mutation: this.destinationDestroyMutation,
         variables: {
           id: destinationId,
+          isInstance: this.isInstance,
         },
         context: {
           isSingleRequest: true,
         },
-        update(cache, { data }) {
-          if (data.externalAuditEventDestinationDestroy.errors.length) {
+        update(cache, { data }, args) {
+          const errors = args.variables.isInstance
+            ? data.instanceExternalAuditEventDestinationDestroy.errors
+            : data.externalAuditEventDestinationDestroy.errors;
+
+          if (errors.length) {
             return;
           }
 
@@ -329,6 +372,7 @@ export default {
           errors: destinationErrors = [],
           externalAuditEventDestination,
         } = await this.addDestinationUrl();
+
         errors.push(...destinationErrors);
         destinationId = externalAuditEventDestination?.id;
 
@@ -538,7 +582,7 @@ export default {
         />
       </gl-form-group>
 
-      <div class="gl-mb-5">
+      <div v-if="!isInstance" class="gl-mb-5">
         <strong class="gl-display-block gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</strong>
         <gl-table-lite :items="headers" :fields="$options.fields">
           <template
@@ -623,7 +667,7 @@ export default {
         </gl-button>
       </div>
 
-      <div class="gl-mb-5">
+      <div v-if="!isInstance" class="gl-mb-5">
         <strong class="gl-display-block gl-mb-3" data-testid="filtering-header">{{
           $options.i18n.HEADER_FILTERING
         }}</strong>

@@ -1,5 +1,6 @@
 import produce from 'immer';
 import getExternalDestinationsQuery from './queries/get_external_destinations.query.graphql';
+import getInstanceExternalDestinationsQuery from './queries/get_instance_external_destinations.query.graphql';
 import ExternalAuditEventDestinationFragment from './fragments/external_audit_event_destination.fragment.graphql';
 
 const EXTERNAL_AUDIT_EVENT_DESTINATION_TYPENAME = 'ExternalAuditEventDestination';
@@ -16,8 +17,11 @@ function makeDestinationIdRecord(store, id) {
 }
 
 export function addAuditEventsStreamingDestination({ store, fullPath, newDestination }) {
+  const getDestinationQuery =
+    fullPath === 'instance' ? getInstanceExternalDestinationsQuery : getExternalDestinationsQuery;
+
   const sourceData = store.readQuery({
-    query: getExternalDestinationsQuery,
+    query: getDestinationQuery,
     variables: { fullPath },
   });
 
@@ -26,14 +30,21 @@ export function addAuditEventsStreamingDestination({ store, fullPath, newDestina
   }
 
   const data = produce(sourceData, (draftData) => {
-    draftData.group.externalAuditEventDestinations.nodes.push(newDestination);
+    const nodes =
+      fullPath === 'instance'
+        ? draftData.instanceExternalAuditEventDestinations.nodes
+        : draftData.group.externalAuditEventDestinations.nodes;
+    nodes.push(newDestination);
   });
-  store.writeQuery({ query: getExternalDestinationsQuery, variables: { fullPath }, data });
+
+  store.writeQuery({ query: getDestinationQuery, variables: { fullPath }, data });
 }
 
 export function removeAuditEventsStreamingDestination({ store, fullPath, destinationId }) {
+  const getDestinationQuery =
+    fullPath === 'instance' ? getInstanceExternalDestinationsQuery : getExternalDestinationsQuery;
   const sourceData = store.readQuery({
-    query: getExternalDestinationsQuery,
+    query: getDestinationQuery,
     variables: { fullPath },
   });
 
@@ -42,11 +53,17 @@ export function removeAuditEventsStreamingDestination({ store, fullPath, destina
   }
 
   const data = produce(sourceData, (draftData) => {
-    draftData.group.externalAuditEventDestinations.nodes = draftData.group.externalAuditEventDestinations.nodes.filter(
-      (node) => node.id !== destinationId,
-    );
+    if (fullPath === 'instance') {
+      draftData.instanceExternalAuditEventDestinations.nodes = draftData.instanceExternalAuditEventDestinations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    } else {
+      draftData.group.externalAuditEventDestinations.nodes = draftData.group.externalAuditEventDestinations.nodes.filter(
+        (node) => node.id !== destinationId,
+      );
+    }
   });
-  store.writeQuery({ query: getExternalDestinationsQuery, variables: { fullPath }, data });
+  store.writeQuery({ query: getDestinationQuery, variables: { fullPath }, data });
 }
 
 export function addAuditEventStreamingHeader({ store, destinationId, newHeader }) {

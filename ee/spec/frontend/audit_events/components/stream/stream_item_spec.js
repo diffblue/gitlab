@@ -6,13 +6,18 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_external_destination.mutation.graphql';
+import deleteInstanceExternalDestination from 'ee/audit_events/graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import { AUDIT_STREAMS_NETWORK_ERRORS, STREAM_ITEMS_I18N } from 'ee/audit_events/constants';
 import StreamItem from 'ee/audit_events/components/stream/stream_item.vue';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import {
+  groupPath,
   destinationDeleteMutationPopulator,
   mockExternalDestinations,
   mockFiltersOptions,
+  instanceGroupPath,
+  destinationInstanceDeleteMutationPopulator,
+  mockInstanceExternalDestinations,
 } from '../../mock_data';
 
 jest.mock('~/alert');
@@ -23,20 +28,31 @@ describe('StreamItem', () => {
 
   const destinationWithoutFilters = mockExternalDestinations[0];
   const destinationWithFilters = mockExternalDestinations[1];
+  const instanceDestination = mockInstanceExternalDestinations[0];
   const defaultDeleteSpy = jest.fn().mockResolvedValue(destinationDeleteMutationPopulator());
   const showModalSpy = jest.fn();
+  const defaultInstanceDeleteSpy = jest
+    .fn()
+    .mockResolvedValue(destinationInstanceDeleteMutationPopulator());
+
+  let groupPathProvide = groupPath;
+  let itemProvide = destinationWithoutFilters;
+  let deleteExternalDestinationProvide = deleteExternalDestination;
 
   const createComponent = (props = {}, deleteExternalDestinationSpy = defaultDeleteSpy) => {
     const mockApollo = createMockApollo([
-      [deleteExternalDestination, deleteExternalDestinationSpy],
+      [deleteExternalDestinationProvide, deleteExternalDestinationSpy],
     ]);
     wrapper = mountExtended(StreamItem, {
       attachTo: document.body,
       apolloProvider: mockApollo,
       propsData: {
-        item: destinationWithoutFilters,
+        item: itemProvide,
         groupEventFilters: mockFiltersOptions,
         ...props,
+      },
+      provide: {
+        groupPath: groupPathProvide,
       },
       stubs: {
         StreamDestinationEditor: true,
@@ -61,141 +77,274 @@ describe('StreamItem', () => {
     createAlert.mockClear();
   });
 
-  describe('render', () => {
-    beforeEach(() => {
-      createComponent();
-    });
+  describe('Group StreamItem', () => {
+    describe('render', () => {
+      beforeEach(() => {
+        createComponent();
+      });
 
-    it('should not show the editor', () => {
-      expect(findEditor().exists()).toBe(false);
-    });
-  });
-
-  describe('deleting', () => {
-    it('should emit deleted on success operation', async () => {
-      createComponent();
-      const deleteBtn = findDeleteButton();
-      await deleteBtn.trigger('click');
-
-      expect(findActionsDropdown().props('loading')).toBe(true);
-      await waitForPromises();
-
-      expect(findActionsDropdown().props('loading')).toBe(false);
-      expect(wrapper.emitted('deleted')).toBeDefined();
-      expect(createAlert).not.toHaveBeenCalled();
-    });
-
-    it('should not emit deleted when backend error occurs', async () => {
-      const errorMsg = 'Random Error message';
-      const deleteExternalDestinationErrorSpy = jest
-        .fn()
-        .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
-      createComponent({}, deleteExternalDestinationErrorSpy);
-      const deleteBtn = findDeleteButton();
-
-      await deleteBtn.trigger('click');
-
-      expect(findActionsDropdown().props('loading')).toBe(true);
-      await waitForPromises();
-
-      expect(findActionsDropdown().props('loading')).toBe(false);
-      expect(wrapper.emitted('deleted')).toBeUndefined();
-      expect(wrapper.emitted('error')).toBeDefined();
-      expect(createAlert).toHaveBeenCalledWith({
-        message: errorMsg,
+      it('should not show the editor', () => {
+        expect(findEditor().exists()).toBe(false);
       });
     });
 
-    it('should not emit deleted when network error occurs', async () => {
-      const error = new Error('Network error');
-      createComponent({}, jest.fn().mockRejectedValue(error));
+    describe('deleting', () => {
+      it('should emit deleted on success operation', async () => {
+        createComponent();
+        const deleteBtn = findDeleteButton();
+        await deleteBtn.trigger('click');
 
-      const deleteBtn = findDeleteButton();
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
 
-      await deleteBtn.trigger('click');
+        expect(findActionsDropdown().props('loading')).toBe(false);
+        expect(wrapper.emitted('deleted')).toBeDefined();
+        expect(createAlert).not.toHaveBeenCalled();
+      });
 
-      expect(findActionsDropdown().props('loading')).toBe(true);
-      await waitForPromises();
+      it('should not emit deleted when backend error occurs', async () => {
+        const errorMsg = 'Random Error message';
+        const deleteExternalDestinationErrorSpy = jest
+          .fn()
+          .mockResolvedValue(destinationDeleteMutationPopulator([errorMsg]));
+        createComponent({}, deleteExternalDestinationErrorSpy);
+        const deleteBtn = findDeleteButton();
 
-      expect(findActionsDropdown().props('loading')).toBe(false);
+        await deleteBtn.trigger('click');
 
-      expect(wrapper.emitted('deleted')).toBeUndefined();
-      expect(wrapper.emitted('error')).toBeDefined();
-      expect(createAlert).toHaveBeenCalledWith({
-        message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
-        captureError: true,
-        error,
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
+
+        expect(findActionsDropdown().props('loading')).toBe(false);
+        expect(wrapper.emitted('deleted')).toBeUndefined();
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: errorMsg,
+        });
+      });
+
+      it('should not emit deleted when network error occurs', async () => {
+        const error = new Error('Network error');
+        createComponent({}, jest.fn().mockRejectedValue(error));
+
+        const deleteBtn = findDeleteButton();
+
+        await deleteBtn.trigger('click');
+
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
+
+        expect(findActionsDropdown().props('loading')).toBe(false);
+
+        expect(wrapper.emitted('deleted')).toBeUndefined();
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+          captureError: true,
+          error,
+        });
+      });
+    });
+
+    describe('editing', () => {
+      beforeEach(async () => {
+        createComponent();
+        await findEditButton().trigger('click');
+      });
+
+      it('should pass the item to the editor', () => {
+        expect(findEditor().exists()).toBe(true);
+        expect(findEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
+      });
+
+      it('should emit the updated event when the editor fires its update event', async () => {
+        findEditor().vm.$emit('updated');
+        await waitForPromises();
+
+        expect(wrapper.emitted('updated')).toBeDefined();
+        expect(findEditor().exists()).toBe(false);
+      });
+
+      it('should emit the error event when the editor fires its error event', () => {
+        findEditor().vm.$emit('error');
+
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(findEditor().exists()).toBe(true);
+      });
+
+      it('should close the editor when the editor fires its cancel event', async () => {
+        findEditor().vm.$emit('cancel');
+        await waitForPromises();
+
+        expect(findEditor().exists()).toBe(false);
+      });
+    });
+
+    it('should show modal when viewing token', async () => {
+      createComponent();
+
+      await findViewButton().trigger('click');
+
+      expect(showModalSpy).toHaveBeenCalled();
+      expect(
+        wrapper.findComponent('.modal-stub').findComponent(GlFormInputGroup).props('value'),
+      ).toBe(destinationWithoutFilters.verificationToken);
+    });
+
+    describe('when an item has event filters', () => {
+      beforeEach(() => {
+        createComponent({ item: destinationWithFilters });
+      });
+
+      it('should show filter badge', () => {
+        expect(findFilterBadge().text()).toBe(STREAM_ITEMS_I18N.FILTER_BADGE_LABEL);
+        expect(findFilterBadge().attributes('id')).toBe(destinationWithFilters.id);
+      });
+
+      it('renders a popover', () => {
+        expect(wrapper.findByTestId('filter-popover').element).toMatchSnapshot();
+      });
+    });
+
+    describe('when an item has no filter', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('should not show filter badge', () => {
+        expect(findFilterBadge().exists()).toBe(false);
       });
     });
   });
 
-  describe('editing', () => {
-    beforeEach(async () => {
-      createComponent();
-      await findEditButton().trigger('click');
-    });
-
-    it('should pass the item to the editor', () => {
-      expect(findEditor().exists()).toBe(true);
-      expect(findEditor().props('item')).toStrictEqual(mockExternalDestinations[0]);
-    });
-
-    it('should emit the updated event when the editor fires its update event', async () => {
-      findEditor().vm.$emit('updated');
-      await waitForPromises();
-
-      expect(wrapper.emitted('updated')).toBeDefined();
-      expect(findEditor().exists()).toBe(false);
-    });
-
-    it('should emit the error event when the editor fires its error event', () => {
-      findEditor().vm.$emit('error');
-
-      expect(wrapper.emitted('error')).toBeDefined();
-      expect(findEditor().exists()).toBe(true);
-    });
-
-    it('should close the editor when the editor fires its cancel event', async () => {
-      findEditor().vm.$emit('cancel');
-      await waitForPromises();
-
-      expect(findEditor().exists()).toBe(false);
-    });
-  });
-
-  it('should show modal when viewing token', async () => {
-    createComponent();
-
-    await findViewButton().trigger('click');
-
-    expect(showModalSpy).toHaveBeenCalled();
-    expect(
-      wrapper.findComponent('.modal-stub').findComponent(GlFormInputGroup).props('value'),
-    ).toBe(destinationWithoutFilters.verificationToken);
-  });
-
-  describe('when an item has event filters', () => {
+  describe('Instance StreamItem', () => {
     beforeEach(() => {
-      createComponent({ item: destinationWithFilters });
+      groupPathProvide = instanceGroupPath;
+      itemProvide = instanceDestination;
+      deleteExternalDestinationProvide = deleteInstanceExternalDestination;
     });
 
-    it('should show filter badge', () => {
-      expect(findFilterBadge().text()).toBe(STREAM_ITEMS_I18N.FILTER_BADGE_LABEL);
-      expect(findFilterBadge().attributes('id')).toBe(destinationWithFilters.id);
+    describe('render', () => {
+      beforeEach(() => {
+        createComponent({}, defaultInstanceDeleteSpy);
+      });
+
+      it('should not show the editor', () => {
+        expect(findEditor().exists()).toBe(false);
+      });
     });
 
-    it('renders a popover', () => {
-      expect(wrapper.findByTestId('filter-popover').element).toMatchSnapshot();
-    });
-  });
+    describe('deleting', () => {
+      it('should emit deleted on success operation', async () => {
+        createComponent({}, defaultInstanceDeleteSpy);
+        const deleteBtn = findDeleteButton();
+        await deleteBtn.trigger('click');
 
-  describe('when an item has no filter', () => {
-    beforeEach(() => {
-      createComponent();
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
+
+        expect(findActionsDropdown().props('loading')).toBe(false);
+        expect(wrapper.emitted('deleted')).toBeDefined();
+        expect(createAlert).not.toHaveBeenCalled();
+      });
+
+      it('should not emit deleted when backend error occurs', async () => {
+        const errorMsg = 'Random Error message';
+        const deleteInstanceExternalDestinationErrorSpy = jest
+          .fn()
+          .mockResolvedValue(destinationInstanceDeleteMutationPopulator([errorMsg]));
+        createComponent({}, deleteInstanceExternalDestinationErrorSpy);
+        const deleteBtn = findDeleteButton();
+
+        await deleteBtn.trigger('click');
+
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
+
+        expect(findActionsDropdown().props('loading')).toBe(false);
+        expect(wrapper.emitted('deleted')).toBeUndefined();
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: errorMsg,
+        });
+      });
+
+      it('should not emit deleted when network error occurs', async () => {
+        const error = new Error('Network error');
+        createComponent({}, jest.fn().mockRejectedValue(error));
+
+        const deleteBtn = findDeleteButton();
+
+        await deleteBtn.trigger('click');
+
+        expect(findActionsDropdown().props('loading')).toBe(true);
+        await waitForPromises();
+
+        expect(findActionsDropdown().props('loading')).toBe(false);
+
+        expect(wrapper.emitted('deleted')).toBeUndefined();
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: AUDIT_STREAMS_NETWORK_ERRORS.DELETING_ERROR,
+          captureError: true,
+          error,
+        });
+      });
     });
 
-    it('should not show filter badge', () => {
-      expect(findFilterBadge().exists()).toBe(false);
+    describe('editing', () => {
+      beforeEach(async () => {
+        createComponent({}, defaultInstanceDeleteSpy);
+        await findEditButton().trigger('click');
+      });
+
+      it('should pass the item to the editor', () => {
+        expect(findEditor().exists()).toBe(true);
+        expect(findEditor().props('item')).toStrictEqual(mockInstanceExternalDestinations[0]);
+      });
+
+      it('should emit the updated event when the editor fires its update event', async () => {
+        findEditor().vm.$emit('updated');
+        await waitForPromises();
+
+        expect(wrapper.emitted('updated')).toBeDefined();
+        expect(findEditor().exists()).toBe(false);
+      });
+
+      it('should emit the error event when the editor fires its error event', () => {
+        findEditor().vm.$emit('error');
+
+        expect(wrapper.emitted('error')).toBeDefined();
+        expect(findEditor().exists()).toBe(true);
+      });
+
+      it('should close the editor when the editor fires its cancel event', async () => {
+        findEditor().vm.$emit('cancel');
+        await waitForPromises();
+
+        expect(findEditor().exists()).toBe(false);
+      });
+    });
+
+    it('should show modal when viewing token', async () => {
+      createComponent({}, defaultInstanceDeleteSpy);
+
+      await findViewButton().trigger('click');
+
+      expect(showModalSpy).toHaveBeenCalled();
+      expect(
+        wrapper.findComponent('.modal-stub').findComponent(GlFormInputGroup).props('value'),
+      ).toBe(mockInstanceExternalDestinations[0].verificationToken);
+    });
+
+    describe('when an item has no filter', () => {
+      beforeEach(() => {
+        createComponent({}, defaultInstanceDeleteSpy);
+      });
+
+      it('should not show filter badge', () => {
+        expect(findFilterBadge().exists()).toBe(false);
+      });
     });
   });
 });

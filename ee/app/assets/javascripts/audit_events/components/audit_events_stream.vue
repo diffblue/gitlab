@@ -11,6 +11,7 @@ import {
 } from '../constants';
 import { removeAuditEventsStreamingDestination } from '../graphql/cache_update';
 import externalDestinationsQuery from '../graphql/queries/get_external_destinations.query.graphql';
+import instanceExternalDestinationsQuery from '../graphql/queries/get_instance_external_destinations.query.graphql';
 import StreamEmptyState from './stream/stream_empty_state.vue';
 import StreamDestinationEditor from './stream/stream_destination_editor.vue';
 import StreamItem from './stream/stream_item.vue';
@@ -39,11 +40,17 @@ export default {
     isLoading() {
       return this.$apollo.queries.externalAuditEventDestinations.loading;
     },
+    isInstance() {
+      return this.groupPath === 'instance';
+    },
     shouldShowEmptyMode() {
       return !this.destinationsCount && !this.showEditor;
     },
     destinationsCount() {
       return this.externalAuditEventDestinations?.length ?? 0;
+    },
+    destinationQuery() {
+      return this.isInstance ? instanceExternalDestinationsQuery : externalDestinationsQuery;
     },
   },
   methods: {
@@ -78,14 +85,16 @@ export default {
     setGroupEventFilters(nodes) {
       const filters = [];
       nodes.forEach((node) => {
-        filters.push(...node.eventTypeFilters);
+        if (node?.eventTypeFilters) filters.push(...node.eventTypeFilters);
       });
       this.groupEventFilters = [...new Set(filters)];
     },
   },
   apollo: {
     externalAuditEventDestinations: {
-      query: externalDestinationsQuery,
+      query() {
+        return this.destinationQuery;
+      },
       context: {
         isSingleRequest: true,
       },
@@ -98,8 +107,11 @@ export default {
         return !this.groupPath;
       },
       update(data) {
-        this.setGroupEventFilters(data.group.externalAuditEventDestinations.nodes);
-        return data.group.externalAuditEventDestinations.nodes;
+        const destinations = this.isInstance
+          ? data.instanceExternalAuditEventDestinations.nodes
+          : data.group.externalAuditEventDestinations.nodes;
+        this.setGroupEventFilters(destinations);
+        return destinations;
       },
       error() {
         createAlert({
