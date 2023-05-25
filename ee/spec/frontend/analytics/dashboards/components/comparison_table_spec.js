@@ -1,21 +1,22 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
-import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from 'ee/analytics/dashboards/constants';
+import {
+  TABLE_METRICS,
+  CHART_GRADIENT,
+  CHART_GRADIENT_INVERTED,
+} from 'ee/analytics/dashboards/constants';
 import ComparisonTable from 'ee/analytics/dashboards/components/comparison_table.vue';
 import { mockComparativeTableData } from '../mock_data';
 
 describe('Comparison table', () => {
   let wrapper;
 
-  const groupRequestPath = 'groups/test';
-  const projectRequestPath = 'test/project';
   const now = new Date();
 
   const createWrapper = (props = {}) => {
     wrapper = mountExtended(ComparisonTable, {
       propsData: {
         tableData: mockComparativeTableData,
-        requestPath: groupRequestPath,
+        requestPath: 'groups/test',
         isProject: false,
         now,
         ...props,
@@ -23,50 +24,15 @@ describe('Comparison table', () => {
     });
   };
 
-  const findMetricPopover = (identifier) => wrapper.findByTestId(`${identifier}_popover`);
+  const findMetricTableCell = (identifier) => wrapper.findByTestId(`${identifier}_metric_cell`);
   const findChart = () => wrapper.findByTestId('metric_chart');
   const findChartSkeleton = () => wrapper.findByTestId('metric_chart_skeleton');
 
-  describe.each(Object.entries(METRIC_TOOLTIPS))(
-    'popover for %s',
-    (metric, { description, groupLink, projectLink, docsLink }) => {
-      it('appends groupLink when isProject is false', () => {
-        createWrapper();
-        expect(findMetricPopover(metric).props('metric')).toMatchObject({
-          description,
-          links: [
-            {
-              url: `/${groupRequestPath}/${groupLink}`,
-              label: wrapper.vm.$options.i18n.popoverDashboardLabel,
-            },
-            {
-              url: docsLink,
-              label: wrapper.vm.$options.i18n.popoverDocsLabel,
-              docs_link: true,
-            },
-          ],
-        });
-      });
-
-      it('appends projectLink when isProject is true', () => {
-        createWrapper({ requestPath: projectRequestPath, isProject: true });
-        expect(findMetricPopover(metric).props('metric')).toMatchObject({
-          description,
-          links: [
-            {
-              url: `/${projectRequestPath}/${projectLink}`,
-              label: wrapper.vm.$options.i18n.popoverDashboardLabel,
-            },
-            {
-              url: docsLink,
-              label: wrapper.vm.$options.i18n.popoverDocsLabel,
-              docs_link: true,
-            },
-          ],
-        });
-      });
-    },
-  );
+  it.each(Object.keys(TABLE_METRICS))('renders table cell for %s metric', (identifier) => {
+    createWrapper();
+    expect(findMetricTableCell(identifier).exists()).toBe(true);
+    expect(findMetricTableCell(identifier).props('identifier')).toBe(identifier);
+  });
 
   describe('sparkline chart', () => {
     const mockMetric = { identifier: 'lead_time', value: 'Lead Time' };
