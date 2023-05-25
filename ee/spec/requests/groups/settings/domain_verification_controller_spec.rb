@@ -92,11 +92,44 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
     end
   end
 
+  shared_examples 'respects sso enforcement' do
+    before do
+      stub_licensed_features(domain_verification: true, group_saml: true)
+      create(:saml_provider, group: group, enabled: true, enforced_sso: true)
+    end
+
+    around do |example|
+      Gitlab::Session.with_session({}) do
+        example.run
+      end
+    end
+
+    it 'redirects to SSO sign in' do
+      perform_request
+
+      expect(response).to redirect_to(sso_group_saml_providers_path(group, { redirect: request.fullpath }))
+    end
+
+    context 'when the feature is disabled' do
+      before do
+        stub_feature_flags(domain_verification_sso_redirect: false)
+      end
+
+      it 'does not redirect to SSO sign in' do
+        perform_request
+
+        expect(response).not_to redirect_to(sso_group_saml_providers_url(group, { redirect: request.fullpath }))
+      end
+    end
+  end
+
   describe 'GET /groups/:group_id/-/settings/domain_verification', :saas do
-    subject { get group_settings_domain_verification_index_path(group) }
+    subject(:perform_request) { get group_settings_domain_verification_index_path(group) }
 
     context 'when domain verification is available' do
       context 'when the user is an owner' do
+        it_behaves_like 'respects sso enforcement'
+
         it 'renders index with 200 status code' do
           subject
           expect(response).to have_gitlab_http_status(:ok)
@@ -121,9 +154,11 @@ RSpec.describe Groups::Settings::DomainVerificationController, type: :request,
   end
 
   describe 'GET /groups/:group_id/-/settings/domain_verification/new', :saas do
-    subject { get new_group_settings_domain_verification_path(group) }
+    subject(:perform_request) { get new_group_settings_domain_verification_path(group) }
 
     context 'when domain_verification_operation is enabled' do
+      it_behaves_like 'respects sso enforcement'
+
       it "render the 'new' page" do
         subject
         expect(response).to have_gitlab_http_status(:ok)

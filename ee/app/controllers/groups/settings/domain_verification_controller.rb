@@ -9,6 +9,7 @@ module Groups
       before_action :authorize_admin_group!
       before_action :check_operation_feature_flag, except: [:index]
       before_action :set_domain, except: [:index, :new, :create]
+      before_action :sso_enforcement_redirect, only: [:index, :new]
 
       feature_category :system_access
       urgency :low
@@ -132,6 +133,14 @@ module Groups
 
       def set_domain
         @domain ||= group.all_projects_pages_domains(only_verified: false).find_by_domain!(params[:id].to_s)
+      end
+
+      def sso_enforcement_redirect
+        return unless Feature.enabled?(:domain_verification_sso_redirect)
+
+        enforce = ::Gitlab::Auth::GroupSaml::SsoEnforcer.new(group.saml_provider, user: current_user).access_restricted?
+
+        redirect_to sso_group_saml_providers_url(group, { redirect: request.fullpath }) if enforce
       end
     end
   end
