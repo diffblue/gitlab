@@ -58,7 +58,7 @@ module EE
           params do
             requires :member_id, type: Integer, desc: 'The ID of the member requiring approval'
           end
-          put ':id/members/:member_id/approve', feature_category: :subgroups do
+          put ':id/members/:member_id/approve', feature_category: :groups_and_projects do
             group = find_group!(params[:id])
             member = ::Member.find_by_id(params[:member_id])
 
@@ -81,7 +81,7 @@ module EE
           end
 
           desc 'Approves all pending members'
-          post ':id/members/approve_all', feature_category: :subgroups do
+          post ':id/members/approve_all', feature_category: :groups_and_projects do
             group = find_group!(params[:id])
 
             bad_request! unless group.root?
@@ -100,7 +100,7 @@ module EE
           params do
             use :pagination
           end
-          get ":id/pending_members", feature_category: :subgroups do
+          get ":id/pending_members", feature_category: :groups_and_projects do
             group = find_group!(params[:id])
 
             bad_request! unless group.root?

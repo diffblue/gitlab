@@ -139,7 +139,7 @@ RSpec.describe AutocompleteController do
     end
   end
 
-  context 'groups', feature_category: :subgroups do
+  context 'groups', feature_category: :groups_and_projects do
     let_it_be(:public_group) { create(:group, :public) }
     let_it_be(:authorized_private_group) { create(:group, :private) }
     let_it_be(:unauthorized_private_group) { create(:group, :private) }
@@ -185,7 +185,7 @@ RSpec.describe AutocompleteController do
     end
   end
 
-  describe 'GET group_subgroups', feature_category: :subgroups do
+  describe 'GET group_subgroups', feature_category: :groups_and_projects do
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:subgroup_1) { create(:group, :private, parent: group) }
     let_it_be(:subgroup_2) { create(:group, :private, parent: group) }
@@ -257,7 +257,7 @@ RSpec.describe AutocompleteController do
     end
   end
 
-  context 'GET project_routes', feature_category: :projects do
+  context 'GET project_routes', feature_category: :groups_and_projects do
     let_it_be(:group) { create(:group) }
     let_it_be(:projects) { create_list(:project, 3, group: group) }
 
@@ -328,7 +328,7 @@ RSpec.describe AutocompleteController do
     end
   end
 
-  context 'GET namespace_routes', feature_category: :subgroups do
+  context 'GET namespace_routes', feature_category: :groups_and_projects do
     let_it_be(:groups) { create_list(:group, 3, :private) }
     let_it_be(:users) { create_list(:user, 3) }
 

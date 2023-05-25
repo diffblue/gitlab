@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Display ultimate feature removal banner', :saas, :js, feature_category: :projects do
+RSpec.describe 'Display ultimate feature removal banner', :saas, :js, feature_category: :groups_and_projects do
   let(:project) { create(:project, :public, :repository) }
   let(:user) { create(:user) }
 

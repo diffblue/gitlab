@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Namespace.projects', feature_category: :projects do
+RSpec.describe 'Namespace.projects', feature_category: :groups_and_projects do
   include GraphqlHelpers
 
   describe 'sorting and pagination' do

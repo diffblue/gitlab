@@ -9,7 +9,7 @@ module Projects
 
     idempotent!
     data_consistency :sticky
-    feature_category :projects
+    feature_category :groups_and_projects
     urgency :low
 
     sidekiq_options retry: 3

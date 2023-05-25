@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project', :js, feature_category: :projects do
+RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
   describe 'immediately deleting a project marked for deletion' do
     let(:project) { create(:project, marked_for_deletion_at: Date.current) }
     let(:user) { project.first_owner }

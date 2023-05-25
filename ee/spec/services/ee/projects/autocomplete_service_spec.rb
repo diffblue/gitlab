@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::AutocompleteService, feature_category: :projects do
+RSpec.describe Projects::AutocompleteService, feature_category: :groups_and_projects do
   let_it_be(:group, refind: true) { create(:group, :nested, :private, avatar: fixture_file_upload('spec/fixtures/dk.png')) }
   let_it_be(:project) { create(:project, group: group) }
 

@@ -197,7 +197,7 @@ module EE
           end
 
           desc 'Restore a group.'
-          post ':id/restore', feature_category: :subgroups do
+          post ':id/restore', feature_category: :groups_and_projects do
             authorize! :admin_group, user_group
             break not_found! unless user_group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups)
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::CreateService, '#execute', feature_category: :subgroups do
+RSpec.describe Groups::CreateService, '#execute', feature_category: :groups_and_projects do
   let!(:user) { create :user }
   let!(:group_params) do
     {

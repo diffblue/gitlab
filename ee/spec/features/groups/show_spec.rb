@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group show page', :js, feature_category: :subgroups do
+RSpec.describe 'Group show page', :js, feature_category: :groups_and_projects do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

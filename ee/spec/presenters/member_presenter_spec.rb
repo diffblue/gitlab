@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MemberPresenter, feature_category: :subgroups do
+RSpec.describe MemberPresenter, feature_category: :groups_and_projects do
   let_it_be(:user) { build_stubbed(:user) }
   let_it_be(:group) { build_stubbed(:group) }
   let_it_be(:member) { build_stubbed(:group_member, :guest, source: group, user: user) }

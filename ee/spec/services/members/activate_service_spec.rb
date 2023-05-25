@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Members::ActivateService, feature_category: :subgroups do
+RSpec.describe Members::ActivateService, feature_category: :groups_and_projects do
   let_it_be(:root_group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: root_group) }
   let_it_be(:project) { create(:project, group: root_group) }

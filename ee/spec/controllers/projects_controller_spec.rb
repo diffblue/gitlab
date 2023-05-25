@@ -55,7 +55,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'GET show', feature_category: :projects do
+  describe 'GET show', feature_category: :groups_and_projects do
     render_views
 
     subject { get :show, params: { namespace_id: public_project.namespace.path, id: public_project.path } }
@@ -166,7 +166,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'GET edit', feature_category: :projects do
+  describe 'GET edit', feature_category: :groups_and_projects do
     it 'does not allow an auditor user to access the page' do
       sign_in(create(:user, :auditor))
 
@@ -179,7 +179,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'POST create', feature_category: :projects do
+  describe 'POST create', feature_category: :groups_and_projects do
     let!(:params) do
       {
         path: 'foo',
@@ -289,7 +289,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'PUT #update', feature_category: :projects do
+  describe 'PUT #update', feature_category: :groups_and_projects do
     it 'updates EE attributes' do
       params = {
         repository_size_limit: 1024
@@ -711,7 +711,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  context 'Archive & Unarchive actions', feature_category: :projects do
+  context 'Archive & Unarchive actions', feature_category: :groups_and_projects do
     let(:project) { create(:project, group: group) }
     let(:archived_project) { create(:project, :archived, group: group) }
 
@@ -766,7 +766,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'DELETE #destroy', feature_category: :projects do
+  describe 'DELETE #destroy', feature_category: :groups_and_projects do
     let(:project) { create(:project, group: group) }
 
     before do
@@ -919,7 +919,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'POST #restore', feature_category: :projects do
+  describe 'POST #restore', feature_category: :groups_and_projects do
     let(:project) { create(:project, namespace: user.namespace) }
 
     before do

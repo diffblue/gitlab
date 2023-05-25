@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Project > Unlimited members alert', :js, :saas,
-  feature_category: :subgroups do
+  feature_category: :groups_and_projects do
   let(:alert_selector) { '[data-testid="unlimited-members-during-trial-alert"]' }
   let_it_be(:group) { create(:group, :private, name: 'unlimited-members-during-trial-alert-group') }
   let_it_be(:project) { create(:project, group: group) }

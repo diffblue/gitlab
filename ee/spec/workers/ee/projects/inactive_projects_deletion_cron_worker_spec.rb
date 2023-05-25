@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :projects do
+RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :groups_and_projects do
   include ProjectHelpers
 
   describe "#perform", :clean_gitlab_redis_shared_state, :sidekiq_inline do

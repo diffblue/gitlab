@@ -4,6 +4,6 @@ description: audit when project disable overriding approvers per mr setting is u
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369288
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106652
 milestone: '15.7'
-feature_category: projects
+feature_category: groups_and_projects
 saved_to_database: true
 streamed: true

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::UpdateService, '#execute', feature_category: :projects do
+RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_and_projects do
   include EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }

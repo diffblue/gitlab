@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Projects > Show > Developer views empty project instructions', feature_category: :projects do
+RSpec.describe 'Projects > Show > Developer views empty project instructions', feature_category: :groups_and_projects do
   let(:project) { create(:project, :empty_repo) }
   let(:developer) { create(:user) }
 

@@ -3,7 +3,7 @@ name: group_name_updated
 description: Event triggered when a groups name is updated.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369320
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106079
-feature_category: subgroups
+feature_category: groups_and_projects
 milestone: '15.7'
 saved_to_database: true
 streamed: true

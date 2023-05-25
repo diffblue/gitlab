@@ -17,7 +17,7 @@ module EE
         @seat_count_data = generate_seat_count_alert_data(@project)
       end
 
-      feature_category :projects, [:restore]
+      feature_category :groups_and_projects, [:restore]
     end
 
     def restore

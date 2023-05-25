@@ -3,7 +3,7 @@ name: project_feature_releases_access_level_updated
 description: Event triggered when a project's releases access level setting is updated.
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369308
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/106919
-feature_category: projects
+feature_category: groups_and_projects
 milestone: '15.7'
 saved_to_database: true
 streamed: true

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectSetting, feature_category: :projects do
+RSpec.describe ProjectSetting, feature_category: :groups_and_projects do
   it { is_expected.to belong_to(:push_rule) }
   it { is_expected.to validate_length_of(:product_analytics_instrumentation_key).is_at_most(255).allow_blank }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'New Group page', feature_category: :subgroups do
+RSpec.describe 'New Group page', feature_category: :groups_and_projects do
   describe 'toggling the invite members section', :js do
     let_it_be(:user) { create(:user) }
 

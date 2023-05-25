@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroups do
+RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_and_projects do
   include AfterNextHelpers
 
   let(:admin) { create(:admin) }
