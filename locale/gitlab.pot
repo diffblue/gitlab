@@ -17604,9 +17604,6 @@ msgstr ""
 msgid "Error tracking"
 msgstr ""
 
-msgid "Error tracking is currently in"
-msgstr ""
-
 msgid "Error updating %{issuableType}"
 msgstr ""
 
@@ -31580,9 +31577,6 @@ msgid "Oops, are you sure?"
 msgstr ""
 
 msgid "Open"
-msgstr ""
-
-msgid "Open Beta."
 msgstr ""
 
 msgid "Open Selection"
