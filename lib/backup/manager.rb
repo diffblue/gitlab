@@ -12,7 +12,8 @@ module Backup
     LIST_ENVS = {
       skipped: 'SKIP',
       repositories_storages: 'REPOSITORIES_STORAGES',
-      repositories_paths: 'REPOSITORIES_PATHS'
+      repositories_paths: 'REPOSITORIES_PATHS',
+      skip_repositories_paths: 'SKIP_REPOSITORIES_PATHS'
     }.freeze
 
     YAML_PERMITTED_CLASSES = [
@@ -194,7 +195,8 @@ module Backup
       Repositories.new(progress,
                        strategy: strategy,
                        storages: list_env(:repositories_storages),
-                       paths: list_env(:repositories_paths)
+                       paths: list_env(:repositories_paths),
+                       skip_paths: list_env(:skip_repositories_paths)
                       )
     end
 
@@ -278,7 +280,8 @@ module Backup
         installation_type: Gitlab::INSTALLATION_TYPE,
         skipped: ENV['SKIP'],
         repositories_storages: ENV['REPOSITORIES_STORAGES'],
-        repositories_paths: ENV['REPOSITORIES_PATHS']
+        repositories_paths: ENV['REPOSITORIES_PATHS'],
+        skip_repositories_paths: ENV['SKIP_REPOSITORIES_PATHS']
       }
     end
 
@@ -292,7 +295,8 @@ module Backup
         installation_type: Gitlab::INSTALLATION_TYPE,
         skipped: list_env(:skipped).join(','),
         repositories_storages: list_env(:repositories_storages).join(','),
-        repositories_paths: list_env(:repositories_paths).join(',')
+        repositories_paths: list_env(:repositories_paths).join(','),
+        skip_repositories_paths: list_env(:skip_repositories_paths).join(',')
       )
     end
 
