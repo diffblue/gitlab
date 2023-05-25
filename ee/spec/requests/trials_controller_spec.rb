@@ -43,7 +43,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
     end
   end
 
-  describe 'POST create_lead' do
+  describe 'POST create' do
     let(:step) { 'lead' }
     let(:lead_params) do
       {
@@ -68,7 +68,7 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
     let(:base_params) { lead_params.merge(trial_params).merge(glm_params).merge(step: step) }
 
     subject(:post_create) do
-      post create_lead_trials_path, params: base_params
+      post trials_path, params: base_params
       response
     end
 
@@ -78,9 +78,36 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
       end
     end
 
+    context 'when user is banned' do
+      before do
+        user.ban!
+        login_as(user)
+      end
+
+      it 'redirects to sign in with banned message' do
+        post_create
+
+        expect(response).to redirect_to(new_user_session_path)
+        expect(flash[:alert]).to include('Your account has been blocked')
+      end
+    end
+
     context 'when authenticated' do
       before do
         login_as(user)
+      end
+
+      context 'when user is then banned' do
+        before do
+          user.ban!
+        end
+
+        it 'redirects to trial registration' do
+          post_create
+
+          expect(response).to redirect_to(new_user_session_path)
+          expect(flash[:alert]).to include('Your account has been blocked')
+        end
       end
 
       context 'when successful' do
@@ -145,11 +172,10 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           expect_create_failure(failure_reason, payload)
         end
 
-        context 'when lead is created from outside a namespace and we need to select the namespace' do
-          let(:trial_params) { {} }
-          let(:failure_reason) { :no_single_namespace }
+        context 'when namespace is not found or not allowed to create' do
+          let(:failure_reason) { :not_found }
 
-          it { is_expected.to redirect_to(select_trials_path(glm_params)) }
+          it { is_expected.to have_gitlab_http_status(:not_found) }
         end
 
         context 'when lead creation fails' do
@@ -165,13 +191,32 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
           end
         end
 
+        context 'when lead creation is successful, but we need to select a namespace next to apply trial' do
+          let(:failure_reason) { :no_single_namespace }
+          let(:payload) do
+            {
+              trial_selection_params: {
+                step: GitlabSubscriptions::Trials::CreateService::TRIAL,
+                glm_content: '_glm_content_',
+                glm_source: '_glm_source_'
+              }
+            }
+          end
+
+          it 'redirects to new with trial step' do
+            post_create
+
+            expect(response).to redirect_to(new_trial_path(payload[:trial_selection_params]))
+          end
+        end
+
         context 'with other failures' do
           let(:namespace) { build_stubbed(:namespace) }
           let(:payload) { { namespace_id: namespace.id } }
 
           where(
             case_names: ->(failure_reason) { "with #{failure_reason} failure" },
-            failure_reason: %i[trial_failed random_error]
+            failure_reason: %i[namespace_create_failed random_error trial_failed]
           )
 
           with_them do
@@ -190,151 +235,40 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
     end
   end
 
+  describe 'GET select' do
+    before do
+      login_as(user)
+    end
+
+    it 'redirects to new' do
+      get trials_select_path
+
+      expect(response).to redirect_to(new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL))
+    end
+  end
+
+  describe 'POST create_lead' do
+    before do
+      login_as(user)
+    end
+
+    it 'redirects to new' do
+      post create_lead_trials_path(glm_params)
+
+      expect(response).to redirect_to(new_trial_path(glm_params))
+    end
+  end
+
   describe 'POST apply' do
-    let(:step) { 'trial' }
-    let(:lead_params) { {} }
-    let(:trial_params) do
-      {
-        namespace_id: non_existing_record_id.to_s,
-        trial_entity: '_trial_entity_'
-      }.with_indifferent_access
+    before do
+      login_as(user)
     end
 
-    let(:base_params) { trial_params.merge(glm_params).merge(step: step) }
+    it 'redirects to new' do
+      post apply_trials_path(glm_params)
 
-    subject(:post_apply) do
-      post apply_trials_path, params: base_params
-      response
-    end
-
-    context 'when not authenticated' do
-      it 'redirects to trial registration' do
-        expect(post_apply).to redirect_to_trial_registration
-      end
-    end
-
-    context 'when user is banned' do
-      before do
-        user.ban!
-        login_as(user)
-      end
-
-      it 'redirects to sign in with banned message' do
-        post_apply
-
-        expect(response).to redirect_to(new_user_session_path)
-        expect(flash[:alert]).to include('Your account has been blocked')
-      end
-    end
-
-    context 'when authenticated' do
-      before do
-        login_as(user)
-      end
-
-      context 'when user is then banned' do
-        before do
-          user.ban!
-        end
-
-        it 'redirects to trial registration' do
-          post_apply
-
-          expect(response).to redirect_to(new_user_session_path)
-          expect(flash[:alert]).to include('Your account has been blocked')
-        end
-      end
-
-      context 'when successful' do
-        let(:namespace) { build_stubbed(:namespace) }
-
-        it 'redirects to group path' do
-          expect_create_success(namespace)
-
-          expect(post_apply).to redirect_to(group_path(namespace, { trial: true }))
-        end
-
-        context 'with stored location concerns on redirection' do
-          before do
-            user.update!(setup_for_company: true)
-          end
-
-          context 'when the user is setup for company' do
-            context 'when there is a stored location for the user' do
-              before do
-                allow_next_instance_of(described_class) do |controller|
-                  allow(controller).to receive(:stored_location_for).with(:user).and_return(root_path)
-                end
-              end
-
-              it 'redirects to the stored location' do
-                expect_create_success(namespace)
-
-                expect(post_apply).to redirect_to(root_path)
-              end
-            end
-
-            context 'without a stored location set for the user' do
-              it 'redirects to the group path' do
-                expect_create_success(namespace)
-
-                expect(post_apply).to redirect_to(group_path(namespace, { trial: true }))
-              end
-            end
-          end
-        end
-
-        where(
-          case_names: ->(glm_content) { "when submitted with glm_content value of #{glm_content}" },
-          glm_content: %w[discover-group-security discover-project-security]
-        )
-
-        with_them do
-          let(:glm_params) { { glm_source: '_glm_source_', glm_content: glm_content } }
-
-          it 'redirects to the group security dashboard' do
-            expect_create_success(namespace)
-
-            expect(post_apply).to redirect_to(group_security_dashboard_path(namespace, { trial: true }))
-          end
-        end
-      end
-
-      context 'with create service failures' do
-        let(:payload) { {} }
-
-        before do
-          expect_create_failure(failure_reason, payload)
-        end
-
-        context 'when namespace is not found or allowed to create' do
-          let(:failure_reason) { :not_found }
-
-          it { is_expected.to have_gitlab_http_status(:not_found) }
-        end
-
-        context 'with other failures' do
-          let(:namespace) { build_stubbed(:namespace) }
-          let(:payload) { { namespace_id: namespace.id } }
-
-          where(
-            case_names: ->(failure_reason) { "with #{failure_reason} failure" },
-            failure_reason: %i[trial_failed namespace_create_failed random_error]
-          )
-
-          with_them do
-            it { is_expected.to render_select_namespace }
-          end
-        end
-      end
-
-      context 'when not on SaaS' do
-        before do
-          allow(::Gitlab).to receive(:com?).and_return(false)
-        end
-
-        it { is_expected.to have_gitlab_http_status(:not_found) }
-      end
+      expect(response)
+        .to redirect_to(new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL, **glm_params))
     end
   end
 
