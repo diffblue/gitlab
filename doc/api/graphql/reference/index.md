@@ -12403,6 +12403,7 @@ Represents the total number of issues and their weights for a particular day.
 | <a id="cicatalogresourceicon"></a>`icon` **{warning-solid}** | [`String`](#string) | **Introduced** in 15.11. This feature is an Experiment. It can be changed or removed at any time. Icon for the catalog resource. |
 | <a id="cicatalogresourceid"></a>`id` **{warning-solid}** | [`ID!`](#id) | **Introduced** in 15.11. This feature is an Experiment. It can be changed or removed at any time. ID of the catalog resource. |
 | <a id="cicatalogresourcename"></a>`name` **{warning-solid}** | [`String`](#string) | **Introduced** in 15.11. This feature is an Experiment. It can be changed or removed at any time. Name of the catalog resource. |
+| <a id="cicatalogresourcewebpath"></a>`webPath` **{warning-solid}** | [`String`](#string) | **Introduced** in 16.1. This feature is an Experiment. It can be changed or removed at any time. Web path of the catalog resource. |
 
 #### Fields with arguments
 
