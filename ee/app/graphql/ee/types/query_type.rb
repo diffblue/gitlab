@@ -97,6 +97,11 @@ module EE
               null: true,
               description: 'Instance level external audit event destinations.',
               resolver: ::Resolvers::AuditEvents::InstanceExternalAuditEventDestinationsResolver
+
+        field :ai_messages, ::Types::Ai::CachedMessageType.connection_type,
+              resolver: ::Resolvers::Ai::MessagesResolver,
+              alpha: { milestone: '16.1' },
+              description: 'Find AI messages.'
       end
 
       def vulnerability(id:)

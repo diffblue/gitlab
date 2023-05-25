@@ -2,16 +2,17 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: :shared do
   let_it_be(:user) { create(:user) }
-  let(:uuid) { 'uuid' }
-  let(:timestamp) { Time.now.to_i.to_s }
+  let(:request_id) { 'uuid' }
+  let(:timestamp) { Time.current.to_s }
   let(:payload) do
     {
       timestamp: timestamp,
-      request_id: uuid,
+      request_id: request_id,
       errors: ['some error1', 'another error'],
-      response_body: 'response'
+      role: 'user',
+      content: 'response'
     }
   end
 
@@ -21,20 +22,25 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: 
     other_user = create(:user)
     other_cache = described_class.new(other_user)
 
-    other_cache.add(payload.merge(response_body: 'other user unrelated cache'))
+    other_cache.add(payload.merge(content: 'other user unrelated cache'))
   end
 
   describe '#add' do
-    it 'adds new message' do
-      expect(subject.all).to be_empty
+    it 'adds new message', :aggregate_failures do
+      uuid = 'unique_id'
+
+      expect(SecureRandom).to receive(:uuid).once.and_return(uuid)
+      expect(subject.find_all).to be_empty
 
       subject.add(payload)
 
-      expected_data = payload
-        .except(:errors)
-        .merge(error: 'some error1. another error')
-        .with_indifferent_access
-      expect(subject.all).to eq([expected_data.with_indifferent_access])
+      last = subject.find_all.last
+      expect(last.id).to eq(uuid)
+      expect(last.request_id).to eq(request_id)
+      expect(last.errors).to eq(['some error1. another error'])
+      expect(last.content).to eq('response')
+      expect(last.role).to eq('user')
+      expect(last.timestamp).not_to be_nil
     end
 
     context 'when ai_redis_cache is disabled' do
@@ -43,11 +49,11 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: 
       end
 
       it 'does not add new message' do
-        expect(subject.all).to be_empty
+        expect(subject.find_all).to be_empty
 
         subject.add(payload)
 
-        expect(subject.all).to be_empty
+        expect(subject.find_all).to be_empty
       end
     end
 
@@ -57,69 +63,45 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: 
       end
 
       it 'removes oldes messages if we reach maximum message limit' do
-        subject.add(payload.merge(response_body: 'msg1'))
-        subject.add(payload.merge(response_body: 'msg2'))
+        subject.add(payload.merge(content: 'msg1'))
+        subject.add(payload.merge(content: 'msg2'))
 
-        expect(subject.all).to match([
-          a_hash_including('response_body' => 'msg1'),
-          a_hash_including('response_body' => 'msg2')
-        ])
+        expect(subject.find_all.map(&:content)).to eq(%w[msg1 msg2])
 
-        subject.add(payload.merge(response_body: 'msg3'))
+        subject.add(payload.merge(content: 'msg3'))
 
-        expect(subject.all).to match([
-          a_hash_including('response_body' => 'msg2'),
-          a_hash_including('response_body' => 'msg3')
-        ])
+        expect(subject.find_all.map(&:content)).to eq(%w[msg2 msg3])
       end
     end
   end
 
-  describe '#get' do
-    context 'when there is both request and response' do
-      before do
-        subject.add(payload.merge(response_body: nil))
-        subject.add(payload.merge(response_body: 'msg'))
-      end
+  describe '#find_all' do
+    let(:filters) { {} }
 
-      it 'gets response by request id' do
-        data = subject.get(uuid)
-
-        expect(data).not_to be_nil
-        expect(data['response_body']).to eq('msg')
-      end
+    before do
+      subject.add(payload.merge(content: 'msg1', role: 'user', request_id: '1'))
+      subject.add(payload.merge(content: 'msg2', role: 'assistant', request_id: '2'))
+      subject.add(payload.merge(content: 'msg3', role: 'assistant', request_id: '3'))
     end
 
-    context 'when there is only request' do
-      before do
-        subject.add(payload.merge(response_body: nil))
-      end
-
-      it 'returns nil' do
-        data = subject.get(uuid)
-
-        expect(data).to be_nil
-      end
-    end
-
-    context 'when there is no record with this request id' do
-      it 'returns nil' do
-        data = subject.get(uuid)
-
-        expect(data).to be_nil
-      end
-    end
-  end
-
-  describe '#all' do
     it 'returns all records for this user' do
-      subject.add(payload.merge(response_body: 'msg1'))
-      subject.add(payload.merge(response_body: 'msg2'))
+      expect(subject.find_all(filters).map(&:content)).to eq(%w[msg1 msg2 msg3])
+    end
 
-      expect(subject.all).to match([
-        a_hash_including('response_body' => 'msg1'),
-        a_hash_including('response_body' => 'msg2')
-      ])
+    context 'when filtering by role' do
+      let(:filters) { { roles: ['user'] } }
+
+      it 'returns only records for this role' do
+        expect(subject.find_all(filters).map(&:content)).to eq(%w[msg1])
+      end
+    end
+
+    context 'when filtering by request_ids' do
+      let(:filters) { { request_ids: %w[2 3] } }
+
+      it 'returns only records with the same request_id' do
+        expect(subject.find_all(filters).map(&:content)).to eq(%w[msg2 msg3])
+      end
     end
   end
 end

@@ -62,13 +62,14 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::GenerateTestFile, feature_categ
 
         uuid = 'uuid'
 
-        expect(SecureRandom).to receive(:uuid).and_return(uuid)
+        expect(SecureRandom).to receive(:uuid).twice.and_return(uuid)
 
         data = {
           id: uuid,
           model_name: 'MergeRequest',
           response_body: content,
-          request_id: 'uuid',
+          request_id: uuid,
+          role: 'assistant',
           errors: []
         }
 

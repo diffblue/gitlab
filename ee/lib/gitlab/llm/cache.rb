@@ -21,22 +21,22 @@ module Gitlab
         return unless Feature.enabled?(:ai_redis_cache, user)
 
         data = {
+          id: SecureRandom.uuid,
           request_id: payload[:request_id],
-          timestamp: Time.now.to_i
+          timestamp: Time.current.to_s,
+          role: payload[:role] || 'user'
         }
-        data[:response_body] = payload[:response_body][0, MAX_TEXT_LIMIT] if payload[:response_body]
+        data[:content] = payload[:content][0, MAX_TEXT_LIMIT] if payload[:content]
         data[:error] = payload[:errors].join(". ") if payload[:errors]
 
         cache_data(data)
       end
 
-      def get(request_id)
-        all.find { |data| data['request_id'] == request_id && data['response_body'].present? }
-      end
-
-      def all
+      def find_all(filters = {})
         with_redis do |redis|
-          redis.xrange(key).map { |_id, data| data }
+          redis.xrange(key).filter_map do |_id, data|
+            CachedMessage.new(data) if matches_filters?(data, filters)
+          end
         end
       end
 
@@ -57,6 +57,13 @@ module Gitlab
 
       def with_redis(&block)
         Gitlab::Redis::Chat.with(&block) # rubocop: disable CodeReuse/ActiveRecord
+      end
+
+      def matches_filters?(data, filters)
+        return false if filters[:roles] && filters[:roles].exclude?(data['role'])
+        return false if filters[:request_ids] && filters[:request_ids].exclude?(data['request_id'])
+
+        data
       end
     end
   end

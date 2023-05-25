@@ -49,7 +49,7 @@ module Llm
 
       ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
 
-      payload = { request_id: request_id }
+      payload = { request_id: request_id, role: 'user' }
       ::Gitlab::Llm::Cache.new(user).add(payload)
 
       success(payload)
