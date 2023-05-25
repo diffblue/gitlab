@@ -216,7 +216,7 @@ export default {
               icon="paper-airplane"
               category="primary"
               variant="info"
-              class="gl-absolute! gl-bottom-2 gl-right-2 gl-rounded-top-left-base!"
+              class="gl-absolute! gl-bottom-2 gl-right-2 gl-rounded-base!"
               type="submit"
               :disabled="isLoading"
             />
