@@ -482,7 +482,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe '#should_check_namespace_plan?', feature_category: :subgroups do
+  describe '#should_check_namespace_plan?', feature_category: :groups_and_projects do
     before do
       stub_application_setting(check_namespace_plan: check_namespace_plan_column)
       allow(::Gitlab).to receive(:org_or_com?) { gl_com }
@@ -922,7 +922,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'custom project templates', feature_category: :projects do
+  describe 'custom project templates', feature_category: :groups_and_projects do
     let(:group) { create(:group) }
     let(:projects) { create_list(:project, 3, namespace: group) }
 
@@ -1156,7 +1156,7 @@ RSpec.describe ApplicationSetting do
     end
   end
 
-  describe 'delayed deletion', feature_category: :subgroups do
+  describe 'delayed deletion', feature_category: :groups_and_projects do
     context 'when delayed_group_deletion is set to false' do
       before do
         setting.update!(delayed_group_deletion: false)

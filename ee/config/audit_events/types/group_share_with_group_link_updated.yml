@@ -4,7 +4,7 @@ description: This event is triggered when you proceed to invite a group to anoth
   group via the 'invite group' tab on the group's membership page
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/327909
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/112719
-feature_category: subgroups
+feature_category: groups_and_projects
 milestone: '15.10'
 saved_to_database: true
 streamed: true

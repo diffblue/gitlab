@@ -5,8 +5,7 @@ module EE
     extend ::ActiveSupport::Concern
 
     prepended do
-      feature_category :subgroups, [:project_groups, :namespace_routes, :group_subgroups]
-      feature_category :projects, [:project_routes]
+      feature_category :groups_and_projects, [:project_routes, :project_groups, :namespace_routes, :group_subgroups]
       urgency :high, [:project_groups]
     end
 

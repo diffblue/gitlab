@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Groups > Members > List members', feature_category: :subgroups do
+RSpec.describe 'Groups > Members > List members', feature_category: :groups_and_projects do
   include Features::MembersHelpers
   include Features::InviteMembersModalHelpers
 

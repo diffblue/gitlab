@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe EE::NamespacesHelper, feature_category: :subgroups do
+RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
   using RSpec::Parameterized::TableSyntax
   include NamespacesTestHelper
 

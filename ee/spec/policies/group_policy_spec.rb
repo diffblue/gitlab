@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GroupPolicy, feature_category: :subgroups do
+RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
   include AdminModeHelper
 
   include_context 'GroupPolicy context'

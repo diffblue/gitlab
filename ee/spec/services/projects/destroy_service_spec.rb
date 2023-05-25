@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::DestroyService, feature_category: :projects do
+RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects do
   include EE::GeoHelpers
   include BatchDestroyDependentAssociationsHelper
 

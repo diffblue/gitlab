@@ -509,7 +509,7 @@
   :tags: []
 - :name: cronjob:projects_disable_legacy_open_source_license_for_inactive_projects
   :worker_name: Projects::DisableLegacyOpenSourceLicenseForInactiveProjectsWorker
-  :feature_category: :projects
+  :feature_category: :groups_and_projects
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown

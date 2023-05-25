@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe '[EE] Internal Group access', feature_category: :subgroups do
+RSpec.describe '[EE] Internal Group access', feature_category: :groups_and_projects do
   include AccessMatchers
 
   let_it_be(:group)   { create(:group, :internal) }

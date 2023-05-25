@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Licenses > Maintainer views licenses', :js, feature_category: :projects do
+RSpec.describe 'EE > Projects > Licenses > Maintainer views licenses', :js, feature_category: :groups_and_projects do
   let!(:package_version_licenses) do
     [
       create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT"),

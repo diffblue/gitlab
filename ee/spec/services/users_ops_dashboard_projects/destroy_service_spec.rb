@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe UsersOpsDashboardProjects::DestroyService, feature_category: :projects do
+RSpec.describe UsersOpsDashboardProjects::DestroyService, feature_category: :groups_and_projects do
   let(:user) { create(:user) }
   let(:service) { described_class.new(user) }
   let(:project) { create(:project, :private) }

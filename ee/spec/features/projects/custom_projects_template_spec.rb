@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project', feature_category: :projects do
+RSpec.describe 'Project', feature_category: :groups_and_projects do
   describe 'Custom instance-level projects templates' do
     let(:user) { create(:user) }
     let(:group) { create(:group) }

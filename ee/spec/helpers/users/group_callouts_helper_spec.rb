@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::GroupCalloutsHelper, feature_category: :subgroups do
+RSpec.describe Users::GroupCalloutsHelper, feature_category: :groups_and_projects do
   describe '#show_unlimited_members_during_trial_alert?' do
     let_it_be(:group) { build(:group, :private, name: 'private namespace') }
     let_it_be(:user) { build(:user) }

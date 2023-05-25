@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ExternalStatusChecks::DestroyService, feature_category: :projects do
+RSpec.describe ExternalStatusChecks::DestroyService, feature_category: :groups_and_projects do
   let_it_be(:project) { create(:project) }
   let_it_be(:rule) { create(:external_status_check, name: 'QA', project: project) }
 

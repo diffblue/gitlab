@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Pending project memberships', :js, feature_category: :projects do
+RSpec.describe 'Pending project memberships', :js, feature_category: :groups_and_projects do
   let_it_be(:developer) { create(:user) }
 
   before do

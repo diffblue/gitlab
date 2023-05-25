@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe '[EE] Private Project Access', feature_category: :projects do
+RSpec.describe '[EE] Private Project Access', feature_category: :groups_and_projects do
   include AccessMatchers
 
   let_it_be(:project) { create(:project, :private, :repository) }

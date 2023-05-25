@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard groups', feature_category: :subgroups do
+RSpec.describe 'Dashboard groups', feature_category: :groups_and_projects do
   let(:user) { create(:user) }
   let(:page_path) { dashboard_groups_path }
 

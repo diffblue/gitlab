@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectCacheWorker, feature_category: :projects do
+RSpec.describe ProjectCacheWorker, feature_category: :groups_and_projects do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:worker) { described_class.new }

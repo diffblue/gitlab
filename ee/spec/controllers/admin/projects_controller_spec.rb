@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::ProjectsController, :geo, feature_category: :projects do
+RSpec.describe Admin::ProjectsController, :geo, feature_category: :groups_and_projects do
   include EE::GeoHelpers
 
   let_it_be(:geo_primary) { create(:geo_node, :primary) }

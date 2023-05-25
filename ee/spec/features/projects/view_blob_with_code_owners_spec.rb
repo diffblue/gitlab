@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'File blob > Code owners', :js, feature_category: :projects do
+RSpec.describe 'File blob > Code owners', :js, feature_category: :groups_and_projects do
   let(:project) { create(:project, :private, :repository) }
   let(:maintainer) { create(:user) }
   let(:code_owner) { create(:user, username: 'documentation-owner') }

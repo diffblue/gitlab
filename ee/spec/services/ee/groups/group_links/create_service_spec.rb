@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::GroupLinks::CreateService, '#execute', feature_category: :subgroups do
+RSpec.describe Groups::GroupLinks::CreateService, '#execute', feature_category: :groups_and_projects do
   subject { described_class.new(group, shared_with_group, user, opts) }
 
   let_it_be(:shared_with_group) { create(:group, :private) }

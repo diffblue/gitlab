@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project Insights', feature_category: :projects do
+RSpec.describe 'Project Insights', feature_category: :groups_and_projects do
   it_behaves_like 'Insights page' do
     let_it_be(:entity) { create(:project) }
     let(:path) { project_insights_path(entity) }

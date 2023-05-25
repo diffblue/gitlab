@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group navbar', feature_category: :subgroups do
+RSpec.describe 'Group navbar', feature_category: :groups_and_projects do
   include NavbarStructureHelper
   include WaitForRequests
   include WikiHelpers

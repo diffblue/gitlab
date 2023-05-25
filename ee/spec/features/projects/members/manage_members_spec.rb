@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :subgroups do
+RSpec.describe 'Projects > Members > Manage members', :js, feature_category: :groups_and_projects do
   include Features::InviteMembersModalHelpers
 
   context 'with free user limit', :saas do

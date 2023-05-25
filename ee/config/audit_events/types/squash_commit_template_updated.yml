@@ -3,6 +3,6 @@ description: Event triggered on updating the merge request squash commit templat
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/369314
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/107533
 milestone: '15.8'
-feature_category: projects
+feature_category: groups_and_projects
 saved_to_database: true
 streamed: true

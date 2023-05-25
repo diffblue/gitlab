@@ -27,7 +27,7 @@ module EE
 
       helper_method :ai_assist_ui_enabled?
 
-      feature_category :subgroups, [:restore]
+      feature_category :groups_and_projects, [:restore]
     end
 
     override :render_show_html
