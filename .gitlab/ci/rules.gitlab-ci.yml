@@ -522,9 +522,6 @@
   - "config.ru"
   - "{,ee/,jh/}{app,bin,config,db,generator_templates,haml_lint,lib,locale,public,scripts,storybook,symbol,vendor}/**/*"
   - "doc/api/graphql/reference/*"  # Files in this folder are auto-generated
-  # Mapped patterns (see tests.yml)
-  - "data/whats_new/*.yml"
-  - "doc/index.md"
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
@@ -538,6 +535,9 @@
   # QA changes
   - ".dockerignore"
   - "{,jh/}qa/**/*"
+  # Mapped patterns (see tests.yml)
+  - "data/whats_new/*.yml"
+  - "doc/index.md"
   # Workhorse changes
   - "GITLAB_WORKHORSE_VERSION"
   - "workhorse/**/*"
@@ -815,6 +815,7 @@
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request
       changes: *ci-build-images-patterns
@@ -892,6 +893,7 @@
       allow_failure: true
     # The rest are included to be consistent with .qa:rules:e2e:test-on-gdk
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
       allow_failure: true
     - <<: *if-ruby2-branch
       allow_failure: true
@@ -927,6 +929,7 @@
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
     - <<: *if-ruby2-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
@@ -1121,6 +1124,7 @@
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-merge-request-labels-run-all-e2e
     - <<: *if-auto-deploy-branches
@@ -1346,6 +1350,7 @@
     - <<: *if-not-canonical-namespace
       when: never
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
       when: always
 
 ###############
@@ -1396,6 +1401,7 @@
     - <<: *if-merge-request-labels-pipeline-expedite
       when: never
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
       allow_failure: true
     - <<: *if-merge-request
       changes: *code-backstage-qa-patterns
@@ -1437,6 +1443,7 @@
   rules:
     - !reference [".qa:rules:package-and-test-never-run", rules]
     - <<: *if-merge-request-targeting-stable-branch
+      changes: *setup-test-env-patterns
       allow_failure: true
     - <<: *if-ruby2-branch
       allow_failure: true
