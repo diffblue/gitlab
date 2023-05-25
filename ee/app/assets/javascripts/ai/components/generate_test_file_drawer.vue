@@ -1,5 +1,5 @@
 <script>
-import { GlDrawer, GlBadge, GlSkeletonLoader, GlAlert, GlLink } from '@gitlab/ui';
+import { GlDrawer, GlBadge, GlSkeletonLoader, GlAlert, GlLink, GlIcon } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
@@ -47,6 +47,7 @@ export default {
     GlSkeletonLoader,
     GlAlert,
     GlLink,
+    GlIcon,
     UserFeedback,
   },
   props: {
@@ -115,14 +116,13 @@ export default {
     @close="$emit('close')"
   >
     <template #title>
-      <div class="gl-display-flex">
+      <div class="gl-display-flex gl-align-items-center">
+        <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
         <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">
           {{ __('AI-generated test file') }}
         </h2>
         <div>
-          <gl-badge variant="info" size="sm" class="gl-ml-3 gl-mt-2">{{
-            __('Experiment')
-          }}</gl-badge>
+          <gl-badge variant="neutral" class="gl-ml-3">{{ __('Experiment') }}</gl-badge>
         </div>
       </div>
     </template>

@@ -142,7 +142,7 @@ describe('AiGenieChat', () => {
     });
 
     it('sets correct props on the Experiment label', () => {
-      const badgeType = 'muted';
+      const badgeType = 'neutral';
       const badgeSize = 'md';
       expect(findBadge().props('variant')).toBe(badgeType);
       expect(findBadge().props('size')).toBe(badgeSize);
