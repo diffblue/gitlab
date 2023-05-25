@@ -34,6 +34,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
                                                                  'plan', 'shared_runners_minutes_limit',
                                                                  'avatar_url', 'web_url', 'trial_ends_on', 'trial',
                                                                  'extra_shared_runners_minutes_limit', 'billable_members_count',
+                                                                 'root_repository_size',
                                                                  'additional_purchased_storage_size', 'additional_purchased_storage_ends_on')
 
         expect(user_kind_json_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path',
@@ -54,7 +55,8 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :subgroup
 
         expect(owned_group_response.keys).to contain_exactly('id', 'kind', 'name', 'path', 'full_path', 'trial_ends_on',
                                                              'plan', 'parent_id', 'members_count_with_descendants', 'trial',
-                                                             'avatar_url', 'web_url', 'billable_members_count')
+                                                             'avatar_url', 'web_url', 'billable_members_count',
+                                                             'root_repository_size')
       end
 
       it "returns correct attributes when user cannot admin group" do
