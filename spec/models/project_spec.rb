@@ -359,12 +359,6 @@ RSpec.describe Project, factory_default: :keep, feature_category: :projects do
       end
     end
 
-    shared_examples 'query without source filters' do
-      it do
-        expect(subject.where_values_hash.keys).not_to include('source_id', 'source_type')
-      end
-    end
-
     describe '#namespace_members' do
       let_it_be(:project) { create(:project, :public) }
       let_it_be(:requester) { create(:user) }
