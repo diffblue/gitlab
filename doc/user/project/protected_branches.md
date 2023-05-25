@@ -135,9 +135,10 @@ The protected branch is added to the list of protected branches.
 
 ## Configure multiple protected branches by using a wildcard
 
-If both a specific rule and a wildcard rule apply to the same branch, the most
-permissive rule controls how the branch behaves. For merge controls to work properly,
-set **Allowed to push and merge** to a broader set of users than **Allowed to merge**.
+When using wildcards, multiple rules can apply to a single branch.
+If more than one rule applies to a branch, the _most permissive_ rule controls
+how the branch behaves. For merge controls to work properly, set
+**Allowed to push and merge** to a broader set of users than **Allowed to merge**.
 
 Prerequisite:
 
