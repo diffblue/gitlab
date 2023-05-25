@@ -17,6 +17,7 @@ module Gitlab
             message: "Deferring #{worker.class.name} for #{DELAY} s with arguments (#{job['args'].inspect})"
           )
           worker.class.perform_in(DELAY, *job['args'])
+          counter.increment({ worker: worker.class.name })
           return
         end
 
@@ -26,6 +27,12 @@ module Gitlab
       def defer_job?(worker)
         Feature.enabled?(:"#{FEATURE_FLAG_PREFIX}_#{worker.class.name}", type: :worker,
           default_enabled_if_undefined: false)
+      end
+
+      private
+
+      def counter
+        @counter ||= Gitlab::Metrics.counter(:sidekiq_jobs_deferred_total, 'The number of jobs deferred')
       end
     end
   end

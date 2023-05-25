@@ -48,6 +48,13 @@ RSpec.describe Gitlab::SidekiqMiddleware::DeferJobs, feature_category: :scalabil
           )
           expect { |b| subject.call(TestDeferredWorker.new, job, queue, &b) }.not_to yield_control
         end
+
+        it 'increments the counter' do
+          subject.call(TestDeferredWorker.new, job, queue)
+
+          counter = ::Gitlab::Metrics.registry.get(:sidekiq_jobs_deferred_total)
+          expect(counter.get({ worker: "TestDeferredWorker" })).to eq(1)
+        end
       end
 
       context 'for other workers' do
