@@ -14,6 +14,7 @@ RSpec.describe Sidebars::Admin::Panel, feature_category: :navigation do
       elastic_search: true,
       license_scanning: true
     )
+    stub_application_setting(grafana_enabled: true)
   end
 
   subject { described_class.new(context) }
