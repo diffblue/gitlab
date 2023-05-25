@@ -789,6 +789,9 @@ msgstr ""
 msgid "%{itemsCount} issues with a limit of %{maxIssueCount}"
 msgstr ""
 
+msgid "%{jobs} Jobs"
+msgstr ""
+
 msgid "%{key} is not a valid URL."
 msgstr ""
 
@@ -868,6 +871,9 @@ msgid "%{level_name} is not allowed since the fork source project has lower visi
 msgstr ""
 
 msgid "%{linkStart} Learn more%{linkEnd}."
+msgstr ""
+
+msgid "%{linkStart}%{name}%{linkEnd} triggered pipeline for commit"
 msgstr ""
 
 msgid "%{listToShow}, and %{awardsListLength} more"
@@ -19070,6 +19076,12 @@ msgstr ""
 msgid "Footer message"
 msgstr ""
 
+msgid "For %{link_to_pipeline_ref}"
+msgstr ""
+
+msgid "For %{ref}"
+msgstr ""
+
 msgid "For a faster browsing experience, only %{strongStart}%{visible} of %{total}%{strongEnd} files are shown. Download one of the files below to see all changes."
 msgstr ""
 
@@ -19104,6 +19116,12 @@ msgid "For individual use, create a separate account under your personal email a
 msgstr ""
 
 msgid "For investigating IT service disruptions or outages"
+msgstr ""
+
+msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch}"
+msgstr ""
+
+msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch} into %{link_to_merge_request_target_branch}"
 msgstr ""
 
 msgid "For more info, read the documentation."
@@ -22970,6 +22988,9 @@ msgid "In each example, replace %{code_start}TOKEN%{code_end} with the trigger t
 msgstr ""
 
 msgid "In progress"
+msgstr ""
+
+msgid "In progress, queued for %{queuedDuration} seconds"
 msgstr ""
 
 msgid "In the background, we're attempting to connect you again."
@@ -33169,6 +33190,9 @@ msgstr ""
 msgid "Pipelines|CI/CD Catalog"
 msgstr ""
 
+msgid "Pipelines|Child pipeline (%{linkStart}parent%{linkEnd})"
+msgstr ""
+
 msgid "Pipelines|Child pipeline (%{link_start}parent%{link_end})"
 msgstr ""
 
@@ -33286,6 +33310,9 @@ msgstr ""
 msgid "Pipelines|Revoke trigger"
 msgstr ""
 
+msgid "Pipelines|Scheduled"
+msgstr ""
+
 msgid "Pipelines|Set up a runner"
 msgstr ""
 
@@ -33332,6 +33359,9 @@ msgid "Pipelines|This GitLab CI configuration is valid."
 msgstr ""
 
 msgid "Pipelines|This is a child pipeline within the parent pipeline"
+msgstr ""
+
+msgid "Pipelines|This pipeline is stuck"
 msgstr ""
 
 msgid "Pipelines|This pipeline ran on the contents of this merge request combined with the contents of all other merge requests queued for merging into the target branch."
@@ -46262,6 +46292,9 @@ msgstr ""
 msgid "This is a Jira user."
 msgstr ""
 
+msgid "This is a child pipeline within the parent pipeline"
+msgstr ""
+
 msgid "This is a confidential %{noteableTypeText}."
 msgstr ""
 
@@ -46464,6 +46497,12 @@ msgid "This pipeline makes use of a predefined CI/CD configuration enabled by %{
 msgstr ""
 
 msgid "This pipeline makes use of a predefined CI/CD configuration enabled by %{strongStart}Auto DevOps.%{strongEnd}"
+msgstr ""
+
+msgid "This pipeline makes use of a predefined CI/CD configuration enabled by Auto DevOps."
+msgstr ""
+
+msgid "This pipeline was triggered by a schedule"
 msgstr ""
 
 msgid "This pipeline was triggered by a schedule."
