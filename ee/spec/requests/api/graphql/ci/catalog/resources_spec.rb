@@ -14,7 +14,8 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       :project, :with_avatar,
       name: 'Component Repository',
       description: 'A simple component',
-      namespace: namespace
+      namespace: namespace,
+      star_count: 1
     )
   end
 
@@ -67,7 +68,9 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
           a_graphql_entity_for(
             resource1, :name, :description,
             icon: project1.avatar_path,
-            webPath: "/#{project1.full_path}"
+            webPath: "/#{project1.full_path}",
+            starCount: project1.star_count,
+            forksCount: project1.forks_count
           )
         )
       end
