@@ -7,7 +7,7 @@ import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import { i18n } from 'ee/ai/constants';
 import { helpCenterState } from '~/super_sidebar/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
-import { SOURCE_TYPES } from '../constants';
+import { SOURCE_TYPES, TANUKI_BOT_FEEDBACK_ISSUE_URL } from '../constants';
 
 export default {
   name: 'TanukiBotChatApp',
@@ -115,6 +115,7 @@ export default {
       return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.sources?.length);
     },
   },
+  TANUKI_BOT_FEEDBACK_ISSUE_URL,
 };
 </script>
 
