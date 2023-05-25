@@ -147,6 +147,13 @@ module EE
       super.concat(merge_request_approval_variables)
     end
 
+    override :skipped_mergeable_checks
+    def skipped_mergeable_checks(options = {})
+      super.merge(
+        skip_approved_check: options[:auto_merge_strategy] == AutoMergeService::STRATEGY_MERGE_WHEN_CHECKS_PASS
+      )
+    end
+
     override :mergeability_checks
     def mergeability_checks
       [

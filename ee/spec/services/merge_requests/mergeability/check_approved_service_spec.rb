@@ -3,9 +3,11 @@
 require "spec_helper"
 
 RSpec.describe MergeRequests::Mergeability::CheckApprovedService, feature_category: :code_review_workflow do
-  subject(:check_approved) { described_class.new(merge_request: merge_request, params: {}) }
+  subject(:check_approved) { described_class.new(merge_request: merge_request, params: params) }
 
   let_it_be(:merge_request) { build(:merge_request) }
+  let(:params) { { skip_approved_check: skip_check } }
+  let(:skip_check) { false }
 
   describe "#execute" do
     let(:result) { check_approved.execute }
@@ -46,8 +48,18 @@ RSpec.describe MergeRequests::Mergeability::CheckApprovedService, feature_catego
   end
 
   describe '#skip?' do
-    it 'returns false' do
-      expect(check_approved.skip?).to eq false
+    subject { check_approved.skip? }
+
+    context 'when skip check is true' do
+      let(:skip_check) { true }
+
+      it { is_expected.to eq true }
+    end
+
+    context 'when skip check is false' do
+      let(:skip_check) { false }
+
+      it { is_expected.to eq false }
     end
   end
 

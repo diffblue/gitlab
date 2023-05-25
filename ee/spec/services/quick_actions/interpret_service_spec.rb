@@ -1484,10 +1484,29 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
     end
 
     context 'when the merge request is not approved' do
-      it_behaves_like 'failed command', 'Could not apply merge command.' do
-        let(:content) { '/merge' }
-        let(:issuable) { merge_request }
-        let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+      let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+      let(:content) { '/merge' }
+
+      context 'when "merge_when_checks_pass" is enabled' do
+        let(:service) { described_class.new(project, current_user, { merge_request_diff_head_sha: merge_request.diff_head_sha }) }
+
+        it 'runs merge command and returns merge message' do
+          _, updates, message = service.execute(content, merge_request)
+
+          expect(updates).to eq(merge: merge_request.diff_head_sha)
+
+          expect(message).to eq('Scheduled to merge this merge request (Merge when checks pass).')
+        end
+      end
+
+      context 'when "merge_when_checks_pass" is disabled' do
+        before do
+          stub_feature_flags(merge_when_checks_pass: false)
+        end
+
+        it_behaves_like 'failed command', 'Could not apply merge command.' do
+          let(:issuable) { merge_request }
+        end
       end
     end
 
