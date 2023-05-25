@@ -57,20 +57,6 @@ RSpec.describe Gitlab::Llm::Concerns::ExponentialBackoff, feature_category: :no_
     let(:subject) { service.dummy_method(response_caller) }
   end
 
-  context 'with feature flag disabled' do
-    before do
-      stub_feature_flags(circuit_breaker: false)
-    end
-
-    it 'runs the code block outside of the circuit breaker' do
-      service = dummy_class.new
-      subject = service.dummy_method(response_caller)
-
-      expect(service).not_to receive(:run_with_circuit)
-      subject
-    end
-  end
-
   describe '.wrap_method' do
     it 'wraps the instance method and retries with exponential backoff' do
       service = dummy_class.new
