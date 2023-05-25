@@ -3,6 +3,8 @@
 require "spec_helper"
 
 RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :consumables_cost_management do
+  include NamespaceStorageHelpers
+
   let_it_be(:owner) { create(:user) }
   let_it_be(:free_group) { create(:group) }
   let_it_be_with_refind(:free_group_project) { create(:project, :repository, group: free_group) }
@@ -24,11 +26,7 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
   context 'when namespace storage limits are disabled' do
     before do
       stub_ee_application_setting(enforce_namespace_storage_limit: false)
-      stub_feature_flags(
-        namespace_storage_limit: false,
-        enforce_storage_limit_for_paid: false,
-        enforce_storage_limit_for_free: false
-      )
+      stub_feature_flags(namespace_storage_limit: false)
     end
 
     it 'shows the banner when a project repository in a free group has exceed the storage limit' do
@@ -50,12 +48,7 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
 
   context 'when namespace storage limits are enabled for free plans' do
     before do
-      stub_ee_application_setting(enforce_namespace_storage_limit: true)
-      stub_feature_flags(
-        namespace_storage_limit: true,
-        enforce_storage_limit_for_paid: false,
-        enforce_storage_limit_for_free: true
-      )
+      enforce_namespace_storage_limit(free_group)
     end
 
     it 'shows the banner when a project repository in a paid group has exceed the storage limit' do

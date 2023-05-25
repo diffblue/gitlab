@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::Storage::RootSize, :saas do
+RSpec.describe Namespaces::Storage::RootSize, :saas, feature_category: :consumables_cost_management do
   include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
@@ -16,10 +16,11 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
   let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan) }
 
   let_it_be(:ultimate_plan, reload: true) { create(:ultimate_plan) }
-  let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan, storage_size_limit: 100) }
+  let_it_be(:plan_limits, reload: true) { create(:plan_limits, plan: ultimate_plan) }
 
   before do
     create_statistics
+    set_storage_size_limit(namespace, megabytes: 100)
   end
 
   describe '#above_size_limit?' do
@@ -46,7 +47,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
       context 'when limit is 0' do
         before do
-          plan_limits.update!(storage_size_limit: 0)
+          set_storage_size_limit(namespace, megabytes: 0)
           namespace.update!(additional_purchased_storage_size: 0)
         end
 
@@ -82,7 +83,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
     context 'when limit is 0' do
       before do
-        plan_limits.update!(storage_size_limit: 0)
+        set_storage_size_limit(namespace, megabytes: 0)
       end
 
       it { is_expected.to eq(0) }
@@ -126,11 +127,14 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
   end
 
   describe '#limit' do
+    before do
+      set_storage_size_limit(namespace, megabytes: 15_000)
+    end
+
     subject { model.limit }
 
     context 'when there is additional purchased storage and a plan' do
       before do
-        plan_limits.update!(storage_size_limit: 15_000)
         namespace.update!(additional_purchased_storage_size: 10_000)
       end
 
@@ -139,7 +143,6 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
     context 'when there is no additionl purchased storage' do
       before do
-        plan_limits.update!(storage_size_limit: 15_000)
         namespace.update!(additional_purchased_storage_size: 0)
       end
 
@@ -148,7 +151,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
     context 'when there is no additional purchased storage or plan limit set' do
       before do
-        plan_limits.update!(storage_size_limit: 0)
+        set_storage_size_limit(namespace, megabytes: 0)
         namespace.update!(additional_purchased_storage_size: 0)
       end
 
@@ -159,7 +162,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
       let(:key) { 'root_storage_size_limit' }
 
       before do
-        plan_limits.update!(storage_size_limit: 70_000)
+        set_storage_size_limit(namespace, megabytes: 70_000)
         namespace.update!(additional_purchased_storage_size: 34_000)
       end
 
@@ -254,64 +257,18 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
   end
 
   describe '#enforce_limit?' do
-    before do
-      stub_application_setting(
-        enforce_namespace_storage_limit: true,
-        automatic_purchased_storage_allocation: true
-      )
-    end
+    it 'delegates to Namespaces::Storage::Enforcement' do
+      expect(::Namespaces::Storage::Enforcement).to receive(:enforce_limit?).with(namespace)
 
-    subject { model.enforce_limit? }
-
-    context 'when no subscription is found for namespace' do
-      let(:namespace_without_subscription) { create(:namespace) }
-      let(:model) { described_class.new(namespace_without_subscription) }
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when subscription is for opensource plan' do
-      let!(:subscription) do
-        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:opensource_plan))
-      end
-
-      it { is_expected.to eq(false) }
-    end
-
-    context 'when subscription is for a free plan' do
-      let!(:subscription) do
-        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:free_plan))
-      end
-
-      it { is_expected.to eq(true) }
-
-      context 'when enforce_storage_limit_for_free is disabled' do
-        before do
-          stub_feature_flags(enforce_storage_limit_for_free: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
-    end
-
-    context 'when subscription is for a paid plan' do
-      let!(:subscription) do
-        create(:gitlab_subscription, namespace: namespace, hosted_plan: create(:ultimate_plan))
-      end
-
-      it { is_expected.to eq(true) }
-
-      context 'when enforce_storage_limit_for_paid is disabled' do
-        before do
-          stub_feature_flags(enforce_storage_limit_for_paid: false)
-        end
-
-        it { is_expected.to eq(false) }
-      end
+      model.enforce_limit?
     end
   end
 
   describe '#exceeded_size' do
+    before do
+      set_storage_size_limit(namespace, megabytes: 100)
+    end
+
     context 'when given a parameter' do
       where(:change_size, :expected_excess_size) do
         150.megabytes | 100.megabytes
@@ -381,7 +338,7 @@ RSpec.describe Namespaces::Storage::RootSize, :saas do
 
     context 'when storage size limit is 0' do
       before do
-        plan_limits.update!(storage_size_limit: 0)
+        set_storage_size_limit(namespace, megabytes: 0)
       end
 
       it 'returns false' do

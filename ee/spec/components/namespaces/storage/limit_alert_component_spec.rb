@@ -3,6 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component, feature_category: :consumables_cost_management do
+  include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
   let(:user) { build_stubbed(:user) }
@@ -47,9 +48,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
 
   describe 'namespace enforcement' do
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_ee_application_setting(enforce_namespace_storage_limit: true)
-      stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+      enforce_namespace_storage_limit(group)
 
       allow_next_instance_of(::Namespaces::Storage::RootSize) do |size_checker|
         allow(size_checker).to receive(:usage_ratio).and_return(usage_ratio)
@@ -180,9 +179,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
 
     with_them do
       before do
-        stub_ee_application_setting(should_check_namespace_plan: true)
-        stub_ee_application_setting(enforce_namespace_storage_limit: true)
-        stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+        enforce_namespace_storage_limit(group)
 
         stub_member_access_level(group, maintainer: user)
 

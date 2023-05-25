@@ -413,25 +413,20 @@ RSpec.describe API::Internal::Base do
       end
     end
 
-    context 'when namespace storage size limits are enabled only for free namespaces', :saas do
-      let_it_be(:group, refind: true) { create(:group) }
+    context 'when namespace storage size limits are enabled', :saas do
+      let_it_be(:group, refind: true) { create(:group_with_plan, plan: :ultimate_plan) }
       let_it_be(:project) { create(:project, :repository, group: group) }
 
       let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
 
       before_all do
         project.add_developer(user)
-        create(:gitlab_subscription, :ultimate, namespace: group)
       end
 
       before do
         stub_application_setting(enforce_namespace_storage_limit: true)
         stub_application_setting(automatic_purchased_storage_allocation: true)
-        stub_feature_flags(
-          namespace_storage_limit: true,
-          enforce_storage_limit_for_paid: false,
-          enforce_storage_limit_for_free: true
-        )
+        stub_feature_flags(namespace_storage_limit: true)
       end
 
       context 'with a project in a paid namespace' do

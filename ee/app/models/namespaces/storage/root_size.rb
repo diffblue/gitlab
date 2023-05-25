@@ -4,8 +4,8 @@ module Namespaces
   module Storage
     class RootSize
       CURRENT_SIZE_CACHE_KEY = 'root_storage_current_size'
-      LIMIT_CACHE_KEY = 'root_storage_size_limit'
       EXPIRATION_TIME = 10.minutes
+      LIMIT_CACHE_NAME = 'root_storage_size_limit'
 
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
@@ -31,7 +31,7 @@ module Namespaces
 
       def limit
         @limit ||= Rails.cache.fetch(limit_cache_key, expires_in: EXPIRATION_TIME) do
-          root_namespace.actual_limits.storage_size_limit.megabytes +
+          enforceable_storage_limit.megabytes +
             root_namespace.additional_purchased_storage_size.megabytes
         end
       end
@@ -92,7 +92,15 @@ module Namespaces
       end
 
       def limit_cache_key
-        ['namespaces', root_namespace.id, LIMIT_CACHE_KEY]
+        ['namespaces', root_namespace.id, limit_cache_name]
+      end
+
+      def enforceable_storage_limit
+        ::Namespaces::Storage::Enforcement.enforceable_storage_limit(root_namespace)
+      end
+
+      def limit_cache_name
+        LIMIT_CACHE_NAME
       end
     end
   end

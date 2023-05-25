@@ -165,10 +165,9 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
       end
 
       context 'when namespace size limit enforcement' do
+        include NamespaceStorageHelpers
+
         before do
-          stub_ee_application_setting(automatic_purchased_storage_allocation: true)
-          stub_ee_application_setting(should_check_namespace_plan: true)
-          stub_ee_application_setting(enforce_namespace_storage_limit: true)
           allow_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|
             allow(root_storage_size).to receive(:current_size).and_return(11.5)
             allow(root_storage_size).to receive(:limit).and_return(12)
@@ -177,6 +176,10 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
 
         context 'with a personal namespace' do
           let_it_be(:project) { create(:project, namespace: user.namespace) }
+
+          before do
+            enforce_namespace_storage_limit(user.namespace)
+          end
 
           it 'returns warning message' do
             expect(subject).to match_array([{ "message" => "##### WARNING ##### You have used 96% of the storage quota for #{project.namespace.name} " \
@@ -194,6 +197,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
 
           before do
             group.add_owner(user)
+            enforce_namespace_storage_limit(group)
           end
 
           it 'returns warning message' do

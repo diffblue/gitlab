@@ -1552,7 +1552,7 @@ RSpec.describe Namespace do
   end
 
   describe '#root_storage_size', :saas do
-    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:namespace) { create(:namespace_with_plan, plan: :free_plan) }
 
     subject(:root_storage_size) { namespace.root_storage_size }
 
@@ -1570,11 +1570,7 @@ RSpec.describe Namespace do
       before do
         stub_application_setting(enforce_namespace_storage_limit: false)
         stub_application_setting(automatic_purchased_storage_allocation: false)
-        stub_feature_flags(
-          namespace_storage_limit: false,
-          enforce_storage_limit_for_paid: false,
-          enforce_storage_limit_for_free: false
-        )
+        stub_feature_flags(namespace_storage_limit: false)
       end
 
       it 'returns an instance of RootExcessSize' do
@@ -1586,11 +1582,7 @@ RSpec.describe Namespace do
       before do
         stub_application_setting(enforce_namespace_storage_limit: false)
         stub_application_setting(automatic_purchased_storage_allocation: true)
-        stub_feature_flags(
-          namespace_storage_limit: false,
-          enforce_storage_limit_for_paid: false,
-          enforce_storage_limit_for_free: false
-        )
+        stub_feature_flags(namespace_storage_limit: false)
       end
 
       it 'returns an instance of RootExcessSize' do
@@ -1600,13 +1592,8 @@ RSpec.describe Namespace do
 
     context 'when namespace storage limits are enabled for free namespaces and disabled for paid' do
       before do
-        stub_application_setting(enforce_namespace_storage_limit: true)
-        stub_application_setting(automatic_purchased_storage_allocation: true)
-        stub_feature_flags(
-          namespace_storage_limit: true,
-          enforce_storage_limit_for_paid: false,
-          enforce_storage_limit_for_free: true
-        )
+        set_storage_size_limit(namespace, megabytes: 100)
+        enforce_namespace_storage_limit(namespace)
       end
 
       it 'returns an instance of RootSize for a free namespace' do

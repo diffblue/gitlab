@@ -6,147 +6,150 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
   include NamespaceStorageHelpers
   using RSpec::Parameterized::TableSyntax
 
+  describe '.enforceable_storage_limit', :freeze_time do
+    where(:enforcement_limit, :dashboard_limit, :dashboard_limit_enabled_at, :group_created_at, :result) do
+      # no limits apply
+      0   | 0   | nil          | 1.month.ago  | 0
+      0   | 0   | Time.current | 1.month.ago  | 0
+      0   | 0   | 1.month.ago  | Time.current | 0
+
+      # enforcement limit applies
+      100 | 0   | nil          | 1.month.ago  | 100
+      100 | 0   | Time.current | 1.month.ago  | 100
+      100 | 50  | Time.current | 1.month.ago  | 100
+      100 | 500 | Time.current | 1.month.ago  | 100
+
+      # dashboard limit applies
+      0   | 50  | nil          | 1.month.ago  | 0
+      0   | 50  | 1.month.ago  | Time.current | 50
+      100 | 50  | 1.month.ago  | Time.current | 50
+      25  | 50  | 1.month.ago  | Time.current | 50
+      0   | 50  | Time.current | 1.month.ago  | 0
+    end
+
+    with_them do
+      let(:group) { create(:group_with_plan, created_at: group_created_at) }
+
+      before do
+        plan_limit = create(
+          :plan_limits,
+          enforcement_limit: enforcement_limit,
+          storage_size_limit: dashboard_limit,
+          dashboard_limit_enabled_at: dashboard_limit_enabled_at
+        )
+
+        group.gitlab_subscription.update!(hosted_plan: plan_limit.plan)
+      end
+
+      it 'returns the expected limit' do
+        expect(described_class.enforceable_storage_limit(group)).to eq result
+      end
+    end
+  end
+
   describe '.enforce_limit?' do
     before do
-      stub_feature_flags(
-        namespace_storage_limit: group,
-        enforce_storage_limit_for_free: group,
-        enforce_storage_limit_for_paid: group
-      )
+      stub_feature_flags(namespace_storage_limit: group)
       stub_application_setting(
         enforce_namespace_storage_limit: true,
         automatic_purchased_storage_allocation: true
       )
     end
 
-    context 'with a free plan' do
-      let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:group, refind: true) { create(:group_with_plan) }
+    let_it_be(:subgroup, refind: true) { create(:group, parent: group) }
 
-      it 'returns true when namespace storage limits are enforced for the namespace' do
-        expect(described_class.enforce_limit?(group)).to eq(true)
+    subject(:enforce_limit?) { described_class.enforce_limit?(group) }
+
+    context 'with plans and exclusions' do
+      where(:plan, :enforcement_limit, :dashboard_limit, :excluded, :result) do
+        :free_plan       | 100 | 0   | false | true
+        :free_plan       | 0   | 0   | false | false
+        :free_plan       | 0   | 100 | false | true
+        :free_plan       | 100 | 100 | false | true
+        :free_plan       | 0   | 0   | true  | false
+        :free_plan       | 100 | 0   | true  | false
+        :free_plan       | 0   | 100 | true  | false
+        :free_plan       | 100 | 100 | true  | false
+
+        # paid plans are not enforced
+        :ultimate_plan   | 100 | 0   | false | false
+        :ultimate_plan   | 0   | 100 | false | false
+        :ultimate_plan   | 100 | 100 | false | false
+        :ultimate_plan   | 100 | 0   | true  | false
+        :ultimate_plan   | 0   | 100 | true  | false
+        :ultimate_plan   | 100 | 100 | true  | false
+
+        # opensource plans are not enforced
+        :opensource_plan | 100 | 0   | false | false
+        :opensource_plan | 0   | 100 | false | false
+        :opensource_plan | 100 | 100 | false | false
+        :opensource_plan | 100 | 0   | true  | false
+        :opensource_plan | 0   | 100 | true  | false
+        :opensource_plan | 100 | 100 | true  | false
       end
 
-      it 'returns true when the enforce_storage_limit_for_paid feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_paid: false)
+      with_them do
+        before do
+          plan_limit = create(
+            :plan_limits,
+            plan,
+            enforcement_limit: enforcement_limit,
+            storage_size_limit: dashboard_limit,
+            dashboard_limit_enabled_at: group.created_at - 1.day
+          )
 
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
+          group.root_ancestor.gitlab_subscription.update!(hosted_plan: plan_limit.plan)
 
-      it 'returns false when the namespace_storage_limit feature flag is disabled' do
-        stub_feature_flags(namespace_storage_limit: false)
+          create(:namespace_storage_limit_exclusion, namespace: group.root_ancestor) if excluded
+        end
 
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
+        it 'returns the expected result' do
+          expect(enforce_limit?).to eq result
+        end
 
-      it 'returns false when the enforce_storage_limit_for_free feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_free: false)
+        context 'with a subgroup' do
+          it 'returns the expected result' do
+            expect(described_class.enforce_limit?(subgroup)).to eq result
+          end
+        end
 
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
+        context 'with disabled settings' do
+          it 'returns false when the namespace_storage_limit feature flag is disabled' do
+            stub_feature_flags(namespace_storage_limit: false)
 
-      it 'returns false when the enforce_namespace_storage_limit application setting is disabled' do
-        stub_application_setting(enforce_namespace_storage_limit: false)
+            expect(enforce_limit?).to eq(false)
+          end
 
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
+          it 'returns false when the enforce_namespace_storage_limit application setting is disabled' do
+            stub_application_setting(enforce_namespace_storage_limit: false)
 
-      it 'returns false when the automatic_purchased_storage_allocation application setting is disabled' do
-        stub_application_setting(automatic_purchased_storage_allocation: false)
+            expect(enforce_limit?).to eq(false)
+          end
 
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-    end
+          it 'returns false when the automatic_purchased_storage_allocation application setting is disabled' do
+            stub_application_setting(automatic_purchased_storage_allocation: false)
 
-    context 'with a paid plan' do
-      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-      it 'returns true when namespace storage limits are enforced for the namespace' do
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns true when the enforce_storage_limit_for_free feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_free: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns false when the enforce_storage_limit_for_paid feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_paid: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the namespace_storage_limit feature flag is disabled' do
-        stub_feature_flags(namespace_storage_limit: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the enforce_namespace_storage_limit application setting is disabled' do
-        stub_application_setting(enforce_namespace_storage_limit: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the automatic_purchased_storage_allocation application setting is disabled' do
-        stub_application_setting(automatic_purchased_storage_allocation: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-    end
-
-    context 'with an open source plan' do
-      let_it_be(:group) { create(:group_with_plan, plan: :opensource_plan) }
-
-      it 'returns false even when namespace storage limits are enforced' do
-        expect(described_class.enforce_limit?(group)).to eq(false)
+            expect(enforce_limit?).to eq(false)
+          end
+        end
       end
     end
 
-    context 'without a plan' do
-      let(:group) { create(:group) }
+    context 'when the group does not have a plan' do
+      let_it_be(:group, refind: true) { create(:group) }
+      let_it_be(:plan_limit) { create(:plan_limits, :free_plan, enforcement_limit: 100) }
 
-      it 'returns true when namespace storage limits are enforced for the namespace' do
-        expect(described_class.enforce_limit?(group)).to eq(true)
+      context 'when enforcement limit is set on the free plan' do
+        it { is_expected.to be true }
       end
 
-      it 'returns true when the enforce_storage_limit_for_paid feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_paid: false)
+      context 'when enforcement limit is not set on the free plan' do
+        before do
+          plan_limit.update!(enforcement_limit: 0)
+        end
 
-        expect(described_class.enforce_limit?(group)).to eq(true)
-      end
-
-      it 'returns false when the namespace_storage_limit feature flag is disabled' do
-        stub_feature_flags(namespace_storage_limit: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the enforce_storage_limit_for_free feature flag is disabled' do
-        stub_feature_flags(enforce_storage_limit_for_free: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the enforce_namespace_storage_limit application setting is disabled' do
-        stub_application_setting(enforce_namespace_storage_limit: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-
-      it 'returns false when the automatic_purchased_storage_allocation application setting is disabled' do
-        stub_application_setting(automatic_purchased_storage_allocation: false)
-
-        expect(described_class.enforce_limit?(group)).to eq(false)
-      end
-    end
-
-    context 'with a subgroup' do
-      let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
-      let_it_be(:subgroup) { create(:group, parent: group) }
-
-      it 'returns true when namespace storage limits are enforced for the root namespace' do
-        expect(described_class.enforce_limit?(subgroup)).to eq(true)
+        it { is_expected.to be false }
       end
     end
   end

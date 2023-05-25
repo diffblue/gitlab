@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'namespace storage limit alert' do
+  include NamespaceStorageHelpers
+
   let(:alert_level) { :info }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
-    stub_ee_application_setting(enforce_namespace_storage_limit: true)
-    stub_ee_application_setting(automatic_purchased_storage_allocation: true)
+    enforce_namespace_storage_limit(namespace)
 
     allow_next_instance_of(Namespaces::Storage::LimitAlertComponent) do |alert_component|
       allow(alert_component).to receive(:alert_title).and_return("Alert Title")
