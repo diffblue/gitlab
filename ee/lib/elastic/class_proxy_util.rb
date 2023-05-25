@@ -11,16 +11,20 @@ module Elastic
     def initialize(target, use_separate_indices: false)
       super(target)
 
-      const_name = if use_separate_indices
-                     # This check is needed to load custom mappings for AR and non-AR classes
-                     # For example, Issue and Commit
-                     if target.superclass == Object || target.superclass.abstract_class?
-                       "#{target.name}Config"
+      # use_separate_indices check is needed to load custom mappings for AR and non-AR classes
+      # For example, Issue and Commit
+      const_name = if Feature.disabled?(:use_base_class_in_proxy_util)
+                     if use_separate_indices
+                       if target.superclass == Object || target.superclass.abstract_class?
+                         "#{target.name}Config"
+                       else
+                         "#{target.superclass.name}Config"
+                       end
                      else
-                       "#{target.superclass.name}Config"
+                       'Config'
                      end
                    else
-                     'Config'
+                     use_separate_indices ? "#{target.base_class}Config" : 'Config'
                    end
 
       config = version_namespace.const_get(const_name, false)

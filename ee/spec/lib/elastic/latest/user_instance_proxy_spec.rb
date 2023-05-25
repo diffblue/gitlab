@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Elastic::Latest::UserInstanceProxy, feature_category: :global_search do
   let_it_be_with_reload(:user) { create(:user, :admin, :public_email) }
 
-  subject { described_class.new(user) }
+  subject { described_class.new(user, use_separate_indices: true) }
 
   describe '#as_indexed_json' do
     let(:result) { subject.as_indexed_json.with_indifferent_access }
@@ -109,6 +109,16 @@ RSpec.describe Elastic::Latest::UserInstanceProxy, feature_category: :global_sea
   end
 
   describe '#es_parent' do
+    context 'when use_base_class_in_proxy_util is disabled' do
+      before do
+        stub_feature_flags(use_base_class_in_proxy_util: false)
+      end
+
+      it 'is nil so that elasticsearch routing is disabled' do
+        expect(subject.es_parent).to be_nil
+      end
+    end
+
     it 'is nil so that elasticsearch routing is disabled' do
       expect(subject.es_parent).to be_nil
     end
