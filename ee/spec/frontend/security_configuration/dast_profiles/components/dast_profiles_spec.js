@@ -1,16 +1,30 @@
 import { GlDisclosureDropdown, GlTabs } from '@gitlab/ui';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { within } from '@testing-library/dom';
 import { mount, shallowMount } from '@vue/test-utils';
-import { merge } from 'lodash';
-import { nextTick } from 'vue';
 import DastFailedSiteValidations from 'ee/security_configuration/dast_profiles/components/dast_failed_site_validations.vue';
 import DastProfiles from 'ee/security_configuration/dast_profiles/components/dast_profiles.vue';
 import setWindowLocation from 'helpers/set_window_location_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
+import dastScannerProfilesDelete from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles_delete.mutation.graphql';
+import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
+import dastSiteProfilesDelete from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles_delete.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
+import {
+  scannerProfilesResponse,
+  siteProfilesResponse,
+  scannerProfileDeleteResponse,
+  siteProfileDeleteResponse,
+} from './mock_data/apollo_mock';
 
 const TEST_NEW_DAST_SCANNER_PROFILE_PATH = '/-/on_demand_scans/scanner_profiles/new';
 const TEST_NEW_DAST_SITE_PROFILE_PATH = '/-/on_demand_scans/site_profiles/new';
 const TEST_PROJECT_FULL_PATH = '/namespace/project';
+
+Vue.use(VueApollo);
 
 beforeEach(() => {
   setWindowLocation(TEST_HOST);
@@ -19,7 +33,29 @@ beforeEach(() => {
 describe('EE - DastProfiles', () => {
   let wrapper;
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
+  const defaultHandlers = {
+    queries: {
+      siteProfiles: jest.fn().mockResolvedValue(siteProfilesResponse()),
+      scannerProfiles: jest.fn().mockResolvedValue(scannerProfilesResponse()),
+    },
+    deletions: {
+      siteProfiles: jest.fn().mockResolvedValue(siteProfileDeleteResponse()),
+      scannerProfiles: jest.fn().mockResolvedValue(scannerProfileDeleteResponse()),
+    },
+  };
+
+  const createMockApolloProvider = (handlers) => {
+    return createMockApollo([
+      [dastSiteProfilesQuery, handlers.queries.siteProfiles],
+      [dastScannerProfilesQuery, handlers.queries.scannerProfiles],
+      [dastSiteProfilesDelete, handlers.deletions.siteProfiles],
+      [dastScannerProfilesDelete, handlers.deletions.scannerProfiles],
+    ]);
+  };
+
+  const createComponentFactory = (mountFn = shallowMount) => ({
+    handlers = defaultHandlers,
+  } = {}) => {
     const defaultProps = {
       createNewProfilePaths: {
         scannerProfile: TEST_NEW_DAST_SCANNER_PROFILE_PATH,
@@ -28,35 +64,13 @@ describe('EE - DastProfiles', () => {
       projectFullPath: TEST_PROJECT_FULL_PATH,
     };
 
-    const defaultMocks = {
-      $apollo: {
-        queries: {
-          dastProfiles: {
-            fetchMore: jest.fn().mockResolvedValue(),
-          },
-          siteProfiles: {
-            fetchMore: jest.fn().mockResolvedValue(),
-          },
-          scannerProfiles: {
-            fetchMore: jest.fn().mockResolvedValue(),
-          },
-        },
-        mutate: jest.fn().mockResolvedValue(),
-        addSmartQuery: jest.fn(),
+    wrapper = mountFn(DastProfiles, {
+      stubs: {
+        DastFailedSiteValidations: true,
       },
-    };
-
-    wrapper = mountFn(
-      DastProfiles,
-      merge(
-        {},
-        {
-          propsData: defaultProps,
-          mocks: defaultMocks,
-        },
-        options,
-      ),
-    );
+      propsData: defaultProps,
+      apolloProvider: createMockApolloProvider(handlers),
+    });
   };
 
   const createComponent = createComponentFactory();
@@ -177,26 +191,25 @@ describe('EE - DastProfiles', () => {
   });
 
   it.each`
-    profileType          | key                            | givenData                              | expectedValue | exposedAsProp
-    ${'siteProfiles'}    | ${'error-message'}             | ${{ errorMessage: 'foo' }}             | ${'foo'}      | ${false}
-    ${'siteProfiles'}    | ${'error-details'}             | ${{ errorDetails: ['foo'] }}           | ${'foo'}      | ${false}
-    ${'siteProfiles'}    | ${'has-more-profiles-to-load'} | ${{ pageInfo: { hasNextPage: true } }} | ${'true'}     | ${false}
-    ${'scannerProfiles'} | ${'error-message'}             | ${{ errorMessage: 'foo' }}             | ${'foo'}      | ${false}
-    ${'scannerProfiles'} | ${'error-details'}             | ${{ errorDetails: ['foo'] }}           | ${'foo'}      | ${false}
-    ${'scannerProfiles'} | ${'has-more-profiles-to-load'} | ${{ pageInfo: { hasNextPage: true } }} | ${'true'}     | ${false}
+    profileType          | expectedErrorMessage
+    ${'siteProfiles'}    | ${'Could not fetch site profiles. Please refresh the page, or try again later.'}
+    ${'scannerProfiles'} | ${'Could not fetch scanner profiles. Please refresh the page, or try again later.'}
   `(
-    'passes down $key properly for $profileType',
-    async ({ profileType, key, givenData, expectedValue, exposedAsProp }) => {
-      const propGetter = exposedAsProp ? 'props' : 'attributes';
-      createComponent();
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        profileTypes: { [profileType]: givenData },
+    'passes the correct error message for $profileType',
+    async ({ profileType, expectedErrorMessage }) => {
+      createComponent({
+        handlers: {
+          ...defaultHandlers,
+          queries: {
+            [profileType]: jest.fn().mockRejectedValue(),
+          },
+        },
       });
-      await nextTick();
+      await waitForPromises();
 
-      expect(getProfilesComponent(profileType)[propGetter](key)).toEqual(expectedValue);
+      expect(getProfilesComponent(profileType).attributes('error-message')).toEqual(
+        expectedErrorMessage,
+      );
     },
   );
 
@@ -205,42 +218,86 @@ describe('EE - DastProfiles', () => {
     ${'Site Profiles List'}    | ${'siteProfiles'}
     ${'Scanner Profiles List'} | ${'scannerProfiles'}
   `('$description', ({ profileType }) => {
-    beforeEach(() => {
+    it('passes down the loading state when loading is true', async () => {
       createComponent();
-    });
 
-    it('passes down the loading state when loading is true', () => {
-      createComponent({ mocks: { $apollo: { queries: { [profileType]: { loading: true } } } } });
-
+      await nextTick();
       expect(getProfilesComponent(profileType).attributes('is-loading')).toBe('true');
     });
 
-    it('fetches more results when "@load-more-profiles" is emitted', () => {
-      const {
-        $apollo: {
-          queries: {
-            [profileType]: { fetchMore },
-          },
-        },
-      } = wrapper.vm;
+    it('fetches more results when "@load-more-profiles" is emitted', async () => {
+      const queryHandler = defaultHandlers.queries[profileType];
 
-      expect(fetchMore).not.toHaveBeenCalled();
+      createComponent();
+      await waitForPromises();
+
+      expect(queryHandler).toHaveBeenCalledTimes(1);
 
       getProfilesComponent(profileType).vm.$emit('load-more-profiles');
 
-      expect(fetchMore).toHaveBeenCalledTimes(1);
+      expect(queryHandler).toHaveBeenCalledTimes(2);
     });
 
-    it('deletes profile when "@delete-profile" is emitted', () => {
-      const {
-        $apollo: { mutate },
-      } = wrapper.vm;
+    it('deletes profile when "@delete-profile" is emitted', async () => {
+      const deletionHandler = defaultHandlers.deletions[profileType];
 
-      expect(mutate).not.toHaveBeenCalled();
+      createComponent();
+      await waitForPromises();
 
-      getProfilesComponent(profileType).vm.$emit('delete-profile');
+      expect(deletionHandler).not.toHaveBeenCalled();
 
-      expect(mutate).toHaveBeenCalledTimes(1);
+      getProfilesComponent(profileType).vm.$emit('delete-profile', '1');
+
+      expect(deletionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('passes on the error details when the delete mutation fails', async () => {
+      const errors = ['something went wrong', 'another error'];
+
+      const handlers = {
+        siteProfiles: siteProfileDeleteResponse(errors),
+        scannerProfiles: scannerProfileDeleteResponse(errors),
+      };
+
+      createComponent({
+        handlers: {
+          ...defaultHandlers,
+          deletions: {
+            [profileType]: jest.fn().mockResolvedValue(handlers[profileType]),
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      getProfilesComponent(profileType).vm.$emit('delete-profile', '1');
+
+      await waitForPromises();
+
+      expect(getProfilesComponent(profileType).attributes('error-details')).toEqual(
+        errors.toString(),
+      );
+    });
+
+    it('passes on that there are more profiles to be fetched', async () => {
+      const handlers = {
+        siteProfiles: siteProfilesResponse({ pageInfo: { hasNextPage: true } }),
+        scannerProfiles: scannerProfilesResponse({ pageInfo: { hasNextPage: true } }),
+      };
+      createComponent({
+        handlers: {
+          ...defaultHandlers,
+          queries: {
+            [profileType]: jest.fn().mockResolvedValue(handlers[profileType]),
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(getProfilesComponent(profileType).attributes('has-more-profiles-to-load')).toBe(
+        'true',
+      );
     });
   });
 });

@@ -189,6 +189,7 @@ export default {
               });
             } else {
               handleError({
+                profileType,
                 message: i18n.errorMessages.deletionBackendError,
                 details: errors,
               });
