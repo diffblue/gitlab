@@ -36,8 +36,8 @@ module EE
         clean_params
       end
 
-      override :redirect_to_signup_onboarding?
-      def redirect_to_signup_onboarding?
+      override :complete_signup_onboarding?
+      def complete_signup_onboarding?
         !helpers.in_subscription_flow? &&
           !helpers.user_has_memberships? &&
           !helpers.in_oauth_flow? &&
@@ -52,6 +52,11 @@ module EE
         pass_through[:trial] = params[:trial] if ::Gitlab.com?
 
         pass_through
+      end
+
+      override :finish_onboarding_on_welcome_page
+      def finish_onboarding_on_welcome_page
+        finish_onboarding(current_user)
       end
 
       override :signup_onboarding_path
@@ -90,11 +95,6 @@ module EE
       override :welcome_update_params
       def welcome_update_params
         glm_tracking_params
-      end
-
-      override :finish_onboarding_if_in_subscription_flow
-      def finish_onboarding_if_in_subscription_flow
-        finish_onboarding(current_user) if helpers.in_subscription_flow?
       end
     end
   end

@@ -4,9 +4,10 @@ require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feature_category: :onboarding do
   it 'registers the user and sends them to the group activity page' do
+    new_user = build(:user, name: 'Registering User')
     group = create(:group, name: 'Test Group')
 
-    registers_from_invite(group)
+    registers_from_invite(user: new_user, group: group)
 
     ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
 
@@ -14,20 +15,64 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
     click_on 'Get started!'
 
     expect_to_be_on_activity_page_for(group)
+    ensure_onboarding_is_finished
   end
 
-  def registers_from_invite(group)
+  it 'registers the user with multiple invites and sends them to the root page' do
     new_user = build(:user, name: 'Registering User')
+    group = create(:group, name: 'Test Group')
 
-    invitation = create(:group_member, :invited, :developer, invite_email: new_user.email, source: group)
+    create(
+      :group_member,
+      :invited,
+      :developer,
+      invite_email: new_user.email,
+      source: create(:group, name: 'Another Test Group')
+    )
+
+    registers_from_invite(user: new_user, group: group)
+
+    ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
+
+    fill_in_welcome_form
+    click_on 'Get started!'
+
+    expect(page).to have_current_path(root_path)
+    ensure_onboarding_is_finished
+  end
+
+  it 'registers the user and sends them to the tasks to be done page' do
+    new_user = build(:user, name: 'Registering User')
+    group = create(:group, name: 'Test Group')
+
+    registers_from_invite(user: new_user, group: group, tasks_to_be_done: [:ci, :code])
+
+    ensure_onboarding { expect_to_see_welcome_form_without_join_project_question }
+
+    fill_in_welcome_form
+    click_on 'Get started!'
+
+    expect_to_be_on_issues_dashboard_page_for(new_user)
+    ensure_onboarding_is_finished
+  end
+
+  def registers_from_invite(user:, group:, tasks_to_be_done: [])
+    invitation = create(
+      :group_member,
+      :invited,
+      :developer,
+      invite_email: user.email,
+      source: group,
+      tasks_to_be_done: tasks_to_be_done
+    )
 
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
+    fill_in 'First name', with: user.first_name
+    fill_in 'Last name', with: user.last_name
+    fill_in 'Username', with: user.username
+    fill_in 'Email', with: user.email
+    fill_in 'Password', with: user.password
 
     wait_for_all_requests
 
@@ -51,5 +96,10 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas_registration, feat
   def expect_to_be_on_activity_page_for(group)
     expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
     expect(page).to have_content('You have been granted Developer access to group Test Group')
+  end
+
+  def expect_to_be_on_issues_dashboard_page_for(user)
+    expect(page).to have_current_path(issues_dashboard_path, ignore_query: true)
+    expect(page).to have_content("Assignee = #{user.name}")
   end
 end

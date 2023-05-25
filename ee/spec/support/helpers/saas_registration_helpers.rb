@@ -78,6 +78,11 @@ module SaasRegistrationHelpers
     yield
   end
 
+  def ensure_onboarding_is_finished
+    visit root_path
+    expect(page).to have_current_path(root_path)
+  end
+
   def user_registers_from_subscription
     new_user = build(:user, name: 'Registering User', email: user_email)
 
