@@ -64,7 +64,7 @@ module EE
           save_onboarding_step_url(path, current_user)
           path
         else
-          path = new_users_sign_up_groups_project_path
+          path = new_users_sign_up_group_path
           save_onboarding_step_url(path, current_user)
           path
         end

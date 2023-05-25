@@ -1,6 +1,6 @@
-import * as types from 'ee/registrations/groups_projects/new/store/mutation_types';
-import mutations from 'ee/registrations/groups_projects/new/store/mutations';
-import state from 'ee/registrations/groups_projects/new/store/state';
+import * as types from 'ee/registrations/groups/new/store/mutation_types';
+import mutations from 'ee/registrations/groups/new/store/mutations';
+import state from 'ee/registrations/groups/new/store/state';
 
 describe('Mutations', () => {
   let stateCopy;

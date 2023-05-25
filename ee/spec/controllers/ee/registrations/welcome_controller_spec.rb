@@ -244,7 +244,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               specify do
                 patch_update
                 user.reload
-                path = new_users_sign_up_groups_project_path
+                path = new_users_sign_up_group_path
 
                 expect(user.onboarding_in_progress).to be_truthy
                 expect(user.user_detail.onboarding_step_url).to eq(path)
@@ -282,7 +282,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
             specify do
               patch_update
               user.reload
-              path = new_users_sign_up_groups_project_path
+              path = new_users_sign_up_group_path
 
               expect(user.onboarding_in_progress).to be_truthy
               expect(user.user_detail.onboarding_step_url).to eq(path)
@@ -319,7 +319,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               allow(controller.helpers).to receive(:in_subscription_flow?).and_return(true)
             end
 
-            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
           end
 
           context 'when in invitation flow' do
@@ -327,7 +327,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
               allow(controller.helpers).to receive(:user_has_memberships?).and_return(true)
             end
 
-            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
 
             it 'tracks successful submission event' do
               patch_update
@@ -344,7 +344,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
           context 'when in trial flow' do
             let(:extra_params) { { trial: 'true' } }
 
-            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
 
             it 'tracks successful submission event' do
               patch_update

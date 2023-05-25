@@ -117,12 +117,12 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
           expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query.merge(glm_params)))
+          expect(response).to redirect_to(new_users_sign_up_group_path(redirect_query.merge(glm_params)))
         end
       end
 
       context 'when saving onboarding_step_url' do
-        let(:path) { new_users_sign_up_groups_project_path(glm_params) }
+        let(:path) { new_users_sign_up_group_path(glm_params) }
         let(:should_check_namespace_plan) { true }
 
         before do

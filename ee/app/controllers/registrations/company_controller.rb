@@ -31,7 +31,7 @@ module Registrations
             label: tracking_label)
         end
 
-        path = new_users_sign_up_groups_project_path(redirect_params)
+        path = new_users_sign_up_group_path(redirect_params)
         save_onboarding_step_url(path, current_user)
         redirect_to path
       else
