@@ -61,6 +61,9 @@ describe('IssuesLaneList', () => {
     });
   };
 
+  const findDraggable = () => wrapper.findComponent(Draggable);
+  const findList = () => wrapper.find('ul');
+
   describe('if list is expanded', () => {
     beforeEach(() => {
       store = createStore();
@@ -101,13 +104,15 @@ describe('IssuesLaneList', () => {
     });
 
     it('user cannot drag on epic lane if canAdminEpic is false', () => {
-      expect(wrapper.vm.treeRootWrapper).toBe('ul');
+      expect(findList().exists()).toBe(true);
+      expect(findDraggable().exists()).toBe(false);
     });
 
     it('user can drag on unassigned lane if canAdminEpic is false', () => {
       createComponent({ isUnassignedIssuesLane: true });
 
-      expect(wrapper.vm.treeRootWrapper).toBe(Draggable);
+      expect(findList().exists()).toBe(false);
+      expect(findDraggable().exists()).toBe(true);
     });
   });
 
@@ -137,7 +142,7 @@ describe('IssuesLaneList', () => {
 
     describe('handleDragOnEnd', () => {
       it('removes class `is-dragging` from document body', () => {
-        jest.spyOn(wrapper.vm, 'moveIssue').mockImplementation(() => {});
+        jest.spyOn(store, 'dispatch').mockImplementation(() => {});
         document.body.classList.add('is-dragging');
 
         wrapper.find(`[data-testid="tree-root-wrapper"]`).vm.$emit('end', {
@@ -211,21 +216,17 @@ describe('IssuesLaneList', () => {
 
   describe('Apollo boards', () => {
     it.each`
-      isUnassignedIssuesLane | performsQuery
-      ${true}                | ${true}
-      ${false}               | ${false}
+      isUnassignedIssuesLane | queryCalledTimes
+      ${true}                | ${1}
+      ${false}               | ${0}
     `(
       'fetches issues $performsQuery when isUnassignedIssuesLane is $isUnassignedIssuesLane',
-      async ({ isUnassignedIssuesLane, performsQuery }) => {
+      async ({ isUnassignedIssuesLane, queryCalledTimes }) => {
         createComponent({ isUnassignedIssuesLane, isApolloBoard: true });
 
         await waitForPromises();
 
-        if (performsQuery) {
-          expect(listIssuesQueryHandlerSuccess).toHaveBeenCalled();
-        } else {
-          expect(listIssuesQueryHandlerSuccess).not.toHaveBeenCalled();
-        }
+        expect(listIssuesQueryHandlerSuccess).toHaveBeenCalledTimes(queryCalledTimes);
       },
     );
   });
