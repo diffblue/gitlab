@@ -126,6 +126,7 @@ RSpec.describe SafeFormatHelper, feature_category: :shared do
       '<a'               | nil           | nil
       '<a>'              | nil           | nil
       '<a><a>'           | nil           | nil
+      '<input/>'         | nil           | nil
       '<a></a>'          | '<a>'         | '</a>'
       '<a href="">x</a>' | '<a href="">' | '</a>'
     end
@@ -144,7 +145,7 @@ RSpec.describe SafeFormatHelper, feature_category: :shared do
       let(:tag) { helper.tag.strong.to_str }
 
       it 'raises an ArgumentError' do
-        expect { result }.to raise_error ArgumentError, 'Argument `tag` must be a `html_safe`!'
+        expect { result }.to raise_error ArgumentError, 'Argument `tag` must be `html_safe`!'
       end
     end
   end

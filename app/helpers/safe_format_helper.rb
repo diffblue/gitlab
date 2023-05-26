@@ -13,7 +13,7 @@ module SafeFormatHelper
   #   safe_format('In &lt; hour & more')
   #   # => "In &lt; hour &amp; more"
   #
-  # @example With +tag_pair+a support
+  # @example With +tag_pair+ support
   #   safe_format('Some %{open}bold%{close} text.', tag_pair(tag.strong, :open, :close))
   #   # => "Some <strong>bold</strong> text."
   #   safe_format('Some %{open}bold%{close} %{italicStart}text%{italicEnd}.',
@@ -33,7 +33,7 @@ module SafeFormatHelper
   # Returns a Hash containing a pair of +open+ and +close+ tag parts extracted
   # from HTML-safe +tag+. The values are HTML-safe.
   #
-  # Note: Returns an empty Hash if +tag+ is not a valid paired tag (e.g. <p>Foo</p>).
+  # Returns an empty Hash if +tag+ is not a valid paired tag (e.g. <p>foo</p>).
   # an empty Hash is returned.
   #
   # @param [String] tag is a HTML-safe output from tag helper
@@ -50,13 +50,13 @@ module SafeFormatHelper
     raise ArgumentError, 'Argument `tag` must be `html_safe`!' unless tag.html_safe?
     return {} unless tag.start_with?('<')
 
-    open_index = tag.index('>')
     # end of opening tag: <p>foo</p>
     #                       ^
     open_index = tag.index('>')
     # start of closing tag: <p>foo</p>
     #                             ^^
     close_index = tag.rindex('</')
+
     return {} unless open_index && close_index
 
     {
