@@ -19223,6 +19223,9 @@ msgstr ""
 msgid "For more information, see the File Hooks documentation."
 msgstr ""
 
+msgid "For the next few releases, you can go to your avatar at any time to turn the new navigation on and off."
+msgstr ""
+
 msgid "Forbidden"
 msgstr ""
 
@@ -37316,6 +37319,9 @@ msgstr ""
 msgid "Read more about GitLab at %{link_to_promo}."
 msgstr ""
 
+msgid "Read more about the %{changes_link_start}changes%{link_end}, the %{vision_link_start}vision%{link_end}, and the %{design_link_start}design%{link_end}."
+msgstr ""
+
 msgid "Read their documentation."
 msgstr ""
 
@@ -50826,6 +50832,9 @@ msgid "Welcome to GitLab, %{first_name}!"
 msgstr ""
 
 msgid "Welcome to GitLab,%{br_tag}%{name}!"
+msgstr ""
+
+msgid "Welcome to a new navigation experience"
 msgstr ""
 
 msgid "Welcome, %{name}!"
