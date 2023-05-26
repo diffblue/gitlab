@@ -54,6 +54,16 @@ module Gitlab
         def self.default_final_answer
           _("AI|I don't see how I can help. Please give better instructions!")
         end
+
+        def self.error_answer(context:, content:)
+          new(
+            status: :error,
+            content: content,
+            context: context,
+            tool: nil,
+            is_final: true
+          )
+        end
       end
     end
   end

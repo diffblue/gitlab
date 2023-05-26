@@ -22426,6 +22426,9 @@ msgstr ""
 msgid "I accept the %{terms_link}"
 msgstr ""
 
+msgid "I am sorry, I am unable to find the issue you are looking for."
+msgstr ""
+
 msgid "I do not know."
 msgstr ""
 
