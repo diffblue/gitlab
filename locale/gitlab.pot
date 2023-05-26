@@ -14275,6 +14275,9 @@ msgstr ""
 msgid "DefaultBranchProtection|Both developers and maintainers can push new commits, force push, or delete the branch."
 msgstr ""
 
+msgid "DefaultBranchProtection|Developers can push the initial commit to a repository, but none afterward. Maintainers can always push. No one can force push."
+msgstr ""
+
 msgid "DefaultBranchProtection|Developers cannot push new commits, but are allowed to accept merge requests to the branch. Maintainers can push to the branch."
 msgstr ""
 
@@ -14282,6 +14285,9 @@ msgid "DefaultBranchProtection|Developers cannot push new commits, but maintaine
 msgstr ""
 
 msgid "DefaultBranchProtection|Fully protected"
+msgstr ""
+
+msgid "DefaultBranchProtection|Fully protected after initial push"
 msgstr ""
 
 msgid "DefaultBranchProtection|Not protected"
