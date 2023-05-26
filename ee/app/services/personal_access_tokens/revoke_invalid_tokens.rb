@@ -40,7 +40,6 @@ module PersonalAccessTokens
     end
 
     def revoke_tokens!
-      personal_access_tokens.with_no_expires_at.update_all(revoked: true)
       personal_access_tokens.with_expires_at_after(expiration_date).update_all(revoked: true)
     end
 
