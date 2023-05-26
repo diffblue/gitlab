@@ -49193,6 +49193,12 @@ msgstr ""
 msgid "UserProfiles|No snippets found."
 msgstr ""
 
+msgid "UserProfile|%{count} %{file}"
+msgstr ""
+
+msgid "UserProfile|%{id} · created %{created} by %{author}"
+msgstr ""
+
 msgid "UserProfile|Activity"
 msgstr ""
 
@@ -49332,6 +49338,9 @@ msgid "UserProfile|at"
 msgstr ""
 
 msgid "UserProfile|made a private contribution"
+msgstr ""
+
+msgid "UserProfile|updated %{updated}"
 msgstr ""
 
 msgid "Username"
