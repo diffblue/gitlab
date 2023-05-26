@@ -148,22 +148,30 @@ export default {
       </template>
 
       <template #feedback="slotProps">
+        <div
+          v-if="messageHasSources(slotProps.message)"
+          class="gl-mt-4 gl-mr-3 gl-text-gray-600"
+          data-testid="tanuki-bot-chat-message-sources"
+        >
+          <span>{{ messageSourceLabel(slotProps.message) }}:</span>
+          <ul class="gl-list-style-none gl-p-0 gl-m-0">
+            <li
+              v-for="(source, index) in slotProps.message.sources"
+              :key="index"
+              class="gl-display-flex gl-pt-3"
+            >
+              <gl-icon
+                v-if="source.source_type"
+                :name="getSourceIcon(source.source_type)"
+                class="gl-flex-shrink-0 gl-mr-2"
+              />
+              <gl-link :href="source.source_url">{{ getSourceTitle(source) }}</gl-link>
+            </li>
+          </ul>
+        </div>
         <div class="gl-display-flex gl-align-items-flex-end gl-mt-4">
-          <div
-            v-if="messageHasSources(slotProps.message)"
-            class="gl-mr-3 gl-text-gray-600"
-            data-testid="tanuki-bot-chat-message-sources"
-          >
-            <span>{{ messageSourceLabel(slotProps.message) }}</span>
-            <ul class="gl-pl-5 gl-my-0">
-              <li v-for="(source, index) in slotProps.message.sources" :key="index">
-                <gl-icon v-if="source.source_type" :name="getSourceIcon(source.source_type)" />
-                <gl-link :href="source.source_url">{{ getSourceTitle(source) }}</gl-link>
-              </li>
-            </ul>
-          </div>
           <gl-link
-            class="gl-ml-auto gl-white-space-nowrap"
+            class="gl-ml-auto gl-white-space-nowrap gl-text-gray-600"
             :href="$options.TANUKI_BOT_FEEDBACK_ISSUE_URL"
             target="_blank"
             ><gl-icon name="comment" /> {{ $options.i18n.giveFeedback }}</gl-link
