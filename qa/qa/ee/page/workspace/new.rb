@@ -22,7 +22,6 @@ module QA
             options = agent_selector.all('option')
 
             raise "No agent available" if options.empty?
-            raise "No matching agent found" if options.none? { |option| option.text == agent }
 
             agent_selector.select agent
           end
