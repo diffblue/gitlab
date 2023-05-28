@@ -8,24 +8,14 @@
 #
 #   How to setup the test
 #
-#   1. Ensure gitlab is up and running with default KAS / agentk stopped
-#   2. Setup agentk for a group and start agentk with the token received.
-#        (This agent name is passed in variable AGENTK_NAME)
-#   3. Add a project under the same group and add a file named .devfile.yaml with below content.
-#        (This project name is passed in variable DEVFILE_PROJECT)
-#         devfile_content = <<~YAML
-#            schemaVersion: 2.2.0
-#              components:
-#                - name: tooling-container
-#                attributes:
-#                  gl/inject-editor: true
-#                  container:
-#                    image: quay.io/mloriedo/universal-developer-image:ubi8-dw-demo
-#          YAML
-#   4. Call the helper scripts at `scripts/remote_development/run_e2e_spec.sh` with DEVFILE_PROJECT and AGENTK_NAME
-#      For example, to override any variable, the script can be run in the following manner
-#         DEVFILE_PROJECT="devfile-test-project" AGENTK_NAME="test-agent" GITLAB_PASSWORD=example
-#         TEST_INSTANCE_URL=https://gdk.test:3000 scripts/remote_development/run-e2e-spec.sh
+#   1. Follow this documentation to set up your local GDK environment for creating remote development workspaces:
+#      https://gitlab.com/gitlab-org/remote-development/gitlab-remote-development-docs/-/blob/main/doc/local-development-environment-setup.md
+#   2. Ensure that you can successfully create and terminate workspaces in your local GDK environment.
+#   3. Call the helper script at `scripts/remote_development/run-e2e-tests.sh`.
+#      If you used all the default suggested group/project/agent values in the documentation above, the default values
+#      should work for you. Otherwise, any variable can be overridden on the command line, for example:
+#
+#      DEVFILE_PROJECT="devfile-test-project" AGENT_NAME="test-agent" scripts/remote_development/run-e2e-tests.sh
 
 module QA
   RSpec.describe 'Create',
@@ -35,10 +25,10 @@ module QA
     }, product_group: :ide do
     describe 'Remote Development' do
       let(:devfile_project_name) { ENV.fetch("DEVFILE_PROJECT", "devfile-project-example") }
-      let(:agent) { ENV.fetch("AGENTK_NAME", "test-agentk") }
+      let(:agent) { ENV.fetch("AGENT_NAME", "test-agent") }
 
       before do
-        Flow::Login.sign_in
+        Flow::Login.sign_in(skip_page_validation: true)
       end
 
       it 'creates a new workspace and then stops and terminates it',
