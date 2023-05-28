@@ -3,22 +3,22 @@
 module Mutations
   module AuditEvents
     module GoogleCloudLoggingConfigurations
-      class Create < BaseMutation
-        graphql_name 'GoogleCloudLoggingConfigurationCreate'
+      class Update < BaseMutation
+        graphql_name 'GoogleCloudLoggingConfigurationUpdate'
 
         authorize :admin_external_audit_events
 
-        argument :group_path, GraphQL::Types::ID,
+        argument :id, ::Types::GlobalIDType[::AuditEvents::GoogleCloudLoggingConfiguration],
           required: true,
-          description: 'Group path.'
+          description: 'ID of the google Cloud configuration to update.'
 
         argument :google_project_id_name, GraphQL::Types::String,
-          required: true,
+          required: false,
           description: 'Unique identifier of the Google Cloud project ' \
                        'to which the logging configuration belongs.'
 
         argument :client_email, GraphQL::Types::String,
-          required: true,
+          required: false,
           description: 'Email address associated with the service account ' \
                        'that will be used to authenticate and interact with the ' \
                        'Google Cloud Logging service. This is part of the IAM credentials.'
@@ -26,33 +26,28 @@ module Mutations
         argument :log_id_name, GraphQL::Types::String,
           required: false,
           description: 'Unique identifier used to distinguish and manage ' \
-                       'different logs within the same Google Cloud project.' \
-                       '(defaults to `audit_events`).',
-          default_value: 'audit_events'
+                       'different logs within the same Google Cloud project.'
 
         argument :private_key, GraphQL::Types::String,
-          required: true,
+          required: false,
           description: 'Private Key associated with the service account. This key ' \
                        'is used to authenticate the service account and authorize it ' \
                        'to interact with the Google Cloud Logging service.'
+
         field :google_cloud_logging_configuration, ::Types::AuditEvents::GoogleCloudLoggingConfigurationType,
           null: true,
-          description: 'configuration created.'
+          description: 'configuration updated.'
 
-        def resolve(group_path:, google_project_id_name:, client_email:, private_key:, log_id_name: nil)
-          group = authorized_find!(group_path)
+        def resolve(id:, google_project_id_name: nil, client_email: nil, private_key: nil, log_id_name: nil)
+          config = authorized_find!(id)
           config_attributes = {
-            group: group,
             google_project_id_name: google_project_id_name,
             client_email: client_email,
-            private_key: private_key
-          }
+            private_key: private_key,
+            log_id_name: log_id_name
+          }.compact
 
-          config_attributes[:log_id_name] = log_id_name if log_id_name.present?
-
-          config = ::AuditEvents::GoogleCloudLoggingConfiguration.new(config_attributes)
-
-          if config.save
+          if config.update(config_attributes)
             { google_cloud_logging_configuration: config, errors: [] }
           else
             { google_cloud_logging_configuration: nil, errors: Array(config.errors) }
@@ -61,8 +56,10 @@ module Mutations
 
         private
 
-        def find_object(group_path)
-          ::Group.find_by_full_path(group_path)
+        def find_object(config_gid)
+          GitlabSchema.object_from_id(
+            config_gid,
+            expected_type: ::AuditEvents::GoogleCloudLoggingConfiguration).sync
         end
       end
     end

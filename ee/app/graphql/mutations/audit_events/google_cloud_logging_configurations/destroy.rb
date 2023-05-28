@@ -10,7 +10,7 @@ module Mutations
 
         argument :id, ::Types::GlobalIDType[::AuditEvents::GoogleCloudLoggingConfiguration],
           required: true,
-          description: 'ID of the google cloud logging configuration to destroy.'
+          description: 'ID of the Google Cloud logging configuration to destroy.'
 
         def resolve(id:)
           config = authorized_find!(id)

@@ -117,6 +117,7 @@ module EE
         mount_mutation ::Mutations::AuditEvents::InstanceExternalAuditEventDestinations::Update
         mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Create
         mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Destroy
+        mount_mutation ::Mutations::AuditEvents::GoogleCloudLoggingConfigurations::Update
         mount_mutation ::Mutations::Forecasting::BuildForecast, alpha: { milestone: '16.0' }
 
         prepend(Types::DeprecatedMutations)
