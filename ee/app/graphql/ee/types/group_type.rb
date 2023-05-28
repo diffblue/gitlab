@@ -100,6 +100,12 @@ module EE
               description: 'External locations that receive audit events belonging to the group.',
               authorize: :admin_external_audit_events
 
+        field :google_cloud_logging_configurations,
+              ::Types::AuditEvents::GoogleCloudLoggingConfigurationType.connection_type,
+              null: true,
+              description: 'Google Cloud logging configurations that receive audit events belonging to the group.',
+              authorize: :admin_external_audit_events
+
         field :merge_request_violations,
               ::Types::ComplianceManagement::MergeRequests::ComplianceViolationType.connection_type,
               null: true,

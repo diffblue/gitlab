@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Destroy google cloud logging configuration', feature_category: :audit_events do
+RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :audit_events do
   include GraphqlHelpers
 
   let_it_be(:config) { create(:google_cloud_logging_configuration) }

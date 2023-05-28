@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Create google cloud logging configuration', feature_category: :audit_events do
+RSpec.describe 'Create Google Cloud logging configuration', feature_category: :audit_events do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
