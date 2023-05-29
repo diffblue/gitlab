@@ -47,7 +47,17 @@ RSpec.describe Abuse::NewAbuseReportWorker, :saas, feature_category: :instance_r
         allow(AbuseReport).to receive(:find_by_id).and_return(abuse_report)
       end
 
-      context 'when the user is part of a paid namespace' do
+      context 'when the user is a member of a namespace with a paid plan trial subscription' do
+        let_it_be(:trial_group) { create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: 1.day.from_now) }
+
+        before do
+          trial_group.add_reporter(user)
+        end
+
+        it_behaves_like 'bans user'
+      end
+
+      context 'when the user is a member of a namespace with a paid plan subscription' do
         let_it_be(:paid_group) { create(:group_with_plan, plan: :ultimate_plan) }
 
         before do
