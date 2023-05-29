@@ -342,17 +342,17 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker, feature_category: :audit_
         include_context 'audit event stream'
       end
     end
+  end
 
-    context 'when connecting to redis fails' do
-      before do
-        allow(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).and_raise(Redis::CannotConnectError)
-      end
+  context 'when connecting to redis fails' do
+    before do
+      allow(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).and_raise(Redis::CannotConnectError)
+    end
 
-      it_behaves_like 'a successful audit event stream' do
-        let_it_be(:group) { create(:group) }
-        let_it_be(:project) { create(:project, group: group) }
-        let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
-      end
+    it_behaves_like 'a successful audit event stream' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:event) { create(:audit_event, :project_event, target_project: project) }
     end
   end
 end

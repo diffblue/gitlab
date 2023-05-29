@@ -15,5 +15,13 @@ module AuditEvents
       key: Settings.attr_encrypted_db_key_base_32,
       encode: false,
       encode_iv: false
+
+    def headers_hash
+      { STREAMING_TOKEN_HEADER_KEY => verification_token }
+    end
+
+    def allowed_to_stream?(*)
+      true
+    end
   end
 end

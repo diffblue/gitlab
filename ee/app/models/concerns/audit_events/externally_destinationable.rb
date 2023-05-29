@@ -4,6 +4,8 @@ module AuditEvents
   module ExternallyDestinationable
     extend ActiveSupport::Concern
 
+    STREAMING_TOKEN_HEADER_KEY = "X-Gitlab-Event-Streaming-Token"
+
     included do
       validates :destination_url, public_url: true, presence: true
       validates :destination_url, uniqueness: true, length: { maximum: 255 }
