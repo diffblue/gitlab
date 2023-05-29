@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Reports in a Merge Request Widget' do
-      let(:sast_vuln_count) { 6 }
+      let(:sast_vuln_count) { 7 }
       let(:dependency_scan_vuln_count) { 4 }
       let(:container_scan_vuln_count) { 8 }
       let(:vuln_name) { "Regular Expression Denial of Service in debug" }

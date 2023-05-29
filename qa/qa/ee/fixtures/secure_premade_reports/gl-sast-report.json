@@ -149,6 +149,62 @@
       ]
     },
     {
+      "id": "7e126e060d3d0b5f0b11506528c82fa40f5d144d85b2460ab01c44c7c9043be7",
+      "category": "sast",
+      "message": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "description": "Detected possible formatted SQL query. Use parameterized queries instead.\n",
+      "cve": "semgrep_id:bandit.B608:304:304",
+      "severity": "Medium",
+      "scanner": {
+        "id": "semgrep",
+        "name": "Semgrep"
+      },
+      "location": {
+        "file": "django/contrib/gis/db/backends/postgis/operations.py",
+        "start_line": 304
+      },
+      "identifiers": [
+        {
+          "type": "semgrep_id",
+          "name": "bandit.B608",
+          "value": "bandit.B608",
+          "url": "https://semgrep.dev/r/gitlab.bandit.B608"
+        },
+        {
+          "type": "cwe",
+          "name": "CWE-89",
+          "value": "89",
+          "url": "https://cwe.mitre.org/data/definitions/89.html"
+        },
+        {
+          "type": "owasp",
+          "name": "A1:2017 - Injection",
+          "value": "A1:2017"
+        },
+        {
+          "type": "bandit_test_id",
+          "name": "Bandit Test ID B608",
+          "value": "B608"
+        }
+      ],
+      "tracking": {
+        "type": "source",
+        "items": [
+          {
+            "file": "django/contrib/gis/db/backends/postgis/operations.py",
+            "line_start": 304,
+            "line_end": 304,
+            "signatures": [
+              {
+                "algorithm": "scope_offset",
+                "value": "django/contrib/gis/db/backends/postgis/operations.py|PostGISOperations[0]|_get_postgis_func[0]:6"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "id": "47f7fccbb39495c68dac599833fa631a5c043025e8a50fc036f86bafde7kl090",
       "category": "sast",
       "name": "Cipher with no integrity",
@@ -171,6 +227,12 @@
           "name": "Find Security Bugs-CIPHER_INTEGRITY",
           "value": "CIPHER_INTEGRITY",
           "url": "https://find-sec-bugs.github.io/bugs.htm#CIPHER_INTEGRITY"
+        },
+        {
+          "type": "cwe",
+          "name": "CWE-353",
+          "value": "353",
+          "url": "https://cwe.mitre.org/data/definitions/353.html"
         }
       ],
       "priority": "Medium",
