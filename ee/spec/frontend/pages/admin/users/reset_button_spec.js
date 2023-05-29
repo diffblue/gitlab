@@ -11,7 +11,7 @@ const $toast = {
   show: jest.fn(),
 };
 
-describe('Reset pipeline minutes button', () => {
+describe('Reset compute usage button', () => {
   let wrapper;
   let mock;
 
@@ -30,10 +30,10 @@ describe('Reset pipeline minutes button', () => {
 
   const findResetButton = () => wrapper.findComponent(GlButton);
 
-  it('should contain a button with the "Reset pipeline minutes" text', () => {
+  it('should contain a button with the "Reset compute usage" text', () => {
     const button = findResetButton();
 
-    expect(button.text()).toBe('Reset pipeline minutes');
+    expect(button.text()).toBe('Reset compute usage');
   });
 
   describe('when the api is available', () => {
@@ -58,7 +58,7 @@ describe('Reset pipeline minutes button', () => {
       await axios.waitForAll();
 
       expect(axiosSpy).toHaveBeenCalled();
-      expect($toast.show).toHaveBeenCalledWith('User pipeline minutes were successfully reset.');
+      expect($toast.show).toHaveBeenCalledWith('Successfully reset compute usage for namespace.');
       expect(button.props('loading')).toBe(false);
     });
   });
@@ -85,7 +85,7 @@ describe('Reset pipeline minutes button', () => {
 
       expect(axiosSpy).toHaveBeenCalled();
       expect($toast.show).toHaveBeenCalledWith(
-        'There was an error resetting user pipeline minutes.',
+        'An error occurred while resetting the compute usage.',
       );
     });
   });

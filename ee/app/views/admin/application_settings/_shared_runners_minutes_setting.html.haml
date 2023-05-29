@@ -1,6 +1,6 @@
 .form-group
-  = form.label :shared_runners_minutes, _('Quota of CI/CD minutes'), class: 'label-bold'
+  = form.label :shared_runners_minutes, _('Compute quota'), class: 'label-bold'
   = form.number_field :shared_runners_minutes, class: 'form-control gl-form-input'
   .form-text.text-muted
-    = _('The maximum number of CI/CD minutes on shared runners that a group can use each month. 0 for unlimited.')
-    = link_to _('What are CI/CD minutes?'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'
+    = _('The maximum units of compute that jobs in a namespace can use on shared runners each month. 0 for unlimited.')
+    = link_to _('What is a compute quota?'), help_page_path('ci/pipelines/cicd_minutes'), target: '_blank', rel: 'noopener noreferrer'

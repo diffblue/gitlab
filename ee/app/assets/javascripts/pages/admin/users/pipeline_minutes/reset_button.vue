@@ -25,10 +25,10 @@ export default {
       try {
         const response = await axios.post(this.resetMinutesPath);
         if (response.status === HTTP_STATUS_OK) {
-          this.$toast.show(__('User pipeline minutes were successfully reset.'));
+          this.$toast.show(__('Successfully reset compute usage for namespace.'));
         }
       } catch (e) {
-        this.$toast.show(__('There was an error resetting user pipeline minutes.'));
+        this.$toast.show(__('An error occurred while resetting the compute usage.'));
       } finally {
         this.loading = false;
       }
@@ -40,17 +40,17 @@ export default {
   <gl-alert
     class="gl-mb-5"
     variant="info"
-    :title="s__('SharedRunnersMinutesSettings|Reset used pipeline minutes')"
+    :title="s__('SharedRunnersMinutesSettings|Reset compute usage')"
     :dismissible="false"
   >
     {{
       s__(
-        'SharedRunnersMinutesSettings|By resetting the pipeline minutes for this namespace, the currently used minutes will be set to zero.',
+        'SharedRunnersMinutesSettings|When you reset the compute usage for this namespace, the compute usage changes to zero.',
       )
     }}
     <template #actions>
       <gl-button variant="confirm" :loading="loading" @click="resetPipelineMinutes">
-        {{ s__('SharedRunnersMinutesSettings|Reset pipeline minutes') }}
+        {{ s__('SharedRunnersMinutesSettings|Reset compute usage') }}
       </gl-button>
     </template>
   </gl-alert>

@@ -29,7 +29,7 @@ If you are using a self-managed instance of GitLab:
   and selecting **Show runner installation instructions**.
   These instructions are also available [in the documentation](https://docs.gitlab.com/runner/install/index.html).
 - The administrator can also configure a maximum number of shared runner
-  [CI/CD minutes for each group](../pipelines/cicd_minutes.md#set-the-quota-of-cicd-minutes-for-a-specific-namespace).
+  [CI/CD minutes for each group](../pipelines/cicd_minutes.md#set-the-compute-quota-for-a-specific-namespace).
 
 If you are using GitLab.com:
 
@@ -95,7 +95,7 @@ To disable shared runners for a group:
    select **Allow projects and subgroups to override the group setting**.
 
 NOTE:
-If you re-enable the shared runners for a group after you disable them, a user with the 
+If you re-enable the shared runners for a group after you disable them, a user with the
 Owner or Maintainer role must manually change this setting for each project subgroup or project.
 
 ### How shared runners pick jobs
