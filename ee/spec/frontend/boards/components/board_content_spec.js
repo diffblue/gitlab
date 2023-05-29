@@ -35,6 +35,8 @@ describe('ee/BoardContent', () => {
         boardId: 'gid://gitlab/Board/1',
         filterParams: {},
         isSwimlanesOn,
+        listQueryVariables: {},
+        addColumnFormVisible: false,
       },
       stubs: {
         'board-content-sidebar': BoardContentSidebar,

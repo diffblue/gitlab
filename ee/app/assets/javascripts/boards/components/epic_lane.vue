@@ -46,6 +46,11 @@ export default {
       type: Object,
       required: true,
     },
+    highlightedLists: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     const { userPreferences } = this.epic;
@@ -226,6 +231,7 @@ export default {
         :can-admin-list="canAdminList"
         :board-id="boardId"
         :filter-params="filterParams"
+        :highlighted-lists-apollo="highlightedLists"
       />
     </div>
   </div>

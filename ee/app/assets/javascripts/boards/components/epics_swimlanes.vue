@@ -3,7 +3,6 @@ import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import VirtualList from 'vue-virtual-scroll-list';
 import Draggable from 'vuedraggable';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import BoardAddNewColumn from 'ee_else_ce/boards/components/board_add_new_column.vue';
 import BoardListHeader from 'ee_else_ce/boards/components/board_list_header.vue';
 import { isListDraggable } from '~/boards/boards_util';
 import eventHub from '~/boards/eventhub';
@@ -26,7 +25,6 @@ export default {
   epicLaneBaseHeight: EPIC_LANE_BASE_HEIGHT,
   draggableItemTypes: DraggableItemTypes,
   components: {
-    BoardAddNewColumn,
     BoardListHeader,
     EpicLane,
     IssuesLaneList,
@@ -56,6 +54,11 @@ export default {
     boardId: {
       type: String,
       required: true,
+    },
+    highlightedLists: {
+      type: Array,
+      required: false,
+      default: () => [],
     },
   },
   data() {
@@ -90,7 +93,6 @@ export default {
       'epics',
       'pageInfoByListId',
       'listsFlags',
-      'addColumnForm',
       'filterParams',
       'epicsSwimlanesFetchInProgress',
       'hasMoreEpics',
@@ -120,9 +122,6 @@ export default {
       return this.isApolloBoard
         ? this.isLoadingMore
         : this.epicsSwimlanesFetchInProgress.epicLanesFetchMoreInProgress;
-    },
-    addColumnFormVisible() {
-      return this.addColumnForm?.visible;
     },
     treeRootWrapper() {
       return this.canAdminList ? Draggable : DRAGGABLE_TAG;
@@ -247,6 +246,7 @@ export default {
           canAdminList: this.canAdminList,
           boardId: this.boardId,
           filterParams: this.filtersToUse,
+          highlightedLists: this.highlightedLists,
         },
       };
     },
@@ -373,6 +373,7 @@ export default {
                 :board-id="boardId"
                 :filter-params="filtersToUse"
                 :is-loading-more-issues="isLoadingMoreIssues"
+                :highlighted-lists-apollo="highlightedLists"
                 @updatePageInfo="updatePageInfo"
                 @issuesLoaded="isLoadingMoreIssues = false"
               />
@@ -399,7 +400,7 @@ export default {
     </div>
 
     <transition name="slide" @after-enter="afterFormEnters">
-      <board-add-new-column v-if="addColumnFormVisible" class="gl-sticky gl-top-5" />
+      <slot></slot>
     </transition>
   </div>
 </template>

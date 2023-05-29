@@ -15,6 +15,8 @@ import listEpicsQuery from './graphql/lists_epics.query.graphql';
 import listEpicsWithColorQuery from './graphql/lists_epics_with_color.query.graphql';
 import listDeferredQuery from './graphql/board_lists_deferred.query.graphql';
 import epicListDeferredQuery from './graphql/epic_board_lists_deferred.query.graphql';
+import createBoardListMutation from './graphql/board_list_create.mutation.graphql';
+import createEpicBoardListMutation from './graphql/epic_board_list_create.mutation.graphql';
 import toggleEpicListCollapsedMutation from './graphql/client/epic_board_toggle_collapsed.mutation.graphql';
 
 export * from '~/boards/constants';
@@ -164,6 +166,15 @@ export const listsDeferredQuery = {
   },
   [TYPE_EPIC]: {
     query: epicListDeferredQuery,
+  },
+};
+
+export const createListMutations = {
+  [TYPE_ISSUE]: {
+    mutation: createBoardListMutation,
+  },
+  [TYPE_EPIC]: {
+    mutation: createEpicBoardListMutation,
   },
 };
 

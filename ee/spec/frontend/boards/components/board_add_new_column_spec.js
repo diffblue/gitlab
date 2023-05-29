@@ -1,21 +1,43 @@
 import { GlAvatarLabeled, GlFormRadio, GlFormRadioGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import BoardAddNewColumn, { listTypeInfo } from 'ee/boards/components/board_add_new_column.vue';
+import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
+import createBoardListMutation from 'ee_else_ce/boards/graphql/board_list_create.mutation.graphql';
+import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
+import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { ListType } from '~/boards/constants';
 import defaultState from '~/boards/stores/state';
 import { getIterationPeriod } from 'ee/iterations/utils';
-import { mockAssignees, mockLists, mockIterations } from '../mock_data';
-
-const mockLabelList = mockLists[1];
+import { mockLabelList, createBoardListResponse, labelsQueryResponse } from 'jest/boards/mock_data';
+import {
+  mockAssignees,
+  mockIterations,
+  assigneesQueryResponse,
+  iterationsQueryResponse,
+} from '../mock_data';
 
 Vue.use(Vuex);
+Vue.use(VueApollo);
 
 describe('BoardAddNewColumn', () => {
   let wrapper;
+
+  const createBoardListQueryHandler = jest.fn().mockResolvedValue(createBoardListResponse);
+  const labelsQueryHandler = jest.fn().mockResolvedValue(labelsQueryResponse);
+  const assigneesQueryHandler = jest.fn().mockResolvedValue(assigneesQueryResponse);
+  const iterationQueryHandler = jest.fn().mockResolvedValue(iterationsQueryResponse);
+  const mockApollo = createMockApollo([
+    [boardLabelsQuery, labelsQueryHandler],
+    [projectBoardMembersQuery, assigneesQueryHandler],
+    [searchIterationQuery, iterationQueryHandler],
+    [createBoardListMutation, createBoardListQueryHandler],
+  ]);
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const selectItem = (id) => {
@@ -40,8 +62,15 @@ describe('BoardAddNewColumn', () => {
     iterations = [],
     getListByTypeId = jest.fn(),
     actions = {},
+    provide = {},
   } = {}) => {
     wrapper = shallowMountExtended(BoardAddNewColumn, {
+      apolloProvider: mockApollo,
+      propsData: {
+        listQueryVariables: {},
+        boardId: 'gid://gitlab/Board/1',
+        lists: {},
+      },
       stubs: {
         BoardAddNewColumnForm,
         GlFormRadio,
@@ -57,7 +86,6 @@ describe('BoardAddNewColumn', () => {
       store: createStore({
         actions: {
           fetchLabels: jest.fn(),
-          setAddColumnFormVisibility: jest.fn(),
           ...actions,
         },
         getters: {
@@ -78,6 +106,11 @@ describe('BoardAddNewColumn', () => {
         assigneeListsAvailable: true,
         iterationListsAvailable: true,
         isEpicBoard: false,
+        issuableType: 'issue',
+        fullPath: 'gitlab-org/gitlab',
+        boardType: 'project',
+        isApolloBoard: false,
+        ...provide,
       },
     });
 
@@ -85,6 +118,9 @@ describe('BoardAddNewColumn', () => {
     if (selectedId) {
       selectItem(selectedId);
     }
+
+    // Necessary for cache update
+    mockApollo.clients.defaultClient.cache.writeQuery = jest.fn();
   };
 
   const findForm = () => wrapper.findComponent(BoardAddNewColumnForm);
@@ -116,16 +152,11 @@ describe('BoardAddNewColumn', () => {
   };
 
   it('clicking cancel hides the form', () => {
-    const setAddColumnFormVisibility = jest.fn();
-    mountComponent({
-      actions: {
-        setAddColumnFormVisibility,
-      },
-    });
+    mountComponent();
 
     cancelButton().vm.$emit('click');
 
-    expect(setAddColumnFormVisibility).toHaveBeenCalledWith(expect.anything(), false);
+    expect(wrapper.emitted('setAddColumnFormVisibility')).toEqual([[false]]);
   });
 
   it('renders GlCollapsibleListbox with search field', () => {
@@ -282,6 +313,58 @@ describe('BoardAddNewColumn', () => {
         .wrappers.map((x) => x.text());
 
       expect(cadenceTitles).toEqual(cadenceTitles.map((_, idx) => getCadenceTitleFromMocks(idx)));
+    });
+  });
+
+  describe('Apollo boards', () => {
+    describe('assignee list', () => {
+      beforeEach(async () => {
+        mountComponent({ provide: { isApolloBoard: true } });
+        listTypeSelect(ListType.assignee);
+
+        await nextTick();
+      });
+
+      it('sets assignee placeholder text in form', () => {
+        expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
+        expect(findDropdown().props('searchPlaceholder')).toBe(
+          listTypeInfo.assignee.searchPlaceholder,
+        );
+      });
+
+      it('shows list of assignees', () => {
+        const userList = wrapper.findAllComponents(GlAvatarLabeled);
+
+        const [firstUser] = mockAssignees;
+
+        expect(userList).toHaveLength(mockAssignees.length);
+        expect(userList.at(0).props()).toMatchObject({
+          label: firstUser.name,
+          subLabel: `@${firstUser.username}`,
+        });
+      });
+    });
+
+    describe('iteration list', () => {
+      beforeEach(async () => {
+        mountComponent({ provide: { isApolloBoard: true } });
+        await selectIteration();
+      });
+
+      it('sets iteration placeholder text in form', () => {
+        expect(findForm().props('searchLabel')).toBe(BoardAddNewColumn.i18n.value);
+        expect(findDropdown().props('searchPlaceholder')).toBe(
+          listTypeInfo.iteration.searchPlaceholder,
+        );
+      });
+
+      it('shows list of iterations', () => {
+        const itemList = findDropdown().props('items');
+
+        expect(itemList).toHaveLength(mockIterations.length);
+        expectIterationWithoutTitle();
+        expectIterationWithTitle();
+      });
     });
   });
 });
