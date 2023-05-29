@@ -2,11 +2,11 @@
 import { isEmpty } from 'lodash';
 import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
+import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { DRAWER_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
-import { NAV_BAR_CSS_CLASS } from '../constants';
 import DastProfilesDrawerHeader from './dast_profiles_drawer_header.vue';
 import DastProfilesDrawerEmptyState from './dast_profiles_drawer_empty_state.vue';
 import DastProfilesDrawerForm from './dast_profiles_drawer_form.vue';
@@ -14,6 +14,7 @@ import DastProfilesDrawerList from './dast_profiles_drawer_list.vue';
 
 export default {
   DRAWER_VIEW_MODE,
+  DRAWER_Z_INDEX,
   i18n: {
     footerLinkText: s__('DastProfiles|Manage %{profileType} profiles'),
   },
@@ -28,11 +29,6 @@ export default {
   },
   mixins: [dastProfileConfiguratorMixin()],
   props: {
-    containerClass: {
-      type: String,
-      required: false,
-      default: NAV_BAR_CSS_CLASS,
-    },
     open: {
       type: Boolean,
       required: false,
@@ -84,7 +80,7 @@ export default {
   },
   computed: {
     getDrawerHeaderHeight() {
-      return getContentWrapperHeight(this.containerClass);
+      return getContentWrapperHeight('.content-wrapper');
     },
     hasProfiles() {
       return this.profiles.length > 0;
@@ -195,6 +191,7 @@ export default {
     :header-height="getDrawerHeaderHeight"
     :header-sticky="true"
     :open="open"
+    :z-index="$options.DRAWER_Z_INDEX"
     @close="resetAndEmitCloseEvent"
   >
     <template #title>
