@@ -1531,6 +1531,16 @@ RSpec.describe User, feature_category: :system_access do
           expect(user.has_paid_namespace?(plans: [::Plan::ULTIMATE, ::Plan::FREE])).to eq(false)
         end
       end
+
+      context 'when passed exclude_trials: true' do
+        let_it_be(:trial_group) { create(:group_with_plan, plan: :ultimate_plan, trial_ends_on: 1.day.from_now) }
+
+        it 'returns false' do
+          trial_group.add_owner(user)
+
+          expect(user.has_paid_namespace?(exclude_trials: true)).to eq(false)
+        end
+      end
     end
 
     context 'when passed a plan' do

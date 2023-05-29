@@ -334,17 +334,26 @@ module EE
 
     # Returns true if the user is a Reporter or higher on any namespace
     # currently on a paid plan
-    def has_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS)
-      paid_namespaces(plans: plans).any?
+    def has_paid_namespace?(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
+      paid_namespaces(plans: plans, exclude_trials: exclude_trials).any?
     end
 
-    def paid_namespaces(plans: ::Plan::PAID_HOSTED_PLANS)
+    def paid_namespaces(plans: ::Plan::PAID_HOSTED_PLANS, exclude_trials: false)
       paid_hosted_plans = ::Plan::PAID_HOSTED_PLANS & plans
-      ::Namespace
+
+      namespaces_with_plans = ::Namespace
         .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
         .include_gitlab_subscription
         .where(gitlab_subscriptions: { hosted_plan: ::Plan.where(name: paid_hosted_plans) })
-        .select(:id)
+
+      if exclude_trials
+        return namespaces_with_plans
+          .where(gitlab_subscriptions: { trial: [nil, false] })
+          .or(namespaces_with_plans.where(gitlab_subscriptions: { trial_ends_on: ..Date.yesterday }))
+          .select(:id)
+      end
+
+      namespaces_with_plans.select(:id)
     end
 
     # Returns true if the user is an Owner on any namespace currently on
