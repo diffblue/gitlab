@@ -799,7 +799,8 @@ translatable in certain languages.
   Set the link starting and ending HTML fragments as variables:
 
   ```haml
-  - zones_link = link_to('', 'https://cloud.google.com/compute/docs/regions-zones/regions-zones', target: '_blank', rel: 'noopener noreferrer')
+  - zones_link_url = 'https://cloud.google.com/compute/docs/regions-zones/regions-zones'
+  - zones_link = link_to('', zones_link_url, target: '_blank', rel: 'noopener noreferrer')
   = safe_format(s_('ClusterIntegration|Learn more about %{zones_link_start}zones%{zones_link_end}'), tag_pair(zones_link, :zones_link_start, :zones_link_end))
   ```
 

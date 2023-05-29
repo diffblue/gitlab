@@ -18,7 +18,7 @@ module SafeFormatHelper
   #   # => "Some <strong>bold</strong> text."
   #   safe_format('Some %{open}bold%{close} %{italicStart}text%{italicEnd}.',
   #     tag_pair(tag.strong, :open, :close),
-  #     tag_pair(tag.i, :italicStart, italicEnd))
+  #     tag_pair(tag.i, :italicStart, :italicEnd))
   #   # => "Some <strong>bold</strong> <i>text</i>.
   def safe_format(format, *args)
     args = args.inject({}, &:merge)
@@ -42,9 +42,9 @@ module SafeFormatHelper
   # @raise [ArgumentError] if +tag+ is not HTML-safe
   #
   # @example
-  #   tag_pair(helper.tag.strong, :open, close)
+  #   tag_pair(helper.tag.strong, :open, :close)
   #   # => { open: '<strong>', close: '</strong>' }
-  #   tag_pair(helper.tag.link_to('', '/', :open, :close))
+  #   tag_pair(link_to('', '/'), :open, :close)
   #   # => { open: '<a href="/">', close: '</a>' }
   def tag_pair(tag, open_name, close_name)
     raise ArgumentError, 'Argument `tag` must be `html_safe`!' unless tag.html_safe?
