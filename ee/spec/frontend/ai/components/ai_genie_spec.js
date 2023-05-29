@@ -76,6 +76,7 @@ describe('AiGenie', () => {
   const findGenieChat = () => wrapper.findComponent(AiGenieChat);
   const findCodeBlock = () => wrapper.findComponent(CodeBlockHighlighted);
   const findUserFeedback = () => wrapper.findComponent(UserFeedback);
+  const findLegalWarning = () => wrapper.findByTestId('chat-legal-warning-gitlab-usage');
   const getRangeAtMock = (top = () => 0) => {
     return jest.fn((rangePosition) => {
       return {
@@ -314,6 +315,11 @@ describe('AiGenie', () => {
       await waitForPromises();
       await nextTick();
       expect(findGenieChat().props('isLoading')).toBe(false);
+    });
+
+    it('renders the GitLab AI legal warning', async () => {
+      await requestExplanation();
+      expect(findLegalWarning().exists()).toBe(true);
     });
 
     describe('error handling', () => {

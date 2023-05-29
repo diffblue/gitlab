@@ -139,20 +139,18 @@ export default {
         />
       </div>
 
-      <slot name="subheader">
-        <gl-alert
-          :dismissible="false"
-          variant="warning"
-          class="gl-font-sm gl-border-t"
-          role="alert"
-          data-testid="chat-legal-warning"
-          primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
-          :primary-button-text="__('Read more')"
-        >
-          <strong v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI"></strong>
-          <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
-        </gl-alert>
-      </slot>
+      <gl-alert
+        :dismissible="false"
+        variant="tip"
+        :show-icon="false"
+        class="gl-text-center gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning gl-max-w-full"
+        role="alert"
+        data-testid="chat-legal-warning"
+      >
+        <span>{{ $options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI }}</span>
+      </gl-alert>
+
+      <slot name="subheader"></slot>
     </header>
 
     <div class="gl-drawer-body gl-drawer-body gl-display-flex gl-flex-direction-column">

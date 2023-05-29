@@ -1,6 +1,6 @@
 <script>
 import { debounce } from 'lodash';
-import { GlButton, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective, GlAlert } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
@@ -28,6 +28,7 @@ export default {
     AiGenieChat,
     CodeBlockHighlighted,
     UserFeedback,
+    GlAlert,
   },
   directives: {
     SafeHtml,
@@ -213,6 +214,19 @@ export default {
           max-height="20rem"
           class="gl-border-t gl-border-b gl-rounded-0! gl-mb-0 gl-overflow-y-auto"
         />
+      </template>
+      <template #subheader>
+        <gl-alert
+          :dismissible="false"
+          variant="warning"
+          class="gl-font-sm gl-border-t"
+          role="alert"
+          data-testid="chat-legal-warning-gitlab-usage"
+          primary-button-link="https://internal-handbook.gitlab.io/handbook/product/ai-strategy/ai-integration-effort/legal_restrictions/"
+          :primary-button-text="__('Read more')"
+        >
+          <p v-safe-html="$options.i18n.GENIE_CHAT_LEGAL_NOTICE"></p>
+        </gl-alert>
       </template>
       <template #feedback="{ promptLocation }">
         <user-feedback :event-name="$options.trackingEventName" :prompt-location="promptLocation" />
