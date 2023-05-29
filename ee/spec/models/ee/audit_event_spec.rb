@@ -145,6 +145,48 @@ RSpec.describe AuditEvent, type: :model, feature_category: :audit_events do
         event.stream_to_external_destinations
       end
     end
+
+    context 'when instance level external destination is present' do
+      let_it_be(:event) { create(:audit_event, :group_event) }
+
+      before do
+        create(:instance_external_audit_event_destination)
+      end
+
+      shared_examples 'no stream event gets created' do
+        it 'enqueues no workers' do
+          expect(AuditEvents::AuditEventStreamingWorker).not_to receive(:perform_async)
+
+          event.stream_to_external_destinations
+        end
+      end
+
+      context 'when feature is licensed for instance' do
+        before do
+          stub_licensed_features(external_audit_events: true)
+        end
+
+        context 'when feature flag ff_external_audit_events is enabled' do
+          it 'enqueues one worker' do
+            expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).once
+
+            event.stream_to_external_destinations
+          end
+        end
+
+        context 'when feature flag ff_external_audit_events is disabled' do
+          before do
+            stub_feature_flags(ff_external_audit_events: false)
+          end
+
+          it_behaves_like 'no stream event gets created'
+        end
+      end
+
+      context 'when feature is not licensed for instance' do
+        it_behaves_like 'no stream event gets created'
+      end
+    end
   end
 
   describe '.by_entity' do
