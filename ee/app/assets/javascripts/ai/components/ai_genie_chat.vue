@@ -172,7 +172,7 @@ export default {
             },
           ]"
         >
-          <template v-if="hasMessages">
+          <template v-if="hasMessages || isLoading">
             <div
               v-for="(message, index) in messages"
               :key="`${message.role}-${index}`"
