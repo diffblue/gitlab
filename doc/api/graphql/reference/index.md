@@ -11754,7 +11754,7 @@ Information about a connected Agent.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="aicachedmessagetypecontent"></a>`content` | [`String`](#string) | Content of the message. Can be null for user requests or failed responses. |
+| <a id="aicachedmessagetypecontent"></a>`content` | [`String`](#string) | Content of the message. Can be null for failed responses. |
 | <a id="aicachedmessagetypeerrors"></a>`errors` | [`[String!]!`](#string) | Errors that occurred while asynchronously fetching an AI (assistant) response. |
 | <a id="aicachedmessagetypeid"></a>`id` | [`ID`](#id) | UUID of the message. |
 | <a id="aicachedmessagetyperequestid"></a>`requestId` | [`ID`](#id) | UUID of the original request message. |

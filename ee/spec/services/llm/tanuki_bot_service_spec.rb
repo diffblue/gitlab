@@ -17,6 +17,7 @@ RSpec.describe Llm::TanukiBotService, feature_category: :global_search do
     it_behaves_like 'completion worker sync and async' do
       let(:resource) { user }
       let(:action_name) { :tanuki_bot }
+      let(:content) { options[:question] }
     end
 
     context 'when openai_experimentation feature flag is disabled' do
