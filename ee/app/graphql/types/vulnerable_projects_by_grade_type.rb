@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Types
-  # rubocop: disable Graphql/AuthorizeTypes
+  # rubocop: disable Graphql/AuthorizeTypes (The serialized object is a Hash)
   class VulnerableProjectsByGradeType < BaseObject
     graphql_name 'VulnerableProjectsByGrade'
     description 'Represents vulnerability letter grades with associated projects'

@@ -66,7 +66,7 @@ module EE
           resolver: ::Resolvers::VulnerabilitiesCountPerDayResolver
 
         field :vulnerability_grades, [::Types::VulnerableProjectsByGradeType],
-          null: false,
+          null: true,
           description: 'Represents vulnerable project counts for each grade.',
           resolver: ::Resolvers::VulnerabilitiesGradeResolver
 
