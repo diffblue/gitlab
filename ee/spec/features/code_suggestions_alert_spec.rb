@@ -54,6 +54,41 @@ RSpec.describe 'Code suggestions alert', :saas, :js, feature_category: :code_sug
     expect_banner_to_be_absent
   end
 
+  context 'when new navigation alert is present' do
+    let_it_be(:user) { create(:user, use_new_navigation: true) }
+
+    before do
+      sign_in(user)
+      visit group_path(group)
+    end
+
+    it 'does not show code suggestions alert' do
+      expect_new_nav_alert_to_be_present
+      expect_group_page_for(group)
+      expect_banner_to_be_absent
+    end
+
+    context 'when user dismisses new navigation alert' do
+      it 'hides new nav alert and shows code suggestions alert' do
+        expect_new_nav_alert_to_be_present
+
+        page.within(find('[data-feature-id="new_navigation_callout"]')) do
+          find('[data-testid="close-icon"]').click
+        end
+
+        wait_for_requests
+
+        # simulate delay in showing code suggestions alert
+        travel_to(Time.current + 31.minutes) do
+          visit group_path(group)
+
+          expect_new_nav_alert_be_absent
+          expect_banner_to_be_present
+        end
+      end
+    end
+  end
+
   def dismiss_button
     find('button[data-testid="code_suggestions_alert_dismiss"]')
   end
@@ -74,5 +109,13 @@ RSpec.describe 'Code suggestions alert', :saas, :js, feature_category: :code_sug
 
   def expect_banner_to_be_absent
     expect(page).not_to have_text 'Get started with Code Suggestions'
+  end
+
+  def expect_new_nav_alert_to_be_present
+    expect(page).to have_content _('Welcome to a new navigation experience')
+  end
+
+  def expect_new_nav_alert_be_absent
+    expect(page).not_to have_content _('Welcome to a new navigation experience')
   end
 end
