@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :continuous_integration do
+RSpec.describe 'Reset namespace compute usage', :js, feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let(:admin) { create(:admin) }
@@ -12,17 +12,17 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
     gitlab_enable_admin_mode_sign_in(admin)
   end
 
-  shared_examples 'resetting pipeline minutes' do
+  shared_examples 'resetting compute usage' do
     context 'when namespace has minutes used' do
       before do
         set_ci_minutes_used(namespace, 100)
       end
 
-      it 'resets pipeline minutes' do
+      it 'resets compute usage' do
         time = Time.zone.now
 
         travel_to(time) do
-          click_button 'Reset pipeline minutes'
+          click_button 'Reset compute usage'
         end
 
         expect(page).to have_selector('.gl-toast')
@@ -36,7 +36,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
   end
 
   shared_examples 'rendering error' do
-    context 'when resetting pipeline minutes fails' do
+    context 'when resetting compute usage fails' do
       before do
         allow_next_instance_of(Ci::Minutes::ResetUsageService) do |instance|
           allow(instance).to receive(:execute).and_return(false)
@@ -44,7 +44,7 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
       end
 
       it 'renders edit page with an error' do
-        click_button 'Reset pipeline minutes'
+        click_button 'Reset compute usage'
 
         expect(page).to have_current_path(%r(#{namespace.path}), ignore_query: true)
         expect(page).to have_selector('.gl-toast')
@@ -61,11 +61,11 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
       click_link 'Edit'
     end
 
-    it 'reset pipeline minutes button is visible' do
-      expect(page).to have_button('Reset pipeline minutes')
+    it 'reset compute usage button is visible' do
+      expect(page).to have_button('Reset compute usage')
     end
 
-    include_examples 'resetting pipeline minutes'
+    include_examples 'resetting compute usage'
     include_examples 'rendering error'
   end
 
@@ -77,8 +77,8 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
       end
     end
 
-    it 'does not display reset pipeline minutes callout' do
-      expect(page).not_to have_link('Reset pipeline minutes')
+    it 'does not display reset compute usage callout' do
+      expect(page).not_to have_link('Reset compute usage')
     end
   end
 
@@ -91,11 +91,11 @@ RSpec.describe 'Reset namespace pipeline minutes', :js, feature_category: :conti
       click_link 'Edit'
     end
 
-    it 'reset pipeline minutes button is visible' do
-      expect(page).to have_button('Reset pipeline minutes')
+    it 'reset compute usage button is visible' do
+      expect(page).to have_button('Reset compute usage')
     end
 
-    include_examples 'resetting pipeline minutes'
+    include_examples 'resetting compute usage'
     include_examples 'rendering error'
   end
 end
