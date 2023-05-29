@@ -55,7 +55,8 @@ RSpec.describe Projects::ContainerRepository::Gitlab::DeleteTagsService, feature
       context 'with timeout' do
         context 'set to a valid value' do
           before do
-            allow(Time.zone).to receive(:now).and_return(10, 15, 25) # third call to Time.zone.now will be triggering the timeout
+            now = Time.zone.now
+            allow(Time.zone).to receive(:now).and_return(now + 10, now + 15, now + 25) # third call to Time.zone.now will be triggering the timeout
             stub_delete_reference_requests('A' => 200)
           end
 
