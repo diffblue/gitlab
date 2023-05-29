@@ -55,6 +55,11 @@ export default {
       required: false,
       default: false,
     },
+    highlightedListsApollo: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -110,6 +115,10 @@ export default {
       return this.issues;
     },
 
+    highlightedListsToUse() {
+      return this.isApolloBoard ? this.highlightedListsApollo : this.highlightedLists;
+    },
+
     treeRootWrapper() {
       return this.canAdminList && (this.canAdminEpic || this.isUnassignedIssuesLane)
         ? Draggable
@@ -144,7 +153,7 @@ export default {
     },
 
     highlighted() {
-      return this.highlightedLists.includes(this.list.id);
+      return this.highlightedListsToUse.includes(this.list.id);
     },
     boardItemsSizeExceedsMax() {
       return (

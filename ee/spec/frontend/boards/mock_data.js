@@ -892,3 +892,30 @@ export const epicBoardListsQueryResponse = {
     },
   },
 };
+
+export const assigneesQueryResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Project/33',
+      assignees: {
+        nodes: [
+          { id: 'gid://gitlab/ProjectMember/43', user: mockAssignees[0] },
+          { id: 'gid://gitlab/ProjectMember/44', user: mockAssignees[1] },
+        ],
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const iterationsQueryResponse = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Group/33',
+      iterations: {
+        nodes: mockIterations,
+      },
+      __typename: 'Project',
+    },
+  },
+};

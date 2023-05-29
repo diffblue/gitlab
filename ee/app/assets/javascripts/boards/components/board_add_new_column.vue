@@ -1,4 +1,6 @@
 <script>
+import produce from 'immer';
+import { debounce } from 'lodash';
 import {
   GlAvatar,
   GlAvatarLabeled,
@@ -12,8 +14,9 @@ import {
 } from '@gitlab/ui';
 import { mapActions, mapGetters, mapState } from 'vuex';
 import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form.vue';
-import { ListType } from '~/boards/constants';
+import { ListType, createListMutations, listsQuery, BoardType } from 'ee_else_ce/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import { __ } from '~/locale';
 import {
   groupOptionsByIterationCadences,
@@ -21,32 +24,39 @@ import {
   getIterationPeriod,
 } from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
+import boardLabelsQuery from '~/boards/graphql/board_labels.query.graphql';
+import groupBoardMilestonesQuery from '~/boards/graphql/group_board_milestones.query.graphql';
+import projectBoardMilestonesQuery from '~/boards/graphql/project_board_milestones.query.graphql';
+import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
+import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';
+import { getListByTypeId } from '~/boards//boards_util';
+import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query.graphql';
 
 export const listTypeInfo = {
   [ListType.label]: {
-    listPropertyName: 'labels',
-    loadingPropertyName: 'labelsLoading',
+    listPropertyName: 'labelsToUse',
+    loadingPropertyName: 'isLabelsLoading',
     fetchMethodName: 'fetchLabels',
     noneSelected: __('Select a label'),
     searchPlaceholder: __('Search labels'),
   },
   [ListType.assignee]: {
-    listPropertyName: 'assignees',
-    loadingPropertyName: 'assigneesLoading',
+    listPropertyName: 'assigneesToUse',
+    loadingPropertyName: 'isAssigneesLoading',
     fetchMethodName: 'fetchAssignees',
     noneSelected: __('Select an assignee'),
     searchPlaceholder: __('Search assignees'),
   },
   [ListType.milestone]: {
-    listPropertyName: 'milestones',
-    loadingPropertyName: 'milestonesLoading',
+    listPropertyName: 'milestonesToUse',
+    loadingPropertyName: 'isMilestonesLoading',
     fetchMethodName: 'fetchMilestones',
     noneSelected: __('Select a milestone'),
     searchPlaceholder: __('Search milestones'),
   },
   [ListType.iteration]: {
-    listPropertyName: 'iterations',
-    loadingPropertyName: 'iterationsLoading',
+    listPropertyName: 'iterationsToUse',
+    loadingPropertyName: 'isIterationsLoading',
     fetchMethodName: 'fetchIterations',
     noneSelected: __('Select an iteration'),
     searchPlaceholder: __('Search iterations'),
@@ -78,15 +88,106 @@ export default {
     'milestoneListsAvailable',
     'assigneeListsAvailable',
     'iterationListsAvailable',
+    'boardType',
+    'issuableType',
+    'fullPath',
     'isEpicBoard',
+    'isApolloBoard',
   ],
+  props: {
+    boardId: {
+      type: String,
+      required: true,
+    },
+    listQueryVariables: {
+      type: Object,
+      required: true,
+    },
+    lists: {
+      type: Object,
+      required: true,
+    },
+  },
   data() {
     return {
       selectedId: null,
       selectedItem: null,
       columnType: ListType.label,
       selectedIdValid: true,
+      labelsApollo: [],
+      milestonesApollo: [],
+      assigneesApollo: [],
+      iterationsApollo: [],
+      searchTerm: '',
     };
+  },
+  apollo: {
+    labelsApollo: {
+      query: boardLabelsQuery,
+      variables() {
+        return {
+          ...this.baseVariables,
+          isGroup: this.boardType === BoardType.group,
+          isProject: this.boardType === BoardType.project,
+        };
+      },
+      skip() {
+        return !this.isApolloBoard || this.columnType !== ListType.label;
+      },
+      update(data) {
+        return data[this.boardType].labels.nodes;
+      },
+    },
+    milestonesApollo: {
+      query() {
+        if (this.boardType === BoardType.project) {
+          return projectBoardMilestonesQuery;
+        }
+        return groupBoardMilestonesQuery;
+      },
+      variables() {
+        return this.baseVariables;
+      },
+      update(data) {
+        return data.workspace.milestones.nodes;
+      },
+      skip() {
+        return !this.isApolloBoard || this.columnType !== ListType.milestone;
+      },
+    },
+    assigneesApollo: {
+      query() {
+        if (this.boardType === BoardType.project) {
+          return projectBoardMembersQuery;
+        }
+        return groupBoardMembersQuery;
+      },
+      variables() {
+        return { ...this.baseVariables, search: this.searchTerm };
+      },
+      update(data) {
+        return data.workspace.assignees.nodes.map(({ user }) => user);
+      },
+      skip() {
+        return !this.isApolloBoard || this.columnType !== ListType.assignee;
+      },
+    },
+    iterationsApollo: {
+      query: searchIterationQuery,
+      variables() {
+        return {
+          ...this.baseVariables,
+          search: this.searchTerm,
+          isProject: this.boardType === BoardType.project,
+        };
+      },
+      update(data) {
+        return data[this.boardType].iterations.nodes;
+      },
+      skip() {
+        return !this.isApolloBoard || this.columnType !== ListType.iteration;
+      },
+    },
   },
   computed: {
     ...mapState([
@@ -100,7 +201,42 @@ export default {
       'assigneesLoading',
     ]),
     ...mapGetters(['getListByTypeId']),
-
+    labelsToUse() {
+      return this.isApolloBoard ? this.labelsApollo : this.labels;
+    },
+    isLabelsLoading() {
+      return this.isApolloBoard ? this.$apollo.queries.labelsApollo.loading : this.labelsLoading;
+    },
+    milestonesToUse() {
+      return this.isApolloBoard ? this.milestonesApollo : this.milestones;
+    },
+    isMilestonesLoading() {
+      return this.isApolloBoard
+        ? this.$apollo.queries.milestonesApollo.loading
+        : this.milestonesLoading;
+    },
+    assigneesToUse() {
+      return this.isApolloBoard ? this.assigneesApollo : this.assignees;
+    },
+    isAssigneesLoading() {
+      return this.isApolloBoard
+        ? this.$apollo.queries.assigneesApollo.loading
+        : this.assigneesLoading;
+    },
+    iterationsToUse() {
+      return this.isApolloBoard ? this.iterationsApollo : this.iterations;
+    },
+    isIterationsLoading() {
+      return this.isApolloBoard
+        ? this.$apollo.queries.iterationsApollo.loading
+        : this.iterationsLoading;
+    },
+    baseVariables() {
+      return {
+        fullPath: this.fullPath,
+        searchTerm: this.searchTerm,
+      };
+    },
     info() {
       return listTypeInfo[this.columnType] || {};
     },
@@ -110,21 +246,15 @@ export default {
     },
 
     items() {
-      return (
-        this[this.info.listPropertyName].map((i) => ({
-          ...i,
-          text: i.title,
-          value: i.id,
-        })) || []
-      );
+      return (this[this.info.listPropertyName] || []).map((i) => ({
+        ...i,
+        text: i.title,
+        value: i.id,
+      }));
     },
 
     listboxItems() {
       return this.iterationTypeSelected ? groupOptionsByIterationCadences(this.items) : this.items;
-    },
-
-    hasItems() {
-      return this.items.length > 0;
     },
 
     labelTypeSelected() {
@@ -159,6 +289,9 @@ export default {
       }
 
       const key = `${this.columnType}Id`;
+      if (this.isApolloBoard) {
+        return getListByTypeId(this.lists, this.columnType, this.selectedId);
+      }
       return this.getListByTypeId({
         [key]: this.selectedId,
       });
@@ -202,39 +335,94 @@ export default {
     },
   },
   created() {
-    this.filterItems();
+    if (!this.isApolloBoard) {
+      this.filterItems();
+    }
   },
   methods: {
     ...mapActions([
       'createList',
       'fetchLabels',
       'highlightList',
-      'setAddColumnFormVisibility',
       'fetchAssignees',
       'fetchIterations',
       'fetchMilestones',
     ]),
-    addList() {
+    async createListApollo({ backlog, labelId, milestoneId, assigneeId, iterationId }) {
+      const {
+        data: { boardListCreate },
+      } = await this.$apollo.mutate({
+        mutation: createListMutations[this.issuableType].mutation,
+        variables: {
+          labelId,
+          backlog,
+          milestoneId,
+          assigneeId,
+          iterationId,
+          boardId: this.boardId,
+        },
+        update: (
+          store,
+          {
+            data: {
+              boardListCreate: { list },
+            },
+          },
+        ) => {
+          const sourceData = store.readQuery({
+            query: listsQuery[this.issuableType].query,
+            variables: this.listQueryVariables,
+          });
+          const data = produce(sourceData, (draftData) => {
+            draftData[this.boardType].board.lists.nodes.push(list);
+          });
+          store.writeQuery({
+            query: listsQuery[this.issuableType].query,
+            variables: this.listQueryVariables,
+            data,
+          });
+          this.$emit('highlight-list', list.id);
+        },
+      });
+      return boardListCreate;
+    },
+    async addList() {
       if (!this.selectedItem) {
         this.selectedIdValid = false;
         return;
       }
 
-      this.setAddColumnFormVisibility(false);
-
       if (this.columnForSelected) {
         const listId = this.columnForSelected.id;
-        this.highlightList(listId);
+        if (this.isApolloBoard) {
+          this.$emit('highlight-list', listId);
+        } else {
+          this.highlightList(listId);
+        }
         return;
       }
 
-      // eslint-disable-next-line @gitlab/require-i18n-strings
-      this.createList({ [`${this.columnType}Id`]: this.selectedId });
+      if (this.isApolloBoard) {
+        // eslint-disable-next-line @gitlab/require-i18n-strings
+        await this.createListApollo({ [`${this.columnType}Id`]: this.selectedId });
+      } else {
+        // eslint-disable-next-line @gitlab/require-i18n-strings
+        this.createList({ [`${this.columnType}Id`]: this.selectedId });
+      }
+
+      this.$emit('setAddColumnFormVisibility', false);
     },
 
     filterItems(searchTerm) {
       this[this.info.fetchMethodName](searchTerm);
     },
+
+    onSearch: debounce(function debouncedSearch(searchTerm) {
+      this.searchTerm = searchTerm;
+      if (!this.isApolloBoard) {
+        this.filterItems(searchTerm);
+      }
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
 
     showScopedLabels(label) {
       return this.scopedLabelsAvailable && isScopedLabel(label);
@@ -244,7 +432,9 @@ export default {
       this.columnType = type;
       this.selectedId = null;
       this.setSelectedItem(null);
-      this.filterItems();
+      if (!this.isApolloBoard) {
+        this.filterItems();
+      }
     },
 
     setSelectedItem(selectedId) {
@@ -272,8 +462,8 @@ export default {
   <board-add-new-column-form
     :search-label="searchLabel"
     :selected-id-valid="selectedIdValid"
-    @filter-items="filterItems"
     @add-list="addList"
+    @setAddColumnFormVisibility="$emit('setAddColumnFormVisibility', $event)"
   >
     <template #select-list-type>
       <gl-form-group
@@ -306,7 +496,7 @@ export default {
         :selected="selectedId"
         :no-results-text="$options.i18n.noResults"
         @select="setSelectedItem"
-        @search="filterItems"
+        @search="onSearch"
         @hidden="onHide"
       >
         <template #toggle>

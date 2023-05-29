@@ -746,10 +746,10 @@ export default {
         },
       })
       .then(({ data }) => {
-        if (data?.epicBoardListCreate?.errors.length) {
-          commit(types.CREATE_LIST_FAILURE, data.epicBoardListCreate.errors[0]);
+        if (data?.boardListCreate?.errors.length) {
+          commit(types.CREATE_LIST_FAILURE, data.boardListCreate.errors[0]);
         } else {
-          const list = data.epicBoardListCreate?.list;
+          const list = data.boardListCreate?.list;
           dispatch('addList', list);
           dispatch('highlightList', list.id);
         }

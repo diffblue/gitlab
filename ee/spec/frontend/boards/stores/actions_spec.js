@@ -924,7 +924,7 @@ describe('createEpicList', () => {
 
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        epicBoardListCreate: {
+        boardListCreate: {
           list: backlogList,
           errors: [],
         },
@@ -946,7 +946,7 @@ describe('createEpicList', () => {
 
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        epicBoardListCreate: {
+        boardListCreate: {
           list,
           errors: [],
         },
@@ -962,7 +962,7 @@ describe('createEpicList', () => {
   it('should commit CREATE_LIST_FAILURE mutation when API returns an error', async () => {
     jest.spyOn(gqlClient, 'mutate').mockResolvedValue({
       data: {
-        epicBoardListCreate: {
+        boardListCreate: {
           list: {},
           errors: ['foo'],
         },
