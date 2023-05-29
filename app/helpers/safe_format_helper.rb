@@ -42,26 +42,26 @@ module SafeFormatHelper
   # @raise [ArgumentError] if +tag+ is not HTML-safe
   #
   # @example
-  #   tag_pair(helper.tag.strong, :open, :close)
+  #   tag_pair(tag.strong, :open, :close)
   #   # => { open: '<strong>', close: '</strong>' }
   #   tag_pair(link_to('', '/'), :open, :close)
   #   # => { open: '<a href="/">', close: '</a>' }
-  def tag_pair(tag, open_name, close_name)
-    raise ArgumentError, 'Argument `tag` must be `html_safe`!' unless tag.html_safe?
-    return {} unless tag.start_with?('<')
+  def tag_pair(html_tag, open_name, close_name)
+    raise ArgumentError, 'Argument `tag` must be `html_safe`!' unless html_tag.html_safe?
+    return {} unless html_tag.start_with?('<')
 
     # end of opening tag: <p>foo</p>
     #                       ^
-    open_index = tag.index('>')
+    open_index = html_tag.index('>')
     # start of closing tag: <p>foo</p>
     #                             ^^
-    close_index = tag.rindex('</')
+    close_index = html_tag.rindex('</')
 
     return {} unless open_index && close_index
 
     {
-      open_name => tag[0, open_index + 1],
-      close_name => tag[close_index, tag.size]
+      open_name => html_tag[0, open_index + 1],
+      close_name => html_tag[close_index, html_tag.size]
     }
   end
 end
