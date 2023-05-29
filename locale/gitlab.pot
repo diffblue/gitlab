@@ -9868,6 +9868,9 @@ msgstr[1] ""
 msgid "Clear All"
 msgstr ""
 
+msgid "Clear all"
+msgstr ""
+
 msgid "Clear all repository checks"
 msgstr ""
 
