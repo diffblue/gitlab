@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlAlert, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__, n__ } from '~/locale';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
@@ -23,7 +23,6 @@ export default {
   },
   components: {
     GlIcon,
-    GlAlert,
     AiGenieChat,
     GlSprintf,
     GlLink,
@@ -132,19 +131,6 @@ export default {
     >
       <template #title>
         {{ $options.i18n.gitlabChat }}
-      </template>
-
-      <template #subheader>
-        <gl-alert
-          :dismissible="false"
-          variant="tip"
-          :show-icon="false"
-          class="gl-text-center gl-mx-n5 gl-border-t gl-p-4 gl-text-gray-500 gl-bg-gray-10 legal-warning gl-max-w-full"
-          role="alert"
-          data-testid="chat-legal-warning"
-        >
-          <span>{{ $options.i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI }}</span>
-        </gl-alert>
       </template>
 
       <template #feedback="slotProps">
