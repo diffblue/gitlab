@@ -13,6 +13,10 @@ module Gitlab
       # sufficient.
       MAX_TEXT_LIMIT = 20_000
 
+      ROLE_USER = 'user'
+      ROLE_ASSISTANT = 'assistant'
+      ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT].freeze
+
       def initialize(user)
         @user = user
       end
@@ -20,11 +24,13 @@ module Gitlab
       def add(payload)
         return unless Feature.enabled?(:ai_redis_cache, user)
 
+        raise ArgumentError, "Invalid role '#{payload[:role]}'" unless ALLOWED_ROLES.include?(payload[:role])
+
         data = {
           id: SecureRandom.uuid,
           request_id: payload[:request_id],
           timestamp: Time.current.to_s,
-          role: payload[:role] || 'user'
+          role: payload[:role]
         }
         data[:content] = payload[:content][0, MAX_TEXT_LIMIT] if payload[:content]
         data[:error] = payload[:errors].join(". ") if payload[:errors]
@@ -60,8 +66,8 @@ module Gitlab
       end
 
       def matches_filters?(data, filters)
-        return false if filters[:roles] && filters[:roles].exclude?(data['role'])
-        return false if filters[:request_ids] && filters[:request_ids].exclude?(data['request_id'])
+        return false if filters[:roles]&.exclude?(data['role'])
+        return false if filters[:request_ids]&.exclude?(data['request_id'])
 
         data
       end

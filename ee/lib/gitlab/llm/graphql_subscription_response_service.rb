@@ -21,7 +21,7 @@ module Gitlab
           # todo: do we need to sanitize/refine this response in any ways?
           response_body: generate_response_body(response_modifier.response_body),
           errors: response_modifier.errors,
-          role: 'assistant'
+          role: Cache::ROLE_ASSISTANT
         }
 
         logger.debug(

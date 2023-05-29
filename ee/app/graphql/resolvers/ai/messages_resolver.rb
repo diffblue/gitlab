@@ -11,7 +11,7 @@ module Resolvers
 
       argument :roles, [Types::Ai::CachedMessageRoleEnum],
         required: false,
-        description: 'Array of request IDs to fetch.'
+        description: 'Array of roles to fetch.'
 
       def resolve(**args)
         return [] unless current_user && Feature.enabled?(:ai_redis_cache, current_user)

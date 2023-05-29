@@ -47,7 +47,7 @@ module Llm
         action_name: action_name
       )
 
-      payload = { request_id: request_id, role: 'user' }
+      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER }
       ::Gitlab::Llm::Cache.new(user).add(payload)
 
       if options[:sync] == true
