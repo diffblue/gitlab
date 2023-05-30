@@ -33,4 +33,23 @@ RSpec.describe Analytics::CycleAnalytics::RuntimeLimiter do
       expect(runtime_limiter.over_time?).to be(true)
     end
   end
+
+  describe '#was_over_time?' do
+    it 'returns true if over_time? returned true at an earlier step' do
+      first_monotonic_time = 10
+      second_monotonic_time = first_monotonic_time + 50
+      third_monotonic_time = second_monotonic_time + 50 # over time: 110 > 100
+
+      expect(Gitlab::Metrics::System).to receive(:monotonic_time)
+        .and_return(first_monotonic_time, second_monotonic_time, third_monotonic_time)
+
+      runtime_limiter = described_class.new(100)
+
+      expect(runtime_limiter.over_time?).to be(false) # uses the second_monotonic_time
+      expect(runtime_limiter.was_over_time?).to be(false)
+
+      expect(runtime_limiter.over_time?).to be(true) # uses the third_monotonic_time
+      expect(runtime_limiter.was_over_time?).to be(true)
+    end
+  end
 end
