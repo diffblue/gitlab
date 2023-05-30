@@ -87,7 +87,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
     end
   end
 
-  describe '.group_access_restricted?' do
+  describe '.access_restricted?' do
     context 'when SAML SSO is enabled for resource' do
       using RSpec::Parameterized::TableSyntax
 
@@ -110,21 +110,13 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
 
       shared_examples 'SSO Enforced' do
         it 'returns true' do
-          expect(described_class.group_access_restricted?(resource, user: user)).to eq(true) if resource.is_a?(Group)
-
-          if resource.is_a?(Project)
-            expect(described_class.group_access_restricted?(resource.group, user: user, for_project: true)).to eq(true)
-          end
+          expect(described_class.access_restricted?(user: user, resource: resource)).to eq(true)
         end
       end
 
       shared_examples 'SSO Not enforced' do
         it 'returns false' do
-          expect(described_class.group_access_restricted?(resource, user: user)).to eq(false) if resource.is_a?(Group)
-
-          if resource.is_a?(Project)
-            expect(described_class.group_access_restricted?(resource.group, user: user, for_project: true)).to eq(false)
-          end
+          expect(described_class.access_restricted?(user: user, resource: resource)).to eq(false)
         end
       end
 
@@ -302,23 +294,14 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | true | true  | nil  | 'SSO Not enforced'
         ref(:project)    | 'public'  | true  | ref(:member_without_identity) | false | nil   | nil  | nil   | true | 'SSO Not enforced'
 
-        # As per the table, SSO is not enforced for the cases below.
-        # That is handled on Group/Project policy level, see
-        # - ee/spec/controllers/concerns/routable_actions_spec.rb
-        # - ee/spec/policies/group_policy_spec.rb
-        # - ee/spec/policies/project_policy_spec.rb
-        # files.
-        #
-        # `::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?` method
-        # should return `true` for those cases, except for deploy_token, until that logic moves to the class.
-        ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
-        ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:root_group) | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:root_group) | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
         ref(:root_group) | 'public'  | true  | ref(:deploy_token)            | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
-        ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
-        ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:subgroup)   | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
         ref(:subgroup)   | 'public'  | true  | ref(:deploy_token)            | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
-        ref(:project)    | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
-        ref(:project)    | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Enforced'
+        ref(:project)    | 'public'  | true  | ref(:non_member)              | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
+        ref(:project)    | 'public'  | true  | ref(:not_signed_in_user)      | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
         ref(:project)    | 'public'  | true  | ref(:deploy_token)            | nil   | nil   | nil  | nil   | nil  | 'SSO Not enforced'
       end
 
