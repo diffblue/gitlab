@@ -2,6 +2,7 @@ import MockAdapter from 'axios-mock-adapter';
 import testAction from 'helpers/vuex_action_helper';
 import {
   fetchProtectedEnvironments,
+  setPage,
   fetchAllMembers,
   fetchAllMembersForEnvironment,
   fetchMembers,
@@ -37,7 +38,25 @@ describe('ee/protected_environments/store/edit/actions', () => {
   describe('fetchProtectedEnvironments', () => {
     it('successfully calls the protected environments API and saves the result', () => {
       const environments = [{ name: 'staging' }];
-      mock.onGet().replyOnce(HTTP_STATUS_OK, environments);
+
+      const pageInfo = {
+        page: 1,
+        nextPage: 2,
+        previousPage: 1,
+        perPage: 10,
+        total: 50,
+        totalPages: 5,
+      };
+      const headers = {
+        'X-Next-Page': pageInfo.nextPage,
+        'X-Page': pageInfo.page,
+        'X-Per-Page': pageInfo.perPage,
+        'X-Prev-Page': pageInfo.previousPage,
+        'X-Total': pageInfo.total,
+        'X-Total-Pages': pageInfo.totalPages,
+      };
+
+      mock.onGet().replyOnce(HTTP_STATUS_OK, environments, headers);
       return testAction(
         fetchProtectedEnvironments,
         undefined,
@@ -45,6 +64,7 @@ describe('ee/protected_environments/store/edit/actions', () => {
         [
           { type: types.REQUEST_PROTECTED_ENVIRONMENTS },
           { type: types.RECEIVE_PROTECTED_ENVIRONMENTS_SUCCESS, payload: environments },
+          { type: types.SET_PAGINATION, payload: pageInfo },
         ],
         [{ type: 'fetchAllMembers' }],
       );
@@ -61,6 +81,20 @@ describe('ee/protected_environments/store/edit/actions', () => {
           { type: types.RECEIVE_PROTECTED_ENVIRONMENTS_ERROR, payload: expect.any(Error) },
         ],
         [],
+      );
+    });
+  });
+
+  describe('setPage', () => {
+    it('commits the page to the store', () => {
+      const page = 2;
+
+      return testAction(
+        setPage,
+        { page },
+        mockedState,
+        [{ type: types.SET_PAGE, payload: { page } }],
+        [{ type: 'fetchProtectedEnvironments' }],
       );
     });
   });

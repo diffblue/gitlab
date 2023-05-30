@@ -15,6 +15,12 @@ export const mutations = {
   [types.RECEIVE_PROTECTED_ENVIRONMENTS_ERROR](state) {
     state.loading = false;
   },
+  [types.SET_PAGINATION](state, pageInfo) {
+    state.pageInfo = pageInfo;
+  },
+  [types.SET_PAGE](state, page) {
+    state.pageInfo = { ...state.pageInfo, page };
+  },
   [types.REQUEST_MEMBERS](state) {
     state.loading = true;
   },

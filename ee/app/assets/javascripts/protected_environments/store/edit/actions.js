@@ -1,5 +1,6 @@
 import { getUser, getProjectMembers, getGroupMembers } from '~/rest_api';
 import Api from 'ee/api';
+import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { INHERITED_GROUPS, RULE_KEYS } from '../../constants';
 import * as types from './mutation_types';
 
@@ -28,14 +29,28 @@ const fetchUsersForRuleForProject = (
 export const fetchProtectedEnvironments = ({ state, commit, dispatch }) => {
   commit(types.REQUEST_PROTECTED_ENVIRONMENTS);
 
-  return Api.protectedEnvironments(state.projectId)
-    .then(({ data }) => {
+  const params = {
+    page: state.pageInfo?.page ?? null,
+  };
+
+  return Api.protectedEnvironments(state.projectId, params)
+    .then(({ data, headers }) => {
       commit(types.RECEIVE_PROTECTED_ENVIRONMENTS_SUCCESS, data);
       dispatch('fetchAllMembers');
+
+      const normalizedHeaders = normalizeHeaders(headers);
+      const pageInfo = parseIntPagination(normalizedHeaders);
+      commit(types.SET_PAGINATION, pageInfo);
     })
     .catch((error) => {
       commit(types.RECEIVE_PROTECTED_ENVIRONMENTS_ERROR, error);
     });
+};
+
+export const setPage = ({ commit, dispatch }, page) => {
+  commit(types.SET_PAGE, page);
+
+  dispatch('fetchProtectedEnvironments');
 };
 
 export const fetchAllMembers = async ({ state, dispatch, commit }) => {

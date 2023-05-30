@@ -118,6 +118,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
     wrapper.findByRole('button', { name: s__('ProtectedEnvironments|Save') });
   const findApprovalsInput = () =>
     wrapper.findByRole('textbox', { name: s__('ProtectedEnvironments|Required approval count') });
+  const findProtectedEnvironments = () => wrapper.findComponent(ProtectedEnvironments);
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -433,7 +434,7 @@ describe('ee/protected_environments/edit_protected_environments_list.vue', () =>
 
       await createComponent();
 
-      wrapper.findComponent(ProtectedEnvironments).vm.$emit('unprotect', environment);
+      findProtectedEnvironments().vm.$emit('unprotect', environment);
       await waitForPromises();
 
       expect(mock.history.delete).toHaveLength(1);

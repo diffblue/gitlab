@@ -1,10 +1,12 @@
 <script>
 import { GlBadge, GlButton, GlCollapse, GlIcon, GlModal } from '@gitlab/ui';
+import { mapState, mapActions } from 'vuex';
+import Pagination from '~/vue_shared/components/pagination_links.vue';
 import { n__, s__, __, sprintf } from '~/locale';
 import { DEPLOYER_RULE_KEY, APPROVER_RULE_KEY } from './constants';
 
 export default {
-  components: { GlBadge, GlButton, GlCollapse, GlIcon, GlModal },
+  components: { GlBadge, GlButton, GlCollapse, GlIcon, GlModal, Pagination },
   props: {
     environments: {
       required: true,
@@ -15,6 +17,7 @@ export default {
     return { expanded: {}, environmentToUnprotect: null };
   },
   computed: {
+    ...mapState(['pageInfo']),
     confirmUnprotectText() {
       return sprintf(
         s__(
@@ -26,8 +29,12 @@ export default {
     isUnprotectModalVisible() {
       return Boolean(this.environmentToUnprotect);
     },
+    showPagination() {
+      return this.pageInfo?.totalPages > 1;
+    },
   },
   methods: {
+    ...mapActions(['setPage']),
     isLast(index) {
       return index === this.environments.length - 1;
     },
@@ -128,5 +135,12 @@ export default {
         </gl-button>
       </gl-collapse>
     </div>
+    <pagination
+      v-if="showPagination"
+      :change="setPage"
+      :page-info="pageInfo"
+      align="center"
+      class="gl-mt-3"
+    />
   </div>
 </template>
