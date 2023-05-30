@@ -39,7 +39,7 @@ export default {
     return { isAddingRule: false, addingEnvironment: null, addingRule: '' };
   },
   computed: {
-    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules']),
+    ...mapState(['projectId', 'loading', 'protectedEnvironments', 'editingRules', 'pageInfo']),
     ...mapGetters(['getUsersForRule']),
     isAddingDeploymentRule() {
       return this.addingRule === DEPLOYER_RULE_KEY;
@@ -48,6 +48,9 @@ export default {
       return this.isAddingDeploymentRule
         ? this.$options.i18n.addDeploymentRuleModalTitle
         : this.$options.i18n.addApprovalRuleModalTitle;
+    },
+    protectedEnvironmentsCount() {
+      return this.pageInfo?.total || this.protectedEnvironments?.length;
     },
   },
   mounted() {
@@ -105,7 +108,7 @@ export default {
   <div data-testid="protected-environments-list">
     <h5>
       <gl-sprintf :message="$options.i18n.title">
-        <template #protectedEnvironmentsCount>{{ protectedEnvironments.length }}</template>
+        <template #protectedEnvironmentsCount>{{ protectedEnvironmentsCount }}</template>
       </gl-sprintf>
     </h5>
     <add-rule-modal

@@ -47,6 +47,31 @@ describe('ee/protected_environments/store/edit/mutations', () => {
     });
   });
 
+  describe(types.SET_PAGINATION, () => {
+    const pageInfo = {
+      page: 1,
+      nextPage: 2,
+      previousPage: 1,
+      perPage: 10,
+      total: 50,
+      totalPages: 5,
+    };
+
+    it('saves pageInfo', () => {
+      mutations[types.SET_PAGINATION](mockedState, pageInfo);
+
+      expect(mockedState.pageInfo).toBe(pageInfo);
+    });
+  });
+
+  describe(types.SET_PAGE, () => {
+    it('saves pageInfo', () => {
+      mutations[types.SET_PAGE](mockedState, 2);
+
+      expect(mockedState.pageInfo).toEqual({ page: 2 });
+    });
+  });
+
   describe(types.REQUEST_MEMBERS, () => {
     it('sets loading to true', () => {
       mutations[types.REQUEST_MEMBERS](mockedState);
