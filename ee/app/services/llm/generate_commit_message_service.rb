@@ -12,7 +12,7 @@ module Llm
     private
 
     def perform
-      perform_async(user, resource, :generate_commit_message, options)
+      worker_perform(user, resource, :generate_commit_message, options)
     end
   end
 end
