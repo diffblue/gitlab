@@ -55,10 +55,10 @@ class GeoNode < ApplicationRecord
   scope :enabled, -> { where(enabled: true) }
 
   attr_encrypted :secret_access_key,
-                 key: Settings.attr_encrypted_db_key_base_32,
-                 algorithm: 'aes-256-gcm',
-                 mode: :per_attribute_iv,
-                 encode: true
+    key: Settings.attr_encrypted_db_key_base_32,
+    algorithm: 'aes-256-gcm',
+    mode: :per_attribute_iv,
+    encode: true
 
   strip_attributes! :name
 

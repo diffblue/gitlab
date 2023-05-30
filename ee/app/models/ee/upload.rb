@@ -26,9 +26,9 @@ module EE
       scope :available_verifiables, -> { joins(:upload_state) }
 
       has_one :upload_state,
-              autosave: false,
-              inverse_of: :upload,
-              class_name: '::Geo::UploadState'
+        autosave: false,
+        inverse_of: :upload,
+        class_name: '::Geo::UploadState'
 
       after_save :save_verification_details
 

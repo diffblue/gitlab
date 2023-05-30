@@ -286,9 +286,9 @@ export default {
     return this.deploymentApproval({ id, deploymentId, approve: false, comment });
   },
 
-  protectedEnvironments(id) {
+  protectedEnvironments(id, params = {}) {
     const url = Api.buildUrl(this.protectedEnvironmentsPath).replace(':id', encodeURIComponent(id));
-    return axios.get(url);
+    return axios.get(url, { params });
   },
 
   createProtectedEnvironment(id, protectedEnvironment) {

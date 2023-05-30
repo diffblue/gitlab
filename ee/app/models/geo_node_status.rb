@@ -14,10 +14,10 @@ class GeoNodeStatus < ApplicationRecord
 
   # Prometheus metrics, no need to store them in the database
   attr_accessor :event_log_max_id, :repository_created_max_id, :repository_updated_max_id,
-                :repository_deleted_max_id, :repository_renamed_max_id, :repositories_changed_max_id,
-                :lfs_objects_registry_count, :job_artifacts_registry_count,
-                :hashed_storage_migrated_max_id, :hashed_storage_attachments_max_id,
-                :repositories_checked_count, :repositories_checked_failed_count
+    :repository_deleted_max_id, :repository_renamed_max_id, :repositories_changed_max_id,
+    :lfs_objects_registry_count, :job_artifacts_registry_count,
+    :hashed_storage_migrated_max_id, :hashed_storage_attachments_max_id,
+    :repositories_checked_count, :repositories_checked_failed_count
 
   sha_attribute :storage_configuration_digest
 

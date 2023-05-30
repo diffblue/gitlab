@@ -17,10 +17,10 @@ module EE
         with_replicator ::Geo::ProjectWikiRepositoryReplicator
 
         has_one :wiki_repository_state,
-                class_name: 'Geo::WikiRepositoryState',
-                foreign_key: :project_wiki_repository_id,
-                inverse_of: :project_wiki_repository,
-                autosave: false
+          class_name: 'Geo::WikiRepositoryState',
+          foreign_key: :project_wiki_repository_id,
+          inverse_of: :project_wiki_repository,
+          autosave: false
 
         after_save :save_verification_details
 

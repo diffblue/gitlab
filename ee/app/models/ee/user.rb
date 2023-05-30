@@ -38,16 +38,16 @@ module EE
       after_create :perform_user_cap_check
 
       delegate :shared_runners_minutes_limit, :shared_runners_minutes_limit=,
-               :extra_shared_runners_minutes_limit, :extra_shared_runners_minutes_limit=,
-               to: :namespace
+        :extra_shared_runners_minutes_limit, :extra_shared_runners_minutes_limit=,
+        to: :namespace
       delegate :provisioned_by_group, :provisioned_by_group=,
-               :provisioned_by_group_id, :provisioned_by_group_id=,
-               :provisioned_by_group_at, :provisioned_by_group_at=,
-               :onboarding_step_url=,
-               to: :user_detail, allow_nil: true
+        :provisioned_by_group_id, :provisioned_by_group_id=,
+        :provisioned_by_group_at, :provisioned_by_group_at=,
+        :onboarding_step_url=,
+        to: :user_detail, allow_nil: true
 
       delegate :code_suggestions_enabled?, :code_suggestions, :code_suggestions=,
-               to: :namespace
+        to: :namespace
 
       has_many :epics,                    foreign_key: :author_id
       has_many :test_reports,             foreign_key: :author_id, inverse_of: :author, class_name: 'RequirementsManagement::TestReport'

@@ -1,7 +1,11 @@
 import { GlBadge, GlModal } from '@gitlab/ui';
+import Vue from 'vue';
+import Vuex from 'vuex';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import { s__ } from '~/locale';
+import { state } from 'ee/protected_environments/store/edit/state';
 import ProtectedEnvironments from 'ee/protected_environments/protected_environments.vue';
+import Pagination from '~/vue_shared/components/pagination_links.vue';
 import { DEVELOPER_ACCESS_LEVEL } from './constants';
 
 const DEFAULT_ENVIRONMENTS = [
@@ -42,11 +46,37 @@ const DEFAULT_ENVIRONMENTS = [
   },
 ];
 
+const DEFAULT_PAGE_INFO = {
+  perPage: 20,
+  page: 1,
+  total: 1,
+  totalPages: 1,
+  nextPage: null,
+  previousPage: null,
+};
+
+Vue.use(Vuex);
+
 describe('ee/protected_environments/protected_environments.vue', () => {
   let wrapper;
 
-  const createComponent = ({ environments = DEFAULT_ENVIRONMENTS } = {}) => {
+  const setPageMock = jest.fn(() => Promise.resolve());
+
+  const createStore = ({ pageInfo } = {}) => {
+    return new Vuex.Store({
+      state: { ...state, pageInfo },
+      actions: {
+        setPage: setPageMock,
+      },
+    });
+  };
+
+  const createComponent = ({
+    environments = DEFAULT_ENVIRONMENTS,
+    pageInfo = DEFAULT_PAGE_INFO,
+  } = {}) => {
     wrapper = mountExtended(ProtectedEnvironments, {
+      store: createStore({ pageInfo }),
       propsData: {
         environments,
       },
@@ -57,6 +87,7 @@ describe('ee/protected_environments/protected_environments.vue', () => {
   };
 
   const findEnvironmentButton = (name) => wrapper.findByRole('button', { name });
+  const findPagination = () => wrapper.findComponent(Pagination);
 
   describe('environment button', () => {
     let button;
@@ -122,6 +153,30 @@ describe('ee/protected_environments/protected_environments.vue', () => {
       modal.vm.$emit('primary');
 
       expect(wrapper.emitted('unprotect')).toEqual([[environment]]);
+    });
+  });
+
+  describe('pagination', () => {
+    it('does not show pagination when there is 1 page', () => {
+      createComponent();
+
+      expect(findPagination().exists()).toBe(false);
+    });
+
+    it('shows pagination when there are more then 1 page', () => {
+      const pageInfo = { ...DEFAULT_PAGE_INFO, totalPages: 2 };
+      createComponent({ pageInfo });
+
+      expect(findPagination().props('pageInfo')).toBe(pageInfo);
+    });
+
+    it('calls setPage action', () => {
+      const pageInfo = { ...DEFAULT_PAGE_INFO, totalPages: 2 };
+      createComponent({ pageInfo });
+
+      findPagination().props('change')(2);
+
+      expect(setPageMock).toHaveBeenCalledWith(expect.any(Object), 2);
     });
   });
 });
