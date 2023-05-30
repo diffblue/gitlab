@@ -27,31 +27,42 @@ module Gitlab
                 Provide your answer in JSON form! The answer should be just the JSON without any other commentary!
                 Make sure the response is a valid JSON. Follow the exact JSON format:
 
+                ```json
                 {
                   "ResourceIdentifierType": <ResourceIdentifierType>
                   "ResourceIdentifier": <ResourceIdentifier>
                 }
+                ```
 
                 Example of an issue reference:
                 The user question or request may include: https://some.host.name/some/long/path/-/issues/410692
+                Response:
+                ```json
                 {
                   "ResourceIdentifierType": "url",
                   "ResourceIdentifier": "https://some.host.name/some/long/path/-/issues/410692"
                 }
+                ```
 
                 Another example of an issue reference:
                 The user question or request may include: #12312312
+                Response:
+                ```json
                 {
                   "ResourceIdentifierType": "iid",
                   "ResourceIdentifier": 12312312
                 }
+                ```
 
                 Third example of an issue reference:
                 The user question or request may include: long/groups/path#12312312
+                Response:
+                ```json
                 {
                   "ResourceIdentifierType": "reference",
                   "ResourceIdentifier": "long/groups/path#12312312"
                 }
+                ```
 
                 Begin!
             PROMPT
@@ -66,13 +77,15 @@ module Gitlab
           end
 
           def execute(context, input_variables)
+            return already_identified_answer(context) if already_identified?(input_variables)
+
             MAX_RETRIES.times do
               @context = context
               @input_variables = input_variables
 
               prompt = prompt(input_variables)
               response = request(prompt)
-              json = Gitlab::Json.parse(response.strip).with_indifferent_access
+              json = extract_json(response)
               issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
               # if issue not found then return an error as the answer.
@@ -99,8 +112,30 @@ module Gitlab
 
           private
 
+          def already_identified?(input_variables)
+            identifier_action_regex = /(?=Action: IssueIdentifier)/
+            json_loaded_regex = /(?=I now have the JSON information about the issue)/
+
+            issue_identifier_calls = input_variables[:suggestions].scan(identifier_action_regex).size
+            issue_identifier_json_loaded = input_variables[:suggestions].scan(json_loaded_regex).size
+
+            issue_identifier_calls > 1 && issue_identifier_json_loaded >= 1
+          end
+
+          def extract_json(response)
+            content_after_ticks = response.split(/```json/, 2).last
+            content_between_ticks = content_after_ticks&.split(/```/, 2)&.first
+
+            Gitlab::Json.parse(content_between_ticks&.strip.to_s).with_indifferent_access
+          end
+
           def request(prompt)
-            context.ai_client.text(content: prompt)&.dig("predictions", 0, "content").to_s.strip
+            params = ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
+              temperature: 0.2
+            )
+
+            ai_client = context.ai_client
+            ai_client.text(content: prompt, parameters: { **params })&.dig("predictions", 0, "content").to_s.strip
           end
 
           def identify_issue(resource_identifier_type, resource_identifier)
@@ -132,11 +167,21 @@ module Gitlab
 
           def issue_not_found
             content = _("I am sorry, I am unable to find the issue you are looking for.")
+
             Answer.error_answer(context: context, content: content)
           end
 
           def prompt(input_variables)
             Utils::Prompt.no_role_text(PROMPT_TEMPLATE, input_variables)
+          end
+
+          def already_identified_answer(context)
+            resource = context.resource
+            content = "You already have identified the issue ##{resource.iid}, read carefully."
+
+            ::Gitlab::Llm::Chain::Answer.new(
+              status: :ok, context: context, content: content, tool: nil, is_final: false
+            )
           end
         end
       end

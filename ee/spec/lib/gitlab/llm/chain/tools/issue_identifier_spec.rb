@@ -78,7 +78,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
       end
 
       let(:tool) { described_class.new }
-      let(:input_variables) { { input: "user input", suggestions: "" } }
+      let(:input_variables) do
+        { input: "user input", suggestions: "Action: IssueIdentifier\nActionInput: #{issue1.iid}" }
+      end
 
       context 'when user does not have permission to read resource' do
         context 'when is issue identified with iid' do
@@ -186,6 +188,26 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
             let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
 
             it_behaves_like 'success response'
+          end
+        end
+
+        context 'when issue was already identified' do
+          let(:resource_iid) { issue1.iid }
+          let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
+
+          before do
+            input_variables[:suggestions] = "Action: IssueIdentifier\nActionInput: #{issue1.iid}"
+            input_variables[:suggestions] += "Observation: I now have the JSON information about the issue #1"
+            input_variables[:suggestions] += "Action: IssueIdentifier\nActionInput: #{issue1.iid}"
+          end
+
+          it 'returns already identified response' do
+            ai_client = double
+            allow(ai_client).to receive_message_chain(:text, :dig, :to_s, :strip).and_return(ai_response)
+            allow(context).to receive(:ai_client).and_return(ai_client)
+
+            response = "You already have identified the issue ##{context.resource.iid}, read carefully."
+            expect(tool.execute(context, input_variables).content).to eq(response)
           end
         end
       end

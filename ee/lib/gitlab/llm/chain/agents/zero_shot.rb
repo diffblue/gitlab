@@ -39,8 +39,9 @@ module Gitlab
                 Begin!
               PROMPT
             ),
+            Utils::Prompt.as_assistant("%<agent_scratchpad>s"),
             Utils::Prompt.as_user("Question: %<user_input>s"),
-            Utils::Prompt.as_assistant("%<agent_scratchpad>s", "Thought: ")
+            Utils::Prompt.as_assistant("Thought: ")
           ].freeze
 
           def execute
@@ -50,20 +51,20 @@ module Gitlab
 
               return answer if answer.is_final?
 
-              input_variables[:agent_scratchpad] = input_variables[:agent_scratchpad].to_s + answer.content.to_s
+              input_variables[:agent_scratchpad] << answer.content.to_s << answer.suggestions.to_s
               tool = answer.tool
 
               tool_answer = tool.execute(
                 context,
                 {
                   input: user_input,
-                  suggestions: "#{answer.content}\n#{answer.suggestions&.join("\n")}"
+                  suggestions: input_variables[:agent_scratchpad]
                 }
               )
 
               return tool_answer if tool_answer.is_final?
 
-              input_variables[:agent_scratchpad] += "Observation: #{tool_answer.content}\n"
+              input_variables[:agent_scratchpad] << "Observation: #{tool_answer.content}\n"
             end
 
             Answer.final_answer(context: context, content: Answer.default_final_answer)
@@ -76,7 +77,12 @@ module Gitlab
           end
 
           def request(prompt)
-            context.ai_client.text(content: prompt)&.dig("predictions", 0, 'content').to_s.strip
+            params = ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
+              temperature: 0.2
+            )
+
+            ai_client = context.ai_client
+            ai_client.text(content: prompt, parameters: { **params })&.dig("predictions", 0, "content").to_s.strip
           end
 
           def input_variables
@@ -84,7 +90,7 @@ module Gitlab
               tool_names: tools.map(&:name),
               tools_definitions: tools.map { |tool| "#{tool.name}: #{tool.description}" }.to_s,
               user_input: user_input,
-              agent_scratchpad: nil
+              agent_scratchpad: +""
             }
           end
         end
