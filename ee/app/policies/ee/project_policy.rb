@@ -471,7 +471,7 @@ module EE
 
       with_scope :subject
       condition(:needs_new_sso_session) do
-        ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject.group, user: @user, for_project: true) && (subject.private? || group_member?)
+        ::Gitlab::Auth::GroupSaml::SsoEnforcer.access_restricted?(user: @user, resource: subject)
       end
 
       with_scope :subject
