@@ -22256,6 +22256,8 @@ CREATE TABLE schema_inconsistencies (
     object_name text NOT NULL,
     table_name text NOT NULL,
     valitador_name text NOT NULL,
+    diff text NOT NULL,
+    CONSTRAINT check_001d186ac7 CHECK ((char_length(diff) <= 6144)),
     CONSTRAINT check_120b6c86d0 CHECK ((char_length(valitador_name) <= 63)),
     CONSTRAINT check_a0411f31fd CHECK ((char_length(object_name) <= 63)),
     CONSTRAINT check_d96408dfd2 CHECK ((char_length(table_name) <= 63))
@@ -33100,8 +33102,6 @@ CREATE UNIQUE INDEX kubernetes_namespaces_cluster_and_namespace ON clusters_kube
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_and_note_id_index ON merge_request_user_mentions USING btree (merge_request_id, note_id);
 
 CREATE UNIQUE INDEX merge_request_user_mentions_on_mr_id_index ON merge_request_user_mentions USING btree (merge_request_id) WHERE (note_id IS NULL);
-
-CREATE INDEX merge_requests_state_id_temp_index ON merge_requests USING btree (id) WHERE (state_id = ANY (ARRAY[2, 3]));
 
 CREATE INDEX migrate_index_users_for_active_billable_users ON users USING btree (id) WHERE (((state)::text = 'active'::text) AND ((user_type IS NULL) OR (user_type = 0) OR (user_type = ANY (ARRAY[0, 6, 4, 13]))) AND ((user_type IS NULL) OR (user_type = 0) OR (user_type = ANY (ARRAY[0, 4, 5]))));
 

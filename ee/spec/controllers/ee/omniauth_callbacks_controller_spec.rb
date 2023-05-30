@@ -41,20 +41,19 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
   describe '#openid_connect' do
     let(:user) { create(:omniauth_user, extern_uid: extern_uid, provider: provider) }
-    let(:extern_uid) { 'my-uid' }
-    let(:provider) { 'openid_connect' }
+    let(:provider) { :openid_connect }
 
     before do
-      prepare_provider_route('openid_connect')
+      prepare_provider_route(provider)
 
       allow(Gitlab::Auth::OAuth::Provider).to(
-        receive_messages({ providers: [:openid_connect],
-                           config_for: openid_connect_config })
+        receive_messages({ providers: [provider],
+                           config_for: connect_config })
       )
       stub_omniauth_setting(
         { enabled: true,
-          allow_single_sign_on: ['openid_connect'],
-          providers: [openid_connect_config] }
+          allow_single_sign_on: [provider],
+          providers: [connect_config] }
       )
 
       request.env['devise.mapping'] = Devise.mappings[:user]
@@ -62,11 +61,11 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
 
     context 'when auth hash is missing required groups' do
-      let(:openid_connect_config) do
+      let(:connect_config) do
         {
-          'name' => 'openid_connect',
+          'name' => provider,
           'args' => {
-            'name' => 'openid_connect',
+            'name' => provider,
             'client_options' => {
               'identifier' => 'gitlab-test-client',
               'gitlab' => {
@@ -188,29 +187,40 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
     end
   end
 
-  context 'for sign up with strategies', :aggregate_failures do
-    let(:extern_uid) { 'my-uid' }
-    let(:user) { build_stubbed(:user, email: 'new@example.com') }
+  context 'with strategies', :aggregate_failures do
+    let(:provider) { :github }
     let(:check_namespace_plan) { true }
 
     before do
-      request.env['omniauth.params'] = { 'intent' => 'register' }
       stub_ee_application_setting(should_check_namespace_plan: check_namespace_plan)
       stub_feature_flags(ensure_onboarding: true)
       stub_omniauth_setting(block_auto_created_users: false)
     end
 
-    context 'with github' do
-      let(:provider) { :github }
+    context 'when user is not registered yet' do
+      let(:user) { build_stubbed(:user, email: 'new@example.com') }
 
       context 'when onboarding is enforced' do
         it 'redirects to welcome path with onboarding setup' do
           post provider
 
-          expect(response).to redirect_to(users_sign_up_welcome_path)
-          created_user = User.find_by_email(user.email)
-          expect(created_user).to be_onboarding_in_progress
-          expect(created_user.user_detail.onboarding_step_url).to eq(users_sign_up_welcome_path)
+          expect(request.env['warden']).to be_authenticated
+          expect_to_be_onboarding(response, user.email)
+        end
+
+        context 'when glm and trial params exist' do
+          let(:omniauth_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_', trial: true } }
+
+          before do
+            request.env['omniauth.params'] = omniauth_params.stringify_keys
+          end
+
+          it 'redirects to welcome path with onboarding setup with passed params' do
+            post provider
+
+            expect(request.env['warden']).to be_authenticated
+            expect_to_be_onboarding(response, user.email, omniauth_params)
+          end
         end
       end
 
@@ -226,10 +236,29 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
       end
     end
 
+    context 'when user is already registered' do
+      let(:user) { create(:omniauth_user, extern_uid: extern_uid, provider: provider) }
+
+      it 'does not have onboarding setup and redirects to root path' do
+        post provider
+
+        expect(request.env['warden']).to be_authenticated
+        expect(response).to redirect_to(root_path)
+        expect_to_not_be_onboarding(user.email)
+      end
+    end
+
     def expect_to_not_be_onboarding(email)
       created_user = User.find_by_email(email)
       expect(created_user).not_to be_onboarding_in_progress
       expect(created_user.user_detail.onboarding_step_url).to be_nil
+    end
+
+    def expect_to_be_onboarding(response, email, params = {})
+      expect(response).to redirect_to(users_sign_up_welcome_path(params))
+      created_user = User.find_by_email(email)
+      expect(created_user).to be_onboarding_in_progress
+      expect(created_user.user_detail.onboarding_step_url).to eq(users_sign_up_welcome_path(params))
     end
   end
 end

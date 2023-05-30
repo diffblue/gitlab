@@ -35,8 +35,7 @@ RSpec.describe EE::RegistrationsHelper, feature_category: :user_management do
     let(:result) do
       {
         glm_source: '_glm_source_',
-        glm_content: '_glm_content_',
-        intent: :register
+        glm_content: '_glm_content_'
       }
     end
 

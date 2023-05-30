@@ -74,18 +74,4 @@ feature_category: :onboarding do
       expect(page).not_to have_content('What would you like to do?')
     end
   end
-
-  def fill_in_company_form
-    expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-      user: user,
-      params: company_params
-    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
-
-    fill_in 'company_name', with: 'Test Company'
-    select '1 - 99', from: 'company_size'
-    select 'United States of America', from: 'country'
-    select 'Florida', from: 'state'
-    fill_in 'phone_number', with: '+1234567890'
-    fill_in 'website_url', with: 'https://gitlab.com'
-  end
 end
