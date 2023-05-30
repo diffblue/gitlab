@@ -17,7 +17,6 @@ module Llm
       def perform
         return unless Feature.enabled?(:openai_experimentation)
         return unless Feature.enabled?(:tanuki_bot)
-        return unless Feature.enabled?(:tanuki_bot_indexing)
         return unless ::License.feature_available?(:ai_tanuki_bot)
 
         ::Embedding::TanukiBotMvc.previous.limit(BATCH_SIZE).delete_all

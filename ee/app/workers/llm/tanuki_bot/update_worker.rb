@@ -16,7 +16,6 @@ module Llm
       def perform(id, version)
         return unless Feature.enabled?(:openai_experimentation)
         return unless Feature.enabled?(:tanuki_bot)
-        return unless Feature.enabled?(:tanuki_bot_indexing)
         return unless ::License.feature_available?(:ai_tanuki_bot)
 
         record = ::Embedding::TanukiBotMvc.find_by_id(id)
