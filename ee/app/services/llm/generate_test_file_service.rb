@@ -12,7 +12,7 @@ module Llm
     private
 
     def perform
-      perform_async(user, resource, :generate_test_file, options)
+      worker_perform(user, resource, :generate_test_file, options)
     end
   end
 end

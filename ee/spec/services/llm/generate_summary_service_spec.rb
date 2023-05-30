@@ -60,11 +60,11 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'async Llm service' do
-          subject { described_class.new(current_user, resource, {}) }
-
+        it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
           let(:options) { {} }
+
+          subject { described_class.new(current_user, resource, options) }
         end
       end
     end
@@ -81,11 +81,11 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
 
         it_behaves_like "ensures feature flags and license"
         it_behaves_like "ensures user membership"
-        it_behaves_like 'async Llm service' do
-          subject { described_class.new(current_user, resource, {}) }
-
+        it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
           let(:options) { {} }
+
+          subject { described_class.new(current_user, resource, options) }
         end
       end
     end

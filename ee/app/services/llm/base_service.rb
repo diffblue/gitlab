@@ -34,7 +34,7 @@ module Llm
       raise NotImplementedError
     end
 
-    def perform_async(user, resource, action_name, options)
+    def worker_perform(user, resource, action_name, options)
       request_id = SecureRandom.uuid
       options[:request_id] = request_id
 
@@ -47,10 +47,17 @@ module Llm
         action_name: action_name
       )
 
-      ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
-
       payload = { request_id: request_id, role: 'user' }
       ::Gitlab::Llm::Cache.new(user).add(payload)
+
+      if options[:sync] == true
+        response_data = ::Llm::CompletionWorker.new.perform(
+          user.id, resource.id, resource.class.name, action_name, options
+        )
+        payload.merge!(response_data)
+      else
+        ::Llm::CompletionWorker.perform_async(user.id, resource.id, resource.class.name, action_name, options)
+      end
 
       success(payload)
     end

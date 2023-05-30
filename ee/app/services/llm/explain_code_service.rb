@@ -20,7 +20,7 @@ module Llm
     def perform
       return error('The messages are too big') if messages_are_too_big?
 
-      perform_async(user, resource, :explain_code, options)
+      worker_perform(user, resource, :explain_code, options)
     end
 
     def messages_are_too_big?

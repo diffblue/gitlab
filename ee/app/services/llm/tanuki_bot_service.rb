@@ -9,7 +9,7 @@ module Llm
     private
 
     def perform
-      perform_async(user, resource, :tanuki_bot, options)
+      worker_perform(user, resource, :tanuki_bot, options)
     end
   end
 end

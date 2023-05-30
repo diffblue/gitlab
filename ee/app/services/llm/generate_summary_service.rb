@@ -7,7 +7,7 @@ module Llm
     private
 
     def perform
-      perform_async(user, resource, :summarize_comments, options)
+      worker_perform(user, resource, :summarize_comments, options)
     end
 
     def valid?
