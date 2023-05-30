@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlIcon } from '@gitlab/ui';
+import { GlBadge, GlIcon, GlLink } from '@gitlab/ui';
 import { fetchPolicies } from '~/lib/graphql';
 import { __ } from '~/locale';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -14,6 +14,7 @@ export default {
   components: {
     GlBadge,
     GlIcon,
+    GlLink,
   },
   directives: { SafeHtml },
   inject: {
@@ -86,6 +87,9 @@ export default {
       this.$emit('set-ai-loading', false);
     },
   },
+  feedback: {
+    link: 'https://gitlab.com/gitlab-org/gitlab/-/issues/407779',
+  },
   i18n: {
     onlyVisibleToYou: __('Only visible to you'),
   },
@@ -107,6 +111,10 @@ export default {
         <gl-icon name="eye-slash" class="gl-text-gray-400 gl-mr-2" :size="12" />{{
           $options.i18n.onlyVisibleToYou
         }}
+        &middot;
+        <gl-link :href="$options.feedback.link" target="_blank" class="gl-font-sm">{{
+          __('Leave feedback')
+        }}</gl-link>
       </div>
     </div>
   </div>
