@@ -53,11 +53,9 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
       context 'when properly formatted list of identifiers' do
         let(:identifiers) do
           [
-            { type: "cve", name: "CVE-2023-22797", value: "CVE-2023-22797",
-              url: "https://nvd.nist.gov/vuln/detail/CVE-2023-22797" },
-            { type: "ghsa", name: "GHSA-9445-4cr6-336r", value: "GHSA-9445-4cr6-336r",
-              url: "https://nvd.nist.gov/vuln/detail/CVE-2023-22797" },
-            { type: "gms", name: "GMS-2023-57", value: "GMS-2023-57" }
+            create(:pm_identifier, :cve),
+            create(:pm_identifier, type: "ghsa", name: "GHSA-9445-4cr6-336r", value: "GHSA-9445-4cr6-336r", url: "https://nvd.nist.gov/vuln/detail/CVE-2023-22797"),
+            create(:pm_identifier, type: "gms", name: "GMS-2023-57", value: "GMS-2023-57")
           ]
         end
 
@@ -65,21 +63,14 @@ RSpec.describe PackageMetadata::Advisory, type: :model, feature_category: :softw
       end
 
       context 'when more than max identifiers' do
-        let(:identifiers) do
-          Array.new(11) { |_i| { type: "cve", name: "CVE-2023-22797", value: "CVE-2023-22797", url: "https://nvd.nist.gov/vuln/detail/CVE-2023-22797" } }
-        end
+        let(:identifiers) { create_list(:pm_identifier, 11, :cve) }
 
         it { is_expected.not_to be_valid }
       end
 
       context 'when identifier' do
         let(:base_identifier) do
-          {
-            type: 'CVE',
-            name: 'CVE-1111',
-            url: 'http://foo.com/cve/1111',
-            value: 'CVE-1111'
-          }
+          create(:pm_identifier, :cve)
         end
 
         let(:identifiers) { [identifier] }
