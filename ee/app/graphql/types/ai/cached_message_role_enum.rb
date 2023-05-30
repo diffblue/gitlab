@@ -6,8 +6,9 @@ module Types
       graphql_name 'AiCachedMessageRole'
       description 'Roles to filter in chat message.'
 
-      value 'USER', 'Filter only user messages.', value: 'user'
-      value 'ASSISTANT', 'Filter only AI responses.', value: 'assistant'
+      ::Gitlab::Llm::Cache::ALLOWED_ROLES.each do |role|
+        value role.upcase, description: "Filter only #{role} messages.", value: role
+      end
     end
   end
 end
