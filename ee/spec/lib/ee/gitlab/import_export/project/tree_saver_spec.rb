@@ -7,7 +7,6 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:issue) { create(:issue, project: project) }
-  let_it_be(:note2) { create(:note, noteable: issue, project: project, author: user) }
 
   let_it_be(:epic) { create(:epic, group: group) }
   let_it_be(:epic_issue) { create(:epic_issue, issue: issue, epic: epic) }
@@ -61,7 +60,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
       FileUtils.rm_rf(full_path)
     end
 
-    context 'epics' do
+    context 'epics relation' do
       it 'contains issue epic object', :aggregate_failures do
         expect(project_tree_saver.save).to be true
         expect(issue_json['epic_issue']).not_to be_empty
@@ -77,6 +76,25 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
         it 'filters out inaccessible epic object' do
           expect(project_tree_saver.save).to be true
           expect(issue_json['epic_issue']).to be_nil
+        end
+      end
+
+      context 'when restricted associations are present' do
+        let_it_be(:notes) { create_list(:note, 3, :system, noteable: issue, project: project, author: user) }
+
+        before do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :read_note, notes[1]).and_return(false)
+        end
+
+        it 'filters out only inaccessible resources', :aggregate_failures do
+          expect(project_tree_saver.save).to be true
+          expect(issue_json['epic_issue']).not_to be_empty
+          expect(issue_json['epic_issue']['id']).to eql(epic_issue.id)
+          expect(issue_json['notes']).not_to be_empty
+          expect(issue_json['notes'].count).to eq(2)
+          expect(issue_json['notes'].first['note']).to eq(notes[0].note)
+          expect(issue_json['notes'].last['note']).to eq(notes[2].note)
         end
       end
     end
