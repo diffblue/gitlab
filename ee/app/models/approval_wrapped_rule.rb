@@ -21,10 +21,12 @@ class ApprovalWrappedRule
   attr_reader :merge_request
   attr_reader :approval_rule
 
-  def_delegators(:@approval_rule,
-                 :regular?, :any_approver?, :code_owner?, :report_approver?,
-                 :overridden?, :id, :users, :groups, :code_owner,
-                 :source_rule, :rule_type, :approvals_required, :section, :to_global_id)
+  def_delegators(
+    :@approval_rule,
+    :regular?, :any_approver?, :code_owner?, :report_approver?,
+    :overridden?, :id, :users, :groups, :code_owner,
+    :source_rule, :rule_type, :approvals_required, :section, :to_global_id
+  )
 
   def self.wrap(merge_request, rule)
     if rule.any_approver?
