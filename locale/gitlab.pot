@@ -15658,6 +15658,12 @@ msgstr ""
 msgid "Diagram saved successfully."
 msgstr ""
 
+msgid "Diagrams.net"
+msgstr ""
+
+msgid "Diagrams.net URL"
+msgstr ""
+
 msgid "Did not delete the source branch."
 msgstr ""
 
@@ -16621,6 +16627,9 @@ msgid "Enable cleanup policy caching."
 msgstr ""
 
 msgid "Enable dashboard limits on namespaces"
+msgstr ""
+
+msgid "Enable diagrams.net"
 msgstr ""
 
 msgid "Enable email notification"
@@ -37794,6 +37803,9 @@ msgstr ""
 msgid "Render diagrams in your documents using PlantUML."
 msgstr ""
 
+msgid "Render diagrams in your documents using diagrams.net."
+msgstr ""
+
 msgid "Renew subscription"
 msgstr ""
 
@@ -45200,6 +45212,9 @@ msgid "The hostname of your PlantUML server."
 msgstr ""
 
 msgid "The hostname of your Snowplow collector."
+msgstr ""
+
+msgid "The hostname of your diagrams.net server."
 msgstr ""
 
 msgid "The import cannot be canceled because it is %{project_status}"
