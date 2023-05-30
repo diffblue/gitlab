@@ -114,7 +114,7 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
 
                   context 'no namespace' do
                     it 'has an expiration blocking message' do
-                      expect(message).to include('Please delete your current license if you want to downgrade to the free plan')
+                      expect(message).to include("This instance is now read-only. Don't worry, your data is safe. To change to GitLab Free and restore write access to this instance, delete your expired license")
                     end
                   end
 
