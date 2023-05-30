@@ -7,8 +7,9 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, :public, group: group) }
 
+  let(:options) { {} }
   let(:current_user) { user }
-  let(:service) { described_class.new(current_user, resource, {}) }
+  let(:service) { described_class.new(current_user, resource, options) }
   let(:generate_description_license_enabled) { true }
 
   describe '#perform' do
@@ -56,11 +57,10 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
 
       it_behaves_like "ensures license and feature flag checks"
       it_behaves_like "ensures user membership"
-      it_behaves_like 'async Llm service' do
-        subject { service }
-
+      it_behaves_like 'completion worker sync and async' do
         let(:action_name) { :generate_description }
-        let(:options) { {} }
+
+        subject { service }
       end
     end
   end

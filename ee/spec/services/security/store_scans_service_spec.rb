@@ -183,26 +183,11 @@ RSpec.describe Security::StoreScansService, feature_category: :vulnerability_man
           stub_licensed_features(security_orchestration_policies: true)
         end
 
-        context 'when sync_approval_rules_from_findings is enabled' do
-          it 'calls SyncFindingsToApprovalRulesWorker' do
-            expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
-              .to receive(:perform_async).with(pipeline.id)
+        it 'calls SyncFindingsToApprovalRulesWorker' do
+          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
+            .to receive(:perform_async).with(pipeline.id)
 
-            store_group_of_artifacts
-          end
-        end
-
-        context 'when sync_approval_rules_from_findings is disabled' do
-          before do
-            stub_feature_flags(sync_approval_rules_from_findings: false)
-          end
-
-          it 'does not call SyncFindingsToApprovalRulesWorker' do
-            expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
-              .not_to receive(:perform_async)
-
-            store_group_of_artifacts
-          end
+          store_group_of_artifacts
         end
       end
     end

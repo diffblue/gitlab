@@ -26,8 +26,6 @@ module EE
 
         ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(pipeline_id)
 
-        return unless ::Feature.enabled?(:sync_approval_rules_from_findings, merge_request.target_project)
-
         # This is needed here to avoid inconsistent state when the scan result policy is updated after the
         # head pipeline completes and before the merge request is created, we might have inconsistent state.
         ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(pipeline_id)

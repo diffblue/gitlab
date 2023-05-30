@@ -16,7 +16,7 @@ module Llm
     private
 
     def perform
-      perform_async(user, resource, :generate_description, options)
+      worker_perform(user, resource, :generate_description, options)
     end
   end
 end

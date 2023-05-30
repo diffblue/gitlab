@@ -14,7 +14,7 @@ RSpec.describe Llm::TanukiBotService, feature_category: :global_search do
   end
 
   describe '#perform' do
-    it_behaves_like 'async Llm service' do
+    it_behaves_like 'completion worker sync and async' do
       let(:resource) { user }
       let(:action_name) { :tanuki_bot }
     end

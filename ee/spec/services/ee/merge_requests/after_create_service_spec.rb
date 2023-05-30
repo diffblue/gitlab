@@ -32,18 +32,6 @@ RSpec.describe MergeRequests::AfterCreateService, feature_category: :code_review
         expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
           .to have_received(:perform_async).ordered.with(pipeline_id)
       end
-
-      context 'when sync_approval_rules_from_findings is disabled' do
-        before do
-          stub_feature_flags(sync_approval_rules_from_findings: false)
-        end
-
-        it 'does not schedule a background job to sync findings to approval rules' do
-          execute
-
-          expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker).not_to have_received(:perform_async)
-        end
-      end
     end
 
     context 'when the merge request does not have actual_head_pipeline' do

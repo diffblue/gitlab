@@ -29,7 +29,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
         project.add_maintainer(user)
       end
 
-      it_behaves_like 'async Llm service' do
+      it_behaves_like 'completion worker sync and async' do
         let(:resource) { merge_request }
         let(:action_name) { :generate_test_file }
       end

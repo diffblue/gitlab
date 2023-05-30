@@ -30,7 +30,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
   end
 
   describe '#perform' do
-    it_behaves_like 'async Llm service' do
+    it_behaves_like 'completion worker sync and async' do
       let(:resource) { project }
       let(:action_name) { :explain_code }
     end
