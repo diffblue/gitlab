@@ -1,7 +1,8 @@
-import { GlLink, GlSprintf, GlProgressBar, GlButton } from '@gitlab/ui';
+import { GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { projectHelpPaths } from '~/usage_quotas/storage/constants';
+import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 
 import { withRootStorageStatistics } from '../mock_data';
@@ -36,8 +37,15 @@ describe('StorageUsageStatistics', () => {
 
   const findNamespaceStorageCard = () => wrapper.findByTestId('namespace-usage-card');
   const findPurchasedStorageCard = () => wrapper.findByTestId('purchased-usage-card');
+  const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
 
   describe('namespace storage card', () => {
+    it('shows the namespace storage overview subtitle', () => {
+      createComponent();
+
+      expect(findOverviewSubtitle().text()).toBe(NAMESPACE_STORAGE_OVERVIEW_SUBTITLE);
+    });
+
     it('renders card description with help link', () => {
       createComponent();
 
@@ -120,13 +128,6 @@ describe('StorageUsageStatistics', () => {
       expect(findPurchasedStorageCard().findComponent(GlLink).attributes('href')).toBe(
         projectHelpPaths.usageQuotasNamespaceStorageLimit,
       );
-    });
-
-    it('renders purchase more storage button', () => {
-      const purchaseButton = findPurchasedStorageCard().findComponent(GlButton);
-
-      expect(purchaseButton.exists()).toBe(true);
-      expect(purchaseButton.attributes('href')).toBe('some-fancy-url');
     });
 
     describe('when purchaseStorageUrl is not passed', () => {

@@ -409,6 +409,19 @@ describe('DevopsAdoptionApp', () => {
         it('displays the devops adoption overview component', () => {
           expect(findOverviewTab().findComponent(DevopsAdoptionOverview).exists()).toBe(true);
         });
+
+        it.each`
+          key                                           | index
+          ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[0].key} | ${0}
+          ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[1].key} | ${1}
+          ${DEVOPS_ADOPTION_TABLE_CONFIGURATION[2].key} | ${2}
+        `('change the active tab when card title is clicked', async ({ key, index }) => {
+          const overviewTab = wrapper.findComponent(DevopsAdoptionOverview);
+          overviewTab.vm.$emit('card-selected', { key });
+
+          await nextTick();
+          expect(wrapper.findComponent(GlTabs).props().value).toBe(index + 1);
+        });
       });
 
       describe('devops adoption tabs', () => {

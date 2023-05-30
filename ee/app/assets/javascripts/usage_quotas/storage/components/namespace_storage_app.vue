@@ -1,12 +1,15 @@
 <script>
 import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
-import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { parseGetStorageResults } from '../utils';
+import {
+  NAMESPACE_STORAGE_ERROR_MESSAGE,
+  NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
+} from '../constants';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
@@ -71,7 +74,8 @@ export default {
     },
   },
   i18n: {
-    errorMessageText: s__('UsageQuota|Something went wrong while loading usage details'),
+    NAMESPACE_STORAGE_ERROR_MESSAGE,
+    NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE,
   },
   data() {
     return {
@@ -178,7 +182,7 @@ export default {
 <template>
   <div>
     <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mt-4">
-      {{ $options.i18n.errorMessageText }}
+      {{ $options.i18n.NAMESPACE_STORAGE_ERROR_MESSAGE }}
     </gl-alert>
     <storage-inline-alert
       v-if="shouldShowStorageInlineAlert"
@@ -199,6 +203,10 @@ export default {
         :loading="isStorageUsageStatisticsLoading"
       />
     </div>
+
+    <h4 data-testid="breakdown-subtitle">
+      {{ $options.i18n.NAMESPACE_STORAGE_BREAKDOWN_SUBTITLE }}
+    </h4>
 
     <dependency-proxy-usage
       v-if="!userNamespace"

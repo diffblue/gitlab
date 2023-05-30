@@ -8,6 +8,7 @@ import {
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
   STORAGE_STATISTICS_PURCHASED_STORAGE,
   STORAGE_STATISTICS_PURCHASED_STORAGE_USED,
+  NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
 } from '../constants';
 
 export default {
@@ -56,6 +57,7 @@ export default {
     usedUsageHelpText: STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
     purchaseButtonText: BUY_STORAGE,
     totalUsageDescription: STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
+    namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
   },
   computed: {
     usedStorageAmount() {
@@ -90,62 +92,67 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
-    <storage-statistics-card
-      :used-storage="usedStorageAmount"
-      :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
-      :show-progress-bar="storageLimitEnforced"
-      :loading="loading"
-      data-testid="namespace-usage-card"
-      data-qa-selector="namespace_usage_total"
-      class="gl-flex-grow-1"
-    >
-      <template #description>
-        {{ $options.i18n.totalUsageDescription }}
+  <div class="gl-py-4">
+    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
+      <h4 data-testid="overview-subtitle">{{ $options.i18n.namespaceStorageOverviewSubtitle }}</h4>
 
-        <gl-link
-          :href="$options.i18n.usedUsageHelpLink"
-          target="_blank"
-          class="gl-ml-2"
-          :aria-label="$options.i18n.usedUsageHelpText"
-        >
-          <gl-icon name="question-o" />
-        </gl-link>
-      </template>
-    </storage-statistics-card>
+      <gl-button
+        v-if="purchaseStorageUrl"
+        :href="purchaseStorageUrl"
+        target="_blank"
+        category="primary"
+        variant="confirm"
+        data-qa-selector="purchase_more_storage"
+      >
+        {{ $options.i18n.purchaseButtonText }}
+      </gl-button>
+    </div>
+    <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-4">
+      <storage-statistics-card
+        :used-storage="usedStorageAmount"
+        :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
+        :show-progress-bar="storageLimitEnforced"
+        :loading="loading"
+        data-testid="namespace-usage-card"
+        data-qa-selector="namespace_usage_total"
+        class="gl-flex-grow-1"
+      >
+        <template #description>
+          {{ $options.i18n.totalUsageDescription }}
 
-    <storage-statistics-card
-      v-if="purchaseStorageUrl"
-      :used-storage="purchasedUsedStorage"
-      :total-storage="purchasedTotalStorage"
-      :show-progress-bar="storageLimitEnforced"
-      :loading="loading"
-      data-testid="purchased-usage-card"
-      data-qa-selector="purchased_usage_total"
-      class="gl-flex-grow-1"
-    >
-      <template #actions>
-        <gl-button
-          :href="purchaseStorageUrl"
-          target="_blank"
-          category="primary"
-          variant="confirm"
-          data-qa-selector="purchase_more_storage"
-        >
-          {{ $options.i18n.purchaseButtonText }}
-        </gl-button>
-      </template>
-      <template #description>
-        {{ purchasedUsageDescription }}
-        <gl-link
-          :href="$options.i18n.purchasedUsageHelpLink"
-          target="_blank"
-          class="gl-ml-2"
-          :aria-label="$options.i18n.purchasedUsageHelpText"
-        >
-          <gl-icon name="question-o" />
-        </gl-link>
-      </template>
-    </storage-statistics-card>
+          <gl-link
+            :href="$options.i18n.usedUsageHelpLink"
+            target="_blank"
+            class="gl-ml-2"
+            :aria-label="$options.i18n.usedUsageHelpText"
+          >
+            <gl-icon name="question-o" />
+          </gl-link>
+        </template>
+      </storage-statistics-card>
+
+      <storage-statistics-card
+        v-if="purchaseStorageUrl"
+        :used-storage="purchasedUsedStorage"
+        :total-storage="purchasedTotalStorage"
+        :show-progress-bar="storageLimitEnforced"
+        :loading="loading"
+        data-testid="purchased-usage-card"
+        data-qa-selector="purchased_usage_total"
+        class="gl-flex-grow-1"
+      >
+        <template #description>
+          {{ purchasedUsageDescription }}
+          <gl-link
+            :href="$options.i18n.purchasedUsageHelpLink"
+            target="_blank"
+            class="gl-ml-2"
+            :aria-label="$options.i18n.purchasedUsageHelpText"
+          >
+            <gl-icon name="question-o" />
+          </gl-link>
+        </template>
+      </storage-statistics-card>
+    </div>
   </div>
 </template>

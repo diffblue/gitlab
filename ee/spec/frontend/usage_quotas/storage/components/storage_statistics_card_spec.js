@@ -11,7 +11,6 @@ describe('StorageStatisticsCard', () => {
       propsData: { ...defaultProps, ...props },
       slots: {
         description: 'storage-statistics-card description slot',
-        actions: 'storage-statistics-card actions slot',
       },
     });
   };
@@ -19,7 +18,6 @@ describe('StorageStatisticsCard', () => {
   const findDenominatorBlock = () => wrapper.findByTestId('denominator');
   const findTotalBlock = () => wrapper.findByTestId('denominator-total');
   const findDescriptionBlock = () => wrapper.findByTestId('description');
-  const findActionsBlock = () => wrapper.findByTestId('actions');
   const findProgressBar = () => wrapper.findComponent(GlProgressBar);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
 
@@ -59,11 +57,6 @@ describe('StorageStatisticsCard', () => {
     it('renders description slot', () => {
       createComponent();
       expect(findDescriptionBlock().text()).toBe('storage-statistics-card description slot');
-    });
-
-    it('renders actions slot', () => {
-      createComponent();
-      expect(findActionsBlock().text()).toBe('storage-statistics-card actions slot');
     });
   });
 
