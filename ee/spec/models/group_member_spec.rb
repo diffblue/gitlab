@@ -103,6 +103,29 @@ RSpec.describe GroupMember do
         expect(described_class.with_saml_identity(saml_provider)).to eq([member])
       end
     end
+
+    describe '.eligible_approvers_by_groups' do
+      let(:group) { create(:group) }
+      let(:guest) { create(:user) }
+      let(:developer) { create(:user) }
+      let(:maintainer) { create(:user) }
+
+      before do
+        group.add_guest(guest)
+        group.add_developer(developer)
+        group.add_maintainer(maintainer)
+      end
+
+      subject(:approver_ids) do
+        described_class
+          .eligible_approvers_by_groups([group])
+          .pluck_user_ids
+      end
+
+      it 'returns IDs of users with sufficient access level' do
+        expect(approver_ids).to contain_exactly(developer.id, maintainer.id)
+      end
+    end
   end
 
   describe '.filter_by_enterprise_users' do

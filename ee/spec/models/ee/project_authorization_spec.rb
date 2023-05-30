@@ -3,6 +3,32 @@
 require 'spec_helper'
 
 RSpec.describe ProjectAuthorization do
+  describe 'scopes' do
+    describe '.eligible_approvers_by_project_id_and_access_levels' do
+      let_it_be(:project) { create(:project) }
+      let(:guest) { create(:user) }
+      let(:developer) { create(:user) }
+      let(:maintainer) { create(:user) }
+      let(:access_levels) { [::Gitlab::Access::DEVELOPER, ::Gitlab::Access::MAINTAINER] }
+
+      before do
+        project.add_guest(guest)
+        project.add_developer(developer)
+        project.add_maintainer(maintainer)
+      end
+
+      subject(:approver_ids) do
+        described_class
+          .eligible_approvers_by_project_id_and_access_levels([project], access_levels)
+          .pluck_user_ids
+      end
+
+      it 'returns users with sufficient project access level' do
+        expect(approver_ids).to contain_exactly(developer.id, maintainer.id)
+      end
+    end
+  end
+
   describe '.visible_to_user_and_access_level' do
     let(:user) { create(:user) }
     let(:project1) { create(:project) }
