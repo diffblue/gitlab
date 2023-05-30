@@ -32,7 +32,7 @@ module Types
       field :errors,
         [GraphQL::Types::String],
         null: false,
-        description: 'Errors that occurred while asynchronously fetching an AI(assistant) response.'
+        description: 'Errors that occurred while asynchronously fetching an AI (assistant) response.'
     end
     # rubocop: enable Graphql/AuthorizeTypes
   end

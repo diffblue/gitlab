@@ -6,6 +6,48 @@ module Gitlab
       class SsoEnforcer
         DEFAULT_SESSION_TIMEOUT = 1.day
 
+        class << self
+          def access_restricted?(user:, resource:)
+            group = resource.is_a?(::Group) ? resource : resource.group
+
+            return false unless group
+
+            saml_provider = group.root_saml_provider
+
+            return false unless saml_provider
+            return false if user_authorized?(user, group, resource)
+
+            new(saml_provider, user: user).access_restricted?
+          end
+
+          # Given an array of groups or subgroups, return an array
+          # of root groups that are access restricted for the user
+          def access_restricted_groups(groups, user: nil)
+            return [] unless groups.any?
+
+            ::Preloaders::GroupRootAncestorPreloader.new(groups, [:saml_provider]).execute
+            root_ancestors = groups.map(&:root_ancestor).uniq
+
+            root_ancestors.select do |root_ancestor|
+              new(root_ancestor.saml_provider, user: user).access_restricted?
+            end
+          end
+
+          private
+
+          def user_authorized?(user, group, resource)
+            return true if resource.public? && !group_member?(group, user)
+            return true if user&.can_read_all_resources?
+            return true if resource.is_a?(::Group) && resource.root? && resource.owned_by?(user)
+
+            false
+          end
+
+          def group_member?(group, user)
+            user && user.is_a?(::User) && group.member?(user)
+          end
+        end
+
         attr_reader :saml_provider, :user
 
         def initialize(saml_provider, user: nil)
@@ -25,31 +67,6 @@ module Gitlab
           saml_enforced? && !active_session?
         end
 
-        def self.group_access_restricted?(group, user: nil, for_project: false)
-          return false unless group
-          return false unless group.root_ancestor
-
-          saml_provider = group.root_saml_provider
-
-          return false unless saml_provider
-          return false if user_authorized?(user, group, for_project)
-
-          new(saml_provider, user: user).access_restricted?
-        end
-
-        # Given an array of groups or subgroups, return an array
-        # of root groups that are access restricted for the user
-        def self.access_restricted_groups(groups, user: nil)
-          return [] unless groups.any?
-
-          ::Preloaders::GroupRootAncestorPreloader.new(groups, [:saml_provider]).execute
-          root_ancestors = groups.map(&:root_ancestor).uniq
-
-          root_ancestors.select do |root_ancestor|
-            group_access_restricted?(root_ancestor, user: user, for_project: true)
-          end
-        end
-
         private
 
         def saml_enforced?
@@ -62,15 +79,6 @@ module Gitlab
 
         def group
           saml_provider&.group
-        end
-
-        def self.user_authorized?(user, group, for_project)
-          return false unless user
-          return true if user.can_read_all_resources?
-
-          return false if for_project
-
-          !group.has_parent? && group.owned_by?(user)
         end
       end
     end

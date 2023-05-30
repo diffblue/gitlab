@@ -43,6 +43,18 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: 
       expect(last.timestamp).not_to be_nil
     end
 
+    it 'raises an exception when role is missing' do
+      payload[:role] = nil
+
+      expect { subject.add(payload) }.to raise_error(ArgumentError, "Invalid role ''")
+    end
+
+    it 'raises an exception when role is invalid' do
+      payload[:role] = 'bot'
+
+      expect { subject.add(payload) }.to raise_error(ArgumentError, "Invalid role 'bot'")
+    end
+
     context 'when ai_redis_cache is disabled' do
       before do
         stub_feature_flags(ai_redis_cache: false)
