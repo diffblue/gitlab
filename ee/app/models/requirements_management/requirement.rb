@@ -58,16 +58,16 @@ module RequirementsManagement
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
     delegate :title,
-             :title_html,
-             :author,
-             :author_id,
-             :description,
-             :description_html,
-             :cached_markdown_version,
-             :created_at,
-             :updated_at,
-             to: :requirement_issue,
-             allow_nil: true
+      :title_html,
+      :author,
+      :author_id,
+      :description,
+      :description_html,
+      :cached_markdown_version,
+      :created_at,
+      :updated_at,
+      to: :requirement_issue,
+      allow_nil: true
 
     scope :with_issue, -> { joins(:requirement_issue) }
     scope :for_iid, -> (iid) { where(iid: iid) }

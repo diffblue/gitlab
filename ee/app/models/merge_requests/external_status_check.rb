@@ -18,7 +18,7 @@ module MergeRequests
 
     belongs_to :project
     has_and_belongs_to_many :protected_branches,
-                            after_add: :audit_protected_branch_add, after_remove: :audit_protected_branch_remove
+      after_add: :audit_protected_branch_add, after_remove: :audit_protected_branch_remove
     after_create_commit :audit_creation
     after_destroy_commit :audit_deletion
     validates :external_url, presence: true, uniqueness: { scope: :project_id }, addressable_url: true

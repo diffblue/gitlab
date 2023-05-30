@@ -36,11 +36,11 @@ module MergeRequests
 
     validates :violating_user, presence: true
     validates :merge_request,
-              presence: true,
-              uniqueness: {
-                scope: [:violating_user, :reason],
-                message: -> (_object, _data) { _('compliance violation has already been recorded') }
-              }
+      presence: true,
+      uniqueness: {
+        scope: [:violating_user, :reason],
+        message: -> (_object, _data) { _('compliance violation has already been recorded') }
+      }
     validates :reason, presence: true
     validates :severity_level, presence: true
 

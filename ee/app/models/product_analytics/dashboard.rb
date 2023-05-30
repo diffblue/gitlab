@@ -37,8 +37,7 @@ module ProductAnalytics
 
       trees.delete_if { |tree| tree.name == 'visualizations' }.map do |tree|
         config = YAML.safe_load(
-          project.repository.blob_data_at(project.repository.root_ref_sha,
-                                          "#{tree.path}/#{tree.name}.yaml")
+          project.repository.blob_data_at(project.repository.root_ref_sha, "#{tree.path}/#{tree.name}.yaml")
         )
 
         new(
