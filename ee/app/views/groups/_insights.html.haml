@@ -4,8 +4,8 @@
     = s_('GroupSettings|Select the project containing your custom Insights file.')
     = link_to(s_('GroupSettings|What is Insights?'), help_page_path('user/group/insights/index.md'), target: '_blank', rel: 'noopener noreferrer')
 
-  .insights-settings.settings-content
-    = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
+  .settings-content
+    = gitlab_ui_form_for @group, html: { class: 'fieldset-form', data: { testid: 'insights-settings' } } do |form|
       = form_errors(@group)
 
       - insight = @group.insight || @group.build_insight

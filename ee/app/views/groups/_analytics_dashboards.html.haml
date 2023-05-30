@@ -4,8 +4,8 @@
     = s_('GroupSettings|Select the project containing Analytics Dashboards configuration files.')
     = link_to(s_('GroupSettings|What is Analytics Dashboards?'), help_page_path('user/analytics/value_streams_dashboard.md'))
 
-  .analytics-dashboards-settings.settings-content
-    = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
+  .settings-content
+    = gitlab_ui_form_for @group, html: { class: 'fieldset-form', data: { testid: 'analytics-dashboards-settings' } } do |form|
       = form_errors(@group)
 
       - pointer = @group.analytics_dashboards_pointer || @group.build_analytics_dashboards_pointer

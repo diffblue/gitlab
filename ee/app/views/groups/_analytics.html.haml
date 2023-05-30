@@ -1,7 +1,8 @@
 - can_see_analytics_dashboards = can?(current_user, :read_group_analytics_dashboards, @group)
 - can_see_insights = @group.insights_available?
+- can_see_vsd_settings = can?(current_user, :modify_value_stream_dashboard_settings, @group)
 
-- return unless can_see_analytics_dashboards || can_see_insights
+- return unless can_see_analytics_dashboards || can_see_insights || can_see_vsd_settings
 
 %section.settings.no-animate{ class: ('expanded' if expanded) }
   .settings-header
@@ -13,4 +14,5 @@
       = s_('GroupSettings|Configure analytics features for this group')
   .settings-content
     = render 'analytics_dashboards' if can_see_analytics_dashboards
+    = render 'value_stream_dashboard' if can_see_vsd_settings
     = render 'insights' if can_see_insights

@@ -1,0 +1,12 @@
+.sub-section
+  %h4.warning-title= s_('GroupSettings|Value Streams Dashboard')
+
+  .settings-content
+    = gitlab_ui_form_for @group, html: { class: 'fieldset-form', data: { testid: 'value-streams-dashboards-settings' } } do |form|
+      = form_errors(@group)
+
+      - pointer = @group.value_stream_dashboard_aggregation || @group.build_value_stream_dashboard_aggregation(enabled: false)
+      %fieldset.form-group.gl-form-group
+        = form.fields_for :value_stream_dashboard_aggregation_attributes, pointer do |pointer_form|
+          = pointer_form.gitlab_ui_checkbox_component :enabled, s_('GroupSettings|Enable overview background aggregation for Value Streams Dashboard')
+      = form.submit _('Save changes'), pajamas_button: true
