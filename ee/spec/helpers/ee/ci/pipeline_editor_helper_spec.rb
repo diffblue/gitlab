@@ -25,6 +25,11 @@ RSpec.describe EE::Ci::PipelineEditorHelper do
 
     subject(:pipeline_editor_data) { helper.js_pipeline_editor_data(project) }
 
+    it 'passes down EE only properties' do
+      expect(pipeline_editor_data.keys).to include('can-view-namespace-catalog')
+      expect(pipeline_editor_data.keys).to include('ci-catalog-path')
+    end
+
     shared_examples 'no licensed features keys' do
       it 'returns dataset with no licensed features keys' do
         expect(pipeline_editor_data.keys).not_to include('api-fuzzing-configuration-path')

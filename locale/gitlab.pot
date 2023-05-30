@@ -8278,6 +8278,9 @@ msgstr ""
 msgid "BroadcastMessages|Your message here"
 msgstr ""
 
+msgid "Browse CI/CD Catalog"
+msgstr ""
+
 msgid "Browse Directory"
 msgstr ""
 
