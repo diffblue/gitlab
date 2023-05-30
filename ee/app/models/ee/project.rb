@@ -83,12 +83,13 @@ module EE
       has_many :vulnerability_feedback, class_name: 'Vulnerabilities::Feedback'
       has_many :vulnerability_historical_statistics, class_name: 'Vulnerabilities::HistoricalStatistic'
       has_many :vulnerability_findings,
-               class_name: 'Vulnerabilities::Finding',
-               inverse_of: :project, dependent: :destroy do # rubocop:disable Cop/ActiveRecordDependent
-        def lock_for_confirmation!(id)
-          where(vulnerability_id: nil).lock.find(id)
+        class_name: 'Vulnerabilities::Finding',
+        inverse_of: :project,
+        dependent: :destroy do # rubocop:disable Cop/ActiveRecordDependent
+          def lock_for_confirmation!(id)
+            where(vulnerability_id: nil).lock.find(id)
+          end
         end
-      end
       has_many :vulnerability_identifiers, class_name: 'Vulnerabilities::Identifier'
       has_many :vulnerability_scanners, class_name: 'Vulnerabilities::Scanner'
       has_many :vulnerability_exports, class_name: 'Vulnerabilities::Export'
@@ -178,7 +179,7 @@ module EE
         from_union([projects_with_feature_available_in_plan, public_projects_in_public_groups])
       end
       scope :requiring_code_owner_approval,
-            -> { joins(:protected_branches).where(protected_branches: { code_owner_approval_required: true }) }
+        -> { joins(:protected_branches).where(protected_branches: { code_owner_approval_required: true }) }
       scope :github_imported, -> { where(import_type: 'github') }
       scope :with_protected_branches, -> { joins(:protected_branches) }
       scope :with_repositories_enabled, -> { joins(:project_feature).where(project_features: { repository_access_level: ::ProjectFeature::ENABLED }) }
@@ -188,8 +189,10 @@ module EE
       scope :with_github_integration_pipeline_events, -> { joins(:github_integration).merge(::Integrations::Github.pipeline_hooks) }
       scope :with_active_prometheus_integration, -> { joins(:prometheus_integration).merge(::Integrations::Prometheus.active) }
       scope :mirrored_with_enabled_pipelines, -> do
-        joins(:project_feature).mirror.where(mirror_trigger_builds: true,
-                                             project_features: { builds_access_level: ::ProjectFeature::ENABLED })
+        joins(:project_feature).mirror.where(
+          mirror_trigger_builds: true,
+          project_features: { builds_access_level: ::ProjectFeature::ENABLED }
+        )
       end
       scope :with_slack_integration, -> { joins(:slack_integration) }
       scope :with_slack_slash_commands_integration, -> { joins(:slack_slash_commands_integration) }
@@ -284,16 +287,16 @@ module EE
       alias_attribute :compliance_pipeline_configuration_full_path, :pipeline_configuration_full_path
 
       delegate :prevent_merge_without_jira_issue,
-               :selective_code_owner_removals,
-               :suggested_reviewers_enabled,
-               :only_allow_merge_if_all_status_checks_passed,
-               :only_allow_merge_if_all_status_checks_passed=,
-               :mirror_branch_regex,
-               :mirror_branch_regex=,
-               :allow_pipeline_trigger_approve_deployment,
-               :allow_pipeline_trigger_approve_deployment=,
-               :product_analytics_instrumentation_key,
-               to: :project_setting
+        :selective_code_owner_removals,
+        :suggested_reviewers_enabled,
+        :only_allow_merge_if_all_status_checks_passed,
+        :only_allow_merge_if_all_status_checks_passed=,
+        :mirror_branch_regex,
+        :mirror_branch_regex=,
+        :allow_pipeline_trigger_approve_deployment,
+        :allow_pipeline_trigger_approve_deployment=,
+        :product_analytics_instrumentation_key,
+        to: :project_setting
 
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }

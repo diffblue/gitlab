@@ -36,10 +36,11 @@ module EE
       shared_with_group_domains = shared_with_group.root_ancestor_allowed_email_domains.pluck(:domain).to_set
 
       if shared_with_group_domains.empty? || !shared_with_group_domains.subset?(root_ancestor_group_domains)
-        errors.add(:group_id,
-        _("Invited group allowed email domains must contain a subset of the allowed email domains"\
-          " of the root ancestor group. Go to the group's 'Settings &gt; General' page"\
-          " and check 'Restrict membership by email domain'."))
+        errors.add(
+          :group_id,
+          _("Invited group allowed email domains must contain a subset of the allowed email domains"\
+            " of the root ancestor group. Go to the group's 'Settings &gt; General' page"\
+            " and check 'Restrict membership by email domain'."))
       end
     end
   end
