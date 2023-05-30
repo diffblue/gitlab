@@ -29515,6 +29515,9 @@ msgstr ""
 msgid "NamespaceLimits|Storage Phased Notification"
 msgstr ""
 
+msgid "NamespaceLimits|There was an error fetching the exclusion list, try refreshing the page."
+msgstr ""
+
 msgid "NamespaceLimits|These namespaces won't receive any notifications nor any degraded functionality while they remain on this list"
 msgstr ""
 

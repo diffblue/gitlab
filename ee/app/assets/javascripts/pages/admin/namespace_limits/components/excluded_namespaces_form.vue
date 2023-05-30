@@ -134,6 +134,7 @@ export default {
         v-model="excludingReason"
         :placeholder="$options.i18n.reasonPlaceholder"
         size="xl"
+        autocomplete="off"
         required
       />
     </gl-form-group>
