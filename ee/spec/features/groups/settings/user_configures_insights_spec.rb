@@ -34,7 +34,7 @@ RSpec.describe 'Groups > Settings > User configures Insights', :js, feature_cate
     end
 
     it 'allows to select a project in a subgroup for the Insights config' do
-      page.within '.insights-settings form' do
+      page.within '[data-testid="insights-settings"]' do
         select_from_listbox(project.full_name, from: s_('ProjectSelect|Search for project'))
 
         click_button _('Save changes')
