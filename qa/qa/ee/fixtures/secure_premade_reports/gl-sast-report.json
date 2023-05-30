@@ -151,7 +151,7 @@
     {
       "id": "7e126e060d3d0b5f0b11506528c82fa40f5d144d85b2460ab01c44c7c9043be7",
       "category": "sast",
-      "message": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+      "name": "Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
       "description": "Detected possible formatted SQL query. Use parameterized queries instead.\n",
       "cve": "semgrep_id:bandit.B608:304:304",
       "severity": "Medium",
