@@ -26,12 +26,20 @@ describe('EpicHeaderComponent', () => {
 
   Vue.use(VueApollo);
 
-  const createComponent = ({ isMoveSidebarEnabled = false } = {}) => {
+  const createComponent = ({
+    isMoveSidebarEnabled = false,
+    isLoggedIn = true,
+    epicData = mockEpicData,
+  } = {}) => {
     store = createStore();
     store.dispatch('setEpicMeta', mockEpicMeta);
-    store.dispatch('setEpicData', mockEpicData);
+    store.dispatch('setEpicData', epicData);
 
     const handlers = [[epicReferenceQuery, epicReferenceSuccessHandler]];
+
+    if (isLoggedIn) {
+      window.gon.current_user_id = 1;
+    }
 
     wrapper = shallowMount(EpicHeader, {
       apolloProvider: createMockApollo(handlers),
@@ -65,6 +73,8 @@ describe('EpicHeaderComponent', () => {
   const findSidebarToggle = () => wrapper.find('[data-testid="sidebar-toggle"]');
   const findNotificationWidget = () => wrapper.find(`[data-testid="notification-toggle"]`);
   const findCopyRefenceDropdownItem = () => wrapper.find(`[data-testid="copy-reference"]`);
+  const findDesktopDropdown = () => wrapper.find('[data-testid="desktop-dropdown"]');
+  const findMobileDropdown = () => wrapper.find('[data-testid="mobile-dropdown"]');
 
   describe('computed', () => {
     describe('statusIcon', () => {
@@ -288,9 +298,41 @@ describe('EpicHeaderComponent', () => {
         expect(findNotificationWidget().exists()).toBe(true);
       });
 
-      it('does not render the copy reference toggle', () => {
+      it('renders the copy reference toggle', () => {
         expect(findCopyRefenceDropdownItem().exists()).toBe(true);
       });
     });
+  });
+
+  describe('when logged out', () => {
+    describe.each`
+      movedMrSidebarEnabled | headerActionsVisible
+      ${true}               | ${true}
+      ${false}              | ${false}
+    `(
+      `with movedMrSidebarEnabled flag is "$movedMrSidebarEnabled"`,
+      ({ movedMrSidebarEnabled, headerActionsVisible }) => {
+        beforeEach(async () => {
+          createComponent({
+            isLoggedIn: false,
+            isMoveSidebarEnabled: movedMrSidebarEnabled,
+            epicData: {
+              ...mockEpicData,
+              canCreate: false,
+              canDestroy: false,
+              canUpdate: false,
+            },
+          });
+          await waitForPromises();
+        });
+
+        it(`${headerActionsVisible ? 'shows' : 'hides'} headers actions`, () => {
+          expect(findDesktopDropdown().exists()).toBe(headerActionsVisible);
+          expect(findMobileDropdown().exists()).toBe(headerActionsVisible);
+          expect(findCopyRefenceDropdownItem().exists()).toBe(headerActionsVisible);
+          expect(findNotificationWidget().exists()).toBe(false);
+        });
+      },
+    );
   });
 });

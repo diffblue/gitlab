@@ -18,7 +18,7 @@ RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
     it 'does not show the Delete button' do
       visit group_epic_path(group, epic)
 
-      expect(page).not_to have_css('[data-testid="desktop-dropdown"]')
+      expect(page).not_to have_css('[data-testid="delete-epic-button"]')
     end
   end
 
