@@ -1,9 +1,18 @@
 <script>
-import { GlTable, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlTable, GlLoadingIcon } from '@gitlab/ui';
+import Api from '~/api';
+import axios from '~/lib/utils/axios_utils';
+import { __ } from '~/locale';
+import {
+  LIST_EXCLUSIONS_ENDPOINT,
+  exclusionListFetchError,
+  excludedNamespacesDescription,
+} from '../constants';
 import ExcludedNamespacesForm from './excluded_namespaces_form.vue';
 
 export default {
   components: {
+    GlAlert,
     GlTable,
     GlLoadingIcon,
     ExcludedNamespacesForm,
@@ -11,19 +20,37 @@ export default {
   data() {
     return {
       loading: false,
-      tableItems: [
-        {
-          namespace_id: 1,
-          name: 2,
-          reason: 3,
-          operations: 4,
-        },
+      exclusions: [],
+      tableFields: [
+        { key: 'namespace_name', label: __('Name') },
+        { key: 'namespace_id', label: __('ID') },
+        'reason',
+        'operations',
       ],
+      fetchError: null,
     };
   },
+  created() {
+    this.fetchExclusions();
+  },
+  i18n: {
+    excludedNamespacesDescription,
+  },
   methods: {
-    handleExcludingNamespace() {
+    async fetchExclusions() {
+      const endpoint = Api.buildUrl(LIST_EXCLUSIONS_ENDPOINT);
+
       this.loading = true;
+      this.fetchError = null;
+
+      try {
+        const { data } = await axios.get(endpoint);
+        this.exclusions = data;
+      } catch {
+        this.fetchError = exclusionListFetchError;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 };
@@ -32,14 +59,13 @@ export default {
 <template>
   <div>
     <p class="gl-text-secondary">
-      {{
-        s__(
-          "NamespaceLimits|These namespaces won't receive any notifications nor any degraded functionality while they remain on this list",
-        )
-      }}
+      {{ $options.i18n.excludedNamespacesDescription }}
     </p>
 
-    <gl-table :items="tableItems" :busy="loading">
+    <gl-alert v-if="fetchError" variant="danger" :dismissible="false" class="gl-mb-3">
+      {{ fetchError }}
+    </gl-alert>
+    <gl-table :items="exclusions" :fields="tableFields" :busy="loading">
       <template #table-busy>
         <div class="gl-text-center gl-text-red-500 gl-my-2">
           <gl-loading-icon />
@@ -47,6 +73,6 @@ export default {
       </template>
     </gl-table>
     <br />
-    <excluded-namespaces-form @added="handleExcludingNamespace" />
+    <excluded-namespaces-form @added="fetchExclusions" />
   </div>
 </template>
