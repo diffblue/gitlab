@@ -22256,6 +22256,8 @@ CREATE TABLE schema_inconsistencies (
     object_name text NOT NULL,
     table_name text NOT NULL,
     valitador_name text NOT NULL,
+    diff text NOT NULL,
+    CONSTRAINT check_001d186ac7 CHECK ((char_length(diff) <= 6144)),
     CONSTRAINT check_120b6c86d0 CHECK ((char_length(valitador_name) <= 63)),
     CONSTRAINT check_a0411f31fd CHECK ((char_length(object_name) <= 63)),
     CONSTRAINT check_d96408dfd2 CHECK ((char_length(table_name) <= 63))
