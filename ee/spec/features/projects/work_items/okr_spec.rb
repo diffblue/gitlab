@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
 
-  let_it_be_with_reload(:user) { create(:user) }
+  let_it_be_with_reload(:user) { create(:user, name: 'Sherlock Holmes') }
   let_it_be(:user2) { create(:user, name: 'John') }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project, namespace: group) }
