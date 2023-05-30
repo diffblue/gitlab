@@ -25,6 +25,11 @@ module EE
       scope :guests, -> { where(access_level: ::Gitlab::Access::GUEST) }
       scope :non_owners, -> { where("members.access_level < ?", ::Gitlab::Access::OWNER) }
       scope :by_user_id, ->(user_id) { where(user_id: user_id) }
+
+      scope :eligible_approvers_by_groups, ->(groups) do
+        where(source_id: groups.pluck(:id), access_level: ::Gitlab::Access::DEVELOPER...)
+          .limit(::Security::ScanResultPolicy::APPROVERS_LIMIT)
+      end
     end
 
     class_methods do

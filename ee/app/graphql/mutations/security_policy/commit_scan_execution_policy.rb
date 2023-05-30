@@ -37,6 +37,11 @@ module Mutations
             null: true,
             description: 'Name of the branch to which the policy changes are committed.'
 
+      field :validation_errors,
+            [Types::SecurityPolicyValidationError],
+            null: true,
+            description: 'Validation errors encountered during execution of the mutation.'
+
       def resolve(args)
         project_or_group = authorized_find!(**args)
 
@@ -46,7 +51,8 @@ module Mutations
 
         {
           branch: result[:branch],
-          errors: [error_message, *error_details].compact
+          errors: [error_message, *error_details].compact,
+          validation_errors: result[:validation_errors] || []
         }
       end
 
