@@ -50,6 +50,8 @@ module QA
 
         context 'with existing CI minutes pack' do
           let(:ci_minutes_quantity) { 5 }
+          let(:expected_minutes) { CI_MINUTES[:ci_minutes] * ci_minutes_quantity }
+          let(:plan_limits) { PREMIUM[:ci_minutes] }
 
           before do
             Resource::Project.fabricate_via_api! do |project|
@@ -64,12 +66,16 @@ module QA
 
           it 'upgrades from free to premium with correct CI minutes',
              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349085' do
+            Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+              wait_for_ci_minutes(usage_quota)
+
+              expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
+            end
+
             Flow::Purchase.upgrade_subscription(plan: PREMIUM)
 
-            expected_minutes = CI_MINUTES[:ci_minutes] * ci_minutes_quantity
-            plan_limits = PREMIUM[:ci_minutes]
-
             Page::Group::Menu.perform(&:go_to_billing)
+
             Gitlab::Page::Group::Settings::Billing.perform do |billing|
               expect do
                 billing.billing_plan_header
@@ -78,11 +84,10 @@ module QA
             end
 
             Page::Group::Menu.perform(&:go_to_usage_quotas)
-            Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-              usage_quota.pipelines_tab
 
-              expect { usage_quota.additional_ci_minutes_added? }
-                .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
+            Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+              wait_for_ci_minutes(usage_quota)
+
               aggregate_failures do
                 expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
                 expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
@@ -91,6 +96,16 @@ module QA
           end
         end
       end
+    end
+
+    private
+
+    def wait_for_ci_minutes(usage_quota)
+      usage_quota.pipelines_tab
+
+      expect { usage_quota.additional_ci_minutes_added? }
+        .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page),
+          'Expected additional CI minutes but they did not appear.'
     end
   end
 end
