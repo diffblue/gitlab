@@ -82,7 +82,7 @@ module Gitlab
     def block_changes_message
       return namespace_block_changes_message if namespace
 
-      _('Please delete your current license if you want to downgrade to the free plan.')
+      _("This instance is now read-only. Don't worry, your data is safe. To change to GitLab Free and restore write access to this instance, delete your expired license.")
     end
 
     def namespace_block_changes_message
