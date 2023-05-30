@@ -14,11 +14,11 @@ module Vulnerabilities
     validates :vulnerability, :issue, presence: true
     validates :issue_id, uniqueness: { scope: :vulnerability_id, message: N_('has already been linked to another vulnerability') }
     validates :vulnerability_id,
-              uniqueness: {
-                conditions: -> { where(link_type: 'created') },
-                message: N_('already has a "created" issue link')
-              },
-              if: :created?
+      uniqueness: {
+        conditions: -> { where(link_type: 'created') },
+        message: N_('already has a "created" issue link')
+      },
+      if: :created?
 
     scope :by_link_type, -> (link_type) { link_type ? where(link_type: link_type.downcase) : all }
     scope :for_issue, -> (issue) { where(issue_id: issue) }
