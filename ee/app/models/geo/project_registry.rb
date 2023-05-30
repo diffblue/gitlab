@@ -203,10 +203,12 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
       Arel::Nodes::SqlLiteral.new('project_registry.repository_missing_on_primary IS NOT TRUE')
 
     where(repository_exists_on_primary)
-      .where(last_repository_verification_failure: nil,
-             primary_repository_checksummed: true,
-             resync_repository: false,
-             repository_verification_checksum_sha: nil)
+      .where(
+        last_repository_verification_failure: nil,
+        primary_repository_checksummed: true,
+        resync_repository: false,
+        repository_verification_checksum_sha: nil
+      )
   end
 
   def self.wikis_checksummed_pending_verification
@@ -214,10 +216,12 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
       Arel::Nodes::SqlLiteral.new('project_registry.wiki_missing_on_primary IS NOT TRUE')
 
     where(wiki_exists_on_primary)
-      .where(last_wiki_verification_failure: nil,
-             primary_wiki_checksummed: true,
-             resync_wiki: false,
-             wiki_verification_checksum_sha: nil)
+      .where(
+        last_wiki_verification_failure: nil,
+        primary_wiki_checksummed: true,
+        resync_wiki: false,
+        wiki_verification_checksum_sha: nil
+      )
   end
 
   def self.flag_repositories_for_resync!
@@ -343,8 +347,10 @@ class Geo::ProjectRegistry < Geo::BaseRegistry
   end
 
   def repository_created!(repository_created_event)
-    update!(resync_repository: true,
-            resync_wiki: repository_created_event.wiki_path.present?)
+    update!(
+      resync_repository: true,
+      resync_wiki: repository_created_event.wiki_path.present?
+    )
   end
 
   # Marks the project as dirty.

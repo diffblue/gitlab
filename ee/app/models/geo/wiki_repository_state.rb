@@ -5,8 +5,8 @@ module Geo
     include ::Geo::VerificationStateDefinition
 
     belongs_to :project_wiki_repository,
-               class_name: 'Projects::WikiRepository',
-               inverse_of: :wiki_repository_state
+      class_name: 'Projects::WikiRepository',
+      inverse_of: :wiki_repository_state
 
     validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :project_wiki_repository, presence: true
