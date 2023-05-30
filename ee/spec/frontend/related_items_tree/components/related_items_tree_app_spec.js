@@ -4,9 +4,11 @@ import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
+import Api from 'ee/api';
 import mockProjects from 'test_fixtures_static/projects.json';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
-import AddIssuableForm from '~/related_issues/components/add_issuable_form.vue';
+import CreateEpicForm from 'ee/related_items_tree/components/create_epic_form.vue';
+import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import RelatedItemsTreeApp from 'ee/related_items_tree/components/related_items_tree_app.vue';
 import RelatedItemsTreeHeader from 'ee/related_items_tree/components/related_items_tree_header.vue';
@@ -24,30 +26,36 @@ import { mockInitialConfig, mockParentItem, mockEpics, mockIssues } from '../moc
 
 Vue.use(Vuex);
 
-const createComponent = () => {
-  const store = createDefaultStore();
-
-  store.dispatch('setInitialConfig', mockInitialConfig);
-  store.dispatch('setInitialParentItem', mockParentItem);
-  store.dispatch('setItemChildren', {
-    parentItem: mockParentItem,
-    children: [...mockEpics, ...mockIssues],
-  });
-
-  return shallowMountExtended(RelatedItemsTreeApp, {
-    store,
-    stubs: {
-      SlotSwitch,
-    },
-  });
-};
-
 describe('RelatedItemsTreeApp', () => {
   let axiosMock;
   let wrapper;
+  let store;
+
+  const createComponent = () => {
+    store = createDefaultStore();
+
+    store.dispatch('setInitialConfig', mockInitialConfig);
+    store.dispatch('setInitialParentItem', mockParentItem);
+    store.dispatch('setItemChildren', {
+      parentItem: mockParentItem,
+      children: [...mockEpics, ...mockIssues],
+    });
+
+    jest.spyOn(store, 'dispatch');
+
+    wrapper = shallowMountExtended(RelatedItemsTreeApp, {
+      store,
+      stubs: {
+        SlotSwitch,
+      },
+    });
+  };
 
   const findCreateIssueForm = () => wrapper.findComponent(CreateIssueForm);
-  const findAddItemForm = () => wrapper.findComponent(AddIssuableForm);
+  const findAddItemForm = () => wrapper.findComponent(AddItemForm);
+  const findCreateEpicForm = () => wrapper.findComponent(CreateEpicForm);
+  const findRelatedItemsTreeActions = () => wrapper.findComponent(RelatedItemsTreeActions);
+  const findRelatedItemsTreeHeader = () => wrapper.findComponent(RelatedItemsTreeHeader);
 
   beforeEach(() => {
     axiosMock = new AxiosMockAdapter(axios);
@@ -60,7 +68,8 @@ describe('RelatedItemsTreeApp', () => {
 
   describe('methods', () => {
     beforeEach(() => {
-      wrapper = createComponent();
+      createComponent();
+      store.state.showAddItemForm = true;
     });
 
     describe('getRawRefs', () => {
@@ -75,11 +84,9 @@ describe('RelatedItemsTreeApp', () => {
 
     describe('handlePendingItemRemove', () => {
       it('calls `removePendingReference` action with provided `index` param', () => {
-        jest.spyOn(wrapper.vm, 'removePendingReference').mockImplementation();
+        findAddItemForm().vm.$emit('pendingIssuableRemoveRequest', 0);
 
-        wrapper.vm.handlePendingItemRemove(0);
-
-        expect(wrapper.vm.removePendingReference).toHaveBeenCalledWith(0);
+        expect(store.dispatch).toHaveBeenCalledWith('removePendingReference', 0);
       });
     });
 
@@ -88,19 +95,21 @@ describe('RelatedItemsTreeApp', () => {
       const touchedReference = '&2';
 
       it('calls `addPendingReferences` action with provided `untouchedRawReferences` param', () => {
-        jest.spyOn(wrapper.vm, 'addPendingReferences').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormInput', {
+          untouchedRawReferences,
+          touchedReference,
+        });
 
-        wrapper.vm.handleAddItemFormInput({ untouchedRawReferences, touchedReference });
-
-        expect(wrapper.vm.addPendingReferences).toHaveBeenCalledWith(untouchedRawReferences);
+        expect(store.dispatch).toHaveBeenCalledWith('addPendingReferences', untouchedRawReferences);
       });
 
       it('calls `setItemInputValue` action with provided `touchedReference` param', () => {
-        jest.spyOn(wrapper.vm, 'setItemInputValue').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormInput', {
+          untouchedRawReferences,
+          touchedReference,
+        });
 
-        wrapper.vm.handleAddItemFormInput({ untouchedRawReferences, touchedReference });
-
-        expect(wrapper.vm.setItemInputValue).toHaveBeenCalledWith(touchedReference);
+        expect(store.dispatch).toHaveBeenCalledWith('setItemInputValue', touchedReference);
       });
     });
 
@@ -108,19 +117,15 @@ describe('RelatedItemsTreeApp', () => {
       const newValue = '&1 &2';
 
       it('calls `addPendingReferences` action with provided `newValue` param', () => {
-        jest.spyOn(wrapper.vm, 'addPendingReferences').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormBlur', newValue);
 
-        wrapper.vm.handleAddItemFormBlur(newValue);
-
-        expect(wrapper.vm.addPendingReferences).toHaveBeenCalledWith(newValue.split(/\s+/));
+        expect(store.dispatch).toHaveBeenCalledWith('addPendingReferences', newValue.split(/\s+/));
       });
 
       it('calls `setItemInputValue` action with empty string', () => {
-        jest.spyOn(wrapper.vm, 'setItemInputValue').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormBlur', newValue);
 
-        wrapper.vm.handleAddItemFormBlur(newValue);
-
-        expect(wrapper.vm.setItemInputValue).toHaveBeenCalledWith('');
+        expect(store.dispatch).toHaveBeenCalledWith('setItemInputValue', '');
       });
     });
 
@@ -129,22 +134,24 @@ describe('RelatedItemsTreeApp', () => {
         const emitObj = {
           pendingReferences: '&1 &2',
         };
-        jest.spyOn(wrapper.vm, 'addItem').mockImplementation();
 
-        wrapper.vm.handleAddItemFormSubmit(emitObj);
+        findAddItemForm().vm.$emit('addIssuableFormSubmit', emitObj);
 
-        expect(wrapper.vm.addItem).toHaveBeenCalled();
+        expect(store.dispatch).toHaveBeenCalledWith('addItem');
       });
     });
 
     describe('handleCreateEpicFormSubmit', () => {
-      it('calls `createItem` action with `itemTitle` param', () => {
+      it('calls `createItem` action with `itemTitle` param', async () => {
         const newValue = 'foo';
-        jest.spyOn(wrapper.vm, 'createItem').mockImplementation();
+        jest.spyOn(Api, 'createChildEpic').mockResolvedValue({ data: { url: '' } });
+        store.dispatch('toggleAddItemForm', { toggleState: false });
+        store.dispatch('toggleCreateEpicForm', { toggleState: true });
+        await nextTick();
 
-        wrapper.vm.handleCreateEpicFormSubmit({ value: newValue });
+        findCreateEpicForm().vm.$emit('createEpicFormSubmit', { value: newValue });
 
-        expect(wrapper.vm.createItem).toHaveBeenCalledWith({
+        expect(store.dispatch).toHaveBeenCalledWith('createItem', {
           itemTitle: newValue,
           groupFullPath: undefined,
         });
@@ -153,53 +160,46 @@ describe('RelatedItemsTreeApp', () => {
 
     describe('handleAddItemFormCancel', () => {
       it('calls `toggleAddItemForm` actions with params `toggleState` as `false`', () => {
-        jest.spyOn(wrapper.vm, 'toggleAddItemForm').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormCancel');
 
-        wrapper.vm.handleAddItemFormCancel();
-
-        expect(wrapper.vm.toggleAddItemForm).toHaveBeenCalledWith({ toggleState: false });
+        expect(store.dispatch).toHaveBeenCalledWith('toggleAddItemForm', { toggleState: false });
       });
 
       it('calls `setPendingReferences` action with empty array', () => {
-        jest.spyOn(wrapper.vm, 'setPendingReferences').mockImplementation();
+        findAddItemForm().vm.$emit('addIssuableFormCancel');
 
-        wrapper.vm.handleAddItemFormCancel();
-
-        expect(wrapper.vm.setPendingReferences).toHaveBeenCalledWith([]);
+        expect(store.dispatch).toHaveBeenCalledWith('setPendingReferences', []);
       });
 
-      it('calls `setItemInputValue` action with empty string', () => {
-        jest.spyOn(wrapper.vm, 'setItemInputValue').mockImplementation();
+      it('calls `setItemInputValue` action with empty string', async () => {
+        store.dispatch('toggleAddItemForm', { toggleState: false });
+        store.dispatch('toggleCreateEpicForm', { toggleState: true });
+        await nextTick();
 
-        wrapper.vm.handleAddItemFormCancel();
+        findCreateEpicForm().vm.$emit('createEpicFormCancel');
 
-        expect(wrapper.vm.setItemInputValue).toHaveBeenCalledWith('');
+        expect(store.dispatch).toHaveBeenCalledWith('setItemInputValue', '');
       });
     });
 
     describe('handleCreateEpicFormCancel', () => {
-      it('calls `toggleCreateEpicForm` actions with params `toggleState`', () => {
-        jest.spyOn(wrapper.vm, 'toggleCreateEpicForm').mockImplementation();
+      it('calls `toggleCreateEpicForm` actions with params `toggleState`', async () => {
+        store.dispatch('toggleAddItemForm', { toggleState: false });
+        store.dispatch('toggleCreateEpicForm', { toggleState: true });
+        await nextTick();
 
-        wrapper.vm.handleCreateEpicFormCancel();
+        findCreateEpicForm().vm.$emit('createEpicFormCancel');
 
-        expect(wrapper.vm.toggleCreateEpicForm).toHaveBeenCalledWith({ toggleState: false });
-      });
-
-      it('calls `setItemInputValue` action with empty string', () => {
-        jest.spyOn(wrapper.vm, 'setItemInputValue').mockImplementation();
-
-        wrapper.vm.handleCreateEpicFormCancel();
-
-        expect(wrapper.vm.setItemInputValue).toHaveBeenCalledWith('');
+        expect(store.dispatch).toHaveBeenCalledWith('toggleCreateEpicForm', { toggleState: false });
+        expect(store.dispatch).toHaveBeenCalledWith('setItemInputValue', '');
       });
     });
   });
 
   describe('template', () => {
     beforeEach(() => {
-      wrapper = createComponent();
-      wrapper.vm.$store.dispatch('receiveItemsSuccess', {
+      createComponent();
+      store.dispatch('receiveItemsSuccess', {
         parentItem: mockParentItem,
         children: [],
         isSubItem: false,
@@ -207,7 +207,7 @@ describe('RelatedItemsTreeApp', () => {
     });
 
     it('renders loading icon when `state.itemsFetchInProgress` prop is true', async () => {
-      wrapper.vm.$store.dispatch('requestItems', {
+      store.dispatch('requestItems', {
         parentItem: mockParentItem,
         isSubItem: false,
       });
@@ -222,7 +222,7 @@ describe('RelatedItemsTreeApp', () => {
     });
 
     it('renders tree container element with `disabled-content` class when `state.itemsFetchInProgress` prop is false and `state.itemAddInProgress` or `state.itemCreateInProgress` is true', async () => {
-      wrapper.vm.$store.dispatch('requestAddItem');
+      store.dispatch('requestAddItem');
 
       await nextTick();
       expect(wrapper.find('.related-items-tree.disabled-content').isVisible()).toBe(true);
@@ -230,11 +230,11 @@ describe('RelatedItemsTreeApp', () => {
 
     it('renders tree header component', async () => {
       await nextTick();
-      expect(wrapper.findComponent(RelatedItemsTreeHeader).isVisible()).toBe(true);
+      expect(findRelatedItemsTreeHeader().isVisible()).toBe(true);
     });
 
     it('renders item add/create form container element', async () => {
-      wrapper.vm.$store.dispatch('toggleAddItemForm', {
+      store.dispatch('toggleAddItemForm', {
         toggleState: true,
         issuableType: TYPE_EPIC,
       });
@@ -260,12 +260,12 @@ describe('RelatedItemsTreeApp', () => {
         expectedAutoCompleteIssues,
         expectedAutoCompleteEpics,
       }) => {
-        wrapper.vm.$store.dispatch('toggleAddItemForm', {
+        store.dispatch('toggleAddItemForm', {
           toggleState: true,
           issuableType,
         });
-        wrapper.vm.$store.state.autoCompleteIssues = autoCompleteIssues;
-        wrapper.vm.$store.state.autoCompleteEpics = autoCompleteEpics;
+        store.state.autoCompleteIssues = autoCompleteIssues;
+        store.state.autoCompleteEpics = autoCompleteEpics;
 
         await nextTick();
 
@@ -277,15 +277,15 @@ describe('RelatedItemsTreeApp', () => {
     );
 
     it('switches tab to Roadmap', async () => {
-      wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+      store.state.itemsFetchResultEmpty = false;
 
       await nextTick();
 
-      wrapper.findComponent(RelatedItemsTreeActions).vm.$emit('tab-change', ITEM_TABS.ROADMAP);
+      findRelatedItemsTreeActions().vm.$emit('tab-change', ITEM_TABS.ROADMAP);
 
       await nextTick();
 
-      expect(wrapper.vm.activeTab).toBe(ITEM_TABS.ROADMAP);
+      expect(findRelatedItemsTreeActions().props('activeTab')).toBe(ITEM_TABS.ROADMAP);
     });
 
     it.each`
@@ -293,11 +293,11 @@ describe('RelatedItemsTreeApp', () => {
       ${'Tree View'}    | ${ITEM_TABS.TREE}
       ${'Roadmap View'} | ${ITEM_TABS.ROADMAP}
     `('renders $visibleApp when activeTab is $activeTab', async ({ activeTab }) => {
-      wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+      store.state.itemsFetchResultEmpty = false;
 
       await nextTick();
 
-      wrapper.findComponent(RelatedItemsTreeActions).vm.$emit('tab-change', activeTab);
+      findRelatedItemsTreeActions().vm.$emit('tab-change', activeTab);
 
       await nextTick();
 
@@ -312,14 +312,15 @@ describe('RelatedItemsTreeApp', () => {
     it.each([false, true])(
       "toggle related items container when `toggleRelatedItemsView` emits '%s'",
       async (toggled) => {
-        wrapper.vm.$store.state.itemsFetchResultEmpty = false;
+        store.state.itemsFetchResultEmpty = false;
 
         await nextTick();
 
-        wrapper.findComponent(RelatedItemsTreeHeader).vm.$emit('toggleRelatedItemsView', toggled);
+        findRelatedItemsTreeHeader().vm.$emit('toggleRelatedItemsView', toggled);
 
         await nextTick();
-        expect(wrapper.vm.showRelatedItems).toBe(toggled);
+
+        expect(findRelatedItemsTreeHeader().classes().includes('border-bottom-0')).toBe(!toggled);
         expect(wrapper.findByTestId('related-items-container').exists()).toBe(toggled);
       },
     );
