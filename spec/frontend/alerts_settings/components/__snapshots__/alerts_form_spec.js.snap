@@ -64,6 +64,7 @@ exports[`Alert integration settings form default state should match the default 
         resetbuttonlabel=""
         searchplaceholder="Search"
         selected="selecte_tmpl"
+        showselectallbuttonlabel=""
         size="medium"
         toggletext=""
         variant="default"
