@@ -17,7 +17,6 @@ module Security
       return unless project && configuration
 
       active_scan_result_policies = configuration.active_scan_result_policies
-      return if active_scan_result_policies.empty?
 
       sync_policies(project, configuration, active_scan_result_policies)
 

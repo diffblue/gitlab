@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :security_policy_management do
   let_it_be(:configuration, refind: true) { create(:security_orchestration_policy_configuration, configured_at: nil) }
 
-  let(:active_policies) do
+  let(:policies) do
     {
       scan_execution_policy: [],
       scan_result_policy:
@@ -22,9 +22,26 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
           actions: [
             { type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }
           ]
+        },
+        {
+          name: 'Disabled policy',
+          description: 'This policy with CS for critical policy',
+          enabled: false,
+          rules: [
+            { type: 'scan_finding', branches: %w[production], vulnerabilities_allowed: 0,
+              severity_levels: %w[critical], scanners: %w[container_scanning],
+              vulnerability_states: %w[newly_detected] }
+          ],
+          actions: [
+            { type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }
+          ]
         }
       ]
     }
+  end
+
+  let(:active_scan_result_policies) do
+    policies[:scan_result_policy].select { |policy| policy[:enabled] }
   end
 
   it_behaves_like 'an idempotent worker' do
@@ -33,7 +50,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
 
   before do
     allow_next_instance_of(Repository) do |repository|
-      allow(repository).to receive(:blob_data_at).and_return(active_policies.to_yaml)
+      allow(repository).to receive(:blob_data_at).and_return(policies.to_yaml)
       allow(repository).to receive(:last_commit_for_path)
     end
   end
@@ -47,7 +64,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
       end
 
       it 'calls two services to general merge request approval rules from the policy YAML' do
-        active_policies[:scan_result_policy].each_with_index do |policy, policy_index|
+        active_scan_result_policies.each_with_index do |policy, policy_index|
           expect_next_instance_of(
             Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
             project: configuration.project,
@@ -72,7 +89,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
 
     context 'when sync_mr_approval_rules_security_policies is enabled' do
       it 'calls process scan result policy service and invokes the sync open mr worker' do
-        active_policies[:scan_result_policy].each_with_index do |policy, policy_index|
+        active_scan_result_policies.each_with_index do |policy, policy_index|
           expect_next_instance_of(
             Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService,
             project: configuration.project,
@@ -124,6 +141,53 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
         worker.perform(project.id, configuration.id)
 
         expect(scan_result_policy_read.reload.id).to eq(scan_result_policy_read.id)
+      end
+    end
+
+    context 'when policies are inactive' do
+      let_it_be(:project) { configuration.project }
+      let_it_be(:approval_rule) do
+        create(:approval_project_rule, :scan_finding,
+          project: project, security_orchestration_policy_configuration_id: configuration.id
+        )
+      end
+
+      let_it_be(:mr_approval_rule) do
+        create(:report_approver_rule, :scan_finding,
+          merge_request: create(:merge_request, source_project: project),
+          security_orchestration_policy_configuration_id: configuration.id
+        )
+      end
+
+      let(:policies) do
+        {
+          scan_execution_policy: [],
+          scan_result_policy:
+          [
+            {
+              name: 'CS critical policy',
+              description: 'This policy with CS for critical policy',
+              enabled: false,
+              rules: [
+                { type: 'scan_finding', branches: %w[production], vulnerabilities_allowed: 0,
+                  severity_levels: %w[critical], scanners: %w[container_scanning],
+                  vulnerability_states: %w[newly_detected] }
+              ],
+              actions: [
+                { type: 'require_approval', approvals_required: 1, user_approvers: %w[admin] }
+              ]
+            }
+          ]
+        }
+      end
+
+      it 'returns prior to triggering service' do
+        not_call_process_scan_result_policy_service
+
+        worker.perform(project.id, configuration.id)
+
+        expect { mr_approval_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
+        expect { approval_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
       end
     end
 
