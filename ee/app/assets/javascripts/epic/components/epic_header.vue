@@ -15,6 +15,7 @@ import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import issuesEventHub from '~/issues/show/event_hub';
 
 import { __ } from '~/locale';
+import { isLoggedIn } from '~/lib/utils/common_utils';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import toast from '~/vue_shared/plugins/global_toast';
 import { createAlert } from '~/alert';
@@ -98,6 +99,15 @@ export default {
     isMrSidebarMoved() {
       return this.glFeatures.movedMrSidebar;
     },
+    showNotificationToggle() {
+      return this.isMrSidebarMoved && isLoggedIn();
+    },
+    showMobileDropdown() {
+      return this.showDesktopDropdown || this.canUpdate;
+    },
+    showDesktopDropdown() {
+      return this.canCreate || this.canDestroy || this.epicReference;
+    },
   },
   mounted() {
     /**
@@ -129,7 +139,7 @@ export default {
         return data.workspace?.issuable?.reference || '';
       },
       skip() {
-        return false;
+        return !this.isMrSidebarMoved;
       },
       error(error) {
         Sentry.captureException(error);
@@ -203,13 +213,13 @@ export default {
       data-testid="action-buttons"
     >
       <gl-dropdown
-        v-if="canUpdate || canCreate || canDestroy"
+        v-if="showMobileDropdown"
         class="gl-sm-display-none! gl-mt-3 w-100"
         block
         :text="$options.i18n.dropdownText"
         data-testid="mobile-dropdown"
       >
-        <template v-if="isMrSidebarMoved">
+        <template v-if="showNotificationToggle">
           <sidebar-subscriptions-widget
             :iid="String(iid)"
             :full-path="fullPath"
@@ -274,7 +284,7 @@ export default {
       </gl-button>
 
       <gl-dropdown
-        v-if="canCreate || canDestroy"
+        v-if="showDesktopDropdown"
         v-gl-tooltip.hover
         class="gl-display-none gl-sm-display-inline-flex! gl-sm-ml-3"
         icon="ellipsis_v"
@@ -287,7 +297,7 @@ export default {
         right
         data-testid="desktop-dropdown"
       >
-        <template v-if="isMrSidebarMoved">
+        <template v-if="showNotificationToggle">
           <sidebar-subscriptions-widget
             :iid="String(iid)"
             :full-path="fullPath"
