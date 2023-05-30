@@ -140,7 +140,9 @@ RSpec.describe ::Search::IndexRepairService, feature_category: :global_search do
 
       it_behaves_like 'gets counts for project and blobs from the search client'
 
-      it 'logs a warning' do
+      it 'enqueues the project for indexing and logs a warning' do
+        expect(::Elastic::ProcessBookkeepingService).to receive(:track!).with(project)
+
         expect_next_instance_of(::Gitlab::Elasticsearch::Logger) do |logger|
           expected_hash = {
             message: 'project document missing from index',
