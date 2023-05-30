@@ -8278,6 +8278,9 @@ msgstr ""
 msgid "BroadcastMessages|Your message here"
 msgstr ""
 
+msgid "Browse CI/CD Catalog"
+msgstr ""
+
 msgid "Browse Directory"
 msgstr ""
 
@@ -15829,6 +15832,12 @@ msgstr ""
 msgid "Diagram saved successfully."
 msgstr ""
 
+msgid "Diagrams.net"
+msgstr ""
+
+msgid "Diagrams.net URL"
+msgstr ""
+
 msgid "Did not delete the source branch."
 msgstr ""
 
@@ -16795,6 +16804,9 @@ msgid "Enable cleanup policy caching."
 msgstr ""
 
 msgid "Enable dashboard limits on namespaces"
+msgstr ""
+
+msgid "Enable diagrams.net"
 msgstr ""
 
 msgid "Enable email notification"
@@ -38022,6 +38034,9 @@ msgstr ""
 msgid "Render diagrams in your documents using PlantUML."
 msgstr ""
 
+msgid "Render diagrams in your documents using diagrams.net."
+msgstr ""
+
 msgid "Renew subscription"
 msgstr ""
 
@@ -39055,6 +39070,9 @@ msgstr ""
 msgid "Runners|An upgrade is recommended for this runner"
 msgstr ""
 
+msgid "Runners|Arch/Platform"
+msgstr ""
+
 msgid "Runners|Architecture"
 msgstr ""
 
@@ -39623,6 +39641,9 @@ msgstr ""
 msgid "Runners|Support for registration tokens is deprecated"
 msgstr ""
 
+msgid "Runners|System ID"
+msgstr ""
+
 msgid "Runners|Tags"
 msgstr ""
 
@@ -39639,6 +39660,9 @@ msgid "Runners|The project, group or instance where the runner was registered. I
 msgstr ""
 
 msgid "Runners|The runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
+msgstr ""
+
+msgid "Runners|The unique ID for each runner that uses this configuration."
 msgstr ""
 
 msgid "Runners|These runners are assigned to this project."
@@ -45456,6 +45480,9 @@ msgid "The hostname of your PlantUML server."
 msgstr ""
 
 msgid "The hostname of your Snowplow collector."
+msgstr ""
+
+msgid "The hostname of your diagrams.net server."
 msgstr ""
 
 msgid "The import cannot be canceled because it is %{project_status}"
