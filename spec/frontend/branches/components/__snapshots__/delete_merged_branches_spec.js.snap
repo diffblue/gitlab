@@ -10,6 +10,7 @@ exports[`Delete merged branches component Delete merged branches confirmation mo
     nocaret="true"
     offset="[object Object]"
     placement="right"
+    positioningstrategy="absolute"
     size="medium"
     textsronly="true"
     toggleid="dropdown-toggle-btn-25"
