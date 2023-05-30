@@ -54,7 +54,7 @@ module RequirementsManagement
 
       def passed_reports_for_all_requirements(build, timestamp)
         [].tap do |reports|
-          build.project.issues.requirement.opened.select(:id).find_each do |requirement_issue|
+          build.project.issues.with_issue_type(:requirement).opened.select(:id).find_each do |requirement_issue|
             reports << build_report(state: :passed, requirement_issue: requirement_issue, build: build, timestamp: timestamp)
           end
         end
@@ -89,7 +89,7 @@ module RequirementsManagement
           build.project.issues.opened.for_requirement_iids(iids)
             .select('issues.id, requirement.iid as requirement_iid')
         else
-          build.project.issues.opened.requirement.where(iid: iids)
+          build.project.issues.opened.with_issue_type(:requirement).where(iid: iids)
             .select('issues.id, issues.iid as work_item_iid')
         end
       end

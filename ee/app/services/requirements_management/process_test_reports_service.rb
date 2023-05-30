@@ -14,7 +14,7 @@ module RequirementsManagement
 
     def execute
       return unless @build.project.feature_available?(:requirements)
-      return if @build.project.issues.requirement.empty?
+      return if @build.project.issues.with_issue_type(:requirement).empty?
       return if test_report_already_generated?
 
       raise Gitlab::Access::AccessDeniedError unless can?(@build.user, :create_requirement_test_report, @build.project)
