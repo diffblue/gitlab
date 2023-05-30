@@ -23,7 +23,6 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :system_acce
     let(:user) { build_stubbed(:user) }
 
     before do
-      request.env['omniauth.params'] = { 'intent' => 'register' }
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_feature_flags(ensure_onboarding: true)
     end

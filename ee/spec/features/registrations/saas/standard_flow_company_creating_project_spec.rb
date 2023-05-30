@@ -133,18 +133,4 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
       expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
   end
-
-  def fill_in_company_form(trial: true, glm: true)
-    expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-      user: user,
-      params: company_params(trial: trial, glm: glm)
-    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
-
-    fill_in 'company_name', with: 'Test Company'
-    select '1 - 99', from: 'company_size'
-    select 'United States of America', from: 'country'
-    select 'Florida', from: 'state'
-    fill_in 'phone_number', with: '+1234567890'
-    fill_in 'website_url', with: 'https://gitlab.com'
-  end
 end

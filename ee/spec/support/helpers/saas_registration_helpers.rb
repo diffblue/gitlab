@@ -58,7 +58,9 @@ module SaasRegistrationHelpers
       visit new_user_registration_path(params)
     end
 
-    click_link "oauth-login-#{provider}"
+    wait_for_all_requests
+
+    click_link_or_button "oauth-login-#{provider}"
     solve_arkose_verify_challenge(saml: true)
   end
 
@@ -67,6 +69,14 @@ module SaasRegistrationHelpers
       visit new_trial_registration_path(params)
 
       expect_to_be_on_trial_user_registration
+    end
+  end
+
+  def user_signs_up_through_signin_with_sso(params = {})
+    user_signs_up_with_sso({}, provider: 'google_oauth2') do
+      visit new_user_session_path(params)
+
+      expect_to_be_on_user_sign_in
     end
   end
 
@@ -112,6 +122,10 @@ module SaasRegistrationHelpers
     expect(page).to have_content('Free 30-day trial')
   end
 
+  def expect_to_be_on_user_sign_in
+    expect(page).to have_content('By signing in you accept')
+  end
+
   def expect_to_be_in_learn_gitlab
     expect(page).to have_content('Learn GitLab')
 
@@ -137,7 +151,7 @@ module SaasRegistrationHelpers
     expect(page).to have_content 'About your company'
   end
 
-  def expect_to_apply_trial
+  def expect_to_apply_trial(glm: true)
     service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
     allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
 
@@ -154,7 +168,9 @@ module SaasRegistrationHelpers
         kind: 'group',
         trial_ends_on: nil
       }
-    }.merge(glm_params)
+    }
+
+    trial_user_information.merge!(glm_params) if glm
 
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
@@ -241,6 +257,20 @@ module SaasRegistrationHelpers
         user.id,
         trial_user_information
       ).and_call_original
+  end
+
+  def fill_in_company_form(trial: true, glm: true)
+    expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
+      user: user,
+      params: company_params(trial: trial, glm: glm)
+    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
+
+    fill_in 'company_name', with: 'Test Company'
+    select '1 - 99', from: 'company_size'
+    select 'United States of America', from: 'country'
+    select 'Florida', from: 'state'
+    fill_in 'phone_number', with: '+1234567890'
+    fill_in 'website_url', with: 'https://gitlab.com'
   end
 
   def company_params(trial: true, glm: true)

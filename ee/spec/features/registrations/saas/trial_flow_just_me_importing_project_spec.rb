@@ -24,7 +24,7 @@ feature_category: :onboarding do
 
     expect_to_see_company_form
 
-    fill_in_company_form
+    fill_in_company_form(glm: false)
     click_on 'Continue'
 
     expect_to_see_group_and_project_creation_form
@@ -85,20 +85,6 @@ feature_category: :onboarding do
     expect(page).to have_content('Create or import your first project')
     expect(page).to have_content('Projects help you organize your work')
     expect(page).to have_content('Your project will be created at:')
-  end
-
-  def fill_in_company_form
-    expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
-      user: user,
-      params: company_params(glm: false)
-    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
-
-    fill_in 'company_name', with: 'Test Company'
-    select '1 - 99', from: 'company_size'
-    select 'United States of America', from: 'country'
-    select 'Florida', from: 'state'
-    fill_in 'phone_number', with: '+1234567890'
-    fill_in 'website_url', with: 'https://gitlab.com'
   end
 
   def fills_in_import_form
