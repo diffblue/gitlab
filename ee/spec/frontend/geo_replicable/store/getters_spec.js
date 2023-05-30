@@ -1,5 +1,6 @@
 import * as getters from 'ee/geo_replicable/store/getters';
 import createState from 'ee/geo_replicable/store/state';
+import { FILTER_OPTIONS } from 'ee/geo_replicable/constants';
 import { MOCK_REPLICABLE_TYPE } from '../mock_data';
 
 describe('GeoReplicable Store Getters', () => {
@@ -24,18 +25,18 @@ describe('GeoReplicable Store Getters', () => {
   });
 
   describe.each`
-    currentFilterIndex | searchFilter | hasFilters
-    ${0}               | ${''}        | ${false}
-    ${0}               | ${'test'}    | ${true}
-    ${1}               | ${''}        | ${true}
-    ${1}               | ${'test'}    | ${true}
-  `('hasFilters', ({ currentFilterIndex, searchFilter, hasFilters }) => {
+    statusFilter               | searchFilter | hasFilters
+    ${FILTER_OPTIONS[0].value} | ${''}        | ${false}
+    ${FILTER_OPTIONS[0].value} | ${'test'}    | ${true}
+    ${FILTER_OPTIONS[1].value} | ${''}        | ${true}
+    ${FILTER_OPTIONS[1].value} | ${'test'}    | ${true}
+  `('hasFilters', ({ statusFilter, searchFilter, hasFilters }) => {
     beforeEach(() => {
-      state.currentFilterIndex = currentFilterIndex;
+      state.statusFilter = statusFilter;
       state.searchFilter = searchFilter;
     });
 
-    it(`when currentFilterIndex: ${currentFilterIndex} and searchFilter: "${searchFilter}" hasFilters returns ${hasFilters}`, () => {
+    it(`when statusFilter: ${statusFilter} and searchFilter: "${searchFilter}" hasFilters returns ${hasFilters}`, () => {
       expect(getters.hasFilters(state)).toBe(hasFilters);
     });
   });

@@ -6,23 +6,30 @@ export const FILTER_STATES = {
     label: __('All'),
     value: '',
   },
+  STARTED: {
+    label: __('Started'),
+    value: 'started',
+  },
   PENDING: {
     label: __('In progress'),
     value: 'pending',
-  },
-  FAILED: {
-    label: __('Failed'),
-    value: 'failed',
   },
   SYNCED: {
     label: __('Synced'),
     value: 'synced',
   },
+  FAILED: {
+    label: __('Failed'),
+    value: 'failed',
+  },
 };
+
+export const FILTER_OPTIONS = Object.values(FILTER_STATES);
 
 export const DEFAULT_STATUS = 'never';
 
 export const STATUS_ICON_NAMES = {
+  [FILTER_STATES.STARTED.value]: 'clock',
   [FILTER_STATES.SYNCED.value]: 'check-circle-filled',
   [FILTER_STATES.PENDING.value]: 'status_pending',
   [FILTER_STATES.FAILED.value]: 'status_failed',
@@ -30,6 +37,7 @@ export const STATUS_ICON_NAMES = {
 };
 
 export const STATUS_ICON_CLASS = {
+  [FILTER_STATES.STARTED.value]: 'gl-text-orange-500',
   [FILTER_STATES.SYNCED.value]: 'gl-text-green-500',
   [FILTER_STATES.PENDING.value]: 'gl-text-orange-500',
   [FILTER_STATES.FAILED.value]: 'gl-text-red-500',

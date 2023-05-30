@@ -1,9 +1,9 @@
 import * as types from './mutation_types';
 
 export default {
-  [types.SET_FILTER](state, filterIndex) {
+  [types.SET_STATUS_FILTER](state, filter) {
     state.paginationData.page = 1;
-    state.currentFilterIndex = filterIndex;
+    state.statusFilter = filter;
   },
   [types.SET_SEARCH](state, search) {
     state.paginationData.page = 1;

@@ -45,15 +45,15 @@ describe('GeoReplicableApp', () => {
     findGeoReplicableContainer().findComponent(GeoReplicableFilterBar);
 
   describe.each`
-    isLoading | graphqlFieldName         | replicableItems              | showReplicableItems | showEmptyState | showFilterBar | showLoader
-    ${false}  | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${true}       | ${false}
-    ${false}  | ${null}                  | ${[]}                        | ${false}            | ${true}        | ${true}       | ${false}
-    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${false}      | ${false}
-    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${true}        | ${false}      | ${false}
-    ${true}   | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${true}       | ${true}
-    ${true}   | ${null}                  | ${[]}                        | ${false}            | ${false}       | ${true}       | ${true}
-    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${false}      | ${true}
-    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${false}       | ${false}      | ${true}
+    isLoading | graphqlFieldName         | replicableItems              | showReplicableItems | showEmptyState | showLoader
+    ${false}  | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${false}
+    ${false}  | ${null}                  | ${[]}                        | ${false}            | ${true}        | ${false}
+    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${true}             | ${false}       | ${false}
+    ${false}  | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${true}        | ${false}
+    ${true}   | ${null}                  | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${true}
+    ${true}   | ${null}                  | ${[]}                        | ${false}            | ${false}       | ${true}
+    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${MOCK_BASIC_FETCH_DATA_MAP} | ${false}            | ${false}       | ${true}
+    ${true}   | ${MOCK_GRAPHQL_REGISTRY} | ${[]}                        | ${false}            | ${false}       | ${true}
   `(
     `template`,
     ({
@@ -62,7 +62,6 @@ describe('GeoReplicableApp', () => {
       replicableItems,
       showReplicableItems,
       showEmptyState,
-      showFilterBar,
       showLoader,
     }) => {
       beforeEach(() => {
@@ -87,8 +86,8 @@ describe('GeoReplicableApp', () => {
           expect(findGeoReplicableEmptyState().exists()).toBe(showEmptyState);
         });
 
-        it(`${showFilterBar ? 'shows' : 'hides'} the filter bar`, () => {
-          expect(findGeoReplicableFilterBar().exists()).toBe(showFilterBar);
+        it(`shows the filter bar always`, () => {
+          expect(findGeoReplicableFilterBar().exists()).toBe(true);
         });
 
         it(`${showLoader ? 'shows' : 'hides'} the loader`, () => {

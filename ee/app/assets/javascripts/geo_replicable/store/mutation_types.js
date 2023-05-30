@@ -1,4 +1,4 @@
-export const SET_FILTER = 'SET_FILTER';
+export const SET_STATUS_FILTER = 'SET_STATUS_FILTER';
 export const SET_SEARCH = 'SET_SEARCH';
 export const SET_PAGE = 'SET_PAGE';
 

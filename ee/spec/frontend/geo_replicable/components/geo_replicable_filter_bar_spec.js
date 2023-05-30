@@ -1,12 +1,20 @@
 import { GlDropdown, GlDropdownItem, GlSearchBoxByType, GlButton, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableFilterBar from 'ee/geo_replicable/components/geo_replicable_filter_bar.vue';
-import { DEFAULT_SEARCH_DELAY, RESYNC_MODAL_ID } from 'ee/geo_replicable/constants';
-import { getStoreConfig } from 'ee/geo_replicable/store';
+import {
+  DEFAULT_SEARCH_DELAY,
+  RESYNC_MODAL_ID,
+  FILTER_OPTIONS,
+  FILTER_STATES,
+} from 'ee/geo_replicable/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
-import { MOCK_REPLICABLE_TYPE } from '../mock_data';
+import {
+  MOCK_REPLICABLE_TYPE,
+  MOCK_RESTFUL_PAGINATION_DATA,
+  MOCK_GRAPHQL_PAGINATION_DATA,
+} from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -15,18 +23,22 @@ describe('GeoReplicableFilterBar', () => {
 
   const actionSpies = {
     setSearch: jest.fn(),
-    setFilter: jest.fn(),
+    setStatusFilter: jest.fn(),
     fetchReplicableItems: jest.fn(),
     initiateAllReplicableSyncs: jest.fn(),
   };
 
-  const createComponent = () => {
-    const fakeStore = new Vuex.Store({
-      ...getStoreConfig({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
+  const createComponent = (initialState) => {
+    const store = new Vuex.Store({
+      state: { ...initialState },
       actions: actionSpies,
+      getters: {
+        replicableTypeName: () => MOCK_REPLICABLE_TYPE,
+      },
     });
+
     wrapper = shallowMount(GeoReplicableFilterBar, {
-      store: fakeStore,
+      store,
       directives: {
         GlModalDirective: createMockDirective('gl-modal-directive'),
       },
@@ -41,120 +53,134 @@ describe('GeoReplicableFilterBar', () => {
   const findGlButton = () => findNavContainer().findComponent(GlButton);
   const findGlModal = () => findNavContainer().findComponent(GlModal);
 
+  const legacyFilterOptions = FILTER_OPTIONS.filter(
+    (option) => option.value !== FILTER_STATES.STARTED.value,
+  );
+
+  const getFilterLabels = (filters) => {
+    return filters.map((filter) => {
+      if (!filter.value) {
+        return `${filter.label} ${MOCK_REPLICABLE_TYPE}`;
+      }
+
+      return filter.label;
+    });
+  };
+
   describe('template', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('renders nav container always', () => {
-      expect(findNavContainer().exists()).toBe(true);
-    });
-
-    it('renders dropdown always', () => {
-      expect(findGlDropdown().exists()).toBe(true);
-    });
-
-    describe('Filter options', () => {
-      it('renders a dropdown item for each filterOption', () => {
-        expect(findDropdownItemsText()).toStrictEqual(
-          wrapper.vm.filterOptions.map((n) => {
-            if (n.label === 'All') {
-              return `${n.label} ${MOCK_REPLICABLE_TYPE}`;
-            }
-
-            return n.label;
-          }),
-        );
+    describe('when useGraphQl is false', () => {
+      beforeEach(() => {
+        createComponent({ useGraphQL: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
       });
 
-      it('clicking a dropdown item calls setFilter with its index', () => {
-        const index = 1;
-        findGlDropdownItems().at(index).vm.$emit('click');
-
-        expect(actionSpies.setFilter).toHaveBeenCalledWith(expect.any(Object), index);
+      it('renders the nav container', () => {
+        expect(findNavContainer().exists()).toBe(true);
       });
-    });
 
-    describe('Search box', () => {
-      it('renders always', () => {
+      it('renders the filter dropdown', () => {
+        expect(findGlDropdown().exists()).toBe(true);
+      });
+
+      it('renders the correct filter options', () => {
+        expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(legacyFilterOptions));
+      });
+
+      it('renders the search box with debounce prop', () => {
         expect(findGlSearchBox().exists()).toBe(true);
-      });
-
-      it('has debounce prop', () => {
         expect(findGlSearchBox().attributes('debounce')).toBe(DEFAULT_SEARCH_DELAY.toString());
       });
 
-      describe('onSearch', () => {
-        const testSearch = 'test search';
-
-        beforeEach(() => {
-          findGlSearchBox().vm.$emit('input', testSearch);
-        });
-
-        it('calls fetchSyncNamespaces when input event is fired from GlSearchBoxByType', () => {
-          expect(actionSpies.setSearch).toHaveBeenCalledWith(expect.any(Object), testSearch);
-          expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
-        });
+      it('does render Re-sync all button that is bound to GlModal', () => {
+        expect(findGlButton().exists()).toBe(true);
+        expect(getBinding(findGlButton().element, 'gl-modal-directive').value).toBe(
+          RESYNC_MODAL_ID,
+        );
       });
     });
 
-    describe('Re-sync all button', () => {
-      it('does not render', () => {
+    describe('when useGraphQl is true', () => {
+      beforeEach(() => {
+        createComponent({ useGraphQl: true, paginationData: MOCK_GRAPHQL_PAGINATION_DATA });
+      });
+
+      it('renders the nav container', () => {
+        expect(findNavContainer().exists()).toBe(true);
+      });
+
+      it('renders the filter dropdown', () => {
+        expect(findGlDropdown().exists()).toBe(true);
+      });
+
+      it('renders the correct filter options', () => {
+        expect(findDropdownItemsText()).toStrictEqual(getFilterLabels(FILTER_OPTIONS));
+      });
+
+      it('does not render search box', () => {
+        expect(findGlSearchBox().exists()).toBe(false);
+      });
+
+      it('does not render Re-sync all button', () => {
         expect(findGlButton().exists()).toBe(false);
-      });
-
-      describe('when there are results', () => {
-        beforeEach(() => {
-          wrapper.vm.$store.state.paginationData.total = 1;
-        });
-
-        it('renders', () => {
-          expect(findGlButton().exists()).toBe(true);
-        });
-
-        it('triggers GlModal', () => {
-          const binding = getBinding(findGlButton().element, 'gl-modal-directive');
-
-          expect(binding.value).toBe(RESYNC_MODAL_ID);
-        });
-      });
-    });
-
-    describe('GlModal', () => {
-      it('renders always', () => {
-        expect(findGlModal().exists()).toBe(true);
-      });
-
-      it('updates title', async () => {
-        wrapper.vm.$store.state.paginationData.total = 1;
-        await nextTick();
-        expect(findGlModal().props('title')).toBe('Resync all designs');
-        wrapper.vm.$store.state.paginationData.total = 15;
-        await nextTick();
-        expect(findGlModal().props('title')).toBe('Resync all 15 designs');
-      });
-
-      it('calls initiateAllReplicableSyncs when primary action is emitted', () => {
-        findGlModal().vm.$emit('primary');
-        expect(actionSpies.initiateAllReplicableSyncs).toHaveBeenCalled();
       });
     });
   });
 
-  describe('filterChange', () => {
-    const testValue = 2;
-
+  describe('Status filter actions', () => {
     beforeEach(() => {
-      createComponent();
-      wrapper.vm.filterChange(testValue);
+      createComponent({ useGraphQl: true, paginationData: MOCK_GRAPHQL_PAGINATION_DATA });
     });
 
-    it('should call setFilter with the filterIndex', () => {
-      expect(actionSpies.setFilter).toHaveBeenCalledWith(expect.any(Object), testValue);
-    });
+    it('clicking a filter item calls setStatusFilter with value and fetchReplicableItems', () => {
+      const index = 1;
+      findGlDropdownItems().at(index).vm.$emit('click');
 
-    it('should call fetchReplicableItems', () => {
+      expect(actionSpies.setStatusFilter).toHaveBeenCalledWith(
+        expect.any(Object),
+        FILTER_OPTIONS[index].value,
+      );
       expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
+    });
+  });
+
+  describe('Search box actions', () => {
+    beforeEach(() => {
+      createComponent({ useGraphQl: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
+    });
+
+    it('searching calls setSearch with search and fetchReplicableItems', () => {
+      const testSearch = 'test search';
+      findGlSearchBox().vm.$emit('input', testSearch);
+
+      expect(actionSpies.setSearch).toHaveBeenCalledWith(expect.any(Object), testSearch);
+      expect(actionSpies.fetchReplicableItems).toHaveBeenCalled();
+    });
+  });
+
+  describe('GlModal', () => {
+    describe.each`
+      total | title
+      ${1}  | ${`Resync all ${MOCK_REPLICABLE_TYPE}`}
+      ${15} | ${`Resync all 15 ${MOCK_REPLICABLE_TYPE}`}
+    `(`template when total is $total`, ({ total, title }) => {
+      beforeEach(() => {
+        createComponent({ useGraphQl: false, paginationData: { total } });
+      });
+
+      it(`sets the title to ${title}`, () => {
+        expect(findGlModal().props('title')).toBe(title);
+      });
+    });
+
+    describe('actions', () => {
+      beforeEach(() => {
+        createComponent({ useGraphQl: false, paginationData: MOCK_RESTFUL_PAGINATION_DATA });
+      });
+
+      it('calls initiateAllReplicableSyncs when primary action is emitted', () => {
+        findGlModal().vm.$emit('primary');
+
+        expect(actionSpies.initiateAllReplicableSyncs).toHaveBeenCalled();
+      });
     });
   });
 });

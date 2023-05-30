@@ -1,5 +1,11 @@
 import Api from 'ee/api';
-import { ACTION_TYPES, PREV, NEXT, DEFAULT_PAGE_SIZE } from 'ee/geo_replicable/constants';
+import {
+  ACTION_TYPES,
+  PREV,
+  NEXT,
+  DEFAULT_PAGE_SIZE,
+  FILTER_OPTIONS,
+} from 'ee/geo_replicable/constants';
 import buildReplicableTypeQuery from 'ee/geo_replicable/graphql/replicable_type_query_builder';
 import * as actions from 'ee/geo_replicable/store/actions';
 import * as types from 'ee/geo_replicable/store/mutation_types';
@@ -272,6 +278,42 @@ describe('GeoReplicable Store Actions', () => {
             );
           });
         });
+
+        describe('with statusFilter', () => {
+          const direction = null;
+          // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
+          const registries = MOCK_BASIC_GRAPHQL_QUERY_RESPONSE.geoNode[MOCK_GRAPHQL_REGISTRY];
+          const data = registries.nodes;
+
+          it('should call mockGeoGqClient with all uppercase replicationState', () => {
+            state.statusFilter = FILTER_OPTIONS[1].value;
+
+            testAction(
+              actions.fetchReplicableItemsGraphQl,
+              direction,
+              state,
+              [],
+              [
+                {
+                  type: 'receiveReplicableItemsSuccess',
+                  payload: { data, pagination: registries.pageInfo },
+                },
+              ],
+              () => {
+                expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+                  query: buildReplicableTypeQuery(MOCK_GRAPHQL_REGISTRY, true),
+                  variables: {
+                    before: '',
+                    after: '',
+                    first: DEFAULT_PAGE_SIZE,
+                    last: null,
+                    replicationState: FILTER_OPTIONS[1].value.toUpperCase(),
+                  },
+                });
+              },
+            );
+          });
+        });
       });
 
       describe('on error', () => {
@@ -334,7 +376,7 @@ describe('GeoReplicable Store Actions', () => {
         beforeEach(() => {
           state.paginationData.page = 3;
           state.searchFilter = 'test search';
-          state.currentFilterIndex = 2;
+          state.statusFilter = FILTER_OPTIONS[2].value;
         });
 
         it('should call getGeoReplicableItems with default queryParams', () => {
@@ -353,7 +395,7 @@ describe('GeoReplicable Store Actions', () => {
               expect(Api.getGeoReplicableItems).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
                 page: 3,
                 search: 'test search',
-                sync_status: state.filterOptions[2].value,
+                sync_status: FILTER_OPTIONS[2].value,
               });
             },
           );
@@ -575,15 +617,15 @@ describe('GeoReplicable Store Actions', () => {
     });
   });
 
-  describe('setFilter', () => {
-    it('should commit mutation SET_FILTER', async () => {
-      const testValue = 1;
+  describe('setStatusFilter', () => {
+    it('should commit mutation SET_STATUS_FILTER', async () => {
+      const testValue = FILTER_OPTIONS[1].value;
 
       await testAction(
-        actions.setFilter,
+        actions.setStatusFilter,
         testValue,
         state,
-        [{ type: types.SET_FILTER, payload: testValue }],
+        [{ type: types.SET_STATUS_FILTER, payload: testValue }],
         [],
       );
     });

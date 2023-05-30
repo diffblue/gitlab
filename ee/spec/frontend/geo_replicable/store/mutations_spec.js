@@ -1,6 +1,7 @@
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import mutations from 'ee/geo_replicable/store/mutations';
 import createState from 'ee/geo_replicable/store/state';
+import { FILTER_OPTIONS } from 'ee/geo_replicable/constants';
 import {
   MOCK_BASIC_FETCH_DATA_MAP,
   MOCK_REPLICABLE_TYPE,
@@ -14,18 +15,18 @@ describe('GeoReplicable Store Mutations', () => {
     state = createState({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null });
   });
 
-  describe('SET_FILTER', () => {
-    const testValue = 2;
+  describe('SET_STATUS_FILTER', () => {
+    const testValue = FILTER_OPTIONS[2].value;
 
     beforeEach(() => {
-      state.currentFilterIndex = 1;
+      state.statusFilter = FILTER_OPTIONS[1].value;
       state.paginationData.page = 2;
 
-      mutations[types.SET_FILTER](state, testValue);
+      mutations[types.SET_STATUS_FILTER](state, testValue);
     });
 
-    it('sets the currentFilterIndex state key', () => {
-      expect(state.currentFilterIndex).toEqual(testValue);
+    it('sets the statusFilter state key', () => {
+      expect(state.statusFilter).toEqual(testValue);
     });
 
     it('resets the page to 1', () => {
