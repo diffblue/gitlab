@@ -2,6 +2,7 @@
 import { GlDrawer, GlInfiniteScroll, GlResizeObserverDirective } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 import Tracking from '~/tracking';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { getDrawerBodyHeight } from '../utils/get_drawer_body_height';
 import Feature from './feature.vue';
 import SkeletonLoader from './skeleton_loader.vue';
@@ -27,6 +28,9 @@ export default {
   },
   computed: {
     ...mapState(['open', 'features', 'pageInfo', 'drawerBodyHeight', 'fetching']),
+    getDrawerHeaderHeight() {
+      return getContentWrapperHeight();
+    },
   },
   mounted() {
     this.openDrawer(this.versionDigest);
@@ -68,6 +72,7 @@ export default {
       ref="drawer"
       v-gl-resize-observer="handleResize"
       class="whats-new-drawer gl-reset-line-height"
+      :header-height="getDrawerHeaderHeight"
       :z-index="700"
       :open="open"
       @close="closeDrawer"
