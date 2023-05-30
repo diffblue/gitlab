@@ -102,6 +102,22 @@ feature_category: :onboarding do
   end
 
   def fills_in_import_form
+    expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(
+      user.id,
+      {
+        namespace_id: anything,
+        gitlab_com_trial: true,
+        sync_to_gl: true,
+        namespace: {
+          id: anything,
+          name: 'Test Group',
+          path: 'test-group',
+          kind: 'group',
+          trial_ends_on: nil
+        }
+      }
+    )
+
     fill_in 'import_group_name', with: 'Test Group'
   end
 
