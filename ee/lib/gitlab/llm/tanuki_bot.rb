@@ -16,7 +16,6 @@ module Gitlab
       CONTENT_ID_FIELD = 'ATTRS'
       CONTENT_ID_REGEX = /CNT-IDX-(?<id>\d+)/
       RECORD_LIMIT = 7
-      MINIMUM_DISTANCE = 0.6
 
       def self.execute(current_user:, question:, logger: nil)
         new(current_user: current_user, question: question, logger: logger).execute
@@ -143,8 +142,7 @@ module Gitlab
 
         ::Embedding::TanukiBotMvc.current.neighbor_for(
           question_embedding,
-          limit: RECORD_LIMIT,
-          minimum_distance: MINIMUM_DISTANCE
+          limit: RECORD_LIMIT
         ).map do |item|
           item.metadata['source_url'] = item.url
 

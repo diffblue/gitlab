@@ -291,9 +291,7 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
                   expect(::Embedding::TanukiBotMvc).to receive(:current).and_call_original.once
 
                   expect(::Embedding::TanukiBotMvc).to receive(:neighbor_for)
-                    .with(embedding,
-                      limit: described_class::RECORD_LIMIT,
-                      minimum_distance: described_class::MINIMUM_DISTANCE)
+                    .with(embedding, limit: described_class::RECORD_LIMIT)
                     .and_call_original.once
 
                   execute
