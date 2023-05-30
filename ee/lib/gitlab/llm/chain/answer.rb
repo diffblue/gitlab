@@ -25,6 +25,7 @@ module Gitlab
           action = parser.action
           action_input = parser.action_input
           thought = parser.thought
+          content = "\nAction: #{action}\nAction Input: #{action_input}\n"
 
           tool = tools.find { |tool| tool.name == action }
 
@@ -33,7 +34,7 @@ module Gitlab
           new(
             status: :ok,
             context: context,
-            content: action_input,
+            content: content,
             tool: tool,
             suggestions: thought,
             is_final: false
