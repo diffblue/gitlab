@@ -289,6 +289,12 @@ export default {
         },
       });
     },
+    trackCardSelected(card) {
+      const index = this.$options.devopsAdoptionTableConfiguration.findIndex(
+        ({ key }) => card.key === key,
+      );
+      this.onTabChange(index + 1);
+    },
   },
 };
 </script>
@@ -302,6 +308,7 @@ export default {
           :data="devopsAdoptionEnabledNamespaces"
           :timestamp="timestamp"
           @enabledNamespacesRemoved="deleteEnabledNamespacesFromCache"
+          @card-selected="trackCardSelected"
         />
       </gl-tab>
 

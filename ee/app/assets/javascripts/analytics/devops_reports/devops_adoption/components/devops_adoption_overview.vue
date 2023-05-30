@@ -68,6 +68,11 @@ export default {
       return sprintf(I18N_TABLE_HEADER_TEXT, { timestamp: this.timestamp });
     },
   },
+  methods: {
+    trackCardTitleClick(card) {
+      this.$emit('card-selected', card);
+    },
+  },
 };
 </script>
 <template>
@@ -86,6 +91,7 @@ export default {
         :variant="item.variant"
         :feature-meta="item.featureMeta"
         :display-meta="item.displayMeta"
+        @card-title-clicked="trackCardTitleClick(item)"
       />
     </div>
     <devops-adoption-overview-chart v-if="groupGid" class="gl-mb-7" />

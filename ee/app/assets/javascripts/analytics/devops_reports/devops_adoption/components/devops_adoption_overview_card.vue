@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlProgressBar } from '@gitlab/ui';
+import { GlButton, GlIcon, GlProgressBar } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { I18N_FEATURES_ADOPTED_TEXT, PROGRESS_BAR_HEIGHT } from '../constants';
 import DevopsAdoptionTableCellFlag from './devops_adoption_table_cell_flag.vue';
@@ -8,6 +8,7 @@ export default {
   name: 'DevopsAdoptionOverviewCard',
   progressBarHeight: PROGRESS_BAR_HEIGHT,
   components: {
+    GlButton,
     GlIcon,
     GlProgressBar,
     DevopsAdoptionTableCellFlag,
@@ -52,6 +53,11 @@ export default {
       });
     },
   },
+  methods: {
+    trackCardTitleClick() {
+      this.$emit('card-title-clicked');
+    },
+  },
 };
 </script>
 <template>
@@ -60,7 +66,17 @@ export default {
   >
     <div class="gl-display-flex gl-align-items-center gl-mb-3" data-testid="card-title">
       <gl-icon :name="icon" class="gl-mr-3 gl-text-gray-500" />
-      <span class="gl-font-md gl-font-weight-bold" data-testid="card-title-text">{{ title }}</span>
+      <gl-button
+        v-if="displayMeta"
+        class="gl-font-md gl-font-weight-bold"
+        variant="link"
+        data-testid="card-title-link"
+        @click="trackCardTitleClick"
+        >{{ title }}
+      </gl-button>
+      <span v-else class="gl-font-md gl-font-weight-bold" data-testid="card-title-text"
+        >{{ title }}
+      </span>
     </div>
     <gl-progress-bar
       :value="adoptedCount"

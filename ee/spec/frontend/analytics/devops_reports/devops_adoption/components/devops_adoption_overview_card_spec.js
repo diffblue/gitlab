@@ -21,6 +21,10 @@ describe('DevopsAdoptionOverview', () => {
     });
   };
 
+  const findCardLink = () => wrapper.findByTestId('card-title-link');
+  const findCardDescription = () => wrapper.findByTestId('card-description');
+  const findCardMetaRow = () => wrapper.findByTestId('card-meta-row');
+
   describe('default state', () => {
     beforeEach(() => {
       createComponent();
@@ -35,7 +39,7 @@ describe('DevopsAdoptionOverview', () => {
       });
 
       it('displays the title text', () => {
-        const text = wrapper.findByTestId('card-title-text');
+        const text = findCardLink();
 
         expect(text.exists()).toBe(true);
         expect(text.text()).toBe(overallAdoptionData.title);
@@ -47,7 +51,7 @@ describe('DevopsAdoptionOverview', () => {
     });
 
     it('displays the description correctly', () => {
-      const text = wrapper.findByTestId('card-description');
+      const text = findCardDescription();
 
       expect(text.exists()).toBe(true);
       expect(text.text()).toBe(`${metrics} Overall adoption features adopted`);
@@ -55,7 +59,7 @@ describe('DevopsAdoptionOverview', () => {
 
     describe('meta', () => {
       it('displays the meta', () => {
-        expect(wrapper.findByTestId('card-meta-row').exists()).toBe(true);
+        expect(findCardMetaRow().exists()).toBe(true);
       });
 
       it('displays the correct number of rows', () => {
@@ -74,6 +78,12 @@ describe('DevopsAdoptionOverview', () => {
             overallAdoptionData.featureMeta[0].title,
           );
         });
+
+        it('emits the correct event', () => {
+          findCardLink().vm.$emit('click');
+
+          expect(wrapper.emitted()).toHaveProperty('card-title-clicked');
+        });
       });
     });
   });
@@ -84,14 +94,14 @@ describe('DevopsAdoptionOverview', () => {
     });
 
     it('displays the description correctly', () => {
-      const text = wrapper.findByTestId('card-description');
+      const text = findCardDescription();
 
       expect(text.exists()).toBe(true);
       expect(text.text()).toBe(`${metrics}  features adopted`);
     });
 
     it('does not display the meta', () => {
-      expect(wrapper.findByTestId('card-meta-row').exists()).toBe(false);
+      expect(findCardMetaRow().exists()).toBe(false);
     });
   });
 });
