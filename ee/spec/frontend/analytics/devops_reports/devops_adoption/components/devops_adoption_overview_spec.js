@@ -56,6 +56,17 @@ describe('DevopsAdoptionOverview', () => {
       it('does not display the overview chart', () => {
         expect(wrapper.findComponent(DevopsAdoptionOverviewChart).exists()).toBe(false);
       });
+
+      it('passes the correct event when the card title is clicked', () => {
+        const cards = wrapper
+          .findAllComponents(DevopsAdoptionOverviewCard)
+          .filter((c) => c.props().displayMeta).wrappers;
+
+        for (const card of cards) {
+          card.vm.$emit('card-title-clicked');
+          expect(wrapper.emitted()).toHaveProperty('card-selected');
+        }
+      });
     });
   });
 
