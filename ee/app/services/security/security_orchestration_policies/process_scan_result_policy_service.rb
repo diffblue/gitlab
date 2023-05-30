@@ -64,14 +64,12 @@ module Security
       end
 
       def rule_params(rule, rule_index, action_info, scan_result_policy_read)
-        protected_branch_ids = project.all_protected_branches.get_ids_by_name(rule[:branches])
-
         rule_params = {
           skip_authorization: true,
           approvals_required: action_info[:approvals_required],
           name: rule_name(policy[:name], rule_index),
-          protected_branch_ids: protected_branch_ids,
-          applies_to_all_protected_branches: rule[:branches].empty?,
+          protected_branch_ids: protected_branch_ids(rule),
+          applies_to_all_protected_branches: applies_to_all_protected_branches?(rule),
           rule_type: :report_approver,
           user_ids: users_ids(action_info[:user_approvers_ids], action_info[:user_approvers]),
           report_type: report_type(rule[:type]),
@@ -93,6 +91,26 @@ module Security
         end
 
         rule_params
+      end
+
+      def protected_branch_ids(rule)
+        return project.all_protected_branches.get_ids_by_name(rule[:branches]) unless branch_type_enabled?
+
+        service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: project)
+        applicable_branches = service.scan_result_branches([rule])
+        protected_branches = project.all_protected_branches.select do |protected_branch|
+          applicable_branches.any? { |branch| protected_branch.matches?(branch) }
+        end
+
+        protected_branches.pluck(:id) # rubocop: disable CodeReuse/ActiveRecord
+      end
+
+      def applies_to_all_protected_branches?(rule)
+        branches = rule[:branches]
+
+        return branches == [] unless branch_type_enabled?
+
+        branches == [] || rule[:branch_type] == "protected"
       end
 
       def rule_type_allowed?(rule_type)
@@ -136,6 +154,10 @@ module Security
 
       def search_groups_globally?
         Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled?
+      end
+
+      def branch_type_enabled?
+        Feature.enabled?(:security_policies_branch_type, project)
       end
     end
   end

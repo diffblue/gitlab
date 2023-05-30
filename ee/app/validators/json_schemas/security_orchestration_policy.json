@@ -361,6 +361,14 @@
                     "type": "string"
                   }
                 },
+                "branch_type": {
+                  "type": "string",
+                  "description": "Which types of branches to scan.",
+                  "enum": [
+                    "default",
+                    "protected"
+                  ]
+                },
                 "scanners": {
                   "description": "Specifies a list of scanners that should be considered to enforce this policy. Possible values: `sast`, `secret_detection`, `dependency_scanning`, `container_scanning`, `dast`, `coverage_fuzzing`, `api_fuzzing`.",
                   "type": "array",
@@ -438,6 +446,18 @@
                   }
                 }
               },
+              "oneOf": [
+                {
+                  "required": [
+                    "branches"
+                  ]
+                },
+                {
+                  "required": [
+                    "branch_type"
+                  ]
+                }
+              ],
               "allOf": [
                 {
                   "if": {
@@ -450,7 +470,6 @@
                   "then": {
                     "required": [
                       "type",
-                      "branches",
                       "scanners",
                       "vulnerabilities_allowed",
                       "severity_levels",
@@ -469,7 +488,6 @@
                   "then": {
                     "required": [
                       "type",
-                      "branches",
                       "match_on_inclusion",
                       "license_types",
                       "license_states"
