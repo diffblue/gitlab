@@ -31,7 +31,9 @@ module EE
 
     override :after_sign_up_path
     def after_sign_up_path
-      onboarding_params = request.env['omniauth.params'].slice('glm_source', 'glm_content', 'trial')
+      # The sign in path for creating an account with sso will not have params as there are no
+      # leads that would start out there. So we need to protect for that here by using fetch
+      onboarding_params = request.env.fetch('omniauth.params', {}).slice('glm_source', 'glm_content', 'trial')
 
       ::Gitlab::Utils.add_url_parameters(super, onboarding_params)
     end
@@ -40,6 +42,8 @@ module EE
     def perform_registration_tasks(user, provider)
       super
 
+      # This also protects the sub classes group saml and ldap from staring onboarding
+      # as we don't want those to onboard.
       return unless provider.to_sym.in?(::AuthHelper.providers_for_base_controller)
 
       start_onboarding!(after_sign_up_path, user)

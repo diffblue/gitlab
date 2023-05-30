@@ -349,7 +349,6 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :system_ac
         let(:user) { build_stubbed(:user) }
 
         before do
-          request.env['omniauth.params'] = { 'intent' => 'register' }
           stub_ee_application_setting(should_check_namespace_plan: true)
           stub_feature_flags(ensure_onboarding: true)
           stub_omniauth_setting(block_auto_created_users: false)

@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Single sign on flow for user picking company and creating a project', :js, :saas_sso_registration, feature_category: :onboarding do
+RSpec.describe 'Single sign on for signing up through sign in flow for user picking company and creating a project', :js, :saas_sso_registration, feature_category: :onboarding do
   context 'when opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-      user_signs_up_with_sso(glm_params)
+      user_signs_up_through_signin_with_sso
 
       expect_to_see_identity_verification_page
 
@@ -20,14 +20,14 @@ RSpec.describe 'Single sign on flow for user picking company and creating a proj
 
       ensure_onboarding { expect_to_see_company_form }
 
-      fill_in_company_form
+      fill_in_company_form(glm: false)
       toggle_trial
       click_on 'Continue'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }
 
       fills_in_group_and_project_creation_form
-      expect_to_apply_trial
+      expect_to_apply_trial(glm: false)
       click_on 'Create project'
 
       expect_to_be_in_continuous_onboarding
@@ -40,7 +40,7 @@ RSpec.describe 'Single sign on flow for user picking company and creating a proj
 
   context 'when not opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding' do
-      user_signs_up_with_sso
+      user_signs_up_through_signin_with_sso
 
       expect_to_see_identity_verification_page
 
