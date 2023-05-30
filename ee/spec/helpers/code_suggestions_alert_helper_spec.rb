@@ -13,7 +13,8 @@ RSpec.describe CodeSuggestionsAlertHelper, feature_category: :code_suggestions d
       cookie_present?: ['true', nil],
       check_namespace_plan?: [true, false],
       user?: [true, false],
-      code_suggestions_enabled?: [true, false]
+      code_suggestions_enabled?: [true, false],
+      nav_alert_dismissed: [true, false]
     )
 
     with_them do
@@ -25,13 +26,14 @@ RSpec.describe CodeSuggestionsAlertHelper, feature_category: :code_suggestions d
         helper.request.cookies['code_suggestions_alert_dismissed'] = cookie_present?
         allow(helper).to receive(:current_user) { local_user }
         allow(user).to receive(:code_suggestions_enabled?) { code_suggestions_enabled? }
+        allow(helper).to receive(:user_dismissed_before?).and_return(nav_alert_dismissed)
       end
 
       let(:expected_result) do
         check_namespace_plan? &&
           !cookie_present? &&
           feature_flag_enabled? &&
-          (local_user.nil? || !code_suggestions_enabled?)
+          (local_user.nil? || (nav_alert_dismissed && !code_suggestions_enabled?))
       end
 
       subject { helper.show_code_suggestions_alert? }
