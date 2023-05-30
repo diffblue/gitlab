@@ -41272,6 +41272,9 @@ msgstr ""
 msgid "SecurityReports|Failed to get security report information. Please reload the page or try again later."
 msgstr ""
 
+msgid "SecurityReports|Failed updating vulnerabilities with the following IDs: %{ids}"
+msgstr ""
+
 msgid "SecurityReports|Has issue"
 msgstr ""
 
