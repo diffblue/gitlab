@@ -18,20 +18,10 @@ module Security
           head_pipeline = merge_request.actual_head_pipeline
           next unless head_pipeline
 
-          if sync_approval_rules_from_findings_enabled?
-            ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(head_pipeline.id)
-          end
-
+          ::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(head_pipeline.id)
           ::Ci::SyncReportsToReportApprovalRulesWorker.perform_async(head_pipeline.id)
         end
       end
-
-      private
-
-      def sync_approval_rules_from_findings_enabled?
-        Feature.enabled?(:sync_approval_rules_from_findings, @project)
-      end
-      strong_memoize_attr :sync_approval_rules_from_findings_enabled?
     end
   end
 end

@@ -65,28 +65,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
         opened_merge_request.update!(head_pipeline_id: head_pipeline.id)
       end
 
-      context 'with sync_approval_rules_from_findings enabled' do
-        it 'triggers both workers' do
-          expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
-          expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
-            .to receive(:perform_async).with(head_pipeline.id)
+      it 'triggers both workers' do
+        expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
+        expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
+          .to receive(:perform_async).with(head_pipeline.id)
 
-          subject
-        end
-      end
-
-      context 'with sync_approval_rules_from_findings disabled' do
-        before do
-          stub_feature_flags(sync_approval_rules_from_findings: false)
-        end
-
-        it 'triggers SyncReportsToReportApprovalRulesWorker only' do
-          expect(::Ci::SyncReportsToReportApprovalRulesWorker).to receive(:perform_async).with(head_pipeline.id)
-          expect(::Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker)
-            .not_to receive(:perform_async).with(head_pipeline.id)
-
-          subject
-        end
+        subject
       end
     end
 

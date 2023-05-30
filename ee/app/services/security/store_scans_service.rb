@@ -61,8 +61,7 @@ module Security
     end
 
     def sync_findings_to_approval_rules
-      return unless project.licensed_feature_available?(:security_orchestration_policies) &&
-        Feature.enabled?(:sync_approval_rules_from_findings, project)
+      return unless project.licensed_feature_available?(:security_orchestration_policies)
 
       Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker.perform_async(pipeline.id)
     end

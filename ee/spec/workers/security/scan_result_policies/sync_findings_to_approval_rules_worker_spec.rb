@@ -36,17 +36,5 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesWorker, 
         run_worker
       end
     end
-
-    context 'when sync_approval_rules_from_findings is disabled' do
-      before do
-        stub_feature_flags(sync_approval_rules_from_findings: false)
-      end
-
-      it 'does not call SyncFindingsToApprovalRulesService' do
-        expect(Security::ScanResultPolicies::SyncFindingsToApprovalRulesService).not_to receive(:new)
-
-        run_worker
-      end
-    end
   end
 end
