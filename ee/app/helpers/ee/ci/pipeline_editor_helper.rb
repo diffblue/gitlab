@@ -21,6 +21,11 @@ module EE
           )
         end
 
+        result.merge!(
+          "can-view-namespace-catalog" => can_view_namespace_catalog?(project).to_s,
+          "ci-catalog-path" => project_ci_catalog_resources_path(project)
+        )
+
         result
       end
     end
