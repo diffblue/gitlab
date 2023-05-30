@@ -89,10 +89,6 @@ export default {
             <span class="gl-font-lg">{{ totalUnit }}</span>
           </span>
         </p>
-
-        <div data-testid="actions">
-          <slot name="actions"></slot>
-        </div>
       </div>
       <p class="gl-font-weight-bold gl-mb-0" data-testid="description">
         <slot name="description"></slot>
