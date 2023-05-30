@@ -185,7 +185,10 @@ module API
           desc: 'Date time when the epic was created. Available only for admins and project owners',
           documentation: { example: '2016-03-11T03:45:40Z' }
         optional :start_date,
-          as: :start_date_fixed,
+          type: String,
+          desc: 'Deprecated: use start_date_fixed instead',
+          documentation: { example: '2018-07-31' }
+        optional :start_date_fixed,
           type: String,
           desc: 'The start date of an epic',
           documentation: { example: '2018-07-31' }
@@ -193,7 +196,10 @@ module API
           type: Boolean,
           desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
         optional :end_date,
-          as: :due_date_fixed,
+          type: String,
+          desc: 'Deprecated: use due_date_fixed instead',
+          documentation: { example: '2019-08-11' }
+        optional :due_date_fixed,
           type: String,
           desc: 'The due date of an epic',
           documentation: { example: '2019-08-11' }
@@ -217,10 +223,16 @@ module API
         params.delete(:created_at) unless current_user.can?(:set_epic_created_at, user_group)
         params.delete(:color) unless Feature.enabled?(:epic_color_highlight)
 
+        create_params = declared_params(include_missing: false)
+
+        # Backward compatibility for deprecated fields "start_date" and "end_date"
+        create_params[:start_date_fixed] ||= create_params.delete(:start_date)
+        create_params[:due_date_fixed] ||= create_params.delete(:end_date)
+
         epic = ::Epics::CreateService.new(
           group: user_group,
           current_user: current_user,
-          params: declared_params(include_missing: false)
+          params: create_params
         ).execute
 
         if epic.valid?
@@ -259,7 +271,10 @@ module API
           desc: 'Date time when the epic was updated. Available only for admins and project owners',
           documentation: { example: '2016-03-11T03:45:40Z' }
         optional :start_date,
-          as: :start_date_fixed,
+          type: String,
+          desc: 'Deprecated: use start_date_fixed instead',
+          documentation: { example: '2018-07-31' }
+        optional :start_date_fixed,
           type: String,
           desc: 'The start date of an epic',
           documentation: { example: '2018-07-31' }
@@ -267,7 +282,10 @@ module API
           type: Boolean,
           desc: 'Indicates start date should be sourced from start_date_fixed field not the issue milestones'
         optional :end_date,
-          as: :due_date_fixed,
+          type: String,
+          desc: 'Deprecated: use due_date_fixed instead',
+          documentation: { example: '2019-08-11' }
+        optional :due_date_fixed,
           type: String,
           desc: 'The due date of an epic',
           documentation: { example: '2019-08-11' }
@@ -292,7 +310,8 @@ module API
         optional :state_event, type: String, values: %w[reopen close], desc: 'State event for an epic'
         optional :parent_id, type: Integer, desc: 'The ID of a parent epic', documentation: { example: 12 }
         at_least_one_of :add_labels, :color, :confidential, :description, :due_date_fixed, :due_date_is_fixed, :labels,
-          :parent_id, :remove_labels, :start_date_fixed, :start_date_is_fixed, :state_event, :title
+          :parent_id, :remove_labels, :start_date_fixed, :start_date_is_fixed, :state_event, :title,
+          :start_date, :end_date
       end
       put ':id/(-/)epics/:epic_iid' do
         authorize_can_admin_epic!
@@ -303,6 +322,10 @@ module API
 
         update_params = declared_params(include_missing: false)
         update_params.delete(:epic_iid)
+
+        # Backward compatibility for deprecated fields "start_date" and "end_date"
+        update_params[:start_date_fixed] ||= update_params.delete(:start_date)
+        update_params[:due_date_fixed] ||= update_params.delete(:end_date)
 
         result = ::Epics::UpdateService.new(
           group: user_group,
