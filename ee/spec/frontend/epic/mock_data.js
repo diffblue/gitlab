@@ -24,13 +24,15 @@ export const mockEpicData = convertObjectPropsToCamelCase(
 );
 
 export const mockEpicReferenceData = {
-  workspace: {
-    id: 'gid://gitlab/Group/24',
-    issuable: {
-      id: 'gid://gitlab/Epic/10',
-      reference: 'gitlab-org&5',
-      __typename: 'Epic',
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/35',
+      issuable: {
+        id: 'gid://gitlab/Epic/36',
+        reference: 'twitter&6',
+        __typename: 'Epic',
+      },
+      __typename: 'Group',
     },
-    __typename: 'Group',
   },
 };
