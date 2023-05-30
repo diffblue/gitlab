@@ -39058,6 +39058,9 @@ msgstr ""
 msgid "Runners|An upgrade is recommended for this runner"
 msgstr ""
 
+msgid "Runners|Arch/Platform"
+msgstr ""
+
 msgid "Runners|Architecture"
 msgstr ""
 
@@ -39626,6 +39629,9 @@ msgstr ""
 msgid "Runners|Support for registration tokens is deprecated"
 msgstr ""
 
+msgid "Runners|System ID"
+msgstr ""
+
 msgid "Runners|Tags"
 msgstr ""
 
@@ -39642,6 +39648,9 @@ msgid "Runners|The project, group or instance where the runner was registered. I
 msgstr ""
 
 msgid "Runners|The runner will be permanently deleted and no longer available for projects or groups in the instance. Are you sure you want to continue?"
+msgstr ""
+
+msgid "Runners|The unique ID for each runner that uses this configuration."
 msgstr ""
 
 msgid "Runners|These runners are assigned to this project."
