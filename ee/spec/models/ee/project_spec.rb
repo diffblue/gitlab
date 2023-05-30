@@ -2508,15 +2508,8 @@ RSpec.describe Project, feature_category: :groups_and_projects do
           expect(project).to receive(:use_elasticsearch?).and_return(true)
         end
 
-        it 'schedules a full index of the wiki repository using ElasticWikiIndexerWorker if the feature separate_elastic_wiki_indexer_for_project is enabled' do
+        it 'schedules a full index of the wiki repository using ElasticWikiIndexerWorker' do
           expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(project.id, project.class.name)
-
-          project.after_import
-        end
-
-        it 'schedules a full index of the wiki repository using ElasticCommitIndexerWorker if the feature separate_elastic_wiki_indexer_for_project is disabled' do
-          stub_feature_flags(separate_elastic_wiki_indexer_for_project: false)
-          expect(ElasticCommitIndexerWorker).to receive(:perform_async).with(project.id, true)
 
           project.after_import
         end
