@@ -52,9 +52,7 @@ module EE
       end
 
       def where_group_saml_uid(saml_provider, extern_uid)
-        where(provider: :group_saml,
-              saml_provider: saml_provider,
-              extern_uid: extern_uid)
+        where(provider: :group_saml, saml_provider: saml_provider, extern_uid: extern_uid)
       end
 
       def find_by_group_saml_uid(saml_provider, extern_uid)

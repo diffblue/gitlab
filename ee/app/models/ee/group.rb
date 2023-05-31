@@ -46,8 +46,8 @@ module EE
       has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id
       has_many :external_audit_event_destinations, class_name: "AuditEvents::ExternalAuditEventDestination", foreign_key: 'namespace_id'
       has_many :google_cloud_logging_configurations, class_name: "AuditEvents::GoogleCloudLoggingConfiguration",
-               foreign_key: 'namespace_id',
-               inverse_of: :group
+        foreign_key: 'namespace_id',
+        inverse_of: :group
 
       has_many :ldap_group_links, foreign_key: 'group_id', dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :saml_group_links, foreign_key: 'group_id'
@@ -80,12 +80,11 @@ module EE
       delegate :deleting_user, :marked_for_deletion_on, to: :deletion_schedule, allow_nil: true
 
       delegate :repository_read_only,
-               :code_suggestions, :code_suggestions=,
-               :default_compliance_framework_id,
-               to: :namespace_settings, allow_nil: true
+        :code_suggestions, :code_suggestions=,
+        :default_compliance_framework_id,
+        to: :namespace_settings, allow_nil: true
 
-      delegate :ai_settings_allowed?,
-               to: :namespace_settings
+      delegate :ai_settings_allowed?, to: :namespace_settings
 
       delegate :wiki_access_level=, to: :group_feature, allow_nil: true
 
@@ -94,11 +93,11 @@ module EE
       private :file_template_project
 
       validates :repository_size_limit,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
 
       validates :max_personal_access_token_lifetime,
-                allow_blank: true,
-                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
+        allow_blank: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
       validate :custom_project_templates_group_allowed, if: :custom_project_templates_group_id_changed?
 
@@ -397,8 +396,7 @@ module EE
       if skip_validation
         # A group that does not validate cannot transition out of its
         # current state, so manually set the ldap_sync_status
-        update_columns(ldap_sync_error: error_message,
-                       ldap_sync_status: 'failed')
+        update_columns(ldap_sync_error: error_message, ldap_sync_status: 'failed')
       else
         fail_ldap_sync
         update_column(:ldap_sync_error, error_message)
