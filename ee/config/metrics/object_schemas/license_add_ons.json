@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "GitLab_FileLocks": {
+      "type": "number",
+      "description": "FileLocks on the GitLab license"
+    },
+    "GitLab_Auditor_User": {
+      "type": "number",
+      "description": "Auditor User on the GitLab license"
+    },
+    "GitLab_Geo": {
+      "type": "number",
+      "description": "Geo on the GitLab license"
+    }
+  }
+}
