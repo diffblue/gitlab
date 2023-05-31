@@ -8,18 +8,17 @@ RSpec.describe Embedding::TanukiBotMvc, :clean_gitlab_redis_shared_state, type: 
   describe 'scopes' do
     describe '.neighbor_for' do
       subject(:neighbors) do
-        described_class.neighbor_for(question.embedding, limit: limit, minimum_distance: minimum_distance)
+        described_class.neighbor_for(question.embedding, limit: limit)
       end
 
       let_it_be(:question) { build(:tanuki_bot_mvc) }
       let(:limit) { 10 }
-      let(:minimum_distance) { -1 }
 
       it 'calls nearest_neighbors for question' do
         create_list(:tanuki_bot_mvc, 2)
 
         expect(described_class).to receive(:nearest_neighbors)
-          .with(:embedding, question.embedding, distance: 'inner_product').and_call_original.once
+          .with(:embedding, question.embedding, distance: 'cosine').and_call_original.once
 
         neighbors
       end
@@ -34,14 +33,6 @@ RSpec.describe Embedding::TanukiBotMvc, :clean_gitlab_redis_shared_state, type: 
 
         context 'with a limit of one' do
           let(:limit) { 1 }
-
-          it 'does not return the far neighbor' do
-            expect(neighbors).to match_array(near)
-          end
-        end
-
-        context 'with a minimum distance' do
-          let(:minimum_distance) { 0.1 }
 
           it 'does not return the far neighbor' do
             expect(neighbors).to match_array(near)

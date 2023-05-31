@@ -27,7 +27,7 @@ module Gitlab
           thought = parser.thought
           content = "\nAction: #{action}\nAction Input: #{action_input}\n"
 
-          tool = tools.find { |tool| tool.name == action }
+          tool = tools.find { |tool_class| tool_class::NAME == action }
 
           return final_answer(context: context, content: default_final_answer) unless tool
 

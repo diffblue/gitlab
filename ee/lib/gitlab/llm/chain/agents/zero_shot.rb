@@ -10,6 +10,9 @@ module Gitlab
 
           MAX_ITERATIONS = 10
 
+          # @param [String] user_input - a question from a user
+          # @param [Array<Tool>] tools - an array of Tool classes
+          # @param [GitlabContext] context - Gitlab context containing useful context information
           def initialize(user_input:, tools:, context:)
             @user_input = user_input
             @tools = tools
@@ -46,21 +49,22 @@ module Gitlab
 
           def execute
             MAX_ITERATIONS.times do
-              response = request(prompt)
-              answer = Answer.from_response(response_body: response, tools: tools, context: context)
+              answer = Answer.from_response(response_body: request, tools: tools, context: context)
 
               return answer if answer.is_final?
 
               input_variables[:agent_scratchpad] << answer.content.to_s << answer.suggestions.to_s
-              tool = answer.tool
+              tool_class = answer.tool
 
-              tool_answer = tool.execute(
-                context,
-                {
+              tool = tool_class.new(
+                context: context,
+                options: {
                   input: user_input,
                   suggestions: input_variables[:agent_scratchpad]
                 }
               )
+
+              tool_answer = tool.execute
 
               return tool_answer if tool_answer.is_final?
 
@@ -72,11 +76,12 @@ module Gitlab
 
           private
 
+          # This method should not be memoized because the input variables change over time
           def prompt
             Utils::Prompt.no_role_text(PROMPT_TEMPLATE, input_variables)
           end
 
-          def request(prompt)
+          def request
             params = ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
               temperature: 0.2
             )
@@ -87,8 +92,10 @@ module Gitlab
 
           def input_variables
             @input_variables ||= {
-              tool_names: tools.map(&:name),
-              tools_definitions: tools.map { |tool| "#{tool.name}: #{tool.description}" }.to_s,
+              tool_names: tools.map { |tool_class| tool_class::NAME }.join(', '),
+              tools_definitions: tools
+                .map { |tool_class| "#{tool_class::NAME}: #{tool_class::DESCRIPTION}" }
+                .join("\n"),
               user_input: user_input,
               agent_scratchpad: +""
             }

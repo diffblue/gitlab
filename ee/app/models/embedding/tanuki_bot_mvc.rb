@@ -11,11 +11,8 @@ module Embedding
     scope :previous, -> { where("version < ?", get_current_version) }
     scope :nil_embeddings_for_version, ->(version) { where(version: version, embedding: nil) }
 
-    scope :neighbor_for, ->(embedding, limit:, minimum_distance:) do
-      ::Embedding::TanukiBotMvc
-        .nearest_neighbors(:embedding, embedding, distance: 'inner_product')
-        .limit(limit)
-        .select { |n| n.neighbor_distance >= minimum_distance }
+    scope :neighbor_for, ->(embedding, limit:) do
+      ::Embedding::TanukiBotMvc.nearest_neighbors(:embedding, embedding, distance: 'cosine').limit(limit)
     end
 
     def self.current_version_cache_key

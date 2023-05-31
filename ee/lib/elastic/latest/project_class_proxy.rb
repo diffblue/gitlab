@@ -20,11 +20,11 @@ module Elastic
             }
           end
 
-          if options[:non_archived]
+          unless options[:include_archived]
             filters << {
               terms: {
-                _name: context.name(:not_archived),
-                archived: [!options[:non_archived]].flatten
+                _name: context.name(:archived, false),
+                archived: [false]
               }
             }
           end

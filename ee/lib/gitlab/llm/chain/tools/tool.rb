@@ -7,15 +7,17 @@ module Gitlab
         class Tool
           include Gitlab::Utils::StrongMemoize
 
-          attr_reader :name, :description
-          attr_accessor :context, :input_variables
+          NAME = 'Base Tool'
+          DESCRIPTION = 'Base Tool description'
 
-          def initialize(name:, description:)
-            @name = name
-            @description = description
+          attr_reader :context, :options
+
+          def initialize(context:, options:)
+            @context = context
+            @options = options
           end
 
-          def execute(context, options)
+          def execute
             raise NotImplementedError
           end
 

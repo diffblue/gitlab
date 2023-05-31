@@ -71,19 +71,15 @@ module Gitlab
             Utils::Prompt.as_assistant("%<suggestions>s")
           ].freeze
 
-          def initialize
-            super(name: NAME, description: DESCRIPTION)
+          def initialize(context:, options:)
+            super(context: context, options: options)
             @retries = 0
           end
 
-          def execute(context, input_variables)
-            return already_identified_answer(context) if already_identified?(input_variables)
+          def execute
+            return already_identified_answer if already_identified?
 
             MAX_RETRIES.times do
-              @context = context
-              @input_variables = input_variables
-
-              prompt = prompt(input_variables)
               response = request(prompt)
               json = extract_json(response)
               issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
@@ -92,7 +88,7 @@ module Gitlab
               return issue_not_found unless issue
 
               # now the issue in context is being referenced in user input.
-              self.context.resource = issue
+              context.resource = issue
 
               content = "I now have the JSON information about the issue ##{issue.iid}."
               return Answer.new(status: :ok, context: context, content: content, tool: nil)
@@ -101,7 +97,7 @@ module Gitlab
               self.retries += 1
 
               error_message = "\nObservation: JSON has an invalid format. Please retry"
-              input_variables[:suggestions] += error_message
+              options[:suggestions] += error_message
             rescue StandardError
               # todo: add exception logging
               return Answer.error_answer(context: context, content: _("Unexpected error"))
@@ -112,12 +108,12 @@ module Gitlab
 
           private
 
-          def already_identified?(input_variables)
+          def already_identified?
             identifier_action_regex = /(?=Action: IssueIdentifier)/
             json_loaded_regex = /(?=I now have the JSON information about the issue)/
 
-            issue_identifier_calls = input_variables[:suggestions].scan(identifier_action_regex).size
-            issue_identifier_json_loaded = input_variables[:suggestions].scan(json_loaded_regex).size
+            issue_identifier_calls = options[:suggestions].scan(identifier_action_regex).size
+            issue_identifier_json_loaded = options[:suggestions].scan(json_loaded_regex).size
 
             issue_identifier_calls > 1 && issue_identifier_json_loaded >= 1
           end
@@ -171,11 +167,12 @@ module Gitlab
             Answer.error_answer(context: context, content: content)
           end
 
-          def prompt(input_variables)
-            Utils::Prompt.no_role_text(PROMPT_TEMPLATE, input_variables)
+          # This method should not be memoized because the options change over time
+          def prompt
+            Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
           end
 
-          def already_identified_answer(context)
+          def already_identified_answer
             resource = context.resource
             content = "You already have identified the issue ##{resource.iid}, read carefully."
 
