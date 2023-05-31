@@ -126,6 +126,24 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
       end
     end
 
+    describe '[:can_admin]' do
+      before do
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      context 'when user can admin vulnerabilities' do
+        before do
+          project.add_developer(user)
+        end
+
+        it { is_expected.to include(can_admin: true) }
+      end
+
+      context 'when user can not admin vulnerabilities' do
+        it { is_expected.to include(can_admin: false) }
+      end
+    end
+
     context 'when pipeline exists' do
       subject { helper.vulnerability_details(vulnerability, pipeline) }
 

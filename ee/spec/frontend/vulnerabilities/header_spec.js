@@ -1,4 +1,4 @@
-import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon, GlDropdown } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
@@ -62,11 +62,13 @@ describe('Vulnerability Header', () => {
   const getVulnerability = ({
     shouldShowMergeRequestButton,
     shouldShowDownloadPatchButton = true,
+    canAdmin = true,
   }) => ({
     remediations: shouldShowMergeRequestButton ? [{ diff }] : null,
     state: shouldShowDownloadPatchButton ? 'detected' : 'resolved',
     mergeRequestLinks: shouldShowMergeRequestButton ? [] : [{}],
     mergeRequestFeedback: shouldShowMergeRequestButton ? null : {},
+    canAdmin,
   });
 
   const createApolloProvider = (...queries) => {
@@ -85,6 +87,7 @@ describe('Vulnerability Header', () => {
   const findGlLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findStatusBadge = () => wrapper.findComponent(StatusBadge);
   const findSplitButton = () => wrapper.findComponent(SplitButton);
+  const findStateButton = () => wrapper.findComponent(GlDropdown);
   const findResolutionAlert = () => wrapper.findComponent(ResolutionAlert);
   const findStatusDescription = () => wrapper.findComponent(StatusDescription);
 
@@ -191,6 +194,20 @@ describe('Vulnerability Header', () => {
         await waitForPromises();
         expect(createAlert).toHaveBeenCalledTimes(1);
       });
+    });
+  });
+
+  describe('state button', () => {
+    it('renders the disabled state button when user can not admin the vulnerability', () => {
+      createWrapper({ vulnerability: getVulnerability({ canAdmin: true }) });
+
+      expect(findStateButton().props('disabled')).toBe(false);
+    });
+
+    it('renders the enabled state button when user can admin the vulnerability', () => {
+      createWrapper({ vulnerability: getVulnerability({ canAdmin: false }) });
+
+      expect(findStateButton().props('disabled')).toBe(true);
     });
   });
 
