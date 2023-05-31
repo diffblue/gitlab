@@ -168,18 +168,19 @@ feature_category: :global_search do
       expect { described_class.new.execute }.to change(described_class, :queue_size).by(-fake_refs.count)
     end
 
-    it 'returns the number of documents processed' do
+    it 'returns the number of documents processed and number of failures' do
       described_class.track!(*fake_refs)
+      failed = fake_refs[0]
 
-      expect_processing(*fake_refs)
+      expect_processing(*fake_refs, failures: [failed])
 
-      expect(described_class.new.execute).to eq(fake_refs.count)
+      expect(described_class.new.execute).to eq([fake_refs.count, 1])
     end
 
-    it 'returns 0 without writing to the index when there are no documents' do
+    it 'returns 0 docments processed and 0 failures without writing to the index when there are no documents' do
       expect(::Gitlab::Elastic::BulkIndexer).not_to receive(:new)
 
-      expect(described_class.new.execute).to eq(0)
+      expect(described_class.new.execute).to eq([0, 0])
     end
 
     it 'retries failed documents' do

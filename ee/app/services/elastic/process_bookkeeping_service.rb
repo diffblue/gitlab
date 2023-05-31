@@ -155,7 +155,7 @@ module Elastic
         scores[set_key] = [first_score, last_score, specs.count]
       end
 
-      return 0 if specs_buffer.blank?
+      return [0, 0] if specs_buffer.blank?
 
       indexing_durations = []
       refs = deserialize_all(specs_buffer)
@@ -218,7 +218,7 @@ module Elastic
         )
       end
 
-      specs_buffer.count
+      [specs_buffer.count, @failures.count]
     end
 
     def deserialize_all(specs)
