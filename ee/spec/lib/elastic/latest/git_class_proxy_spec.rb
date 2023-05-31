@@ -58,7 +58,22 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
     context 'if type is blob' do
       let_it_be(:user) { create(:user) }
 
-      it 'global blob search' do
+      it 'global blob search and migration not completed' do
+        search_options = {
+          current_user: user,
+          public_and_internal_projects: true,
+          order_by: nil,
+          sort: nil,
+          type: 'blob'
+        }
+        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).with(
+          :backfill_project_permissions_in_blobs).and_return(false)
+        subject.elastic_search('*', type: 'blob', options: search_options)
+        assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
+                             'blob:match:search_terms')
+      end
+
+      it 'global blob search and migration completed' do
         search_options = {
           current_user: user,
           public_and_internal_projects: true,
@@ -67,7 +82,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
           type: 'blob'
         }
         subject.elastic_search('*', type: 'blob', options: search_options)
-        assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
+        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
                              'blob:match:search_terms')
       end
 
@@ -177,13 +192,27 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
       expect(result.first.buckets.first[:count]).to eq(2)
     end
 
-    it 'assert names queries for global blob search' do
+    it 'assert names queries for global blob search when migration is complete' do
       search_options = {
         current_user: user,
         public_and_internal_projects: true,
         order_by: nil,
         sort: nil
       }
+      subject.blob_aggregations('*', search_options)
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+                           'blob:match:search_terms')
+    end
+
+    it 'assert names queries for global blob search when migration is not complete' do
+      search_options = {
+        current_user: user,
+        public_and_internal_projects: true,
+        order_by: nil,
+        sort: nil
+      }
+      allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).with(
+        :backfill_project_permissions_in_blobs).and_return(false)
       subject.blob_aggregations('*', search_options)
       assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
                            'blob:match:search_terms')
