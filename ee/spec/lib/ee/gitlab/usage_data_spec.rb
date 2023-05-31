@@ -74,10 +74,32 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
     it 'gathers usage data', :fips_mode do
       expect(subject.keys).to include(
         *%i(
+          historical_max_users
+          license_add_ons
+          license_plan
+          license_expires_at
+          license_starts_at
+          license_user_count
+          license_trial
+          license_subscription_id
+          licensee
+          license_md5
+          license_sha256
+          license_id
           elasticsearch_enabled
           geo_enabled
           license_trial_ends_on
+          license_billable_users
         ))
+
+      expect(subject[:license_md5]).to eq(nil)
+    end
+
+    context 'when not in FIPS mode', fips_mode: false do
+      it 'includes MD5' do
+        expect(subject.keys).to include(:license_md5)
+        expect(subject[:license_md5]).to be_present
+      end
     end
 
     it 'gathers usage counts', :aggregate_failures do
@@ -132,6 +154,35 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       expect(subject[:elasticsearch_enabled]).to eq(Gitlab::CurrentSettings.elasticsearch_search?)
       expect(subject[:geo_enabled]).to eq(Gitlab::Geo.enabled?)
       expect(subject[:license_trial_ends_on]).to eq(License.trial_ends_on)
+    end
+  end
+
+  describe '.license_usage_data' do
+    subject { described_class.license_usage_data }
+
+    it 'gathers license data', :fips_mode do
+      license = ::License.current
+
+      expect(subject[:license_id]).to eq(license.license_id)
+      expect(subject[:license_user_count]).to eq(license.restricted_user_count)
+      expect(subject[:license_starts_at]).to eq(license.starts_at)
+      expect(subject[:license_expires_at]).to eq(license.expires_at)
+      expect(subject[:license_add_ons]).to eq(license.add_ons)
+      expect(subject[:license_trial]).to eq(license.trial?)
+      expect(subject[:license_subscription_id]).to eq(license.subscription_id)
+      expect(subject[:license_billable_users]).to eq(license.daily_billable_users_count)
+      expect(subject[:licensee]).to eq(license.licensee)
+      expect(subject[:license_md5]).to eq(nil)
+      expect(subject[:license_sha256]).to eq(Digest::SHA256.hexdigest(license.data))
+      expect(subject[:historical_max_users]).to eq(license.historical_max)
+    end
+
+    context 'when not in FIPS mode', fips_mode: false do
+      it 'includes MD5' do
+        license = ::License.current
+
+        expect(subject[:license_md5]).to eq(Digest::MD5.hexdigest(license.data))
+      end
     end
   end
 
