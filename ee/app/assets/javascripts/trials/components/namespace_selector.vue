@@ -32,6 +32,11 @@ export default {
       required: false,
       default: null,
     },
+    hideNamespaceSelector: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -40,6 +45,9 @@ export default {
     };
   },
   computed: {
+    showNamespaceSelector() {
+      return this.anyTrialEligibleNamespaces && !this.hideNamespaceSelector;
+    },
     showNewGroupNameField() {
       return !this.anyTrialEligibleNamespaces || this.selectedGroup === CREATE_GROUP_OPTION_VALUE;
     },
@@ -50,7 +58,7 @@ export default {
 <template>
   <div>
     <listbox-input
-      v-if="anyTrialEligibleNamespaces"
+      v-if="showNamespaceSelector"
       v-model="selectedGroup"
       name="namespace_id"
       label-for="namespace_id"

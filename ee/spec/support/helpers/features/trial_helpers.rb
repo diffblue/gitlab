@@ -29,6 +29,7 @@ module Features
       end
 
       within('[data-testid="trial-form"]') do
+        expect(page).not_to have_content('This subscription is for')
         expect(page.find_field('new_group_name').value).to eq(group_name)
       end
     end
@@ -145,12 +146,12 @@ module Features
       { namespace: group.slice(:id, :name, :path, :kind, :trial_ends_on) }
     end
 
-    def new_group_attrs(path: 'gitlab')
+    def new_group_attrs(path: 'gitlab', name: 'gitlab')
       {
         namespace: {
           id: anything,
           path: path,
-          name: 'gitlab',
+          name: name,
           kind: 'group',
           trial_ends_on: nil
         }
