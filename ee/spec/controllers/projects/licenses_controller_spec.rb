@@ -125,62 +125,129 @@ RSpec.describe Projects::LicensesController, feature_category: :dependency_manag
             end
 
             context 'when the license_scanning_sbom_scanner feature flag is enabled' do
-              let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
+              context 'when querying uncompressed package metadata' do
+                let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
 
-              before do
-                stub_feature_flags(compressed_package_metadata_query: false)
+                before do
+                  stub_feature_flags(compressed_package_metadata_query: false)
 
-                create(:pm_package_version_license, :with_all_relations, name: "activesupport", purl_type: "gem", version: "5.1.4", license_name: "MIT")
-                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "MIT")
-                create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus", purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
-                create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
+                  create(:pm_package_version_license, :with_all_relations, name: "activesupport",
+                    purl_type: "gem", version: "5.1.4", license_name: "MIT")
+                  create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+                    purl_type: "golang", version: "v1.4.2", license_name: "MIT")
+                  create(:pm_package_version_license, :with_all_relations, name: "github.com/sirupsen/logrus",
+                    purl_type: "golang", version: "v1.4.2", license_name: "BSD-3-Clause")
+                  create(:pm_package_version_license, :with_all_relations, name: "org.apache.logging.log4j/log4j-api",
+                    purl_type: "maven", version: "2.6.1", license_name: "BSD-3-Clause")
 
-                get_licenses
+                  get_licenses
+                end
+
+                it 'returns success code' do
+                  expect(response).to have_gitlab_http_status(:ok)
+                end
+
+                it 'returns a hash with licenses sorted by name' do
+                  expect(json_response['licenses'].length).to eq(3)
+                  expect(json_response['licenses'][0]).to include({
+                    'id' => nil,
+                    'classification' => 'unclassified',
+                    'name' => "BSD-3-Clause",
+                    'spdx_identifier' => "BSD-3-Clause",
+                    'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
+                    # TODO: figure out if order is important here
+                    'components' => match_array([
+                      {
+                        "name" => "github.com/sirupsen/logrus",
+                        "package_manager" => nil,
+                        "version" => "v1.4.2",
+                        "blob_path" => nil
+                      },
+                      {
+                        "name" => "org.apache.logging.log4j/log4j-api",
+                        "package_manager" => nil,
+                        "version" => "2.6.1",
+                        "blob_path" => nil
+                      }
+                    ])
+                  })
+                end
+
+                it 'returns status ok' do
+                  expect(json_response['report']['status']).to eq('ok')
+                end
+
+                it 'includes the pagination headers' do
+                  expect(response).to include_pagination_headers
+                end
+
+                context 'with pagination params' do
+                  let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
+
+                  it 'return only 1 license' do
+                    expect(json_response['licenses'].length).to eq(1)
+                  end
+                end
               end
 
-              it 'returns success code' do
-                expect(response).to have_gitlab_http_status(:ok)
-              end
+              context 'when querying compressed package metadata' do
+                let_it_be(:pipeline) { create(:ee_ci_pipeline, status: :success, project: project, builds: [create(:ee_ci_build, :success, :cyclonedx)]) }
 
-              it 'returns a hash with licenses sorted by name' do
-                expect(json_response['licenses'].length).to eq(3)
-                expect(json_response['licenses'][0]).to include({
-                  'id' => nil,
-                  'classification' => 'unclassified',
-                  'name' => "BSD-3-Clause",
-                  'spdx_identifier' => "BSD-3-Clause",
-                  'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
-                  # TODO: figure out if order is important here
-                  'components' => match_array([
-                    {
-                      "name" => "github.com/sirupsen/logrus",
-                      "package_manager" => nil,
-                      "version" => "v1.4.2",
-                      "blob_path" => nil
-                    },
-                    {
-                      "name" => "org.apache.logging.log4j/log4j-api",
-                      "package_manager" => nil,
-                      "version" => "2.6.1",
-                      "blob_path" => nil
-                    }
-                  ])
-                })
-              end
+                before do
+                  create(:pm_package, name: "activesupport", purl_type: "gem",
+                    other_licenses: [{ license_names: ["MIT"], versions: ["5.1.4"] }])
+                  create(:pm_package, name: "github.com/sirupsen/logrus", purl_type: "golang",
+                    other_licenses: [{ license_names: ["MIT", "BSD-3-Clause"], versions: ["v1.4.2"] }])
+                  create(:pm_package, name: "org.apache.logging.log4j/log4j-api", purl_type: "maven",
+                    other_licenses: [{ license_names: ["BSD-3-Clause"], versions: ["2.6.1"] }])
 
-              it 'returns status ok' do
-                expect(json_response['report']['status']).to eq('ok')
-              end
+                  get_licenses
+                end
 
-              it 'includes the pagination headers' do
-                expect(response).to include_pagination_headers
-              end
+                it 'returns success code' do
+                  expect(response).to have_gitlab_http_status(:ok)
+                end
 
-              context 'with pagination params' do
-                let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
+                it 'returns a hash with licenses sorted by name' do
+                  expect(json_response['licenses'].length).to eq(3)
+                  expect(json_response['licenses'][0]).to include({
+                    'id' => nil,
+                    'classification' => 'unclassified',
+                    'name' => "BSD-3-Clause",
+                    'spdx_identifier' => "BSD-3-Clause",
+                    'url' => "https://spdx.org/licenses/BSD-3-Clause.html",
+                    # TODO: figure out if order is important here
+                    'components' => match_array([
+                      {
+                        "name" => "github.com/sirupsen/logrus",
+                        "package_manager" => nil,
+                        "version" => "v1.4.2",
+                        "blob_path" => nil
+                      },
+                      {
+                        "name" => "org.apache.logging.log4j/log4j-api",
+                        "package_manager" => nil,
+                        "version" => "2.6.1",
+                        "blob_path" => nil
+                      }
+                    ])
+                  })
+                end
 
-                it 'return only 1 license' do
-                  expect(json_response['licenses'].length).to eq(1)
+                it 'returns status ok' do
+                  expect(json_response['report']['status']).to eq('ok')
+                end
+
+                it 'includes the pagination headers' do
+                  expect(response).to include_pagination_headers
+                end
+
+                context 'with pagination params' do
+                  let(:params) { { namespace_id: project.namespace, project_id: project, per_page: 2, page: 2 } }
+
+                  it 'return only 1 license' do
+                    expect(json_response['licenses'].length).to eq(1)
+                  end
                 end
               end
             end

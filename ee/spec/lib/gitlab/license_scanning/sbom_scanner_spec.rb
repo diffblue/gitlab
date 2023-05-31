@@ -9,7 +9,6 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
   subject(:scanner) { described_class.new(project, pipeline) }
 
   before do
-    stub_feature_flags(compressed_package_metadata_query: false)
     stub_licensed_features(license_scanning: true)
   end
 
@@ -48,59 +47,131 @@ RSpec.describe ::Gitlab::LicenseScanning::SbomScanner, feature_category: :softwa
 
     context "when the pipeline is not nil" do
       context "when the pipeline contains an sbom report" do
-        let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+        context 'when querying uncompressed package metadata' do
+          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
-        before_all do
-          components_to_create_in_db = [
-            Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0"),
-            Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "5.7.3"),
-            Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "6.4.0"),
-            Hashie::Mash.new(name: "json-schema", purl_type: "npm", version: "0.2.3"),
-            Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", version: "2.6.1"),
-            Hashie::Mash.new(name: "activesupport", purl_type: "gem", version: "5.1.4"),
-            Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", version: "9.0.2")
-          ]
+          before do
+            stub_feature_flags(compressed_package_metadata_query: false)
+          end
 
-          components_to_create_in_db.each do |component|
-            create(:pm_package_version_license, :with_all_relations, name: component.name,
-              purl_type: component.purl_type, version: component.version, license_name: "OLDAP-2.1")
-            create(:pm_package_version_license, :with_all_relations, name: component.name,
-              purl_type: component.purl_type, version: component.version, license_name: "BSD")
+          before_all do
+            components_to_create_in_db = [
+              Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", version: "v1.10.0"),
+              Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "5.7.3"),
+              Hashie::Mash.new(name: "acorn", purl_type: "npm", version: "6.4.0"),
+              Hashie::Mash.new(name: "json-schema", purl_type: "npm", version: "0.2.3"),
+              Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", version: "2.6.1"),
+              Hashie::Mash.new(name: "activesupport", purl_type: "gem", version: "5.1.4"),
+              Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", version: "9.0.2")
+            ]
+
+            components_to_create_in_db.each do |component|
+              create(:pm_package_version_license, :with_all_relations, name: component.name,
+                purl_type: component.purl_type, version: component.version, license_name: "OLDAP-2.1")
+              create(:pm_package_version_license, :with_all_relations, name: component.name,
+                purl_type: component.purl_type, version: component.version, license_name: "BSD")
+            end
+          end
+
+          it 'returns the expected licenses' do
+            expect(report.licenses).to match_array([
+              have_attributes(id: "BSD-4-Clause", name: "BSD"),
+              have_attributes(id: "OLDAP-2.1", name: "OLDAP-2.1"),
+              have_attributes(id: nil, name: "unknown")
+            ])
+          end
+
+          it 'returns the expected dependencies for known licenses' do
+            bsd_license = report.licenses.find { |license| license.name == "BSD" }
+
+            expect(bsd_license.dependencies).to match_array([
+              have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
+              have_attributes(name: "acorn", version: "5.7.3"),
+              have_attributes(name: "acorn", version: "6.4.0"),
+              have_attributes(name: "json-schema", version: "0.2.3"),
+              have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
+              have_attributes(name: "activesupport", version: "5.1.4"),
+              have_attributes(name: "yargs-parser", version: "9.0.2")
+            ])
+          end
+
+          it 'returns the expected dependencies for unknown licenses' do
+            unknown_license = report.licenses.find { |license| license.name == "unknown" }
+
+            expect(unknown_license.dependencies.length).to be(434)
+
+            expect(unknown_license.dependencies).to include(
+              have_attributes(name: "byebug", version: "10.0.0"),
+              have_attributes(name: "rspec-core", version: "3.7.1"),
+              have_attributes(name: "yargs-parser", version: "8.1.0")
+            )
           end
         end
 
-        it 'returns the expected licenses' do
-          expect(report.licenses).to match_array([
-            have_attributes(id: "BSD-4-Clause", name: "BSD"),
-            have_attributes(id: "OLDAP-2.1", name: "OLDAP-2.1"),
-            have_attributes(id: nil, name: "unknown")
-          ])
-        end
+        context 'when querying compressed package metadata' do
+          let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
 
-        it 'returns the expected dependencies for known licenses' do
-          bsd_license = report.licenses.find { |license| license.name == "BSD" }
+          before_all do
+            components_to_create_in_db = [
+              Hashie::Mash.new(name: "github.com/astaxie/beego", purl_type: "golang", versions: ["v1.10.0"]),
+              Hashie::Mash.new(name: "acorn", purl_type: "npm", versions: ["5.7.3", "6.4.0"]),
+              Hashie::Mash.new(name: "json-schema", purl_type: "npm", versions: ["0.2.3"]),
+              Hashie::Mash.new(name: "org.apache.logging.log4j/log4j-core", purl_type: "maven", versions: ["2.6.1"]),
+              Hashie::Mash.new(name: "activesupport", purl_type: "gem", versions: ["5.1.4"]),
+              Hashie::Mash.new(name: "yargs-parser", purl_type: "npm", versions: ["9.0.2"])
+            ]
 
-          expect(bsd_license.dependencies).to match_array([
-            have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
-            have_attributes(name: "acorn", version: "5.7.3"),
-            have_attributes(name: "acorn", version: "6.4.0"),
-            have_attributes(name: "json-schema", version: "0.2.3"),
-            have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
-            have_attributes(name: "activesupport", version: "5.1.4"),
-            have_attributes(name: "yargs-parser", version: "9.0.2")
-          ])
-        end
+            components_to_create_in_db.each do |component|
+              create(:pm_package, name: component.name, purl_type: component.purl_type,
+                other_licenses: [{ license_names: ["OLDAP-2.1", "BSD"], versions: component.versions }])
+            end
+          end
 
-        it 'returns the expected dependencies for unknown licenses' do
-          unknown_license = report.licenses.find { |license| license.name == "unknown" }
+          it 'returns the expected licenses' do
+            expect(report.licenses).to match_array([
+              have_attributes(id: "BSD-4-Clause", name: "BSD"),
+              have_attributes(id: "OLDAP-2.1", name: "OLDAP-2.1"),
+              # TODO: document difference in behaviour
+              have_attributes(id: "DEFAULT-2.1", name: "DEFAULT-2.1"),
+              have_attributes(id: nil, name: "unknown")
+            ])
+          end
 
-          expect(unknown_license.dependencies.length).to be(434)
+          it 'returns the expected dependencies for known licenses' do
+            bsd_license = report.licenses.find { |license| license.name == "BSD" }
 
-          expect(unknown_license.dependencies).to include(
-            have_attributes(name: "byebug", version: "10.0.0"),
-            have_attributes(name: "rspec-core", version: "3.7.1"),
-            have_attributes(name: "yargs-parser", version: "8.1.0")
-          )
+            expect(bsd_license.dependencies).to match_array([
+              have_attributes(name: "github.com/astaxie/beego", version: "v1.10.0"),
+              have_attributes(name: "acorn", version: "5.7.3"),
+              have_attributes(name: "acorn", version: "6.4.0"),
+              have_attributes(name: "json-schema", version: "0.2.3"),
+              have_attributes(name: "org.apache.logging.log4j/log4j-core", version: "2.6.1"),
+              have_attributes(name: "activesupport", version: "5.1.4"),
+              have_attributes(name: "yargs-parser", version: "9.0.2")
+            ])
+          end
+
+          it 'returns the expected dependencies for unknown licenses' do
+            unknown_license = report.licenses.find { |license| license.name == "unknown" }
+
+            expect(unknown_license.dependencies.length).to be(433)
+
+            expect(unknown_license.dependencies).to include(
+              have_attributes(name: "byebug", version: "10.0.0"),
+              have_attributes(name: "rspec-core", version: "3.7.1")
+            )
+          end
+
+          # TODO: document difference in behaviour
+          it 'returns the expected dependencies for default licenses' do
+            unknown_license = report.licenses.find { |license| license.name == "DEFAULT-2.1" }
+
+            expect(unknown_license.dependencies.length).to be(1)
+
+            expect(unknown_license.dependencies).to include(
+              have_attributes(name: "yargs-parser", version: "8.1.0")
+            )
+          end
         end
       end
 
