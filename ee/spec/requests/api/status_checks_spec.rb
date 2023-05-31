@@ -313,7 +313,7 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
     end
   end
 
-  describe 'POST :id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id' do
+  describe 'POST projects/:id/merge_requests/:merge_request_iid/status_checks/:external_status_check_id/retry' do
     subject(:retry_failed_status_check) do
       post api("/projects/#{project.id}/merge_requests/#{merge_request.iid}/status_checks/#{rule.id}/retry", user)
     end
@@ -394,6 +394,13 @@ RSpec.describe API::StatusChecks, feature_category: :compliance_management do
             retry_failed_status_check
 
             expect(response).to have_gitlab_http_status(:accepted)
+          end
+
+          it 'updates last status check response' do
+            retry_failed_status_check
+
+            expect(merge_request.status_check_responses.last.status).to eq('failed')
+            expect(merge_request.status_check_responses.last.retried_at).not_to be_nil
           end
         end
 
