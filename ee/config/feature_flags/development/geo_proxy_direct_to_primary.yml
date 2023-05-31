@@ -5,4 +5,4 @@ rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/391407
 milestone: '15.10'
 type: development
 group: group::geo
-default_enabled: false
+default_enabled: true
