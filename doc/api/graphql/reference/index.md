@@ -6375,6 +6375,10 @@ Input type: `UpdateContainerExpirationPolicyInput`
 
 ### `Mutation.updateDependencyProxyImageTtlGroupPolicy`
 
+These settings can be adjusted by the group Owner or Maintainer.
+[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
+this to Owners only to match the permissions level in the user interface.
+
 Input type: `UpdateDependencyProxyImageTtlGroupPolicyInput`
 
 #### Arguments
@@ -6396,7 +6400,9 @@ Input type: `UpdateDependencyProxyImageTtlGroupPolicyInput`
 
 ### `Mutation.updateDependencyProxySettings`
 
-These settings can be adjusted by the group Owner or Maintainer. However, in GitLab 16.0, we will be limiting this to the Owner role. [GitLab-#364441](https://gitlab.com/gitlab-org/gitlab/-/issues/364441) proposes making this change to match the permissions level in the user interface.
+These settings can be adjusted by the group Owner or Maintainer.
+[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
+this to Owners only to match the permissions level in the user interface.
 
 Input type: `UpdateDependencyProxySettingsInput`
 
@@ -6556,6 +6562,10 @@ Input type: `UpdateIterationInput`
 | <a id="mutationupdateiterationiteration"></a>`iteration` | [`Iteration`](#iteration) | Updated iteration. |
 
 ### `Mutation.updateNamespacePackageSettings`
+
+These settings can be adjusted by the group Owner or Maintainer.
+[Issue 370471](https://gitlab.com/gitlab-org/gitlab/-/issues/370471) proposes limiting
+this to Owners only to match the permissions level in the user interface.
 
 Input type: `UpdateNamespacePackageSettingsInput`
 
