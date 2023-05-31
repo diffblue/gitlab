@@ -63,6 +63,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
         it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
           let(:options) { {} }
+          let(:content) { 'Summarize comments' }
 
           subject { described_class.new(current_user, resource, options) }
         end
@@ -84,6 +85,7 @@ RSpec.describe Llm::GenerateSummaryService, feature_category: :no_category do # 
         it_behaves_like 'completion worker sync and async' do
           let(:action_name) { :summarize_comments }
           let(:options) { {} }
+          let(:content) { 'Summarize comments' }
 
           subject { described_class.new(current_user, resource, options) }
         end

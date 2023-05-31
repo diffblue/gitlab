@@ -32,6 +32,7 @@ RSpec.describe Llm::GenerateTestFileService, :saas, feature_category: :code_revi
       it_behaves_like 'completion worker sync and async' do
         let(:resource) { merge_request }
         let(:action_name) { :generate_test_file }
+        let(:content) { 'Generate test file' }
       end
     end
 

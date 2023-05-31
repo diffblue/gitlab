@@ -47,7 +47,7 @@ module Llm
         action_name: action_name
       )
 
-      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER }
+      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER, content: content(action_name) }
       ::Gitlab::Llm::Cache.new(user).add(payload)
 
       if options[:sync] == true
@@ -72,6 +72,10 @@ module Llm
 
     def error(message)
       ServiceResponse.error(message: message)
+    end
+
+    def content(action_name)
+      action_name.to_s.humanize
     end
   end
 end
