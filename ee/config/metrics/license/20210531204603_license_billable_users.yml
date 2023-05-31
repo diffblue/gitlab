@@ -12,6 +12,9 @@ milestone: "14.0"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/62850
 time_frame: all
 data_source: database
+instrumentation_class: LicenseMetric
+options:
+  attribute: daily_billable_users_count
 distribution:
 - ee
 tier:
