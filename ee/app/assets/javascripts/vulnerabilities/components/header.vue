@@ -95,6 +95,9 @@ export default {
     initialDismissalReason() {
       return this.vulnerability.stateTransitions?.at(-1)?.dismissalReason;
     },
+    disabledChangeState() {
+      return !this.vulnerability.canAdmin;
+    },
   },
 
   watch: {
@@ -244,11 +247,13 @@ export default {
           v-else-if="glFeatures.dismissalReason"
           :initial-state="vulnerability.state"
           :initial-dismissal-reason="initialDismissalReason"
+          :disabled="disabledChangeState"
           @change="changeVulnerabilityState"
         />
         <vulnerability-state-dropdown-deprecated
           v-else
           :initial-state="vulnerability.state"
+          :disabled="disabledChangeState"
           @change="changeVulnerabilityState"
         />
         <split-button

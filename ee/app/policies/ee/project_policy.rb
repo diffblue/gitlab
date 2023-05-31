@@ -334,8 +334,11 @@ module EE
       end
 
       rule { can?(:read_security_resource) & ~security_and_compliance_disabled }.policy do
-        enable :admin_vulnerability
         enable :read_vulnerability
+      end
+
+      rule { can?(:read_security_resource) & ~security_and_compliance_disabled & can?(:developer_access) }.policy do
+        enable :admin_vulnerability
       end
 
       rule { security_bot & auto_fix_enabled }.policy do
