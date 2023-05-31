@@ -1,5 +1,13 @@
 <script>
-import { GlFormGroup, GlCollapse, GlAvatar, GlLink, GlFormInput } from '@gitlab/ui';
+import {
+  GlFormGroup,
+  GlCollapse,
+  GlAvatar,
+  GlButton,
+  GlLink,
+  GlFormInput,
+  GlTooltipDirective as GlTooltip,
+} from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { uniqueId } from 'lodash';
 import Api from 'ee/api';
@@ -31,6 +39,12 @@ const mapGroupToApprover = (group) => ({
   type: 'group',
 });
 
+const ID_FOR_TYPE = {
+  user: 'user_id',
+  group: 'group_id',
+  access: 'access_level',
+};
+
 const MIN_APPROVALS_COUNT = 1;
 
 const MAX_APPROVALS_COUNT = 5;
@@ -41,10 +55,12 @@ export default {
     GlFormGroup,
     GlCollapse,
     GlAvatar,
+    GlButton,
     GlLink,
     GlFormInput,
     AccessDropdown,
   },
+  directives: { GlTooltip },
   inject: { accessLevelsData: { default: [] } },
   props: {
     disabled: {
@@ -95,6 +111,7 @@ export default {
 
             return Promise.resolve({
               accessLevel: approver.access_level,
+              id: approver.access_level,
               name: this.accessLevelsData.find(({ id }) => id === approver.access_level).text,
               approvals: 1,
               type: 'access',
@@ -119,6 +136,11 @@ export default {
     updateApprovers(permissions) {
       this.approvers = permissions;
     },
+    removeApprover({ type, id }) {
+      const key = ID_FOR_TYPE[type];
+      const index = this.approvers.findIndex(({ [key]: i }) => id === i);
+      this.$delete(this.approvers, index);
+    },
     isApprovalValid(approvals) {
       const count = parseFloat(approvals);
       return count >= MIN_APPROVALS_COUNT && count <= MAX_APPROVALS_COUNT;
@@ -134,6 +156,7 @@ export default {
     ),
     approvalRulesLabel: s__('ProtectedEnvironments|Approval rules'),
     approvalsInvalid: s__('ProtectedEnvironments|Number of approvals must be between 1 and 5'),
+    removeApprover: s__('ProtectedEnvironments|Remove approval rule'),
   },
 };
 </script>
@@ -152,8 +175,8 @@ export default {
         :access-levels-data="accessLevelsData"
         :access-level="$options.ACCESS_LEVELS.DEPLOY"
         :disabled="disabled"
-        :preselected-items="approvers"
-        @hidden="updateApprovers"
+        :items="approvers"
+        @select="updateApprovers"
       />
     </gl-form-group>
     <gl-collapse :visible="hasSelectedApprovers">
@@ -163,7 +186,7 @@ export default {
         class="protected-environment-approvers gl-display-grid gl-gap-5 gl-align-items-center"
       >
         <span class="protected-environment-approvers-label">{{ __('Approvers') }}</span>
-        <span>{{ __('Approvals required') }}</span>
+        <span class="protected-environment-approvers-label">{{ __('Approvals required') }}</span>
         <template v-for="(approver, index) in approverInfo">
           <gl-avatar
             v-if="approver.avatarShape"
@@ -186,6 +209,7 @@ export default {
             :label="$options.i18n.approverLabel"
             :label-for="approvalsId(index)"
             label-sr-only
+            class="gl-mb-0"
           >
             <gl-form-input
               :id="approvalsId(index)"
@@ -199,6 +223,15 @@ export default {
               {{ $options.i18n.approvalsInvalid }}
             </template>
           </gl-form-group>
+          <gl-button
+            :key="`${index}-remove`"
+            v-gl-tooltip
+            :title="$options.i18n.removeApprover"
+            :aria-label="$options.i18n.removeApprover"
+            icon="remove"
+            :data-testid="`remove-approver-${approver.name}`"
+            @click="removeApprover(approver)"
+          />
         </template>
       </div>
     </gl-collapse>

@@ -94,7 +94,7 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
     });
     findAccessDropdown().vm.$emit('hidden', deployAccessLevels);
     findEnvironmentsListbox().vm.$emit('select', name);
-    findApproverDropdown().vm.$emit('hidden', deployAccessLevels);
+    findApproverDropdown().vm.$emit('select', deployAccessLevels);
     await waitForPromises();
     findRequiredCountForApprover('root').vm.$emit('input', requiredApprovalCount);
     await nextTick();
