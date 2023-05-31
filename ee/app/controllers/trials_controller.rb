@@ -46,8 +46,15 @@ class TrialsController < ApplicationController
     elsif result.reason == :lead_failed
       @create_errors = result.errors.to_sentence
       render :new
+    elsif result.reason == :namespace_create_failed
+      # namespace creation failed
+      @create_errors = result.errors.to_sentence
+      @hide_namespace_selector = true
+      params[:namespace_id] = result.payload[:namespace_id]
+
+      render :select_namespace_form
     else
-      # namespace creation or trial failed
+      # trial failed
       @create_errors = result.errors.to_sentence
       params[:namespace_id] = result.payload[:namespace_id]
 

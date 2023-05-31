@@ -36,6 +36,12 @@ describe('NamespaceSelector', () => {
 
       expect(findListboxInput().exists()).toBe(false);
     });
+
+    it('is hidden if hideNamespaceSelector is true', () => {
+      createComponent({ hideNamespaceSelector: true });
+
+      expect(findListboxInput().exists()).toBe(false);
+    });
   });
 
   describe('"New group name" input', () => {

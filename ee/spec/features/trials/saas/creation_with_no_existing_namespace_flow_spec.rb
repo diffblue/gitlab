@@ -23,7 +23,7 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
 
       # required field check
       message = page.find_field('new_group_name').native.attribute('validationMessage')
-      expect(message).to eq('Please fill out this field.')
+      expect(message).to match(/Please fill [a-z]+ this field./)
 
       # namespace invalid check
       fill_in_trial_form_for_new_group(name: '_invalid group name_')

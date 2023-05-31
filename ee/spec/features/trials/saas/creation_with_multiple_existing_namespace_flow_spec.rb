@@ -88,16 +88,6 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
       select_from_listbox 'Create group', from: 'Please select a group'
       wait_for_requests
 
-      # namespace invalid check
-      fill_in_trial_selection_form_for_new_group(name: '_invalid group name_')
-
-      click_button 'Start your free trial'
-
-      # We really shouldn't be showing the selector at this point.
-      # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405125
-      expect_to_be_on_namespace_selection
-      expect_to_have_namespace_creation_errors
-
       # success
       fill_in_trial_selection_form_for_new_group
 
@@ -107,8 +97,8 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
     end
   end
 
-  context 'when selecting to create a new group initially and then using selected group instead' do
-    it 'fills out form, submits and lands on the group page' do
+  context 'when selecting to create a new group with an invalid group name' do
+    it 'fills out form, submits and is presented with error then fills out valid name' do
       sign_in(user)
 
       visit new_trial_path
@@ -127,17 +117,14 @@ RSpec.describe 'Trial lead submission and creation with multiple eligible namesp
 
       click_button 'Start your free trial'
 
-      # We really shouldn't be showing the selector at this point.
-      # issue: https://gitlab.com/gitlab-org/gitlab/-/issues/405125
-      expect_to_be_on_namespace_selection
       expect_to_have_namespace_creation_errors
 
-      # success when choosing an existing namespace instead
-      fill_in_trial_selection_form(from: 'Create group')
+      # success when choosing a valid name instead
+      fill_in_trial_selection_form_for_new_group(name: 'valid')
 
-      submit_trial_selection_form
+      submit_new_group_trial_selection_form(extra_params: new_group_attrs(path: 'valid', name: 'valid'))
 
-      expect_to_be_on_group_page
+      expect_to_be_on_group_page(path: 'valid')
     end
   end
 
