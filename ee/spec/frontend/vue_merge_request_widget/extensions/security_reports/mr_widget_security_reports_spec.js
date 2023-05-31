@@ -7,7 +7,7 @@ import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_re
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
-import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
+import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
