@@ -14,9 +14,17 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import explainCodeMutation from 'ee/ai/graphql/explain_code.mutation.graphql';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import LineHighlighter from '~/blob/line_highlighter';
 
 const aiResponseFormatted = 'Formatted AI response';
 
+const lineHighlighter = new LineHighlighter();
+jest.mock('~/blob/line_highlighter', () =>
+  jest.fn().mockReturnValue({
+    highlightRange: jest.fn(),
+    clearHighlight: jest.fn(),
+  }),
+);
 jest.mock('ee/ai/utils', () => ({
   generateExplainCodePrompt: jest.fn(),
   generateChatPrompt: jest.fn(),
@@ -37,6 +45,7 @@ const SELECTION_START_POSITION = 50;
 const SELECTION_END_POSITION = 150;
 const CONTAINER_TOP = 20;
 const SELECTED_TEXT = 'Foo';
+const LINE_ID = 'LC1';
 
 let mutationHandlerMock;
 let subscriptionHandlerMock;
@@ -94,10 +103,12 @@ describe('AiGenie', () => {
   const getSelectionMock = ({ getRangeAt = getRangeAtMock(), toString = () => {} } = {}) => {
     return {
       anchorNode: document.getElementById('first-paragraph'),
+      focusNode: document.getElementById('first-paragraph'),
       isCollapsed: false,
       getRangeAt,
       rangeCount: 10,
       toString,
+      removeAllRanges: jest.fn(),
     };
   };
 
@@ -129,7 +140,7 @@ describe('AiGenie', () => {
     mutationHandlerMock = jest.fn().mockResolvedValue(explainCodeMutationResponse);
     subscriptionHandlerMock = jest.fn().mockResolvedValue(explainCodeSubscriptionResponse);
     setHTMLFixture(
-      `<div id="${containerId}" style="height:1000px; width: 800px"><p lang=${language} id="first-paragraph">Foo</p></div>`,
+      `<div id="${containerId}" style="height:1000px; width: 800px"><span class="line" id="${LINE_ID}"><p lang=${language} id="first-paragraph">Foo</p></span></div>`,
     );
   });
 
@@ -380,6 +391,37 @@ describe('AiGenie', () => {
       await requestExplanation();
       expect(findUserFeedback().props('eventName')).toBe(EXPLAIN_CODE_TRACKING_EVENT_NAME);
       expect(findUserFeedback().props('promptLocation')).toBe('before_content');
+    });
+  });
+
+  describe('Lines highlighting', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+    it('initiates LineHighlighter', () => {
+      expect(LineHighlighter).toHaveBeenCalled();
+    });
+    it('calls highlightRange with expected range', async () => {
+      await simulateSelectText();
+      await requestExplanation();
+      expect(lineHighlighter.highlightRange).toHaveBeenCalledWith([1, 1]);
+    });
+    it('calls clearHighlight to clear previous selection', async () => {
+      await simulateSelectText();
+      await requestExplanation();
+      expect(lineHighlighter.clearHighlight).toHaveBeenCalledTimes(1);
+    });
+    it('calls clearHighlight when chat is closed', async () => {
+      await simulateSelectText();
+      await requestExplanation();
+      findGenieChat().vm.$emit('chat-hidden');
+      expect(lineHighlighter.clearHighlight).toHaveBeenCalledTimes(2);
+    });
+    it('does not call highlight range when no line found', async () => {
+      document.getElementById(`${LINE_ID}`).classList.remove('line');
+      await simulateSelectText();
+      await requestExplanation();
+      expect(lineHighlighter.highlightRange).not.toHaveBeenCalled();
     });
   });
 
