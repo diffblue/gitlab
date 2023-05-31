@@ -41,6 +41,38 @@ module EE
           }
         end
 
+        override :license_usage_data
+        def license_usage_data
+          usage_data = super
+          license = ::License.current
+
+          if license
+            usage_data[:license_md5] =
+              if ::Gitlab::FIPS.enabled? # rubocop:disable UsageData/LargeTable
+                nil
+              else
+                add_metric("LicenseMetric", options: { attribute: 'md5' })
+              end
+
+            usage_data[:license_sha256] = add_metric("LicenseMetric", options: { attribute: 'sha256' })
+            usage_data[:license_id] = license.license_id
+            # rubocop: disable UsageData/LargeTable
+            usage_data[:historical_max_users] = add_metric("HistoricalMaxUsersMetric")
+            # rubocop: enable UsageData/LargeTable
+            usage_data[:licensee] = add_metric("LicenseeMetrics")
+            usage_data[:license_user_count] = license.restricted_user_count
+            usage_data[:license_billable_users] = alt_usage_data { license.daily_billable_users_count }
+            usage_data[:license_starts_at] = license.starts_at
+            usage_data[:license_expires_at] = license.expires_at
+            usage_data[:license_plan] = license.plan
+            usage_data[:license_add_ons] = license.add_ons
+            usage_data[:license_trial] = license.trial?
+            usage_data[:license_subscription_id] = license.subscription_id
+          end
+
+          usage_data
+        end
+
         override :components_usage_data
         def components_usage_data
           usage_data = super

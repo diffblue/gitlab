@@ -17,7 +17,19 @@ RSpec.describe Gitlab::Usage::ServicePing::PayloadKeysProcessor do
         instance_double(::Gitlab::Usage::MetricDefinition, key: 'counts.issues'),
         instance_double(::Gitlab::Usage::MetricDefinition, key: 'topology'),
         instance_double(::Gitlab::Usage::MetricDefinition, key: 'redis_hll_counters.search.i_search_total_monthly'),
-        instance_double(::Gitlab::Usage::MetricDefinition, key: 'settings.collected_data_categories')
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'settings.collected_data_categories'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_md5'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_id'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'historical_max_users'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'licensee'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_user_count'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_billable_users'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_starts_at'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_expires_at'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_plan'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_add_ons'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_trial'),
+        instance_double(::Gitlab::Usage::MetricDefinition, key: 'license_subscription_id')
       ]
     end
 

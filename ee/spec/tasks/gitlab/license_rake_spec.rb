@@ -12,22 +12,42 @@ RSpec.describe 'gitlab:license namespace rake tasks', :silence_stdout do
   describe 'info' do
     subject { run_rake_task 'gitlab:license:info' }
 
-    before do
-      allow(ApplicationRecord.connection).to receive(:transaction_open?).and_return(false)
-    end
+    it 'displays information' do
+      allow(Gitlab::UsageData).to receive(:license_usage_data).and_return(
+        {
+          license_plan: 'Foo',
+          recorded_at: 1.day.ago,
+          uuid: Gitlab::CurrentSettings.uuid,
+          hostname: 'example.com',
+          version: Gitlab::VERSION,
+          installation_type: 'gitlab-development-kit',
+          active_user_count: 42,
+          edition: 'EE',
+          licensee: { 'Email' => 'foo@example.com' }
+        }
+      )
 
-    it 'displays information', :with_license do
       expect { subject }.to output(
         include(
-          'Current User Count: 0',
-          'Email associated with license: user1@example.org'
+          'Current User Count: 42',
+          'Email associated with license: foo@example.com'
         )
       ).to_stdout
     end
 
     context 'when license not found' do
       it 'aborts' do
-        allow(::License).to receive(:current).and_return(instance_double('License', plan: nil))
+        allow(Gitlab::UsageData).to receive(:license_usage_data).and_return(
+          {
+            recorded_at: 1.day.ago,
+            uuid: Gitlab::CurrentSettings.uuid,
+            hostname: 'example.com',
+            version: Gitlab::VERSION,
+            installation_type: 'gitlab-development-kit',
+            active_user_count: 42,
+            edition: 'CE'
+          }
+        )
 
         expect { subject }.to raise_error(SystemExit, 'No license has been applied.')
       end
