@@ -80,7 +80,7 @@ export default {
   },
   computed: {
     getDrawerHeaderHeight() {
-      return getContentWrapperHeight('.content-wrapper');
+      return getContentWrapperHeight();
     },
     hasProfiles() {
       return this.profiles.length > 0;
