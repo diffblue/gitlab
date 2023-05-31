@@ -48,7 +48,7 @@
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?
-              = form_tag import_users_sign_up_groups_path, class: 'gl-show-field-errors gl-w-full gl-p-4 js-import-project-form' do
+              = form_tag import_users_sign_up_groups_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4 js-import-project-form' do
                 = form_errors(@group, type: "Group")
                 = render 'layouts/flash'
 

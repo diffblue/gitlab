@@ -86,7 +86,7 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
     context 'when service returns non-zero counter' do
       before do
         expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
-          expect(service).to receive(:execute).and_return(15)
+          expect(service).to receive(:execute).and_return([15, 0])
         end
       end
 
@@ -107,6 +107,20 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
     end
 
     context 'when there are no records in the queue' do
+      it 'does not requeue the worker' do
+        expect(described_class).not_to receive(:perform_in)
+
+        worker.perform(shard_number)
+      end
+    end
+
+    context 'when indexing failures occur in the queue' do
+      before do
+        expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
+          expect(service).to receive(:execute).and_return([15, 5])
+        end
+      end
+
       it 'does not requeue the worker' do
         expect(described_class).not_to receive(:perform_in)
 

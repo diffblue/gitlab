@@ -37,12 +37,14 @@ module Elastic
 
     def process_shard(shard_number)
       in_lock("#{self.class.name.underscore}/shard/#{shard_number}", ttl: 10.minutes, retries: 10, sleep_sec: 1) do
-        service.execute(shards: [shard_number]).tap do |records_count|
+        service.execute(shards: [shard_number]).tap do |records_count, failures_count|
           log_extra_metadata_on_done(:records_count, records_count)
           log_extra_metadata_on_done(:shard_number, shard_number)
 
           # Requeue current worker if the queue isn't empty
-          self.class.perform_in(RESCHEDULE_INTERVAL, shard_number) if should_requeue?(records_count)
+          if should_requeue?(records_count: records_count, failures_count: failures_count)
+            self.class.perform_in(RESCHEDULE_INTERVAL, shard_number)
+          end
         end
       end
     end
@@ -57,8 +59,9 @@ module Elastic
       !!Gitlab::ExclusiveLease.get_uuid(self.class.name.underscore)
     end
 
-    def should_requeue?(records_count)
+    def should_requeue?(records_count:, failures_count:)
       return false unless records_count
+      return false if failures_count > 0
 
       records_count > 0
     end

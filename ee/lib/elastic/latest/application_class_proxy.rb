@@ -184,6 +184,7 @@ module Elastic
           query_hash[:query][:bool][:filter] << if options[:no_join_project]
                                                   # Some models have denormalized project permissions into the
                                                   # document so that we do not need to use joins
+                                                  project_query[:_name] = context.name
                                                   {
                                                     bool: project_query
                                                   }

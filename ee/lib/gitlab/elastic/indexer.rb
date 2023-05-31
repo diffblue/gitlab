@@ -47,20 +47,20 @@ module Gitlab
       # ref - Git ref up to which the indexation will run (default: HEAD)
       def run(ref = 'HEAD')
         commit = find_indexable_commit(ref)
-        return update_index_status(Gitlab::Git::BLANK_SHA) unless commit
+        commit_sha = commit&.sha
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           logger.debug(build_structured_payload(message: 'indexing_commit_range',
                                                 group_id: group&.id,
                                                 project_id: project.id,
                                                 from_sha: from_sha,
-                                                to_sha: commit.sha,
+                                                to_sha: commit_sha,
                                                 index_wiki: index_wiki?
                                                )
                       )
 
           # This might happen when default branch has been reset or rebased.
-          base_sha = if purge_unreachable_commits_from_index?(commit.sha)
+          base_sha = if purge_unreachable_commits_from_index?(commit_sha)
                        purge_unreachable_commits_from_index!(target)
 
                        Gitlab::Git::EMPTY_TREE_ID
@@ -68,21 +68,23 @@ module Gitlab
                        from_sha
                      end
 
-          run_indexer!(base_sha, commit.sha, target)
+          run_indexer!(base_sha, commit_sha, target) if commit_sha
         end
 
         # update the index status only if all writes were successful
-        update_index_status(commit.sha)
+        update_index_status(commit_sha || Gitlab::Git::BLANK_SHA)
 
         true
       end
 
       def find_indexable_commit(ref)
-        !repository.empty? && repository.commit(ref)
+        return if repository.empty?
+
+        repository.commit(ref)
       end
 
       def purge_unreachable_commits_from_index?(to_sha)
-        force_reindexing? || !last_commit_ancestor_of?(to_sha)
+        to_sha.blank? || force_reindexing? || !last_commit_ancestor_of?(to_sha)
       end
 
       private

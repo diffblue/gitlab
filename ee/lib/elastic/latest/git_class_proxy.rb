@@ -47,20 +47,6 @@ module Elastic
 
       private
 
-      # Builds an elasticsearch query that will select documents from a
-      # set of projects for Group and Project searches, taking user access
-      # rules for blob into account. Relies upon super for Global searches
-      override :project_ids_filter
-      def project_ids_filter(query_hash, options)
-        return super if options[:public_and_internal_projects] || options[:scope] != 'blob'
-
-        current_user = options[:current_user]
-        scoped_project_ids = scoped_project_ids(current_user, options[:project_ids])
-        return super if scoped_project_ids == :any
-
-        get_query_hash_for_project_and_group_searches(scoped_project_ids, current_user, query_hash, options[:features])
-      end
-
       def options_filter_context(type, options)
         repository_ids = [options[:repository_id]].flatten
         languages = [options[:language]].flatten
@@ -278,6 +264,10 @@ module Elastic
 
         if options[:features].eql?('wiki')
           options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
+        end
+
+        if options[:scope] == 'blob'
+          options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_project_permissions_in_blobs)
         end
 
         if options[:features].eql?('wiki') && use_separate_wiki_index?

@@ -34,6 +34,7 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
             allow_next_found_instance_of(Project) do |project|
               expect(project).to receive(:use_elasticsearch?).and_return(false)
             end
+            expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id)
             expect(Gitlab::Elastic::Indexer).not_to receive(:new)
             expect(logger_double).not_to receive(:info)
             expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
@@ -87,6 +88,8 @@ RSpec.describe ElasticWikiIndexerWorker, feature_category: :global_search do
 
       context 'when container can not be found' do
         it 'does not runs Gitlab::Elastic::Indexer and does not performs logging and metrics' do
+          es_id = Gitlab::Elastic::Helper.build_es_id(es_type: project.class.es_type, target_id: 0)
+          expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(0, es_id)
           expect(Gitlab::Elastic::Indexer).not_to receive(:new)
           expect(logger_double).not_to receive(:info)
           expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
