@@ -1,17 +1,17 @@
 {
   "productAnalytics": [
     {
-      "id": "dashboard_audience",
+      "slug": "audience",
       "title": "Audience",
       "description": "Understand your audience",
       "icon": "users",
-      "labels": ["By GitLab"]
+      "userDefined": false
     },
     {
-      "id": "dashboard_behavior",
+      "slug": "behavior",
       "title": "Behavior",
       "description": "All insights on user activity",
-      "labels": ["By GitLab"]
+      "userDefined": false
     }
   ]
 }

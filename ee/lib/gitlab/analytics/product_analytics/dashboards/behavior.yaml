@@ -1,5 +1,6 @@
 ---
 title: Behavior
+description: All insights on user activity
 panels:
   - id: 1
     visualization: page_views_over_time

@@ -1,0 +1,24 @@
+query getProductAnalyticsDashboards($projectPath: ID!, $slug: String) {
+  project(fullPath: $projectPath) {
+    id
+    productAnalyticsDashboards(slug: $slug) {
+      nodes {
+        slug
+        title
+        description
+        userDefined
+        panels {
+          nodes {
+            title
+            gridAttributes
+            visualization {
+              type
+              options
+              data
+            }
+          }
+        }
+      }
+    }
+  }
+}

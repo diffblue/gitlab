@@ -2,13 +2,13 @@
 import { GlLink, GlAlert, GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
-import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import { createAlert } from '~/alert';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-
+import { isValidConfigFileName, configFileNameToID } from 'ee/analytics/analytics_dashboards/utils';
+import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import LIST_OF_FEATURE_DASHBOARDS from '../gl_dashboards/analytics_dashboards.json';
 import {
+  PRODUCT_ANALYTICS_FEATURE_DASHBOARDS,
   I18N_DASHBOARD_LIST_TITLE,
   I18N_DASHBOARD_LIST_DESCRIPTION,
   I18N_DASHBOARD_LIST_LEARN_MORE,
@@ -17,7 +17,9 @@ import {
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
   I18N_ALERT_NO_POINTER_DESCRIPTION,
+  FEATURE_PRODUCT_ANALYTICS,
 } from '../constants';
+import getProductAnalyticsDashboardsQuery from '../graphql/queries/get_product_analytics_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
 const ONBOARDING_FEATURE_COMPONENTS = {
@@ -39,6 +41,9 @@ export default {
       type: Object,
       default: null,
     },
+    projectFullPath: {
+      type: String,
+    },
     collectorHost: {
       type: String,
     },
@@ -56,6 +61,7 @@ export default {
       featureDashboards: [],
       userDashboards: [],
       showCreateButtons: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      jitsuEnabled: !this.glFeatures.productAnalyticsSnowplowSupport,
     };
   },
   computed: {
@@ -69,15 +75,60 @@ export default {
           .filter(this.featureRequiresOnboarding),
       );
     },
+    unavailableFeatures() {
+      return this.features.filter(this.featureDisabled).filter(this.featureRequiresOnboarding);
+    },
   },
+  // TODO: Remove once we've swapped over to Snowplow entirely
+  // https://gitlab.com/gitlab-org/gitlab/-/issues/403418
   async created() {
-    if (this.customDashboardsProject) {
+    if (this.customDashboardsProject && this.jitsuEnabled) {
       this.loadCustomDashboards();
     }
+  },
+  apollo: {
+    userDashboards: {
+      // TODO: Rename once the type is updated to be just AnalyticsDashboards
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/412290
+      query: getProductAnalyticsDashboardsQuery,
+      variables() {
+        return {
+          projectPath: this.projectFullPath,
+        };
+      },
+      update(data) {
+        return data?.project?.productAnalyticsDashboards?.nodes
+          .map((dashboard) => {
+            // TODO: Simplify checks when backend returns dashboards only for onboarded features
+            // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
+            if (
+              !dashboard.userDefined &&
+              this.unavailableFeatures.includes(FEATURE_PRODUCT_ANALYTICS) &&
+              PRODUCT_ANALYTICS_FEATURE_DASHBOARDS.includes(dashboard.slug)
+            ) {
+              return null;
+            }
+
+            return dashboard;
+          })
+          .filter(Boolean);
+      },
+      // TODO: Remove when backend returns dashboards only for onboarded features
+      // https://gitlab.com/gitlab-org/gitlab/-/issues/411608
+      skip() {
+        return this.jitsuEnabled || this.featureRequiresOnboarding([FEATURE_PRODUCT_ANALYTICS]);
+      },
+      error(err) {
+        this.onError(err);
+      },
+    },
   },
   methods: {
     featureEnabled([feature]) {
       return this.features.includes(feature);
+    },
+    featureDisabled([feature]) {
+      return !this.features.includes(feature);
     },
     featureRequiresOnboarding([feature]) {
       return this.requiresOnboarding.includes(feature);
@@ -86,9 +137,10 @@ export default {
       return this.$router.push(dashboardId);
     },
     redirectToProjectPointerConfig() {
-      const { group, project } = document.body.dataset;
       visitUrl(
-        `${gon.relative_url_root || ''}/${group}/${project}/edit#js-analytics-dashboards-settings`,
+        `${gon.relative_url_root || ''}/${
+          this.projectFullPath
+        }/edit#js-analytics-dashboards-settings`,
       );
     },
     async loadCustomDashboards() {
@@ -97,11 +149,14 @@ export default {
       this.userDashboards = customFiles
         .filter(({ file_name }) => isValidConfigFileName(file_name))
         .map(({ file_name }) => configFileNameToID(file_name))
-        .map((id) => ({ id, title: id }));
+        .map((id) => ({ slug: id, title: id }));
     },
     onboardingComplete(feature) {
       this.requiresOnboarding = this.requiresOnboarding.filter((f) => f !== feature);
-      this.featureDashboards.push(...LIST_OF_FEATURE_DASHBOARDS[feature]);
+
+      if (feature === FEATURE_PRODUCT_ANALYTICS && this.jitsuEnabled) {
+        this.featureDashboards.push(...LIST_OF_FEATURE_DASHBOARDS[feature]);
+      }
     },
     onError(error, captureError = true, message = '') {
       createAlert({
@@ -173,7 +228,7 @@ export default {
 
       <dashboard-list-item
         v-for="dashboard in dashboards"
-        :key="dashboard.id"
+        :key="dashboard.slug"
         :dashboard="dashboard"
       />
     </ul>
