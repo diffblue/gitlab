@@ -2583,52 +2583,6 @@ RSpec.describe User, feature_category: :system_access do
     expect(described_class.use_separate_indices?).to eq(true)
   end
 
-  describe '#send_to_ai?' do
-    subject(:user) { create(:user) }
-
-    it 'is true' do
-      expect(user).to be_send_to_ai
-    end
-
-    context 'for Gitlab.com', :saas do
-      let_it_be_with_reload(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-      before do
-        allow(ultimate_group.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
-      end
-
-      it 'is false' do
-        expect(user).not_to be_send_to_ai
-      end
-
-      context 'when the user belongs to a group with an ultimate plan' do
-        before do
-          ultimate_group.add_developer(user)
-        end
-
-        context 'when the group has third party AI features enabled' do
-          before do
-            ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: true)
-          end
-
-          it 'is true' do
-            expect(user).to be_send_to_ai
-          end
-        end
-
-        context 'when the group does not have third party AI features enabled' do
-          before do
-            ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: false)
-          end
-
-          it 'is false' do
-            expect(user).not_to be_send_to_ai
-          end
-        end
-      end
-    end
-  end
-
   describe '#use_elasticsearch?', feature_category: :global_search do
     [true, false].each do |matcher|
       describe '#use_elasticsearch?' do

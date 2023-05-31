@@ -1110,12 +1110,6 @@ module EE
       use_elasticsearch? && repository_exists? && !empty_repo?
     end
 
-    # We can remove this method once it's no longer called for all resources in `Llm::BaseService`.
-    # https://gitlab.com/gitlab-org/gitlab/-/issues/411479
-    def send_to_ai?
-      true
-    end
-
     def resource_parent
       self
     end

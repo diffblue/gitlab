@@ -44,14 +44,6 @@ RSpec.describe Llm::MergeRequests::SummarizeReviewService, :saas, feature_catego
         it_behaves_like "returns an error"
       end
 
-      context "when resource#send_to_ai? returns false" do
-        before do
-          allow(merge_request).to receive(:send_to_ai?).and_return(false)
-        end
-
-        it_behaves_like "returns an error"
-      end
-
       context "when merge request has no associated draft notes" do
         before do
           allow(merge_request).to receive(:draft_notes).and_return(DraftNote.none)
