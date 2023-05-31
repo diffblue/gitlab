@@ -57,16 +57,16 @@ RSpec.describe Analytics::Forecasting::DeploymentFrequencyForecast, feature_cate
   end
 
   describe '#values' do
-    let(:model_forecast) { [1.1, 2, 3.5, 3.9] }
+    let(:model_forecast) { [1.1, 2, 3.5, 3.9, -1.3] }
     let(:expected_forecast) do
-      [1, 2, 4, 4].map.with_index { |v, i| [Date.today + i + 1, v] }.to_h
+      [1, 2, 4, 4, 0].map.with_index { |v, i| [Date.today + i + 1, v] }.to_h
     end
 
     before do
       allow(model_mock).to receive(:predict).with(horizon).and_return(model_forecast)
     end
 
-    it 'returns rounded values of whatever model forecasts' do
+    it 'returns rounded positive values of whatever model forecasts' do
       expect(subject.values).to eq expected_forecast
     end
   end
