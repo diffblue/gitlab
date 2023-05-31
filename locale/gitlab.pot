@@ -51343,6 +51343,9 @@ msgstr ""
 msgid "WorkItem|Child objectives and key results"
 msgstr ""
 
+msgid "WorkItem|Child removal reverted"
+msgstr ""
+
 msgid "WorkItem|Child removed"
 msgstr ""
 
