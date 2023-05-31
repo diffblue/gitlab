@@ -261,4 +261,116 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
       end
     end
   end
+
+  describe 'rootNamespace' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+      namespace.add_developer(user)
+    end
+
+    let(:query) do
+      <<~GQL
+        query {
+          ciCatalogResources(projectPath: "#{project1.full_path}") {
+            nodes {
+              id
+              rootNamespace {
+                id
+                name
+                path
+              }
+            }
+          }
+        }
+      GQL
+    end
+
+    it 'returns the correct root namespace data' do
+      post_query
+
+      expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+        a_graphql_entity_for(
+          resource1,
+          rootNamespace: a_graphql_entity_for(namespace, :name, :path)
+        )
+      )
+    end
+
+    shared_examples 'returns the correct root namespace for both resources' do
+      it do
+        resource2 = create(:catalog_resource, project: project2)
+
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(resource1, rootNamespace: a_graphql_entity_for(namespace)),
+          a_graphql_entity_for(resource2, rootNamespace: a_graphql_entity_for(namespace2))
+        )
+      end
+    end
+
+    shared_examples 'when there are two resources visible to the current user' do
+      it_behaves_like 'returns the correct root namespace for both resources'
+      it_behaves_like 'avoids N+1 queries'
+
+      context 'when a resource is within a nested namespace' do
+        let_it_be(:nested_namespace) { create(:group, parent: namespace2) }
+        let_it_be(:project2) { create(:project, namespace: nested_namespace) }
+
+        it_behaves_like 'returns the correct root namespace for both resources'
+        it_behaves_like 'avoids N+1 queries'
+      end
+    end
+
+    context 'when there are multiple resources visible to the current user from the same root namespace' do
+      let_it_be(:namespace2) { namespace }
+
+      it_behaves_like 'when there are two resources visible to the current user'
+    end
+
+    # We expect the resources resolver will eventually support returning resources from multiple root namespaces.
+    context 'when there are multiple resources visible to the current user from different root namespaces' do
+      before do
+        # In order to mock this scenario, we allow the resolver to return
+        # all existing resources without scoping to a specific namespace.
+        allow_next_instance_of(::Ci::Catalog::Listing) do |instance|
+          allow(instance).to receive(:resources).and_return(::Ci::Catalog::Resource.includes(:project))
+        end
+      end
+
+      # Make the current user an Admin so it has `:read_namespace` ability on all namespaces
+      let_it_be(:user) { create(:admin) }
+
+      let_it_be(:namespace2) { create(:group) }
+      let_it_be(:project2) { create(:project, namespace: namespace2) }
+
+      it_behaves_like 'when there are two resources visible to the current user'
+
+      context 'when a resource is within a User namespace' do
+        let_it_be(:namespace2) { create(:user).namespace }
+        let_it_be(:project2) { create(:project, namespace: namespace2) }
+
+        # A response containing any number of 'User' type root namespaces will always execute 1 extra
+        # query than a response with only 'Group' type root namespaces. This is due to their different
+        # policies. Here we preemptively create another resource with a 'User' type root namespace so
+        # that the control_count in the N+1 test includes this extra query.
+        let_it_be(:namespace3) { create(:user).namespace }
+        let_it_be(:resource3) { create(:catalog_resource, project: create(:project, namespace: namespace3)) }
+
+        it 'returns the correct root namespace for all resources' do
+          resource2 = create(:catalog_resource, project: project2)
+
+          post_query
+
+          expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+            a_graphql_entity_for(resource1, rootNamespace: a_graphql_entity_for(namespace)),
+            a_graphql_entity_for(resource2, rootNamespace: a_graphql_entity_for(namespace2)),
+            a_graphql_entity_for(resource3, rootNamespace: a_graphql_entity_for(namespace3))
+          )
+        end
+
+        it_behaves_like 'avoids N+1 queries'
+      end
+    end
+  end
 end

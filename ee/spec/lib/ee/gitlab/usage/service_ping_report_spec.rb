@@ -17,6 +17,7 @@ feature_category: :service_ping do
       memoized_constants += Gitlab::UsageData::EE_MEMOIZED_VALUES if defined? Gitlab::UsageData::EE_MEMOIZED_VALUES
       memoized_constants.each { |v| Gitlab::UsageData.clear_memoization(v) }
       stub_database_flavor_check('Cloud SQL for PostgreSQL')
+      allow(License).to receive(:current)
     end
 
     it 'does not raise errors' do

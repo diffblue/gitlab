@@ -47,6 +47,9 @@ describe('ee/protected_environments/add_approvers.vue', () => {
       .findAllComponents(GlFormInput)
       .wrappers.find((w) => w.attributes('name') === `approval-count-${name}`);
 
+  const findRemoveApproverButton = (name) =>
+    wrapper.findComponentByTestId(`remove-approver-${name}`);
+
   beforeEach(() => {
     window.gon = {
       api_version: 'v4',
@@ -72,7 +75,7 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     mockAxios.onGet().replyOnce(HTTP_STATUS_BAD_REQUEST);
 
     createComponent();
-    findApproverDropdown().vm.$emit('hidden', [{ group_id: 1 }]);
+    findApproverDropdown().vm.$emit('select', [{ group_id: 1 }]);
 
     await waitForPromises();
 
@@ -86,7 +89,7 @@ describe('ee/protected_environments/add_approvers.vue', () => {
 
   it('emits an empty error value when fetching new details', async () => {
     createComponent();
-    findApproverDropdown().vm.$emit('hidden', [{ group_id: 1 }]);
+    findApproverDropdown().vm.$emit('select', [{ group_id: 1 }]);
 
     await waitForPromises();
 
@@ -96,12 +99,69 @@ describe('ee/protected_environments/add_approvers.vue', () => {
       avatar_url: '/root.png',
       id: 1,
     });
-    findApproverDropdown().vm.$emit('hidden', [{ user_id: 1 }]);
+    findApproverDropdown().vm.$emit('select', [{ user_id: 1 }]);
 
     await waitForPromises();
 
     const [[event]] = wrapper.emitted('error').reverse();
     expect(event).toBe('');
+  });
+
+  it('shows a remove button for approvers', async () => {
+    createComponent();
+    mockAxios.onGet('/api/v4/groups/1').reply(HTTP_STATUS_OK, {
+      full_name: 'root / group',
+      name: 'group',
+      web_url: `${TEST_HOST}/root/group`,
+      avatar_url: '/root/group.png',
+      id: 1,
+    });
+    findApproverDropdown().vm.$emit('select', [{ group_id: 1 }]);
+
+    await nextTick();
+    await waitForPromises();
+
+    const button = findRemoveApproverButton('root / group');
+
+    expect(button.props('icon')).toBe('remove');
+    expect(button.attributes()).toMatchObject({
+      title: s__('ProtectedEnvironments|Remove approval rule'),
+      'aria-label': s__('ProtectedEnvironments|Remove approval rule'),
+    });
+  });
+
+  it('removes approvers if remove is clicked', async () => {
+    createComponent();
+    mockAxios
+      .onGet('/api/v4/users/1')
+      .reply(HTTP_STATUS_OK, {
+        name: 'root',
+        web_url: `${TEST_HOST}/root`,
+        avatar_url: '/root.png',
+        id: 1,
+      })
+      .onGet('/api/v4/groups/1')
+      .reply(HTTP_STATUS_OK, {
+        full_name: 'root / group',
+        name: 'group',
+        web_url: `${TEST_HOST}/root/group`,
+        avatar_url: '/root/group.png',
+        id: 1,
+      });
+    findApproverDropdown().vm.$emit('select', [{ user_id: 1 }, { group_id: 1 }]);
+
+    await nextTick();
+    await waitForPromises();
+
+    const button = findRemoveApproverButton('root');
+
+    await button.vm.$emit('click');
+
+    await waitForPromises();
+
+    const approvalInputs = wrapper.findByTestId('approval-rules').findAllComponents(GlFormInput);
+
+    expect(approvalInputs).toHaveLength(1);
   });
 
   describe('information for approvers', () => {
@@ -129,7 +189,7 @@ describe('ee/protected_environments/add_approvers.vue', () => {
     `('it displays correct information for $type', ({ access, details }) => {
       beforeEach(async () => {
         createComponent();
-        findApproverDropdown().vm.$emit('hidden', [access]);
+        findApproverDropdown().vm.$emit('select', [access]);
         await nextTick();
         await waitForPromises();
       });

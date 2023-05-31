@@ -36887,6 +36887,9 @@ msgstr ""
 msgid "ProtectedEnvironments|Number of approvals must be between 1 and 5"
 msgstr ""
 
+msgid "ProtectedEnvironments|Remove approval rule"
+msgstr ""
+
 msgid "ProtectedEnvironments|Required approval count"
 msgstr ""
 
