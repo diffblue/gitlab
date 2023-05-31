@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_access do
   let(:saml_provider) { build_stubbed(:saml_provider, enforced_sso: true) }
+  let(:user) { nil }
   let(:session) { {} }
 
   before do
@@ -16,7 +17,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
     end
   end
 
-  subject { described_class.new(saml_provider) }
+  subject { described_class.new(saml_provider, user: user) }
 
   describe '#update_session' do
     it 'stores that a session is active for the given provider' do
@@ -53,17 +54,61 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
     end
   end
 
-  describe '#allows_access?' do
-    it 'allows access when saml_provider is nil' do
-      subject = described_class.new(nil)
+  describe '#access_restricted?' do
+    context 'when sso enforcement is enabled' do
+      context 'when there is no active saml session' do
+        it 'returns true' do
+          expect(subject).to be_access_restricted
+        end
+      end
 
-      expect(subject).not_to be_access_restricted
+      context 'when there is active saml session' do
+        before do
+          subject.update_session
+        end
+
+        it 'returns false' do
+          expect(subject).not_to be_access_restricted
+        end
+      end
+
+      context 'when user is an admin' do
+        let(:user) { create(:user, :admin) }
+
+        context 'when admin mode enabled', :enable_admin_mode do
+          it 'returns false' do
+            expect(subject).not_to be_access_restricted
+          end
+        end
+
+        context 'when admin mode disabled' do
+          it 'returns true' do
+            expect(subject).to be_access_restricted
+          end
+        end
+      end
+
+      context 'when user is an auditor' do
+        let(:user) { create(:user, :auditor) }
+
+        it 'returns false' do
+          expect(subject).not_to be_access_restricted
+        end
+      end
+    end
+
+    context 'when saml_provider is nil' do
+      let(:saml_provider) { nil }
+
+      it 'returns false' do
+        expect(subject).not_to be_access_restricted
+      end
     end
 
     context 'when sso enforcement is disabled' do
       let(:saml_provider) { build_stubbed(:saml_provider, enforced_sso: false) }
 
-      it 'allows access when sso enforcement is disabled' do
+      it 'returns false' do
         expect(subject).not_to be_access_restricted
       end
     end
@@ -71,19 +116,9 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
     context 'when saml_provider is disabled' do
       let(:saml_provider) { build_stubbed(:saml_provider, enforced_sso: true, enabled: false) }
 
-      it 'allows access when saml_provider is disabled' do
+      it 'returns false' do
         expect(subject).not_to be_access_restricted
       end
-    end
-
-    it 'prevents access when sso enforcement active but there is no session' do
-      expect(subject).to be_access_restricted
-    end
-
-    it 'allows access when sso is enforced but a saml session is active' do
-      subject.update_session
-
-      expect(subject).not_to be_access_restricted
     end
   end
 
