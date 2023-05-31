@@ -17,6 +17,8 @@ module Gitlab
       ROLE_ASSISTANT = 'assistant'
       ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT].freeze
 
+      RESET_MESSAGE = '/reset'
+
       def initialize(user)
         @user = user
       end

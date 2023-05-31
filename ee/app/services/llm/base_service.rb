@@ -42,6 +42,11 @@ module Llm
     def worker_perform(user, resource, action_name, options)
       request_id = SecureRandom.uuid
       options[:request_id] = request_id
+      message = content(action_name)
+      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER, content: message }
+
+      ::Gitlab::Llm::Cache.new(user).add(payload)
+      return success(payload) if no_worker_message?(message)
 
       logger.debug(
         message: "Enqueuing CompletionWorker",
@@ -51,9 +56,6 @@ module Llm
         request_id: request_id,
         action_name: action_name
       )
-
-      payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER, content: content(action_name) }
-      ::Gitlab::Llm::Cache.new(user).add(payload)
 
       if options[:sync] == true
         response_data = ::Llm::CompletionWorker.new.perform(
@@ -89,6 +91,10 @@ module Llm
 
     def content(action_name)
       action_name.to_s.humanize
+    end
+
+    def no_worker_message?(content)
+      content == ::Gitlab::Llm::Cache::RESET_MESSAGE
     end
   end
 end
