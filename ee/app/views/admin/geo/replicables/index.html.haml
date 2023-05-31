@@ -3,6 +3,7 @@
 #js-geo-replicable{ data: { "geo-replicable-empty-svg-path" => image_path("illustrations/empty-state/geo-replication-empty.svg"),
   "replicable-type" => @replicator_class.replicable_name_plural,
   "graphql-field-name" => @replicator_class.graphql_field_name,
+  "graphql-mutation-registry-class" => @replicator_class.graphql_mutation_registry_class,
   "verification-enabled" => @replicator_class.verification_enabled?&.to_s,
   "geo-target-site-id" => @target_node&.id,
   "geo-current-site-id" => @current_node&.id } }

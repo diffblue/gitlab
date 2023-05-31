@@ -6,6 +6,8 @@ export const MOCK_REPLICABLE_TYPE = 'designs';
 
 export const MOCK_GRAPHQL_REGISTRY = 'designsRegistry';
 
+export const MOCK_GRAPHQL_REGISTRY_CLASS = 'DESIGNS_REGISTRY';
+
 export const MOCK_BASIC_FETCH_RESPONSE = {
   data: [
     {
@@ -36,6 +38,21 @@ export const MOCK_BASIC_FETCH_DATA_MAP = convertObjectPropsToCamelCase(
   { deep: true },
 );
 
+export const MOCK_BASIC_GRAPHQL_DATA = [
+  {
+    id: 'git/1',
+    state: 'PENDING',
+    lastSyncedAt: new Date().toString(),
+    verifiedAt: new Date().toString(),
+  },
+  {
+    id: 'git/2',
+    state: 'SYNCED',
+    lastSyncedAt: null,
+    verifiedAt: null,
+  },
+];
+
 export const MOCK_RESTFUL_PAGINATION_DATA = {
   perPage: MOCK_BASIC_FETCH_RESPONSE.headers['x-per-page'],
   total: MOCK_BASIC_FETCH_RESPONSE.headers['x-total'],
@@ -53,20 +70,7 @@ export const MOCK_BASIC_GRAPHQL_QUERY_RESPONSE = {
   geoNode: {
     [MOCK_GRAPHQL_REGISTRY]: {
       pageInfo: MOCK_GRAPHQL_PAGINATION_DATA,
-      nodes: [
-        {
-          id: 'git/1',
-          state: 'PENDING',
-          lastSyncedAt: new Date().toString(),
-          verifiedAt: new Date().toString(),
-        },
-        {
-          id: 'git/2',
-          state: 'SYNCED',
-          lastSyncedAt: null,
-          verifiedAt: null,
-        },
-      ],
+      nodes: MOCK_BASIC_GRAPHQL_DATA,
     },
   },
 };

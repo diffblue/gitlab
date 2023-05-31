@@ -3,6 +3,7 @@ import { GlLink, GlButton } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { __, s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { ACTION_TYPES } from '../constants';
 import GeoReplicableStatus from './geo_replicable_status.vue';
 import GeoReplicableTimeAgo from './geo_replicable_time_ago.vue';
@@ -21,15 +22,15 @@ export default {
     GeoReplicableTimeAgo,
     GeoReplicableStatus,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     name: {
       type: String,
       required: true,
     },
-    projectId: {
-      type: Number,
-      required: false,
-      default: null,
+    registryId: {
+      type: [String, Number],
+      required: true,
     },
     syncStatus: {
       type: String,
@@ -48,10 +49,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['verificationEnabled']),
-    hasProject() {
-      return Boolean(this.projectId);
-    },
+    ...mapState(['verificationEnabled', 'useGraphQl']),
     timeAgoArray() {
       return [
         {
@@ -68,6 +66,9 @@ export default {
         },
       ];
     },
+    showActions() {
+      return !this.useGraphQl || this.glFeatures.geoRegistriesUpdateMutation;
+    },
   },
   methods: {
     ...mapActions(['initiateReplicableSync']),
@@ -83,20 +84,22 @@ export default {
       data-testid="replicable-item-header"
     >
       <geo-replicable-status :status="syncStatus" />
-      <template v-if="hasProject">
-        <gl-link class="gl-font-weight-bold gl-pr-3" :href="`/${name}`" target="_blank">{{
-          name
-        }}</gl-link>
-        <gl-button
-          class="gl-ml-auto"
-          size="small"
-          @click="initiateReplicableSync({ projectId, name, action: $options.actionTypes.RESYNC })"
-          >{{ $options.i18n.resync }}</gl-button
-        >
-      </template>
-      <template v-else>
-        <span class="gl-font-weight-bold">{{ name }}</span>
-      </template>
+      <gl-link
+        v-if="!useGraphQl"
+        class="gl-font-weight-bold gl-pr-3"
+        :href="`/${name}`"
+        target="_blank"
+        >{{ name }}</gl-link
+      >
+      <span v-if="useGraphQl" class="gl-font-weight-bold">{{ name }}</span>
+      <gl-button
+        v-if="showActions"
+        class="gl-ml-auto"
+        size="small"
+        @click="initiateReplicableSync({ registryId, name, action: $options.actionTypes.RESYNC })"
+      >
+        {{ $options.i18n.resync }}
+      </gl-button>
     </div>
     <div class="gl-display-flex gl-align-items-center gl-flex-wrap">
       <geo-replicable-time-ago

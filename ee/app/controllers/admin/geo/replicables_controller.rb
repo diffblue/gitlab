@@ -4,6 +4,9 @@ class Admin::Geo::ReplicablesController < Admin::Geo::ApplicationController
   before_action :check_license!
   before_action :set_replicator_class, only: :index
   before_action :load_node_data, only: [:index]
+  before_action do
+    push_frontend_feature_flag(:geo_registries_update_mutation)
+  end
 
   def index
     # legacy routes always get redirected, either to the current node, or

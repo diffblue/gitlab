@@ -10,6 +10,7 @@ Vue.use(Vuex);
 export const getStoreConfig = ({
   replicableType,
   graphqlFieldName,
+  graphqlMutationRegistryClass,
   verificationEnabled,
   geoCurrentSiteId,
   geoTargetSiteId,
@@ -20,6 +21,7 @@ export const getStoreConfig = ({
   state: createState({
     replicableType,
     graphqlFieldName,
+    graphqlMutationRegistryClass,
     verificationEnabled,
     geoCurrentSiteId,
     geoTargetSiteId,

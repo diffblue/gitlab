@@ -9,6 +9,7 @@ import initStore from 'ee/geo_replicable/store';
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import {
   MOCK_BASIC_FETCH_DATA_MAP,
+  MOCK_BASIC_GRAPHQL_DATA,
   MOCK_REPLICABLE_TYPE,
   MOCK_GRAPHQL_PAGINATION_DATA,
   MOCK_RESTFUL_PAGINATION_DATA,
@@ -42,30 +43,61 @@ describe('GeoReplicable', () => {
     findGeoReplicableContainer().findAllComponents(GeoReplicableItem);
 
   describe('template', () => {
-    beforeEach(() => {
-      createStore();
-      store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
-        data: MOCK_BASIC_FETCH_DATA_MAP,
-        pagination: MOCK_RESTFUL_PAGINATION_DATA,
+    describe('with RESTful data', () => {
+      beforeEach(() => {
+        createStore();
+        store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
+          data: MOCK_BASIC_FETCH_DATA_MAP,
+          pagination: MOCK_RESTFUL_PAGINATION_DATA,
+        });
+        createComponent();
       });
-      createComponent();
+
+      it('renders the replicable container', () => {
+        expect(findGeoReplicableContainer().exists()).toBe(true);
+      });
+
+      describe('GeoReplicableItem', () => {
+        it('renders an instance for each replicableItem in the store', () => {
+          const replicableItemWrappers = findGeoReplicableItem();
+          const replicableItems = [...store.state.replicableItems];
+
+          for (let i = 0; i < replicableItemWrappers.length; i += 1) {
+            expect(replicableItemWrappers.at(i).props().registryId).toBe(
+              replicableItems[i].projectId,
+            );
+          }
+        });
+      });
     });
 
-    it('renders the replicable container', () => {
-      expect(findGeoReplicableContainer().exists()).toBe(true);
-    });
+    describe('with GraphQL data', () => {
+      beforeEach(() => {
+        createStore({ graphqlFieldName: MOCK_GRAPHQL_REGISTRY });
+        store.commit(types.RECEIVE_REPLICABLE_ITEMS_SUCCESS, {
+          data: MOCK_BASIC_GRAPHQL_DATA,
+          pagination: MOCK_RESTFUL_PAGINATION_DATA,
+        });
+        createComponent();
+      });
 
-    describe('GeoReplicableItem', () => {
-      it('renders an instance for each replicableItem in the store', () => {
-        const replicableItemWrappers = findGeoReplicableItem();
-        const replicableItems = [...store.state.replicableItems];
+      it('renders the replicable container', () => {
+        expect(findGeoReplicableContainer().exists()).toBe(true);
+      });
 
-        for (let i = 0; i < replicableItemWrappers.length; i += 1) {
-          expect(replicableItemWrappers.at(i).props().projectId).toBe(replicableItems[i].projectId);
-        }
+      describe('GeoReplicableItem', () => {
+        it('renders an instance for each replicableItem in the store', () => {
+          const replicableItemWrappers = findGeoReplicableItem();
+          const replicableItems = [...store.state.replicableItems];
+
+          for (let i = 0; i < replicableItemWrappers.length; i += 1) {
+            expect(replicableItemWrappers.at(i).props().registryId).toBe(replicableItems[i].id);
+          }
+        });
       });
     });
   });
+
   describe('GlPagination', () => {
     describe('when graphqlFieldName is not defined', () => {
       it('renders always', () => {

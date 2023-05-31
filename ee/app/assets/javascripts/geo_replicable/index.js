@@ -11,6 +11,7 @@ export default () => {
     replicableType,
     geoReplicableEmptySvgPath,
     graphqlFieldName,
+    graphqlMutationRegistryClass,
     verificationEnabled,
     geoCurrentSiteId,
     geoTargetSiteId,
@@ -21,6 +22,7 @@ export default () => {
     store: createStore({
       replicableType,
       graphqlFieldName,
+      graphqlMutationRegistryClass,
       verificationEnabled,
       geoCurrentSiteId,
       geoTargetSiteId,
