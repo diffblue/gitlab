@@ -37,6 +37,7 @@ module QA
               return false unless has_vulnerability?(description: description)
 
               click_element(:vulnerability, vulnerability_description: description)
+              wait_for_requests
             end
 
             def select_all_vulnerabilities
