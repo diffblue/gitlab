@@ -12,6 +12,18 @@ module Dora
     validates :project, presence: true
     validates :date, presence: true, uniqueness: { scope: :project_id }
 
+    scope :for_projects, ->(projects) do
+      where(project: projects)
+    end
+
+    scope :for_dates, ->(date_or_range) do
+      where(date: date_or_range)
+    end
+
+    scope :group_counts_by_metric, ->(metric_symbol) do
+      group(metric_symbol).count
+    end
+
     DailyMetrics::AVAILABLE_METRICS.each do |metric|
       enum metric.to_sym => SCORES, :_suffix => true
     end

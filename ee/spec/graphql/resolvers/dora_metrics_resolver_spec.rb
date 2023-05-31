@@ -242,7 +242,7 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', fea
   end
 
   def metric_row(**extra)
-    row = Dora::DailyMetrics::AVAILABLE_METRICS.index_with { |_key| nil }.merge(extra)
+    row = ::Dora::DailyMetrics::AVAILABLE_METRICS.index_with { |_key| nil }.merge(extra)
     row['date'] = Date.parse(row['date']) if row['date'].is_a?(String)
     row
   end

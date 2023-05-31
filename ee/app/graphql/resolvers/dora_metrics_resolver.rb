@@ -55,7 +55,7 @@ module Resolvers
     def selected_metrics
       return unless lookahead&.selected?
 
-      Dora::DailyMetrics::AVAILABLE_METRICS.select { |name| lookahead.selects?(name.to_sym) }
+      ::Dora::DailyMetrics::AVAILABLE_METRICS.select { |name| lookahead.selects?(name.to_sym) }
     end
   end
 end
