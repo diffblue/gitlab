@@ -4640,9 +4640,6 @@ msgstr ""
 msgid "Allow projects and subgroups to override the group setting"
 msgstr ""
 
-msgid "Allow projects within this group to use Git LFS"
-msgstr ""
-
 msgid "Allow public access to pipelines and job details, including output logs and artifacts."
 msgstr ""
 
@@ -8740,9 +8737,6 @@ msgid "CampfireService|The %{code_open}.campfirenow.com%{code_close} subdomain."
 msgstr ""
 
 msgid "Can be manually deployed to"
-msgstr ""
-
-msgid "Can be overridden in each project."
 msgstr ""
 
 msgid "Can create groups:"
@@ -34067,6 +34061,9 @@ msgid "Popularity"
 msgstr ""
 
 msgid "Port"
+msgstr ""
+
+msgid "Possible to override in each project."
 msgstr ""
 
 msgid "Postman collection"
