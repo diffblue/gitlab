@@ -218,7 +218,7 @@ export default {
     </div>
     <div
       v-if="showUnassignedLane"
-      class="gl-display-flex gl-pb-5 board-epic-lane-issues"
+      class="gl-display-flex gl-pt-3 gl-pb-5 board-epic-lane-issues"
       data-testid="board-epic-lane-issues"
     >
       <issues-lane-list
