@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_cache, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :shared do
   let_it_be(:user) { create(:user) }
   let(:request_id) { 'uuid' }
   let(:timestamp) { Time.current.to_s }
