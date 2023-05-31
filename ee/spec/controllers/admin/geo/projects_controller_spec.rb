@@ -41,7 +41,7 @@ RSpec.describe Admin::Geo::ProjectsController, :geo, feature_category: :geo_repl
       end
 
       context 'warns about viewing replication data' do
-        let(:expected_warning) { 'Viewing projects and designs data from a primary site is not possible when using a unified URL. Visit the secondary site directly.' }
+        let(:expected_warning) { 'Viewing projects data from a primary site is not possible when using a unified URL. Visit the secondary site directly.' }
 
         context 'on a Geo primary' do
           before do
