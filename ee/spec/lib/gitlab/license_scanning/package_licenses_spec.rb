@@ -28,7 +28,6 @@ RSpec.describe Gitlab::LicenseScanning::PackageLicenses, feature_category: :soft
       before_all do
         create(:pm_package, name: "beego", purl_type: "golang",
           other_licenses: [{ license_names: ["OLDAP-2.1", "OLDAP-2.2"], versions: ["v1.10.0"] }])
-
         create(:pm_package, name: "camelcase", purl_type: "npm", other_licenses: [
           { license_names: ["OLDAP-2.1"], versions: ["1.2.1"] },
           { license_names: ["OLDAP-2.2"], versions: ["4.1.0"] }
