@@ -5196,6 +5196,9 @@ msgstr ""
 msgid "Analytics|Browser Family"
 msgstr ""
 
+msgid "Analytics|By GitLab"
+msgstr ""
+
 msgid "Analytics|Cancel"
 msgstr ""
 

@@ -141,7 +141,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render audience dashboard by id', async () => {
-      createWrapper({ routeId: 'dashboard_audience' });
+      createWrapper({ routeId: 'audience' });
 
       await waitForPromises();
 
@@ -155,7 +155,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('should render behavior dashboard by id', async () => {
-      createWrapper({ routeId: 'dashboard_behavior' });
+      createWrapper({ routeId: 'behavior' });
 
       await waitForPromises();
 

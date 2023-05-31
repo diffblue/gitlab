@@ -1,5 +1,11 @@
 import { s__, __ } from '~/locale';
 
+export const FEATURE_PRODUCT_ANALYTICS = 'productAnalytics';
+
+export const PRODUCT_ANALYTICS_FEATURE_DASHBOARDS = ['audience', 'behavior'];
+
+export const I18N_BUILT_IN_DASHBOARD_LABEL = s__('Analytics|By GitLab');
+
 export const I18N_DASHBOARD_LIST_TITLE = s__('Analytics|Analytics dashboards');
 export const I18N_DASHBOARD_LIST_DESCRIPTION = s__(
   'Analytics|Dashboards are created by editing the projects dashboard files.',

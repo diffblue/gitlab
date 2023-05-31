@@ -1,5 +1,6 @@
 ---
 title: Audience
+description: Understand your audience
 panels:
   - id: 1
     visualization: daily_active_users

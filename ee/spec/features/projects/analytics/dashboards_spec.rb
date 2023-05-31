@@ -27,7 +27,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
   context 'with the combined dashboards feature flag disabled' do
     before do
-      stub_feature_flags(combined_analytics_dashboards: false)
+      stub_feature_flags(combined_analytics_dashboards: false, product_analytics_snowplow_support: false)
     end
 
     it_behaves_like 'renders not found'
@@ -35,7 +35,7 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
 
   context 'with the combined dashboards feature flag enabled' do
     before do
-      stub_feature_flags(combined_analytics_dashboards: true)
+      stub_feature_flags(combined_analytics_dashboards: true, product_analytics_snowplow_support: false)
     end
 
     context 'with the licensed feature disabled' do
@@ -70,13 +70,21 @@ RSpec.describe 'Analytics Dashboard', :js, feature_category: :product_analytics 
           end
         end
 
-        context 'with snowplow' do
-          it_behaves_like 'product analytics dashboards'
-        end
+        it_behaves_like 'product analytics dashboards'
 
-        context 'without snowplow' do
+        context 'with snowplow enabled' do
           before do
-            stub_feature_flags(product_analytics_snowplow_support: false)
+            stub_feature_flags(combined_analytics_dashboards: true, product_analytics_snowplow_support: true)
+          end
+
+          context 'when loading the default page' do
+            before do
+              visit_page
+            end
+
+            it 'renders the dashboards list' do
+              expect(page).to have_content('Analytics dashboards')
+            end
           end
 
           it_behaves_like 'product analytics dashboards'
