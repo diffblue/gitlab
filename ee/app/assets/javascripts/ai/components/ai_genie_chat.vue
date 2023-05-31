@@ -234,6 +234,7 @@ export default {
               class="gl-absolute gl-h-full! gl-py-4! gl-bg-transparent! gl-rounded-top-right-none gl-rounded-bottom-right-none gl-shadow-none!"
               :placeholder="$options.i18n.GENIE_CHAT_PROMPT_PLACEHOLDER"
               :disabled="isLoading"
+              autofocus
               @keydown.enter.exact.prevent="sendChatPrompt"
             />
           </div>

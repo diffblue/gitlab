@@ -17,7 +17,7 @@ module Types
       field :content,
         GraphQL::Types::String,
         null: true,
-        description: 'Content of the message. Can be null for user requests or failed responses.'
+        description: 'Content of the message. Can be null for failed responses.'
 
       field :role,
         Types::Ai::CachedMessageRoleEnum,

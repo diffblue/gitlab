@@ -33,6 +33,7 @@ RSpec.describe Llm::ExplainCodeService, :saas, feature_category: :source_code_ma
     it_behaves_like 'completion worker sync and async' do
       let(:resource) { project }
       let(:action_name) { :explain_code }
+      let(:content) { 'Explain code' }
     end
 
     context 'when explain_code_snippet feature flag is disabled' do

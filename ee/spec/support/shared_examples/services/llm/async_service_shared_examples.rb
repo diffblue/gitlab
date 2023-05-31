@@ -34,7 +34,7 @@ RSpec.shared_examples 'completion worker sync and async' do
   it 'caches request' do
     expect(SecureRandom).to receive(:uuid).once.and_return('uuid')
     expect_next_instance_of(::Gitlab::Llm::Cache) do |cache|
-      expect(cache).to receive(:add).with({ request_id: 'uuid', role: 'user' })
+      expect(cache).to receive(:add).with({ request_id: 'uuid', role: 'user', content: content })
     end
 
     subject.execute

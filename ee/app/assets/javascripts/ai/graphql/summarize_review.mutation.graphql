@@ -1,0 +1,5 @@
+mutation summarizeReview($resourceId: AiModelID!) {
+  aiAction(input: { summarizeReview: { resourceId: $resourceId } }) {
+    errors
+  }
+}

@@ -11,5 +11,9 @@ module Llm
     def perform
       worker_perform(user, resource, :tanuki_bot, options)
     end
+
+    def content(_action_name)
+      options[:question]
+    end
   end
 end

@@ -59,6 +59,7 @@ RSpec.describe Llm::GenerateDescriptionService, feature_category: :team_planning
       it_behaves_like "ensures user membership"
       it_behaves_like 'completion worker sync and async' do
         let(:action_name) { :generate_description }
+        let(:content) { 'Generate description' }
 
         subject { service }
       end
