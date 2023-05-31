@@ -10,7 +10,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import { s__, sprintf } from '~/locale';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
-import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.graphql';
+import findingQuery from 'ee/security_dashboard/graphql/queries/mr_widget_finding.query.graphql';
 import dismissFindingMutation from 'ee/security_dashboard/graphql/mutations/dismiss_finding.mutation.graphql';
 import revertFindingToDetectedMutation from 'ee/security_dashboard/graphql/mutations/revert_finding_to_detected.mutation.graphql';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';

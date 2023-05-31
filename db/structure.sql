@@ -20904,7 +20904,8 @@ CREATE TABLE project_features (
     infrastructure_access_level integer DEFAULT 20 NOT NULL,
     feature_flags_access_level integer DEFAULT 20 NOT NULL,
     environments_access_level integer DEFAULT 20 NOT NULL,
-    releases_access_level integer DEFAULT 20 NOT NULL
+    releases_access_level integer DEFAULT 20 NOT NULL,
+    model_experiments_access_level integer DEFAULT 20 NOT NULL
 );
 
 CREATE SEQUENCE project_features_id_seq
