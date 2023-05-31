@@ -24,7 +24,10 @@ class ElasticCommitIndexerWorker
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
     @project = Project.find(project_id)
-    return true unless @project.use_elasticsearch?
+    unless @project.use_elasticsearch?
+      ElasticDeleteProjectWorker.perform_async(project_id, @project.es_id)
+      return true
+    end
 
     force = !!options['force']
     search_indexing_duration_s = Benchmark.realtime do

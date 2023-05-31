@@ -33,8 +33,12 @@ class ElasticWikiIndexerWorker
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
     container = container_class.find_by_id(container_id)
+    unless container&.use_elasticsearch?
+      es_id = Gitlab::Elastic::Helper.build_es_id(es_type: container_class.es_type, target_id: container_id)
 
-    return true unless container&.use_elasticsearch?
+      ElasticDeleteProjectWorker.perform_async(container_id, es_id)
+      return true
+    end
 
     options = options.with_indifferent_access
 
