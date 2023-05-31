@@ -107,7 +107,8 @@ export default {
       <projects-dropdown-filter
         v-if="showProjectFilter"
         data-testid="violations-project-dropdown"
-        class="gl-mb-2 gl-lg-mb-0 compliance-filter-dropdown-input"
+        class="gl-mb-2 gl-lg-mb-0"
+        toggle-classes="compliance-filter-dropdown-input"
         :group-namespace="groupPath"
         :query-params="$options.projectsFilterParams"
         :multi-select="true"

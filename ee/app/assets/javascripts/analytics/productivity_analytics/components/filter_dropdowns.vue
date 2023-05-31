@@ -87,6 +87,7 @@ export default {
       v-if="showProjectsDropdownFilter"
       :key="groupId"
       class="project-select"
+      toggle-classes="gl-max-w-26"
       :default-projects="projects"
       :query-params="projectsQueryParams"
       :group-id="groupId"
