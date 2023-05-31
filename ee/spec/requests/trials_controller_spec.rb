@@ -235,43 +235,6 @@ RSpec.describe TrialsController, :saas, feature_category: :purchase do
     end
   end
 
-  describe 'GET select' do
-    before do
-      login_as(user)
-    end
-
-    it 'redirects to new' do
-      get trials_select_path
-
-      expect(response).to redirect_to(new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL))
-    end
-  end
-
-  describe 'POST create_lead' do
-    before do
-      login_as(user)
-    end
-
-    it 'redirects to new' do
-      post create_lead_trials_path(glm_params)
-
-      expect(response).to redirect_to(new_trial_path(glm_params))
-    end
-  end
-
-  describe 'POST apply' do
-    before do
-      login_as(user)
-    end
-
-    it 'redirects to new' do
-      post apply_trials_path(glm_params)
-
-      expect(response)
-        .to redirect_to(new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL, **glm_params))
-    end
-  end
-
   def expect_create_success(namespace)
     service_params = {
       step: step,
