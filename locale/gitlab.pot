@@ -40979,6 +40979,9 @@ msgstr ""
 msgid "SecurityOrchestration|Are you sure you want to delete this policy? This action cannot be undone."
 msgstr ""
 
+msgid "SecurityOrchestration|Branch types don't match any existing branches."
+msgstr ""
+
 msgid "SecurityOrchestration|Choose a project"
 msgstr ""
 

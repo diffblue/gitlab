@@ -15,6 +15,7 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Invalid policy type')) if invalid_policy_type?
         return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled without branch information')) if blank_branch_for_rule?
         return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }) if missing_branch_for_rule?
+        return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.')) if invalid_branch_types?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers'), title: s_('SecurityOrchestration|Logic error'), field: "approvers_ids") if required_approvals_exceed_eligible_approvers?
 
@@ -135,6 +136,22 @@ module Security
       def branches_for_project
         strong_memoize(:branches_for_project) do
           container.repository.branch_names
+        end
+      end
+
+      def invalid_branch_types?
+        return false if container.blank? || !project_container? ||
+          Feature.disabled?(:security_policies_branch_type, container)
+
+        service = Security::SecurityOrchestrationPolicies::PolicyBranchesService.new(project: container)
+
+        policy[:rules].select { |rule| rule[:branch_type].present? }
+                      .any? do |rule|
+          if scan_result_policy?
+            service.scan_result_branches([rule]).empty?
+          else
+            service.scan_execution_branches([rule]).empty?
+          end
         end
       end
 
