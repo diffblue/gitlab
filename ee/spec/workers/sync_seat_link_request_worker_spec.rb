@@ -270,10 +270,10 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker, feature_category: :sm_p
   end
 
   describe 'sidekiq_retry_in_block' do
-    it 'is at least 30 minutes in the first retry' do
+    it 'is at least 1 hour in the first retry' do
       expect(
         described_class.sidekiq_retry_in_block.call(0, nil)
-      ).to be >= 30.minutes
+      ).to be >= 1.hour
     end
   end
 end
