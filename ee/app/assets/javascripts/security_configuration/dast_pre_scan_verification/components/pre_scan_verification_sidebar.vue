@@ -43,7 +43,7 @@ export default {
       return this.status === PRE_SCAN_VERIFICATION_STATUS.DEFAULT;
     },
     getDrawerHeaderHeight() {
-      return getContentWrapperHeight('.content-wrapper');
+      return getContentWrapperHeight();
     },
   },
 };
