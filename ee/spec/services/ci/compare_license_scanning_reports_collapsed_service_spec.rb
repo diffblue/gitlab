@@ -57,37 +57,77 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
         end
 
         context 'when the license_scanning_sbom_scanner feature flag is true' do
-          let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
-          let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
+          context 'when querying uncompressed package metadata' do
+            let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+            let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
+            before do
+              stub_feature_flags(compressed_package_metadata_query: false)
 
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-              version: "1.8.0", license_name: "BSD-3-Clause")
-            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
-              version: "1.11.4", license_name: "MIT")
+              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                version: "1.8.0", license_name: "BSD-3-Clause")
+              create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+                version: "1.11.4", license_name: "MIT")
 
-            allow_next_instance_of(::SCA::LicensePolicy) do |license|
-              allow(license).to receive(:approval_status).and_return('denied')
+              allow_next_instance_of(::SCA::LicensePolicy) do |license|
+                allow(license).to receive(:approval_status).and_return('denied')
+              end
+            end
+
+            it 'exposes report with numbers of licenses by type' do
+              expect(subject[:status]).to eq(:parsed)
+              expect(subject[:data]['new_licenses']).to eq(1)
+              expect(subject[:data]['existing_licenses']).to eq(1)
+              expect(subject[:data]['removed_licenses']).to eq(1)
+              expect(subject[:data]['approval_required']).to eq(false)
+              expect(subject[:data]['has_denied_licenses']).to eq(true)
+            end
+
+            context 'when license_check enabled' do
+              let_it_be(:license_check) do
+                create(:report_approver_rule, :license_scanning, merge_request: merge_request)
+              end
+
+              it 'exposes approval as required' do
+                expect(subject[:data]['approval_required']).to eq(true)
+                expect(subject[:data]['has_denied_licenses']).to eq(true)
+              end
             end
           end
 
-          it 'exposes report with numbers of licenses by type' do
-            expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses']).to eq(1)
-            expect(subject[:data]['existing_licenses']).to eq(1)
-            expect(subject[:data]['removed_licenses']).to eq(1)
-            expect(subject[:data]['approval_required']).to eq(false)
-            expect(subject[:data]['has_denied_licenses']).to eq(true)
-          end
+          context 'when querying compressed package metadata' do
+            let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+            let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
-          context 'when license_check enabled' do
-            let_it_be(:license_check) { create(:report_approver_rule, :license_scanning, merge_request: merge_request) }
+            before do
+              create(:pm_package, name: "nokogiri", purl_type: "gem",
+                other_licenses: [{ license_names: ["BSD-3-Clause"], versions: ["1.8.0"] }])
+              create(:pm_package, name: "django", purl_type: "pypi",
+                other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
 
-            it 'exposes approval as required' do
-              expect(subject[:data]['approval_required']).to eq(true)
+              allow_next_instance_of(::SCA::LicensePolicy) do |license|
+                allow(license).to receive(:approval_status).and_return('denied')
+              end
+            end
+
+            it 'exposes report with numbers of licenses by type' do
+              expect(subject[:status]).to eq(:parsed)
+              expect(subject[:data]['new_licenses']).to eq(1)
+              expect(subject[:data]['existing_licenses']).to eq(1)
+              expect(subject[:data]['removed_licenses']).to eq(1)
+              expect(subject[:data]['approval_required']).to eq(false)
               expect(subject[:data]['has_denied_licenses']).to eq(true)
+            end
+
+            context 'when license_check enabled' do
+              let_it_be(:license_check) do
+                create(:report_approver_rule, :license_scanning, merge_request: merge_request)
+              end
+
+              it 'exposes approval as required' do
+                expect(subject[:data]['approval_required']).to eq(true)
+                expect(subject[:data]['has_denied_licenses']).to eq(true)
+              end
             end
           end
         end
@@ -106,21 +146,40 @@ RSpec.describe Ci::CompareLicenseScanningReportsCollapsedService, feature_catego
         end
 
         context 'when the license_scanning_sbom_scanner feature flag is true' do
-          let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
-          let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
+          context 'when querying uncompressed package metadata' do
+            let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+            let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
 
-          before do
-            stub_feature_flags(compressed_package_metadata_query: false)
+            before do
+              stub_feature_flags(compressed_package_metadata_query: false)
 
-            create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
-              version: "1.8.0", license_name: "BSD-3-Clause")
-            create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
-              version: "1.11.4", license_name: "MIT")
+              create(:pm_package_version_license, :with_all_relations, name: "nokogiri", purl_type: "gem",
+                version: "1.8.0", license_name: "BSD-3-Clause")
+              create(:pm_package_version_license, :with_all_relations, name: "django", purl_type: "pypi",
+                version: "1.11.4", license_name: "MIT")
+            end
+
+            it 'exposes approval as not required' do
+              expect(subject[:data]['approval_required']).to eq(false)
+              expect(subject[:data]['has_denied_licenses']).to eq(false)
+            end
           end
 
-          it 'exposes approval as not required' do
-            expect(subject[:data]['approval_required']).to eq(false)
-            expect(subject[:data]['has_denied_licenses']).to eq(false)
+          context 'when querying compressed package metadata' do
+            let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_report, project: project) }
+            let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_cyclonedx_pypi_only, project: project) }
+
+            before do
+              create(:pm_package, name: "nokogiri", purl_type: "gem",
+                other_licenses: [{ license_names: ["BSD-3-Clause"], versions: ["1.8.0"] }])
+              create(:pm_package, name: "django", purl_type: "pypi",
+                other_licenses: [{ license_names: ["MIT"], versions: ["1.11.4"] }])
+            end
+
+            it 'exposes approval as not required' do
+              expect(subject[:data]['approval_required']).to eq(false)
+              expect(subject[:data]['has_denied_licenses']).to eq(false)
+            end
           end
         end
       end
