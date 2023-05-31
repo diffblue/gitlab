@@ -29506,6 +29506,9 @@ msgstr ""
 msgid "NamespaceLimits|Confirm limits change"
 msgstr ""
 
+msgid "NamespaceLimits|Enter a valid number greater or equal to zero."
+msgstr ""
+
 msgid "NamespaceLimits|Exclude"
 msgstr ""
 
