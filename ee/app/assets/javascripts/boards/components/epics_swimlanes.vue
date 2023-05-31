@@ -362,7 +362,7 @@ export default {
             </div>
           </div>
           <div v-if="!isUnassignedCollapsed" data-testid="board-lane-unassigned-issues">
-            <div class="gl-display-flex">
+            <div class="gl-display-flex gl-pt-3">
               <issues-lane-list
                 v-for="list in lists"
                 :key="`${list.id}-issues`"
