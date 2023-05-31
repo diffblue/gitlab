@@ -22,6 +22,7 @@ module VulnerabilitiesHelper
       related_issues_help_path: help_page_path('user/application_security/vulnerabilities', anchor: 'linking-a-vulnerability-to-issues'),
       pipeline: vulnerability_pipeline_data(pipeline),
       can_modify_related_issues: current_user.can?(:admin_vulnerability_issue_link, vulnerability),
+      can_admin: current_user.can?(:admin_vulnerability, vulnerability.project),
       issue_tracking_help_path: help_page_path('user/project/settings', anchor: 'sharing-and-permissions'),
       permissions_help_path: help_page_path('user/permissions', anchor: 'project-members-permissions'),
       dismissal_descriptions: dismissal_descriptions
