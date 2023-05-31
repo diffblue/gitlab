@@ -2960,9 +2960,6 @@ msgstr ""
 msgid "Admin Area / Dashboard"
 msgstr ""
 
-msgid "Admin Mode"
-msgstr ""
-
 msgid "Admin Note"
 msgstr ""
 
@@ -2970,6 +2967,9 @@ msgid "Admin Notifications"
 msgstr ""
 
 msgid "Admin message"
+msgstr ""
+
+msgid "Admin mode"
 msgstr ""
 
 msgid "Admin mode already enabled"
@@ -16969,9 +16969,6 @@ msgid "Ensure your %{linkStart}environment is part of the deploy stage%{linkEnd}
 msgstr ""
 
 msgid "Enter %{weights_link_start}weights%{weights_link_end} for storages for new repositories. Configured storages appear below."
-msgstr ""
-
-msgid "Enter 2FA for Admin Mode"
 msgstr ""
 
 msgid "Enter a name for your comment template"
@@ -47989,6 +47986,9 @@ msgid "Two-factor authentication"
 msgstr ""
 
 msgid "Two-factor authentication disabled"
+msgstr ""
+
+msgid "Two-factor authentication for admin mode"
 msgstr ""
 
 msgid "Two-factor authentication grace period"
