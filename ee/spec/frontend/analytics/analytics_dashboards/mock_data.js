@@ -64,6 +64,78 @@ export const TEST_CUSTOM_DASHBOARD = () => ({
     },
   ],
 });
+
+export const getGraphQLDashboard = (options = {}) => ({
+  slug: '',
+  title: '',
+  userDefined: false,
+  description: 'Understand your audience',
+  panels: {
+    nodes: [
+      {
+        title: 'Daily Active Users',
+        gridAttributes: {
+          yPos: 1,
+          xPos: 0,
+          width: 6,
+          height: 5,
+        },
+        visualization: {
+          type: 'LineChart',
+          options: {
+            xAxis: {
+              name: 'Time',
+              type: 'time',
+            },
+            yAxis: {
+              name: 'Counts',
+              type: 'time',
+            },
+          },
+          data: {
+            type: 'cube_analytics',
+            query: {
+              measures: ['SnowplowTrackedEvents.uniqueUsersCount'],
+              timeDimensions: [
+                {
+                  dimension: 'SnowplowTrackedEvents.derivedTstamp',
+                  granularity: 'day',
+                },
+              ],
+              limit: 100,
+              timezone: 'UTC',
+              filters: [],
+              dimensions: [],
+            },
+          },
+          __typename: 'ProductAnalyticsDashboardVisualization',
+        },
+        __typename: 'ProductAnalyticsDashboardPanel',
+      },
+    ],
+    __typename: 'ProductAnalyticsDashboardPanelConnection',
+  },
+  __typename: 'ProductAnalyticsDashboard',
+  ...options,
+});
+
+export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      productAnalyticsDashboards: {
+        nodes: [
+          getGraphQLDashboard({ slug: 'audience', title: 'Audience' }),
+          getGraphQLDashboard({ slug: 'behavior', title: 'Behavior' }),
+          getGraphQLDashboard({ slug: 'new_dashboard', title: 'new_dashboard', userDefined: true }),
+        ],
+        __typename: 'ProductAnalyticsDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const mockResultSet = {
   seriesNames: () => [
     {

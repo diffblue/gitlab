@@ -1,5 +1,6 @@
 <script>
 import { GlAvatar, GlIcon, GlLabel } from '@gitlab/ui';
+import { I18N_BUILT_IN_DASHBOARD_LABEL } from '../../constants';
 
 export default {
   name: 'DashboardsListItem',
@@ -14,10 +15,18 @@ export default {
       required: true,
     },
   },
+  computed: {
+    isBuiltInDashboard() {
+      return 'userDefined' in this.dashboard && !this.dashboard.userDefined;
+    },
+  },
   methods: {
     routeToDashboard() {
-      return this.$router.push(this.dashboard.id);
+      return this.$router.push(this.dashboard.slug);
     },
+  },
+  i18n: {
+    builtInLabel: I18N_BUILT_IN_DASHBOARD_LABEL,
   },
 };
 </script>
@@ -39,7 +48,7 @@ export default {
         <router-link
           data-testid="dashboard-link"
           class="gl-font-weight-bold gl-line-height-normal"
-          :to="dashboard.id"
+          :to="dashboard.slug"
           >{{ dashboard.title }}</router-link
         >
         <p
@@ -49,13 +58,8 @@ export default {
           {{ dashboard.description }}
         </p>
       </div>
-      <div class="gl-float-right">
-        <gl-label
-          v-for="label in dashboard.labels"
-          :key="label"
-          :title="label"
-          background-color="#D9C2EE"
-        />
+      <div v-if="isBuiltInDashboard" class="gl-float-right">
+        <gl-label :title="$options.i18n.builtInLabel" background-color="#D9C2EE" />
       </div>
     </div>
   </li>

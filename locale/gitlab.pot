@@ -5196,6 +5196,9 @@ msgstr ""
 msgid "Analytics|Browser Family"
 msgstr ""
 
+msgid "Analytics|By GitLab"
+msgstr ""
+
 msgid "Analytics|Cancel"
 msgstr ""
 
@@ -16441,9 +16444,6 @@ msgid "Edit Pipeline Schedule"
 msgstr ""
 
 msgid "Edit Release"
-msgstr ""
-
-msgid "Edit Requirement"
 msgstr ""
 
 msgid "Edit Slack integration"
