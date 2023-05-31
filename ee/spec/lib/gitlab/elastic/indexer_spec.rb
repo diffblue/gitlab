@@ -77,23 +77,35 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
       expect(indexer.find_indexable_commit(Gitlab::Git::BLANK_SHA)).to be_nil
       expect(indexer.find_indexable_commit(Gitlab::Git::EMPTY_TREE_ID)).to be_nil
     end
+
+    context 'when repository project is empty' do
+      let_it_be(:project) { create(:project, :empty_repo) }
+
+      it 'returns nil for empty repository project' do
+        expect(indexer.find_indexable_commit('HEAD')).to be_nil
+      end
+    end
   end
 
   describe '#purge_unreachable_commits_from_index?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:force_reindexing, :ancestor_of, :result) do
-      true      | false      | true
-      false     | false      | true
-      false     | true       | false
-      true      | true       | true
+    where(:to_sha, :force_reindexing, :ancestor_of, :result) do
+      'commit_sha'  | true  | true  | true
+      'commit_sha'  | true  | false | true
+      'commit_sha'  | false | true  | false
+      'commit_sha'  | false | false | true
+      nil           | true  | true  | true
+      nil           | true  | false | true
+      nil           | false | true  | true
+      nil           | false | false | true
     end
 
     with_them do
       it 'returns correct result' do
         allow(indexer).to receive(:last_commit_ancestor_of?).and_return(ancestor_of)
 
-        expect(indexer.purge_unreachable_commits_from_index?('sha')).to eq(result)
+        expect(indexer.purge_unreachable_commits_from_index?(to_sha)).to eq(result)
       end
     end
   end

@@ -22,6 +22,18 @@ RSpec.describe ElasticCommitIndexerWorker, feature_category: :global_search do
       worker.perform(project.id, false)
     end
 
+    context 'when elasticsearch is disabled for Project' do
+      it 'calls ElasticDeleteProjectWorker on the project and return true' do
+        allow_next_found_instance_of(Project) do |project|
+          expect(project).to receive(:use_elasticsearch?).and_return(false)
+        end
+        expect(ElasticDeleteProjectWorker).to receive(:perform_async).with(project.id, project.es_id)
+        expect(Gitlab::Elastic::Indexer).not_to receive(:new)
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+        expect(worker.perform(project.id)).to be true
+      end
+    end
+
     it 'logs timing information' do
       allow_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
         allow(indexer).to receive(:run).and_return(true)
