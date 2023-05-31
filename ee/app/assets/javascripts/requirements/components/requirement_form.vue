@@ -80,9 +80,6 @@ export default {
     isCreate() {
       return isEmpty(this.requirement);
     },
-    fieldLabel() {
-      return this.isCreate ? __('New Requirement') : __('Edit Requirement');
-    },
     saveButtonLabel() {
       return this.isCreate ? __('Create requirement') : __('Save changes');
     },
@@ -243,7 +240,9 @@ export default {
     @close="handleDrawerClose"
   >
     <template #title>
-      <h4 v-if="isCreate" class="gl-m-0">{{ __('New Requirement') }}</h4>
+      <h4 v-if="isCreate" class="gl-m-0" data-testid="new-requirement-title">
+        {{ __('New Requirement') }}
+      </h4>
       <div v-else class="gl-display-flex gl-align-items-center">
         <strong class="gl-text-gray-500">{{ reference }}</strong>
         <requirement-status-badge

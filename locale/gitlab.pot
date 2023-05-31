@@ -16440,9 +16440,6 @@ msgstr ""
 msgid "Edit Release"
 msgstr ""
 
-msgid "Edit Requirement"
-msgstr ""
-
 msgid "Edit Slack integration"
 msgstr ""
 
