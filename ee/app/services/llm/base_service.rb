@@ -23,7 +23,12 @@ module Llm
     def valid?
       return false if resource.respond_to?(:resource_parent) && !resource.resource_parent.member?(user)
 
-      ai_integration_enabled? && resource.send_to_ai?
+      case resource
+      when User
+        ai_integration_enabled? && user_can_send_to_ai?
+      else
+        ai_integration_enabled?
+      end
     end
 
     private
@@ -64,6 +69,14 @@ module Llm
 
     def ai_integration_enabled?
       Feature.enabled?(:openai_experimentation)
+    end
+
+    # This check is used for features that do not act on a specific namespace, and the `resource` is a `User`.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/413520
+    def user_can_send_to_ai?
+      return true unless ::Gitlab.com?
+
+      user.paid_namespaces(plans: ::EE::User::AI_SUPPORTED_PLANS).any?(&:third_party_ai_features_enabled)
     end
 
     def success(data = {})

@@ -271,12 +271,6 @@ module EE
         .execute
     end
 
-    def send_to_ai?
-      return true unless ::Gitlab.com?
-
-      paid_namespaces(plans: AI_SUPPORTED_PLANS).any?(&:third_party_ai_features_enabled)
-    end
-
     def use_elasticsearch?
       ::Gitlab::CurrentSettings.elasticsearch_search?
     end
