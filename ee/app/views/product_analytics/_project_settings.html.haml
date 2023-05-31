@@ -1,4 +1,4 @@
-- return unless @project.feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project)
+- return unless @project.feature_available?(:product_analytics) && Feature.enabled?(:product_analytics_admin_settings) && current_user.can?(:modify_product_analytics_settings, @project) && Feature.enabled?(:product_analytics_dashboards, @project)
 - data = analytics_project_settings_data(@project)
 - link_start = '<a href="%{url}" rel="noopener noreferrer">'.html_safe % { url: project_analytics_dashboards_path(@project, vueroute: 'product-analytics-onboarding') }
 

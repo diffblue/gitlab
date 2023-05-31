@@ -2,6 +2,7 @@
 import { debounce } from 'lodash';
 import { GlButton, GlTooltipDirective, GlAlert } from '@gitlab/ui';
 import SafeHtml from '~/vue_shared/directives/safe_html';
+import LineHighlighter from '~/blob/line_highlighter';
 import { generateExplainCodePrompt, generateChatPrompt } from 'ee/ai/utils';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import CodeBlockHighlighted from '~/vue_shared/components/code_block_highlighted.vue';
@@ -92,6 +93,7 @@ export default {
       container: null,
       top: null,
       messages: [],
+      lineHighlighter: null,
     };
   },
   computed: {
@@ -103,7 +105,7 @@ export default {
       return { top: `${this.top}px` };
     },
     filteredMessages() {
-      return this.messages.slice(2) || []; // drop the `system` and the first `user` prompts
+      return this.messages?.slice(2) || []; // drop the `system` and the first `user` prompts
     },
     isChatAvailable() {
       return this.glFeatures.explainCodeChat && this.messages.length > 0;
@@ -113,6 +115,7 @@ export default {
     this.debouncedSelectionChangeHandler = debounce(this.handleSelectionChange, AI_GENIE_DEBOUNCE);
   },
   mounted() {
+    this.lineHighlighter = new LineHighlighter();
     document.addEventListener('selectionchange', this.debouncedSelectionChangeHandler);
   },
   beforeDestroy() {
@@ -153,8 +156,30 @@ export default {
       this.messages = [];
       this.codeExplanationError = '';
       this.selectedText = window.getSelection().toString().replace(linesWithDigitsOnly, '').trim();
+
+      this.setHighlightedLines();
+
       const prompt = generateExplainCodePrompt(this.selectedText, this.filePath);
       this.chat(prompt);
+    },
+    setHighlightedLines() {
+      const getSelection = window.getSelection();
+      if (getSelection) {
+        const rangeStart = this.getLineNumber(getSelection.focusNode);
+        const rangeEnd = this.getLineNumber(getSelection.anchorNode);
+        this.clearHighlightedLines();
+        if (rangeStart && rangeEnd) {
+          this.lineHighlighter.highlightRange([rangeStart, rangeEnd]);
+        }
+      }
+    },
+    getLineNumber(node) {
+      const line = node?.parentElement?.closest('.line');
+      return line ? Number(line.attributes.id.value.match(/\d+/)[0]) : null;
+    },
+    clearHighlightedLines() {
+      window.getSelection()?.removeAllRanges();
+      this.lineHighlighter.clearHighlight();
     },
     chat(prompt) {
       this.isLoading = true;
@@ -203,6 +228,7 @@ export default {
       :messages="filteredMessages"
       :error="codeExplanationError"
       @send-chat-prompt="chat"
+      @chat-hidden="clearHighlightedLines"
     >
       <template #title>
         {{ $options.i18n.GENIE_CHAT_TITLE }}
