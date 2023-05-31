@@ -1,4 +1,5 @@
-import { GlFormInput, GlModal, GlLink } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import { GlFormInput, GlModal, GlAlert, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import NamespaceLimitsSection, {
   MODAL_ID,
@@ -43,9 +44,25 @@ describe('NamespaceLimitsSection', () => {
 
   const findUpdateLimitButton = () => wrapper.findByText('Update limit');
   const findModal = () => wrapper.findComponent(GlModal);
+  const findAlert = () => wrapper.findComponent(GlAlert);
   const findInput = () => wrapper.findComponent(GlFormInput);
   const findChangelogEntries = () => wrapper.findByTestId('changelog-entries');
   const findChangelogHeader = () => wrapper.findByText('Changelog');
+
+  describe('showing alert', () => {
+    it('shows the alert if there is `errorMessage` passed to the component', () => {
+      const errorMessage = 'Sample error message for namespace_limits_section';
+      createComponent({ errorMessage });
+
+      expect(findAlert().text()).toBe(errorMessage);
+    });
+
+    it('does not show the alert if there is no `errorMessage` passed to the component', () => {
+      createComponent();
+
+      expect(findAlert().exists()).toBe(false);
+    });
+  });
 
   describe('interacting with modal', () => {
     beforeEach(() => {
@@ -81,10 +98,29 @@ describe('NamespaceLimitsSection', () => {
     });
 
     describe('changing limits', () => {
-      it('emits limit-change event when modal is confirmed', () => {
-        findInput().setValue(150);
-        findModal().vm.$emit('primary');
-        expect(wrapper.emitted('limit-change')).toStrictEqual([['150']]);
+      describe('when input is valid', () => {
+        it('emits limit-change event when modal is confirmed', () => {
+          findInput().setValue(150);
+          findModal().vm.$emit('primary');
+          expect(wrapper.emitted('limit-change')).toStrictEqual([[150]]);
+        });
+      });
+
+      describe('when input is invalid', () => {
+        beforeEach(() => {
+          findInput().setValue(-150);
+          findModal().vm.$emit('primary');
+
+          return nextTick();
+        });
+
+        it('does not emit limit-change event', () => {
+          expect(wrapper.emitted('limit-change')).toBeUndefined();
+        });
+
+        it('shows a validation error', () => {
+          expect(findAlert().text()).toEqual('Enter a valid number greater or equal to zero.');
+        });
       });
     });
   });

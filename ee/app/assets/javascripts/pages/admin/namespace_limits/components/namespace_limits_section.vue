@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlSprintf,
   GlLink,
   GlFormInput,
@@ -20,6 +21,7 @@ const i18n = {
   modalBody: s__(
     'NamespaceLimits|This will limit the amount of notifications your namespace receives, this can be removed in the future.',
   ),
+  limitValidationError: s__('NamespaceLimits|Enter a valid number greater or equal to zero.'),
 };
 
 const modalActionsProps = {
@@ -38,7 +40,7 @@ export const MODAL_ID = 'confirm-limits-change-modal';
 
 export default {
   name: 'NamespaceLimitsSection',
-  components: { GlSprintf, GlLink, GlFormInput, GlFormGroup, GlButton, GlModal },
+  components: { GlAlert, GlSprintf, GlLink, GlFormInput, GlFormGroup, GlButton, GlModal },
   directives: {
     GlModal: GlModalDirective,
   },
@@ -57,10 +59,16 @@ export default {
       required: false,
       default: () => [],
     },
+    errorMessage: {
+      type: String,
+      required: false,
+      default: '',
+    },
   },
   data() {
     return {
-      limit: '',
+      limit: 0,
+      error: this.errorMessage,
     };
   },
   i18n,
@@ -68,7 +76,14 @@ export default {
   MODAL_ID,
   methods: {
     confirmChangingLimits() {
-      this.$emit('limit-change', this.limit);
+      const limit = Number(this.limit);
+      // validate the limit is a positive number
+      if (limit < 0) {
+        this.error = i18n.limitValidationError;
+        return;
+      }
+
+      this.$emit('limit-change', limit);
     },
   },
 };
@@ -77,6 +92,9 @@ export default {
 <template>
   <div>
     <div>
+      <gl-alert v-if="error" class="gl-mb-4" variant="danger" :dismissible="false">
+        {{ error }}
+      </gl-alert>
       <gl-form-group :label="label" :description="description" class="gl-lg-w-half">
         <gl-form-input v-model="limit" size="md" type="number" />
       </gl-form-group>
