@@ -5,6 +5,35 @@ require 'spec_helper'
 RSpec.describe Gitlab::Database do
   include ::EE::GeoHelpers
 
+  describe '.db_config_names' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:configs_for, :gitlab_schema, :expected) do
+      %i[main geo] | nil | %i[main geo]
+      %i[main geo] | :gitlab_internal | %i[main geo]
+      %i[main geo] | :gitlab_shared | %i[main] # geo does not have `gitlab_shared`
+      %i[main geo] | :gitlab_geo | %i[geo]
+    end
+
+    with_them do
+      before do
+        skip_if_multiple_databases_not_setup(:geo)
+
+        hash_configs = configs_for.map do |x|
+          instance_double(ActiveRecord::DatabaseConfigurations::HashConfig, name: x)
+        end
+        allow(::ActiveRecord::Base).to receive(:configurations).and_return(
+          instance_double(ActiveRecord::DatabaseConfigurations, configs_for: hash_configs)
+        )
+      end
+
+      it do
+        expect(described_class.db_config_names(with_schema: gitlab_schema))
+          .to eq(expected)
+      end
+    end
+  end
+
   describe '.read_only?' do
     context 'with Geo enabled' do
       before do

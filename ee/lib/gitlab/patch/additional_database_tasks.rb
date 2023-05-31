@@ -9,16 +9,26 @@ module Gitlab
       # Returns the proper path for the structure.sql and schema_cache.yml
       # files for additional databases.
       module ActiveRecordDatabaseTasksDumpFilename
-        def dump_filename(db_config_name, format = ApplicationRecord.schema_format)
-          return super unless Gitlab::Database::EE_DATABASES_NAME_TO_DIR.key?(db_config_name.to_s)
+        def dump_filename(database, format = ApplicationRecord.schema_format)
+          db_dir = Gitlab::Database.all_database_connections[database]&.db_dir
+          return super if default_db_dir?(db_dir)
 
-          Rails.root.join(Gitlab::Database::EE_DATABASES_NAME_TO_DIR[db_config_name.to_s], 'structure.sql').to_s
+          Rails.root.join(db_dir, 'structure.sql').to_s
         end
 
-        def cache_dump_filename(db_config_name, schema_cache_path: nil)
-          return super unless Gitlab::Database::EE_DATABASES_NAME_TO_DIR.key?(db_config_name.to_s)
+        def cache_dump_filename(database, schema_cache_path: nil)
+          db_dir = Gitlab::Database.all_database_connections[database]&.db_dir
+          return super if default_db_dir?(db_dir)
 
-          Rails.root.join(Gitlab::Database::EE_DATABASES_NAME_TO_DIR[db_config_name.to_s], 'schema_cache.yml').to_s
+          Rails.root.join(db_dir, 'schema_cache.yml').to_s
+        end
+
+        def default_db_dir?(db_dir)
+          db_dir.nil? || db_dir == default_db_dir
+        end
+
+        def default_db_dir
+          Rails.root.join('db')
         end
       end
 
