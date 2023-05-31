@@ -35,7 +35,7 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
           repository_ref: params[:repository_ref],
           order_by: params[:order_by],
           sort: params[:sort],
-          filters: { confidential: nil, state: nil, language: nil, labels: nil }
+          filters: { confidential: nil, state: nil, language: nil, labels: nil, include_archived: nil }
         ).and_return search_results
 
         expect(search_service.execute).to eq(search_results)
