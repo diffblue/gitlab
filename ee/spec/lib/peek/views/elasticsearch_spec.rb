@@ -10,6 +10,8 @@ RSpec.describe Peek::Views::Elasticsearch, :elastic, :request_store do
     ::Gitlab::Instrumentation::ElasticsearchTransport.detail_store # Create store in redis
     allow(::Gitlab::PerformanceBar).to receive(:enabled_for_request?).and_return(true)
     ensure_elasticsearch_index!
+
+    set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs)
   end
 
   describe '#results' do
