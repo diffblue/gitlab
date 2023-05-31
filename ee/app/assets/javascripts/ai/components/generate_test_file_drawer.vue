@@ -68,8 +68,8 @@ export default {
     };
   },
   computed: {
-    drawerHeightOffset() {
-      return getContentWrapperHeight('.content-wrapper');
+    getDrawerHeaderHeight() {
+      return getContentWrapperHeight();
     },
   },
   watch: {
@@ -111,7 +111,7 @@ export default {
 <template>
   <gl-drawer
     :open="opened"
-    :header-height="drawerHeightOffset"
+    :header-height="getDrawerHeaderHeight"
     :z-index="$options.DRAWER_Z_INDEX"
     @close="$emit('close')"
   >
