@@ -1,0 +1,10 @@
+name: embedding
+description:
+  GitLab database holding all AI related features, etc.
+  This database uses `vector` extensions.
+gitlab_schemas:
+  - gitlab_internal
+  - gitlab_embedding
+klass: Embedding::ApplicationRecord
+uses_load_balancing: true
+db_dir: ee/db/embedding

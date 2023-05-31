@@ -78,11 +78,11 @@ module EE
       validate :validate_children_count
 
       validates :total_opened_issue_weight,
-                :total_closed_issue_weight,
-                :total_opened_issue_count,
-                :total_closed_issue_count,
-                presence: true,
-                numericality: { only_integer: true }
+        :total_closed_issue_weight,
+        :total_opened_issue_count,
+        :total_closed_issue_count,
+        presence: true,
+        numericality: { only_integer: true }
 
       alias_attribute :parent_ids, :parent_id
       alias_attribute :issuing_parent_id, :group_id
@@ -634,9 +634,11 @@ module EE
 
     def issues_weight_and_count
       state_sums = issues
-        .select('issues.state_id AS issues_state_id',
-                'SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum',
-                'COUNT(issues.id) AS issues_count')
+        .select(
+          'issues.state_id AS issues_state_id',
+          'SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum',
+          'COUNT(issues.id) AS issues_count'
+        )
         .reorder(nil)
         .group("issues.state_id")
 
@@ -701,7 +703,7 @@ module EE
           format(
             _('This epic cannot be added. One or more epics would exceed the maximum '\
               "depth (%{max_depth}) from its most distant ancestor."),
-              max_depth: MAX_HIERARCHY_DEPTH
+            max_depth: MAX_HIERARCHY_DEPTH
           )
         )
       end

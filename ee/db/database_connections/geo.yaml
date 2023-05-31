@@ -1,0 +1,8 @@
+name: geo
+description: GitLab database holding all Geo related features, etc.
+gitlab_schemas:
+  - gitlab_internal
+  - gitlab_geo
+klass: Geo::TrackingBase
+uses_load_balancing: false
+db_dir: ee/db/geo

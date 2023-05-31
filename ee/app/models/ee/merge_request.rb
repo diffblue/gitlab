@@ -47,14 +47,14 @@ module EE
       has_one :merge_train_car, class_name: 'MergeTrains::Car', inverse_of: :merge_request, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
 
       has_many :blocks_as_blocker,
-               class_name: 'MergeRequestBlock',
-               inverse_of: :blocking_merge_request,
-               foreign_key: :blocking_merge_request_id
+        class_name: 'MergeRequestBlock',
+        inverse_of: :blocking_merge_request,
+        foreign_key: :blocking_merge_request_id
 
       has_many :blocks_as_blockee,
-               class_name: 'MergeRequestBlock',
-               inverse_of: :blocked_merge_request,
-               foreign_key: :blocked_merge_request_id
+        class_name: 'MergeRequestBlock',
+        inverse_of: :blocked_merge_request,
+        foreign_key: :blocked_merge_request_id
 
       has_many :blocking_merge_requests, through: :blocks_as_blockee
 
@@ -111,8 +111,11 @@ module EE
     class_methods do
       # This is an ActiveRecord scope in CE
       def with_api_entity_associations
-        super.preload(:blocking_merge_requests, :approval_rules,
-                      target_project: [:regular_or_any_approver_approval_rules, group: :saml_provider])
+        super.preload(
+          :blocking_merge_requests,
+          :approval_rules,
+          target_project: [:regular_or_any_approver_approval_rules, group: :saml_provider]
+        )
       end
 
       def sort_by_attribute(method, *args, **kwargs)
