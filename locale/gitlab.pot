@@ -11096,6 +11096,15 @@ msgstr ""
 msgid "Command line instructions"
 msgstr ""
 
+msgid "CommandPalette|Commands"
+msgstr ""
+
+msgid "CommandPalette|Type %{commandHandle} for command or search..."
+msgstr ""
+
+msgid "CommandPalette|command"
+msgstr ""
+
 msgid "Commands applied"
 msgstr ""
 
@@ -12800,6 +12809,9 @@ msgid "Create a new issue"
 msgstr ""
 
 msgid "Create a new project"
+msgstr ""
+
+msgid "Create a new project/repository"
 msgstr ""
 
 msgid "Create a new repository"
