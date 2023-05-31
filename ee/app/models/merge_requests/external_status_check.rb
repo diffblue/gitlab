@@ -32,11 +32,19 @@ module MergeRequests
     end
 
     def status(merge_request, sha)
-      merge_request.status_check_responses.where(external_status_check: self, sha: sha).last&.status || 'pending'
+      last_response = response_for(merge_request, sha)
+
+      return 'pending' if !last_response || !last_response.retried_at.nil?
+
+      last_response.status
     end
 
     def failed?(merge_request)
-      merge_request.status_check_responses.where(external_status_check: self, sha: merge_request.diff_head_sha).last&.status == 'failed'
+      status(merge_request, merge_request.diff_head_sha) == 'failed'
+    end
+
+    def response_for(merge_request, sha)
+      merge_request.status_check_responses.order(id: :desc).find_by(external_status_check: self, sha: sha)
     end
 
     def to_h
