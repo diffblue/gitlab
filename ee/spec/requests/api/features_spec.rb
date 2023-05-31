@@ -16,8 +16,6 @@ RSpec.describe API::Features, stub_feature_flags: false, feature_category: :feat
       actor.respond_to?(:admin) && actor.admin?
     end
 
-    stub_feature_flags(admin_mode_for_api: true)
-
     skip_feature_flags_yaml_validation
   end
 
