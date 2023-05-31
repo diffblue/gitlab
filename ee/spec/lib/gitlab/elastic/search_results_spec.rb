@@ -373,6 +373,20 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query, feature
       include_examples 'search results filtered by state'
       include_examples 'search results filtered by confidential'
       include_examples 'search results filtered by labels'
+
+      context 'for projects' do
+        let_it_be(:group) { create(:group) }
+        let!(:unarchived_project) { create(:project, :public, group: group) }
+        let!(:archived_project) { create(:project, :archived, :public, group: group) }
+
+        let(:results) { described_class.new(user, '*', [unarchived_project.id, archived_project.id], filters: filters) }
+
+        it_behaves_like 'search results filtered by archived' do
+          before do
+            ensure_elasticsearch_index!
+          end
+        end
+      end
     end
 
     context 'ordering' do

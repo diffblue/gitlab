@@ -57,6 +57,19 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic, feature_category: 
     it_behaves_like 'search results filtered by language'
   end
 
+  context 'for projects' do
+    let!(:unarchived_project) { create(:project, :public, group: group) }
+    let!(:archived_project) { create(:project, :archived, :public, group: group) }
+
+    let(:scope) { 'projects' }
+
+    it_behaves_like 'search results filtered by archived' do
+      before do
+        ensure_elasticsearch_index!
+      end
+    end
+  end
+
   describe 'users' do
     let(:query) { 'john' }
     let(:scope) { 'users' }
