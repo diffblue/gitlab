@@ -1,12 +1,10 @@
 <script>
 import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
-import { s__, __ } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import MetricPopover from '~/analytics/shared/components/metric_popover.vue';
-import { METRIC_TOOLTIPS } from '~/analytics/shared/constants';
 import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
 import { generateDashboardTableFields } from '../utils';
+import MetricTableCell from './metric_table_cell.vue';
 import TrendIndicator from './trend_indicator.vue';
 
 export default {
@@ -15,7 +13,7 @@ export default {
     GlSkeletonLoader,
     GlTableLite,
     GlSparklineChart,
-    MetricPopover,
+    MetricTableCell,
     TrendIndicator,
   },
   props: {
@@ -45,28 +43,9 @@ export default {
     formatDate(date) {
       return formatDate(date, 'mmm d');
     },
-    popoverTarget(identifier) {
-      return `${this.requestPath}__${identifier}`.replace('/', '_');
-    },
-    popoverMetric(identifier, label) {
-      const { description, groupLink, projectLink, docsLink } = METRIC_TOOLTIPS[identifier];
-      const dashboardLink = `/${this.requestPath}/${this.isProject ? projectLink : groupLink}`;
-      return {
-        label,
-        description,
-        links: [
-          { url: dashboardLink, label: this.$options.i18n.popoverDashboardLabel, name: label },
-          { url: docsLink, label: this.$options.i18n.popoverDocsLabel, docs_link: true },
-        ],
-      };
-    },
     chartGradient(invert) {
       return invert ? CHART_GRADIENT_INVERTED : CHART_GRADIENT;
     },
-  },
-  i18n: {
-    popoverDashboardLabel: __('Dashboard'),
-    popoverDocsLabel: s__('DORA4Metrics|Go to docs'),
   },
 };
 </script>
@@ -87,12 +66,12 @@ export default {
       <trend-indicator v-if="change" :change="change" :invert-color="invertTrendColor" />
     </template>
 
-    <template #cell(metric)="{ value: { identifier, value } }">
-      <span :id="popoverTarget(identifier)">{{ value }}</span>
-      <metric-popover
-        :target="popoverTarget(identifier)"
-        :metric="popoverMetric(identifier, value)"
-        :data-testid="`${identifier}_popover`"
+    <template #cell(metric)="{ value: { identifier } }">
+      <metric-table-cell
+        :data-testid="`${identifier}_metric_cell`"
+        :identifier="identifier"
+        :request-path="requestPath"
+        :is-project="isProject"
       />
     </template>
 
