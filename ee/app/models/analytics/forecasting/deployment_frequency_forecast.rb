@@ -33,7 +33,9 @@ module Analytics
       private
 
       def model_forecast(*)
-        super.map(&:round)
+        super.map do |value|
+          value > 0 ? value.round : 0
+        end
       end
     end
   end
