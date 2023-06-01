@@ -380,6 +380,7 @@ Dangerfile
 /lib/gitlab/url_blocker.rb
 /lib/gitlab/url_blockers/
 /lib/gitlab/utils.rb
+/lib/gitlab/path_traversal.rb
 
 ^[Gitaly] @proglottis @toon
 lib/gitlab/git_access.rb
