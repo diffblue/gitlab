@@ -177,6 +177,7 @@ module GitlabSubscriptions
       ai_features
       ai_git_command
       ai_tanuki_bot
+      ai_analyze_ci_job_failure
       api_discovery
       api_fuzzing
       auto_rollback

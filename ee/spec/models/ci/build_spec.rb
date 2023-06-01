@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
 
   let(:project) { create(:project, :repository, group: group) }
@@ -867,6 +869,34 @@ RSpec.describe Ci::Build, :saas, feature_category: :continuous_integration do
 
           expect_no_snowplow_event
         end
+      end
+    end
+
+    describe '#to_ability_name' do
+      specify { expect(job.to_ability_name).to eq 'build' }
+    end
+
+    describe '#resource_parent' do
+      specify { expect(job.resource_parent).to eq project }
+    end
+
+    describe 'send_to_ai?' do
+      where(:debug_mode, :has_trace, :result) do
+        false | true   | true
+        false | false  | false
+        true  | true   | false
+        true  | false  | false
+      end
+
+      with_them do
+        before do
+          allow(job).to receive(:debug_mode?).and_return(debug_mode)
+          allow_next_instance_of(Gitlab::Ci::Trace) do |t|
+            allow(t).to receive(:exist?).and_return(has_trace)
+          end
+        end
+
+        it { expect(job.send_to_ai?).to eq(result) }
       end
     end
   end
