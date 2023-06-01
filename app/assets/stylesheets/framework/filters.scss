@@ -439,6 +439,12 @@
 
 .vue-filtered-search-bar-container {
   .gl-search-box-by-click {
+    // Absolute width is needed to prevent flex to grow
+    // beyond the available width.
+    .gl-filtered-search-scrollable {
+      width: 1px;
+    }
+
     // There are several styling issues happening while using
     // `GlFilteredSearch` in roadmap due to some of our global
     // styles which we need to override until those are fixed
