@@ -31047,9 +31047,6 @@ msgstr ""
 msgid "Now, personalize your GitLab experience"
 msgstr ""
 
-msgid "Nuget metadatum must have at least license_url, project_url or icon_url set"
-msgstr ""
-
 msgid "Number of Elasticsearch shards and replicas per index:"
 msgstr ""
 
