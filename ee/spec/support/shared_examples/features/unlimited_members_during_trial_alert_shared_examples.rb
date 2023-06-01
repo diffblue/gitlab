@@ -33,4 +33,20 @@ RSpec.shared_examples_for 'unlimited members during trial alert' do
     expect(page).to have_content('Subgroups and projects').or have_content('Project information')
     expect(page).not_to have_selector(alert_selector)
   end
+
+  context 'when new nav is enabled' do
+    let_it_be(:user) { create(:user, use_new_navigation: true) }
+
+    it 'displays alert with Explore paid plans link and Invite more members button on other pages' do
+      visit page_path
+
+      expect(page).to have_selector(alert_selector)
+      expect(page).to have_link(text: 'Explore paid plans', href: group_billings_path(group))
+      expect(page).to have_button('Invite more members')
+
+      click_button 'Invite more members'
+
+      expect(page).to have_selector(invite_modal_selector)
+    end
+  end
 end
