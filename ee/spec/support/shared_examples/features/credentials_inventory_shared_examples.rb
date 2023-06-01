@@ -5,29 +5,6 @@ require 'spec_helper'
 RSpec.shared_examples_for 'credentials inventory personal access tokens' do
   let_it_be(:user) { defined?(managed_user) ? managed_user : create(:user, name: 'abc') }
 
-  context 'when a personal access token is active' do
-    before do
-      create(
-        :personal_access_token,
-        user: user,
-        created_at: '2019-12-10',
-        updated_at: '2020-06-22',
-        expires_at: nil
-      )
-      visit credentials_path
-    end
-
-    it 'shows the details', :aggregate_failures do
-      expect(first_row.text).to include('abc')
-      expect(first_row.text).to include('api')
-      expect(first_row.text).to include('2019-12-10')
-      expect(first_row.text).to include(PersonalAccessToken::MAX_PERSONAL_ACCESS_TOKEN_LIFETIME_IN_DAYS
-        .days.from_now.strftime("%Y-%m-%d"))
-      expect(first_row.text).not_to include('2020-06-22')
-      expect(first_row).to have_selector('a.btn', text: 'Revoke')
-    end
-  end
-
   context 'when a personal access token has an expiry' do
     let_it_be(:expiry_date) { 1.day.since.to_date.to_s }
 

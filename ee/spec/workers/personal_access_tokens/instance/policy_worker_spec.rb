@@ -37,14 +37,6 @@ RSpec.describe PersonalAccessTokens::Instance::PolicyWorker, type: :worker, feat
 
     context 'invalid tokens' do
       context 'PATs of users that do not belong to a managed group' do
-        context "when a token doesn't have an expiration time" do
-          let(:expire_at) { nil }
-
-          it 'enforces the policy on tokens' do
-            expect { subject.perform }.to change { pat.reload.revoked }.from(false).to(true)
-          end
-        end
-
         context 'when a token expires after the limit' do
           let(:expire_at) { (instance_limit + 1).days.from_now.to_date }
 

@@ -82,7 +82,7 @@ RSpec.describe('shared/credentials_inventory/resource_access_tokens/_resource_ac
     context 'for expires date' do
       context 'when token has never been used' do
         let_it_be(:project_access_token) do
-          create(:personal_access_token, user: project_member.user, scopes: %w[read_repository api], expires_at: nil)
+          create(:personal_access_token, user: project_member.user, scopes: %w[read_repository api])
         end
 
         it 'displays Never' do
@@ -184,7 +184,7 @@ RSpec.describe('shared/credentials_inventory/resource_access_tokens/_resource_ac
     context 'for expires date' do
       context 'when token has never been used' do
         let_it_be(:group_access_token) do
-          create(:personal_access_token, user: group_member.user, scopes: %w[read_repository api], expires_at: nil)
+          create(:personal_access_token, user: group_member.user, scopes: %w[read_repository api])
         end
 
         it 'displays Never' do

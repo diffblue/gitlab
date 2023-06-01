@@ -20,7 +20,6 @@ module EE
       scope :created_on_or_after, ->(date) { active.where('created_at >= ?', date) }
 
       with_options if: :expiration_policy_enabled? do
-        validates :expires_at, presence: true
         validate :expires_at_before_max_expiry_date
       end
     end

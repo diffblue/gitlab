@@ -94,12 +94,11 @@ RSpec.describe User, feature_category: :system_access do
     describe 'with_invalid_expires_at_tokens' do
       it 'only includes users with invalid tokens' do
         valid_pat = create(:personal_access_token, expires_at: 7.days.from_now)
-        invalid_pat1 = create(:personal_access_token, expires_at: nil)
-        invalid_pat2 = create(:personal_access_token, expires_at: 20.days.from_now)
+        invalid_pat = create(:personal_access_token, expires_at: 20.days.from_now)
 
         users_with_invalid_tokens = described_class.with_invalid_expires_at_tokens(15.days.from_now)
 
-        expect(users_with_invalid_tokens).to contain_exactly(invalid_pat1.user, invalid_pat2.user)
+        expect(users_with_invalid_tokens).to contain_exactly(invalid_pat.user)
         expect(users_with_invalid_tokens).not_to include valid_pat.user
       end
     end

@@ -10,8 +10,7 @@ RSpec.describe PersonalAccessTokens::RevokeInvalidTokens, feature_category: :sys
 
     let_it_be(:user) { create(:user) }
     let_it_be(:pat) { create(:personal_access_token, expires_at: 5.days.from_now, user: user) }
-    let_it_be(:invalid_pat1) { create(:personal_access_token, expires_at: nil, user: user) }
-    let_it_be(:invalid_pat2) { create(:personal_access_token, expires_at: 20.days.from_now, user: user) }
+    let_it_be(:invalid_pat) { create(:personal_access_token, expires_at: 20.days.from_now, user: user) }
 
     before do
       stub_licensed_features(personal_access_token_expiration_policy: true)
@@ -38,8 +37,7 @@ RSpec.describe PersonalAccessTokens::RevokeInvalidTokens, feature_category: :sys
             service.execute
 
             expect(pat.reload).not_to be_revoked
-            expect(invalid_pat1.reload).to be_revoked
-            expect(invalid_pat2.reload).to be_revoked
+            expect(invalid_pat.reload).to be_revoked
           end
         end
 
@@ -49,7 +47,7 @@ RSpec.describe PersonalAccessTokens::RevokeInvalidTokens, feature_category: :sys
           it "does not revoke user's invalid tokens" do
             service.execute
 
-            [pat, invalid_pat1, invalid_pat2].each do |token_object|
+            [pat, invalid_pat].each do |token_object|
               expect(token_object.reload).not_to be_revoked
             end
           end
