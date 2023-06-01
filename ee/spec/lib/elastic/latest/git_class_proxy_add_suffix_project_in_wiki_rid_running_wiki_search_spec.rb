@@ -5,7 +5,7 @@ require 'spec_helper'
 
 RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
   let_it_be(:wiki_project) { create(:project, :wiki_repo) }
-  let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
+  let(:included_class) { Elastic::Latest::WikiClassProxy }
 
   subject { included_class.new(wiki_project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
 
