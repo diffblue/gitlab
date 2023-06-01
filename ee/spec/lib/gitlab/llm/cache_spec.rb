@@ -43,6 +43,15 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
       expect(last.timestamp).not_to be_nil
     end
 
+    it 'does not set error when errors are empty' do
+      payload[:errors] = []
+
+      subject.add(payload)
+
+      last = subject.find_all.last
+      expect(last.errors).to eq([])
+    end
+
     it 'raises an exception when role is missing' do
       payload[:role] = nil
 

@@ -6,7 +6,8 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :g
   let_it_be(:user) { create(:user) }
 
   let(:question) { 'A question' }
-  let(:options) { { question: question, request_id: 'uuid' } }
+  let(:options) { { question: question } }
+  let(:params) { { request_id: 'uuid' } }
   let(:template_class) { ::Gitlab::Llm::OpenAi::Templates::TanukiBot }
 
   let(:ai_response) do
@@ -19,7 +20,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Completions::TanukiBot, feature_category: :g
     }.to_json
   end
 
-  subject(:tanuki_bot) { described_class.new(template_class).execute(user, user, options) }
+  subject(:tanuki_bot) { described_class.new(template_class, params).execute(user, user, options) }
 
   describe '#execute' do
     it 'makes a call to ::Gitlab::Llm::TanukiBot' do
