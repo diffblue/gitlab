@@ -7,7 +7,7 @@ module QA
 
       context 'when regular git commit' do
         it 'is replicated to the secondary',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348050' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348050' do
           file_content = 'This is a Geo project! Commit from primary.'
           project = nil
 
@@ -58,7 +58,7 @@ module QA
 
       context 'when git-lfs commit' do
         it 'is replicated to the secondary',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348049' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348049' do
           file_content = 'This is a Geo project!'
           lfs_file_display_message = 'The rendered file could not be displayed because it is stored in LFS.'
           project = nil

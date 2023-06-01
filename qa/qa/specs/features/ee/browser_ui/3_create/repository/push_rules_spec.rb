@@ -49,31 +49,41 @@ module QA
             content: SecureRandom.hex(100)
           }]
 
-          expect_error_on_push(file: large_file,
-                               error: 'File "file" is larger than the allowed size of 1 MB')
-          expect_error_on_push(file: wrongly_named_file,
-                               error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
+          expect_error_on_push(
+            file: large_file,
+            error: 'File "file" is larger than the allowed size of 1 MB')
+          expect_error_on_push(
+            file: wrongly_named_file,
+            error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
         end
 
         it 'restricts users by email format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347783' do
           gitlab_user = Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2)
           @project.add_member(gitlab_user, Resource::Members::AccessLevel::MAINTAINER)
 
-          expect_error_on_push(file: standard_file, user: gitlab_user,
-                               error: Regexp.escape("Committer's email '#{gitlab_user.email}' does not follow the pattern '#{@authors_email_limitation}'"))
+          expect_error_on_push(
+            file: standard_file,
+            user: gitlab_user,
+            error: Regexp.escape("Committer's email '#{gitlab_user.email}' does not follow the pattern '#{@authors_email_limitation}'"))
         end
 
         it 'restricts branches by branch name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347781' do
-          expect_error_on_push(file: standard_file, branch: 'forbidden_branch',
-                               error: Regexp.escape("Branch name 'forbidden_branch' does not follow the pattern '#{@branch_name_limitation}'"))
+          expect_error_on_push(
+            file: standard_file,
+            branch: 'forbidden_branch',
+            error: Regexp.escape("Branch name 'forbidden_branch' does not follow the pattern '#{@branch_name_limitation}'"))
         end
 
         it 'restricts commit by message format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347780' do
           expect_no_error_on_push(file: standard_file, commit_message: @needed_phrase_limitation)
-          expect_error_on_push(file: standard_file, commit_message: 'forbidden message',
-                               error: Regexp.escape("Commit message does not follow the pattern '#{@needed_phrase_limitation}'"))
-          expect_error_on_push(file: standard_file, commit_message: "#{@needed_phrase_limitation} - #{@deny_message_phrase_limitation}",
-                               error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
+          expect_error_on_push(
+            file: standard_file,
+            commit_message: 'forbidden message',
+            error: Regexp.escape("Commit message does not follow the pattern '#{@needed_phrase_limitation}'"))
+          expect_error_on_push(
+            file: standard_file,
+            commit_message: "#{@needed_phrase_limitation} - #{@deny_message_phrase_limitation}",
+            error: Regexp.escape("Commit message contains the forbidden pattern '#{@deny_message_phrase_limitation}'"))
         end
 
         it 'restricts committing files with secrets', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347779' do
@@ -82,8 +92,9 @@ module QA
             content: SecureRandom.hex(100)
           }]
 
-          expect_error_on_push(file: secret_file,
-                               error: Regexp.escape('File name id_rsa was prohibited by the pattern "id_rsa$"'))
+          expect_error_on_push(
+            file: secret_file,
+            error: Regexp.escape('File name id_rsa was prohibited by the pattern "id_rsa$"'))
         end
 
         it 'restricts removal of tag', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347782' do
@@ -93,8 +104,7 @@ module QA
             tag.name = "test_tag_#{SecureRandom.hex(8)}"
           end
 
-          expect_error_on_push(file: standard_file, tag: tag.name,
-                               error: 'You cannot delete a tag')
+          expect_error_on_push(file: standard_file, tag: tag.name, error: 'You cannot delete a tag')
         end
       end
 
@@ -118,8 +128,10 @@ module QA
             user.email = 'non_member_user@non_member_user.com'
           end
 
-          expect_error_on_push(file: standard_file, user: non_member_user,
-                               error: Regexp.escape("Author '#{non_member_user.email}' is not a member of team"))
+          expect_error_on_push(
+            file: standard_file,
+            user: non_member_user,
+            error: Regexp.escape("Author '#{non_member_user.email}' is not a member of team"))
         end
       end
 
@@ -137,8 +149,10 @@ module QA
 
         it 'rejects unverified emails', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347791' do
           expect_no_error_on_push(file: standard_file)
-          expect_error_on_push(file: standard_file, user: @root,
-                               error: 'You can only push commits if the committer email is one of your own verified emails')
+          expect_error_on_push(
+            file: standard_file,
+            user: @root,
+            error: 'You can only push commits if the committer email is one of your own verified emails')
         end
       end
 
