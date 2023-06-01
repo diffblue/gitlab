@@ -126,6 +126,30 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
     end
   end
 
+  shared_examples 'subscription table with management buttons' do
+    before do
+      visit page_path
+    end
+
+    it 'displays subscription table' do
+      expect(page).to have_link('Add seats')
+      expect(page).to have_link('Manage')
+      expect(page).to have_link('Renew')
+    end
+  end
+
+  shared_examples 'subscription table without management buttons' do
+    before do
+      visit page_path
+    end
+
+    it 'displays subscription table' do
+      expect(page).not_to have_link('Manage')
+      expect(page).not_to have_link('Add seats')
+      expect(page).not_to have_link('Renew')
+    end
+  end
+
   shared_examples 'used seats rendering for non paid subscriptions' do
     before do
       visit page_path
@@ -379,11 +403,9 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
         let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
 
-        before do
-          visit page_path
-        end
-
         it 'displays plan header' do
+          visit page_path
+
           page.within('.billing-plan-header') do
             expect(page).to have_content("#{namespace.name} is currently using the Ultimate Plan")
 
@@ -393,6 +415,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
 
         it_behaves_like 'does not display the billing plans'
         it_behaves_like 'plan with subscription table'
+        it_behaves_like 'subscription table with management buttons'
       end
 
       context 'on bronze' do
@@ -463,23 +486,22 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :bi
         it_behaves_like 'non-upgradable plan'
         it_behaves_like 'used seats rendering for non paid subscriptions'
         it_behaves_like 'plan with subscription table'
+        it_behaves_like 'subscription table with management buttons'
       end
 
       context 'with auditor user' do
         let(:plan) { ultimate_plan }
-        let!(:group_member) { create(:group_member, :guest, group: namespace, user: auditor) }
         let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
 
         before do
           stub_licensed_features(auditor_user: true)
 
           sign_in(auditor)
-
-          visit page_path
         end
 
         it_behaves_like 'does not display the billing plans'
         it_behaves_like 'plan with subscription table'
+        it_behaves_like 'subscription table without management buttons'
       end
     end
 

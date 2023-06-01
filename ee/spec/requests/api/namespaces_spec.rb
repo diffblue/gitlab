@@ -575,7 +575,7 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
   end
 
   describe 'GET :id/gitlab_subscription', :saas do
-    def do_get(current_user, namespace_id = namespace.id)
+    def do_get_subscription(current_user, namespace_id = namespace.id)
       get api("/namespaces/#{namespace_id}/gitlab_subscription", current_user)
     end
 
@@ -591,20 +591,19 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       namespace.add_owner(owner)
       namespace.add_maintainer(maintainer)
       namespace.add_developer(developer)
-      namespace.add_guest(auditor)
     end
 
     context 'with a developer user' do
       context 'using a user namespace does not error' do
         before do
-          do_get(developer, developer.namespace.id)
+          do_get_subscription(developer, developer.namespace.id)
         end
 
         it_behaves_like 'authorized user using user namespace for billing'
       end
 
       it 'returns an unauthorized error' do
-        do_get(developer)
+        do_get_subscription(developer)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
@@ -613,14 +612,14 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
     context 'with a maintainer' do
       context 'using a user namespace does not error' do
         before do
-          do_get(maintainer, maintainer.namespace.id)
+          do_get_subscription(maintainer, maintainer.namespace.id)
         end
 
         it_behaves_like 'authorized user using user namespace for billing'
       end
 
       it 'returns an unauthorized error' do
-        do_get(maintainer)
+        do_get_subscription(maintainer)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
@@ -630,25 +629,26 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
       context 'without :auditor_billing_page_access feature flag' do
         before do
           stub_feature_flags(auditor_billing_page_access: false)
-          do_get(auditor)
+          do_get_subscription(auditor)
         end
 
         it 'returns an unauthorized error' do
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:unauthorized)
         end
       end
 
       context 'with :auditor_billing_page_access feature flag' do
         before do
           stub_feature_flags(auditor_billing_page_access: namespace)
-          do_get(auditor)
+          do_get_subscription(auditor)
         end
 
         it_behaves_like 'authorized user using group namespace for billing'
 
         context 'using a user namespace' do
           before do
-            do_get(auditor, auditor.namespace.id)
+            stub_feature_flags(auditor_billing_page_access: auditor.namespace)
+            do_get_subscription(auditor, auditor.namespace.id)
           end
 
           it_behaves_like 'authorized user using user namespace for billing'
@@ -658,14 +658,14 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
 
     context 'with the owner of the Group' do
       before do
-        do_get(owner)
+        do_get_subscription(owner)
       end
 
       it_behaves_like 'authorized user using group namespace for billing'
 
       context 'using a user namespace' do
         before do
-          do_get(owner, owner.namespace.id)
+          do_get_subscription(owner, owner.namespace.id)
         end
 
         it_behaves_like 'authorized user using user namespace for billing'
@@ -678,19 +678,20 @@ RSpec.describe API::Namespaces, :aggregate_failures, feature_category: :groups_a
 
       before do
         ultimate_namespace.add_owner(owner)
+        do_get_subscription(owner, ultimate_namespace.id)
       end
 
       it 'returns true for Ultimate-like plans' do
-        get api("/namespaces/#{ultimate_namespace.id}/gitlab_subscription", owner)
-
         expect(json_response['plan']['exclude_guests']).to eq(true)
       end
     end
 
     context 'when namespace is a project namespace' do
-      it 'returns a 404 error' do
-        get api("/namespaces/#{project_namespace.id}/gitlab_subscription", admin)
+      before do
+        do_get_subscription(admin, project_namespace.id)
+      end
 
+      it 'returns a 404 error' do
         expect(response).to have_gitlab_http_status(:not_found)
         expect(json_response).to eq('message' => '404 Namespace Not Found')
       end

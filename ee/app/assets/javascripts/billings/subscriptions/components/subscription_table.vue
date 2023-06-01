@@ -11,7 +11,12 @@ import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSubscriptionData } from '../subscription_actions.customer.query.graphql';
 import SubscriptionTableRow from './subscription_table_row.vue';
 
-const createButtonProps = (text, href, testId) => ({ text, href, testId });
+const createButtonProps = (text, href, testId) => ({
+  text,
+  href,
+  testId,
+  dataQaSelector: testId,
+});
 
 export default {
   name: 'SubscriptionTable',
