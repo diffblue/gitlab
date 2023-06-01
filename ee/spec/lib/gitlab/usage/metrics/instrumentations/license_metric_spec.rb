@@ -48,4 +48,12 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::LicenseMetric do
   it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'user_count' } } do
     let(:expected_value) { current_license.restricted_user_count }
   end
+
+  it_behaves_like 'a correct instrumented metric value', { time_frame: 'all', options: { attribute: 'daily_billable_users_count' } } do
+    let(:expected_value) { current_license.daily_billable_users_count }
+  end
+
+  it_behaves_like 'a correct instrumented metric value', { time_frame: 'none', options: { attribute: 'add_ons' } } do
+    let(:expected_value) { current_license.add_ons }
+  end
 end

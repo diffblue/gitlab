@@ -30,14 +30,15 @@ module Tasks
     private
 
     def info
-      license = ::Gitlab::UsageData.license_usage_data
-      abort("No license has been applied.") unless license[:license_plan]
+      license = ::License.current
+      abort("No license has been applied.") unless license&.plan
+
       puts "Today's Date: #{Date.today}"
-      puts "Current User Count: #{license[:active_user_count]}"
-      puts "Max Historical Count: #{license[:historical_max_users]}"
-      puts "Max Users in License: #{license[:license_user_count]}"
-      puts "License valid from: #{license[:license_starts_at]} to #{license[:license_expires_at]}"
-      puts "Email associated with license: #{license[:licensee]['Email']}"
+      puts "Current User Count: #{::Gitlab::Utils::UsageData.count(User.active)}"
+      puts "Max Historical Count: #{license.historical_max}"
+      puts "Max Users in License: #{license.restricted_user_count}"
+      puts "License valid from: #{license.starts_at} to #{license.expires_at}"
+      puts "Email associated with license: #{license.licensee_email}"
     end
 
     # TODO: Alter explanation text in verbose mode, after
