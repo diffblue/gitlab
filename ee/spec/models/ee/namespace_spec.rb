@@ -25,7 +25,6 @@ RSpec.describe Namespace do
   it { is_expected.to delegate_method(:upgradable?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_extended_or_reactivated?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:email).to(:owner).with_prefix.allow_nil }
-  it { is_expected.to delegate_method(:additional_purchased_storage_size).to(:namespace_limit) }
   it { is_expected.to delegate_method(:additional_purchased_storage_size=).to(:namespace_limit).with_arguments(:args) }
   it { is_expected.to delegate_method(:additional_purchased_storage_ends_on).to(:namespace_limit) }
   it { is_expected.to delegate_method(:additional_purchased_storage_ends_on=).to(:namespace_limit).with_arguments(:args) }
@@ -1301,6 +1300,13 @@ RSpec.describe Namespace do
 
     it 'returns the total size of all project repositories' do
       expect(namespace.total_repository_size).to eq(875)
+    end
+  end
+
+  describe '#additional_purchased_storage_size' do
+    it 'calls namespace_limit#eligible_additional_purchased_storage_size' do
+      expect(namespace.namespace_limit).to receive(:eligible_additional_purchased_storage_size)
+      namespace.additional_purchased_storage_size
     end
   end
 

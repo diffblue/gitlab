@@ -78,10 +78,8 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category:
       expect(page).to have_current_path(project_issues_path(project))
     end
 
-    context 'with invite_for_help_continuous_onboarding candidate experience' do
+    context 'with invite members link opening invite modal' do
       before do
-        stub_experiments(invite_for_help_continuous_onboarding: :candidate)
-
         sign_in(user)
         visit namespace_project_learn_gitlab_path(namespace, project)
       end

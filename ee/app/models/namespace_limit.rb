@@ -26,6 +26,16 @@ class NamespaceLimit < ApplicationRecord
     namespace.root_storage_size.usage_ratio >= MIN_REQURIED_STORAGE_USAGE_RATIO
   end
 
+  def eligible_additional_purchased_storage_size
+    if Feature.enabled?(:expired_storage_check, namespace) &&
+        additional_purchased_storage_ends_on &&
+        Date.today > additional_purchased_storage_ends_on
+      0
+    else
+      additional_purchased_storage_size
+    end
+  end
+
   private
 
   def namespace_is_root_namespace
