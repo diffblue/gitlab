@@ -6,7 +6,14 @@ module Security
       def execute(schedule)
         branches = schedule.applicable_branches(container)
         actions = actions_for(schedule)
-        schedule_scan(actions, branches)
+        schedule_errors = schedule_scan(actions, branches).select { |service_result| service_result[:status] == :error }
+
+        return ServiceResponse.success if schedule_errors.blank?
+
+        # The use of .pluck here is not for an Active record model but for a hash
+        # rubocop: disable CodeReuse/ActiveRecord
+        ServiceResponse.error(message: schedule_errors.pluck(:message))
+        # rubocop: enable CodeReuse/ActiveRecord
       end
 
       private
@@ -19,9 +26,9 @@ module Security
       end
 
       def schedule_scan(actions, branches)
-        return if actions.blank?
+        return [] if actions.blank?
 
-        branches.each do |branch|
+        branches.map do |branch|
           ::Security::SecurityOrchestrationPolicies::CreatePipelineService
             .new(project: container, current_user: current_user, params: { actions: actions, branch: branch })
             .execute

@@ -21,7 +21,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
             container: schedule.security_orchestration_policy_configuration.project,
             current_user: schedule.owner
           ) do |service|
-            expect(service).to receive(:execute)
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
           worker.perform
@@ -31,6 +31,42 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
           worker.perform
 
           expect(schedule.reload.next_run_at).to be > Time.zone.now
+        end
+
+        context 'and RuleScheduleService returns an error result' do
+          before do
+            allow_next_instance_of(::Security::SecurityOrchestrationPolicies::RuleScheduleService) do |service|
+              allow(service).to receive(:execute).and_return(ServiceResponse.error(message: service_response_message))
+            end
+          end
+
+          let(:service_response_message) { ['message', 'message 2'] }
+
+          it 'loggs the error' do
+            expect(Sidekiq.logger).to receive(:warn).with({
+              worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
+              security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
+              user_id: schedule.owner.id,
+              message: 'message. message 2'
+            })
+
+            worker.perform
+          end
+
+          context 'and the service response message is a string' do
+            let(:service_response_message) { 'message' }
+
+            it 'loggs the error' do
+              expect(Sidekiq.logger).to receive(:warn).with({
+                worker: 'Security::OrchestrationPolicyRuleScheduleWorker',
+                security_orchestration_policy_configuration_id: security_orchestration_policy_configuration.id,
+                user_id: schedule.owner.id,
+                message: 'message'
+              })
+
+              worker.perform
+            end
+          end
         end
       end
 
@@ -49,7 +85,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
             container: schedule.security_orchestration_policy_configuration.project,
             current_user: security_policy_bot
           ) do |service|
-            expect(service).to receive(:execute)
+            expect(service).to receive(:execute).and_return(ServiceResponse.success)
           end
 
           worker.perform
