@@ -34,6 +34,8 @@ module Elastic
     private
 
     def get_data_class(klass)
+      return (klass.try(:base_class) || klass) if Feature.enabled?(:simplify_logic_to_find_search_proxy_class)
+
       klass < ActiveRecord::Base ? klass.base_class : klass
     end
 
