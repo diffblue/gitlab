@@ -1107,6 +1107,18 @@ RSpec.describe API::Epics, :aggregate_failures, feature_category: :portfolio_man
           end
         end
 
+        context 'when deprecated dates are missing' do
+          let(:epic) { create(:epic, :use_fixed_dates, group: group) }
+
+          it 'does not drop existing dates' do
+            put api(url, user), params: { title: 'New title' }
+
+            result = epic.reload
+            expect(result.start_date_fixed).to be_present
+            expect(result.due_date_fixed).to be_present
+          end
+        end
+
         context 'when updating start_date_is_fixed by itself' do
           let(:epic) { create(:epic, :use_fixed_dates, group: group) }
           let(:new_start_date) { epic.start_date + 1.day }
