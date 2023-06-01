@@ -23,12 +23,6 @@ class TrialsController < ApplicationController
     render :select_namespace_form if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
   end
 
-  def create_lead
-    # soft landing for stale pages during release of new code/routes, cannot redirect a post
-    # remove with https://gitlab.com/gitlab-org/gitlab/-/issues/393969
-    redirect_to new_trial_path(glm_tracking_params)
-  end
-
   def create
     result = GitlabSubscriptions::Trials::CreateService.new(
       step: params[:step], lead_params: lead_params, trial_params: trial_params, user: current_user
@@ -60,12 +54,6 @@ class TrialsController < ApplicationController
 
       render :select_namespace_form
     end
-  end
-
-  def apply
-    # soft landing for stale pages during release of new code/routes, cannot redirect a post
-    # remove with https://gitlab.com/gitlab-org/gitlab/-/issues/393969
-    redirect_to new_trial_path(step: GitlabSubscriptions::Trials::CreateService::TRIAL, **glm_tracking_params)
   end
 
   private
