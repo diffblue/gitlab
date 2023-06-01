@@ -3,11 +3,7 @@
 class SmartcardIdentity < ApplicationRecord
   belongs_to :user
 
-  validates :user,
-            presence: true
-  validates :subject,
-            presence: true,
-            uniqueness: { scope: :issuer }
-  validates :issuer,
-            presence: true
+  validates :user, presence: true
+  validates :subject, presence: true, uniqueness: { scope: :issuer }
+  validates :issuer, presence: true
 end

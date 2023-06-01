@@ -24,18 +24,18 @@ module Security
     attr_readonly :partition_number
 
     partitioned_by :partition_number,
-                   strategy: :sliding_list,
-                   next_partition_if: -> (partition) { partition_full?(partition) },
-                   detach_partition_if: -> (partition) { detach_partition?(partition.value) }
+      strategy: :sliding_list,
+      next_partition_if: -> (partition) { partition_full?(partition) },
+      detach_partition_if: -> (partition) { detach_partition?(partition.value) }
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
 
     belongs_to :vulnerability_finding,
-               class_name: 'Vulnerabilities::Finding',
-               primary_key: :uuid,
-               foreign_key: :uuid,
-               inverse_of: :security_findings
+      class_name: 'Vulnerabilities::Finding',
+      primary_key: :uuid,
+      foreign_key: :uuid,
+      inverse_of: :security_findings
 
     has_one :build, through: :scan, disable_joins: true
     has_one :vulnerability, through: :vulnerability_finding
@@ -45,10 +45,10 @@ module Security
     has_many :merge_request_links, through: :vulnerability
 
     has_many :feedbacks,
-             class_name: 'Vulnerabilities::Feedback',
-             inverse_of: :security_finding,
-             primary_key: 'uuid',
-             foreign_key: 'finding_uuid'
+      class_name: 'Vulnerabilities::Feedback',
+      inverse_of: :security_finding,
+      primary_key: 'uuid',
+      foreign_key: 'finding_uuid'
 
     enum confidence: ::Enums::Vulnerability.confidence_levels, _prefix: :confidence
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
@@ -67,11 +67,13 @@ module Security
     scope :by_state, -> (states, check_feedback: false) do
       states = Array(states).map(&:to_s)
 
-      relation = where('EXISTS (?)',
-                       Vulnerability.select(1)
-                                    .with_states(states)
-                                    .joins(:findings)
-                                    .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+      relation = where(
+        'EXISTS (?)',
+        Vulnerability.select(1)
+          .with_states(states)
+          .joins(:findings)
+          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+      )
 
       # If the given states includes `dismissed` and `check_feedback` is true,
       # we need to check `vulnerabilities_feedback` as well.
@@ -85,33 +87,41 @@ module Security
     end
 
     scope :dismissed_by_feedback, -> do
-      where('EXISTS (?)',
-            Scan.select(1)
-                .has_dismissal_feedback
-                .where('security_scans.id = security_findings.scan_id')
-                .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
+      where(
+        'EXISTS (?)',
+        Scan.select(1)
+          .has_dismissal_feedback
+          .where('security_scans.id = security_findings.scan_id')
+          .where('vulnerability_feedback.finding_uuid = security_findings.uuid')
+      )
     end
 
     scope :recently_detected, -> do
-      where('NOT EXISTS (?)',
-            Vulnerabilities::Finding.select(1)
-                                    .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+      where(
+        'NOT EXISTS (?)',
+        Vulnerabilities::Finding.select(1)
+          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+      )
     end
 
     scope :undismissed_by_vulnerability, -> do
-      where('NOT EXISTS (?)',
-            Vulnerability.select(1)
-                         .dismissed
-                         .joins(:findings)
-                         .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+      where(
+        'NOT EXISTS (?)',
+        Vulnerability.select(1)
+          .dismissed
+          .joins(:findings)
+          .where('vulnerability_occurrences.uuid = security_findings.uuid::text')
+      )
     end
 
     scope :undismissed, -> do
-      where('NOT EXISTS (?)',
-            Scan.select(1)
-                .has_dismissal_feedback
-                .where('security_scans.id = security_findings.scan_id')
-                .where('vulnerability_feedback.finding_uuid = security_findings.uuid'))
+      where(
+        'NOT EXISTS (?)',
+        Scan.select(1)
+          .has_dismissal_feedback
+          .where('security_scans.id = security_findings.scan_id')
+          .where('vulnerability_feedback.finding_uuid = security_findings.uuid')
+      )
     end
 
     scope :ordered, -> { order(severity: :desc, id: :asc) }

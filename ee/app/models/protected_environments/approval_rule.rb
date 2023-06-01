@@ -13,7 +13,7 @@ module ProtectedEnvironments
 
     validates :access_level, allow_blank: true, inclusion: { in: ALLOWED_ACCESS_LEVELS }
     validates :required_approvals,
-              numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }
+      numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 5 }
     validates :group_inheritance_type, inclusion: { in: GROUP_INHERITANCE_TYPE.values }
   end
 end

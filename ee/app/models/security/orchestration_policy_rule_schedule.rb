@@ -13,8 +13,8 @@ module Security
 
     belongs_to :owner, class_name: 'User', foreign_key: 'user_id'
     belongs_to :security_orchestration_policy_configuration,
-               class_name: 'Security::OrchestrationPolicyConfiguration',
-               foreign_key: 'security_orchestration_policy_configuration_id'
+      class_name: 'Security::OrchestrationPolicyConfiguration',
+      foreign_key: 'security_orchestration_policy_configuration_id'
 
     validates :owner, presence: true
     validates :security_orchestration_policy_configuration, presence: true
