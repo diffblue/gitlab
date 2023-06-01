@@ -45,6 +45,65 @@ RSpec.describe Sidebars::Projects::Menus::SecurityComplianceMenu, feature_catego
   end
 
   describe 'Menu items' do
+    describe 'with read_vulnerablity custom role permission' do
+      subject(:renderable_items) { described_class.new(context).renderable_items }
+
+      before do
+        stub_licensed_features(
+          security_dashboard: true, audit_events: true, dependency_scanning: true, custom_roles: true, license_scanning: true)
+      end
+
+      let_it_be(:project) { create(:project, :public, :in_group) }
+      let_it_be(:guest) { create(:user) }
+      let_it_be(:member) do
+        create(
+          :group_member,
+          user: guest,
+          source: project.group,
+          access_level: Gitlab::Access::GUEST
+        )
+      end
+
+      let_it_be(:member_role) do
+        create(:member_role, :guest, namespace: project.group, read_vulnerability: true).tap do |role|
+          role.members << member
+        end
+      end
+
+      let(:context) { Sidebars::Projects::Context.new(current_user: guest, container: project, show_promotions: false, show_discover_project_security: false) }
+      let(:allowed_pages) { [:vulnerability_report] }
+      let(:disallowed_pages) do
+        [:configuration, :discover_project_security, :dashboard, :on_demand_scans, :dependency_list,
+          :license_compliance, :scan_policies, :audit_events]
+      end
+
+      context 'when custom_roles_vulnerability FF is enabled' do
+        before do
+          stub_feature_flags(custom_roles_vulnerability: true)
+        end
+
+        it 'displays the vulnerability report menu item' do
+          expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).not_to be_nil
+        end
+
+        it 'does not display other pages' do
+          disallowed_pages.each do |page_id|
+            expect(renderable_items.find { |i| i.item_id == page_id }).to be_nil
+          end
+        end
+      end
+
+      context 'when custom_roles_vulnerability FF is disabled' do
+        before do
+          stub_feature_flags(custom_roles_vulnerability: false)
+        end
+
+        it 'does not display the vulnerability report menu item' do
+          expect(renderable_items.find { |i| i.item_id == :vulnerability_report }).to be_nil
+        end
+      end
+    end
+
     subject { described_class.new(context).renderable_items.find { |i| i.item_id == item_id } }
 
     describe 'Configuration' do
