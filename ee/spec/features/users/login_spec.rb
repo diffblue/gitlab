@@ -164,7 +164,7 @@ RSpec.describe 'Login', feature_category: :system_access do
       it 'shows LDAP login form' do
         subject
 
-        expect(page).to have_selector('#ldapmain.tab-pane form#new_ldap_user')
+        expect(page).to have_selector('#ldapmain.tab-pane form[data-testid=new_ldap_user]')
       end
 
       it 'shows LDAP smartcard login form' do
@@ -187,7 +187,7 @@ RSpec.describe 'Login', feature_category: :system_access do
       it 'does not show LDAP login form' do
         subject
 
-        expect(page).not_to have_selector('#ldapmain.tab-pane form#new_ldap_user')
+        expect(page).not_to have_selector('#ldapmain.tab-pane form[data-testid=new_ldap_user]')
       end
 
       it 'shows LDAP smartcard login form' do
