@@ -5,7 +5,7 @@ require 'rubocop_spec_helper'
 require_relative '../../../../rubocop/cop/migration/update_column_in_batches'
 
 RSpec.describe RuboCop::Cop::Migration::UpdateColumnInBatches do
-  let(:tmp_rails_root) { rails_root_join('tmp', 'rails_root') }
+  let(:tmp_rails_root) { Pathname.new(rails_root_join('tmp', 'rails_root')) }
   let(:migration_code) do
     <<-END
     def up
@@ -103,6 +103,27 @@ RSpec.describe RuboCop::Cop::Migration::UpdateColumnInBatches do
 
       it_behaves_like 'a migration file with no spec file'
       it_behaves_like 'a migration file with a spec file'
+    end
+  end
+
+  describe '#external_dependency_checksum' do
+    subject { cop.external_dependency_checksum }
+
+    before do
+      touch_file('spec/migrations/foo_spec.rb')
+      touch_file('spec/migrations/a/nested/bar_spec.rb')
+      touch_file('ee/spec/migrations/bar_spec.rb')
+    end
+
+    # The computed SHA from sorted list of filenames above
+    it { is_expected.to eq('687c9239e00d9e7744131f3d1de27901cfe2d21e64969f5c30b6ea2817aac801') }
+
+    private
+
+    def touch_file(path)
+      full_path = tmp_rails_root.join(path)
+      full_path.dirname.mkpath
+      full_path.write('')
     end
   end
 end
