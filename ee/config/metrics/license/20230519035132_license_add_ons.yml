@@ -1,0 +1,23 @@
+---
+key_path: license_add_ons
+description: List of add-ons in the license
+product_section: fulfillment
+product_stage: fulfillment
+product_group: license
+value_type: object
+value_json_schema: 'ee/config/metrics/object_schemas/license_add_ons.json'
+status: active
+time_frame: none
+data_source: license
+instrumentation_class: LicenseMetric
+options:
+  attribute: add_ons
+data_category: standard
+distribution:
+  - ee
+tier:
+  - premium
+  - ultimate
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/119904
+performance_indicator_type: []
+milestone: "<13.9"
