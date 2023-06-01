@@ -9,10 +9,10 @@ describe('RunnerFormFields', () => {
 
   const findTextarea = (name) => wrapper.find(`textarea[name="${name}"]`);
 
-  const createComponent = ({ runner } = {}) => {
+  const createComponent = ({ value } = {}) => {
     wrapper = mountExtended(RunnerFormFields, {
       propsData: {
-        value: runner,
+        value,
       },
       provide: {
         glFeatures: {
@@ -23,7 +23,7 @@ describe('RunnerFormFields', () => {
   };
 
   it('updates runner maintenance note', async () => {
-    createComponent();
+    createComponent({ value: {} });
     await nextTick();
 
     expect(wrapper.emitted('input')).toBe(undefined);

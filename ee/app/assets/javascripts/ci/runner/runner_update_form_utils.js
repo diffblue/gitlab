@@ -14,9 +14,9 @@ export const runnerToModel = (runner) => {
 
 export const modelToUpdateMutationVariables = (model) => {
   const {
+    maintenanceNote,
     privateProjectsMinutesCostFactor,
     publicProjectsMinutesCostFactor,
-    maintenanceNote,
   } = model;
 
   return {

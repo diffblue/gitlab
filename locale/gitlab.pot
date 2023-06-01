@@ -39192,9 +39192,6 @@ msgstr ""
 msgid "Runners|Enter the number of seconds."
 msgstr ""
 
-msgid "Runners|Enter the number of seconds. This timeout takes precedence over lower timeouts set for the project."
-msgstr ""
-
 msgid "Runners|Environment"
 msgstr ""
 
@@ -39716,9 +39713,6 @@ msgid "Runners|Use Group runners when you want all projects in a group to have a
 msgstr ""
 
 msgid "Runners|Use the runner for jobs without tags in addition to tagged jobs."
-msgstr ""
-
-msgid "Runners|Use the runner for jobs without tags, in addition to tagged jobs."
 msgstr ""
 
 msgid "Runners|Use the runner for the currently assigned projects only. Only administrators can change the assigned projects."
