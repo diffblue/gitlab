@@ -48,7 +48,7 @@ module RuboCop
           digest = Digest::SHA256.new
 
           rails_root.glob(pattern) do |path|
-            digest.update(path.to_path)
+            digest.update(path.relative_path_from(rails_root).to_path)
           end
 
           digest.hexdigest
