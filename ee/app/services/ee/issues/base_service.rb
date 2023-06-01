@@ -166,6 +166,19 @@ module EE
 
         params[:iteration] = iteration if iteration
       end
+
+      def log_audit_event(issue, user, event_type, message)
+        audit_context = {
+          name: event_type,
+          author: user,
+          scope: issue.respond_to?(:group) ? issue.group : issue.project,
+          target: issue,
+          message: message,
+          target_details: { iid: issue.iid, id: issue.id }
+        }
+
+        ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
     end
   end
 end

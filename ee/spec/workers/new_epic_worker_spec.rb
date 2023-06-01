@@ -104,6 +104,35 @@ RSpec.describe NewEpicWorker, feature_category: :portfolio_management do
             worker.perform(epic.id, user.id)
           end
         end
+
+        context 'when project bot it logs audit events' do
+          let_it_be(:project_bot) { create(:user, :project_bot, email: "bot@example.com") }
+
+          include_examples 'audit event logging' do
+            let(:epic) { create(:epic, author: project_bot) }
+            let(:operation) { worker.perform(epic.id, project_bot.id) }
+            let(:event_type) { 'epic_created_by_project_bot' }
+            let(:fail_condition!) { allow_any_instance_of(User).to receive(:project_bot?).and_return(false) } # rubocop:disable RSpec/AnyInstanceOf
+            let(:attributes) do
+              {
+                author_id: project_bot.id,
+                entity_id: epic.group.id,
+                entity_type: 'Group',
+                details: {
+                  author_name: project_bot.name,
+                  target_id: epic.id,
+                  target_type: 'Epic',
+                  target_details: {
+                    iid: epic.iid,
+                    id: epic.id
+                  }.to_s,
+                  author_class: project_bot.class.name,
+                  custom_message: "Created epic #{epic.title}"
+                }
+              }
+            end
+          end
+        end
       end
     end
   end

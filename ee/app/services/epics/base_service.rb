@@ -188,5 +188,18 @@ module Epics
     def parent_param_present?
       params.key?(:parent) || params.key?(:parent_id)
     end
+
+    def log_audit_event(epic, event_type, message)
+      audit_context = {
+        name: event_type,
+        author: current_user,
+        scope: epic.group,
+        target: epic,
+        message: message,
+        target_details: { iid: epic.iid, id: epic.id }
+      }
+
+      ::Gitlab::Audit::Auditor.audit(audit_context)
+    end
   end
 end
