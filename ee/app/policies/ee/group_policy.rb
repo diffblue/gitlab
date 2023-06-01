@@ -390,7 +390,7 @@ module EE
         prevent :override_group_member
       end
 
-      rule { owner & service_accounts_available }.policy do
+      rule { (admin | owner) & service_accounts_available }.policy do
         enable :admin_service_accounts
       end
 
