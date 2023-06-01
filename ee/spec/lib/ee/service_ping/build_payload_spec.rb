@@ -6,13 +6,7 @@ RSpec.describe ServicePing::BuildPayload, feature_category: :service_ping do
   describe '#execute' do
     subject(:service_ping_payload) { described_class.new.execute }
 
-    include_context 'stubbed service ping metrics definitions' do
-      let(:subscription_metrics) do
-        [
-          metric_attributes('license_md5', "subscription")
-        ]
-      end
-    end
+    include_context 'stubbed service ping metrics definitions'
 
     before do
       allow(User).to receive(:single_user)
@@ -43,7 +37,7 @@ RSpec.describe ServicePing::BuildPayload, feature_category: :service_ping do
           end
 
           it_behaves_like 'service ping payload with all expected metrics' do
-            let(:expected_metrics) { standard_metrics + subscription_metrics + optional_metrics + operational_metrics }
+            let(:expected_metrics) { standard_metrics + optional_metrics + operational_metrics }
           end
         end
       end
@@ -61,7 +55,7 @@ RSpec.describe ServicePing::BuildPayload, feature_category: :service_ping do
           end
 
           it_behaves_like 'service ping payload with all expected metrics' do
-            let(:expected_metrics) { standard_metrics + subscription_metrics + operational_metrics }
+            let(:expected_metrics) { standard_metrics + operational_metrics }
           end
 
           it_behaves_like 'service ping payload without restricted metrics' do

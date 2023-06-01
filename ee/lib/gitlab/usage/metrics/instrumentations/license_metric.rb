@@ -13,16 +13,18 @@ module Gitlab
           #   attribute: md5
           # end
 
-          ALLOWED_ATTRIBUTES = %w(md5
-                                  sha256
-                                  license_id
-                                  plan
-                                  trial?
-                                  starts_at
+          ALLOWED_ATTRIBUTES = %w(add_ons
+                                  daily_billable_users_count
                                   expires_at
-                                  user_count
+                                  license_id
+                                  md5
+                                  plan
+                                  sha256
+                                  subscription_id
+                                  starts_at
+                                  trial?
                                   trial_ends_on
-                                  subscription_id).freeze
+                                  user_count).freeze
 
           def initialize(metric_definition)
             super

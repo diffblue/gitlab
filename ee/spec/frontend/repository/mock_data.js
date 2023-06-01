@@ -1,10 +1,8 @@
 export const refMock = 'default-ref';
 
-export const codeOwnerMock = { id: '8765', name: 'John Doe', webPath: 'path/to/@johnDoe' };
-
 export const codeOwnersPath = 'path/to/codeowners/file';
 
-export const codeOwnersMultipleMock = [
+export const codeOwnersMock = [
   { id: '1', name: 'Idella Welch', webPath: '/raisa' },
   { id: '2', name: 'Winston Von', webPath: '/noella' },
   { id: '3', name: 'Don Runte', webPath: '/edyth' },

@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
   let_it_be(:current_user) { create(:user) }
+  let_it_be(:url) { "https://example.com/v1/projects/llm/locations/us-central1/publishers/google/models/codechat-bison:predict" }
+
   let(:body) { { 'test' => 'test' } }
   let(:token) { create(:personal_access_token, user: current_user) }
   let(:response_double) { instance_double(HTTParty::Response, code: 200, success?: true, body: body.to_json) }
@@ -24,8 +26,8 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
 
     stub_feature_flags(explain_vulnerability_vertex: true)
     stub_feature_flags(ai_experimentation_api: current_user)
-    stub_application_setting(tofa_host: host)
-    stub_application_setting(vertex_project: 'llm')
+    stub_application_setting(vertex_ai_host: host)
+    stub_application_setting(vertex_ai_project: 'llm')
   end
 
   shared_examples 'invalid request' do
@@ -50,6 +52,7 @@ RSpec.describe API::Ai::Experimentation::VertexAi, feature_category: :shared do
       expect(data).to include({
         'AllowRedirects' => false,
         'Method' => 'POST',
+        'URL' => url,
         'Header' => header,
         'Body' => expected_request_body
       })
