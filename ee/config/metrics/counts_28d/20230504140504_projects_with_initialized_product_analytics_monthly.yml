@@ -1,8 +1,8 @@
 ---
 key_path: counts.projects_with_initialized_product_analytics_monthly
 description: "Count of the number of projects that initialized product analytics in the last 28 days"
-product_section: dev
-product_stage: analyze
+product_section: analytics
+product_stage: analytics
 product_group: product_analytics
 value_type: number
 status: active
