@@ -35,9 +35,7 @@ module Security
       end
 
       def collect_ingested_ids_for(scan, ingested_ids)
-        scan.scanners.each do |scanner|
-          ingested_ids_by_scanner[scanner] += ingested_ids
-        end
+        ingested_ids_by_scanner[scan.scanner] += ingested_ids
       end
 
       def latest_security_scans

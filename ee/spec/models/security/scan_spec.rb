@@ -450,13 +450,13 @@ RSpec.describe Security::Scan, feature_category: :vulnerability_management do
     expect(scan.pipeline_id).to eq(scan.build.commit_id)
   end
 
-  describe "#scanners" do
+  describe "#scanner" do
     let_it_be(:scan) { create(:security_scan, scan_type: :dependency_scanning) }
     let_it_be(:artifact) { create(:ee_ci_job_artifact, :dependency_scanning, job: scan.build, project: scan.project) }
     let_it_be(:gemnasium_maven_scanner) { create(:vulnerabilities_scanner, project: scan.project, external_id: 'gemnasium-maven') }
 
     it 'returns the matching vulnerability scanner' do
-      expect(scan.scanners).to contain_exactly(gemnasium_maven_scanner)
+      expect(scan.scanner).to eq(gemnasium_maven_scanner)
     end
   end
 end
