@@ -7,8 +7,8 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::Chat, feature_categor
   let_it_be(:project) { 'cllm' }
 
   before do
-    stub_application_setting(tofa_host: host)
-    stub_application_setting(vertex_project: project)
+    stub_application_setting(vertex_ai_host: host)
+    stub_application_setting(vertex_ai_project: project)
   end
 
   describe '#payload' do

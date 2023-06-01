@@ -10,8 +10,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
   subject(:configuration) { described_class.new(model_config: model_config) }
 
   before do
-    stub_application_setting(tofa_url: url)
-    stub_application_setting(tofa_host: host)
+    stub_application_setting(vertex_ai_host: host)
   end
 
   describe '#access_token', :clean_gitlab_redis_cache do
@@ -46,7 +45,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
       end
 
       before do
-        stub_application_setting(tofa_credentials: credentials.to_json)
+        stub_application_setting(vertex_ai_credentials: credentials.to_json)
 
         stub_request(:post, "https://www.googleapis.com/oauth2/v4/token").to_return(
           status: 200,
@@ -76,7 +75,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
         {
           'Accept' => 'application/json',
           'Authorization' => 'Bearer 123',
-          'Host' => model_config.host,
+          'Host' => host,
           'Content-Type' => 'application/json'
         }
       )

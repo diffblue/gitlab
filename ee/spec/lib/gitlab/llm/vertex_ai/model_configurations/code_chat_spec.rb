@@ -28,8 +28,8 @@ RSpec.describe Gitlab::Llm::VertexAi::ModelConfigurations::CodeChat, feature_cat
       host = 'example.com'
       project = 'llm'
 
-      stub_application_setting(tofa_host: host)
-      stub_application_setting(vertex_project: project)
+      stub_application_setting(vertex_ai_host: host)
+      stub_application_setting(vertex_ai_project: project)
 
       expect(subject.url).to eq(
         'https://example.com/v1/projects/llm/locations/us-central1/publishers/google/models/codechat-bison:predict'
