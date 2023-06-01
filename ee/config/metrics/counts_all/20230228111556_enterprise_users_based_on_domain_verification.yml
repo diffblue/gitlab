@@ -5,7 +5,9 @@ product_section: dev
 product_stage: manage
 product_group: authentication_and_authorization
 value_type: number
-status: active
+status: removed
+removed_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121719
+milestone_removed: "16.1"
 milestone: "15.10"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/112185
 time_frame: all
