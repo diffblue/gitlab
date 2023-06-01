@@ -11,11 +11,12 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
 
   let_it_be(:project1) do
     create(
-      :project, :with_avatar,
+      :project, :with_avatar, :custom_repo,
       name: 'Component Repository',
       description: 'A simple component',
       namespace: namespace,
-      star_count: 1
+      star_count: 1,
+      files: { 'README.md' => '**Test**' }
     )
   end
 
@@ -70,20 +71,28 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
             icon: project1.avatar_path,
             webPath: "/#{project1.full_path}",
             starCount: project1.star_count,
-            forksCount: project1.forks_count
+            forksCount: project1.forks_count,
+            readmeHtml: a_string_including('<strong>Test</strong>')
           )
         )
       end
 
       context 'when there are two resources visible to the current user in the namespace' do
-        it 'returns both resources' do
+        it 'returns both resources with the expected data' do
           resource2 = create(:catalog_resource, project: project2)
 
           post_query
 
           expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
             a_graphql_entity_for(resource1),
-            a_graphql_entity_for(resource2)
+            a_graphql_entity_for(
+              resource2, :name, :description,
+              icon: project2.avatar_path,
+              webPath: "/#{project2.full_path}",
+              starCount: project2.star_count,
+              forksCount: project2.forks_count,
+              readmeHtml: ''
+            )
           )
         end
 

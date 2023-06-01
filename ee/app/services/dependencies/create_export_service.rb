@@ -2,15 +2,15 @@
 
 module Dependencies
   class CreateExportService
-    attr_reader :author, :project
+    attr_reader :author, :exportable
 
-    def initialize(project, author)
+    def initialize(exportable, author)
       @author = author
-      @project = project
+      @exportable = exportable
     end
 
     def execute
-      dependency_list_export = Dependencies::DependencyListExport.create!(project: project, author: author)
+      dependency_list_export = Dependencies::DependencyListExport.create!(exportable: exportable, author: author)
       Dependencies::ExportWorker.perform_async(dependency_list_export.id)
       dependency_list_export
     rescue StandardError
