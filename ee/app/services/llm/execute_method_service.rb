@@ -5,6 +5,7 @@ module Llm
     # This list of methods will expand as we add more methods to support.
     # Could also be abstracted to another class specific to find the appropriate method service.
     METHODS = {
+      analyze_ci_job_failure: Llm::AnalyzeCiJobFailureService,
       explain_vulnerability: ::Llm::ExplainVulnerabilityService,
       summarize_comments: Llm::GenerateSummaryService,
       summarize_review: Llm::MergeRequests::SummarizeReviewService,

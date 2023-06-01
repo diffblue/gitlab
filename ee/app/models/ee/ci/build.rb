@@ -27,6 +27,7 @@ module EE
       }.freeze
 
       prepended do
+        include Ai::Model
         include UsageStatistics
         include FromUnion
 
@@ -200,6 +201,24 @@ module EE
 
       def waiting_for_deployment_approval?
         manual? && deployment_job? && deployment&.blocked?
+      end
+
+      # For AiAction
+      def send_to_ai?
+        return false if debug_mode?
+        return false unless trace.exist?
+
+        true
+      end
+
+      # For AiAction
+      def to_ability_name
+        'build'
+      end
+
+      # For AiAction
+      def resource_parent
+        project
       end
 
       private
