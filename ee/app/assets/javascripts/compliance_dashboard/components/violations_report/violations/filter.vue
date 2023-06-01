@@ -98,9 +98,9 @@ export default {
 
 <template>
   <div
-    class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row row-content-block gl-pb-0 gl-mb-5 gl-gap-5"
+    class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row row-content-block gl-pb-0 gl-gap-5 gl-border-b-0"
   >
-    <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-md-pr-5 gl-sm-gap-3">
+    <div class="gl-display-flex gl-flex-direction-column gl-mb-5 gl-sm-gap-3">
       <label data-testid="dropdown-label" class="gl-line-height-normal">{{
         $options.i18n.projectFilterLabel
       }}</label>
@@ -124,7 +124,7 @@ export default {
       :default-start-date="defaultStartDate"
       :default-end-date="defaultEndDate"
       :default-max-date="$options.defaultMaxDate"
-      :start-picker-class="`${$options.dateRangePickerClass} gl-mr-5`"
+      :start-picker-class="`${$options.dateRangePickerClass}`"
       :end-picker-class="$options.dateRangePickerClass"
       date-range-indicator-class="gl-m-0!"
       :same-day-selection="false"
