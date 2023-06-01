@@ -132,10 +132,13 @@ export const updateInvoicePreviewLoading = ({ commit }, isLoading) => {
 export const startLoadingZuoraScript = ({ commit }) =>
   commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
 
-export const fetchPaymentFormParams = ({ dispatch }) =>
+export const fetchPaymentFormParams = ({ commit, dispatch }) => {
+  commit(types.UPDATE_IS_LOADING_PAYMENT_METHOD, true);
   Api.fetchPaymentFormParams(PAYMENT_FORM_ID)
     .then(({ data }) => dispatch('fetchPaymentFormParamsSuccess', data))
-    .catch(() => dispatch('fetchPaymentFormParamsError'));
+    .catch(() => dispatch('fetchPaymentFormParamsError'))
+    .finally(() => dispatch('zuoraIframeRendered'));
+};
 
 export const fetchPaymentFormParamsSuccess = ({ commit, dispatch }, data) => {
   if (data.errors) {

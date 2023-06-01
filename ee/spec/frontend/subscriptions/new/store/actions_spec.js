@@ -392,8 +392,16 @@ describe('Subscriptions Actions', () => {
         actions.fetchPaymentFormParams,
         null,
         {},
-        [],
-        [{ type: 'fetchPaymentFormParamsSuccess', payload: { token: 'x' } }],
+        [
+          {
+            payload: true,
+            type: 'UPDATE_IS_LOADING_PAYMENT_METHOD',
+          },
+        ],
+        [
+          { type: 'fetchPaymentFormParamsSuccess', payload: { token: 'x' } },
+          { type: 'zuoraIframeRendered' },
+        ],
       );
     });
 
@@ -404,8 +412,13 @@ describe('Subscriptions Actions', () => {
         actions.fetchPaymentFormParams,
         null,
         {},
-        [],
-        [{ type: 'fetchPaymentFormParamsError' }],
+        [
+          {
+            payload: true,
+            type: 'UPDATE_IS_LOADING_PAYMENT_METHOD',
+          },
+        ],
+        [{ type: 'fetchPaymentFormParamsError' }, { type: 'zuoraIframeRendered' }],
       );
     });
   });
