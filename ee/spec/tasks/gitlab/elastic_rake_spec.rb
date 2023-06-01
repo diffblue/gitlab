@@ -281,8 +281,9 @@ feature_category: :global_search do
     subject { run_rake_task('gitlab:elastic:list_pending_migrations') }
 
     context 'when there are pending migrations' do
-      let(:pending_migration1) { ::Elastic::DataMigrationService.migrations[1] }
-      let(:pending_migration2) { ::Elastic::DataMigrationService.migrations[2] }
+      let(:two_most_recent_migrations) { ::Elastic::DataMigrationService.migrations.last(2) }
+      let(:pending_migration1) { two_most_recent_migrations.first }
+      let(:pending_migration2) { two_most_recent_migrations.second }
 
       before do
         pending_migration1.save!(completed: false)
@@ -297,6 +298,18 @@ feature_category: :global_search do
     context 'when there is no pending migrations' do
       it 'outputs message there are no pending migrations' do
         expect { subject }.to output(/There are no pending migrations./).to_stdout
+      end
+    end
+
+    context 'when pending migrations are obsolete' do
+      let(:obsolete_pending_migration) { ::Elastic::DataMigrationService.migrations.first }
+
+      before do
+        obsolete_pending_migration.save!(completed: false)
+      end
+
+      it 'outputs that the pending migration is obsolete' do
+        expect { subject }.to output(/#{obsolete_pending_migration.name} \[Obsolete\]/).to_stdout
       end
     end
   end
@@ -443,36 +456,35 @@ feature_category: :global_search do
     end
 
     it 'outputs pending migrations' do
-      migration = instance_double(
-        Elastic::MigrationRecord,
-        name: 'TestMigration',
-        started?: true,
-        halted?: false,
-        failed?: false,
-        load_state: { test: 'value' }
-      )
+      pending_migration = ::Elastic::DataMigrationService.migrations.last
+      obsolete_migration = ::Elastic::DataMigrationService.migrations.first
+      pending_migration.save!(completed: false)
+      obsolete_migration.save!(completed: false)
 
-      allow(::Elastic::DataMigrationService).to receive(:pending_migrations).and_return([migration])
+      allow(::Elastic::DataMigrationService).to receive(:pending_migrations)
+        .and_return([pending_migration, obsolete_migration])
 
       expect { subject }.to output(
-        /Pending Migrations\s+#{migration.name}/
+        /Pending Migrations\s+#{pending_migration.name}\s+#{obsolete_migration.name} \[Obsolete\]/
       ).to_stdout
     end
 
     it 'outputs current migration' do
-      migration = instance_double(
-        Elastic::MigrationRecord,
-        name: 'TestMigration',
-        started?: true,
-        halted?: false,
-        failed?: false,
-        load_state: { test: 'value' }
-      )
+      migration = ::Elastic::DataMigrationService.migrations.last
+      allow(migration).to receive(:started?).and_return(true)
+      allow(migration).to receive(:load_state).and_return({ test: 'value' })
       allow(Elastic::MigrationRecord).to receive(:current_migration).and_return(migration)
 
-      expect { subject }.to output(
-        /Name:\s+TestMigration\s+Started:\s+yes\s+Halted:\s+no\s+Failed:\s+no\s+Current state:\s+{"test":"value"}/
-      ).to_stdout
+      expected_regex = Regexp.new([
+        "Name:\\s+#{migration.name}\\s+",
+        'Started:\\s+yes\\s+',
+        'Halted:\\s+no\\s+',
+        'Failed:\\s+no\\s+',
+        'Obsolete:\\s+no\\s+',
+        'Current state:\\s+{"test":"value"}'
+      ].join(''))
+
+      expect { subject }.to output(expected_regex).to_stdout
     end
 
     context 'with index settings' do
