@@ -69,6 +69,39 @@ RSpec.describe Epics::ReopenService, feature_category: :portfolio_management do
 
             subject.execute(epic)
           end
+
+          context 'when project bot it logs audit events' do
+            let_it_be(:user) { create(:user, :project_bot, email: "bot@example.com") }
+
+            before_all do
+              group.add_maintainer(user)
+            end
+
+            include_examples 'audit event logging' do
+              let(:licensed_features_to_stub) { { epics: true } }
+              let(:operation) { subject.execute(epic) }
+              let(:event_type) { 'epic_reopened_by_project_bot' }
+              let(:fail_condition!) { expect(user).to receive(:project_bot?).and_return(false) }
+              let(:attributes) do
+                {
+                  author_id: user.id,
+                  entity_id: epic.group.id,
+                  entity_type: 'Group',
+                  details: {
+                    author_name: user.name,
+                    target_id: epic.id,
+                    target_type: 'Epic',
+                    target_details: {
+                      iid: epic.iid,
+                      id: epic.id
+                    }.to_s,
+                    author_class: user.class.name,
+                    custom_message: "Reopened epic #{epic.title}"
+                  }
+                }
+              end
+            end
+          end
         end
 
         context 'when trying to reopen an opened epic' do

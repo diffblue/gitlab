@@ -19,6 +19,10 @@ module Epics
           author: current_user,
           namespace: epic.group
         )
+
+        if current_user.project_bot?
+          log_audit_event(epic, "epic_reopened_by_project_bot", "Reopened epic #{epic.title}")
+        end
       end
     end
   end

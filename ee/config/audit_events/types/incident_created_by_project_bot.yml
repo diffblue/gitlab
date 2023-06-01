@@ -1,0 +1,9 @@
+---
+name: incident_created_by_project_bot
+description: Triggered when an incident is created using a project access token
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/323299
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/121485
+feature_category: incident_management
+milestone: '16.1'
+saved_to_database: true
+streamed: true

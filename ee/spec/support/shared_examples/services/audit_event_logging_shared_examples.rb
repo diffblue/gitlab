@@ -3,7 +3,11 @@
 RSpec.shared_examples 'audit event logging' do
   context 'when licensed' do
     before do
-      stub_licensed_features(extended_audit_events: true)
+      if defined?(licensed_features_to_stub)
+        stub_licensed_features(licensed_features_to_stub.merge(extended_audit_events: true))
+      else
+        stub_licensed_features(extended_audit_events: true)
+      end
     end
 
     context 'when operation succeeds' do

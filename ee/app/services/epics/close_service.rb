@@ -20,6 +20,7 @@ module Epics
           author: current_user,
           namespace: epic.group
         )
+        log_audit_event(epic, "epic_closed_by_project_bot", "Closed epic #{epic.title}") if current_user.project_bot?
       end
     end
   end
