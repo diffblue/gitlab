@@ -204,10 +204,7 @@ namespace :gitlab do
       pending_migrations = ::Elastic::DataMigrationService.pending_migrations
 
       if pending_migrations.any?
-        puts 'Pending migrations:'
-        pending_migrations.each do |migration|
-          puts migration.name
-        end
+        display_pending_migrations(pending_migrations)
       else
         puts 'There are no pending migrations.'
       end
@@ -277,10 +274,7 @@ namespace :gitlab do
 
         if pending_migrations.any?
           puts ""
-          puts "Pending Migrations".color(:yellow)
-          pending_migrations.each do |migration|
-            puts migration.name
-          end
+          display_pending_migrations(pending_migrations)
         end
       end
 
@@ -296,6 +290,7 @@ namespace :gitlab do
           puts "Started:\t\t#{current_migration.started? ? "yes".color(:green) : "no"}"
           puts "Halted:\t\t\t#{current_migration.halted? ? "yes".color(:red) : "no".color(:green)}"
           puts "Failed:\t\t\t#{current_migration.failed? ? "yes".color(:red) : "no".color(:green)}"
+          puts "Obsolete:\t\t#{current_migration.obsolete? ? "yes".color(:red) : "no".color(:green)}"
           puts "Current state:\t\t#{current_state.to_json}" if current_state.present?
         end
       end
@@ -367,6 +362,15 @@ namespace :gitlab do
       arr.each { |p| puts "Project '#{p.full_path}' (ID: #{p.id}) isn't indexed.".color(:red) }
 
       puts "#{arr.count} out of #{projects.count} non-indexed projects shown."
+    end
+
+    def display_pending_migrations(pending_migrations)
+      puts "Pending Migrations".color(:yellow)
+      pending_migrations.each do |migration|
+        migration_info = migration.name
+        migration_info << " [Obsolete]".color(:red) if migration.obsolete?
+        puts migration_info
+      end
     end
   end
 end
