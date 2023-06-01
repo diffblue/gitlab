@@ -290,7 +290,6 @@ module EE
         override :usage_activity_by_stage_secure
         def usage_activity_by_stage_secure(time_period)
           results = count_secure_pipelines(time_period)
-          results.merge!(count_secure_scans(time_period))
 
           prefix = 'user_'
 
@@ -307,20 +306,6 @@ module EE
 
         # rubocop:disable CodeReuse/ActiveRecord
         # rubocop: disable UsageData/LargeTable
-        def count_secure_scans(time_period)
-          start = minimum_id(::Security::Scan, :build_id)
-          finish = maximum_id(::Security::Scan, :build_id)
-
-          {}.tap do |secure_jobs|
-            ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, scan_type|
-              by_scan_type = ::Security::Scan.where(scan_type: scan_type).where(time_period)
-              # increase the batch size to match ee/lib/gitlab/usage/metrics/instrumentations/count_ci_builds_metric.rb
-              secure_jobs["#{name}_scans".to_sym] =
-                count(by_scan_type, :build_id, start: start, finish: finish, batch_size: 1_000_000)
-            end
-          end
-        end
-
         def count_secure_pipelines(time_period)
           return {} if time_period.blank?
 
