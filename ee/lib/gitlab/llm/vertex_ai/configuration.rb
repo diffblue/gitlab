@@ -47,7 +47,7 @@ module Gitlab
         attr_reader :model_config
 
         delegate :host, :url, :payload, to: :model_config
-        delegate :tofa_credentials, to: :settings
+        delegate :vertex_ai_credentials, to: :settings
 
         def settings
           @settings ||= Gitlab::CurrentSettings.current_application_settings
@@ -55,7 +55,7 @@ module Gitlab
 
         def fresh_token
           response = ::Google::Auth::ServiceAccountCredentials.make_creds(
-            json_key_io: StringIO.new(tofa_credentials),
+            json_key_io: StringIO.new(vertex_ai_credentials),
             scope: DEFAULT_SCOPE
           ).fetch_access_token!
 

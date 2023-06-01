@@ -8,19 +8,22 @@ module Gitlab
           MissingConfigurationError = Class.new(StandardError)
 
           def url
-            raise MissingConfigurationError if host.blank? || vertex_project.blank?
+            raise MissingConfigurationError if host.blank? || vertex_ai_project.blank?
 
             text_model_url = URI::HTTPS.build(
               host: host,
-              path: "/v1/projects/#{vertex_project}/locations/us-central1/publishers/google/models/#{model}:predict"
+              path: "/v1/projects/#{vertex_ai_project}/locations/us-central1/publishers/google/models/#{model}:predict"
             )
             text_model_url.to_s
           end
 
+          def host
+            vertex_ai_host || "us-central1-aiplatform.googleapis.com"
+          end
+
           private
 
-          delegate :tofa_host, :vertex_project, to: :settings
-          alias_method :host, :tofa_host
+          delegate :vertex_ai_host, :vertex_ai_project, to: :settings
 
           def settings
             @settings ||= Gitlab::CurrentSettings.current_application_settings
