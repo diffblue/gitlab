@@ -1,13 +1,15 @@
-import { GlForm } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { GlForm } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
+import { VARIANT_SUCCESS } from '~/alert';
+import { visitUrl } from '~/lib/utils/url_utility';
+
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+
 import { runnerFormData } from 'jest/ci/runner/mock_data';
-import { VARIANT_SUCCESS } from '~/alert';
-import { visitUrl } from '~/lib/utils/url_utility';
 import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/ci/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/ci/runner/graphql/edit/runner_update.mutation.graphql';
@@ -46,7 +48,7 @@ describe('RunnerUpdateForm', () => {
     wrapper = extendedWrapper(
       mount(RunnerUpdateForm, {
         propsData: {
-          runner: mockRunner,
+          runner: null,
           runnerPath: mockRunnerPath,
           ...props,
         },
@@ -89,10 +91,15 @@ describe('RunnerUpdateForm', () => {
 
   describe('Cost factor fields', () => {
     describe('When on .com', () => {
-      beforeEach(() => {
+      beforeEach(async () => {
         gon.dot_com = true;
 
         createComponent();
+
+        await wrapper.setProps({
+          loading: false,
+          runner: mockRunner,
+        });
       });
 
       it('the form contains CI minute cost factors', () => {
@@ -102,20 +109,17 @@ describe('RunnerUpdateForm', () => {
 
       describe('On submit, runner gets updated', () => {
         it.each`
-          test                         | initialValue                               | findInput                             | value    | submitted
-          ${'private minutes'}         | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${'1.5'} | ${{ privateProjectsMinutesCostFactor: 1.5 }}
-          ${'private minutes to null'} | ${{ privateProjectsMinutesCostFactor: 1 }} | ${findPrivateProjectsCostFactorInput} | ${''}    | ${{ privateProjectsMinutesCostFactor: null }}
-          ${'public minutes'}          | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${'0.5'} | ${{ publicProjectsMinutesCostFactor: 0.5 }}
-          ${'public minutes to null'}  | ${{ publicProjectsMinutesCostFactor: 0 }}  | ${findPublicProjectsCostFactorInput}  | ${''}    | ${{ publicProjectsMinutesCostFactor: null }}
-        `("Field updates runner's $test", async ({ initialValue, findInput, value, submitted }) => {
-          const runner = { ...mockRunner, ...initialValue };
-          createComponent({ props: { runner } });
-
+          test                         | findInput                             | value    | submitted
+          ${'private minutes'}         | ${findPrivateProjectsCostFactorInput} | ${'1.5'} | ${{ privateProjectsMinutesCostFactor: 1.5 }}
+          ${'private minutes to null'} | ${findPrivateProjectsCostFactorInput} | ${''}    | ${{ privateProjectsMinutesCostFactor: null }}
+          ${'public minutes'}          | ${findPublicProjectsCostFactorInput}  | ${'0.5'} | ${{ publicProjectsMinutesCostFactor: 0.5 }}
+          ${'public minutes to null'}  | ${findPublicProjectsCostFactorInput}  | ${''}    | ${{ publicProjectsMinutesCostFactor: null }}
+        `("Field updates runner's $test", async ({ findInput, value, submitted }) => {
           await findInput().setValue(value);
           await submitFormAndWait();
 
           expectToHaveSubmittedRunnerContaining({
-            id: runner.id,
+            id: mockRunner.id,
             ...submitted,
           });
         });
@@ -140,14 +144,18 @@ describe('RunnerUpdateForm', () => {
     const value = 'Note';
     const runner = { ...mockRunner, maintenanceNote: value };
 
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent({
-        props: { runner },
         provide: {
           glFeatures: {
             runnerMaintenanceNote: true,
           },
         },
+      });
+
+      await wrapper.setProps({
+        loading: false,
+        runner,
       });
     });
 
