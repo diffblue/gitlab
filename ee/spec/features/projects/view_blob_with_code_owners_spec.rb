@@ -33,15 +33,17 @@ RSpec.describe 'File blob > Code owners', :js, feature_category: :groups_and_pro
         wait_for_requests
         within('.file-owner-content') do
           expect(page).to have_content _('Code owners')
-          expect(page).to have_link(code_owner.name)
+          expect(page).to have_button('Show all')
           expect(page).to have_link _('Manage branch rules')
         end
       end
 
-      it 'does not show the code owners banner when there are no code owners' do
+      it 'shows no codeowners text and link to docs when there are no code owners' do
         visit_blob('README.md')
 
-        expect(page).not_to have_content _('Code owners')
+        expect(page).to have_content _('Code owners')
+        expect(page).to have_content _('Assign users and groups as approvers for specific file changes.')
+        expect(page).to have_link _('Learn more.')
       end
 
       context 'when the user does not have maintainer access' do
