@@ -13,6 +13,25 @@ RSpec.describe PasswordsController, feature_category: :system_access do
 
     subject { post :create, params: { user: { email: user.email } } }
 
-    it { expect { subject }.to change { AuditEvent.count }.by(1) }
+    it "generates audit events" do
+      expect { subject }.to change { AuditEvent.count }.by(1)
+
+      audit_event = AuditEvent.last
+      expect(audit_event.attributes).to include({
+        "entity_id" => user.id,
+        "entity_type" => "User",
+        "entity_path" => nil,
+        "author_name" => "An unauthenticated user",
+        "target_type" => "User",
+        "target_details" => user.email,
+        "target_id" => user.id
+      })
+      expect(audit_event.details).to include({
+        custom_message: "Ask for password reset",
+        author_name: "An unauthenticated user",
+        target_type: "User",
+        target_details: user.email
+      })
+    end
   end
 end
