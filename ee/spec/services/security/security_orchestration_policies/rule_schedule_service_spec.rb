@@ -11,7 +11,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     let!(:scanner_profile) { create(:dast_scanner_profile, name: 'Scanner Profile', project: project) }
     let!(:site_profile) { create(:dast_site_profile, name: 'Site Profile', project: project) }
     let(:policy) { build(:scan_execution_policy, enabled: true, rules: [rule]) }
-    let(:rule) { { type: 'schedule', branches: %w[master production], cadence: '*/20 * * * *' } }
+    let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
+    let(:branches) { %w[master production] }
 
     subject(:service) { described_class.new(container: project, current_user: current_user) }
 
@@ -29,6 +30,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
       allow_next_instance_of(Security::OrchestrationPolicyConfiguration) do |instance|
         allow(instance).to receive(:active_scan_execution_policies).and_return([policy])
       end
+    end
+
+    it 'returns a successful service response' do
+      service_result = service.execute(schedule)
+
+      expect(service_result).to be_kind_of(ServiceResponse)
+      expect(service_result.success?).to be(true)
     end
 
     context 'when scan type is dast' do
@@ -137,6 +145,31 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
       let(:policy) { nil }
 
       it_behaves_like 'does not execute scan'
+    end
+
+    context 'when create pipeline service returns errors' do
+      before do
+        allow_next_instance_of(::Security::SecurityOrchestrationPolicies::CreatePipelineService) do |service|
+          allow(service).to receive(:execute).and_return(ServiceResponse.error(message: 'message'))
+        end
+      end
+
+      it 'bubbles one error per branch' do
+        service_result = service.execute(schedule)
+
+        expect(service_result).to be_kind_of(ServiceResponse)
+        expect(service_result.message).to contain_exactly('message', 'message')
+      end
+
+      context 'with one branch' do
+        let(:branches) { %w[master] }
+
+        it 'returns one error message' do
+          service_result = service.execute(schedule)
+
+          expect(service_result.message).to contain_exactly('message')
+        end
+      end
     end
   end
 end
