@@ -105,7 +105,7 @@ module EE
         end
 
         def value_streams
-          @value_streams ||= namespace.value_streams.preload_associated_models
+          @value_streams ||= namespace.value_streams.preload_associated_models.order_by_name_asc
         end
 
         def serialize_value_stream(result)
