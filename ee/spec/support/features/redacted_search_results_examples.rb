@@ -110,13 +110,11 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
           expect(page).to have_content('The Project')
         end
 
-        # Issues scope should be redacted
-        if has_search_scope?('Issues')
-          select_search_scope('Issues')
-          # Project issues are still public
-          expect(page).to have_content('The Issue')
-          expect(page).not_to have_content('The Confidential issue')
-        end
+        select_search_scope('Issues')
+        # Project issues are still public
+        expect(page).to have_content('The Issue')
+        expect(page).not_to have_content('The Confidential issue')
+
         # Merge requests scope is not available for search within a project when
         # code is restricted
         if has_search_scope?('Merge requests')
@@ -125,16 +123,14 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
           expect(page).not_to have_content('The Merge Request')
         end
 
-        if has_search_scope?('Milestones')
-          select_search_scope('Milestones')
-          # Project issues are still public
-          expect(page).to have_content('The Milestone')
+        select_search_scope('Milestones')
+        # Project issues are still public
+        expect(page).to have_content('The Milestone')
 
-          select_search_scope('Comments')
-          # All places where notes are posted are restricted
-          expect(page).to have_content('A note on issue')
-          expect(page).to have_content('A note on', count: 1)
-        end
+        select_search_scope('Comments')
+        # All places where notes are posted are restricted
+        expect(page).to have_content('A note on issue')
+        expect(page).to have_content('A note on', count: 1)
       end
     end
   end
