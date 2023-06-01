@@ -567,19 +567,12 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
     it 'includes accurate usage_activity_by_stage data' do
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         sast_pipeline: be_within(error_rate).percent_of(0),
-        sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
-        dependency_scanning_scans: 0,
         container_scanning_pipeline: be_within(error_rate).percent_of(0),
-        container_scanning_scans: 0,
         dast_pipeline: be_within(error_rate).percent_of(0),
-        dast_scans: 0,
         secret_detection_pipeline: be_within(error_rate).percent_of(0),
-        secret_detection_scans: 0,
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        coverage_fuzzing_scans: 0,
-        api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0
+        api_fuzzing_pipeline: be_within(error_rate).percent_of(0)
       )
     end
 
@@ -599,15 +592,6 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         create(:security_scan, build: ds_failed_build, scan_type: 'dependency_scanning')
       end
 
-      expect(described_class.usage_activity_by_stage_secure({})).to include(
-        sast_scans: 2,
-        dependency_scanning_scans: 6,
-        container_scanning_scans: 2,
-        dast_scans: 0,
-        secret_detection_scans: 2,
-        coverage_fuzzing_scans: 0
-      )
-
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         sast_pipeline: be_within(error_rate).percent_of(1),
         dependency_scanning_pipeline: be_within(error_rate).percent_of(2),
@@ -615,14 +599,7 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         dast_pipeline: be_within(error_rate).percent_of(0),
         secret_detection_pipeline: be_within(error_rate).percent_of(1),
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        sast_scans: 1,
-        dependency_scanning_scans: 3,
-        container_scanning_scans: 1,
-        dast_scans: 0,
-        secret_detection_scans: 1,
-        coverage_fuzzing_scans: 0,
-        api_fuzzing_scans: 0
+        api_fuzzing_pipeline: be_within(error_rate).percent_of(0)
       )
     end
 
@@ -635,19 +612,12 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         sast_pipeline: be_within(error_rate).percent_of(0),
-        sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
-        dependency_scanning_scans: 0,
         container_scanning_pipeline: be_within(error_rate).percent_of(0),
-        container_scanning_scans: 0,
         dast_pipeline: be_within(error_rate).percent_of(0),
-        dast_scans: 0,
         secret_detection_pipeline: be_within(error_rate).percent_of(0),
-        secret_detection_scans: 0,
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        coverage_fuzzing_scans: 0,
-        api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0
+        api_fuzzing_pipeline: be_within(error_rate).percent_of(0)
       )
     end
 
@@ -658,19 +628,12 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         sast_pipeline: be_within(error_rate).percent_of(0),
-        sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
-        dependency_scanning_scans: 0,
         container_scanning_pipeline: be_within(error_rate).percent_of(0),
-        container_scanning_scans: 0,
         dast_pipeline: be_within(error_rate).percent_of(0),
-        dast_scans: 0,
         secret_detection_pipeline: be_within(error_rate).percent_of(0),
-        secret_detection_scans: 0,
         coverage_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        coverage_fuzzing_scans: 0,
-        api_fuzzing_pipeline: be_within(error_rate).percent_of(0),
-        api_fuzzing_scans: 0
+        api_fuzzing_pipeline: be_within(error_rate).percent_of(0)
       )
     end
 
@@ -678,6 +641,10 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
       subject { described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params) }
 
       before do
+        for_defined_days_back do
+          create(:security_scan)
+        end
+
         allow(Gitlab::Database::BatchCount).to receive(:batch_distinct_count).and_raise(ActiveRecord::StatementInvalid)
         allow(Gitlab::Database::BatchCount).to receive(:batch_count).and_raise(ActiveRecord::StatementInvalid)
         allow(Gitlab::Database::PostgresHll::BatchDistinctCounter).to receive(:new).and_raise(ActiveRecord::StatementInvalid)
@@ -697,25 +664,14 @@ RSpec.describe Gitlab::UsageData, feature_category: :service_ping do
         let(:should_raise_for_dev) { false }
 
         it 'has to resort to 0 for counting license scan' do
-          for_defined_days_back do
-            create(:security_scan)
-          end
-
           expect(subject).to include(
             sast_pipeline: -1,
-            sast_scans: -1,
             dependency_scanning_pipeline: -1,
-            dependency_scanning_scans: -1,
             container_scanning_pipeline: -1,
-            container_scanning_scans: -1,
             dast_pipeline: -1,
-            dast_scans: -1,
             secret_detection_pipeline: -1,
-            secret_detection_scans: -1,
             coverage_fuzzing_pipeline: -1,
-            coverage_fuzzing_scans: -1,
-            api_fuzzing_pipeline: -1,
-            api_fuzzing_scans: -1
+            api_fuzzing_pipeline: -1
           )
         end
       end
