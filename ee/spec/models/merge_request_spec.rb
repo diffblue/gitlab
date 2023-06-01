@@ -1551,4 +1551,19 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
       end
     end
   end
+
+  describe '#diff_llm_summaries' do
+    let(:merge_request) { create(:merge_request) }
+    let!(:mr_diff_1) { create(:merge_request_diff, merge_request: merge_request) }
+    let!(:mr_diff_2) { create(:merge_request_diff, merge_request: merge_request) }
+    let!(:mr_diff_3) { create(:merge_request_diff, merge_request: merge_request) }
+    let!(:other_mr_diff) { create(:merge_request_diff) }
+    let!(:mr_diff_summary_1) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_1) }
+    let!(:mr_diff_summary_3) { create(:merge_request_diff_llm_summary, merge_request_diff: mr_diff_3) }
+    let!(:other_mr_diff_summary) { create(:merge_request_diff_llm_summary, merge_request_diff: other_mr_diff) }
+
+    it 'returns recent MergeRequest::DiffLlmSummary records associated to merge request diffs' do
+      expect(merge_request.diff_llm_summaries).to eq([mr_diff_summary_3, mr_diff_summary_1])
+    end
+  end
 end
