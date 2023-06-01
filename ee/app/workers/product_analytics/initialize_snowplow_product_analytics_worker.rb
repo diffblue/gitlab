@@ -9,6 +9,14 @@ module ProductAnalytics
     idempotent!
     worker_has_external_dependencies!
 
+    PROJECT_PRODUCT_ANALYTICS_KEY = "project:%{project_id}:product_analytics_initializing"
+
+    sidekiq_options retry: 1
+    sidekiq_retries_exhausted do |msg|
+      project_id = msg.dig('args', 0)
+      Gitlab::Redis::SharedState.with { |r| r.del(format(PROJECT_PRODUCT_ANALYTICS_KEY, project_id: project_id)) }
+    end
+
     def perform(project_id)
       @project = Project.find_by_id(project_id)
 
@@ -17,7 +25,8 @@ module ProductAnalytics
 
       response = Gitlab::HTTP.post(
         "#{::ProductAnalytics::Settings.for_project(@project).product_analytics_configurator_connection_string}/setup-project/gitlab_project_#{project_id}", # rubocop:disable Layout/LineLength
-        allow_local_requests: true
+        allow_local_requests: true,
+        timeout: 10
       )
 
       ::ProductAnalytics::InitializeStackService.new(container: @project).unlock!
