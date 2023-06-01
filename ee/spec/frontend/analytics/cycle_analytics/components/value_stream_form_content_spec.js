@@ -108,6 +108,8 @@ describe('ValueStreamFormContent', () => {
   const findCustomStageEventField = (index = 0) =>
     wrapper.findAllComponents(CustomStageEventField).at(index);
   const findFieldErrors = (testId) => wrapper.findByTestId(testId).attributes('invalid-feedback');
+  const findNameInput = () =>
+    wrapper.findByTestId('create-value-stream-name').findComponent(GlFormInput);
 
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
@@ -153,6 +155,20 @@ describe('ValueStreamFormContent', () => {
 
         expect(findDefaultStages()).toHaveLength(defaultStageConfig.length);
         expect(findCustomStages()).toHaveLength(0);
+      });
+
+      it('does not clear name when toggling templates', async () => {
+        await findNameInput().vm.$emit('input', initialData.name);
+
+        expect(findNameInput().attributes('value')).toBe(initialData.name);
+
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
+
+        expect(findNameInput().attributes('value')).toBe(initialData.name);
+
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
+
+        expect(findNameInput().attributes('value')).toBe(initialData.name);
       });
 
       it('each stage has a transition key when toggling', async () => {
@@ -293,6 +309,18 @@ describe('ValueStreamFormContent', () => {
       });
 
       describe('restore defaults button', () => {
+        it('restores the original name', async () => {
+          const newName = 'name';
+
+          await findNameInput().vm.$emit('input', newName);
+
+          expect(findNameInput().attributes('value')).toBe(newName);
+
+          await findRestoreButton().vm.$emit('click');
+
+          expect(findNameInput().attributes('value')).toBe(initialData.name);
+        });
+
         it('will clear the form fields', async () => {
           expect(findCustomStages().length).toBe(stageCount);
 
@@ -378,10 +406,7 @@ describe('ValueStreamFormContent', () => {
           const fieldTestId = 'create-value-stream-name';
           expect(findFieldErrors(fieldTestId)).toBeUndefined();
 
-          await wrapper
-            .findByTestId('create-value-stream-name')
-            .findComponent(GlFormInput)
-            .vm.$emit('input', '');
+          await findNameInput().vm.$emit('input', '');
           await clickAddStage();
 
           expectFieldError(fieldTestId, 'Name is required');

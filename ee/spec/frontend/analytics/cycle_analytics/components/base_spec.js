@@ -100,8 +100,8 @@ const mocks = {
   },
 };
 
-function mockRequiredRoutes(mockAdapter) {
-  mockAdapter.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, issueEvents);
+function mockRequiredRoutes(mockAdapter, { page = 1 } = {}) {
+  mockAdapter.onGet(endpoints.stageData).reply(HTTP_STATUS_OK, issueEvents, { 'x-page': page });
   mockAdapter.onGet(endpoints.tasksByTypeTopLabelsData).reply(HTTP_STATUS_OK, groupLabels);
   mockAdapter.onGet(endpoints.tasksByTypeData).reply(HTTP_STATUS_OK, { ...tasksByTypeData });
   mockAdapter
@@ -187,6 +187,7 @@ describe('EE Value Stream Analytics component', () => {
   const findDurationOverviewChart = () => wrapper.findComponent(DurationOverviewChart);
   const findTypeOfWorkCharts = () => wrapper.findComponent(TypeOfWorkCharts);
   const findValueStreamSelect = () => wrapper.findComponent(ValueStreamSelect);
+  const findUrlSync = () => wrapper.findComponent(UrlSync);
 
   describe('with no value streams', () => {
     beforeEach(async () => {
@@ -433,40 +434,38 @@ describe('EE Value Stream Analytics component', () => {
   describe('Path navigation', () => {
     const selectedStage = { id: 2, title: 'Plan' };
     const overviewStage = { id: OVERVIEW_STAGE_ID, title: 'Overview' };
-    let actionSpies = {};
 
-    beforeEach(async () => {
+    beforeEach(() => {
       mock = new MockAdapter(axios);
       mockRequiredRoutes(mock);
-      wrapper = await createComponent();
-      actionSpies = {
-        setDefaultSelectedStage: jest.spyOn(wrapper.vm, 'setDefaultSelectedStage'),
-        setSelectedStage: jest.spyOn(wrapper.vm, 'setSelectedStage'),
-        updateStageTablePagination: jest.spyOn(wrapper.vm, 'updateStageTablePagination'),
-      };
     });
 
     afterEach(() => {
       mock.restore();
     });
 
-    it('when a stage is selected', () => {
+    it('when a stage is selected', async () => {
+      wrapper = await createComponent();
+
       findPathNavigation().vm.$emit('selected', selectedStage);
 
-      expect(actionSpies.setDefaultSelectedStage).not.toHaveBeenCalled();
-      expect(actionSpies.setSelectedStage).toHaveBeenCalledWith(selectedStage);
-      expect(actionSpies.updateStageTablePagination).toHaveBeenCalledWith({
-        ...initialPaginationQuery,
-        page: 1,
-      });
+      await waitForPromises();
+
+      expect(findUrlSync().props('query')).toEqual(
+        expect.objectContaining({ stage_id: selectedStage.id, page: 1 }),
+      );
     });
 
-    it('when the overview is selected', () => {
+    it('when the overview is selected', async () => {
+      wrapper = await createComponent({ selectedStage });
+
       findPathNavigation().vm.$emit('selected', overviewStage);
 
-      expect(actionSpies.setSelectedStage).not.toHaveBeenCalled();
-      expect(actionSpies.updateStageTablePagination).not.toHaveBeenCalled();
-      expect(actionSpies.setDefaultSelectedStage).toHaveBeenCalled();
+      await waitForPromises();
+
+      expect(findUrlSync().props('query')).toEqual(
+        expect.objectContaining({ stage_id: null, page: null }),
+      );
     });
   });
 

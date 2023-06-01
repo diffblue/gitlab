@@ -35,6 +35,10 @@ module Gitlab
         generate_commit_message: {
           service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage,
           prompt_class: ::Gitlab::Llm::Templates::GenerateCommitMessage
+        },
+        chat: {
+          service_class: ::Gitlab::Llm::Completions::Chat,
+          prompt_class: nil
         }
       }.freeze
 

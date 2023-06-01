@@ -205,6 +205,7 @@ export default {
 
     <gl-empty-state
       v-if="showFiltersEmptyState"
+      data-testid="filters-empty-state"
       :title="s__('IssuesAnalytics|Sorry, your filter produced no results')"
       :description="
         s__(
@@ -217,6 +218,7 @@ export default {
 
     <gl-empty-state
       v-if="showNoDataEmptyState"
+      data-testid="no-data-empty-state"
       :title="s__('IssuesAnalytics|There are no issues for the projects in your group')"
       :description="
         s__(

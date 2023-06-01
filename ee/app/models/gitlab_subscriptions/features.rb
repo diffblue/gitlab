@@ -172,6 +172,7 @@ module GitlabSubscriptions
     ].freeze
 
     ULTIMATE_FEATURES = %i[
+      ai_chat
       ai_config_chat
       ai_features
       ai_git_command
