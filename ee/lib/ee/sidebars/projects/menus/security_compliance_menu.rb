@@ -9,7 +9,7 @@ module EE
 
           override :configure_menu_items
           def configure_menu_items
-            return false unless can?(context.current_user, :access_security_and_compliance, context.project)
+            return false unless can_access_some_page?
 
             add_item(discover_project_security_menu_item)
             add_item(security_dashboard_menu_item)
@@ -25,6 +25,31 @@ module EE
           end
 
           private
+
+          def can_access_some_page?
+            can?(context.current_user, :access_security_and_compliance, context.project) ||
+              can?(context.current_user, :read_security_resource, context.project)
+          end
+
+          def can_access_security_dashboard?
+            can?(context.current_user, :access_security_and_compliance, context.project) &&
+              can?(context.current_user, :read_project_security_dashboard, context.project)
+          end
+
+          def can_access_configuration?
+            can_access_security_dashboard? &&
+              context.project.licensed_feature_available?(:security_dashboard)
+          end
+
+          def can_access_license?
+            can?(context.current_user, :access_security_and_compliance, context.project) &&
+              can?(context.current_user, :read_licenses, context.project)
+          end
+
+          def can_access_dependencies?
+            can?(context.current_user, :access_security_and_compliance, context.project) &&
+              can?(context.current_user, :read_dependencies, context.project)
+          end
 
           override :configuration_menu_item_paths
           def configuration_menu_item_paths
@@ -43,8 +68,7 @@ module EE
 
           override :render_configuration_menu_item?
           def render_configuration_menu_item?
-            super ||
-              (context.project.licensed_feature_available?(:security_dashboard) && can?(context.current_user, :read_project_security_dashboard, context.project))
+            super || can_access_configuration?
           end
 
           def discover_project_security_menu_item
@@ -62,7 +86,7 @@ module EE
           end
 
           def security_dashboard_menu_item
-            unless can?(context.current_user, :read_project_security_dashboard, context.project)
+            unless can_access_security_dashboard?
               return ::Sidebars::NilMenuItem.new(item_id: :dashboard)
             end
 
@@ -76,7 +100,7 @@ module EE
           end
 
           def vulnerability_report_menu_item
-            unless can?(context.current_user, :read_project_security_dashboard, context.project)
+            unless can?(context.current_user, :read_security_resource, context.project)
               return ::Sidebars::NilMenuItem.new(item_id: :vulnerability_report)
             end
 
@@ -110,7 +134,7 @@ module EE
           end
 
           def dependencies_menu_item
-            unless can?(context.current_user, :read_dependencies, context.project)
+            unless can_access_dependencies?
               return ::Sidebars::NilMenuItem.new(item_id: :dependency_list)
             end
 
@@ -124,7 +148,7 @@ module EE
           end
 
           def license_compliance_menu_item
-            unless can?(context.current_user, :read_licenses, context.project)
+            unless can_access_license?
               return ::Sidebars::NilMenuItem.new(item_id: :license_compliance)
             end
 
