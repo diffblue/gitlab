@@ -35,7 +35,7 @@ module QA
         end
 
         it 'upgrades from free to ultimate',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347667' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347667' do
           Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
 
           Page::Group::Menu.perform(&:go_to_billing)
@@ -65,7 +65,7 @@ module QA
           end
 
           it 'upgrades from free to premium with correct CI minutes',
-             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349085' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349085' do
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
               usage_quota.pipelines_tab
               usage_quota.wait_for_additional_ci_minutes_available

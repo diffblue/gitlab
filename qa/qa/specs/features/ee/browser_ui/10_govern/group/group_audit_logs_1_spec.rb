@@ -58,7 +58,7 @@ module QA
       end
 
       context 'for change repository size limit', :reliable, :requires_admin,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)
           group.visit!
@@ -73,7 +73,7 @@ module QA
       end
 
       context 'for update group name', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
         before do
           sign_in
           group.visit!
@@ -89,7 +89,7 @@ module QA
       end
 
       context 'for add user, change access level, remove user', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
         before do
           sign_in
           group.visit!
@@ -105,7 +105,7 @@ module QA
       end
 
       context 'for add and remove project access', :reliable,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
           sign_in
           project.visit!

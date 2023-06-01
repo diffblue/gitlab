@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Govern', :jira, :orchestrated, :requires_admin, product_group: :threat_insights do
     describe 'vulnerability report with jira integration',
-testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
+      testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
       let(:jira_project_key) { 'JITP' }
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
@@ -43,7 +43,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
       end
 
       it 'can successfully create a JIRA issue from vulnerability details page',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/381386' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/381386' do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
@@ -65,8 +65,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
         end
 
         issue_key = QA::Vendor::Jira::JiraAPI.perform do |jira_api|
-          jira_api.create_issue(jira_project_key, summary: jira_issue_summary,
-                                                  description: jira_description)
+          jira_api.create_issue(jira_project_key, summary: jira_issue_summary, description: jira_description)
         end
 
         switch_to_vulnerability_report_tab
