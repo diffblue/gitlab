@@ -10,7 +10,7 @@ class ScimIdentity < ApplicationRecord
 
   validates :user, presence: true, uniqueness: { scope: [:group_id] }
   validates :extern_uid, presence: true,
-                         uniqueness: { case_sensitive: false, scope: [:group_id] }
+    uniqueness: { case_sensitive: false, scope: [:group_id] }
 
   scope :for_instance, -> { where(group: nil) }
   scope :for_user, ->(user) { where(user: user) }

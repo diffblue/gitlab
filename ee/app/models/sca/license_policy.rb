@@ -9,7 +9,7 @@ module SCA
     }.with_indifferent_access
 
     attr_reader :id, :name, :url, :dependencies, :spdx_identifier, :classification,
-                :approval_status
+      :approval_status
 
     def initialize(reported_license, software_policy, approval_status = nil)
       @approval_status = approval_status || software_policy&.approval_status || 'unclassified'
