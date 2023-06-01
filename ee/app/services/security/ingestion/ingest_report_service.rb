@@ -32,7 +32,7 @@ module Security
       attr_reader :security_scan
       attr_accessor :errored
 
-      delegate :pipeline, :scanners, to: :security_scan, private: true
+      delegate :pipeline, to: :security_scan, private: true
 
       def finding_map_collection
         @finding_map_collection ||= FindingMapCollection.new(security_scan)
