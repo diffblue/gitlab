@@ -16,9 +16,11 @@ module QA
           expect_status(200)
           expect(json_body.size).to be >= 2
           expect_json('?', primary: true)
-          expect_json_types('*', primary: :boolean, current: :boolean,
-                                 files_max_capacity: :integer, repos_max_capacity: :integer,
-                                 clone_protocol: :string, _links: :object)
+          expect_json_types(
+            '*', primary: :boolean, current: :boolean,
+            files_max_capacity: :integer, repos_max_capacity: :integer,
+            clone_protocol: :string, _links: :object
+          )
         end
       end
 
@@ -43,7 +45,7 @@ module QA
 
         describe 'editing a Geo node' do
           it 'PUT /geo_nodes/:id for secondary node',
-             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348043' do
+            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348043' do
             endpoint = api_endpoint("/geo_nodes/#{@secondary_node[:id]}")
             new_attributes = { enabled: false, files_max_capacity: 1000, repos_max_capacity: 2000 }
 
