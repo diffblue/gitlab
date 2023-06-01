@@ -18,7 +18,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
   describe '#elastic_search' do
     context 'if type is wiki_blob' do
       let_it_be(:wiki_project) { create(:project, :wiki_repo, visibility_level: 0, wiki_access_level: 0) }
-      let(:included_class) { Elastic::Latest::ProjectWikiClassProxy }
+      let(:included_class) { Elastic::Latest::WikiClassProxy }
 
       subject { included_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MultiVersionClassProxy do
+RSpec.describe Elastic::MultiVersionClassProxy, feature_category: :global_search do
   subject { described_class.new(ProjectSnippet) }
 
   describe '#version' do
@@ -22,8 +22,20 @@ RSpec.describe Elastic::MultiVersionClassProxy do
 
         expect(repository_result).to be_a(Elastic::V12p1::RepositoryClassProxy)
         expect(repository_result.target).to eq(Repository)
-        expect(wiki_result).to be_a(Elastic::V12p1::ProjectWikiClassProxy)
+        expect(wiki_result).to be_a(Elastic::V12p1::WikiClassProxy)
         expect(wiki_result.target).to eq(ProjectWiki)
+      end
+
+      context 'when feature_flag simplify_logic_to_find_search_proxy_class is disabled' do
+        before do
+          stub_feature_flags(simplify_logic_to_find_search_proxy_class: false)
+        end
+
+        it 'returns ProjectWikiClassProxy for wiki' do
+          wiki_proxy = described_class.new(ProjectWiki)
+          wiki_result = wiki_proxy.version('V12p1')
+          expect(wiki_result).to be_a(Elastic::V12p1::ProjectWikiClassProxy)
+        end
       end
     end
   end

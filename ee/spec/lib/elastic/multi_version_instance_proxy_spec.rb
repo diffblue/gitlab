@@ -28,7 +28,7 @@ RSpec.describe Elastic::MultiVersionInstanceProxy do
 
         expect(repository_result).to be_a(Elastic::V12p1::RepositoryInstanceProxy)
         expect(repository_result.target).to eq(repository)
-        expect(wiki_result).to be_a(Elastic::V12p1::ProjectWikiInstanceProxy)
+        expect(wiki_result).to be_a(Elastic::V12p1::WikiInstanceProxy)
         expect(wiki_result.target).to eq(wiki)
       end
     end
