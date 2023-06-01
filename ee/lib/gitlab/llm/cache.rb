@@ -33,7 +33,7 @@ module Gitlab
           role: payload[:role]
         }
         data[:content] = payload[:content][0, MAX_TEXT_LIMIT] if payload[:content]
-        data[:error] = payload[:errors].join(". ") if payload[:errors]
+        data[:error] = payload[:errors].join(". ") if payload[:errors].present?
 
         cache_data(data)
       end
