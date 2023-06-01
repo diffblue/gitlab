@@ -83,10 +83,16 @@ module EE
         where("EXISTS (?)", matcher)
       end
 
-      delegate :additional_purchased_storage_size, :additional_purchased_storage_size=,
+      delegate :eligible_additional_purchased_storage_size, :additional_purchased_storage_size=,
         :additional_purchased_storage_ends_on, :additional_purchased_storage_ends_on=,
         :temporary_storage_increase_ends_on, :temporary_storage_increase_ends_on=,
         to: :namespace_limit, allow_nil: true
+
+      # `eligible_additional_purchased_storage_size` uses a FF to start checking `additional_purchased_storage_ends_on`
+      # if the FF is enabled before returning `additional_purchased_storage_size`
+      # To minimize the footprint of the change, aliasing namespace.additional_purchased_storage_size
+      # to namespace.eligible_additional_purchased_storage_size
+      alias_method :additional_purchased_storage_size, :eligible_additional_purchased_storage_size
 
       delegate :email, to: :owner, allow_nil: true, prefix: true
 
