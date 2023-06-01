@@ -3,7 +3,7 @@
     = render Pajamas::CheckboxTagComponent.new(name: :terms_opt_in,
       checkbox_options: { required: true },
       label_options: { class: 'label-bold' }) do |c|
-      = c.label do
+      - c.with_label do
         - terms_link = link_to _("Terms of Service and Privacy Policy"), terms_path, target: "_blank"
         - accept_terms_label = _("I accept the %{terms_link}") % { terms_link: terms_link }
         = accept_terms_label.html_safe
