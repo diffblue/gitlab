@@ -2,7 +2,9 @@ import { GlButton, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
+import { stubComponent } from 'helpers/stub_component';
 import Verification from 'ee/registrations/verification/components/verification.vue';
+import Zuora from 'ee/billings/components/zuora.vue';
 import {
   IFRAME_MINIMUM_HEIGHT,
   EVENT_LABEL,
@@ -16,7 +18,7 @@ jest.mock('~/lib/utils/url_utility');
 describe('Verification', () => {
   let wrapper;
   let trackingSpy;
-  let zuoraSubmitSpy;
+  const zuoraSubmitSpy = jest.fn();
 
   const NEXT_STEP_URL = 'https://gitlab.com/next-step';
   const IFRAME_URL = 'https://customers.gitlab.com/payment_forms/cc_registration_validation';
@@ -30,12 +32,17 @@ describe('Verification', () => {
       stubs: {
         GlButton,
         GlPopover,
+        Zuora: stubComponent(Zuora, {
+          methods: {
+            submit: zuoraSubmitSpy,
+          },
+        }),
       },
     });
   };
 
   const findSubmitButton = () => wrapper.findComponent({ ref: 'submitButton' });
-  const findZuora = () => wrapper.findComponent({ ref: 'zuora' });
+  const findZuora = () => wrapper.findComponent(Zuora);
   const findSkipLink = () => wrapper.findComponent({ ref: 'skipLink' });
   const findPopover = () => wrapper.findComponent({ ref: 'popover' });
   const findPopoverClose = () => wrapper.findComponent({ ref: 'popoverClose' });
@@ -68,18 +75,16 @@ describe('Verification', () => {
 
     it('renders the Zuora component with the right attributes', () => {
       expect(findZuora().exists()).toBe(true);
-      expect(findZuora().attributes()).toMatchObject({
-        iframeurl: IFRAME_URL,
-        allowedorigin: ALLOWED_ORIGIN,
-        initialheight: IFRAME_MINIMUM_HEIGHT.toString(),
+      expect(findZuora().props()).toMatchObject({
+        iframeUrl: IFRAME_URL,
+        allowedOrigin: ALLOWED_ORIGIN,
+        initialHeight: IFRAME_MINIMUM_HEIGHT,
       });
     });
   });
 
   describe('when the submit button is clicked', () => {
     beforeEach(() => {
-      zuoraSubmitSpy = jest.fn();
-      wrapper.vm.$refs.zuora = { submit: zuoraSubmitSpy };
       findSubmitButton().trigger('click');
     });
 
