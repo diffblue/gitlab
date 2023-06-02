@@ -41,6 +41,10 @@ module EE
         ::License.feature_available?(:runner_jobs_statistics)
       end
 
+      condition(:runner_upgrade_management_available) do
+        License.feature_available?(:runner_upgrade_management)
+      end
+
       condition(:service_accounts_available) do
         ::License.feature_available?(:service_accounts)
       end
@@ -59,6 +63,12 @@ module EE
 
         accessible_root_groups = @user.groups.by_parent(nil)
         accessible_root_groups.reject(&:code_suggestions_enabled?).any?
+      end
+
+      condition(:user_has_paid_namespace) do
+        next false unless @user
+
+        @user.has_paid_namespace?
       end
 
       rule { ~anonymous & operations_dashboard_available }.enable :read_operations_dashboard
@@ -106,6 +116,8 @@ module EE
 
       rule { code_suggestions_enabled }.enable :access_code_suggestions
       rule { code_suggestions_disabled_by_group }.prevent :access_code_suggestions
+
+      rule { runner_upgrade_management_available | user_has_paid_namespace }.enable :read_runner_upgrade_status
     end
   end
 end
