@@ -37,7 +37,7 @@ class SubscriptionsController < ApplicationController
         end
     else
       store_location_for(:user, request.fullpath)
-      redirect_to new_user_registration_path(redirect_from: 'checkout')
+      redirect_to new_user_registration_path
     end
   end
 

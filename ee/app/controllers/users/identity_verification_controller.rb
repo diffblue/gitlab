@@ -83,7 +83,7 @@ module Users
 
       sign_in(@user)
       session.delete(:verification_user_id)
-      @redirect_url = after_sign_in_path_for(@user)
+      set_redirect_url
 
       render 'devise/sessions/successful_verification'
     end
@@ -110,6 +110,16 @@ module Users
     end
 
     private
+
+    def set_redirect_url
+      @redirect_url = if helpers.in_subscription_flow?
+                        # Since we need this value to stay in the stored_location_for(user) in order for
+                        # us to be properly redirected for subscription signups.
+                        session['user_return_to']
+                      else
+                        after_sign_in_path_for(@user)
+                      end
+    end
 
     def require_verification_user!
       if verification_user_id = session[:verification_user_id]

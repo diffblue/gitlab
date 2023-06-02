@@ -462,15 +462,11 @@ feature_category: :system_access do
   end
 
   describe 'GET success' do
-    let(:after_sign_in_path) { '/after/sign/in' }
+    let(:stored_user_return_to_path) { '/user/return/to/path' }
     let(:user) { confirmed_user }
 
     before do
-      allow_next_instance_of(described_class) do |controller|
-        allow(controller).to receive(:after_sign_in_path_for).and_return(after_sign_in_path)
-      end
-
-      stub_session(verification_user_id: user.id)
+      stub_session(verification_user_id: user.id, user_return_to: stored_user_return_to_path)
       get success_identity_verification_path
     end
 
@@ -493,7 +489,18 @@ feature_category: :system_access do
     it 'renders the template with the after_sign_in_path_for variable' do
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to render_template('successful_verification', layout: 'minimal')
-      expect(assigns(:redirect_url)).to eq(after_sign_in_path)
+      expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
+      expect(controller.stored_location_for(:user)).to be_nil
+    end
+
+    context 'when user is in subscription onboarding' do
+      let(:stored_user_return_to_path) { new_subscriptions_path(plan_id: 'bronze_id') }
+
+      it 'does not empty out the stored location for user' do
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(assigns(:redirect_url)).to eq(stored_user_return_to_path)
+        expect(controller.stored_location_for(:user)).to eq(stored_user_return_to_path)
+      end
     end
   end
 
