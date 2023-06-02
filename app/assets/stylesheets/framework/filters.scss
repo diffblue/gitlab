@@ -439,11 +439,11 @@
 
 .vue-filtered-search-bar-container {
   .gl-search-box-by-click {
-    // Absolute width is needed to prevent flex to grow
-    // beyond the available width.
-    .gl-filtered-search-scrollable-container {
-      width: 1px;
-    }
+    // This enforces width of flex items to be
+    // calculated in advance so that content
+    // does not overflow.
+
+    min-width: 0;
   }
 
   .sort-dropdown-container {
