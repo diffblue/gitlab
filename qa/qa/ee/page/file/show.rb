@@ -47,6 +47,10 @@ module QA
           def has_lock_button_disabled?
             has_element?(:disabled_lock_button)
           end
+
+          def reveal_code_owners
+            click_on('Show all') if page.has_text?('Show all')
+          end
         end
       end
     end
