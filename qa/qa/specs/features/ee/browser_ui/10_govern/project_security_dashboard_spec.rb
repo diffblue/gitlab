@@ -31,11 +31,14 @@ module QA
 
       let!(:vulnerability_report) do
         vulnerabilities.each do |name, description|
-          QA::EE::Resource::VulnerabilityItem.fabricate_via_api! do |vulnerability|
-            vulnerability.id = project.id
-            vulnerability.severity = vuln_severity
-            vulnerability.name = name
-            vulnerability.description = description
+          Support::Retrier.retry_on_exception(sleep_interval: 2,
+message: "Retrying vulnerability create graphql api") do
+            QA::EE::Resource::VulnerabilityItem.fabricate_via_api! do |vulnerability|
+              vulnerability.id = project.id
+              vulnerability.severity = vuln_severity
+              vulnerability.name = name
+              vulnerability.description = description
+            end
           end
         end
       end
