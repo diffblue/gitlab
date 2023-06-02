@@ -4,10 +4,11 @@ import { mapActions, mapState } from 'vuex';
 import { __, s__, n__ } from '~/locale';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
 import { helpCenterState } from '~/super_sidebar/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
-import { SOURCE_TYPES, TANUKI_BOT_FEEDBACK_ISSUE_URL } from '../constants';
+import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
 export default {
   name: 'TanukiBotChatApp',
@@ -21,11 +22,13 @@ export default {
     whatIsAForkQuestion: s__('TanukiBot|What is a fork?'),
     GENIE_CHAT_LEGAL_GENERATED_BY_AI: i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI,
   },
+  trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
   components: {
     GlIcon,
     AiGenieChat,
     GlSprintf,
     GlLink,
+    UserFeedback,
   },
   props: {
     userId: {
@@ -114,7 +117,6 @@ export default {
       return n__('TanukiBot|Source', 'TanukiBot|Sources', msg.sources?.length);
     },
   },
-  TANUKI_BOT_FEEDBACK_ISSUE_URL,
 };
 </script>
 
@@ -133,16 +135,16 @@ export default {
         {{ $options.i18n.gitlabChat }}
       </template>
 
-      <template #feedback="slotProps">
+      <template #feedback="{ message, promptLocation }">
         <div
-          v-if="messageHasSources(slotProps.message)"
+          v-if="messageHasSources(message)"
           class="gl-mt-4 gl-mr-3 gl-text-gray-600"
           data-testid="tanuki-bot-chat-message-sources"
         >
-          <span>{{ messageSourceLabel(slotProps.message) }}:</span>
+          <span>{{ messageSourceLabel(message) }}:</span>
           <ul class="gl-list-style-none gl-p-0 gl-m-0">
             <li
-              v-for="(source, index) in slotProps.message.sources"
+              v-for="(source, index) in message.sources"
               :key="index"
               class="gl-display-flex gl-pt-3"
             >
@@ -156,12 +158,10 @@ export default {
           </ul>
         </div>
         <div class="gl-display-flex gl-align-items-flex-end gl-mt-4">
-          <gl-link
-            class="gl-ml-auto gl-white-space-nowrap gl-text-gray-600"
-            :href="$options.TANUKI_BOT_FEEDBACK_ISSUE_URL"
-            target="_blank"
-            ><gl-icon name="comment" /> {{ $options.i18n.giveFeedback }}</gl-link
-          >
+          <user-feedback
+            :event-name="$options.trackingEventName"
+            :prompt-location="promptLocation"
+          />
         </div>
       </template>
 
