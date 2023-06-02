@@ -39040,6 +39040,9 @@ msgid_plural "Runners|%d selected runners deleted"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Runners|%{count} runners in this group"
+msgstr ""
+
 msgid "Runners|%{highlightStart}%{duration}%{highlightEnd} second"
 msgid_plural "Runners|%{highlightStart}%{duration}%{highlightEnd} seconds"
 msgstr[0] ""
