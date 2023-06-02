@@ -1,6 +1,6 @@
 version: '1'
-title: "Example title"
-type: LineChart
+title: "Daily Something"
+type: BarChart
 options:
   xAxis:
     name: Time
