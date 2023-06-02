@@ -219,7 +219,6 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
 
           before do
             stub_ee_application_setting(should_check_namespace_plan: true)
-            allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
           end
 
           context 'when joining_project is "true"' do
@@ -304,9 +303,10 @@ RSpec.describe Registrations::WelcomeController, feature_category: :system_acces
             end
 
             context 'with trial param sent with update' do
+              let(:trial_concerns) { extra_params }
+
               context 'with trial as true' do
                 let(:extra_params) { { trial: 'true' } }
-                let(:trial_concerns) { extra_params  }
 
                 it 'redirects to the company path with trial param' do
                   expect(response).to redirect_to redirect_path

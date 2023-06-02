@@ -39,13 +39,10 @@ module EE
       end
 
       def passed_through_params
-        pass_through = update_params.slice(:role, :registration_objective)
+        update_params.slice(:role, :registration_objective)
                      .merge(params.permit(:jobs_to_be_done_other))
                      .merge(glm_tracking_params)
-
-        pass_through[:trial] = params[:trial] if onboarding_status.trial?
-
-        pass_through
+                     .merge(params.permit(:trial))
       end
 
       def iterable_params
@@ -96,7 +93,7 @@ module EE
 
       override :welcome_update_params
       def welcome_update_params
-        glm_tracking_params
+        glm_tracking_params.merge(params.permit(:trial))
       end
     end
   end
