@@ -54,22 +54,32 @@ export const getDismissalNoteEventText = ({ hasProject, hasPipeline, hasDismissa
       return __(
         '%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink} at %{projectLink}',
       );
-    } else if (hasPipeline) {
+    }
+
+    if (hasPipeline) {
       return __(
         '%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink}',
       );
-    } else if (hasProject) {
+    }
+
+    if (hasProject) {
       return __('%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} at %{projectLink}');
     }
+
     return __('%{statusStart}Dismissed%{statusEnd}: %{dismissalReason}');
   }
 
   if (hasPipeline && hasProject) {
     return __('%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink} at %{projectLink}');
-  } else if (hasPipeline) {
+  }
+
+  if (hasPipeline) {
     return __('%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink}');
-  } else if (hasProject) {
+  }
+
+  if (hasProject) {
     return __('%{statusStart}Dismissed%{statusEnd} at %{projectLink}');
   }
+
   return __('%{statusStart}Dismissed%{statusEnd}');
 };
