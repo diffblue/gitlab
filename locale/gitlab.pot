@@ -39084,6 +39084,9 @@ msgid_plural "Runners|%{highlightStart}%{duration}%{highlightEnd} seconds"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "Runners|%{linkStart}Create a new runner%{linkEnd} to get started."
+msgstr ""
+
 msgid "Runners|%{link_start}These runners%{link_end} are available to all groups and projects."
 msgstr ""
 
@@ -39310,6 +39313,9 @@ msgid "Runners|Fetch GitLab Runner release version data from GitLab.com"
 msgstr ""
 
 msgid "Runners|Filter projects"
+msgstr ""
+
+msgid "Runners|Follow the %{linkStart}installation and registration instructions%{linkEnd} to set up a runner."
 msgstr ""
 
 msgid "Runners|Get started with runners"
@@ -39638,10 +39644,7 @@ msgstr ""
 msgid "Runners|Runners are grouped when they have the same authentication token. This happens when you re-use a runner configuration in more than one runner manager. %{linkStart}How does this work?%{linkEnd}"
 msgstr ""
 
-msgid "Runners|Runners are the agents that run your CI/CD jobs. Follow the %{linkStart}installation and registration instructions%{linkEnd} to set up a runner."
-msgstr ""
-
-msgid "Runners|Runners are the agents that run your CI/CD jobs. To register new runners, please contact your administrator."
+msgid "Runners|Runners are the agents that run your CI/CD jobs."
 msgstr ""
 
 msgid "Runners|Runners performance"
@@ -39713,6 +39716,9 @@ msgstr ""
 msgid "Runners|Step 3 (optional)"
 msgstr ""
 
+msgid "Runners|Still using registration tokens?"
+msgstr ""
+
 msgid "Runners|Stop the runner from accepting new jobs."
 msgstr ""
 
@@ -39782,6 +39788,9 @@ msgid "Runners|To install Runner in Kubernetes follow the instructions described
 msgstr ""
 
 msgid "Runners|To install Runner in a container follow the instructions described in the GitLab documentation"
+msgstr ""
+
+msgid "Runners|To register new runners, contact your administrator."
 msgstr ""
 
 msgid "Runners|To register them, go to the %{link_start}group's Runners page%{link_end}."
