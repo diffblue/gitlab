@@ -69,6 +69,7 @@ module EE
         mount ::API::CaptchaCheck
         mount ::API::Ml::AiAssist
         mount ::API::DependencyListExports
+        mount ::API::GroupServiceAccounts
         mount ::API::Ai::Llm::GitCommand
         mount ::API::CodeSuggestions
 
