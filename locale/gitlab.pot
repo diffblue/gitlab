@@ -40108,7 +40108,16 @@ msgstr ""
 msgid "ScanResultPolicy|Choose criteria type"
 msgstr ""
 
+msgid "ScanResultPolicy|Except"
+msgstr ""
+
+msgid "ScanResultPolicy|License is:"
+msgstr ""
+
 msgid "ScanResultPolicy|License scanning allows only one criteria: Status"
+msgstr ""
+
+msgid "ScanResultPolicy|Matching"
 msgstr ""
 
 msgid "ScanResultPolicy|Maximum number of severity-criteria is one"
@@ -40132,6 +40141,9 @@ msgstr ""
 msgid "ScanResultPolicy|Select a scan type before adding criteria"
 msgstr ""
 
+msgid "ScanResultPolicy|Select license types"
+msgstr ""
+
 msgid "ScanResultPolicy|Severity is:"
 msgstr ""
 
@@ -40141,22 +40153,13 @@ msgstr ""
 msgid "ScanResultPolicy|When %{scanType} %{scanners} runs against the %{branches} and find(s) %{vulnerabilitiesNumber} %{boldDescription} of the following criteria:"
 msgstr ""
 
-msgid "ScanResultPolicy|When %{scanType} find any license %{matchType} %{licenseType} in an open merge request targeting the %{branches} and the licences match all of the following criteria"
+msgid "ScanResultPolicy|When %{scanType} in an open merge request targeting the %{branches} and the licenses match all of the following criteria:"
 msgstr ""
 
 msgid "ScanResultPolicy|When %{scanners} find scanner specified conditions in an open merge request targeting the %{branches} and match %{boldDescription} of the following criteria"
 msgstr ""
 
-msgid "ScanResultPolicy|except"
-msgstr ""
-
 msgid "ScanResultPolicy|license status"
-msgstr ""
-
-msgid "ScanResultPolicy|license type"
-msgstr ""
-
-msgid "ScanResultPolicy|matching"
 msgstr ""
 
 msgid "ScanResultPolicy|matching type"

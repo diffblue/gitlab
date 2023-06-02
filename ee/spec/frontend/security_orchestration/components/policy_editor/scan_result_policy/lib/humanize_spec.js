@@ -1,9 +1,11 @@
 import {
   humanizeRules,
   humanizeInvalidBranchesError,
-  LICENSE_FINDING,
-  SCAN_FINDING,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
+import {
+  securityScanBuildRule,
+  licenseScanBuildRule,
+} from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_editor/constants';
 
 jest.mock('~/locale', () => ({
@@ -16,10 +18,9 @@ jest.mock('~/locale', () => ({
 
 const singleValuedSecurityScannerRule = {
   rule: {
-    type: SCAN_FINDING,
+    ...securityScanBuildRule(),
     branches: ['main'],
     scanners: ['sast'],
-    vulnerabilities_allowed: 0,
     severity_levels: ['critical'],
     vulnerability_states: ['newly_detected'],
   },
@@ -35,12 +36,10 @@ const singleValuedSecurityScannerRule = {
 
 const noVulnerabilityStatesSecurityScannerRule = {
   rule: {
-    type: SCAN_FINDING,
+    ...securityScanBuildRule(),
     branches: ['main'],
     scanners: ['sast'],
-    vulnerabilities_allowed: 0,
     severity_levels: ['critical'],
-    vulnerability_states: [],
   },
   humanized: {
     summary:
@@ -51,7 +50,7 @@ const noVulnerabilityStatesSecurityScannerRule = {
 
 const multipleValuedSecurityScannerRule = {
   rule: {
-    type: SCAN_FINDING,
+    ...securityScanBuildRule(),
     branches: ['staging', 'main'],
     scanners: ['dast', 'sast'],
     vulnerabilities_allowed: 2,
@@ -70,12 +69,10 @@ const multipleValuedSecurityScannerRule = {
 
 const noCriteriaSecurityScannerRule = {
   rule: {
-    type: SCAN_FINDING,
+    ...securityScanBuildRule(),
     branches: ['staging', 'main'],
     scanners: ['sast'],
     vulnerabilities_allowed: 1,
-    severity_levels: [],
-    vulnerability_states: [],
   },
   humanized: {
     summary:
@@ -86,9 +83,7 @@ const noCriteriaSecurityScannerRule = {
 
 const allValuedSecurityScannerRule = {
   rule: {
-    type: SCAN_FINDING,
-    branches: [],
-    scanners: [],
+    ...securityScanBuildRule(),
     vulnerabilities_allowed: 2,
     severity_levels: ['info', 'critical'],
     vulnerability_states: ['new_needs_triage', 'resolved', 'confirmed'],
@@ -105,9 +100,8 @@ const allValuedSecurityScannerRule = {
 
 const singleValuedLicenseScanRule = {
   rule: {
-    type: LICENSE_FINDING,
+    ...licenseScanBuildRule(),
     branches: ['main'],
-    match_on_inclusion: true,
     license_types: ['MIT License'],
     license_states: ['detected'],
   },
@@ -119,7 +113,7 @@ const singleValuedLicenseScanRule = {
 
 const multipleValuedLicenseScanRule = {
   rule: {
-    type: LICENSE_FINDING,
+    ...licenseScanBuildRule(),
     branches: ['staging', 'main'],
     match_on_inclusion: false,
     license_types: ['CMU License', 'CNRI Jython License', 'CNRI Python License'],
