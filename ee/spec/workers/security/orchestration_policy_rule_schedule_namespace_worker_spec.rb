@@ -57,6 +57,20 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
 
             expect(schedule.reload.next_run_at).to be > Time.zone.now
           end
+
+          context 'with namespace including project marked for deletion' do
+            let_it_be(:project_pending_deletion) { create(:project, namespace: namespace, marked_for_deletion_at: Time.zone.now) }
+
+            before do
+              allow(Security::SecurityOrchestrationPolicies::RuleScheduleService).to receive(:new).and_call_original
+            end
+
+            it 'does not call RuleScheduleService for the project' do
+              expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new).with(container: project_pending_deletion, current_user: anything).and_call_original
+
+              worker.perform(schedule_id)
+            end
+          end
         end
       end
 

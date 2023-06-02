@@ -8,7 +8,7 @@ module Gitlab
 
         def execute(user, resource, options)
           # The Agent currently only supports Vertex as it relies on VertexAi::Client specific methods.
-          client = ::Gitlab::Llm::VertexAi::Client.new(user)
+          client = ::Gitlab::Llm::Anthropic::Client.new(user)
           context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
             container: resource.resource_parent.root_ancestor,

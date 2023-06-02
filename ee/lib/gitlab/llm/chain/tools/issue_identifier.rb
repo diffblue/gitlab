@@ -126,12 +126,7 @@ module Gitlab
           end
 
           def request(prompt)
-            params = ::Gitlab::Llm::VertexAi::Configuration.default_payload_parameters.merge(
-              temperature: 0.2
-            )
-
-            ai_client = context.ai_client
-            ai_client.text(content: prompt, parameters: { **params })&.dig("predictions", 0, "content").to_s.strip
+            context.ai_client.complete(prompt: prompt)&.dig("completion").to_s.strip
           end
 
           def identify_issue(resource_identifier_type, resource_identifier)
