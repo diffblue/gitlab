@@ -99,14 +99,12 @@ module EE
     def log_audit_event(user)
       return unless user&.persisted?
 
-      ::Gitlab::Audit::Auditor.audit({
-        name: "registration_created",
-        author: user,
-        scope: user,
-        target: user,
-        target_details: user.username,
-        message: _("Instance access request")
-      })
+      ::AuditEventService.new(
+        user,
+        user,
+        action: :custom,
+        custom_message: _('Instance access request')
+      ).for_user.security_event
     end
 
     override :after_sign_up_path
