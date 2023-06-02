@@ -45,7 +45,7 @@ RSpec.describe BroadcastMessage do
 
           create(:broadcast_message)
 
-          expect(described_class).to receive(:where).and_call_original.once
+          expect(described_class).to receive(:current_and_future_messages).and_call_original.once
 
           described_class.current
 
@@ -53,7 +53,7 @@ RSpec.describe BroadcastMessage do
             described_class.current
           end
 
-          expect(described_class).to receive(:where).and_call_original.once
+          expect(described_class).to receive(:current_and_future_messages).and_call_original.once
 
           travel_to(40.seconds.from_now) do
             described_class.current
