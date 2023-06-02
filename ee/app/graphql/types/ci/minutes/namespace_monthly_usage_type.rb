@@ -22,12 +22,12 @@ module Types
               ::GraphQL::Types::Int,
               null: true,
               method: :amount_used,
-              description: 'Total number of minutes used by all projects in the namespace.'
+              description: 'Total number of units of compute used by all projects in the namespace.'
 
         field :projects,
               ::Types::Ci::Minutes::ProjectMonthlyUsageType.connection_type,
               null: true,
-              description: 'CI/CD minutes usage data for projects in the namespace.'
+              description: 'Compute usage data for projects in the namespace.'
 
         field :shared_runners_duration,
               ::GraphQL::Types::Int,

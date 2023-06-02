@@ -109,7 +109,7 @@ module Ci
         end
       end
 
-      # Ensure we only add the CI minutes consumption once for the given build
+      # Ensure we only add the compute usage once for the given build
       # even if the worker is retried.
       def ensure_idempotency
         if already_completed?

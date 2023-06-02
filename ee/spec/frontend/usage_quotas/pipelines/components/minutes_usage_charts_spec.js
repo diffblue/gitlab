@@ -30,7 +30,7 @@ describe('MinutesUsageCharts', () => {
   const findSharedRunnerByProject = () => wrapper.findByTestId('shared-runner-by-project');
   const findYearDropdown = () => wrapper.findByTestId('minutes-usage-year-dropdown');
 
-  it('does not render NoMinutesAlert if there are minutes', () => {
+  it('does not render NoMinutesAlert if there are units of compute', () => {
     expect(findNoMinutesAlert().exists()).toBe(false);
   });
 
@@ -38,7 +38,7 @@ describe('MinutesUsageCharts', () => {
     expect(findYearDropdown().exists()).toBe(true);
   });
 
-  describe('with no minutes', () => {
+  describe('with no units of compute', () => {
     beforeEach(() => {
       const props = {
         ...defaultProps,
@@ -58,7 +58,7 @@ describe('MinutesUsageCharts', () => {
       createComponent({ props });
     });
 
-    it('does not render CI minutes charts', () => {
+    it('does not render compute charts', () => {
       expect(findMinutesByNamespace().exists()).toBe(false);
       expect(findMinutesByProject().exists()).toBe(false);
     });
@@ -89,7 +89,7 @@ describe('MinutesUsageCharts', () => {
       createComponent({ props });
     });
 
-    it('renders CI minutes charts', () => {
+    it('renders compute charts', () => {
       expect(findMinutesByNamespace().exists()).toBe(true);
       expect(findMinutesByProject().exists()).toBe(true);
     });
