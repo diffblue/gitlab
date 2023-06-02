@@ -2776,4 +2776,82 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
       end
     end
   end
+
+  describe 'fill_in_merge_request_template policy', :saas do
+    let_it_be(:namespace) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: namespace) }
+    let_it_be(:current_user) { owner }
+
+    before do
+      namespace.add_owner(owner)
+      allow(project).to receive(:namespace).and_return(namespace)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+
+      stub_licensed_features(
+        fill_in_merge_request_template: true,
+        ai_features: true
+      )
+
+      stub_feature_flags(
+        openai_experimentation: true,
+        fill_in_mr_template: true
+      )
+
+      namespace.namespace_settings.update!(
+        experiment_features_enabled: true,
+        third_party_ai_features_enabled: true
+      )
+    end
+
+    it { is_expected.to be_allowed(:fill_in_merge_request_template) }
+
+    context 'when global AI feature flag is disabled' do
+      before do
+        stub_feature_flags(openai_experimentation: false)
+      end
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+
+    context 'when fill_in_mr_template feature flag is disabled' do
+      before do
+        stub_feature_flags(
+          openai_experimentation: true,
+          fill_in_mr_template: false
+        )
+      end
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+
+    context 'when license is not set' do
+      before do
+        stub_licensed_features(fill_in_merge_request_template: false)
+      end
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+
+    context 'when experiment features are disabled' do
+      before do
+        namespace.namespace_settings.update!(experiment_features_enabled: false)
+      end
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+
+    context 'when third party ai features are disabled' do
+      before do
+        namespace.namespace_settings.update!(third_party_ai_features_enabled: false)
+      end
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+
+    context 'when user cannot create_merge_request_in' do
+      let(:current_user) { guest }
+
+      it { is_expected.to be_disallowed(:fill_in_merge_request_template) }
+    end
+  end
 end

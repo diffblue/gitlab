@@ -39,6 +39,10 @@ module Gitlab
         chat: {
           service_class: ::Gitlab::Llm::Completions::Chat,
           prompt_class: nil
+        },
+        fill_in_merge_request_template: {
+          service_class: ::Gitlab::Llm::VertexAi::Completions::FillInMergeRequestTemplate,
+          prompt_class: ::Gitlab::Llm::Templates::FillInMergeRequestTemplate
         }
       }.freeze
 
