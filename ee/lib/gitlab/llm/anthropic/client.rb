@@ -8,8 +8,8 @@ module Gitlab
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-v1.3'
-        DEFAULT_TEMPERATURE = 0.7
-        DEFAULT_MAX_TOKENS = 16
+        DEFAULT_TEMPERATURE = 0.3
+        DEFAULT_MAX_TOKENS = 2048
 
         def initialize(user)
           @user = user
@@ -19,7 +19,7 @@ module Gitlab
         def complete(prompt:, **options)
           return unless enabled?
 
-          logger.debug("Performing request to Anthropic")
+          logger.debug(message: "Performing request to Anthropic")
 
           response = Gitlab::HTTP.post(
             URI.join(URL, '/v1/complete'),
@@ -27,7 +27,7 @@ module Gitlab
             body: request_body(prompt: prompt, options: options).to_json
           )
 
-          logger.debug("Received response from Anthropic")
+          logger.debug(message: "Received response from Anthropic", response: response)
 
           response
         end

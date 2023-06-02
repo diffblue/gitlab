@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
   RSpec.shared_examples 'success response' do
     it 'returns success response' do
       ai_client = double
-      allow(ai_client).to receive_message_chain(:text, :dig, :to_s, :strip).and_return(ai_response)
+      allow(ai_client).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
       allow(context).to receive(:ai_client).and_return(ai_client)
 
       response = "I now have the JSON information about the issue ##{resource_iid}."
@@ -204,7 +204,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
 
           it 'returns already identified response' do
             ai_client = double
-            allow(ai_client).to receive_message_chain(:text, :dig, :to_s, :strip).and_return(ai_response)
+            allow(ai_client).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
             allow(context).to receive(:ai_client).and_return(ai_client)
 
             response = "You already have identified the issue ##{context.resource.iid}, read carefully."

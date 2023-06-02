@@ -87,7 +87,7 @@ module Gitlab
             )
 
             ai_client = context.ai_client
-            ai_client.text(content: prompt, parameters: { **params })&.dig("predictions", 0, "content").to_s.strip
+            ai_client.complete(prompt: prompt, parameters: { **params })&.dig("completion").to_s.strip
           end
 
           def input_variables
