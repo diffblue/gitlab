@@ -79,7 +79,6 @@ RSpec.describe TemplateFinder do
         "Dockerfile/project_dockerfiles_template.dockerfile" => "project_dockerfiles_template content",
         "gitignore/project_gitignores_template.gitignore" => "project_gitignores_template content",
         "gitlab-ci/project_gitlab_ci_ymls_template.yml" => "project_gitlab_ci_ymls_template content",
-        "metrics-dashboards/project_metrics_dashboard_ymls_template.yml" => "project_metrics_dashboard_ymls_template content",
         ".gitlab/issue_templates/project_issues_template.md" => "project_issues_template content",
         ".gitlab/merge_request_templates/project_merge_requests_template.md" => "project_merge_requests_template content"
       }
@@ -93,7 +92,6 @@ RSpec.describe TemplateFinder do
       :dockerfiles            | 'project_dockerfiles_template'
       :gitignores             | 'project_gitignores_template'
       :gitlab_ci_ymls         | 'project_gitlab_ci_ymls_template'
-      :metrics_dashboard_ymls | 'project_metrics_dashboard_ymls_template'
     end
 
     before do
