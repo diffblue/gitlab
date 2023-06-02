@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe Onboarding, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
-  describe '.user_onboarding_in_progress?' do
-    let(:user) { build_stubbed(:user) }
+  let(:user) { build_stubbed(:user) }
 
+  describe '.user_onboarding_in_progress?' do
     where(
       user?: [true, false],
       user_onboarding?: [true, false],
@@ -45,7 +45,7 @@ RSpec.describe Onboarding, feature_category: :onboarding do
         stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan?)
       end
 
-      subject { described_class.user_onboarding_enabled? }
+      subject { described_class.user_onboarding_enabled?(user) }
 
       it { is_expected.to be expected_result }
     end

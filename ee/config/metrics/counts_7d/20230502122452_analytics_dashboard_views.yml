@@ -1,7 +1,7 @@
 ---
 key_path: counts.analytics_dashboard_views
 description: "Number of views of any single product analytics dashboard"
-product_section: dev
+product_section: analytics
 product_stage: analytics
 product_group: product_analytics
 value_type: number

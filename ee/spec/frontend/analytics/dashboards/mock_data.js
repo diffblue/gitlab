@@ -12,6 +12,7 @@ const mockMetrics = ([
   deploys,
   vulnerabilityCritical,
   vulnerabilityHigh,
+  mergeRequestThroughput,
 ]) => ({
   lead_time_for_changes: {
     value: leadTimeForChanges,
@@ -62,6 +63,11 @@ const mockMetrics = ([
     value: vulnerabilityHigh,
     label: 'High Vulnerabilities  over time',
     identifier: 'vulnerability_high',
+  },
+  merge_request_throughput: {
+    value: mergeRequestThroughput,
+    label: 'Merge request throughput',
+    identifier: 'merge_request_throughput',
   },
 });
 
@@ -123,25 +129,25 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
   },
 ];
 
-export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8, 3, 0]);
+export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8, 3, 0, 5]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 16, 0, 3]);
+export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 16, 0, 3, 2]);
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 8, 2, 0]);
+export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 8, 2, 0, 0]);
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
-export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 16, 0, 0]);
+export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 16, 0, 0, 15]);
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
 export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i) => ({
   ...timePeriod,
-  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i, i % 4, i % 2]),
+  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i, i % 4, i % 2, i]),
 }));
 
 export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
@@ -306,6 +312,24 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
+      identifier: 'merge_request_throughput',
+      value: 'Merge request throughput',
+    },
+    lastMonth: {
+      change: 0,
+      value: 2,
+    },
+    thisMonth: {
+      change: 1.5,
+      value: 5,
+    },
+    twoMonthsAgo: {
+      change: 0,
+      value: 0,
+    },
+  },
+  {
+    metric: {
       identifier: 'vulnerability_critical',
       value: 'Critical Vulnerabilities over time',
     },
@@ -409,6 +433,13 @@ export const mockSubsetChartData = {
     tooltipLabel: undefined,
   },
   vulnerability_high: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
+  },
+  merge_request_throughput: {
     data: [
       [expect.anything(), 0],
       [expect.anything(), 0],
@@ -528,6 +559,17 @@ export const mockChartData = {
     ],
     tooltipLabel: undefined,
   },
+  merge_request_throughput: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 1],
+      [expect.anything(), 2],
+      [expect.anything(), 3],
+      [expect.anything(), 4],
+      [expect.anything(), 5],
+    ],
+    tooltipLabel: undefined,
+  },
 };
 
 export const mockLastVulnerabilityCountData = {
@@ -603,6 +645,11 @@ export const mockFlowMetricsResponseData = {
   __typename: 'GroupValueStreamAnalyticsFlowMetrics',
 };
 
+export const mockMergeRequestsResponseData = {
+  merge_request_throughput: 10,
+  __typename: 'MergeRequestConnection',
+};
+
 export const mockExcludeMetrics = [
   DORA_METRICS.DEPLOYMENT_FREQUENCY,
   DORA_METRICS.LEAD_TIME_FOR_CHANGES,
@@ -610,6 +657,7 @@ export const mockExcludeMetrics = [
 
 export const mockEmptyVulnerabilityResponse = [{ date: null, critical: null, high: null }];
 export const mockEmptyDoraResponse = { metrics: [] };
+export const mockEmptyMergeRequestsResponse = { mergeRequests: {} };
 export const mockEmptyFlowMetricsResponse = {
   issues: null,
   deploys: null,

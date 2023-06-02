@@ -1,6 +1,11 @@
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { KEY_METRICS, DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
+import {
+  KEY_METRICS,
+  DORA_METRICS,
+  VULNERABILITY_METRICS,
+  MERGE_REQUEST_METRICS,
+} from '~/analytics/shared/constants';
 
 export const MAX_PANELS_LIMIT = 4;
 
@@ -47,6 +52,10 @@ export const TABLE_METRICS = {
   },
   [KEY_METRICS.DEPLOYS]: {
     label: s__('DORA4Metrics|Deploys'),
+    units: UNITS.COUNT,
+  },
+  [MERGE_REQUEST_METRICS.THROUGHPUT]: {
+    label: s__('DORA4Metrics|Merge request throughput'),
     units: UNITS.COUNT,
   },
   [VULNERABILITY_METRICS.CRITICAL]: {

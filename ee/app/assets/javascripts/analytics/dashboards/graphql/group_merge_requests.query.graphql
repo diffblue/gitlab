@@ -1,0 +1,13 @@
+query groupMergeRequests(
+  $fullPath: ID!
+  $startDate: Time!
+  $endDate: Time!
+  $state: MergeRequestState!
+) {
+  namespace: group(fullPath: $fullPath) {
+    id
+    mergeRequests(mergedBefore: $endDate, mergedAfter: $startDate, state: $state) {
+      merge_request_throughput: count
+    }
+  }
+}

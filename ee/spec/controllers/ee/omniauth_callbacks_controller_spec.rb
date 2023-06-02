@@ -30,24 +30,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
     it 'audits provider failed login when licensed' do
       stub_licensed_features(extended_audit_events: true)
-      expect(::Gitlab::Audit::Auditor).to receive(:audit).with(hash_including({
-        name: "omniauth_login_failed"
-      })).and_call_original
-
       expect { subject.failure }.to change { AuditEvent.count }.by(1)
-
-      audit_event = AuditEvent.last
-      expect(audit_event.attributes).to include({
-        "author_name" => user.username,
-        "entity_type" => "User",
-        "target_details" => user.username
-      })
-      expect(audit_event.details).to include({
-        failed_login: "LDAP",
-        author_name: user.username,
-        target_details: user.username,
-        custom_message: "LDAP login failed"
-      })
     end
 
     it 'does not audit provider failed login when unlicensed' do

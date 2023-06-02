@@ -14,6 +14,8 @@ import GroupFlowMetricsQuery from 'ee/analytics/dashboards/graphql/group_flow_me
 import ProjectFlowMetricsQuery from 'ee/analytics/dashboards/graphql/project_flow_metrics.query.graphql';
 import GroupDoraMetricsQuery from 'ee/analytics/dashboards/graphql/group_dora_metrics.query.graphql';
 import ProjectDoraMetricsQuery from 'ee/analytics/dashboards/graphql/project_dora_metrics.query.graphql';
+import GroupMergeRequestsQuery from 'ee/analytics/dashboards/graphql/group_merge_requests.query.graphql';
+import ProjectMergeRequestsQuery from 'ee/analytics/dashboards/graphql/project_merge_requests.query.graphql';
 import { DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
 import * as utils from '~/analytics/shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -22,10 +24,12 @@ import {
   doraMetricsParamsHelper,
   flowMetricsParamsHelper,
   vulnerabilityParamsHelper,
+  mergeRequestsParamsHelper,
   mockAllTimePeriodApiResponses,
   mockGraphqlFlowMetricsResponse,
   mockGraphqlDoraMetricsResponse,
   mockGraphqlVulnerabilityResponse,
+  mockGraphqlMergeRequestsResponse,
   expectTimePeriodRequests,
 } from '../helpers';
 import {
@@ -36,10 +40,12 @@ import {
   mockLastVulnerabilityCountData,
   mockDoraMetricsResponseData,
   mockFlowMetricsResponseData,
+  mockMergeRequestsResponseData,
   mockExcludeMetrics,
   mockEmptyVulnerabilityResponse,
   mockEmptyDoraResponse,
   mockEmptyFlowMetricsResponse,
+  mockEmptyMergeRequestsResponse,
 } from '../mock_data';
 
 const mockTypePolicy = {
@@ -66,15 +72,18 @@ describe('Comparison chart', () => {
   let vulnerabilityRequestHandler = null;
   let flowMetricsRequestHandler = null;
   let doraMetricsRequestHandler = null;
+  let mergeRequestsRequestHandler = null;
 
   const setGraphqlQueryHandlerResponses = ({
     vulnerabilityResponse = mockLastVulnerabilityCountData,
     doraMetricsResponse = mockDoraMetricsResponseData,
     flowMetricsResponse = mockFlowMetricsResponseData,
+    mergeRequestsResponse = mockMergeRequestsResponseData,
   } = {}) => {
     vulnerabilityRequestHandler = mockGraphqlVulnerabilityResponse(vulnerabilityResponse);
     flowMetricsRequestHandler = mockGraphqlFlowMetricsResponse(flowMetricsResponse);
     doraMetricsRequestHandler = mockGraphqlDoraMetricsResponse(doraMetricsResponse);
+    mergeRequestsRequestHandler = mockGraphqlMergeRequestsResponse(mergeRequestsResponse);
   };
 
   const createMockApolloProvider = ({
@@ -82,18 +91,21 @@ describe('Comparison chart', () => {
     flowMetricsRequest = flowMetricsRequestHandler,
     doraMetricsRequest = doraMetricsRequestHandler,
     vulnerabilityRequest = vulnerabilityRequestHandler,
+    mergeRequestsRequest = mergeRequestsRequestHandler,
   } = {}) => {
     const flowMetricsQuery = isProject ? ProjectFlowMetricsQuery : GroupFlowMetricsQuery;
     const doraMetricsQuery = isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery;
     const vulnerabilitiesQuery = isProject
       ? ProjectVulnerabilitiesQuery
       : GroupVulnerabilitiesQuery;
+    const mergeRequestsQuery = isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery;
 
     return createMockApollo(
       [
         [flowMetricsQuery, flowMetricsRequest],
         [doraMetricsQuery, doraMetricsRequest],
         [vulnerabilitiesQuery, vulnerabilityRequest],
+        [mergeRequestsQuery, mergeRequestsRequest],
       ],
       {},
       {
@@ -168,12 +180,20 @@ describe('Comparison chart', () => {
       paramsFn: (timePeriod) => vulnerabilityParamsHelper({ ...timePeriod, fullPath }),
     });
 
+  const expectMergeRequestsRequests = (timePeriods, fullPath = groupPath) =>
+    expectTimePeriodRequests({
+      timePeriods,
+      requestHandler: mergeRequestsRequestHandler,
+      paramsFn: (timePeriod) => mergeRequestsParamsHelper({ ...timePeriod, fullPath }),
+    });
+
   afterEach(() => {
     mockApolloProvider = null;
 
     vulnerabilityRequestHandler.mockClear();
     flowMetricsRequestHandler.mockClear();
     doraMetricsRequestHandler.mockClear();
+    mergeRequestsRequestHandler.mockClear();
     createAlert.mockClear();
   });
 
@@ -195,6 +215,10 @@ describe('Comparison chart', () => {
 
     it('will request vulnerability metrics for the table and sparklines', () => {
       expectVulnerabilityRequests(allTimePeriods);
+    });
+
+    it('will request merge request data for the table and sparklines', () => {
+      expectMergeRequestsRequests(allTimePeriods);
     });
 
     it('renders each DORA metric when there is table data', () => {
@@ -296,6 +320,7 @@ describe('Comparison chart', () => {
         doraMetricsResponse: mockEmptyDoraResponse,
         flowMetricsResponse: mockEmptyFlowMetricsResponse,
         vulnerabilityResponse: mockEmptyVulnerabilityResponse,
+        mergeRequestsResponse: mockEmptyMergeRequestsResponse,
       });
       mockApolloProvider = createMockApolloProvider();
 
@@ -312,6 +337,10 @@ describe('Comparison chart', () => {
 
     it('will only request vulnerability metrics for the table', () => {
       expectVulnerabilityRequests(MOCK_TABLE_TIME_PERIODS);
+    });
+
+    it('will only merge request metrics for the table', () => {
+      expectMergeRequestsRequests(MOCK_TABLE_TIME_PERIODS);
     });
 
     it('renders a message when theres no table data available', () => {

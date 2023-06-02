@@ -1,9 +1,13 @@
-import { BUCKETING_INTERVAL_ALL } from 'ee/analytics/dashboards/graphql/constants';
+import {
+  BUCKETING_INTERVAL_ALL,
+  MERGE_REQUESTS_STATE_MERGED,
+} from 'ee/analytics/dashboards/graphql/constants';
 import * as utils from '~/analytics/shared/utils';
 import {
   mockDoraMetricsResponseData,
   mockFlowMetricsResponseData,
   mockLastVulnerabilityCountData,
+  mockMergeRequestsResponseData,
   mockMonthToDateApiResponse,
   mockPreviousMonthApiResponse,
   mockTwoMonthsAgoApiResponse,
@@ -33,6 +37,13 @@ export const vulnerabilityParamsHelper = ({ fullPath, end }) => ({
   fullPath,
   startDate: utils.toYmd(end),
   endDate: utils.toYmd(end),
+});
+
+export const mergeRequestsParamsHelper = ({ start, end, fullPath = '' }) => ({
+  fullPath,
+  startDate: utils.toYmd(start),
+  endDate: utils.toYmd(end),
+  state: MERGE_REQUESTS_STATE_MERGED,
 });
 
 export const mockAllTimePeriodApiResponses = () =>
@@ -65,6 +76,15 @@ export const mockGraphqlDoraMetricsResponse = (mockDataResponse = mockDoraMetric
   jest.fn().mockResolvedValue({
     data: {
       namespace: { id: 'fake-dora-metrics-request', dora: mockDataResponse },
+    },
+  });
+
+export const mockGraphqlMergeRequestsResponse = (
+  mockDataResponse = mockMergeRequestsResponseData,
+) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      namespace: { id: 'fake-merge-requests-request', mergeRequests: mockDataResponse },
     },
   });
 

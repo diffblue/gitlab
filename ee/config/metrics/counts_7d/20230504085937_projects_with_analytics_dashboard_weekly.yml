@@ -1,8 +1,8 @@
 ---
 key_path: counts.projects_with_analytics_dashboard_weekly
 description: Count of projects with an analytics dashboard
-product_section: dev
-product_stage: analyze
+product_section: analytics
+product_stage: analytics
 product_group: product_analytics
 value_type: number
 status: active
