@@ -10,7 +10,7 @@ module Vulnerabilities
 
     validates :vulnerability, :merge_request, presence: true
     validates :merge_request_id,
-              uniqueness: { scope: :vulnerability_id, message: N_('is already linked to this vulnerability') }
+      uniqueness: { scope: :vulnerability_id, message: N_('is already linked to this vulnerability') }
 
     scope :by_finding_uuids, ->(uuids) do
       joins(vulnerability: [:findings]).where(vulnerability: {
