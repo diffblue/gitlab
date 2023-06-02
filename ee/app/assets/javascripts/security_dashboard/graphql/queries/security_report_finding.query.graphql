@@ -17,6 +17,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
         solution
         reportType
         falsePositive
+        dismissalReason
         remediations {
           diff
           summary

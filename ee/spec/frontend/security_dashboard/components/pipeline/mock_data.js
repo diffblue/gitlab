@@ -456,6 +456,7 @@ export const pipelineSecurityReportFinding = {
   solution: 'Some solution',
   reportType: 'reportType',
   falsePositive: false,
+  dismissalReason: null,
   remediations: [
     {
       diff: 'SGVsbG8gR2l0TGFi',

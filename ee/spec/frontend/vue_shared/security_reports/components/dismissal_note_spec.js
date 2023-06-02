@@ -20,6 +20,7 @@ describe('dismissal note', () => {
     value: 'Project one',
     url: '/path-to-the-project',
   };
+  const dismissalReason = 'MITIGATING_CONTROL';
   let wrapper;
 
   const mountComponent = (options, mountFn = shallowMountExtended) => {
@@ -47,6 +48,14 @@ describe('dismissal note', () => {
     it('should return the event text with no project data', () => {
       expect(wrapper.text()).toBe('Dismissed');
     });
+
+    it('should return the event text with dismissal reason', () => {
+      mountComponent({
+        propsData: { feedback: { ...feedback, dismissalReason } },
+      });
+
+      expect(wrapper.text()).toMatchInterpolatedText('Dismissed: Mitigating control');
+    });
   });
 
   describe('with an attached project', () => {
@@ -56,12 +65,22 @@ describe('dismissal note', () => {
       });
     });
 
-    it('should return the event text with project data', () => {
-      expect(wrapper.text()).toBe(`Dismissed at ${project.value}`);
-    });
-
     it('should link to the project', () => {
       expect(findProjectLink().attributes('href')).toBe(project.url);
+    });
+
+    it('should return the event text with project data', () => {
+      expect(wrapper.text()).toMatchInterpolatedText(`Dismissed at ${project.value}`);
+    });
+
+    it('should return the event text with dismissal reason', () => {
+      mountComponent({
+        propsData: { project, feedback: { ...feedback, dismissalReason } },
+      });
+
+      expect(wrapper.text()).toMatchInterpolatedText(
+        `Dismissed: Mitigating control at ${project.value}`,
+      );
     });
   });
 
@@ -72,12 +91,22 @@ describe('dismissal note', () => {
       });
     });
 
-    it('should return the event text with project data', () => {
-      expect(wrapper.text()).toBe(`Dismissed on pipeline #${pipeline.id}`);
-    });
-
     it('should link to the pipeline', () => {
       expect(findPipelineLink().attributes('href')).toBe(pipeline.path);
+    });
+
+    it('should return the event text with project data', () => {
+      expect(wrapper.text()).toMatchInterpolatedText(`Dismissed on pipeline #${pipeline.id}`);
+    });
+
+    it('should return the event text with dismissal reason', () => {
+      mountComponent({
+        propsData: { feedback: { ...feedback, pipeline, dismissalReason } },
+      });
+
+      expect(wrapper.text()).toMatchInterpolatedText(
+        `Dismissed: Mitigating control on pipeline #${pipeline.id}`,
+      );
     });
   });
 
@@ -88,16 +117,28 @@ describe('dismissal note', () => {
       });
     });
 
-    it('should return the event text with project data', () => {
-      expect(wrapper.text()).toBe(`Dismissed on pipeline #${pipeline.id} at ${project.value}`);
-    });
-
     it('should link to the pipeline', () => {
       expect(findPipelineLink().attributes('href')).toBe(pipeline.path);
     });
 
     it('should link to the project', () => {
       expect(findProjectLink().attributes('href')).toBe(project.url);
+    });
+
+    it('should return the event text with project data', () => {
+      expect(wrapper.text()).toMatchInterpolatedText(
+        `Dismissed on pipeline #${pipeline.id} at ${project.value}`,
+      );
+    });
+
+    it('should return the event text with dismissal reason', () => {
+      mountComponent({
+        propsData: { project, feedback: { ...feedback, pipeline, dismissalReason } },
+      });
+
+      expect(wrapper.text()).toMatchInterpolatedText(
+        `Dismissed: Mitigating control on pipeline #${pipeline.id} at ${project.value}`,
+      );
     });
   });
 
