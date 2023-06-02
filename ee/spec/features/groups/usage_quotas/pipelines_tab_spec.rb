@@ -33,7 +33,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
 
     it 'shows correct group quota info' do
       page.within('#pipelines-quota-tab') do
-        expect(page).to have_content("400 / Unlimited minutes")
+        expect(page).to have_content("400 / Unlimited units")
       end
     end
   end
@@ -55,20 +55,20 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
   end
 
-  context 'with minutes under quota' do
+  context 'with compute under quota' do
     include_context 'when user is allowed to see usage quotas'
 
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     it 'shows correct group quota info' do
       page.within('#pipelines-quota-tab') do
-        expect(page).to have_content("300 / 500 minutes")
+        expect(page).to have_content("300 / 500 units")
         expect(page).to have_content("60% used")
       end
     end
   end
 
-  context 'with minutes over quota' do
+  context 'with compute over quota' do
     include_context 'when user is allowed to see usage quotas'
 
     let(:group) { create(:group, :with_used_build_minutes_limit) }
@@ -80,14 +80,14 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     context 'when it is not GitLab.com' do
       let(:gitlab_dot_com) { false }
 
-      it "does not show 'Buy additional minutes' button" do
-        expect(page).not_to have_content('Buy additional minutes')
+      it "does not show 'Buy additional units of compute' button" do
+        expect(page).not_to have_content('Buy additional units of compute')
       end
     end
 
     it 'has correct tracking setup and shows correct group quota and projects info' do
       page.within('#pipelines-quota-tab') do
-        expect(page).to have_content("1000 / 500 minutes")
+        expect(page).to have_content("1000 / 500 units")
         expect(page).to have_content("200% used")
       end
 
@@ -96,7 +96,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         expect(page).not_to have_content(other_project.full_name)
       end
 
-      link = page.find('a', text: 'Buy additional minutes')
+      link = page.find('a', text: 'Buy additional units of compute')
 
       expect(link['data-track-action']).to eq('click_buy_ci_minutes')
       expect(link['data-track-label']).to eq(group.actual_plan_name)
@@ -111,7 +111,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
         visit_usage_quotas_page
       end
 
-      it 'does not show projects with 0 minutes used' do
+      it 'does not show projects with 0 units of compute used' do
         page.within('[data-testid="pipelines-quota-tab-project-table"]') do
           expect(page).to have_content(project.full_name)
           expect(page).not_to have_content(other_project.full_name)
@@ -135,16 +135,16 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
     end
   end
 
-  describe 'Purchase additional CI minutes' do
+  describe 'Purchase additional units of compute' do
     include_context 'when user is allowed to see usage quotas'
 
-    it 'points to GitLab CI minutes purchase flow' do
+    it 'points to GitLab compute purchase flow' do
       visit_usage_quotas_page
 
-      expect(page).to have_link('Buy additional minutes', href: buy_minutes_subscriptions_link(group))
+      expect(page).to have_link('Buy additional units of compute', href: buy_minutes_subscriptions_link(group))
     end
 
-    context 'when successfully purchasing CI Minutes' do
+    context 'when successfully purchasing units of compute' do
       let(:group) { create(:group, :with_ci_minutes) }
       let!(:project) do
         create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true)
@@ -195,11 +195,11 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       visit_usage_quotas_page('pipelines-quota-tab')
     end
 
-    it 'sorts projects list by CI minutes used in descending order' do
+    it 'sorts projects list by compute used in descending order' do
       page.within('[data-testid="pipelines-quota-tab-project-table"]') do
         expect(page).to have_content("Project")
         expect(page).to have_content("Shared runner duration")
-        expect(page).to have_content("CI/CD minutes usage")
+        expect(page).to have_content("Compute usage")
 
         shared_runner_durations = all('[data-testid="project_shared_runner_duration"]').map(&:text)
         expect(shared_runner_durations).to match_array(["16.67", "1.33", "0.83", "0.50", "0.17"])
@@ -241,7 +241,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :
       wait_for_requests
     end
 
-    it 'shows no minutes quota info' do
+    it 'shows no compute quota info' do
       expect(page).not_to have_selector('#pipelines-quota-tab')
     end
   end

@@ -71,7 +71,7 @@ describe('PipelineUsageApp', () => {
     });
   };
 
-  describe('Buy additional minutes Button', () => {
+  describe('Buy additional units of compute Button', () => {
     const mockApollo = createMockApolloProvider();
 
     it('calls pushEECproductAddToCartEvent on click', async () => {
@@ -84,7 +84,7 @@ describe('PipelineUsageApp', () => {
     });
 
     describe('Gitlab SaaS: valid data for buyAdditionalMinutesPath and buyAdditionalMinutesTarget', () => {
-      it('renders the button to buy additional minutes', async () => {
+      it('renders the button to buy additional units of compute', async () => {
         createComponent({ mockApollo });
 
         await waitForPromises();
@@ -105,7 +105,7 @@ describe('PipelineUsageApp', () => {
         });
       });
 
-      it('does not render the button to buy additional minutes', () => {
+      it('does not render the button to buy additional units of compute', () => {
         expect(findBuyAdditionalMinutesButton().exists()).toBe(false);
       });
     });
@@ -114,7 +114,7 @@ describe('PipelineUsageApp', () => {
   describe('namespace ci usage overview', () => {
     const mockApollo = createMockApolloProvider();
 
-    it('passes reset date for monthlyUsageTitle to minutes UsageOverview if present', async () => {
+    it('passes reset date for monthlyUsageTitle to units of compute UsageOverview if present', async () => {
       createComponent({ mockApollo });
 
       await waitForPromises();
@@ -126,7 +126,7 @@ describe('PipelineUsageApp', () => {
       );
     });
 
-    it('passes correct props to minutes UsageOverview', async () => {
+    it('passes correct props to units of compute UsageOverview', async () => {
       createComponent({ mockApollo });
 
       await waitForPromises();
@@ -147,7 +147,7 @@ describe('PipelineUsageApp', () => {
       });
     });
 
-    it('passes correct props to purchased minutes UsageOverview', async () => {
+    it('passes correct props to purchased units of compute UsageOverview', async () => {
       createComponent({ mockApollo });
 
       await waitForPromises();
@@ -166,7 +166,7 @@ describe('PipelineUsageApp', () => {
       });
     });
 
-    it('shows unlimited as usagePercentage on minutes UsageOverview under correct circumstances', async () => {
+    it('shows unlimited as usagePercentage on units of compute UsageOverview under correct circumstances', async () => {
       createComponent({
         mockApollo,
         provide: {
