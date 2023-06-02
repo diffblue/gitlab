@@ -54467,9 +54467,6 @@ msgstr ""
 msgid "mrWidget|Remove from merge train"
 msgstr ""
 
-msgid "mrWidget|Resolve all with new issue"
-msgstr ""
-
 msgid "mrWidget|Resolve conflicts"
 msgstr ""
 
