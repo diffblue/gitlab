@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_policy_management do
   let_it_be_with_reload(:project) { create(:project) }
   let_it_be_with_reload(:namespace) { create(:group, :public) }
+  let_it_be(:timezones) { [{ identifier: "Europe/Paris" }] }
 
   describe '#can_update_security_orchestration_policy_project?' do
     let(:owner) { project.first_owner }
@@ -110,11 +111,13 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           software_licenses: [apache_license.name, mit_license.name],
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
-          root_namespace_path: project.root_ancestor.full_path
+          root_namespace_path: project.root_ancestor.full_path,
+          timezones: timezones.to_json
         }
       end
 
       before do
+        allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
         allow(helper).to receive(:current_user) { owner }
         allow(helper).to receive(:can?).with(owner, :modify_security_policy, project) { true }
       end
@@ -188,11 +191,13 @@ RSpec.describe EE::SecurityOrchestrationHelper, feature_category: :security_poli
           software_licenses: [apache_license.name, mit_license.name],
           global_group_approvers_enabled:
             Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
-          root_namespace_path: namespace.root_ancestor.full_path
+          root_namespace_path: namespace.root_ancestor.full_path,
+          timezones: timezones.to_json
         }
       end
 
       before do
+        allow(helper).to receive(:timezone_data).with(format: :full).and_return(timezones)
         allow(helper).to receive(:current_user) { owner }
         allow(helper).to receive(:can?).with(owner, :modify_security_policy, namespace) { true }
       end
