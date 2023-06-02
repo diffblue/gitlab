@@ -275,7 +275,7 @@ For information on configuring Geo for multiple nodes, see [Geo for multiple ser
 
 ### Configuring Geo with Object Storage
 
-For information on configuring Geo with object storage, see [Geo with Object storage](replication/object_storage.md).
+For information on configuring Geo with Object storage, see [Geo with Object storage](replication/object_storage.md).
 
 ### Disaster Recovery
 
