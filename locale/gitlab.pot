@@ -19295,12 +19295,6 @@ msgstr ""
 msgid "For investigating IT service disruptions or outages"
 msgstr ""
 
-msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch}"
-msgstr ""
-
-msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch} into %{link_to_merge_request_target_branch}"
-msgstr ""
-
 msgid "For more info, read the documentation."
 msgstr ""
 
@@ -33579,6 +33573,12 @@ msgstr ""
 msgid "Pipelines|Token"
 msgstr ""
 
+msgid "Pipelines|Total amount of compute credits used for the pipeline"
+msgstr ""
+
+msgid "Pipelines|Total number of jobs for the pipeline"
+msgstr ""
+
 msgid "Pipelines|Trigger user has insufficient permissions to project"
 msgstr ""
 
@@ -37684,6 +37684,12 @@ msgid "Related feature flags"
 msgstr ""
 
 msgid "Related issues"
+msgstr ""
+
+msgid "Related merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch}"
+msgstr ""
+
+msgid "Related merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch} into %{link_to_merge_request_target_branch}"
 msgstr ""
 
 msgid "Related merge requests"
