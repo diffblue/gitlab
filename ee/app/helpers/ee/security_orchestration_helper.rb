@@ -42,7 +42,8 @@ module EE::SecurityOrchestrationHelper
       scan_result_approvers: approvers&.to_json,
       software_licenses: SoftwareLicense.all_license_names,
       global_group_approvers_enabled: Gitlab::CurrentSettings.security_policy_global_group_approvers_enabled.to_json,
-      root_namespace_path: container.root_ancestor&.full_path
+      root_namespace_path: container.root_ancestor&.full_path,
+      timezones: timezone_data(format: :full).to_json
     }
 
     if container.is_a?(::Project)
