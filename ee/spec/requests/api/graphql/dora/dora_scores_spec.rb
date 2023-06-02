@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_time, feature_category: :devops_reports do
+RSpec.describe 'Query.[group](fullPath).doraPerformanceScoreCounts', :freeze_time, feature_category: :dora_metrics do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }

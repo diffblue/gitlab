@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::DoraMetricBucketingIntervalEnum do
+RSpec.describe Types::DoraMetricBucketingIntervalEnum, feature_category: :dora_metrics do
   it 'includes a value for each DORA bucketing interval type' do
     expect(described_class.values).to match(
       'ALL' => have_attributes(value: 'all'),

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::DoraMetricTypeEnum do
+RSpec.describe Types::DoraMetricTypeEnum, feature_category: :dora_metrics do
   it 'includes a value for each DORA metric type' do
     expect(described_class.values).to match(
       'DEPLOYMENT_FREQUENCY' => have_attributes(value: 'deployment_frequency'),

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::DoraMetricType, feature_category: :devops_reports do
+RSpec.describe Types::DoraMetricType, feature_category: :dora_metrics do
   it 'has the expected fields' do
     expect(described_class).to have_graphql_fields(
       :date, :value, :deployment_frequency, :time_to_restore_service,
