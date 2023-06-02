@@ -153,9 +153,11 @@ describe('Cube Analytics Data Source', () => {
     ];
 
     it.each`
-      type               | queryMeasurement         | expectedDimension
-      ${'TrackedEvents'} | ${'TrackedEvents.count'} | ${'TrackedEvents.utcTime'}
-      ${'Sessions'}      | ${'Sessions.count'}      | ${'Sessions.startAt'}
+      type                       | queryMeasurement                         | expectedDimension
+      ${'TrackedEvents'}         | ${'TrackedEvents.pageViewCount'}         | ${'TrackedEvents.utcTime'}
+      ${'SnowplowTrackedEvents'} | ${'SnowplowTrackedEvents.pageViewCount'} | ${'SnowplowTrackedEvents.derivedTstamp'}
+      ${'Sessions'}              | ${'Sessions.pageViewCount'}              | ${'Sessions.startAt'}
+      ${'SnowplowSessions'}      | ${'SnowplowSessions.pageViewCount'}      | ${'SnowplowSessions.startAt'}
     `(
       'loads the query with date range filters for "$type"',
       async ({ queryMeasurement, expectedDimension }) => {
