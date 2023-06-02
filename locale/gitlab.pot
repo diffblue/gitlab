@@ -40048,6 +40048,9 @@ msgstr ""
 msgid "ScanExecutionPolicy|Schedules:"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Select a scanner"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Select agent"
 msgstr ""
 

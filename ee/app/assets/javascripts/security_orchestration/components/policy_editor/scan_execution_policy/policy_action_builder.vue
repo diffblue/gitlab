@@ -120,6 +120,7 @@ export default {
     selectedTagsInformation: s__(
       'ScanExecutionPolicy|If the field is empty, the runner will be automatically selected',
     ),
+    scannersHeaderText: s__('ScanExecutionPolicy|Select a scanner'),
   },
 };
 </script>
@@ -142,6 +143,7 @@ export default {
           <template #scan>
             <gl-collapsible-listbox
               :items="actionScannerList"
+              :header-text="$options.i18n.scannersHeaderText"
               :selected="selectedScanner"
               :toggle-text="selectedScannerText"
               @select="setSelectedScanner({ scanner: $event })"
