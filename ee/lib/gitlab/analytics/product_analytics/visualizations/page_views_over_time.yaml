@@ -13,7 +13,7 @@ data:
     filters:
       - operator: equals
         values:
-          - pageview
+          - page_view
         member: SnowplowTrackedEvents.event
     limit: 100
     timezone: UTC
