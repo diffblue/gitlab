@@ -396,6 +396,28 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
     end
   end
 
+  describe 'read_runner_upgrade_status' do
+    it { is_expected.to be_disallowed(:read_runner_upgrade_status) }
+
+    context 'when runner_upgrade_management is available' do
+      before do
+        stub_licensed_features(runner_upgrade_management: true)
+      end
+
+      it { is_expected.to be_allowed(:read_runner_upgrade_status) }
+    end
+
+    context 'when user has paid namespace' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return true
+        group = create(:group_with_plan, plan: :ultimate_plan)
+        group.add_maintainer(user)
+      end
+
+      it { expect(described_class.new(user, nil)).to be_allowed(:read_runner_upgrade_status) }
+    end
+  end
+
   describe 'admin_service_accounts' do
     subject { described_class.new(admin, [user]) }
 
