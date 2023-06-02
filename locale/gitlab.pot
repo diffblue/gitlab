@@ -9595,9 +9595,6 @@ msgstr ""
 msgid "CiStatusLabel|created"
 msgstr ""
 
-msgid "CiStatusLabel|delayed"
-msgstr ""
-
 msgid "CiStatusLabel|failed"
 msgstr ""
 
@@ -9614,6 +9611,9 @@ msgid "CiStatusLabel|pending"
 msgstr ""
 
 msgid "CiStatusLabel|preparing"
+msgstr ""
+
+msgid "CiStatusLabel|scheduled"
 msgstr ""
 
 msgid "CiStatusLabel|skipped"
@@ -9655,10 +9655,16 @@ msgstr ""
 msgid "CiStatusText|preparing"
 msgstr ""
 
+msgid "CiStatusText|scheduled"
+msgstr ""
+
 msgid "CiStatusText|skipped"
 msgstr ""
 
 msgid "CiStatusText|waiting"
+msgstr ""
+
+msgid "CiStatusText|warning"
 msgstr ""
 
 msgid "CiStatus|running"
