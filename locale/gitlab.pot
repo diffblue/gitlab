@@ -8107,16 +8107,10 @@ msgstr ""
 msgid "Branches|Filter by branch name"
 msgstr ""
 
-msgid "Branches|Merged into %{default_branch}"
-msgstr ""
-
 msgid "Branches|New branch"
 msgstr ""
 
 msgid "Branches|No branches to show"
-msgstr ""
-
-msgid "Branches|Only a project maintainer or owner can delete a protected branch"
 msgstr ""
 
 msgid "Branches|Overview"
@@ -8158,9 +8152,6 @@ msgstr ""
 msgid "Branches|The branch could not be updated automatically because it has diverged from its upstream counterpart."
 msgstr ""
 
-msgid "Branches|The default branch cannot be deleted"
-msgstr ""
-
 msgid "Branches|This branch hasn't been merged into %{defaultBranchName}. To avoid data loss, consider merging this branch before deleting it."
 msgstr ""
 
@@ -8198,9 +8189,6 @@ msgid "Branches|You're about to permanently delete the protected branch %{branch
 msgstr ""
 
 msgid "Branches|diverged from upstream"
-msgstr ""
-
-msgid "Branches|merged"
 msgstr ""
 
 msgid "Branches|protected"
