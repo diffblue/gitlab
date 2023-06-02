@@ -48929,19 +48929,7 @@ msgstr ""
 msgid "UsageQuota|User settings &gt; Usage quotas"
 msgstr ""
 
-msgid "UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked if the storage limit was reached."
-msgstr ""
-
 msgid "UsageQuota|Wiki content."
-msgstr ""
-
-msgid "UsageQuota|You have consumed all of your additional storage. Purchase more to unlock projects over the limit."
-msgstr ""
-
-msgid "UsageQuota|You have reached the free storage limit on %{projectsLockedText}. To unlock them, purchase additional storage."
-msgstr ""
-
-msgid "UsageQuota|Your purchased storage is running low. To avoid locked projects, purchase more storage."
 msgstr ""
 
 msgid "UsageTrends|Could not load the issues and merge requests chart. Please refresh the page to try again."

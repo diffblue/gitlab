@@ -1,5 +1,4 @@
 import {
-  usageRatioToThresholdLevel,
   formatUsageSize,
   parseProjects,
   calculateUsedAndRemStorage,
@@ -10,21 +9,6 @@ import {
   projects as mockProjectsData,
   mockGetNamespaceStorageStatisticsGraphQLResponse,
 } from './mock_data';
-
-describe('UsageThreshold', () => {
-  it.each`
-    usageRatio | expectedLevel
-    ${0}       | ${'none'}
-    ${0.4}     | ${'none'}
-    ${0.5}     | ${'info'}
-    ${0.9}     | ${'info'}
-    ${0.99}    | ${'alert'}
-    ${1}       | ${'error'}
-    ${1.5}     | ${'error'}
-  `('returns $expectedLevel from $usageRatio', ({ usageRatio, expectedLevel }) => {
-    expect(usageRatioToThresholdLevel(usageRatio)).toBe(expectedLevel);
-  });
-});
 
 describe('formatUsageSize', () => {
   it.each`

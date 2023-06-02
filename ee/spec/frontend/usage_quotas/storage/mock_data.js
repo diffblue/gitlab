@@ -14,7 +14,6 @@ export const defaultNamespaceProvideValues = {
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
   storageLimitEnforced: false,
-  canShowInlineAlert: false,
   helpLinks: projectHelpLinks,
 };
 
