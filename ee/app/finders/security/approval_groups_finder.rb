@@ -11,7 +11,9 @@ module Security
     end
 
     def execute
-      @search_globally ? global_groups : groups_within_container_hierarchy
+      return global_groups if global_groups?
+
+      groups_within_container_hierarchy
     end
 
     private
@@ -20,6 +22,10 @@ module Security
       :group_paths,
       :user,
       :container
+
+    def global_groups?
+      @search_globally || user_namespace?
+    end
 
     # rubocop: disable Layout/LineLength
     def global_groups
@@ -36,6 +42,10 @@ module Security
         .self_and_descendants
         .by_ids_or_paths(group_ids, group_paths)
         .public_or_visible_to_user(user)
+    end
+
+    def user_namespace?
+      container.is_a?(Namespaces::UserNamespace)
     end
   end
 end
