@@ -32125,12 +32125,13 @@ msgstr ""
 msgid "PackageRegistry|Debian"
 msgstr ""
 
-msgid "PackageRegistry|Delete 1 asset"
-msgid_plural "PackageRegistry|Delete %d assets"
-msgstr[0] ""
-msgstr[1] ""
+msgid "PackageRegistry|Delete %{count} assets"
+msgstr ""
 
 msgid "PackageRegistry|Delete Package Version"
+msgstr ""
+
+msgid "PackageRegistry|Delete asset"
 msgstr ""
 
 msgid "PackageRegistry|Delete package"
@@ -32441,6 +32442,9 @@ msgstr ""
 msgid "PackageRegistry|Yes, delete selected packages"
 msgstr ""
 
+msgid "PackageRegistry|You are about to delete %{count} assets. This operation is irreversible."
+msgstr ""
+
 msgid "PackageRegistry|You are about to delete %{count} packages. This operation is irreversible."
 msgstr ""
 
@@ -32449,11 +32453,6 @@ msgstr ""
 
 msgid "PackageRegistry|You are about to delete %{name}, are you sure?"
 msgstr ""
-
-msgid "PackageRegistry|You are about to delete 1 asset. This operation is irreversible."
-msgid_plural "PackageRegistry|You are about to delete %d assets. This operation is irreversible."
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "PackageRegistry|You are about to delete version %{version} of %{name}. Are you sure?"
 msgstr ""
