@@ -7,11 +7,13 @@ import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
 import ProjectVulnerabilitiesQuery from '../graphql/project_vulnerabilities.query.graphql';
+import GroupMergeRequestsQuery from '../graphql/group_merge_requests.query.graphql';
+import ProjectMergeRequestsQuery from '../graphql/project_merge_requests.query.graphql';
 import GroupFlowMetricsQuery from '../graphql/group_flow_metrics.query.graphql';
 import ProjectFlowMetricsQuery from '../graphql/project_flow_metrics.query.graphql';
 import GroupDoraMetricsQuery from '../graphql/group_dora_metrics.query.graphql';
 import ProjectDoraMetricsQuery from '../graphql/project_dora_metrics.query.graphql';
-import { BUCKETING_INTERVAL_ALL } from '../graphql/constants';
+import { BUCKETING_INTERVAL_ALL, MERGE_REQUESTS_STATE_MERGED } from '../graphql/constants';
 import { DASHBOARD_LOADING_FAILURE, DASHBOARD_NO_DATA, CHART_LOADING_FAILURE } from '../constants';
 import {
   fetchMetricsForTimePeriods,
@@ -19,6 +21,7 @@ import {
   extractGraphqlDoraData,
   extractDoraMetrics,
   extractGraphqlFlowData,
+  extractGraphqlMergeRequestsData,
 } from '../api';
 import {
   hasDoraMetricValues,
@@ -33,6 +36,14 @@ import ComparisonTable from './comparison_table.vue';
 const now = new Date();
 const DASHBOARD_TIME_PERIODS = generateDateRanges(now);
 const CHART_TIME_PERIODS = generateChartTimePeriods(now);
+
+const extractQueryResponseFromNamespace = ({ result, resultKey }) => {
+  if (result.data?.namespace) {
+    const { namespace } = result.data;
+    return namespace[resultKey];
+  }
+  return {};
+};
 
 export default {
   name: 'ComparisonChart',
@@ -117,37 +128,35 @@ export default {
         },
       });
 
-      if (result.data?.namespace) {
-        const {
-          data: {
-            namespace: { flowMetrics },
-          },
-        } = result;
-
-        return flowMetrics;
-      }
-      return {};
+      return extractQueryResponseFromNamespace({ result, resultKey: 'flowMetrics' });
     },
     async fetchDoraMetricsQuery({
       isProject,
       interval = BUCKETING_INTERVAL_ALL,
       ...queryVariables
     }) {
-      const res = await this.$apollo.query({
+      const result = await this.$apollo.query({
         query: isProject ? ProjectDoraMetricsQuery : GroupDoraMetricsQuery,
         variables: { ...queryVariables, interval },
       });
 
-      if (res.data?.namespace) {
-        const {
-          namespace: {
-            dora: { metrics },
-          },
-        } = res.data;
+      const responseData = extractQueryResponseFromNamespace({
+        result,
+        resultKey: 'dora',
+      });
+      return responseData?.metrics || {};
+    },
+    async fetchMergeRequestsQuery({ isProject, ...variables }) {
+      const result = await this.$apollo.query({
+        query: isProject ? ProjectMergeRequestsQuery : GroupMergeRequestsQuery,
+        variables,
+      });
 
-        return metrics;
-      }
-      return {};
+      const responseData = extractQueryResponseFromNamespace({
+        result,
+        resultKey: 'mergeRequests',
+      });
+      return responseData || {};
     },
     async fetchVulnerabilitiesQuery({ isProject, ...variables }) {
       const result = await this.$apollo.query({
@@ -155,16 +164,11 @@ export default {
         variables,
       });
 
-      if (result.data?.namespace) {
-        const {
-          namespace: {
-            vulnerabilitiesCountByDay: { nodes = [] },
-          },
-        } = result.data;
-        return nodes;
-      }
-
-      return [];
+      const responseData = extractQueryResponseFromNamespace({
+        result,
+        resultKey: 'vulnerabilitiesCountByDay',
+      });
+      return responseData?.nodes || [];
     },
     async fetchDoraAndFlowMetrics({ startDate, endDate }, timePeriod) {
       // request the dora and flow metrics from the REST endpoint
@@ -183,10 +187,18 @@ export default {
         endDate: toYmd(endDate),
       });
 
+      const mergeRequests = await this.fetchMergeRequestsQuery({
+        ...this.defaultQueryParams,
+        startDate: toYmd(startDate),
+        endDate: toYmd(endDate),
+        state: MERGE_REQUESTS_STATE_MERGED,
+      });
+
       return {
         ...timePeriod,
         ...extractDoraMetrics(rawData),
         ...extractGraphqlVulnerabilitiesData(vulnerabilities),
+        ...extractGraphqlMergeRequestsData(mergeRequests),
       };
     },
 
@@ -213,11 +225,19 @@ export default {
         endDate: toYmd(endDate),
       });
 
+      const mergeRequests = await this.fetchMergeRequestsQuery({
+        ...this.defaultQueryParams,
+        startDate: toYmd(startDate),
+        endDate: toYmd(endDate),
+        state: MERGE_REQUESTS_STATE_MERGED,
+      });
+
       return {
         ...timePeriod,
         ...extractGraphqlFlowData(flowMetrics),
         ...extractGraphqlDoraData(dora),
         ...extractGraphqlVulnerabilitiesData(vulnerabilities),
+        ...extractGraphqlMergeRequestsData(mergeRequests),
       };
     },
     async fetchTableMetrics() {

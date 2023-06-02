@@ -2,13 +2,18 @@ import { stringify } from 'yaml';
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
-import { VULNERABILITY_CRITICAL_TYPE, VULNERABILITY_HIGH_TYPE } from '~/analytics/shared/constants';
+import {
+  VULNERABILITY_CRITICAL_TYPE,
+  VULNERABILITY_HIGH_TYPE,
+  MERGE_REQUEST_THROUGHPUT_TYPE,
+} from '~/analytics/shared/constants';
 import {
   fetchYamlConfig,
   extractDoraMetrics,
   extractGraphqlDoraData,
   extractGraphqlFlowData,
   extractGraphqlVulnerabilitiesData,
+  extractGraphqlMergeRequestsData,
 } from 'ee/analytics/dashboards/api';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
@@ -28,6 +33,7 @@ import {
   mockDoraMetricsResponseData,
   mockLastVulnerabilityCountData,
   mockFlowMetricsResponseData,
+  mockMergeRequestsResponseData,
 } from './mock_data';
 
 describe('Analytics Dashboards api', () => {
@@ -93,6 +99,7 @@ describe('Analytics Dashboards api', () => {
         DEPLOYS_METRIC_TYPE,
         VULNERABILITY_CRITICAL_TYPE,
         VULNERABILITY_HIGH_TYPE,
+        MERGE_REQUEST_THROUGHPUT_TYPE,
       ]);
     });
 
@@ -173,6 +180,23 @@ describe('Analytics Dashboards api', () => {
 
     it('replaces null values with `-`', () => {
       expect(extractGraphqlFlowData(mockFlowMetricsResponseData)).toEqual(flowMetricsResponse);
+    });
+  });
+
+  describe('extractGraphqlMergeRequestsData', () => {
+    const mergeRequestsResponse = {
+      merge_request_throughput: { identifier: 'merge_request_throughput', value: 10 },
+    };
+
+    it('returns each merge request metric', () => {
+      const keys = Object.keys(extractGraphqlMergeRequestsData(mockMergeRequestsResponseData));
+      expect(keys).toEqual(['merge_request_throughput']);
+    });
+
+    it('replaces null values with `-`', () => {
+      expect(extractGraphqlMergeRequestsData(mockMergeRequestsResponseData)).toEqual(
+        mergeRequestsResponse,
+      );
     });
   });
 });

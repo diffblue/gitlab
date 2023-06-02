@@ -13794,6 +13794,9 @@ msgstr ""
 msgid "DORA4Metrics|Median time an incident was open in a production environment over the given time period."
 msgstr ""
 
+msgid "DORA4Metrics|Merge request throughput"
+msgstr ""
+
 msgid "DORA4Metrics|Metrics comparison for %{name} group"
 msgstr ""
 
@@ -49698,6 +49701,9 @@ msgid "ValueStreamAnalytics|Shows %{selectedSubjectFilterText} for group '%{grou
 msgstr ""
 
 msgid "ValueStreamAnalytics|Tasks by type"
+msgstr ""
+
+msgid "ValueStreamAnalytics|The number of merge requests merged by month."
 msgstr ""
 
 msgid "ValueStreamAnalytics|The time it takes an organization to recover from a failure in production."
