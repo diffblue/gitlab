@@ -53,7 +53,7 @@ module Gitlab
         end
 
         def self.default_final_answer
-          _("AI|I don't see how I can help. Please give better instructions!")
+          s_("AI|I don't see how I can help. Please give better instructions!")
         end
 
         def self.error_answer(context:, content:)

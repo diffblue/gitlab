@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let_it_be(:resource) { create(:issue, project: project) }
 
   let(:content) { 'Summarize issue' }
-  let(:ai_client) { instance_double(Gitlab::Llm::VertexAi::Client) }
+  let(:ai_client) { instance_double(Gitlab::Llm::Anthropic::Client) }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:options) { { request_id: 'uuid', content: content } }
   let(:answer) do
@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
   describe '#execute' do
     before do
-      allow(::Gitlab::Llm::VertexAi::Client).to receive(:new).and_return(ai_client)
+      allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(ai_client)
     end
 
     it 'calls the ZeroShot Agent with the right parameters' do
