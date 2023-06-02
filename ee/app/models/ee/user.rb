@@ -649,5 +649,12 @@ module EE
         SetUserStatusBasedOnUserCapSettingWorker.perform_async(id)
       end
     end
+
+    override :should_delay_delete?
+    def should_delay_delete?(*args)
+      return false if has_paid_namespace?(exclude_trials: true)
+
+      super
+    end
   end
 end

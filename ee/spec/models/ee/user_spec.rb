@@ -2569,4 +2569,32 @@ RSpec.describe User, feature_category: :system_access do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '#delete_async', :saas do
+    context 'when target user is the same as deleted_by' do
+      let_it_be(:user) { create(:user) }
+
+      subject { user.delete_async(deleted_by: user) }
+
+      context 'when user is not a member of a namespace with a paid plan subscription (excluding trials)' do
+        it 'schedules the user for deletion with delay' do
+          expect(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(false)
+          expect(DeleteUserWorker).to receive(:perform_in)
+          expect(DeleteUserWorker).not_to receive(:perform_async)
+
+          subject
+        end
+      end
+
+      context 'when user is a member of a namespace with a paid plan subscription (excluding trials)' do
+        it 'schedules user for deletion without delay' do
+          expect(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(true)
+          expect(DeleteUserWorker).to receive(:perform_async)
+          expect(DeleteUserWorker).not_to receive(:perform_in)
+
+          subject
+        end
+      end
+    end
+  end
 end

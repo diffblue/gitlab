@@ -4,7 +4,9 @@ import Vuex from 'vuex';
 import VueApollo from 'vue-apollo';
 import TanukiBotChatApp from 'ee/ai/tanuki_bot/components/app.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
+import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -12,6 +14,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
 import {
   MOCK_USER_MESSAGE,
+  MOCK_TANUKI_MESSAGE,
   MOCK_USER_ID,
   MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_BOT_MUTATATION_RES,
@@ -32,9 +35,12 @@ describe('TanukiBotChatApp', () => {
   let subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
   let mutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
 
-  const createComponent = () => {
+  const createComponent = (initialState = {}) => {
     const store = new Vuex.Store({
       actions: actionSpies,
+      state: {
+        ...initialState,
+      },
     });
 
     const apolloProvider = createMockApollo([
@@ -131,6 +137,18 @@ describe('TanukiBotChatApp', () => {
 
     it('renders AiGenieChat component', () => {
       expect(findGenieChat().exists()).toBe(true);
+    });
+
+    it('renders the User Feedback component for every assistent mesage', () => {
+      const getPromptLocationSpy = jest.spyOn(AiGenieChat.methods, 'getPromptLocation');
+      getPromptLocationSpy.mockReturnValue('foo');
+      createComponent({
+        messages: [MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE, MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE],
+      });
+      const userFeedbackComponents = wrapper.findAllComponents(UserFeedback);
+      expect(userFeedbackComponents.length).toBe(2);
+      expect(userFeedbackComponents.at(0).props('eventName')).toBe(TANUKI_BOT_TRACKING_EVENT_NAME);
+      expect(userFeedbackComponents.at(0).props('promptLocation')).toBe('foo');
     });
 
     describe('when input is submitted', () => {

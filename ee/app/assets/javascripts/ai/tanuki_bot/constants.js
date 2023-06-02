@@ -25,4 +25,5 @@ export const ERROR_MESSAGE = s__(
   'TanukiBot|There was an error communicating with GitLab Chat. Please try again later.',
 );
 
+export const TANUKI_BOT_TRACKING_EVENT_NAME = 'ask_gitlab_chat';
 export const TANUKI_BOT_FEEDBACK_ISSUE_URL = 'https://gitlab.com/gitlab-org/gitlab/-/issues/408527';
