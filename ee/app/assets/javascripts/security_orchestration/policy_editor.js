@@ -26,6 +26,16 @@ export default (el, namespaceType) => {
 
   const policyProject = JSON.parse(assignedPolicyProject);
 
+  let parsedSoftwareLicenses;
+
+  try {
+    parsedSoftwareLicenses = JSON.parse(softwareLicenses).map((license) => {
+      return { value: license, text: license };
+    });
+  } catch {
+    parsedSoftwareLicenses = [];
+  }
+
   let scanResultPolicyApprovers;
 
   try {
@@ -55,7 +65,7 @@ export default (el, namespaceType) => {
       rootNamespacePath,
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
-      softwareLicenses,
+      parsedSoftwareLicenses,
       existingPolicy: policy ? { type: policyType, ...JSON.parse(policy) } : undefined,
       assignedPolicyProject: policyProject
         ? convertObjectPropsToCamelCase(policyProject)
