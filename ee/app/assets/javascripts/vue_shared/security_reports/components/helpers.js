@@ -1,3 +1,4 @@
+import { __ } from '~/locale';
 import { EMPTY_BODY_MESSAGE } from './constants';
 
 /**
@@ -45,4 +46,30 @@ export const getCreatedIssueForVulnerability = (vulnerability) =>
 export const getDismissalTransitionForVulnerability = (vulnerability) => {
   const latestTransition = vulnerability.state_transitions?.at(-1);
   return latestTransition?.to_state.toLowerCase() === 'dismissed' ? latestTransition : null;
+};
+
+export const getDismissalNoteEventText = ({ hasProject, hasPipeline, hasDismissalReason }) => {
+  if (hasDismissalReason) {
+    if (hasPipeline && hasProject) {
+      return __(
+        '%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink} at %{projectLink}',
+      );
+    } else if (hasPipeline) {
+      return __(
+        '%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink}',
+      );
+    } else if (hasProject) {
+      return __('%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} at %{projectLink}');
+    }
+    return __('%{statusStart}Dismissed%{statusEnd}: %{dismissalReason}');
+  }
+
+  if (hasPipeline && hasProject) {
+    return __('%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink} at %{projectLink}');
+  } else if (hasPipeline) {
+    return __('%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink}');
+  } else if (hasProject) {
+    return __('%{statusStart}Dismissed%{statusEnd} at %{projectLink}');
+  }
+  return __('%{statusStart}Dismissed%{statusEnd}');
 };
