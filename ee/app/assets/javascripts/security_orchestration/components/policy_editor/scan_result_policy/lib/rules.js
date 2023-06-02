@@ -18,8 +18,8 @@ export const VULNERABILITY_STATE_KEYS = [
 
 export const SCAN_FINDING = 'scan_finding';
 export const LICENSE_FINDING = 'license_finding';
-export const MATCHING = s__('ScanResultPolicy|matching');
-export const EXCEPT = s__('ScanResultPolicy|except');
+export const MATCHING = s__('ScanResultPolicy|Matching');
+export const EXCEPT = s__('ScanResultPolicy|Except');
 
 export const LICENSE_STATES = {
   newly_detected: s__('ScanResultPolicy|Newly Detected'),
@@ -29,35 +29,29 @@ export const LICENSE_STATES = {
 /*
   Construct a new rule object.
 */
-export function securityScanBuildRule() {
-  return {
-    type: SCAN_FINDING,
-    branches: [],
-    scanners: [],
-    vulnerabilities_allowed: 0,
-    severity_levels: [],
-    vulnerability_states: [],
-  };
-}
+export const securityScanBuildRule = () => ({
+  type: SCAN_FINDING,
+  branches: [],
+  scanners: [],
+  vulnerabilities_allowed: 0,
+  severity_levels: [],
+  vulnerability_states: [],
+});
 
-export function licenseScanBuildRule() {
-  return {
-    type: LICENSE_FINDING,
-    branches: [],
-    match_on_inclusion: true,
-    license_types: [],
-    license_states: [],
-  };
-}
+export const licenseScanBuildRule = () => ({
+  type: LICENSE_FINDING,
+  branches: [],
+  match_on_inclusion: true,
+  license_types: [],
+  license_states: [],
+});
 
 /*
   Construct a new rule object for when the licenseScanningPolocies flag is on
 */
-export function emptyBuildRule() {
-  return {
-    type: '',
-  };
-}
+export const emptyBuildRule = () => ({
+  type: '',
+});
 
 /**
  * Check if all rule values of certain key are included in the allowedValues list

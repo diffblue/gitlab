@@ -5,11 +5,9 @@ import BaseLayoutComponent from 'ee/security_orchestration/components/policy_edi
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
-
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   emptyBuildRule,
-  SCAN_FINDING,
   securityScanBuildRule,
   licenseScanBuildRule,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
@@ -20,19 +18,16 @@ describe('PolicyRuleBuilder', () => {
   const PROTECTED_BRANCHES_MOCK = [{ id: 1, name: 'main' }];
 
   const SECURITY_SCAN_RULE = {
-    type: SCAN_FINDING,
+    ...securityScanBuildRule(),
     branches: [PROTECTED_BRANCHES_MOCK[0].name],
     scanners: ['dast'],
-    vulnerabilities_allowed: 1,
     severity_levels: ['high'],
     vulnerability_states: ['newly_detected'],
   };
 
   const LICENSE_SCANNING_RULE = {
-    type: 'license_finding',
+    ...licenseScanBuildRule(),
     branches: [PROTECTED_BRANCHES_MOCK[0].name],
-    match_on_inclusion: true,
-    license_types: [],
     license_states: ['newly_detected', 'detected'],
   };
 
