@@ -47,7 +47,7 @@ export const TEST_VISUALIZATION = () => ({
 });
 
 export const TEST_CUSTOM_DASHBOARD = () => ({
-  id: 'new_dashboard',
+  slug: 'new_dashboard',
   title: 'New dashboard',
   panels: [
     {
@@ -65,59 +65,95 @@ export const TEST_CUSTOM_DASHBOARD = () => ({
   ],
 });
 
-export const getGraphQLDashboard = (options = {}) => ({
-  slug: '',
-  title: '',
-  userDefined: false,
-  description: 'Understand your audience',
-  panels: {
-    nodes: [
-      {
-        title: 'Daily Active Users',
-        gridAttributes: {
-          yPos: 1,
-          xPos: 0,
-          width: 6,
-          height: 5,
-        },
-        visualization: {
-          type: 'LineChart',
-          options: {
-            xAxis: {
-              name: 'Time',
-              type: 'time',
-            },
-            yAxis: {
-              name: 'Counts',
-              type: 'time',
-            },
-          },
-          data: {
-            type: 'cube_analytics',
-            query: {
-              measures: ['SnowplowTrackedEvents.uniqueUsersCount'],
-              timeDimensions: [
-                {
-                  dimension: 'SnowplowTrackedEvents.derivedTstamp',
-                  granularity: 'day',
-                },
-              ],
-              limit: 100,
-              timezone: 'UTC',
-              filters: [],
-              dimensions: [],
-            },
-          },
-          __typename: 'ProductAnalyticsDashboardVisualization',
-        },
-        __typename: 'ProductAnalyticsDashboardPanel',
+export const TEST_DASHBOARD_GRAPHQL_404_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      productAnalyticsDashboards: {
+        nodes: [],
+        __typename: 'ProductAnalyticsDashboardConnection',
       },
-    ],
-    __typename: 'ProductAnalyticsDashboardPanelConnection',
+      __typename: 'Project',
+    },
   },
-  __typename: 'ProductAnalyticsDashboard',
-  ...options,
-});
+};
+
+export const getGraphQLDashboard = (options = {}, withPanels = true) => {
+  const dashboard = {
+    slug: '',
+    title: '',
+    userDefined: false,
+    description: 'Understand your audience',
+    __typename: 'ProductAnalyticsDashboard',
+    ...options,
+  };
+
+  if (withPanels) {
+    return {
+      ...dashboard,
+      panels: {
+        nodes: [
+          {
+            title: 'Daily Active Users',
+            gridAttributes: {
+              yPos: 1,
+              xPos: 0,
+              width: 6,
+              height: 5,
+            },
+            visualization: {
+              type: 'LineChart',
+              options: {
+                xAxis: {
+                  name: 'Time',
+                  type: 'time',
+                },
+                yAxis: {
+                  name: 'Counts',
+                  type: 'time',
+                },
+              },
+              data: {
+                type: 'cube_analytics',
+                query: {
+                  measures: ['SnowplowTrackedEvents.uniqueUsersCount'],
+                  timeDimensions: [
+                    {
+                      dimension: 'SnowplowTrackedEvents.derivedTstamp',
+                      granularity: 'day',
+                    },
+                  ],
+                  limit: 100,
+                  timezone: 'UTC',
+                  filters: [],
+                  dimensions: [],
+                },
+              },
+              __typename: 'ProductAnalyticsDashboardVisualization',
+            },
+            __typename: 'ProductAnalyticsDashboardPanel',
+          },
+        ],
+        __typename: 'ProductAnalyticsDashboardPanelConnection',
+      },
+    };
+  }
+
+  return dashboard;
+};
+
+export const TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/1',
+      productAnalyticsDashboards: {
+        nodes: [getGraphQLDashboard({ slug: 'audience', title: 'Audience' })],
+        __typename: 'ProductAnalyticsDashboardConnection',
+      },
+      __typename: 'Project',
+    },
+  },
+};
 
 export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
   data: {
@@ -125,9 +161,12 @@ export const TEST_ALL_DASHBOARDS_GRAPHQL_SUCCESS_RESPONSE = {
       id: 'gid://gitlab/Project/1',
       productAnalyticsDashboards: {
         nodes: [
-          getGraphQLDashboard({ slug: 'audience', title: 'Audience' }),
-          getGraphQLDashboard({ slug: 'behavior', title: 'Behavior' }),
-          getGraphQLDashboard({ slug: 'new_dashboard', title: 'new_dashboard', userDefined: true }),
+          getGraphQLDashboard({ slug: 'audience', title: 'Audience' }, false),
+          getGraphQLDashboard({ slug: 'behavior', title: 'Behavior' }, false),
+          getGraphQLDashboard(
+            { slug: 'new_dashboard', title: 'new_dashboard', userDefined: true },
+            false,
+          ),
         ],
         __typename: 'ProductAnalyticsDashboardConnection',
       },

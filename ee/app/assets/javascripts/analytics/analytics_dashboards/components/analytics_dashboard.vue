@@ -20,6 +20,7 @@ import {
   getProductAnalyticsVisualization,
   saveCustomDashboard,
 } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { builtinDashboards, builtinVisualizations } from '../gl_dashboards';
 import {
   VISUALIZATION_TYPE_FILE,
@@ -31,6 +32,7 @@ import {
   I18N_PRODUCT_ANALYTICS_TITLE,
   NEW_DASHBOARD,
 } from '../constants';
+import getProductAnalyticsDashboardQuery from '../graphql/queries/get_product_analytics_dashboard.query.graphql';
 
 export default {
   name: 'AnalyticsDashboard',
@@ -39,10 +41,14 @@ export default {
     CustomizableDashboard,
     GlEmptyState,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: {
     customDashboardsProject: {
       type: Object,
       default: null,
+    },
+    projectFullPath: {
+      type: String,
     },
     dashboardEmptyStateIllustrationPath: {
       type: String,
@@ -70,38 +76,87 @@ export default {
         : buildDefaultDashboardFilters(window.location.search),
       isSaving: false,
       backUrl: this.$router.resolve('/').href,
+      editingEnabled: this.glFeatures.combinedAnalyticsDashboardsEditor,
+      jitsuEnabled: !this.glFeatures.productAnalyticsSnowplowSupport,
     };
   },
   async created() {
     let loadedDashboard;
 
-    if (this.isNewDashboard) {
+    // Only allow new dashboards when the dashboards editor is enabled
+    if (this.editingEnabled && this.isNewDashboard) {
       loadedDashboard = this.createNewDashboard();
-    } else if (builtinDashboards[this.$route?.params.id]) {
-      loadedDashboard = await this.loadBuiltInDashboard(this.$route?.params.id);
-    } else if (this.customDashboardsProject) {
-      loadedDashboard = await this.loadCustomDashboard();
     }
 
+    // Only check Jitsu dashboards when Jitsu is enabled and this isn't a new
+    // dashboard request
+    if (this.jitsuEnabled && !this.isNewDashboard) {
+      if (builtinDashboards[this.$route?.params.slug]) {
+        loadedDashboard = await this.loadBuiltInDashboard(this.$route?.params.slug);
+      } else if (this.customDashboardsProject) {
+        loadedDashboard = await this.loadCustomDashboard();
+      }
+    }
+
+    // If we've got a new dashboard prepped or we found a Jitsu dashboard render it
+    // Otherwise, show the empty state if Jitsu is enabled and we couldn't find it
+    // Or we couldn't prep the new dashboard because the dashboard editor is disabled
     if (loadedDashboard) {
       this.dashboard = await this.importDashboardDependencies(loadedDashboard);
-      this.loadAvailableVisualizations();
-    } else {
+      await this.loadAvailableVisualizations();
+    } else if (this.jitsuEnabled || this.isNewDashboard) {
       this.showEmptyState = true;
     }
+  },
+  apollo: {
+    // TODO: Add retrieval of visualizations for Snowplow
+    //  https://gitlab.com/gitlab-org/gitlab/-/issues/411597
+    dashboard: {
+      query: getProductAnalyticsDashboardQuery,
+      variables() {
+        return {
+          projectPath: this.projectFullPath,
+          slug: this.$route?.params.slug,
+        };
+      },
+      skip() {
+        return this.jitsuEnabled || this.isNewDashboard;
+      },
+      update(data) {
+        const dashboard = data?.project?.productAnalyticsDashboards?.nodes[0];
+
+        if (!dashboard) {
+          this.showEmptyState = true;
+          return null;
+        }
+
+        const panels = dashboard.panels?.nodes || [];
+
+        return {
+          ...dashboard,
+          panels,
+          default: { ...dashboard, panels },
+        };
+      },
+      error(error) {
+        // TODO: Show user friendly errors when request fails
+        // https://gitlab.com/gitlab-org/gitlab/-/issues/395788
+        throw error;
+      },
+    },
   },
   methods: {
     createNewDashboard() {
       return { ...NEW_DASHBOARD(), default: { ...NEW_DASHBOARD() } };
     },
     async loadBuiltInDashboard() {
-      const builtInDashboard = await builtinDashboards[this.$route.params.id]();
+      const builtInDashboard = await builtinDashboards[this.$route.params.slug]();
       return { ...builtInDashboard, builtin: true };
     },
     async loadCustomDashboard() {
       try {
         const customDashboard = await getCustomDashboard(
-          this.$route?.params.id,
+          this.$route?.params.slug,
           this.customDashboardsProject,
         );
         return { ...customDashboard, default: { ...customDashboard } };

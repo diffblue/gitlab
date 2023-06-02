@@ -1,4 +1,4 @@
-query getProductAnalyticsDashboards($projectPath: ID!, $slug: String) {
+query getProductAnalyticsDashboard($projectPath: ID!, $slug: String) {
   project(fullPath: $projectPath) {
     id
     productAnalyticsDashboards(slug: $slug) {

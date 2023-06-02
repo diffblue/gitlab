@@ -1,4 +1,6 @@
 import { GlLoadingIcon, GlEmptyState } from '@gitlab/ui';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import {
   HTTP_STATUS_CREATED,
   HTTP_STATUS_FORBIDDEN,
@@ -8,10 +10,12 @@ import {
 import { createAlert } from '~/alert';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import getProductAnalyticsDashboardQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboard.query.graphql';
 import AnalyticsDashboard from 'ee/analytics/analytics_dashboards/components/analytics_dashboard.vue';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 import { dashboard } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 import { buildDefaultDashboardFilters } from 'ee/vue_shared/components/customizable_dashboard/utils';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import {
   getNextPanelId,
   createNewVisualizationPanel,
@@ -38,12 +42,21 @@ import {
   TEST_VISUALIZATION,
   TEST_EMPTY_DASHBOARD_SVG_PATH,
   TEST_ROUTER_BACK_HREF,
+  TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE,
+  TEST_DASHBOARD_GRAPHQL_404_RESPONSE,
 } from '../mock_data';
 
 jest.mock('~/alert');
-jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api');
+jest.mock('ee/analytics/analytics_dashboards/api/dashboards_api', () => ({
+  getProductAnalyticsVisualizationList: jest.fn(),
+  getProductAnalyticsVisualization: jest.fn(),
+  getCustomDashboard: jest.fn(),
+  saveCustomDashboard: jest.fn(),
+}));
 
 const showToast = jest.fn();
+
+Vue.use(VueApollo);
 
 describe('AnalyticsDashboard', () => {
   let wrapper;
@@ -60,20 +73,46 @@ describe('AnalyticsDashboard', () => {
     findDashboard().vm.$emit('save', 'custom_dashboard', {});
   };
 
+  const getFirstParsedDashboard = (dashboards) => {
+    const firstDashboard = dashboards.data.project.productAnalyticsDashboards.nodes[0];
+
+    const panels = firstDashboard.panels?.nodes || [];
+
+    return {
+      ...firstDashboard,
+      panels,
+      default: { ...firstDashboard, panels },
+    };
+  };
+
+  let mockAnalyticsDashboardsHandler = jest.fn();
+
   beforeEach(() => {
     getCustomDashboard.mockImplementation(() => TEST_CUSTOM_DASHBOARD());
     getProductAnalyticsVisualizationList.mockImplementation(() => []);
     getProductAnalyticsVisualization.mockImplementation(() => TEST_VISUALIZATION());
   });
 
-  const createWrapper = ({ props = {}, data = {}, routeId = '' } = {}) => {
+  afterEach(() => {
+    mockAnalyticsDashboardsHandler.mockReset();
+  });
+
+  const createWrapper = ({
+    props = {},
+    data = {},
+    routeSlug = '',
+    glFeatures = {
+      combinedAnalyticsDashboardsEditor: false,
+      productAnalyticsSnowplowSupport: false,
+    },
+  } = {}) => {
     const mocks = {
       $toast: {
         show: showToast,
       },
       $route: {
         params: {
-          id: routeId,
+          slug: routeSlug,
         },
       },
       $router: {
@@ -83,7 +122,12 @@ describe('AnalyticsDashboard', () => {
       },
     };
 
+    const mockApollo = createMockApollo([
+      [getProductAnalyticsDashboardQuery, mockAnalyticsDashboardsHandler],
+    ]);
+
     wrapper = shallowMountExtended(AnalyticsDashboard, {
+      apolloProvider: mockApollo,
       data() {
         return {
           dashboard: null,
@@ -98,94 +142,216 @@ describe('AnalyticsDashboard', () => {
       provide: {
         customDashboardsProject: TEST_CUSTOM_DASHBOARDS_PROJECT,
         dashboardEmptyStateIllustrationPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
+        projectFullPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+        glFeatures,
       },
     });
   };
 
-  describe('when mounted', () => {
-    it('should render with mock dashboard with filter properties', () => {
-      createWrapper({ data: { dashboard } });
+  describe('with snowplow disabled', () => {
+    describe('when mounted', () => {
+      it('should render with mock dashboard with filter properties', () => {
+        createWrapper({ data: { dashboard } });
 
-      expect(getCustomDashboard).toHaveBeenCalledWith('', TEST_CUSTOM_DASHBOARDS_PROJECT);
+        expect(getCustomDashboard).toHaveBeenCalledWith('', TEST_CUSTOM_DASHBOARDS_PROJECT);
 
-      expect(findDashboard().props()).toMatchObject({
-        initialDashboard: dashboard,
-        defaultFilters: buildDefaultDashboardFilters(''),
-        dateRangeLimit: 0,
-        showDateRangeFilter: true,
-        syncUrlFilters: true,
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: dashboard,
+          defaultFilters: buildDefaultDashboardFilters(''),
+          dateRangeLimit: 0,
+          showDateRangeFilter: true,
+          syncUrlFilters: true,
+        });
+      });
+
+      it('fetches the available visualizations', async () => {
+        createWrapper();
+
+        await waitForPromises();
+
+        expect(findDashboard().props().availableVisualizations).toMatchObject({
+          [I18N_PRODUCT_ANALYTICS_TITLE]: {
+            loading: false,
+            visualizationIds: Object.keys(builtinVisualizations),
+          },
+        });
+      });
+
+      it('should render the loading icon while fetching data', async () => {
+        createWrapper({ routeSlug: 'audience' });
+
+        expect(findLoader().exists()).toBe(true);
+
+        await waitForPromises();
+
+        expect(findLoader().exists()).toBe(false);
+      });
+
+      it('should render audience dashboard by slug', async () => {
+        createWrapper({ routeSlug: 'audience' });
+
+        await waitForPromises();
+
+        expect(getCustomDashboard).toHaveBeenCalledTimes(0);
+        expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+        expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
+
+        expect(findDashboard().exists()).toBe(true);
+      });
+
+      it('should render behavior dashboard by slug', async () => {
+        createWrapper({ routeSlug: 'behavior' });
+
+        await waitForPromises();
+
+        expect(getCustomDashboard).toHaveBeenCalledTimes(0);
+        expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+        expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
+
+        expect(findDashboard().exists()).toBe(true);
+      });
+
+      it('should render custom dashboard by slug', async () => {
+        createWrapper({ routeSlug: 'custom_dashboard' });
+
+        await waitForPromises();
+
+        expect(getCustomDashboard).toHaveBeenCalledWith(
+          'custom_dashboard',
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+        expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+        expect(getProductAnalyticsVisualization).toHaveBeenCalledWith(
+          'page_views_per_day',
+          TEST_CUSTOM_DASHBOARDS_PROJECT,
+        );
+
+        expect(findDashboard().exists()).toBe(true);
       });
     });
 
-    it('fetches the available visualizations', async () => {
-      createWrapper();
+    describe('when a custom dashboard cannot be found', () => {
+      beforeEach(() => {
+        getCustomDashboard.mockRejectedValue({ response: { status: HTTP_STATUS_NOT_FOUND } });
+        createWrapper();
+        return waitForPromises();
+      });
 
-      await waitForPromises();
+      it('does not render the dashboard or loader', () => {
+        expect(findDashboard().exists()).toBe(false);
+        expect(findLoader().exists()).toBe(false);
+      });
 
-      expect(findDashboard().props().availableVisualizations).toMatchObject({
-        [I18N_PRODUCT_ANALYTICS_TITLE]: {
-          loading: false,
-          visualizationIds: Object.keys(builtinVisualizations),
-        },
+      it('renders the empty state', () => {
+        expect(findEmptyState().props()).toMatchObject({
+          svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
+          title: I18N_DASHBOARD_NOT_FOUND_TITLE,
+          description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+          primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
+          primaryButtonLink: TEST_ROUTER_BACK_HREF,
+        });
+      });
+    });
+  });
+
+  describe('with snowplow enabled', () => {
+    describe('when mounted', () => {
+      beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE);
+      });
+
+      it('should render with mock dashboard with filter properties', async () => {
+        createWrapper({
+          glFeatures: { productAnalyticsSnowplowSupport: true },
+        });
+
+        await waitForPromises();
+
+        expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
+          projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+          slug: '',
+        });
+
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: getFirstParsedDashboard(TEST_DASHBOARD_GRAPHQL_SUCCESS_RESPONSE),
+          defaultFilters: buildDefaultDashboardFilters(''),
+          dateRangeLimit: 0,
+          showDateRangeFilter: true,
+          syncUrlFilters: true,
+        });
+      });
+
+      it('does not fetch the available visualizations', async () => {
+        createWrapper({ glFeatures: { productAnalyticsSnowplowSupport: true } });
+
+        await waitForPromises();
+
+        expect(findDashboard().props().availableVisualizations).toMatchObject({});
+      });
+
+      it('should render the loading icon while fetching data', async () => {
+        createWrapper({
+          routeSlug: 'audience',
+          glFeatures: { productAnalyticsSnowplowSupport: true },
+        });
+
+        expect(findLoader().exists()).toBe(true);
+
+        await waitForPromises();
+
+        expect(findLoader().exists()).toBe(false);
+      });
+
+      it('should render dashboard by slug', async () => {
+        createWrapper({
+          routeSlug: 'audience',
+          glFeatures: { productAnalyticsSnowplowSupport: true },
+        });
+
+        await waitForPromises();
+
+        expect(mockAnalyticsDashboardsHandler).toHaveBeenCalledWith({
+          projectPath: TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath,
+          slug: 'audience',
+        });
+
+        expect(findDashboard().exists()).toBe(true);
       });
     });
 
-    it('should render the loading icon while fetching data', async () => {
-      createWrapper({ routeId: 'dashboard_audience' });
+    describe('when a custom dashboard cannot be found', () => {
+      beforeEach(() => {
+        mockAnalyticsDashboardsHandler = jest
+          .fn()
+          .mockResolvedValue(TEST_DASHBOARD_GRAPHQL_404_RESPONSE);
 
-      expect(findLoader().exists()).toBe(true);
+        createWrapper({ glFeatures: { productAnalyticsSnowplowSupport: true } });
 
-      await waitForPromises();
+        return waitForPromises();
+      });
 
-      expect(findLoader().exists()).toBe(false);
-    });
+      it('does not render the dashboard or loader', () => {
+        expect(findDashboard().exists()).toBe(false);
+        expect(findLoader().exists()).toBe(false);
+      });
 
-    it('should render audience dashboard by id', async () => {
-      createWrapper({ routeId: 'audience' });
-
-      await waitForPromises();
-
-      expect(getCustomDashboard).toHaveBeenCalledTimes(0);
-      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-      expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
-
-      expect(findDashboard().exists()).toBe(true);
-    });
-
-    it('should render behavior dashboard by id', async () => {
-      createWrapper({ routeId: 'behavior' });
-
-      await waitForPromises();
-
-      expect(getCustomDashboard).toHaveBeenCalledTimes(0);
-      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-      expect(getProductAnalyticsVisualization).toHaveBeenCalledTimes(0);
-
-      expect(findDashboard().exists()).toBe(true);
-    });
-
-    it('should render custom dashboard by id', async () => {
-      createWrapper({ routeId: 'custom_dashboard' });
-
-      await waitForPromises();
-
-      expect(getCustomDashboard).toHaveBeenCalledWith(
-        'custom_dashboard',
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-      expect(getProductAnalyticsVisualizationList).toHaveBeenCalledWith(
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-      expect(getProductAnalyticsVisualization).toHaveBeenCalledWith(
-        'page_views_per_day',
-        TEST_CUSTOM_DASHBOARDS_PROJECT,
-      );
-
-      expect(findDashboard().exists()).toBe(true);
+      it('renders the empty state', () => {
+        expect(findEmptyState().props()).toMatchObject({
+          svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
+          title: I18N_DASHBOARD_NOT_FOUND_TITLE,
+          description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+          primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
+          primaryButtonLink: TEST_ROUTER_BACK_HREF,
+        });
+      });
     });
   });
 
@@ -194,7 +360,9 @@ describe('AnalyticsDashboard', () => {
     const originalPanels = TEST_CUSTOM_DASHBOARD().panels;
 
     beforeEach(async () => {
-      createWrapper({}, 'custom_dashboard');
+      createWrapper({
+        routeSlug: 'custom_dashboard',
+      });
       await waitForPromises();
 
       findDashboard().vm.$emit('add-panel', 'foo', 'yml');
@@ -222,8 +390,8 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('when saving', () => {
-    it('custom dashboard successfully by id', async () => {
-      createWrapper({ routeId: 'custom_dashboard' });
+    it('custom dashboard successfully by slug', async () => {
+      createWrapper({ routeSlug: 'custom_dashboard' });
 
       await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
 
@@ -240,7 +408,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('custom dashboard with an error', async () => {
-      createWrapper({ routeId: 'custom_dashboard' });
+      createWrapper({ routeSlug: 'custom_dashboard' });
 
       await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
 
@@ -253,7 +421,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('custom dashboard with an error thrown', async () => {
-      createWrapper({ routeId: 'custom_dashboard' });
+      createWrapper({ routeSlug: 'custom_dashboard' });
 
       const newError = new Error();
 
@@ -270,7 +438,7 @@ describe('AnalyticsDashboard', () => {
     });
 
     it('renders an alert with the server message when a bad request was made', async () => {
-      createWrapper({ routeId: 'custom_dashboard' });
+      createWrapper({ routeSlug: 'custom_dashboard' });
 
       const message = 'File already exists';
       const badRequestError = new Error();
@@ -289,54 +457,138 @@ describe('AnalyticsDashboard', () => {
     });
   });
 
-  describe('when a custom dashboard cannot be found', () => {
-    beforeEach(() => {
-      getCustomDashboard.mockRejectedValue({ response: { status: HTTP_STATUS_NOT_FOUND } });
-      createWrapper();
-      return waitForPromises();
-    });
+  describe('with editor disabled', () => {
+    describe('when a dashboard is new', () => {
+      beforeEach(() => {
+        createWrapper({ props: { isNewDashboard: true } });
+      });
 
-    it('does not render the dashboard or loader', () => {
-      expect(findDashboard().exists()).toBe(false);
-      expect(findLoader().exists()).toBe(false);
-    });
+      it('renders the empty state', async () => {
+        await waitForPromises();
 
-    it('renders the empty state', () => {
-      expect(findEmptyState().props()).toMatchObject({
-        svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
-        title: I18N_DASHBOARD_NOT_FOUND_TITLE,
-        description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
-        primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
-        primaryButtonLink: TEST_ROUTER_BACK_HREF,
+        expect(findEmptyState().props()).toMatchObject({
+          svgPath: TEST_EMPTY_DASHBOARD_SVG_PATH,
+          title: I18N_DASHBOARD_NOT_FOUND_TITLE,
+          description: I18N_DASHBOARD_NOT_FOUND_DESCRIPTION,
+          primaryButtonText: I18N_DASHBOARD_NOT_FOUND_ACTION,
+          primaryButtonLink: TEST_ROUTER_BACK_HREF,
+        });
       });
     });
   });
 
-  describe('when a dashboard is new', () => {
-    beforeEach(() => {
-      createWrapper({ props: { isNewDashboard: true } });
-    });
+  describe('with editor enabled', () => {
+    describe('when saving', () => {
+      it('custom dashboard successfully by slug', async () => {
+        createWrapper({
+          routeSlug: 'custom_dashboard',
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+        });
 
-    it('creates a new dashboard and disables the filter syncing', () => {
-      expect(findDashboard().props()).toMatchObject({
-        initialDashboard: {
-          ...NEW_DASHBOARD,
-          default: { ...NEW_DASHBOARD },
-        },
-        defaultFilters: {},
-        showDateRangeFilter: true,
-        syncUrlFilters: false,
+        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+        expect(saveCustomDashboard).toHaveBeenCalledWith({
+          dashboardId: 'custom_dashboard',
+          dashboardObject: {},
+          projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+          isNewFile: false,
+        });
+
+        await waitForPromises();
+
+        expect(showToast).toHaveBeenCalledWith(I18N_DASHBOARD_SAVED_SUCCESSFULLY);
+      });
+
+      it('custom dashboard with an error', async () => {
+        createWrapper({
+          routeSlug: 'custom_dashboard',
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+        });
+
+        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_FORBIDDEN }));
+
+        await waitForPromises();
+        expect(createAlert).toHaveBeenCalledWith({
+          message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+          captureError: true,
+          error: new Error(`Bad save dashboard response. Status:${HTTP_STATUS_FORBIDDEN}`),
+        });
+      });
+
+      it('custom dashboard with an error thrown', async () => {
+        createWrapper({
+          routeSlug: 'custom_dashboard',
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+        });
+
+        const newError = new Error();
+
+        mockSaveDashboardImplementation(() => {
+          throw newError;
+        });
+
+        await waitForPromises();
+        expect(createAlert).toHaveBeenCalledWith({
+          error: newError,
+          message: I18N_DASHBOARD_ERROR_WHILE_SAVING,
+          captureError: true,
+        });
+      });
+
+      it('renders an alert with the server message when a bad request was made', async () => {
+        createWrapper({
+          routeSlug: 'custom_dashboard',
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+        });
+
+        const message = 'File already exists';
+        const badRequestError = new Error();
+
+        badRequestError.response = {
+          status: HTTP_STATUS_BAD_REQUEST,
+          data: { message },
+        };
+
+        await mockSaveDashboardImplementation(() => {
+          throw badRequestError;
+        });
+
+        await waitForPromises();
+        expect(createAlert).toHaveBeenCalledWith({ message });
       });
     });
 
-    it('saves the dashboard as a new file', async () => {
-      await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+    describe('when a dashboard is new', () => {
+      beforeEach(() => {
+        createWrapper({
+          props: { isNewDashboard: true },
+          glFeatures: { combinedAnalyticsDashboardsEditor: true },
+        });
+      });
 
-      expect(saveCustomDashboard).toHaveBeenCalledWith({
-        dashboardId: 'custom_dashboard',
-        dashboardObject: {},
-        projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
-        isNewFile: true,
+      it('creates a new dashboard and and disables the filter syncing', async () => {
+        await waitForPromises();
+
+        expect(findDashboard().props()).toMatchObject({
+          initialDashboard: {
+            ...NEW_DASHBOARD,
+            default: { ...NEW_DASHBOARD },
+          },
+          defaultFilters: {},
+          showDateRangeFilter: true,
+          syncUrlFilters: false,
+        });
+      });
+
+      it('saves the dashboard as a new file', async () => {
+        await mockSaveDashboardImplementation(() => ({ status: HTTP_STATUS_CREATED }));
+
+        expect(saveCustomDashboard).toHaveBeenCalledWith({
+          dashboardId: 'custom_dashboard',
+          dashboardObject: {},
+          projectInfo: TEST_CUSTOM_DASHBOARDS_PROJECT,
+          isNewFile: true,
+        });
       });
     });
   });

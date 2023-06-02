@@ -43,7 +43,7 @@ export default {
       },
       {
         name: 'dashboard-detail',
-        path: '/:id',
+        path: '/:slug',
         // This is the main action that occurs after the list is shown so we preload it rather than lazy importing
         component: AnalyticsDashboard,
       },

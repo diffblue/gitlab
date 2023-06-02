@@ -35,7 +35,25 @@ export default () => {
   Vue.use(VueApollo);
 
   const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
+    defaultClient: createDefaultClient(
+      {},
+      {
+        cacheConfig: {
+          typePolicies: {
+            Project: {
+              fields: {
+                productAnalyticsDashboards: {
+                  keyArgs: ['projectPath', 'slug'],
+                },
+              },
+            },
+            ProductAnalyticsDashboard: {
+              keyFields: ['slug'],
+            },
+          },
+        },
+      },
+    ),
   });
 
   return new Vue({

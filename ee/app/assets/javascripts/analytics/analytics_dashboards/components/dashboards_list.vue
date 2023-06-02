@@ -19,7 +19,7 @@ import {
   I18N_ALERT_NO_POINTER_DESCRIPTION,
   FEATURE_PRODUCT_ANALYTICS,
 } from '../constants';
-import getProductAnalyticsDashboardsQuery from '../graphql/queries/get_product_analytics_dashboards.query.graphql';
+import getAllProductAnalyticsDashboardsQuery from '../graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import DashboardListItem from './list/dashboard_list_item.vue';
 
 const ONBOARDING_FEATURE_COMPONENTS = {
@@ -90,7 +90,7 @@ export default {
     userDashboards: {
       // TODO: Rename once the type is updated to be just AnalyticsDashboards
       // https://gitlab.com/gitlab-org/gitlab/-/issues/412290
-      query: getProductAnalyticsDashboardsQuery,
+      query: getAllProductAnalyticsDashboardsQuery,
       variables() {
         return {
           projectPath: this.projectFullPath,
