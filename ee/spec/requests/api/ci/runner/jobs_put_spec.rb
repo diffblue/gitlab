@@ -32,30 +32,26 @@ RSpec.describe API::Ci::Runner, :clean_gitlab_redis_shared_state, feature_catego
     end
 
     context 'when CI minutes usage is exceeded' do
-      it 'drops the job' do
-        freeze_time do
-          Ci::Minutes::TrackLiveConsumptionService.new(job).time_last_tracked_consumption!(10.minutes.ago)
-          update_job(state: 'running')
+      it 'drops the job', :freeze_time do
+        Ci::Minutes::TrackLiveConsumptionService.new(job).time_last_tracked_consumption!(10.minutes.ago)
+        update_job(state: 'running')
 
-          expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to have_gitlab_http_status(:ok)
 
-          expect(job.reload).to be_failed
-          expect(job.failure_reason).to eq('ci_quota_exceeded')
-        end
+        expect(job.reload).to be_failed
+        expect(job.failure_reason).to eq('ci_quota_exceeded')
       end
     end
 
     context 'when CI minutes usage is not exceeded' do
-      it 'does not drop the job' do
-        freeze_time do
-          Ci::Minutes::TrackLiveConsumptionService.new(job).time_last_tracked_consumption!(2.minutes.ago)
+      it 'does not drop the job', :freeze_time do
+        Ci::Minutes::TrackLiveConsumptionService.new(job).time_last_tracked_consumption!(2.minutes.ago)
 
-          update_job(state: 'running')
+        update_job(state: 'running')
 
-          expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to have_gitlab_http_status(:ok)
 
-          expect(job.reload).to be_running
-        end
+        expect(job.reload).to be_running
       end
     end
 

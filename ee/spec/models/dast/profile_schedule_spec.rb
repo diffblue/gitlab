@@ -172,12 +172,10 @@ RSpec.describe Dast::ProfileSchedule, type: :model do
   describe 'before_save' do
     describe '#set_cron' do
       context 'when repeat? is true' do
-        it 'sets the cron value' do
-          freeze_time do
-            cron_statement = Gitlab::Ci::CronParser.parse_natural_with_timestamp(subject.starts_at, subject.cadence)
+        it 'sets the cron value', :freeze_time do
+          cron_statement = Gitlab::Ci::CronParser.parse_natural_with_timestamp(subject.starts_at, subject.cadence)
 
-            expect(subject.cron).to eq cron_statement
-          end
+          expect(subject.cron).to eq cron_statement
         end
       end
 

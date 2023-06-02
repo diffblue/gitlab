@@ -20,16 +20,14 @@ RSpec.describe HistoricalData do
       allow(User).to receive(:billable).and_return([1, 2, 3, 4, 5])
     end
 
-    it "creates a new historical data record" do
-      freeze_time do
-        described_class.track!
+    it "creates a new historical data record", :freeze_time do
+      described_class.track!
 
-        data = described_class.last
-        # Database time has microsecond precision, while Ruby time has nanosecond precision,
-        # which is why we need the be_within matcher even though we're freezing time.
-        expect(data.recorded_at).to be_within(1e-6.seconds).of(Time.current)
-        expect(data.active_user_count).to eq(5)
-      end
+      data = described_class.last
+      # Database time has microsecond precision, while Ruby time has nanosecond precision,
+      # which is why we need the be_within matcher even though we're freezing time.
+      expect(data.recorded_at).to be_within(1e-6.seconds).of(Time.current)
+      expect(data.active_user_count).to eq(5)
     end
   end
 

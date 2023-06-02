@@ -43,13 +43,11 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
             create_user
           end
 
-          it 'sets the confirmation_sent_at time' do
-            freeze_time do
-              create_user
-              user = User.find_by_username(user_attrs[:username])
+          it 'sets the confirmation_sent_at time', :freeze_time do
+            create_user
+            user = User.find_by_username(user_attrs[:username])
 
-              expect(user.confirmation_sent_at).to eq(Time.current)
-            end
+            expect(user.confirmation_sent_at).to eq(Time.current)
           end
 
           it 'sets the confirmation_token to the unencrypted Devise token' do
@@ -100,13 +98,11 @@ RSpec.describe RegistrationsController, type: :request, feature_category: :syste
             create_user
           end
 
-          it 'sets the confirmation_sent_at time' do
-            freeze_time do
-              create_user
-              user = User.find_by_username(user_attrs[:username])
+          it 'sets the confirmation_sent_at time', :freeze_time do
+            create_user
+            user = User.find_by_username(user_attrs[:username])
 
-              expect(user.confirmation_sent_at).to eq(Time.current)
-            end
+            expect(user.confirmation_sent_at).to eq(Time.current)
           end
 
           it 'sets the confirmation_token to the encrypted custom token' do

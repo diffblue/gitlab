@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Analytics::DoraMetricsAggregator, feature_category: :devops_reports do
-  describe '.aggregate_for' do
+  describe '.aggregate_for', :freeze_time do
     let_it_be(:project) { create(:project) }
     let(:metric) { 'deployment_frequency' }
     let(:end_date) { Time.current.to_date }
@@ -24,12 +24,6 @@ RSpec.describe Analytics::DoraMetricsAggregator, feature_category: :devops_repor
     let_it_be(:staging) { create(:environment, :staging, project: project) }
 
     subject { described_class.aggregate_for(**params) }
-
-    around do |example|
-      freeze_time do
-        example.run
-      end
-    end
 
     before_all do
       create(:dora_daily_metrics, deployment_frequency: 2, environment: production)

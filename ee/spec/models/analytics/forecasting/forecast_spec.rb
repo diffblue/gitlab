@@ -66,12 +66,10 @@ RSpec.describe Analytics::Forecasting::Forecast, feature_category: :devops_repor
       allow(model_mock).to receive(:predict).with(forecast_horizon).and_return(model_forecast)
     end
 
-    it 'returns forecast hash with dates and model forecast values' do
-      freeze_time do
-        expect(subject.values).to be_kind_of Hash
-        expect(subject.values.values).to eq(model_forecast)
-        expect(subject.values.keys).to eq(((Date.today + 1)..(Date.today + forecast_horizon)).to_a)
-      end
+    it 'returns forecast hash with dates and model forecast values', :freeze_time do
+      expect(subject.values).to be_kind_of Hash
+      expect(subject.values.values).to eq(model_forecast)
+      expect(subject.values.keys).to eq(((Date.today + 1)..(Date.today + forecast_horizon)).to_a)
     end
   end
 

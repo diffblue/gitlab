@@ -202,17 +202,15 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
           stub_feature_flags(deprecate_vulnerabilities_feedback: false)
         end
 
-        it 'dismisses a vulnerability and its associated findings', :aggregate_failures do
-          freeze_time do
-            dismiss_vulnerability
+        it 'dismisses a vulnerability and its associated findings', :freeze_time, :aggregate_failures do
+          dismiss_vulnerability
 
-            expect(response).to have_gitlab_http_status(:created)
-            expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
 
-            expect(vulnerability.reload).to(
-              have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
-            expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
-          end
+          expect(vulnerability.reload).to(
+            have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
+          expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
         end
       end
 
@@ -291,17 +289,15 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'resolves a vulnerability and its associated findings', :aggregate_failures do
-        freeze_time do
-          resolve_vulnerability
+      it 'resolves a vulnerability and its associated findings', :freeze_time, :aggregate_failures do
+        resolve_vulnerability
 
-          expect(response).to have_gitlab_http_status(:created)
-          expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
 
-          expect(vulnerability.reload).to(
-            have_attributes(state: 'resolved', resolved_by: user, resolved_at: be_like_time(Time.current)))
-          expect(vulnerability.findings).to all have_attributes(state: 'resolved')
-        end
+        expect(vulnerability.reload).to(
+          have_attributes(state: 'resolved', resolved_by: user, resolved_at: be_like_time(Time.current)))
+        expect(vulnerability.findings).to all have_attributes(state: 'resolved')
       end
 
       context 'with a comment' do
@@ -371,18 +367,16 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'confirms a vulnerability and its associated findings', :aggregate_failures do
-        freeze_time do
-          confirm_vulnerability
+      it 'confirms a vulnerability and its associated findings', :freeze_time, :aggregate_failures do
+        confirm_vulnerability
 
-          expect(response).to have_gitlab_http_status(:created)
-          expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
 
-          expect(vulnerability.reload).to(
-            have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
-          expect(vulnerability.findings).to all have_attributes(state: 'confirmed')
-          expect(vulnerability.state_transitions.last.comment).to eq(comment)
-        end
+        expect(vulnerability.reload).to(
+          have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
+        expect(vulnerability.findings).to all have_attributes(state: 'confirmed')
+        expect(vulnerability.state_transitions.last.comment).to eq(comment)
       end
 
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'
@@ -435,18 +429,16 @@ RSpec.describe API::Vulnerabilities, feature_category: :vulnerability_management
         project.add_developer(user)
       end
 
-      it 'reverts a vulnerability and its associated findings to detected state', :aggregate_failures do
-        freeze_time do
-          revert_vulnerability_to_detected
+      it 'reverts a vulnerability and its associated findings to detected state', :freeze_time, :aggregate_failures do
+        revert_vulnerability_to_detected
 
-          expect(response).to have_gitlab_http_status(:created)
-          expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
+        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to match_response_schema('public_api/v4/vulnerability', dir: 'ee')
 
-          expect(vulnerability.reload).to(
-            have_attributes(state: 'detected', dismissed_by: nil, dismissed_at: nil))
-          expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
-          expect(vulnerability.state_transitions.last.comment).to eq(comment)
-        end
+        expect(vulnerability.reload).to(
+          have_attributes(state: 'detected', dismissed_by: nil, dismissed_at: nil))
+        expect(vulnerability.findings).to all not_have_vulnerability_dismissal_feedback
+        expect(vulnerability.state_transitions.last.comment).to eq(comment)
       end
 
       it_behaves_like 'responds with "not found" for an unknown vulnerability ID'

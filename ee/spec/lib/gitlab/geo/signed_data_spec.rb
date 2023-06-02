@@ -49,19 +49,15 @@ RSpec.describe Gitlab::Geo::SignedData, feature_category: :geo_replication do
       expect(decoded_data).to eq(data)
     end
 
-    it 'defaults to 1-minute expiration time' do
-      freeze_time do
-        expect(jwt.first['exp']).to eq((Time.zone.now + 1.minute).to_i)
-      end
+    it 'defaults to 1-minute expiration time', :freeze_time do
+      expect(jwt.first['exp']).to eq((Time.zone.now + 1.minute).to_i)
     end
 
     context 'with custom validity period' do
       let(:klass_args) { { geo_node: geo_node, validity_period: 42.minutes } }
 
-      it 'uses that expiration time' do
-        freeze_time do
-          expect(jwt.first['exp']).to eq((Time.zone.now + 42.minutes).to_i)
-        end
+      it 'uses that expiration time', :freeze_time do
+        expect(jwt.first['exp']).to eq((Time.zone.now + 42.minutes).to_i)
       end
     end
   end

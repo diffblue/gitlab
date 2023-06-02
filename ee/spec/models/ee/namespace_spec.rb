@@ -1537,14 +1537,12 @@ RSpec.describe Namespace do
   end
 
   describe '#enable_temporary_storage_increase!' do
-    it 'sets a date' do
+    it 'sets a date', :freeze_time do
       namespace = build(:namespace)
 
-      freeze_time do
-        namespace.enable_temporary_storage_increase!
+      namespace.enable_temporary_storage_increase!
 
-        expect(namespace.temporary_storage_increase_ends_on).to eq(30.days.from_now.to_date)
-      end
+      expect(namespace.temporary_storage_increase_ends_on).to eq(30.days.from_now.to_date)
     end
 
     it 'is invalid when set twice' do

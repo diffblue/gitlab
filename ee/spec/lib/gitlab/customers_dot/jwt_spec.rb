@@ -10,17 +10,13 @@ RSpec.describe Gitlab::CustomersDot::Jwt do
   describe '#payload' do
     subject(:payload) { customers_dot_jwt.payload }
 
-    it 'has correct values for JWT attributes' do
-      freeze_time do
-        now = Time.now.to_i
+    it 'has correct values for JWT attributes', :freeze_time, :aggregate_failures do
+      now = Time.now.to_i
 
-        aggregate_failures do
-          expect(payload[:iss]).to eq(Settings.gitlab.host)
-          expect(payload[:iat]).to eq(now)
-          expect(payload[:exp]).to eq(now + Gitlab::CustomersDot::Jwt::DEFAULT_EXPIRE_TIME)
-          expect(payload[:sub]).to eq("gitlab_user_id_#{user.id}")
-        end
-      end
+      expect(payload[:iss]).to eq(Settings.gitlab.host)
+      expect(payload[:iat]).to eq(now)
+      expect(payload[:exp]).to eq(now + Gitlab::CustomersDot::Jwt::DEFAULT_EXPIRE_TIME)
+      expect(payload[:sub]).to eq("gitlab_user_id_#{user.id}")
     end
   end
 

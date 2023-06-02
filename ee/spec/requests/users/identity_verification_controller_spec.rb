@@ -162,10 +162,8 @@ feature_category: :system_access do
     it_behaves_like 'it requires oauth users to go through ArkoseLabs challenge'
 
     context 'when validation was successful' do
-      it 'confirms the user' do
-        freeze_time do
-          expect { do_request }.to change { user.reload.confirmed_at }.from(nil).to(Time.current)
-        end
+      it 'confirms the user', :freeze_time do
+        expect { do_request }.to change { user.reload.confirmed_at }.from(nil).to(Time.current)
       end
 
       it 'accepts pending invitations' do
@@ -235,10 +233,8 @@ feature_category: :system_access do
         stub_session(verification_user_id: user.id)
       end
 
-      it 'sets the confirmation_sent_at time' do
-        freeze_time do
-          expect { do_request }.to change { user.reload.confirmation_sent_at }.to(Time.current)
-        end
+      it 'sets the confirmation_sent_at time', :freeze_time do
+        expect { do_request }.to change { user.reload.confirmation_sent_at }.to(Time.current)
       end
 
       it 'sets the confirmation_token to the encrypted custom token' do

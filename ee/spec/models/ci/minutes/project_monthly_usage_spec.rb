@@ -25,15 +25,13 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
     subject { described_class.find_or_create_current(project_id: project.id) }
 
     shared_examples 'creates usage record' do
-      it 'creates new record and resets minutes consumption' do
-        freeze_time do
-          expect { subject }.to change { described_class.count }.by(1)
+      it 'creates new record and resets minutes consumption', :freeze_time do
+        expect { subject }.to change { described_class.count }.by(1)
 
-          expect(subject.amount_used).to eq(0)
-          expect(subject.project).to eq(project)
-          expect(subject.date).to eq(described_class.beginning_of_month)
-          expect(subject.created_at).to eq(Time.current)
-        end
+        expect(subject.amount_used).to eq(0)
+        expect(subject.project).to eq(project)
+        expect(subject.date).to eq(described_class.beginning_of_month)
+        expect(subject.created_at).to eq(Time.current)
       end
     end
 
@@ -50,12 +48,10 @@ RSpec.describe Ci::Minutes::ProjectMonthlyUsage do
     end
 
     context 'when project usage exists for the current month' do
-      it 'returns the existing usage' do
-        freeze_time do
-          usage = create(:ci_project_monthly_usage, project: project)
+      it 'returns the existing usage', :freeze_time do
+        usage = create(:ci_project_monthly_usage, project: project)
 
-          expect(subject).to eq(usage)
-        end
+        expect(subject).to eq(usage)
       end
     end
 

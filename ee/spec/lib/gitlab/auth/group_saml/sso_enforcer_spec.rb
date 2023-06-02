@@ -24,12 +24,10 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :system_a
       expect { subject.update_session }.to change { session[:active_group_sso_sign_ins] }
     end
 
-    it 'stores the current time for later comparison' do
-      freeze_time do
-        subject.update_session
+    it 'stores the current time for later comparison', :freeze_time do
+      subject.update_session
 
-        expect(session[:active_group_sso_sign_ins][saml_provider.id]).to eq DateTime.now
-      end
+      expect(session[:active_group_sso_sign_ins][saml_provider.id]).to eq DateTime.now
     end
   end
 

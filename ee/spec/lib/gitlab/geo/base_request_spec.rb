@@ -25,10 +25,8 @@ RSpec.describe Gitlab::Geo::BaseRequest,
       expect(token).to start_with(Gitlab::Geo::BaseRequest::GITLAB_GEO_AUTH_TOKEN_TYPE)
     end
 
-    it 'defaults to 1-minute expiration time' do
-      freeze_time do
-        expect(jwt.first['exp']).to eq((Time.now + 1.minute).to_i)
-      end
+    it 'defaults to 1-minute expiration time', :freeze_time do
+      expect(jwt.first['exp']).to eq((Time.now + 1.minute).to_i)
     end
   end
 end
