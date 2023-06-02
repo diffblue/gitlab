@@ -3,6 +3,8 @@
 module EE
   module ResourceAccessTokens
     module CreateService
+      extend ::Gitlab::Utils::Override
+
       def execute
         super.tap do |response|
           audit_event_service(response.payload[:access_token], response)
@@ -10,6 +12,11 @@ module EE
       end
 
       private
+
+      override :reached_access_token_limit?
+      def reached_access_token_limit?
+        resource.is_a?(Project) && resource.namespace.reached_project_access_token_limit?
+      end
 
       def success_message(token)
         if resource_type == 'project'

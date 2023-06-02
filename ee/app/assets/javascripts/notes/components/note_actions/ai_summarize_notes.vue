@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlBadge, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import { createAlert } from '~/alert';
 import aiActionMutation from 'ee/graphql_shared/mutations/ai_action.mutation.graphql';
@@ -9,7 +9,6 @@ import { BV_HIDE_TOOLTIP } from '~/lib/utils/constants';
 export default {
   components: {
     GlButton,
-    GlBadge,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -76,7 +75,6 @@ export default {
   },
   i18n: {
     button: s__('AISummary|View summary'),
-    badge: s__('AISummary|Experiment'),
     tooltip: s__('AISummary|Generates a summary of all comments'),
   },
 };
@@ -92,6 +90,5 @@ export default {
     @click="onClick"
   >
     {{ $options.i18n.button }}
-    <gl-badge variant="info" size="sm">{{ $options.i18n.badge }}</gl-badge>
   </gl-button>
 </template>
