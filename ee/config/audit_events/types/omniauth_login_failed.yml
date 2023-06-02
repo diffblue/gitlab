@@ -1,9 +1,0 @@
----
-name: omniauth_login_failed
-description: Event triggered when an OmniAuth login fails
-introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/374107
-introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/114548
-feature_category: compliance_management
-milestone: '15.11'
-saved_to_database: true
-streamed: false

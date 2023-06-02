@@ -11,15 +11,16 @@ module EE
     private
 
     def log_audit_event
-      ::Gitlab::Audit::Auditor.audit({
-        name: "password_reset_requested",
-        author: ::Gitlab::Audit::UnauthenticatedAuthor.new,
-        scope: resource,
-        target: resource || ::User.new,
-        target_details: resource_params[:email],
-        message: "Ask for password reset",
+      ::AuditEventService.new(
+        current_user,
+        resource,
+        action: :custom,
+        custom_message: 'Ask for password reset',
         ip_address: request.remote_ip
-      })
+      ).for_user(
+        full_path: resource_params[:email],
+        entity_id: nil
+      ).unauth_security_event
     end
   end
 end
