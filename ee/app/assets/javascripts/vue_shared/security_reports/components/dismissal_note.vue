@@ -2,6 +2,8 @@
 import { GlButton, GlSprintf, GlLink } from '@gitlab/ui';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
 import { __ } from '~/locale';
+import { DISMISSAL_REASONS } from 'ee/vulnerabilities/constants';
+import { getDismissalNoteEventText } from './helpers';
 
 export default {
   components: {
@@ -45,21 +47,17 @@ export default {
     pipeline() {
       return this.feedback?.pipeline;
     },
+    dismissalReason() {
+      return DISMISSAL_REASONS[this.feedback.dismissalReason?.toLowerCase()];
+    },
     eventText() {
       const { project, pipeline } = this;
 
       const hasPipeline = Boolean(pipeline?.path && pipeline?.id);
       const hasProject = Boolean(project?.url && project?.value);
+      const hasDismissalReason = Boolean(this.dismissalReason);
 
-      if (hasPipeline && hasProject) {
-        return __('Dismissed on pipeline %{pipelineLink} at %{projectLink}');
-      } else if (hasPipeline) {
-        return __('Dismissed on pipeline %{pipelineLink}');
-      } else if (hasProject) {
-        return __('Dismissed at %{projectLink}');
-      }
-
-      return __('Dismissed');
+      return getDismissalNoteEventText({ hasProject, hasPipeline, hasDismissalReason });
     },
     commentDetails() {
       return this.feedback.comment_details;
@@ -97,6 +95,10 @@ export default {
           </template>
           <template v-if="project" #projectLink>
             <gl-link :href="project.url" data-testid="project-link">{{ project.value }}</gl-link>
+          </template>
+          <template #status="{ content }">{{ content }}</template>
+          <template v-if="dismissalReason" #dismissalReason>
+            {{ dismissalReason }}
           </template>
         </gl-sprintf>
       </div>

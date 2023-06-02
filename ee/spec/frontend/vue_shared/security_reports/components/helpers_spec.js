@@ -1,4 +1,7 @@
-import { getHttpString } from 'ee/vue_shared/security_reports/components/helpers';
+import {
+  getHttpString,
+  getDismissalNoteEventText,
+} from 'ee/vue_shared/security_reports/components/helpers';
 
 describe('getHttpString', () => {
   it.each([null, undefined, false])('returns empty string for "%s"', (type) => {
@@ -40,4 +43,25 @@ describe('getHttpString', () => {
       `${statusCode} ${reasonPhrase}\n${headers[0].name}: ${headers[0].value}\n${headers[1].name}: ${headers[1].value}\n\n${body}`,
     );
   });
+});
+
+describe('getDismissalNoteEventText', () => {
+  it.each`
+    hasProject | hasPipeline | hasDismissalReason | expected
+    ${false}   | ${false}    | ${false}           | ${'%{statusStart}Dismissed%{statusEnd}'}
+    ${false}   | ${false}    | ${true}            | ${'%{statusStart}Dismissed%{statusEnd}: %{dismissalReason}'}
+    ${true}    | ${false}    | ${false}           | ${'%{statusStart}Dismissed%{statusEnd} at %{projectLink}'}
+    ${true}    | ${false}    | ${true}            | ${'%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} at %{projectLink}'}
+    ${false}   | ${true}     | ${false}           | ${'%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink}'}
+    ${false}   | ${true}     | ${true}            | ${'%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink}'}
+    ${true}    | ${true}     | ${false}           | ${'%{statusStart}Dismissed%{statusEnd} on pipeline %{pipelineLink} at %{projectLink}'}
+    ${true}    | ${true}     | ${true}            | ${'%{statusStart}Dismissed%{statusEnd}: %{dismissalReason} on pipeline %{pipelineLink} at %{projectLink}'}
+  `(
+    `returns correct string for hasProject:$hasProject, hasPipeline:$hasPipeline, and hasDismissalReason:$hasDismissalReason`,
+    ({ hasProject, hasPipeline, hasDismissalReason, expected }) => {
+      expect(getDismissalNoteEventText({ hasProject, hasPipeline, hasDismissalReason })).toBe(
+        expected,
+      );
+    },
+  );
 });
