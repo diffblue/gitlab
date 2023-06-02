@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::ReleasesResolver, feature_category: :release_orchestration do
+RSpec.describe Resolvers::Ci::Catalog::VersionsResolver, feature_category: :pipeline_composition do
   include GraphqlHelpers
 
   let_it_be(:today) { Time.now }
@@ -10,9 +10,11 @@ RSpec.describe Resolvers::ReleasesResolver, feature_category: :release_orchestra
   let_it_be(:tomorrow) { today + 1.day }
 
   let_it_be(:project) { create(:project, :private) }
+  # rubocop: disable Layout/LineLength
   let_it_be(:release_v1) { create(:release, project: project, tag: 'v1.0.0', released_at: yesterday, created_at: tomorrow) }
   let_it_be(:release_v2) { create(:release, project: project, tag: 'v2.0.0', released_at: today,     created_at: yesterday) }
   let_it_be(:release_v3) { create(:release, project: project, tag: 'v3.0.0', released_at: tomorrow,  created_at: today) }
+  # rubocop: enable Layout/LineLength
   let_it_be(:developer) { create(:user) }
   let_it_be(:public_user) { create(:user) }
 
@@ -54,7 +56,9 @@ RSpec.describe Resolvers::ReleasesResolver, feature_category: :release_orchestra
   private
 
   def resolve_releases
-    context = { current_user: current_user }
-    resolve(described_class, obj: project, args: args, ctx: context, arg_style: :internal)
+    batch_sync do
+      context = { current_user: current_user }
+      resolve(described_class, obj: project, args: args, ctx: context, arg_style: :internal)
+    end
   end
 end

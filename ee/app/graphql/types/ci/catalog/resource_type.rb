@@ -26,7 +26,7 @@ module Types
 
         field :versions, Types::ReleaseType.connection_type, null: true,
           description: 'Versions of the catalog resource.',
-          resolver: Resolvers::ReleasesResolver,
+          resolver: Resolvers::Ci::Catalog::VersionsResolver,
           alpha: { milestone: '16.1' }
 
         field :star_count, GraphQL::Types::Int, null: false,
