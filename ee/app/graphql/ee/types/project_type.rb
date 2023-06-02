@@ -235,6 +235,13 @@ module EE
               alpha: { milestone: '15.6' },
               resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
 
+        field :product_analytics_visualizations, ::Types::ProductAnalytics::VisualizationType.connection_type,
+              description: 'Visualizations of the project or associated configuration project.',
+              null: true,
+              calls_gitaly: true,
+              alpha: { milestone: '16.1' },
+              resolver: ::Resolvers::ProductAnalytics::VisualizationsResolver
+
         field :product_analytics_state, ::Types::ProductAnalytics::StateEnum,
               description: 'Current state of the product analytics stack for this project.' \
                            'Can only be called for one project in a single request',

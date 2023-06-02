@@ -21,6 +21,23 @@ RSpec.describe ProductAnalytics::Visualization, feature_category: :product_analy
     end
   end
 
+  describe '#slug' do
+    subject { described_class.for_project(project).first.slug }
+
+    it 'returns the slug' do
+      expect(subject).to eq('daily_something')
+    end
+  end
+
+  describe '.for_project' do
+    subject { described_class.for_project(project) }
+
+    it 'returns all visualizations stored in the project as well as built-in ones' do
+      expect(subject.count).to eq(16)
+      expect(subject.map { |v| v.config['type'] }).to include('BarChart', 'LineChart')
+    end
+  end
+
   context 'when dashboard is a built-in dashboard' do
     let(:dashboard) { dashboards.find { |d| d.title == 'Audience' } }
 
