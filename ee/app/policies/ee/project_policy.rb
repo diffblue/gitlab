@@ -591,14 +591,14 @@ module EE
       super
     end
 
-    # Available in Core for self-managed but only paid, non-trial for .com to prevent abuse
+    # Available in Core for self-managed but only paid for .com to prevent abuse
     override :resource_access_token_create_feature_available?
     def resource_access_token_create_feature_available?
       return false unless resource_access_token_feature_available?
       return super unless ::Gitlab.com?
 
       namespace = project.namespace
-      namespace.feature_available_non_trial?(:resource_access_token)
+      namespace.licensed_feature_available?(:resource_access_token)
     end
 
     override :resource_access_token_feature_available?

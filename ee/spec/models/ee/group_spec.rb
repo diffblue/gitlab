@@ -2736,4 +2736,89 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       end
     end
   end
+
+  describe '#reached_project_access_token_limit?' do
+    let(:group) { create(:group) }
+    let(:project) { build(:project, namespace: group) }
+    let(:bot_user) { create(:user, :project_bot) }
+
+    before_all do
+      create(:plan_limits, :ultimate_trial_plan, project_access_token_limit: 1)
+    end
+
+    context 'when not in a saas environment' do
+      it 'returns false when group project has a token' do
+        project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(group.reached_project_access_token_limit?).to eq(false)
+      end
+    end
+
+    context 'when in a saas environment', :saas do
+      before do
+        create(:gitlab_subscription, :ultimate_trial, namespace: group)
+      end
+
+      it 'returns false when the limit has not been reached' do
+        expect(group.reached_project_access_token_limit?).to eq(false)
+      end
+
+      it 'returns true when the limit has been reached' do
+        project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(group.reached_project_access_token_limit?).to eq(true)
+      end
+
+      it 'returns true for a subgroup when a root group project has a token' do
+        subgroup = create(:group, parent: group)
+        project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(subgroup.reached_project_access_token_limit?).to eq(true)
+      end
+
+      it 'returns true for the root group when a subgroup project has a token' do
+        subgroup = create(:group, parent: group)
+        sub_project = build(:project, namespace: subgroup)
+        sub_project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(group.reached_project_access_token_limit?).to eq(true)
+      end
+
+      it 'returns true for a subgroup when another subgroup project has a token' do
+        subgroup_a = create(:group, parent: group)
+        subgroup_b = create(:group, parent: group)
+        sub_project = build(:project, namespace: subgroup_a)
+        sub_project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(subgroup_b.reached_project_access_token_limit?).to eq(true)
+      end
+
+      it 'does not count group tokens' do
+        group.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user)
+
+        expect(group.reached_project_access_token_limit?).to eq(false)
+      end
+
+      it 'does not count personal tokens' do
+        user = create(:user)
+        group.add_maintainer(user)
+        create(:personal_access_token, user: user)
+
+        expect(group.reached_project_access_token_limit?).to eq(false)
+      end
+
+      it 'does not count expired tokens' do
+        project.add_maintainer(bot_user)
+        create(:personal_access_token, user: bot_user, expires_at: 1.day.ago)
+
+        expect(group.reached_project_access_token_limit?).to eq(false)
+      end
+    end
+  end
 end

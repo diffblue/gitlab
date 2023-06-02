@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_access do
-  subject { described_class.new(user, resource).execute }
+  subject(:service_execute) { described_class.new(user, resource).execute }
 
   let_it_be(:user) { create(:user) }
 
@@ -20,27 +20,27 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
     end
 
     it 'does not cause an error' do
-      response = subject
+      response = service_execute
 
       expect(response.error?).to be false
     end
 
     it 'adds the project bot as a member' do
-      expect { subject }.to change { resource.members.count }.by(1)
+      expect { service_execute }.to change { resource.members.count }.by(1)
     end
 
     it 'creates a project bot user' do
-      expect { subject }.to change { User.bots.count }.by(1)
+      expect { service_execute }.to change { User.bots.count }.by(1)
     end
   end
 
   shared_examples 'audit event details' do
     it 'creates an audit event' do
-      expect { subject }.to change { AuditEvent.count }.from(0).to(1)
+      expect { service_execute }.to change { AuditEvent.count }.from(0).to(1)
     end
 
     it 'logs author and resource info', :aggregate_failures do
-      subject
+      service_execute
 
       audit_event = AuditEvent.where(author_id: user.id).last
 
@@ -88,7 +88,7 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
         it_behaves_like 'audit event details'
 
         it 'logs project access token details', :aggregate_failures do
-          response = subject
+          response = service_execute
 
           audit_event = AuditEvent.where(author_id: user.id).last
           access_token = response.payload[:access_token]
@@ -118,7 +118,7 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
           it_behaves_like 'audit event details'
 
           it 'logs the permission error message' do
-            subject
+            service_execute
 
             audit_event = AuditEvent.where(author_id: user.id).last
             custom_message = <<~MESSAGE.squish
@@ -159,7 +159,7 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
           it_behaves_like 'audit event details'
 
           it 'logs the provisioning error message' do
-            subject
+            service_execute
 
             audit_event = AuditEvent.where(author_id: user.id).last
             custom_message = <<~MESSAGE.squish
@@ -179,6 +179,22 @@ RSpec.describe ResourceAccessTokens::CreateService, feature_category: :system_ac
             let_it_be(:event_type) { "project_access_token_creation_failed" }
           end
         end
+      end
+    end
+
+    context 'when resource is project and reached project_access_token limit' do
+      let_it_be(:group) { create(:group) }
+      let(:resource) { build(:project, namespace: group) }
+
+      before do
+        resource.add_maintainer(user)
+        allow(group).to receive(:reached_project_access_token_limit?).and_return(true)
+      end
+
+      it 'causes an error and does not change bots or members count' do
+        expect { service_execute }.to not_change { resource.members.count }
+                          .and not_change { User.bots.count }
+        expect(service_execute.error?).to be true
       end
     end
   end

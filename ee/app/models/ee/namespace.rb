@@ -508,6 +508,10 @@ module EE
       ::Feature.enabled?(:ai_assist_flag, self) && code_suggestions
     end
 
+    def reached_project_access_token_limit?
+      false
+    end
+
     private
 
     def security_orchestration_policies_for_namespaces(namespace_ids)

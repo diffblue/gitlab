@@ -817,7 +817,16 @@ module EE
       Sbom::Occurrence.where(project: all_projects)
     end
 
+    override :reached_project_access_token_limit?
+    def reached_project_access_token_limit?
+      actual_limits.exceeded?(:project_access_token_limit, active_project_tokens_of_root_ancestor)
+    end
+
     private
+
+    def active_project_tokens_of_root_ancestor
+      ::PersonalAccessToken.active.joins(:user).merge(root_ancestor.project_users_with_descendants.project_bot)
+    end
 
     override :post_create_hook
     def post_create_hook
