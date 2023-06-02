@@ -10,7 +10,14 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
   shared_examples 'runner details fetch operation returning expected upgradeStatus' do
     let(:query) do
-      wrap_fields(query_graphql_path(query_path, 'id upgradeStatus'))
+      managers = <<~GRAPHQL
+        managers{
+          nodes {
+            upgradeStatus
+          }
+        }
+      GRAPHQL
+      wrap_fields(query_graphql_path(query_path, "id upgradeStatus #{managers}"))
     end
 
     let(:query_path) do
@@ -23,7 +30,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
       allow_next_instance_of(::Gitlab::Ci::RunnerUpgradeCheck) do |instance|
         allow(instance).to receive(:check_runner_upgrade_suggestion)
           .and_return([nil, upgrade_status])
-          .once
+          .twice # once for the runner and another for the runner manager
       end
     end
 
@@ -34,6 +41,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
       expect(runner_data).not_to be_nil
       expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: expected_upgrade_status)
+      expect(graphql_dig_at(runner_data, :managers, :nodes, 0, :upgrade_status)).to eq(expected_upgrade_status)
     end
 
     context 'when fetching runner releases is disabled' do
@@ -54,6 +62,7 @@ RSpec.describe 'Query.runner(id)', feature_category: :runner_fleet do
 
   describe 'upgradeStatus', :saas do
     let_it_be(:runner) { create(:ci_runner, description: 'Runner 1', version: '14.1.0', revision: 'a') }
+    let_it_be(:runner_manager) { create(:ci_runner_machine, runner: runner, version: '14.1.0', revision: 'a') }
 
     context 'requested by non-paid user' do
       let(:current_user) { admin }
