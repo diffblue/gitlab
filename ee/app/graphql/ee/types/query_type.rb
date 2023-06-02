@@ -7,10 +7,10 @@ module EE
       prepended do
         field :ci_minutes_usage, ::Types::Ci::Minutes::NamespaceMonthlyUsageType.connection_type,
                null: true,
-               description: 'CI/CD minutes usage data for a namespace.' do
+               description: 'Compute usage data for a namespace.' do
                  argument :namespace_id, ::Types::GlobalIDType[::Namespace],
                    required: false,
-                   description: 'Global ID of the Namespace for the monthly CI/CD minutes usage.'
+                   description: 'Global ID of the Namespace for the monthly compute usage.'
                  argument :date, ::Types::DateType,
                    required: false,
                    description: 'Date for which to retrieve the usage data, should be the first day of a month.'

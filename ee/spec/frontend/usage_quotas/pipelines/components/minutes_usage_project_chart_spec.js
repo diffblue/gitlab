@@ -14,7 +14,7 @@ const {
 } = mockGetCiMinutesUsageNamespace;
 const usageDataByYearObject = getUsageDataByYearObject(ciMinutesUsage.nodes);
 
-describe('Minutes usage by project chart component', () => {
+describe('Units of compute usage by project chart component', () => {
   let wrapper;
 
   const findColumnChart = () => wrapper.findComponent(GlColumnChart);
@@ -32,7 +32,7 @@ describe('Minutes usage by project chart component', () => {
     });
   };
 
-  describe('ci/cd minutes usage', () => {
+  describe('units of compute usage', () => {
     beforeEach(() => {
       createComponent();
     });
@@ -48,7 +48,7 @@ describe('Minutes usage by project chart component', () => {
       expect(findMonthDropdown().props('text')).toBe('August');
     });
 
-    it('renders only the months with available minutes data', () => {
+    it('renders only the months with available units of compute data', () => {
       expect(findAllMonthDropdownItems().length).toBe(1);
     });
 
@@ -56,7 +56,7 @@ describe('Minutes usage by project chart component', () => {
       expect(findColumnChart().attributes('responsive')).toBeDefined();
     });
 
-    it('displays ci/cd minutes usage data on the chart', () => {
+    it('displays compute usage data on the chart', () => {
       const expectedChartData = [
         {
           data: [
