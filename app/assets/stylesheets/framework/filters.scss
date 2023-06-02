@@ -439,8 +439,10 @@
 
 .vue-filtered-search-bar-container {
   .gl-search-box-by-click {
-    .gl-filtered-search-scrollable {
-      flex-grow: 1;
+    // Absolute width is needed to prevent flex to grow
+    // beyond the available width.
+    .gl-filtered-search-scrollable-container {
+      width: 1px;
     }
   }
 
