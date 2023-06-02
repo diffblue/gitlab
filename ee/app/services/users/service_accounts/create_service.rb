@@ -13,11 +13,11 @@ module Users
       end
 
       def execute
-        return error(error_message) unless can_create_service_account?
+        return error(error_message, :forbidden) unless can_create_service_account?
 
         user = create_user
 
-        return error(user.errors.full_messages.to_sentence) unless user.persisted?
+        return error(user.errors.full_messages.to_sentence, :bad_request) unless user.persisted?
 
         success(user)
       end
@@ -58,8 +58,8 @@ module Users
         _('ServiceAccount|User does not have permission to create a service account.')
       end
 
-      def error(message)
-        ServiceResponse.error(message: message)
+      def error(message, reason)
+        ServiceResponse.error(message: message, reason: reason)
       end
 
       def success(user)
