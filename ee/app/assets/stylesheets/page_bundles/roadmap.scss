@@ -49,6 +49,10 @@ html.group-epics-roadmap-html {
   }
 }
 
+.epics-roadmap-filters {
+  z-index: $fixed-items-z-index + 1;
+}
+
 .epics-details-filters {
   .btn-group {
     .dropdown-toggle {
@@ -234,6 +238,14 @@ html.group-epics-roadmap-html {
 .epic-timeline-cell {
   float: left;
   border-bottom: $border-style;
+}
+
+// Ensure that last epic item doesn't have bottom border
+.epic-item-container:nth-last-of-type(2) {
+  .epic-details-cell,
+  .epic-timeline-cell {
+    border-bottom: 0;
+  }
 }
 
 .epic-details-cell {

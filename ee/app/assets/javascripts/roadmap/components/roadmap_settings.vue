@@ -25,6 +25,19 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      headerHeight: '',
+    };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      const { offsetTop = 0 } = this.$root.$el;
+      const clientHeight = this.$parent.$refs?.roadmapFilters?.$el.clientHeight || 0;
+
+      this.headerHeight = `${offsetTop + clientHeight}px`;
+    });
+  },
 };
 </script>
 
@@ -32,7 +45,8 @@ export default {
   <gl-drawer
     v-bind="$attrs"
     :open="isOpen"
-    class="gl-absolute"
+    :z-index="20"
+    :header-height="headerHeight"
     @close="$emit('toggleSettings', $event)"
   >
     <template #title>

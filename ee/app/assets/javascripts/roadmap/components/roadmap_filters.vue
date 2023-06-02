@@ -81,7 +81,7 @@ export default {
 </script>
 
 <template>
-  <div class="epics-filters epics-roadmap-filters epics-roadmap-filters-gl-ui">
+  <div class="epics-filters epics-roadmap-filters epics-roadmap-filters-gl-ui gl-relative">
     <div
       class="epics-details-filters filtered-search-block gl-display-flex gl-flex-direction-column gl-xl-flex-direction-row gl-p-3 row-content-block second-block"
     >
@@ -101,7 +101,7 @@ export default {
       />
       <gl-button
         icon="settings"
-        class="gl-xl-ml-3 gl-inset-border-1-gray-400!"
+        class="gl-xl-ml-3 gl-lg-mt-0 gl-mt-3 gl-inset-border-1-gray-400!"
         :aria-label="$options.i18n.settings"
         data-testid="settings-button"
         @click="$emit('toggleSettings', $event)"

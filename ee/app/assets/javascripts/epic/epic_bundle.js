@@ -66,6 +66,7 @@ export default () => {
       allowScopedLabels: epicMeta.scopedLabels,
       labelsManagePath: epicMeta.labelsWebUrl,
       allowSubEpics: parseBoolean(el.dataset.allowSubEpics),
+      hasIterationsFeature: false,
       treeElementSelector,
       roadmapElementSelector,
       containerElementSelector,
