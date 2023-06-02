@@ -66,7 +66,8 @@ RSpec.describe ProtectedBranches::DestroyService, feature_category: :compliance_
           Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
           security_orchestration_policy_configuration
         ) do |sync_service|
-          expect(sync_service).to receive(:execute).with(project.id)
+          expect(sync_service).to receive(:execute).with(project.id,
+            { delay: ::EE::ProtectedBranches::BaseService::SYNC_SERVICE_DELAY_INTERVAL })
         end
 
         service.execute(protected_branch)

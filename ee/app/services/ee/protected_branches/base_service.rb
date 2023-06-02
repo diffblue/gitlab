@@ -3,6 +3,8 @@
 module EE
   module ProtectedBranches
     module BaseService
+      SYNC_SERVICE_DELAY_INTERVAL = 1.minute
+
       def sync_scan_finding_approval_rules
         return unless project_or_group.licensed_feature_available?(:security_orchestration_policies)
 
@@ -14,7 +16,7 @@ module EE
           else
             Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService
               .new(configuration)
-              .execute(project_or_group.id)
+              .execute(project_or_group.id, delay: SYNC_SERVICE_DELAY_INTERVAL)
           end
         end
       end

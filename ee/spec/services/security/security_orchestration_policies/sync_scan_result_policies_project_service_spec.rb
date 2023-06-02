@@ -9,13 +9,26 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesPr
   describe '#execute' do
     let(:project_id) { 999_999 }
 
-    subject { described_class.new(configuration).execute(project_id) }
+    subject(:execute) { described_class.new(configuration).execute(project_id) }
 
     it 'triggers worker for the configuration and provided project_id' do
       expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_async).with(project_id,
         configuration.id)
 
-      subject
+      execute
+    end
+
+    context 'with delay' do
+      let(:delay) { 1.minute }
+
+      subject(:execute) { described_class.new(configuration, delay: delay).execute(project_id) }
+
+      it 'schedules job for the configuration and provided project_id' do
+        expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_in).with(delay,
+          project_id, configuration.id)
+
+        execute
+      end
     end
   end
 end

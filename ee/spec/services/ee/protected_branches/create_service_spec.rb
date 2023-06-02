@@ -103,7 +103,8 @@ RSpec.describe ProtectedBranches::CreateService, feature_category: :compliance_m
           Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService,
           security_orchestration_policy_configuration
         ) do |sync_service|
-          expect(sync_service).to receive(:execute).with(target_project.id)
+          expect(sync_service).to receive(:execute).with(target_project.id,
+            { delay: ::EE::ProtectedBranches::BaseService::SYNC_SERVICE_DELAY_INTERVAL })
         end
 
         service.execute
