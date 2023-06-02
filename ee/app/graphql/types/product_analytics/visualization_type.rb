@@ -20,6 +20,11 @@ module Types
             type: GraphQL::Types::JSON,
             null: false,
             description: 'Data of the visualization.'
+
+      field :slug,
+            type: GraphQL::Types::String,
+            null: false,
+            description: 'Slug of the visualization.'
     end
   end
 end

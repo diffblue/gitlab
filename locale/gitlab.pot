@@ -19295,12 +19295,6 @@ msgstr ""
 msgid "For investigating IT service disruptions or outages"
 msgstr ""
 
-msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch}"
-msgstr ""
-
-msgid "For merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch} into %{link_to_merge_request_target_branch}"
-msgstr ""
-
 msgid "For more info, read the documentation."
 msgstr ""
 
@@ -32161,12 +32155,13 @@ msgstr ""
 msgid "PackageRegistry|Debian"
 msgstr ""
 
-msgid "PackageRegistry|Delete 1 asset"
-msgid_plural "PackageRegistry|Delete %d assets"
-msgstr[0] ""
-msgstr[1] ""
+msgid "PackageRegistry|Delete %{count} assets"
+msgstr ""
 
 msgid "PackageRegistry|Delete Package Version"
+msgstr ""
+
+msgid "PackageRegistry|Delete asset"
 msgstr ""
 
 msgid "PackageRegistry|Delete package"
@@ -32477,6 +32472,9 @@ msgstr ""
 msgid "PackageRegistry|Yes, delete selected packages"
 msgstr ""
 
+msgid "PackageRegistry|You are about to delete %{count} assets. This operation is irreversible."
+msgstr ""
+
 msgid "PackageRegistry|You are about to delete %{count} packages. This operation is irreversible."
 msgstr ""
 
@@ -32485,11 +32483,6 @@ msgstr ""
 
 msgid "PackageRegistry|You are about to delete %{name}, are you sure?"
 msgstr ""
-
-msgid "PackageRegistry|You are about to delete 1 asset. This operation is irreversible."
-msgid_plural "PackageRegistry|You are about to delete %d assets. This operation is irreversible."
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "PackageRegistry|You are about to delete version %{version} of %{name}. Are you sure?"
 msgstr ""
@@ -33578,6 +33571,12 @@ msgid "Pipelines|This project is not currently set up to run pipelines."
 msgstr ""
 
 msgid "Pipelines|Token"
+msgstr ""
+
+msgid "Pipelines|Total amount of compute credits used for the pipeline"
+msgstr ""
+
+msgid "Pipelines|Total number of jobs for the pipeline"
 msgstr ""
 
 msgid "Pipelines|Trigger user has insufficient permissions to project"
@@ -37685,6 +37684,12 @@ msgid "Related feature flags"
 msgstr ""
 
 msgid "Related issues"
+msgstr ""
+
+msgid "Related merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch}"
+msgstr ""
+
+msgid "Related merge request %{link_to_merge_request} to merge %{link_to_merge_request_source_branch} into %{link_to_merge_request_target_branch}"
 msgstr ""
 
 msgid "Related merge requests"

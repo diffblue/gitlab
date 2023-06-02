@@ -10,8 +10,8 @@ data:
     filters:
       - operator: equals
         values:
-          - pageview
-        member: SnowplowTrackedEvents.eventType
+          - page_view
+        member: SnowplowTrackedEvents.event
     limit: 100
     timezone: UTC
     dimensions: []
