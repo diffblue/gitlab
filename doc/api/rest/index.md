@@ -325,6 +325,7 @@ The following table shows the possible return codes for API requests.
 | `422 Unprocessable`       | The entity couldn't be processed.                                                                                                                        |
 | `429 Too Many Requests`   | The user exceeded the [application rate limits](../../administration/instance_limits.md#rate-limits).                                                    |
 | `500 Server Error`        | While handling the request, something went wrong on the server.                                                                                          |
+| `503 Service Unavailable` | The server cannot handle the request because the server is temporarily overloaded.                                                                               |
 
 ## Pagination
 
