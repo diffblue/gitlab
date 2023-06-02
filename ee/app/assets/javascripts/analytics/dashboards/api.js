@@ -172,6 +172,38 @@ export const extractGraphqlFlowData = (data = {}) =>
   );
 
 /**
+ * @typedef {Object} MergeRequestItem
+ * @property {Integer} merge_request_throughput - Count of merge requests merged in the given time period
+ */
+
+/**
+ * @typedef {Object} MergeRequestResponseItem
+ * @property {ValueStreamDashboardTableMetric} merge_request_throughput - Count of merge requests merged in the given time period
+ */
+
+/**
+ * Takes the raw Query.mergeRequests graphql response and prepares the data for display
+ * removing some unnecessary fields and replacing null values with `-`.
+ *
+ * @param {MergeRequestItem} data
+ * @returns {MergeRequestResponseItem} Flow metrics ready for rendering in the value stream dashboard
+ */
+export const extractGraphqlMergeRequestsData = (data = {}) =>
+  Object.entries(TABLE_METRICS).reduce(
+    (acc, [identifier]) =>
+      data && data[identifier]
+        ? {
+            ...acc,
+            [identifier]: {
+              identifier,
+              value: data[identifier] ? data[identifier] : '-',
+            },
+          }
+        : acc,
+    {},
+  );
+
+/**
  * Fetches and merges DORA metrics into the given timePeriod objects.
  *
  * @param {Array} timePeriods - array of objects containing DORA metric values
