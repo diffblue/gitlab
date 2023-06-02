@@ -14,9 +14,10 @@ export default {
   },
   mixins: [glFeatureFlagMixin()],
   props: {
-    runner: {
-      required: true,
-      type: Object,
+    upgradeStatus: {
+      type: String,
+      required: false,
+      default: null,
     },
   },
   computed: {
@@ -25,9 +26,6 @@ export default {
         this.glFeatures?.runnerUpgradeManagement ||
         this.glFeatures?.runnerUpgradeManagementForNamespace
       );
-    },
-    upgradeStatus() {
-      return this.runner.upgradeStatus;
     },
     icon() {
       if (!this.shouldShowUpgradeStatus) {
