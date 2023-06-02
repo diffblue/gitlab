@@ -57,6 +57,7 @@ export default {
         :key="option.value"
         class="gl-mr-2"
         variant="default"
+        button-text-classes="gl-xs-display-none"
         :icon="option.icon"
         @click="trackFeedback(option.value)"
       >
