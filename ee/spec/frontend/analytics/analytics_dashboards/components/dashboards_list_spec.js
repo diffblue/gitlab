@@ -12,7 +12,7 @@ import {
 import jsonList from 'ee/analytics/analytics_dashboards/gl_dashboards/analytics_dashboards.json';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { createAlert } from '~/alert';
-import getProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_product_analytics_dashboards.query.graphql';
+import getAllProductAnalyticsDashboardsQuery from 'ee/analytics/analytics_dashboards/graphql/queries/get_all_product_analytics_dashboards.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getCustomDashboards } from 'ee/analytics/analytics_dashboards/api/dashboards_api';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -53,7 +53,7 @@ describe('DashboardsList', () => {
 
   const createWrapper = (provided = {}) => {
     const mockApollo = createMockApollo([
-      [getProductAnalyticsDashboardsQuery, mockAnalyticsDashboardsHandler],
+      [getAllProductAnalyticsDashboardsQuery, mockAnalyticsDashboardsHandler],
     ]);
 
     wrapper = shallowMountExtended(DashboardsList, {

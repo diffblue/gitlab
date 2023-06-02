@@ -1,0 +1,13 @@
+query getAllProductAnalyticsDashboards($projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    productAnalyticsDashboards {
+      nodes {
+        slug
+        title
+        description
+        userDefined
+      }
+    }
+  }
+}

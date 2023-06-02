@@ -12,6 +12,8 @@ const DEFAULT_COUNT_KEY = 'TrackedEvents.count';
 export const DATE_RANGE_FILTER_DIMENSIONS = {
   sessions: 'Sessions.startAt',
   trackedevents: 'TrackedEvents.utcTime',
+  snowplowtrackedevents: 'SnowplowTrackedEvents.derivedTstamp',
+  snowplowsessions: 'SnowplowSessions.startAt',
 };
 
 const convertToCommonChartFormat = (resultSet) => {
