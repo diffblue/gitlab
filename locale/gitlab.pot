@@ -2366,6 +2366,9 @@ msgstr ""
 msgid "AccessTokens|Access Tokens"
 msgstr ""
 
+msgid "AccessTokens|Access token limit reached"
+msgstr ""
+
 msgid "AccessTokens|Are you sure?"
 msgstr ""
 
@@ -2421,6 +2424,9 @@ msgid "AccessTokens|You can also use personal access tokens to authenticate agai
 msgstr ""
 
 msgid "AccessTokens|You can generate a personal access token for each application you use that needs access to the GitLab API."
+msgstr ""
+
+msgid "AccessTokens|You can only have one active project access token with a trial license. You cannot generate a new token until the existing token is deleted, or you upgrade your subscription."
 msgstr ""
 
 msgid "AccessTokens|Your feed token authenticates you when your RSS reader loads a personalized RSS feed or when your calendar application loads a personalized calendar. It is visible in those feed URLs."
