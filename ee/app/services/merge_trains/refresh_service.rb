@@ -9,8 +9,6 @@ module MergeTrains
   # `deduplicate :until_executed, if_deduplicated: :reschedule_once` option within the worker
   class RefreshService
     DEFAULT_CONCURRENCY = 20
-    TRAIN_PROCESSING_LOCK_TIMEOUT = 15.minutes.freeze
-    SIGNAL_FOR_REFRESH_REQUEST = 1
 
     def initialize(target_project_id, target_branch)
       @target_project_id = target_project_id
