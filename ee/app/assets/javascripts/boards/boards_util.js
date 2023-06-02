@@ -38,6 +38,7 @@ export {
   getMoveData,
   filterVariables,
   fullBoardId,
+  calculateNewPosition,
 } from '~/boards/boards_util';
 
 export function getMilestone({ milestone }) {

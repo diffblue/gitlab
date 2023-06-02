@@ -194,7 +194,6 @@ export default {
   },
   methods: {
     ...mapActions([
-      'moveList',
       'fetchEpicsSwimlanes',
       'fetchIssuesForEpic',
       'fetchItemsForList',
@@ -283,7 +282,7 @@ export default {
         v-bind="treeRootOptions"
         class="board-swimlanes-headers gl-bg-white gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-index-3"
         data-testid="board-swimlanes-headers"
-        @end="moveList"
+        @end="$emit('move-list', $event)"
       >
         <div
           v-for="list in lists"

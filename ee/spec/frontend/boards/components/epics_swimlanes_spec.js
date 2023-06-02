@@ -113,26 +113,31 @@ describe('EpicsSwimlanes', () => {
     expect(fetchIssuesForEpicSpy).toHaveBeenCalled();
   });
 
-  describe('computed', () => {
-    describe('treeRootWrapper', () => {
-      describe('when canAdminList prop is true', () => {
-        beforeEach(() => {
-          createComponent({ canAdminList: true });
-        });
-
-        it('should return Draggable reference when canAdminList prop is true', () => {
-          expect(findDraggable().exists()).toBe(true);
-        });
+  describe('reorder lists', () => {
+    describe('when canAdminList prop is true', () => {
+      beforeEach(() => {
+        createComponent({ canAdminList: true });
       });
 
-      describe('when canAdminList prop is false', () => {
-        beforeEach(() => {
-          createComponent();
-        });
+      it('should return Draggable reference when canAdminList prop is true', () => {
+        expect(findDraggable().exists()).toBe(true);
+      });
 
-        it('should not return Draggable reference when canAdminList prop is false', () => {
-          expect(findDraggable().exists()).toBe(false);
-        });
+      it('emits move-list event when drag & dropping list', async () => {
+        findDraggable().vm.$emit('end', { oldIndex: 1, newIndex: 0 });
+        await nextTick();
+
+        expect(wrapper.emitted('move-list')).toEqual([[{ oldIndex: 1, newIndex: 0 }]]);
+      });
+    });
+
+    describe('when canAdminList prop is false', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('should not return Draggable reference when canAdminList prop is false', () => {
+        expect(findDraggable().exists()).toBe(false);
       });
     });
   });
@@ -233,12 +238,18 @@ describe('EpicsSwimlanes', () => {
 
   describe('Apollo boards', () => {
     beforeEach(async () => {
-      createComponent({ isApolloBoard: true });
+      createComponent({ isApolloBoard: true, canAdminList: true });
       await waitForPromises();
     });
 
     it('fetches epics swimlanes', () => {
       expect(epicsSwimlanesQueryHandlerSuccess).toHaveBeenCalled();
+    });
+
+    it('emits move-list event on reordering lists', () => {
+      findDraggable().vm.$emit('end', {});
+
+      expect(wrapper.emitted('move-list')).toHaveLength(1);
     });
 
     describe('unassigned issues lane', () => {
