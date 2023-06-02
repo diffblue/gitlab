@@ -12,15 +12,15 @@ module Vulnerabilities
     belongs_to :merge_request
     belongs_to :pipeline, class_name: 'Ci::Pipeline', foreign_key: :pipeline_id
     belongs_to :finding,
-               primary_key: :uuid,
-               foreign_key: :finding_uuid,
-               class_name: 'Vulnerabilities::Finding',
-               inverse_of: :feedbacks
+      primary_key: :uuid,
+      foreign_key: :finding_uuid,
+      class_name: 'Vulnerabilities::Finding',
+      inverse_of: :feedbacks
     belongs_to :security_finding,
-               primary_key: :uuid,
-               foreign_key: :finding_uuid,
-               class_name: 'Security::Finding',
-               inverse_of: :feedbacks
+      primary_key: :uuid,
+      foreign_key: :finding_uuid,
+      class_name: 'Security::Finding',
+      inverse_of: :feedbacks
 
     belongs_to :comment_author, class_name: 'User'
 

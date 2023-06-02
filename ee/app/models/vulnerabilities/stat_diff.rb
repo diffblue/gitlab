@@ -28,8 +28,9 @@ module Vulnerabilities
 
     delegate :active_states, :passive_states, to: Vulnerability, private: true
     delegate :destroyed?, to: :vulnerability, prefix: true, private: true
-    delegate :state, :severity, :state_previous_change, :severity_previous_change, :severity_previously_changed?, :state_previously_changed?,
-             to: :vulnerability, private: true
+    delegate :state, :severity, :state_previous_change, :severity_previous_change,
+      :severity_previously_changed?, :state_previously_changed?,
+      to: :vulnerability, private: true
 
     attr_accessor :vulnerability
 
