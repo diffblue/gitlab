@@ -230,6 +230,18 @@ module EE
         @subject.can_suggest_reviewers?
       end
 
+      with_scope :subject
+      condition(:ai_features_enabled) do
+        ::Feature.enabled?(:openai_experimentation)
+      end
+
+      with_scope :subject
+      condition(:fill_in_merge_request_template_enabled) do
+        ::Feature.enabled?(:fill_in_mr_template, subject) &&
+          subject.licensed_feature_available?(:fill_in_merge_request_template) &&
+          ::Gitlab::Llm::StageCheck.available?(subject.root_ancestor, :fill_in_merge_request_template)
+      end
+
       rule { visual_review_bot }.policy do
         prevent :read_note
         enable :create_note
@@ -580,6 +592,10 @@ module EE
         enable :create_pipeline
         enable :push_code
       end
+
+      rule do
+        ai_features_enabled & fill_in_merge_request_template_enabled & can?(:create_merge_request_in)
+      end.enable :fill_in_merge_request_template
     end
 
     override :lookup_access_level!

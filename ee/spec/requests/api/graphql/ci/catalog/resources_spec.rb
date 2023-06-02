@@ -261,11 +261,11 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     end
 
     context 'when the resource does not have a version' do
-      it 'returns the resource without the version data' do
+      it 'returns versions as an empty array' do
         post_query
 
         expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
-          a_graphql_entity_for(resource1, versions: nil)
+          a_graphql_entity_for(resource1, versions: { 'nodes' => [] })
         )
       end
     end
