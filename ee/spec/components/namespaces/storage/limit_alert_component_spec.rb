@@ -75,6 +75,11 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
           render_inline(component)
           expect(page).to have_content(alert_message_below_limit)
         end
+
+        it 'allows to dismiss alert' do
+          render_inline(component)
+          expect(page).to have_css("[data-testid='close-icon']")
+        end
       end
 
       context 'and above storage size limit' do
@@ -89,6 +94,11 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
         it 'renders the alert message' do
           render_inline(component)
           expect(page).to have_content(alert_message_above_limit_no_purchased_storage)
+        end
+
+        it 'does not allow to dismiss alert' do
+          render_inline(component)
+          expect(page).not_to have_css("[data-testid='close-icon']")
         end
       end
     end

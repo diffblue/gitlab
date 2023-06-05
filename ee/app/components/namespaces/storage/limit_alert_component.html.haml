@@ -1,6 +1,6 @@
 .gl-mt-3.container-fluid{ class: content_class }
   = render Pajamas::AlertComponent.new(variant: alert_variant,
-    dismissible: true,
+    dismissible: dismissible?,
     title: alert_title,
     alert_options: { class: 'js-namespace-storage-alert',
                     data: { feature_id: callout_feature_name,
