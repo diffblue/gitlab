@@ -46,7 +46,7 @@ export default {
   <div v-if="isSaas && value">
     <gl-form-group
       data-testid="runner-field-public-projects-cost-factor"
-      :label="__('Public projects Minutes cost factor')"
+      :label="__('Public projects compute cost factor')"
     >
       <gl-form-input-group
         :value="value.publicProjectsMinutesCostFactor"
@@ -58,7 +58,7 @@ export default {
 
     <gl-form-group
       data-testid="runner-field-private-projects-cost-factor"
-      :label="__('Private projects Minutes cost factor')"
+      :label="__('Private projects compute cost factor')"
     >
       <gl-form-input-group
         :value="value.privateProjectsMinutesCostFactor"

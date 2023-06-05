@@ -13,11 +13,11 @@ module EE
         prepended do
           field :public_projects_minutes_cost_factor, GraphQL::Types::Float,
             null: true,
-            description: 'Public projects\' "minutes cost factor" associated with the runner (GitLab.com only).'
+            description: 'Public projects\' "compute cost factor" associated with the runner (GitLab.com only).'
 
           field :private_projects_minutes_cost_factor, GraphQL::Types::Float,
             null: true,
-            description: 'Private projects\' "minutes cost factor" associated with the runner (GitLab.com only).'
+            description: 'Private projects\' "compute cost factor" associated with the runner (GitLab.com only).'
 
           # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/411945
           # this should take the maximum status from runner managers

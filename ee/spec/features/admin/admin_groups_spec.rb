@@ -15,7 +15,7 @@ RSpec.describe 'Admin Groups', feature_category: :continuous_integration do
   end
 
   describe 'show a group' do
-    context 'with minutes' do
+    context 'with compute usage' do
       before do
         project.update!(shared_runners_enabled: true)
         set_ci_minutes_used(group, 300)
@@ -23,34 +23,34 @@ RSpec.describe 'Admin Groups', feature_category: :continuous_integration do
       end
 
       context 'when gitlab saas', :saas do
-        it 'renders minute report' do
+        it 'renders compute usage report' do
           visit admin_group_path(group)
 
-          expect(page).to have_content('Quota of CI/CD minutes: 300 / 400')
+          expect(page).to have_content('Compute quota: 300 / 400')
         end
 
-        it 'renders additional minutes' do
+        it 'renders additional units of compute' do
           group.update!(extra_shared_runners_minutes_limit: 100)
 
           visit admin_group_path(group)
 
-          expect(page).to have_content('Additional minutes:')
+          expect(page).to have_content('Additional units of compute:')
         end
       end
 
       context 'when self-managed' do
-        it 'renders minute report' do
+        it 'renders compute usage report' do
           visit admin_group_path(group)
 
-          expect(page).not_to have_content('Quota of CI/CD minutes: 300 / 400')
+          expect(page).not_to have_content('Compute quota: 300 / 400')
         end
 
-        it 'does not render additional minutes' do
+        it 'does not render additional units of compute' do
           group.update!(extra_shared_runners_minutes_limit: 100)
 
           visit admin_group_path(group)
 
-          expect(page).not_to have_content('Additional minutes:')
+          expect(page).not_to have_content('Additional units of compute:')
         end
       end
     end
