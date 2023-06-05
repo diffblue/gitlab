@@ -14,6 +14,7 @@ const MOCK_SEARCH = 'test search';
 
 describe('GeoSitesFilters', () => {
   let wrapper;
+  let store;
 
   const defaultProps = {
     totalSites: MOCK_TAB_COUNT,
@@ -25,7 +26,7 @@ describe('GeoSitesFilters', () => {
   };
 
   const createComponent = (initialState, props, getters) => {
-    const store = new Vuex.Store({
+    store = new Vuex.Store({
       state: {
         ...initialState,
       },
@@ -175,7 +176,7 @@ describe('GeoSitesFilters', () => {
 
         jest.spyOn(urlUtils, 'updateHistory');
 
-        wrapper.vm.$store.state.searchFilter = MOCK_SEARCH;
+        store.state.searchFilter = MOCK_SEARCH;
       });
 
       it('calls urlUtils.updateHistory when updated', () => {
