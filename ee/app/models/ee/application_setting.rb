@@ -17,53 +17,53 @@ module EE
       belongs_to :file_template_project, class_name: "Project"
 
       validates :shared_runners_minutes,
-                numericality: { greater_than_or_equal_to: 0 }
+        numericality: { greater_than_or_equal_to: 0 }
 
       validates :mirror_max_delay,
-                presence: true,
-                numericality: { allow_nil: true, only_integer: true, greater_than: :mirror_max_delay_in_minutes }
+        presence: true,
+        numericality: { allow_nil: true, only_integer: true, greater_than: :mirror_max_delay_in_minutes }
 
       validates :mirror_max_capacity,
-                presence: true,
-                numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
 
       validates :mirror_capacity_threshold,
-                presence: true,
-                numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { allow_nil: true, only_integer: true, greater_than: 0 }
 
       validate :mirror_capacity_threshold_less_than
 
       validates :repository_size_limit,
-                presence: true,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
       validates :deletion_adjourned_period,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 90 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 90 }
 
       validates :search_max_shard_size_gb,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :search_max_docs_denominator,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :search_min_docs_before_rollover,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :elasticsearch_max_bulk_size_mb,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :elasticsearch_max_bulk_concurrency,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :elasticsearch_url,
-                presence: { message: "can't be blank when indexing is enabled" },
-                if: ->(setting) { setting.elasticsearch_indexing? }
+        presence: { message: "can't be blank when indexing is enabled" },
+        if: ->(setting) { setting.elasticsearch_indexing? }
 
       validates :elasticsearch_username, length: { maximum: 255 }
       validates :elasticsearch_password, length: { maximum: 255 }
@@ -71,24 +71,24 @@ module EE
       validate :check_elasticsearch_url_scheme, if: :elasticsearch_url_changed?
 
       validates :elasticsearch_aws_region,
-                presence: { message: "can't be blank when using aws hosted elasticsearch" },
-                if: ->(setting) { setting.elasticsearch_indexing? && setting.elasticsearch_aws? }
+        presence: { message: "can't be blank when using aws hosted elasticsearch" },
+        if: ->(setting) { setting.elasticsearch_indexing? && setting.elasticsearch_aws? }
 
       validates :elasticsearch_indexed_file_size_limit_kb,
-                presence: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :elasticsearch_indexed_field_length_limit,
-                presence: true,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
       validates :elasticsearch_client_request_timeout,
-                presence: true,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0 }
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
       validates :email_additional_text,
-                allow_blank: true,
-                length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
+        allow_blank: true,
+        length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
 
       attribute :future_subscriptions, ::Gitlab::Database::Type::IndifferentJsonb.new
       validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
@@ -102,42 +102,42 @@ module EE
       validate :check_globally_allowed_ips
 
       validates :max_personal_access_token_lifetime,
-                allow_blank: true,
-                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
+        allow_blank: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
       validates :new_user_signups_cap,
-                allow_blank: true,
-                numericality: { only_integer: true, greater_than: 0 }
+        allow_blank: true,
+        numericality: { only_integer: true, greater_than: 0 }
 
       validates :git_two_factor_session_expiry,
-                presence: true,
-                numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10080 }
+        presence: true,
+        numericality: { only_integer: true, greater_than_or_equal_to: 1, less_than_or_equal_to: 10080 }
 
       validates :max_ssh_key_lifetime,
-                allow_blank: true,
-                numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
+        allow_blank: true,
+        numericality: { only_integer: true, greater_than: 0, less_than_or_equal_to: 365 }
 
       validates :max_number_of_repository_downloads,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 }
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10_000 }
 
       validates :max_number_of_repository_downloads_within_time_period,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i }
+        numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 10.days.to_i }
 
       validates :git_rate_limit_users_allowlist,
-                length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
-                allow_nil: false,
-                user_existence: true,
-                if: :git_rate_limit_users_allowlist_changed?
+        length: { maximum: 100, message: -> (object, data) { _("exceeds maximum length (100 usernames)") } },
+        allow_nil: false,
+        user_existence: true,
+        if: :git_rate_limit_users_allowlist_changed?
 
       validates :git_rate_limit_users_alertlist,
-                length: { maximum: 100, message: ->(object, data) { _("exceeds maximum length (100 user ids)") } },
-                allow_nil: false,
-                user_id_existence: true,
-                if: :git_rate_limit_users_alertlist_changed?
+        length: { maximum: 100, message: ->(object, data) { _("exceeds maximum length (100 user ids)") } },
+        allow_nil: false,
+        user_id_existence: true,
+        if: :git_rate_limit_users_alertlist_changed?
 
       validates :delayed_project_removal,
-                exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
-                if: ->(setting) { !setting.delayed_group_deletion? }
+        exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
+        if: ->(setting) { !setting.delayed_group_deletion? }
 
       with_options(presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }) do
         validates :dashboard_limit
@@ -146,55 +146,55 @@ module EE
       end
 
       validates :dashboard_limit_enabled,
-                inclusion: { in: [true, false], message: 'must be a boolean value' }
+        inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :cube_api_base_url,
-                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
-                presence: true,
-                if: :product_analytics_enabled
+        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :product_analytics_enabled,
-                presence: true,
-                allow_blank: true
+        presence: true,
+        allow_blank: true
 
       validates :jitsu_host,
-                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
-                presence: true,
-                if: :product_analytics_enabled
+        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :jitsu_project_xid,
-                presence: true,
-                if: :product_analytics_enabled
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :jitsu_administrator_email,
-                presence: true,
-                devise_email: true,
-                if: :product_analytics_enabled
+        presence: true,
+        devise_email: true,
+        if: :product_analytics_enabled
 
       validates :jitsu_administrator_password,
-                presence: true,
-                if: :product_analytics_enabled
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :product_analytics_clickhouse_connection_string,
-                presence: true,
-                if: :product_analytics_enabled
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :cube_api_key,
-                presence: true,
-                if: :product_analytics_enabled
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :security_policy_global_group_approvers_enabled,
-                inclusion: { in: [true, false], message: 'must be a boolean value' }
+        inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :product_analytics_data_collector_host,
-                addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
-                presence: true,
-                if: :product_analytics_enabled
+        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
+        presence: true,
+        if: :product_analytics_enabled
 
       validates :package_metadata_purl_types, inclusion: { in: ::Enums::PackageMetadata.purl_types.values }
 
       validates :allow_account_deletion,
-            inclusion: { in: [true, false], message: N_('must be a boolean value') }
+        inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
@@ -588,9 +588,9 @@ module EE
       # to use the HTTP protocol on all URLs.
       elasticsearch_url.each do |str|
         ::Gitlab::UrlBlocker.validate!(str,
-                                       schemes: %w[http https],
-                                       allow_localhost: true,
-                                       dns_rebind_protection: false)
+          schemes: %w[http https],
+          allow_localhost: true,
+          dns_rebind_protection: false)
       end
     rescue ::Gitlab::UrlBlocker::BlockedUrlError
       errors.add(:elasticsearch_url, "only supports valid HTTP(S) URLs.")
