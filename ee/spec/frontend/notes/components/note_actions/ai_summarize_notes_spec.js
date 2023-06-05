@@ -97,4 +97,22 @@ describe('AiSummarizeNotes component', () => {
       });
     });
   });
+
+  describe('on mouseout', () => {
+    let bsTooltipHide;
+
+    beforeEach(async () => {
+      createWrapper();
+
+      bsTooltipHide = jest.fn();
+      wrapper.vm.$root.$on(BV_HIDE_TOOLTIP, bsTooltipHide);
+
+      await findButton().trigger('mouseout');
+      await nextTick();
+    });
+
+    it('closes tooltip', () => {
+      expect(bsTooltipHide).toHaveBeenCalled();
+    });
+  });
 });
