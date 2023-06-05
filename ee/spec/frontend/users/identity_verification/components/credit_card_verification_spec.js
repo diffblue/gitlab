@@ -4,6 +4,7 @@ import { nextTick } from 'vue';
 import { GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import Zuora, { Event } from 'ee/billings/components/zuora_simple.vue';
 import CreditCardVerification, {
   EVENT_CATEGORY,
@@ -22,6 +23,7 @@ const MOCK_VERIFY_CREDIT_CARD_PATH = '/mock/verify_credit_card/path';
 describe('CreditCardVerification', () => {
   let trackingSpy;
   let wrapper;
+  const zuoraSubmitSpy = jest.fn();
 
   const findCheckForReuseLoading = () => wrapper.findComponent(GlLoadingIcon);
   const findZuora = () => wrapper.findComponent(Zuora);
@@ -37,6 +39,11 @@ describe('CreditCardVerification', () => {
         },
       },
       propsData: { completed: false },
+      stubs: {
+        Zuora: stubComponent(Zuora, {
+          methods: { submit: zuoraSubmitSpy },
+        }),
+      },
     });
 
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
@@ -180,13 +187,8 @@ describe('CreditCardVerification', () => {
   });
 
   describe('clicking the submit button', () => {
-    const zuoraSubmitSpy = jest.fn();
-
     beforeEach(() => {
       createComponent();
-
-      wrapper.vm.$refs.zuora = { submit: zuoraSubmitSpy };
-
       findSubmitButton().vm.$emit('click');
     });
 
