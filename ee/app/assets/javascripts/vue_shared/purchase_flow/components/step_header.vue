@@ -1,6 +1,5 @@
 <script>
 import { GlButton, GlIcon } from '@gitlab/ui';
-import { s__ } from '~/locale';
 
 export default {
   components: {
@@ -16,15 +15,16 @@ export default {
       type: String,
       required: true,
     },
+    editButtonText: {
+      type: String,
+      required: true,
+    },
     isEditable: {
       type: Boolean,
       required: true,
     },
   },
   emits: ['edit'],
-  i18n: {
-    edit: s__('Checkout|Edit'),
-  },
 };
 </script>
 <template>
@@ -46,7 +46,7 @@ export default {
       v-if="isEditable"
       class="gl-display-flex gl-flex-direction-column gl-justify-content-center"
     >
-      <gl-button size="small" @click="$emit('edit')">{{ $options.i18n.edit }}</gl-button>
+      <gl-button size="small" @click="$emit('edit')">{{ editButtonText }}</gl-button>
     </div>
   </div>
 </template>

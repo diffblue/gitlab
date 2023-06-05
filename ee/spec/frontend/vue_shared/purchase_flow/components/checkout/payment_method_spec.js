@@ -22,7 +22,6 @@ describe('Payment Method', () => {
 
   const findCCDetails = () => wrapper.findByTestId('card-details');
   const findCCExpiration = () => wrapper.findByTestId('card-expiration');
-
   const findZuora = () => wrapper.findComponent(Zuora);
 
   const isStepValid = () => wrapper.findComponent(Step).props('isValid');

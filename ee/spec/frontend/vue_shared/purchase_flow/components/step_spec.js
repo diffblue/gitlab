@@ -102,6 +102,14 @@ describe('Step', () => {
       });
     });
 
+    it('passes the correct text to the edit button', () => {
+      wrapper = createComponent({
+        propsData: { editButtonText: 'Change' },
+      });
+
+      expect(findStepHeader().props('editButtonText')).toBe('Change');
+    });
+
     it('should not be shown when this step is not valid and not active', async () => {
       const mockApollo = createMockApolloProvider(STEPS, 1);
       await activateFirstStep(mockApollo);

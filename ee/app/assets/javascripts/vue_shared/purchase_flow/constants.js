@@ -12,3 +12,7 @@ export const userProfileLink = 'https://gitlab.com/-/profile';
 export const linkCustomersPortalHelpLink = helpPagePath('subscriptions/customers_portal', {
   anchor: '#change-the-linked-account',
 });
+
+export const i18n = {
+  edit: s__('Checkout|Edit'),
+};
