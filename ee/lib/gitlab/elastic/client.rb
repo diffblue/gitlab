@@ -41,7 +41,16 @@ module Gitlab
       end
 
       def self.adapter
+        # We can't use Typhoeus with Spring on macOS because Typhoeus uses libcurl.
+        # Before libcurl resolves an IP address, it calls SCDynamicStoreCopyProxies,
+        # which appears to crash in a forked process with threads.
+        return :net_http if spring_on_macos?
+
         ::Feature.enabled?(:use_typhoeus_elasticsearch_adapter) ? :typhoeus : :net_http
+      end
+
+      def self.spring_on_macos?
+        Rails.env.test? && defined?(::Spring) && RUBY_PLATFORM.include?('darwin')
       end
 
       def self.debug?
