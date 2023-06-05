@@ -1,6 +1,5 @@
 <script>
 import { GlAlert, GlKeysetPagination } from '@gitlab/ui';
-import { isEmpty } from 'lodash';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import NamespaceStorageQuery from '../queries/namespace_storage.query.graphql';
@@ -12,7 +11,6 @@ import {
 } from '../constants';
 import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
-import StorageInlineAlert from './storage_inline_alert.vue';
 import DependencyProxyUsage from './dependency_proxy_usage.vue';
 import StorageUsageStatistics from './storage_usage_statistics.vue';
 import ContainerRegistryUsage from './container_registry_usage.vue';
@@ -23,7 +21,6 @@ export default {
     GlAlert,
     ProjectList,
     StorageUsageStatistics,
-    StorageInlineAlert,
     GlKeysetPagination,
     DependencyProxyUsage,
     ContainerRegistryUsage,
@@ -35,7 +32,6 @@ export default {
     'helpLinks',
     'defaultPerPage',
     'storageLimitEnforced',
-    'canShowInlineAlert',
     'userNamespace',
   ],
   apollo: {
@@ -112,21 +108,6 @@ export default {
     pageInfo() {
       return this.namespace.projects?.pageInfo ?? {};
     },
-    shouldShowStorageInlineAlert() {
-      if (isEmpty(this.namespace)) {
-        return false;
-      }
-
-      // for initial load check if the data fetch is done (isQueryLoading)
-      if (this.firstFetch && this.isQueryLoading) {
-        return false;
-      }
-
-      // for all subsequent queries the storage inline alert doesn't
-      // have to be re-rendered as the data from graphql will remain
-      // the same.
-      return this.canShowInlineAlert;
-    },
     showPagination() {
       return Boolean(this.pageInfo?.hasPreviousPage || this.pageInfo?.hasNextPage);
     },
@@ -184,15 +165,6 @@ export default {
     <gl-alert v-if="loadingError" variant="danger" :dismissible="false" class="gl-mt-4">
       {{ $options.i18n.NAMESPACE_STORAGE_ERROR_MESSAGE }}
     </gl-alert>
-    <storage-inline-alert
-      v-if="shouldShowStorageInlineAlert"
-      :contains-locked-projects="namespace.containsLockedProjects"
-      :repository-size-excess-project-count="namespace.repositorySizeExcessProjectCount"
-      :total-repository-size-excess="namespace.totalRepositorySizeExcess"
-      :total-repository-size="namespace.totalRepositorySize"
-      :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize"
-      :actual-repository-size-limit="namespace.actualRepositorySizeLimit"
-    />
     <div v-if="storageStatistics">
       <storage-usage-statistics
         :storage-limit-enforced="storageLimitEnforced"

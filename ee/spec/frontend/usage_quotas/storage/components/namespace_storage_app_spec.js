@@ -12,7 +12,6 @@ import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/de
 import createMockApollo from 'helpers/mock_apollo_helper';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
-import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
 import {
@@ -58,7 +57,6 @@ describe('NamespaceStorageApp', () => {
     return createMockApollo(requestHandlers);
   }
 
-  const findStorageInlineAlert = () => wrapper.findComponent(StorageInlineAlert);
   const findDependencyProxy = () => wrapper.findComponent(DependencyProxyUsage);
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
@@ -386,56 +384,6 @@ describe('NamespaceStorageApp', () => {
           expect(findStorageUsageStatistics().props('loading')).toBe(expectedValue);
         },
       );
-    });
-  });
-
-  describe('with rootStorageStatistics available on namespace', () => {
-    beforeEach(async () => {
-      mockApollo = createMockApolloProvider();
-      createComponent({ mockApollo });
-      await waitForPromises();
-    });
-
-    describe('StorageInlineAlert', () => {
-      it('does not show storage inline alert if namespace is empty', async () => {
-        // creating failed mock provider will make namespace = {}
-        mockApollo = createFailedMockApolloProvider();
-        createComponent({
-          provide: { storageLimitEnforced: true },
-          mockApollo,
-        });
-
-        await waitForPromises();
-        expect(findStorageInlineAlert().exists()).toBe(false);
-      });
-    });
-  });
-
-  describe('when canShowInlineAlert is true', () => {
-    it('does render storage-inline-alert component', async () => {
-      mockApollo = createMockApolloProvider();
-
-      createComponent({
-        mockApollo,
-
-        provide: { canShowInlineAlert: true },
-      });
-      await waitForPromises();
-
-      expect(findStorageInlineAlert().exists()).toBe(true);
-    });
-  });
-
-  describe('when canShowInlineAlert is false', () => {
-    it('does not render storage-inline-alert component', async () => {
-      mockApollo = createMockApolloProvider();
-
-      createComponent({
-        mockApollo,
-      });
-      await waitForPromises();
-
-      expect(findStorageInlineAlert().exists()).toBe(false);
     });
   });
 });

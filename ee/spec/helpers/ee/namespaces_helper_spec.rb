@@ -283,8 +283,7 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
         default_per_page: Kaminari.config.default_per_page,
         purchase_storage_url: more_storage_url,
         buy_addon_target_attr: '_blank',
-        storage_limit_enforced: 'false',
-        can_show_inline_alert: 'false'
+        storage_limit_enforced: 'false'
       })
     end
   end
