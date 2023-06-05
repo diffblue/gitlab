@@ -134,6 +134,7 @@ export default {
               throw error;
             }
 
+            this.loading = false;
             this.$refs.addUpdateScheduleModal.hide();
             this.$emit('scheduleCreated');
             this.resetForm();
@@ -141,8 +142,6 @@ export default {
         )
         .catch((error) => {
           this.error = error;
-        })
-        .finally(() => {
           this.loading = false;
         });
     },
@@ -179,6 +178,8 @@ export default {
             if (error) {
               throw error;
             }
+
+            this.loading = false;
             this.$refs.addUpdateScheduleModal.hide();
 
             if (isTimezoneUpdated) {
@@ -188,8 +189,6 @@ export default {
         )
         .catch((error) => {
           this.error = error;
-        })
-        .finally(() => {
           this.loading = false;
         });
     },
