@@ -22,7 +22,5 @@ RSpec.describe 'admin/application_settings/_deletion_protection_settings' do
 
     expect(rendered).to have_selector('#js-admin-deletion-protection-settings')
     expect(rendered).to have_selector('[data-deletion-adjourned-period="1"]')
-    expect(rendered).to have_selector('[data-delayed-group-deletion="false"]')
-    expect(rendered).to have_selector('[data-delayed-project-deletion="false"]')
   end
 end

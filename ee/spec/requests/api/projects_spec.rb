@@ -1715,17 +1715,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
             stub_application_setting(lock_delayed_project_removal: true, delayed_project_removal: false)
           end
 
-          context 'when `always_perform_delayed_deletion` is disabled' do
-            before do
-              stub_feature_flags(always_perform_delayed_deletion: false)
-            end
-
-            it_behaves_like 'deletes project immediately'
-          end
-
-          context 'when `always_perform_delayed_deletion` is enabled' do
-            it_behaves_like 'marks project for deletion'
-          end
+          it_behaves_like 'marks project for deletion'
         end
 
         context 'when deletion adjourned period is 0' do
@@ -1738,17 +1728,7 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :projects d
       end
 
       context 'delayed project deletion is disabled for group' do
-        context 'when `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'deletes project immediately'
-        end
-
-        context 'when `always_perform_delayed_deletion` is enabled' do
-          it_behaves_like 'marks project for deletion'
-        end
+        it_behaves_like 'marks project for deletion'
       end
 
       context 'for projects in user namespace' do

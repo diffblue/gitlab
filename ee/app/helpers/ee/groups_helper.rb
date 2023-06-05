@@ -53,11 +53,6 @@ module EE
       can?(current_user, :read_group_activity_analytics, @group)
     end
 
-    def show_delayed_project_removal_setting?(group)
-      group.licensed_feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-        ::Feature.disabled?(:always_perform_delayed_deletion)
-    end
-
     def show_product_purchase_success_alert?
       !params[:purchased_product].blank?
     end

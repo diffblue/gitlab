@@ -175,17 +175,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :
           group.namespace_settings.update!(delayed_project_removal: false)
         end
 
-        context 'when `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'invokes Projects::DestroyService'
-        end
-
-        context 'when `always_perform_delayed_deletion` is enabled' do
-          it_behaves_like 'invokes Projects::MarkForDeletionService'
-        end
+        it_behaves_like 'invokes Projects::MarkForDeletionService'
       end
 
       context 'when adjourned_deletion_configured is configured for the project' do
@@ -193,17 +183,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker, feature_category: :
           group.namespace_settings.update!(delayed_project_removal: true)
         end
 
-        context 'when `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'invokes Projects::MarkForDeletionService'
-        end
-
-        context 'when `always_perform_delayed_deletion` is enabled' do
-          it_behaves_like 'invokes Projects::MarkForDeletionService'
-        end
+        it_behaves_like 'invokes Projects::MarkForDeletionService'
       end
     end
   end

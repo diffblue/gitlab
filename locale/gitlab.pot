@@ -8823,9 +8823,6 @@ msgstr ""
 msgid "Card number:"
 msgstr ""
 
-msgid "CascadingSettings|Enforce deletion protection for all subgroups"
-msgstr ""
-
 msgid "CascadingSettings|Enforce for all subgroups"
 msgstr ""
 
@@ -14563,22 +14560,13 @@ msgstr ""
 msgid "Deletion pending. This project will be deleted on %{date}. Repository and other project resources are read-only."
 msgstr ""
 
-msgid "DeletionSettings|All projects are deleted immediately."
-msgstr ""
-
 msgid "DeletionSettings|Deletion protection"
-msgstr ""
-
-msgid "DeletionSettings|Keep deleted"
 msgstr ""
 
 msgid "DeletionSettings|Keep deleted projects for %{number} day"
 msgid_plural "DeletionSettings|Keep deleted projects for %{number} days"
 msgstr[0] ""
 msgstr[1] ""
-
-msgid "DeletionSettings|None, delete immediately"
-msgstr ""
 
 msgid "DeletionSettings|Only administrators can delete projects."
 msgstr ""
@@ -14587,9 +14575,6 @@ msgid "DeletionSettings|Owners and administrators can delete projects."
 msgstr ""
 
 msgid "DeletionSettings|Period that deleted groups and projects will remain restorable for. Personal projects are always deleted immediately."
-msgstr ""
-
-msgid "DeletionSettings|Retention period that deleted groups and projects will remain restorable. Personal projects are always deleted immediately. Some groups can opt-out their projects."
 msgstr ""
 
 msgid "Denied"
@@ -53278,9 +53263,6 @@ msgstr[1] ""
 msgid "finding is not found or is already attached to a vulnerability"
 msgstr ""
 
-msgid "for"
-msgstr ""
-
 msgid "for %{link_to_merge_request} with %{link_to_merge_request_source_branch}"
 msgstr ""
 
@@ -53332,12 +53314,6 @@ msgid "group members"
 msgstr ""
 
 msgid "groups"
-msgstr ""
-
-msgid "groups and projects"
-msgstr ""
-
-msgid "groups only"
 msgstr ""
 
 msgid "had %{count} failed job"

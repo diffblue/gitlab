@@ -878,17 +878,7 @@ RSpec.describe ProjectsController do
           allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(false)
         end
 
-        context 'when `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'deletes project right away'
-        end
-
-        context 'when `always_perform_delayed_deletion` is enabled' do
-          it_behaves_like 'marks project for deletion'
-        end
+        it_behaves_like 'marks project for deletion'
       end
 
       context 'when feature is not available for the project' do

@@ -128,17 +128,7 @@ RSpec.describe GroupsHelper do
           stub_application_setting(delayed_group_deletion: false)
         end
 
-        context 'when `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'permanent deletion message'
-        end
-
-        context 'when `always_perform_delayed_deletion` is enabled' do
-          it_behaves_like 'delayed deletion message'
-        end
+        it_behaves_like 'delayed deletion message'
       end
 
       context 'when group delay deletion is enabled and adjourned deletion period is 0' do
@@ -223,24 +213,6 @@ RSpec.describe GroupsHelper do
       it 'returns true' do
         expect(helper.show_group_activity_analytics?).to be true
       end
-    end
-  end
-
-  describe '#show_delayed_project_removal_setting?' do
-    before do
-      stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
-      stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
-    end
-
-    where(:licensed?, :always_perform_delayed_deletion, :result) do
-      true  | true  | false
-      false | true  | false
-      true  | false | true
-      false | false | false
-    end
-
-    with_them do
-      it { expect(helper.show_delayed_project_removal_setting?(group)).to be result }
     end
   end
 

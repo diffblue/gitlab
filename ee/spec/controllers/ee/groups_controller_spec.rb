@@ -671,14 +671,6 @@ RSpec.describe GroupsController, feature_category: :subgroups do
       context 'when feature is available' do
         let(:available) { true }
 
-        context 'when the feature flag `always_perform_delayed_deletion` is disabled' do
-          before do
-            stub_feature_flags(always_perform_delayed_deletion: false)
-          end
-
-          it_behaves_like 'allows storing of settings'
-        end
-
         it_behaves_like 'does not allow storing of settings'
       end
 

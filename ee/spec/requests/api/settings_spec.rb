@@ -216,32 +216,6 @@ RSpec.describe API::Settings, 'EE Settings', :aggregate_failures, feature_catego
     it_behaves_like 'settings for licensed features'
   end
 
-  context 'default delayed group deletion' do
-    let(:settings) { { delayed_group_deletion: true } }
-    let(:feature) { :adjourned_deletion_for_projects_and_groups }
-
-    context 'when `always_perform_delayed_deletion` is disabled' do
-      before do
-        stub_feature_flags(always_perform_delayed_deletion: false)
-      end
-
-      it_behaves_like 'settings for licensed features'
-    end
-  end
-
-  context 'delayed project deletion' do
-    let(:settings) { { delayed_project_deletion: true } }
-    let(:feature) { :adjourned_deletion_for_projects_and_groups }
-
-    context 'when `always_perform_delayed_deletion` is disabled' do
-      before do
-        stub_feature_flags(always_perform_delayed_deletion: false)
-      end
-
-      it_behaves_like 'settings for licensed features'
-    end
-  end
-
   context 'group_owners_can_manage_default_branch_protection setting' do
     let(:settings) { { group_owners_can_manage_default_branch_protection: false } }
     let(:feature) { :default_branch_protection_restriction_in_groups }
