@@ -3,111 +3,102 @@
 require 'spec_helper'
 
 RSpec.describe 'Standard flow for user picking company and creating a project', :js, :saas_registration, feature_category: :onboarding do
-  context 'when opting into a trial' do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-      user_signs_up(glm_params)
-
-      expect_to_see_account_confirmation_page
-
-      confirm_account
-
-      user_signs_in
-
-      ensure_onboarding { expect_to_see_welcome_form }
-
-      fills_in_welcome_form
-      click_on 'Continue'
-
-      ensure_onboarding { expect_to_see_company_form }
-
-      fill_in_company_form
-      toggle_trial
-      click_on 'Continue'
-
-      ensure_onboarding { expect_to_see_group_and_project_creation_form }
-
-      fills_in_group_and_project_creation_form
-      expect_to_apply_trial
-      click_on 'Create project'
-
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
-      expect_to_be_in_learn_gitlab
-    end
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular sign up', ->(params = {}) { regular_sign_up(params) }],
+      ['with sso sign up', ->(params = {}) { sso_sign_up(params) }]
+    ]
   end
 
-  context 'when user in automatic_trial_registration experiment' do
-    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-      stub_experiments(automatic_trial_registration: :candidate)
+  with_them do
+    context 'when opting into a trial' do
+      it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+        sign_up_method.call(glm_params)
 
-      user_signs_up(glm_params)
+        ensure_onboarding { expect_to_see_welcome_form }
 
-      expect_to_see_account_confirmation_page
+        fills_in_welcome_form
+        click_on 'Continue'
 
-      confirm_account
+        ensure_onboarding { expect_to_see_company_form }
 
-      user_signs_in
+        fill_in_company_form
+        toggle_trial
+        click_on 'Continue'
 
-      expect_to_see_welcome_form
+        ensure_onboarding { expect_to_see_group_and_project_creation_form }
 
-      fills_in_welcome_form
-      click_on 'Continue'
+        fills_in_group_and_project_creation_form
+        expect_to_apply_trial
+        click_on 'Create project'
 
-      expect_to_see_company_form
-      expect(page).to have_content 'Your GitLab Ultimate free trial lasts for 30 days.'
-      expect(page).to have_content 'Free 30-day trial'
-      expect(page).to have_content 'Invite unlimited colleagues'
-      expect(page).to have_content 'Used by more than 100,000'
+        expect_to_be_in_continuous_onboarding
 
-      fill_in_company_form
-      click_on 'Start GitLab Ultimate free trial'
+        click_on 'Ok, let\'s go'
 
-      expect_to_see_group_and_project_creation_form
-
-      fills_in_group_and_project_creation_form
-      expect_to_apply_trial
-      click_on 'Create project'
-
-      expect_to_be_in_continuous_onboarding
-
-      click_on 'Ok, let\'s go'
-
-      expect_to_be_in_learn_gitlab
+        expect_to_be_in_learn_gitlab
+      end
     end
-  end
 
-  context 'when not opting into a trial' do
-    it 'registers the user and creates a group and project reaching onboarding' do
-      user_signs_up
+    context 'when user in automatic_trial_registration experiment' do
+      it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+        stub_experiments(automatic_trial_registration: :candidate)
 
-      expect_to_see_account_confirmation_page
+        sign_up_method.call(glm_params)
 
-      confirm_account
+        expect_to_see_welcome_form
 
-      user_signs_in
+        fills_in_welcome_form
+        click_on 'Continue'
 
-      ensure_onboarding { expect_to_see_welcome_form }
+        expect_to_see_company_form
+        expect(page).to have_content 'Your GitLab Ultimate free trial lasts for 30 days.'
+        expect(page).to have_content 'Free 30-day trial'
+        expect(page).to have_content 'Invite unlimited colleagues'
+        expect(page).to have_content 'Used by more than 100,000'
 
-      fills_in_welcome_form
-      click_on 'Continue'
+        fill_in_company_form
+        click_on 'Start GitLab Ultimate free trial'
 
-      ensure_onboarding { expect_to_see_company_form }
+        expect_to_see_group_and_project_creation_form
 
-      fill_in_company_form(trial: false, glm: false)
-      click_on 'Continue'
+        fills_in_group_and_project_creation_form
+        expect_to_apply_trial
+        click_on 'Create project'
 
-      ensure_onboarding { expect_to_see_group_and_project_creation_form }
+        expect_to_be_in_continuous_onboarding
 
-      fills_in_group_and_project_creation_form
-      click_on 'Create project'
+        click_on 'Ok, let\'s go'
 
-      expect_to_be_in_continuous_onboarding
+        expect_to_be_in_learn_gitlab
+      end
+    end
 
-      click_on 'Ok, let\'s go'
+    context 'when not opting into a trial' do
+      it 'registers the user and creates a group and project reaching onboarding' do
+        sign_up_method.call
 
-      expect_to_be_in_learn_gitlab
+        ensure_onboarding { expect_to_see_welcome_form }
+
+        fills_in_welcome_form
+        click_on 'Continue'
+
+        ensure_onboarding { expect_to_see_company_form }
+
+        fill_in_company_form(trial: false, glm: false)
+        click_on 'Continue'
+
+        ensure_onboarding { expect_to_see_group_and_project_creation_form }
+
+        fills_in_group_and_project_creation_form
+        click_on 'Create project'
+
+        expect_to_be_in_continuous_onboarding
+
+        click_on 'Ok, let\'s go'
+
+        expect_to_be_in_learn_gitlab
+      end
     end
   end
 

@@ -2,16 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Single sign on for signing up through sign in flow for user picking company and creating a project', :js, :saas_sso_registration, feature_category: :onboarding do
+RSpec.describe 'Single sign on for signing up through sign in flow for user picking company and creating a project', :js, :saas_registration, feature_category: :onboarding do
   context 'when opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-      user_signs_up_through_signin_with_sso
-
-      expect_to_see_identity_verification_page
-
-      verify_email
-
-      expect_to_see_verification_successful_page
+      sso_signup_through_signin
 
       ensure_onboarding { expect_to_see_welcome_form }
 
@@ -40,13 +34,7 @@ RSpec.describe 'Single sign on for signing up through sign in flow for user pick
 
   context 'when not opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding' do
-      user_signs_up_through_signin_with_sso
-
-      expect_to_see_identity_verification_page
-
-      verify_email
-
-      expect_to_see_verification_successful_page
+      sso_signup_through_signin
 
       expect_to_see_welcome_form
 
@@ -81,7 +69,7 @@ RSpec.describe 'Single sign on for signing up through sign in flow for user pick
   end
 
   def expect_to_see_welcome_form
-    expect(page).to have_content('Welcome to GitLab, mockuser!')
+    expect(page).to have_content('Welcome to GitLab, Registering!')
 
     page.within(welcome_form_selector) do
       expect(page).to have_content('Role')
