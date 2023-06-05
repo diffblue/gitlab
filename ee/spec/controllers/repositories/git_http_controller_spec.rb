@@ -33,4 +33,57 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
       end
     end
   end
+
+  context 'group IP restriction' do
+    let_it_be(:group) { create(:group, :public) }
+    let_it_be(:project) { create(:project, :public, :repository, group: group) }
+
+    let(:repository_path) { "#{project.full_path}.git" }
+    let(:params) { { repository_path: repository_path, service: 'git-upload-pack' } }
+
+    before do
+      stub_licensed_features(group_ip_restriction: true)
+      allow(controller).to receive(:verify_workhorse_api!).and_return(true)
+    end
+
+    subject(:send_request) {  get :info_refs, params: params }
+
+    context 'without enforced IP allowlist' do
+      it 'allows the request' do
+        send_request
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'with enforced IP allowlist' do
+      before_all do
+        create(:ip_restriction, group: group, range: '192.168.0.0/24')
+      end
+
+      context 'when IP is allowed' do
+        before do
+          request.env['REMOTE_ADDR'] = '192.168.0.42'
+        end
+
+        it 'allows the request' do
+          send_request
+
+          expect(response).to have_gitlab_http_status(:ok)
+        end
+      end
+
+      context 'when IP is not allowed' do
+        before do
+          request.env['REMOTE_ADDR'] = '42.42.42.42'
+        end
+
+        it 'returns unauthorized' do
+          send_request
+
+          expect(response).to have_gitlab_http_status(:unauthorized)
+        end
+      end
+    end
+  end
 end

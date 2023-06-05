@@ -246,4 +246,16 @@ RSpec.describe EE::Issuable do
       expect(issue.issuable_resource_links_available?).to be(false)
     end
   end
+
+  context 'with exportable associations' do
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:project) { create(:project, group: group) }
+
+    context 'for issues' do
+      let_it_be_with_reload(:resource) { create(:issue, project: project) }
+      let_it_be(:epic_issue) { create(:epic_issue, issue: resource, epic: create(:epic, group: group)) }
+
+      it_behaves_like 'an exportable', restricted_association: :epic_issue
+    end
+  end
 end
