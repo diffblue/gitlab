@@ -3,53 +3,38 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas_registration, feature_category: :onboarding do
-  it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-    visit new_trial_registration_path(glm_params)
-
-    expect_to_be_on_trial_user_registration
-
-    user_signs_up_through_trial_registration
-
-    expect_to_see_account_confirmation_page
-
-    confirm_account
-
-    user_signs_in
-
-    ensure_onboarding { expect_to_see_welcome_form }
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    ensure_onboarding { expect_to_see_company_form }
-
-    fill_in_company_form
-    click_on 'Continue'
-
-    ensure_onboarding { expect_to_see_group_and_project_creation_form }
-
-    fills_in_group_and_project_creation_form_with_trial
-    click_on 'Create project'
-
-    expect_to_be_in_continuous_onboarding
-
-    click_on 'Ok, let\'s go'
-
-    expect_to_be_in_learn_gitlab
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular trial sign up', ->(params) { trial_registration_sign_up(params) }],
+      ['with sso trial sign up', ->(params) { sso_trial_registration_sign_up(params) }]
+    ]
   end
 
-  def user_signs_up_through_trial_registration
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  with_them do
+    it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
+      sign_up_method.call(glm_params)
 
-    fill_in 'new_user_first_name', with: new_user.first_name
-    fill_in 'new_user_last_name', with: new_user.last_name
-    fill_in 'new_user_username', with: new_user.username
-    fill_in 'new_user_email', with: new_user.email
-    fill_in 'new_user_password', with: new_user.password
+      ensure_onboarding { expect_to_see_welcome_form }
 
-    wait_for_all_requests
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    click_button 'Continue'
+      ensure_onboarding { expect_to_see_company_form }
+
+      fill_in_company_form
+      click_on 'Continue'
+
+      ensure_onboarding { expect_to_see_group_and_project_creation_form }
+
+      fills_in_group_and_project_creation_form_with_trial
+      click_on 'Create project'
+
+      expect_to_be_in_continuous_onboarding
+
+      click_on 'Ok, let\'s go'
+
+      expect_to_be_in_learn_gitlab
+    end
   end
 
   def fills_in_welcome_form

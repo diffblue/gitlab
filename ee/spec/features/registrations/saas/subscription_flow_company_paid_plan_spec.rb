@@ -2,39 +2,42 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Subscription flow for user picking company for paid plan', :js, :saas_subscription_registration,
-  feature_category: :onboarding do
-  it 'registers the user, processes subscription purchase and creates a group' do
-    user_registers_from_subscription
+RSpec.describe 'Subscription flow for user picking company for paid plan', :js, :saas_registration, feature_category: :onboarding do
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular sign up', -> { subscription_regular_sign_up }]
+      # TODO: does not work, issue to address: https://gitlab.com/gitlab-org/gitlab/-/issues/413995
+      # ['with sso sign up', -> { sso_subscription_sign_up }]
+    ]
+  end
 
-    expect_to_see_account_confirmation_page
+  with_them do
+    it 'registers the user, processes subscription purchase and creates a group' do
+      sign_up_method.call
 
-    confirm_account
+      expect_to_see_subscription_welcome_form
 
-    user_signs_in
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    expect_to_see_subscription_welcome_form
+      expect_to_see_checkout_form
 
-    fills_in_welcome_form
-    click_on 'Continue'
+      fill_in_checkout_form
 
-    expect_to_see_checkout_form
+      expect_to_see_subscriptions_group_edit_page
 
-    fill_in_checkout_form
+      fill_in 'Group name (your organization)', with: '@invalid group name'
 
-    expect_to_see_subscriptions_group_edit_page
+      click_on 'Get started'
 
-    fill_in 'Group name (your organization)', with: '@invalid group name'
+      expect_to_see_group_validation_errors
 
-    click_on 'Get started'
+      fill_in 'Group name (your organization)', with: 'Test company'
 
-    expect_to_see_group_validation_errors
+      click_on 'Get started'
 
-    fill_in 'Group name (your organization)', with: 'Test company'
-
-    click_on 'Get started'
-
-    expect_to_see_group_overview_page
+      expect_to_see_group_overview_page
+    end
   end
 
   def fills_in_welcome_form
