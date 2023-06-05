@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Audit::Levels::Group do
+RSpec.describe Gitlab::Audit::Levels::Group, feature_category: :audit_events do
   describe '#apply' do
     let_it_be(:group) { create(:group) }
     let_it_be(:subgroup) { create(:group, parent: group) }
@@ -15,8 +15,24 @@ RSpec.describe Gitlab::Audit::Levels::Group do
 
     subject { described_class.new(group: group).apply }
 
-    it 'finds all group events' do
-      expect(subject).to contain_exactly(group_audit_event)
+    context 'when audit_log_group_level feature enabled' do
+      before do
+        stub_feature_flags(audit_event_group_rollup: true)
+      end
+
+      it 'finds all group and project events' do
+        expect(subject).to contain_exactly(project_audit_event, subproject_audit_event, group_audit_event)
+      end
+    end
+
+    context 'when audit_log_group_level feature disabled' do
+      before do
+        stub_feature_flags(audit_event_group_rollup: false)
+      end
+
+      it 'finds all group events' do
+        expect(subject).to contain_exactly(group_audit_event)
+      end
     end
   end
 end

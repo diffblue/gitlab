@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::UnregisterRunnerAuditEventService do
+RSpec.describe AuditEvents::UnregisterRunnerAuditEventService, feature_category: :audit_events do
   let_it_be(:user) { create(:user) }
 
   let(:service) { described_class.new(runner, author, entity) }
