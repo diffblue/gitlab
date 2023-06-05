@@ -2,48 +2,34 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking just me and importing a project', :js, :saas_registration,
-feature_category: :onboarding do
-  it 'registers the user and starts to import a project' do
-    user_signs_up
-
-    expect_to_see_account_confirmation_page
-
-    confirm_account
-
-    user_signs_in
-
-    expect_to_see_welcome_form
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    expect_to_see_group_and_project_creation_form
-
-    click_on 'Import'
-
-    expect_to_see_import_form
-
-    fills_in_import_form
-    click_on 'GitHub'
-
-    expect_to_be_in_import_process
+RSpec.describe 'Standard flow for user picking just me and importing a project', :js, :saas_registration, feature_category: :onboarding do
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular sign up', -> { regular_sign_up }],
+      ['with sso sign up', -> { sso_sign_up }]
+    ]
   end
 
-  def user_signs_up
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  with_them do
+    it 'registers the user and starts to import a project' do
+      sign_up_method.call
 
-    visit new_user_registration_path
+      expect_to_see_welcome_form
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    wait_for_all_requests
+      expect_to_see_group_and_project_creation_form
 
-    click_button 'Register'
+      click_on 'Import'
+
+      expect_to_see_import_form
+
+      fills_in_import_form
+      click_on 'GitHub'
+
+      expect_to_be_in_import_process
+    end
   end
 
   def fills_in_welcome_form
@@ -79,17 +65,5 @@ feature_category: :onboarding do
 
   def fills_in_import_form
     fill_in 'import_group_name', with: 'Test Group'
-  end
-
-  def expect_to_be_in_import_process
-    expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
-    MESSAGE
-  end
-
-  def expect_to_see_import_form
-    expect_to_see_group_and_project_creation_form
-    expect(page).to have_content('GitLab export')
   end
 end

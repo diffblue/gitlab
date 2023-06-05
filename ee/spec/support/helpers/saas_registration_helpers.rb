@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require_relative 'subscription_portal_helpers'
+
 module SaasRegistrationHelpers
   include IdentityVerificationHelpers
+  include SubscriptionPortalHelpers
 
   def user
     User.find_by(email: user_email)
@@ -32,6 +35,45 @@ module SaasRegistrationHelpers
     visit user_confirmation_path(confirmation_token: token)
   end
 
+  def regular_sign_up(params = {})
+    user_signs_up(params)
+
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+  end
+
+  def subscription_regular_sign_up
+    stub_signing_key
+
+    user_registers_from_subscription
+
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+  end
+
+  def sso_sign_up(params = {})
+    stub_feature_flags(
+      arkose_labs_oauth_signup_challenge: true,
+      identity_verification: true
+    )
+
+    with_omniauth_full_host do
+      user_signs_up_with_sso(params)
+
+      expect_to_see_identity_verification_page
+
+      verify_email
+    end
+
+    expect_to_see_verification_successful_page
+  end
+
   def user_signs_up(params = {})
     new_user = build(:user, name: 'Registering User', email: user_email)
 
@@ -49,7 +91,7 @@ module SaasRegistrationHelpers
   end
 
   def user_signs_up_with_sso(params = {}, provider: 'google_oauth2')
-    mock_auth_hash(provider, 'external_uid', user_email)
+    mock_auth_hash(provider, 'external_uid', user_email, name: 'Registering User')
     stub_omniauth_setting(block_auto_created_users: false)
 
     if block_given?
@@ -62,6 +104,15 @@ module SaasRegistrationHelpers
 
     click_link_or_button "oauth-login-#{provider}"
     solve_arkose_verify_challenge(saml: true)
+  end
+
+  def user_signs_up_through_subscription_with_sso(provider: 'google_oauth2')
+    user_signs_up_with_sso({}, provider: provider) do
+      stub_invoice_preview
+
+      visit new_subscriptions_path(plan_id: 'bronze_id')
+      # expect sign in here
+    end
   end
 
   def user_signs_up_through_trial_with_sso(params = {}, provider: 'google_oauth2')
@@ -78,6 +129,86 @@ module SaasRegistrationHelpers
 
       expect_to_be_on_user_sign_in
     end
+  end
+
+  def trial_registration_sign_up(params = {})
+    visit new_trial_registration_path(params)
+
+    expect_to_be_on_trial_user_registration
+
+    user_signs_up_through_trial_registration
+
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+  end
+
+  def sso_trial_registration_sign_up(params = {})
+    stub_feature_flags(
+      arkose_labs_oauth_signup_challenge: true,
+      identity_verification: true
+    )
+
+    with_omniauth_full_host do
+      user_signs_up_through_trial_with_sso(params)
+
+      expect_to_see_identity_verification_page
+
+      verify_email
+    end
+
+    expect_to_see_verification_successful_page
+  end
+
+  def sso_subscription_sign_up
+    stub_signing_key
+    stub_feature_flags(
+      arkose_labs_oauth_signup_challenge: true,
+      identity_verification: true
+    )
+
+    with_omniauth_full_host do
+      user_signs_up_through_subscription_with_sso
+
+      expect_to_see_identity_verification_page
+
+      verify_email
+    end
+
+    expect_to_see_verification_successful_page
+  end
+
+  def sso_signup_through_signin
+    stub_feature_flags(
+      arkose_labs_oauth_signup_challenge: true,
+      identity_verification: true
+    )
+
+    with_omniauth_full_host do
+      user_signs_up_through_signin_with_sso
+
+      expect_to_see_identity_verification_page
+
+      verify_email
+    end
+
+    expect_to_see_verification_successful_page
+  end
+
+  def user_signs_up_through_trial_registration
+    new_user = build(:user, name: 'Registering User', email: user_email)
+
+    fill_in 'new_user_first_name', with: new_user.first_name
+    fill_in 'new_user_last_name', with: new_user.last_name
+    fill_in 'new_user_username', with: new_user.username
+    fill_in 'new_user_email', with: new_user.email
+    fill_in 'new_user_password', with: new_user.password
+
+    wait_for_all_requests
+
+    click_button 'Continue'
   end
 
   def ensure_onboarding
@@ -116,6 +247,18 @@ module SaasRegistrationHelpers
       glm_source: 'some_source',
       glm_content: 'some_content'
     }
+  end
+
+  def expect_to_be_in_import_process
+    expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
+      To connect GitHub repositories, you first need to authorize
+      GitLab to access the list of your GitHub repositories.
+    MESSAGE
+  end
+
+  def expect_to_see_import_form
+    expect_to_see_group_and_project_creation_form
+    expect(page).to have_content('GitLab export')
   end
 
   def expect_to_be_on_trial_user_registration

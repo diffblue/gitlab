@@ -2,39 +2,25 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas_registration,
-feature_category: :onboarding do
-  it 'registers the user and sends them to a project listing page' do
-    user_signs_up
-
-    expect_to_see_account_confirmation_page
-
-    confirm_account
-
-    user_signs_in
-
-    expect_to_see_welcome_form
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    expect_to_be_on_projects_dashboard_with_zero_authorized_projects
+RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas_registration, feature_category: :onboarding do
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular sign up', -> { regular_sign_up }],
+      ['with sso sign up', -> { sso_sign_up }]
+    ]
   end
 
-  def user_signs_up
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  with_them do
+    it 'registers the user and sends them to a project listing page' do
+      sign_up_method.call
 
-    visit new_user_registration_path
+      expect_to_see_welcome_form
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    wait_for_all_requests
-
-    click_button 'Register'
+      expect_to_be_on_projects_dashboard_with_zero_authorized_projects
+    end
   end
 
   def fills_in_welcome_form

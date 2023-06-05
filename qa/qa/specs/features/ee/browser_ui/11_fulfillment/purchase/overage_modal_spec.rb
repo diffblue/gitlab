@@ -85,7 +85,7 @@ module QA
         before do
           Flow::Purchase.upgrade_subscription(plan: ULTIMATE)
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            billing.wait_for_subscription(ULTIMATE[:name], page: page)
+            billing.wait_for_subscription(ULTIMATE[:name])
           end
           group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
           group.visit!
@@ -130,7 +130,7 @@ module QA
         before do
           Flow::Purchase.upgrade_subscription(plan: PREMIUM)
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
-            billing.wait_for_subscription(PREMIUM[:name], page: page)
+            billing.wait_for_subscription(PREMIUM[:name])
           end
           group.add_member(developer_user, Resource::Members::AccessLevel::DEVELOPER)
           group.visit!

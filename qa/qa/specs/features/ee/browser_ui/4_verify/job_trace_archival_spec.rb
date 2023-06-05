@@ -48,10 +48,8 @@ module QA
         project.remove_via_api!
       end
 
-      it(
-        'continues to display the archived trace',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/357771'
-      ) do
+      it 'continues to display the archived trace',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/357771' do
         job = Resource::Job.fabricate_via_api! do |job|
           job.id = project.job_by_name(pipeline_job_name)[:id]
           job.name = pipeline_job_name

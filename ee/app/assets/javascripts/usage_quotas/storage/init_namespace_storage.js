@@ -22,7 +22,6 @@ export default () => {
     purchaseStorageUrl,
     buyAddonTargetAttr,
     storageLimitEnforced,
-    canShowInlineAlert,
   } = el.dataset;
 
   const apolloProvider = new VueApollo({
@@ -41,7 +40,6 @@ export default () => {
       purchaseStorageUrl,
       buyAddonTargetAttr,
       storageLimitEnforced: parseBoolean(storageLimitEnforced),
-      canShowInlineAlert: parseBoolean(canShowInlineAlert),
       helpLinks,
     },
     render(createElement) {

@@ -66,6 +66,10 @@ module QA
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348472' do
       before do
         Flow::Purchase.upgrade_subscription(plan: PREMIUM)
+
+        Gitlab::Page::Group::Settings::Billing.perform do |billing|
+          billing.wait_for_subscription(PREMIUM[:name])
+        end
       end
 
       it_behaves_like 'Purchase storage', 20
@@ -73,8 +77,16 @@ module QA
 
     context 'with existing CI minutes packs',
             testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348470' do
+      let(:ci_purchase_quantity) { 5 }
+
       before do
-        Flow::Purchase.purchase_ci_minutes(quantity: 5)
+        Flow::Purchase.purchase_ci_minutes(quantity: ci_purchase_quantity)
+
+        Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+          usage_quota.wait_for_additional_ci_minute_limits(
+            (CI_MINUTES[:ci_minutes] * ci_purchase_quantity).to_s
+          )
+        end
       end
 
       it_behaves_like 'Purchase storage', 10

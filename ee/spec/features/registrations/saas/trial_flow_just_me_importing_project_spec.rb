@@ -2,59 +2,39 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas_registration,
-feature_category: :onboarding do
-  it 'registers the user and starts to import a project' do
-    visit new_trial_registration_path
-
-    expect_to_be_on_trial_user_registration
-
-    user_signs_up_through_trial_registration
-
-    expect_to_see_account_confirmation_page
-
-    confirm_account
-
-    user_signs_in
-
-    expect_to_see_welcome_form
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    expect_to_see_company_form
-
-    fill_in_company_form(glm: false)
-    click_on 'Continue'
-
-    expect_to_see_group_and_project_creation_form
-
-    click_on 'Import'
-
-    expect_to_see_import_form
-
-    fills_in_import_form
-    click_on 'GitHub'
-
-    expect_to_be_in_import_process
+RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas_registration, feature_category: :onboarding do
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular trial sign up', -> { trial_registration_sign_up }],
+      ['with sso trial sign up', -> { sso_trial_registration_sign_up }]
+    ]
   end
 
-  def user_signs_up_through_trial_registration
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  with_them do
+    it 'registers the user and starts to import a project' do
+      sign_up_method.call
 
-    fill_in 'new_user_first_name', with: new_user.first_name
-    fill_in 'new_user_last_name', with: new_user.last_name
-    fill_in 'new_user_username', with: new_user.username
-    fill_in 'new_user_email', with: new_user.email
-    fill_in 'new_user_password', with: new_user.password
+      expect_to_see_welcome_form
 
-    wait_for_all_requests
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    click_button 'Continue'
-  end
+      expect_to_see_company_form
 
-  def user_email
-    'onboardinguser@example.com'
+      fill_in_company_form(glm: false)
+      click_on 'Continue'
+
+      expect_to_see_group_and_project_creation_form
+
+      click_on 'Import'
+
+      expect_to_see_import_form
+
+      fills_in_import_form
+      click_on 'GitHub'
+
+      expect_to_be_in_import_process
+    end
   end
 
   def fills_in_welcome_form
@@ -105,17 +85,5 @@ feature_category: :onboarding do
     )
 
     fill_in 'import_group_name', with: 'Test Group'
-  end
-
-  def expect_to_be_in_import_process
-    expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
-    MESSAGE
-  end
-
-  def expect_to_see_import_form
-    expect_to_see_group_and_project_creation_form
-    expect(page).to have_content('GitLab export')
   end
 end

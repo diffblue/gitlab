@@ -3,46 +3,33 @@
 require 'spec_helper'
 
 RSpec.describe 'Standard flow for user picking just me and creating a project', :js, :saas_registration, feature_category: :onboarding do
-  it 'registers the user and creates a group and project reaching onboarding' do
-    user_signs_up
-
-    expect_to_see_account_confirmation_page
-
-    confirm_account
-
-    user_signs_in
-
-    expect_to_see_welcome_form
-
-    fills_in_welcome_form
-    click_on 'Continue'
-
-    expect_to_see_group_and_project_creation_form
-
-    fills_in_group_and_project_creation_form
-    click_on 'Create project'
-
-    expect_to_be_in_continuous_onboarding
-
-    click_on 'Ok, let\'s go'
-
-    expect_to_be_in_learn_gitlab
+  where(:case_name, :sign_up_method) do
+    [
+      ['with regular sign up', -> { regular_sign_up }],
+      ['with sso sign up', -> { sso_sign_up }]
+    ]
   end
 
-  def user_signs_up
-    new_user = build(:user, name: 'Registering User', email: user_email)
+  with_them do
+    it 'registers the user and creates a group and project reaching onboarding' do
+      sign_up_method.call
 
-    visit new_user_registration_path
+      expect_to_see_welcome_form
 
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
+      fills_in_welcome_form
+      click_on 'Continue'
 
-    wait_for_all_requests
+      expect_to_see_group_and_project_creation_form
 
-    click_button 'Register'
+      fills_in_group_and_project_creation_form
+      click_on 'Create project'
+
+      expect_to_be_in_continuous_onboarding
+
+      click_on 'Ok, let\'s go'
+
+      expect_to_be_in_learn_gitlab
+    end
   end
 
   def fills_in_welcome_form

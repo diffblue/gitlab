@@ -67,7 +67,8 @@ module QA
           it 'upgrades from free to premium with correct CI minutes',
              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/349085' do
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-              wait_for_ci_minutes(usage_quota)
+              usage_quota.pipelines_tab
+              usage_quota.wait_for_additional_ci_minutes_available
 
               expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
             end
@@ -86,7 +87,8 @@ module QA
             Page::Group::Menu.perform(&:go_to_usage_quotas)
 
             Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-              wait_for_ci_minutes(usage_quota)
+              usage_quota.pipelines_tab
+              usage_quota.wait_for_additional_ci_minutes_available
 
               aggregate_failures do
                 expect(usage_quota.additional_ci_limits).to eq(expected_minutes.to_s)
@@ -96,16 +98,6 @@ module QA
           end
         end
       end
-    end
-
-    private
-
-    def wait_for_ci_minutes(usage_quota)
-      usage_quota.pipelines_tab
-
-      expect { usage_quota.additional_ci_minutes_added? }
-        .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page),
-          'Expected additional CI minutes but they did not appear.'
     end
   end
 end

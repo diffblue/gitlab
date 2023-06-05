@@ -26,7 +26,7 @@ module QA
       end
 
       it 'replicates deletion of a project to secondary node',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348056' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348056' do
         QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
