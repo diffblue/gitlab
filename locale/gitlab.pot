@@ -17400,10 +17400,16 @@ msgstr ""
 msgid "Environment|Deployments"
 msgstr ""
 
+msgid "Environment|Environment health"
+msgstr ""
+
 msgid "Environment|External IP"
 msgstr ""
 
 msgid "Environment|Failed"
+msgstr ""
+
+msgid "Environment|Healthy"
 msgstr ""
 
 msgid "Environment|Jobs"
@@ -17437,6 +17443,9 @@ msgid "Environment|Succeeded"
 msgstr ""
 
 msgid "Environment|Summary"
+msgstr ""
+
+msgid "Environment|Unhealthy"
 msgstr ""
 
 msgid "Epic"
