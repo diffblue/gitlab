@@ -1,5 +1,6 @@
 <script>
 import {
+  GlAlert,
   GlBadge,
   GlButton,
   GlLoadingIcon,
@@ -19,6 +20,7 @@ const MAX_AI_WAIT_TIME = 20000;
 
 export default {
   components: {
+    GlAlert,
     GlBadge,
     GlButton,
     GlLoadingIcon,
@@ -100,6 +102,7 @@ export default {
     error: __('Failed to generate description'),
     experiment: __('Experiment'),
     modalTitle: s__('AI|Populate issue description'),
+    modalWarning: s__('AI|The existing description will be replaced when you submit.'),
   },
   computed: {
     actionPrimary() {
@@ -215,6 +218,9 @@ export default {
       <div v-if="error" class="gl-text-red-500" data-testid="convert-description-modal-error">
         {{ error }}
       </div>
+      <gl-alert variant="warning" :dismissible="false" class="mt-2">
+        {{ $options.i18n.modalWarning }}
+      </gl-alert>
     </gl-modal>
   </div>
 </template>

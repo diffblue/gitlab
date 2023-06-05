@@ -33,6 +33,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to have_one(:security_setting).class_name('ProjectSecuritySetting') }
     it { is_expected.to have_one(:vulnerability_statistic).class_name('Vulnerabilities::Statistic') }
     it { is_expected.to have_one(:security_orchestration_policy_configuration).class_name('Security::OrchestrationPolicyConfiguration').inverse_of(:project) }
+    it { is_expected.to have_one(:dependency_proxy_packages_setting).class_name('DependencyProxy::Packages::Setting').inverse_of(:project) }
 
     it { is_expected.to have_many(:path_locks) }
     it { is_expected.to have_many(:vulnerability_feedback) }
