@@ -56,7 +56,9 @@ module Security
     end
 
     def cron_timezone
-      Time.zone.name
+      return Time.zone.name unless security_orchestration_policy_configuration
+
+      policy&.dig(:rules, rule_index, :timezone) || Time.zone.name
     end
 
     def worker_cron_expression

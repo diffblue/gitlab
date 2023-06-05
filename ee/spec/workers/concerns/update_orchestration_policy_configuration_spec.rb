@@ -8,7 +8,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
     create(:security_orchestration_policy_configuration, configured_at: nil, project: project)
   end
 
-  let!(:schedule) do
+  let_it_be(:schedule) do
     create(
       :security_orchestration_policy_rule_schedule,
       security_orchestration_policy_configuration: configuration,
@@ -36,18 +36,21 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
   end
 
   describe '.update_policy_configuration' do
-    subject { worker.update_policy_configuration(configuration) }
+    subject(:execute) { worker.update_policy_configuration(configuration) }
 
     context 'when policy is valid' do
+      let(:rules) do
+        [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }]
+      end
+
       let(:active_policies) do
         {
-          scan_execution_policy:
-          [
+          scan_execution_policy: [
             {
               name: 'Scheduled DAST 1',
               description: 'This policy runs DAST for every 20 mins',
               enabled: true,
-              rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }],
+              rules: rules,
               actions: [
                 { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
               ]
@@ -56,7 +59,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
               name: 'Scheduled DAST 2',
               description: 'This policy runs DAST for every 20 mins',
               enabled: true,
-              rules: [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }],
+              rules: rules,
               actions: [
                 { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
               ]
@@ -66,7 +69,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
       end
 
       it 'updates configuration.configured_at to the current time', :freeze_time do
-        expect { subject }.to change { configuration.configured_at }.from(nil).to(Time.current)
+        expect { execute }.to change { configuration.configured_at }.from(nil).to(Time.current)
       end
 
       it 'executes SyncScanResultPoliciesService' do
@@ -76,7 +79,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
           expect(service).to receive(:execute).with(no_args)
         end
 
-        subject
+        execute
       end
 
       it 'executes ProcessRuleService for each policy' do
@@ -90,16 +93,16 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
           end
         end
 
-        subject
+        execute
       end
 
       shared_examples 'creates new rule schedules' do |expected_schedules:|
         it 'creates a rule schedule for each schedule rule in the scan execution policies' do
-          expect { subject }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(expected_schedules)
+          expect { execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(expected_schedules)
         end
 
         it 'deletes existing rule schedules', :freeze_time do
-          subject
+          execute
 
           Security::OrchestrationPolicyRuleSchedule.all.each do |rule_schedule|
             expect(rule_schedule.created_at).to eq(Time.current)
@@ -112,21 +115,21 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
       end
 
       context 'with multiple schedule rules per policy' do
-        before do
-          active_policies[:scan_execution_policy].each do |policy|
-            policy[:rules] << { type: 'schedule', branches: %w[staging], cadence: '*/20 * * * *' }
-          end
+        let(:rules) do
+          [
+            { type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' },
+            { type: 'schedule', branches: %w[staging], cadence: '*/20 * * * *' }
+          ]
         end
 
-        include_examples 'creates new rule schedules', expected_schedules: 4
+        include_examples 'creates new rule schedules', expected_schedules: 4 # 2 policies * 2 rules
       end
     end
 
     context 'when policy is invalid' do
       let(:active_policies) do
         {
-          scan_execution_policy:
-          [
+          scan_execution_policy: [
             {
               key: 'invalid',
               label: 'invalid'
@@ -140,7 +143,7 @@ RSpec.describe UpdateOrchestrationPolicyConfiguration, feature_category: :securi
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService).not_to receive(:new)
         expect(Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesProjectService).not_to receive(:new)
 
-        expect { subject }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
+        expect { execute }.to change(Security::OrchestrationPolicyRuleSchedule, :count).by(-1)
         expect(configuration.reload.configured_at).to be_like_time(Time.current)
       end
     end
