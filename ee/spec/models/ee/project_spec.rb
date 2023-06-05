@@ -3317,23 +3317,15 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#adjourned_deletion?' do
     subject { project.adjourned_deletion? }
 
-    where(:licensed?, :feature_enabled_on_group?, :adjourned_period, :always_perform_delayed_deletion, :result) do
-      true    | true  | 0 | true   | false
-      true    | true  | 1 | true   | true
-      true    | false | 0 | true   | false
-      true    | false | 1 | true   | true
-      false   | true  | 0 | true   | false
-      false   | true  | 1 | true   | false
-      false   | false | 0 | true   | false
-      false   | false | 1 | true   | false
-      true    | true  | 0 | false  | false
-      true    | true  | 1 | false  | true
-      true    | false | 0 | false  | false
-      true    | false | 1 | false  | false
-      false   | true  | 0 | false  | false
-      false   | true  | 1 | false  | false
-      false   | false | 0 | false  | false
-      false   | false | 1 | false  | false
+    where(:licensed?, :feature_enabled_on_group?, :adjourned_period, :result) do
+      true    | true  | 0 | false
+      true    | true  | 1 | true
+      true    | false | 0 | false
+      true    | false | 1 | true
+      false   | true  | 0 | false
+      false   | true  | 1 | false
+      false   | false | 0 | false
+      false   | false | 1 | false
     end
 
     with_them do
@@ -3344,7 +3336,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: licensed?)
         stub_application_setting(deletion_adjourned_period: adjourned_period)
         allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
-        stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
       end
 
       it { is_expected.to be result }
@@ -3368,15 +3359,9 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#adjourned_deletion_configured?' do
     subject { project.adjourned_deletion_configured? }
 
-    where(:feature_enabled_on_group?, :adjourned_period, :always_perform_delayed_deletion, :result) do
-      true  | 0 | true  | false
-      true  | 1 | true  | true
-      false | 0 | true  | false
-      false | 1 | true  | true
-      true  | 0 | false | false
-      true  | 1 | false | true
-      false | 0 | false | false
-      false | 1 | false | false
+    where(:adjourned_period, :result) do
+      0 | false
+      1 | true
     end
 
     with_them do
@@ -3385,8 +3370,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       before do
         stub_application_setting(deletion_adjourned_period: adjourned_period)
-        allow(group.namespace_settings).to receive(:delayed_project_removal?).and_return(feature_enabled_on_group?)
-        stub_feature_flags(always_perform_delayed_deletion: always_perform_delayed_deletion)
       end
 
       it { is_expected.to be result }

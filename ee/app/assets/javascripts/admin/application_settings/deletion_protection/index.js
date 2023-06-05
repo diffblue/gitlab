@@ -9,9 +9,7 @@ export const initAdminDeletionProtectionSettings = () => {
     return false;
   }
 
-  const { deletionAdjournedPeriod, delayedGroupDeletion, delayedProjectDeletion } = parseFormProps(
-    el.dataset,
-  );
+  const { deletionAdjournedPeriod } = parseFormProps(el.dataset);
 
   return new Vue({
     el,
@@ -20,8 +18,6 @@ export const initAdminDeletionProtectionSettings = () => {
       return createElement(FormGroup, {
         props: {
           deletionAdjournedPeriod,
-          delayedGroupDeletion,
-          delayedProjectDeletion,
         },
       });
     },

@@ -550,14 +550,7 @@ module EE
     override :adjourned_deletion?
     def adjourned_deletion?
       feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-        ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
-        adjourned_deletion_configured?
-    end
-
-    def adjourned_deletion_configured?
-      return true if ::Feature.enabled?(:always_perform_delayed_deletion)
-
-      ::Gitlab::CurrentSettings.delayed_group_deletion
+        ::Gitlab::CurrentSettings.deletion_adjourned_period > 0
     end
 
     def vulnerabilities

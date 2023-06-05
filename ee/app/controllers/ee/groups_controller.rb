@@ -102,12 +102,6 @@ module EE
         if experimental_and_third_party_ai_settings_enabled?
           params_ee.push(:experiment_features_enabled, :third_party_ai_features_enabled)
         end
-
-        if current_group&.feature_available?(:adjourned_deletion_for_projects_and_groups) &&
-            ::Feature.disabled?(:always_perform_delayed_deletion)
-          params_ee << :delayed_project_removal
-          params_ee << :lock_delayed_project_removal
-        end
       end
     end
 
