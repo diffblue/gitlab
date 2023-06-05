@@ -37,7 +37,6 @@ module Gitlab
 
           def user_authorized?(user, group, resource)
             return true if resource.public? && !group_member?(group, user)
-            return true if user&.can_read_all_resources?
             return true if resource.is_a?(::Group) && resource.root? && resource.owned_by?(user)
 
             false
@@ -64,6 +63,8 @@ module Gitlab
         end
 
         def access_restricted?
+          return false if user_authorized?
+
           saml_enforced? && !active_session?
         end
 
@@ -75,6 +76,13 @@ module Gitlab
           return false unless saml_provider&.enabled? && group.licensed_feature_available?(:group_saml)
 
           user.group_sso?(group)
+        end
+
+        def user_authorized?
+          return false unless user
+          return true if user.can_read_all_resources?
+
+          false
         end
 
         def group
