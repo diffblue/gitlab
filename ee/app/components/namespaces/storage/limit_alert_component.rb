@@ -45,13 +45,13 @@ module Namespaces
       end
 
       def alert_variant
-        return :danger if [:alert, :error].include?(alert_level)
+        return :danger if attention_required_alert_level?
 
         alert_level
       end
 
       def alert_icon
-        [:alert, :error].include?(alert_level) ? 'error' : alert_level.to_s
+        attention_required_alert_level? ? 'error' : alert_level.to_s
       end
 
       def alert_callout_path
@@ -80,6 +80,14 @@ module Namespaces
 
       def content_class
         "container-limited limit-container-width" unless user.layout == "fluid"
+      end
+
+      def dismissible?
+        !attention_required_alert_level?
+      end
+
+      def attention_required_alert_level?
+        [:alert, :error].include?(alert_level)
       end
 
       def alert_level
