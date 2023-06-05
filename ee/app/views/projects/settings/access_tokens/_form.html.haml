@@ -3,7 +3,7 @@
     = render Pajamas::AlertComponent.new(variant: :info,
       dismissible: false,
       title: s_('AccessTokens|Access token limit reached')) do |c|
-      = c.body do
+      - c.with_body do
         = s_('AccessTokens|You can only have one active project access token with a trial license. You cannot generate a new token until the existing token is deleted, or you upgrade your subscription.')
 - else
   = render_ce 'projects/settings/access_tokens/form', type: type
