@@ -40,6 +40,17 @@ export const participants = [
 
 export const errorMsg = 'Something went wrong';
 
+const oncallScheduleInput = {
+  __typename: 'IncidentManagementOncallSchedule',
+  iid: '37',
+  name: 'Test schedule',
+  description: 'Description 1 lives here',
+  timezone: 'Pacific/Honolulu',
+  rotations: {
+    nodes: [],
+  },
+};
+
 export const getOncallSchedulesQueryResponse = {
   data: {
     project: {
@@ -47,10 +58,8 @@ export const getOncallSchedulesQueryResponse = {
       incidentManagementOncallSchedules: {
         nodes: [
           {
-            __typename: 'IncidentManagementOncallSchedule',
-            iid: '37',
+            ...oncallScheduleInput,
             name: 'Test schedule from query',
-            description: 'Description 1 lives here',
             timezone: 'America/Los_Angeles',
             rotations: { nodes: [{ id: 'gid://gitlab/IncidentManagement::OncallRotation/2' }] },
           },
@@ -67,10 +76,8 @@ export const getOncallSchedulesQueryResponseWithRotations = {
       incidentManagementOncallSchedules: {
         nodes: [
           {
-            __typename: 'IncidentManagementOncallSchedule',
-            iid: '37',
+            ...oncallScheduleInput,
             name: 'Test schedule from query',
-            description: 'Description 1 lives here',
             timezone: 'America/Los_Angeles',
             rotations: { nodes: mockRotations },
           },
@@ -84,16 +91,7 @@ export const destroyScheduleResponse = {
   data: {
     oncallScheduleDestroy: {
       errors: [],
-      oncallSchedule: {
-        __typename: 'IncidentManagementOncallSchedule',
-        iid: '37',
-        name: 'Test schedule',
-        description: 'Description 1 lives here',
-        timezone: 'Pacific/Honolulu',
-        rotations: {
-          nodes: [],
-        },
-      },
+      oncallSchedule: oncallScheduleInput,
     },
   },
 };
@@ -102,16 +100,7 @@ export const destroyScheduleResponseWithErrors = {
   data: {
     oncallScheduleDestroy: {
       errors: ['Houston, we have a problem'],
-      oncallSchedule: {
-        __typename: 'IncidentManagementOncallSchedule',
-        iid: '37',
-        name: 'Test schedule',
-        description: 'Description 1 lives here',
-        timezone: 'Pacific/Honolulu',
-        rotations: {
-          nodes: [],
-        },
-      },
+      oncallSchedule: oncallScheduleInput,
     },
   },
 };
@@ -121,13 +110,20 @@ export const updateScheduleResponse = {
     oncallScheduleUpdate: {
       errors: [],
       oncallSchedule: {
-        __typename: 'IncidentManagementOncallSchedule',
-        iid: '37',
+        ...oncallScheduleInput,
         name: 'Test schedule 2',
         description: 'Description 2 lives here',
-        timezone: 'Pacific/Honolulu',
         rotations: { nodes: [mockRotations] },
       },
+    },
+  },
+};
+
+export const createScheduleResponse = {
+  data: {
+    oncallScheduleCreate: {
+      errors: [],
+      oncallSchedule: oncallScheduleInput,
     },
   },
 };
@@ -137,11 +133,9 @@ export const updateScheduleResponseWithErrors = {
     oncallScheduleUpdate: {
       errors: ['Houston, we have a problem'],
       oncallSchedule: {
-        __typename: 'IncidentManagementOncallSchedule',
-        iid: '37',
+        ...oncallScheduleInput,
         name: 'Test schedule 2',
         description: 'Description 2 lives here',
-        timezone: 'Pacific/Honolulu',
         rotations: { nodes: [{ id: 'gid://gitlab/IncidentManagement::OncallRotation/2' }] },
       },
     },

@@ -121,7 +121,6 @@ module EE
       merge_request_appovers_rules_attributes +
       password_complexity_attributes +
       git_abuse_rate_limit_attributes +
-      delayed_deletion_attributes +
        %i[
          email_additional_text
          file_template_project_id
@@ -167,16 +166,6 @@ module EE
       ]
     end
 
-    def self.delayed_deletion_attributes
-      # TODO: Remove in 16.0, after https://gitlab.com/gitlab-org/gitlab/-/issues/393622 is turned ON
-      # We cannot add a feature flag check in this file, due to the reason mentioned in
-      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/92218#note_1026250151
-      %i[
-        delayed_project_deletion
-        delayed_group_deletion
-      ]
-    end
-
     override :registration_features_can_be_prompted?
     def registration_features_can_be_prompted?
       !::Gitlab::CurrentSettings.usage_ping_enabled? && !License.current.present?
@@ -196,9 +185,7 @@ module EE
 
     def deletion_protection_data
       {
-        deletion_adjourned_period: @application_setting[:deletion_adjourned_period],
-        delayed_group_deletion: @application_setting[:delayed_group_deletion].to_s,
-        delayed_project_deletion: @application_setting[:delayed_project_deletion].to_s
+        deletion_adjourned_period: @application_setting[:deletion_adjourned_period]
       }
     end
 

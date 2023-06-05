@@ -97,7 +97,7 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
     subject { helper.deletion_protection_data }
 
-    it { is_expected.to eq({ deletion_adjourned_period: 1, delayed_group_deletion: 'false', delayed_project_deletion: 'false' }) }
+    it { is_expected.to eq({ deletion_adjourned_period: 1 }) }
   end
 
   describe '.git_abuse_rate_limit_data', feature_category: :insider_threat do

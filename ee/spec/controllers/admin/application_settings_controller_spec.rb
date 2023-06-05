@@ -103,26 +103,6 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
-    context 'when `always_perform_delayed_deletion` is disabled' do
-      before do
-        stub_feature_flags(always_perform_delayed_deletion: false)
-      end
-
-      context 'default delayed group deletion' do
-        let(:settings) { { delayed_group_deletion: true } }
-        let(:feature) { :adjourned_deletion_for_projects_and_groups }
-
-        it_behaves_like 'settings for licensed features'
-      end
-
-      context 'default delayed project deletion' do
-        let(:settings) { { delayed_project_deletion: true } }
-        let(:feature) { :adjourned_deletion_for_projects_and_groups }
-
-        it_behaves_like 'settings for licensed features'
-      end
-    end
-
     context 'updating name disabled for users setting' do
       let(:settings) { { updating_name_disabled_for_users: true } }
       let(:feature) { :disable_name_update_for_users }

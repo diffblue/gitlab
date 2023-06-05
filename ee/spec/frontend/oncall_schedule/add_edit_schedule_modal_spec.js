@@ -9,196 +9,138 @@ import AddEditScheduleModal, {
 } from 'ee/oncall_schedules/components/add_edit_schedule_modal.vue';
 import { editScheduleModalId } from 'ee/oncall_schedules/components/oncall_schedule.vue';
 import { addScheduleModalId } from 'ee/oncall_schedules/components/oncall_schedules_wrapper.vue';
+import createOncallScheduleMutation from 'ee/oncall_schedules/graphql/mutations/create_oncall_schedule.mutation.graphql';
 import updateOncallScheduleMutation from 'ee/oncall_schedules/graphql/mutations/update_oncall_schedule.mutation.graphql';
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
+import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   getOncallSchedulesQueryResponse,
   updateScheduleResponse,
+  createScheduleResponse,
   updateScheduleResponseWithErrors,
 } from './mocks/apollo_mock';
 
 describe('AddScheduleModal', () => {
   let wrapper;
-  let fakeApollo;
-  const localVue = createLocalVue();
-  const projectPath = 'group/project';
-  const mutate = jest.fn();
-  const mockHideModal = jest.fn();
+  let mockApollo;
+  let scheduleHandler;
+
   const mockSchedule =
     getOncallSchedulesQueryResponse.data.project.incidentManagementOncallSchedules.nodes[0];
-  let updateScheduleHandler;
+  const updatedName = 'Updated schedule name';
+  const updatedTimezone = mockTimezones[0];
+  const updatedDescription = 'Updated schedule description';
+  const projectPath = 'group/project';
 
-  const createComponent = ({ schedule, isEditMode, modalId, data } = {}) => {
-    wrapper = shallowMount(AddEditScheduleModal, {
-      data() {
-        return {
-          ...data,
-        };
-      },
-      propsData: {
-        modalId,
-        schedule,
-        isEditMode,
-      },
-      provide: {
-        projectPath,
-        timezones: mockTimezones,
-      },
-      mocks: {
-        $apollo: {
-          mutate,
-        },
-      },
-    });
+  const findModal = () => wrapper.findComponent(GlModal);
+  const findAlert = () => wrapper.findComponent(GlAlert);
+  const findModalForm = () => wrapper.findComponent(AddEditScheduleForm);
 
-    wrapper.vm.$refs.addUpdateScheduleModal.hide = mockHideModal;
+  const localVue = createLocalVue();
+  const mockHideModal = jest.fn(function hide() {
+    this.$emit('hide');
+  });
+
+  const submitForm = async () => {
+    findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+    await nextTick;
+    await waitForPromises();
   };
 
-  function updateSchedule(localWrapper) {
-    localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
-    return nextTick();
-  }
+  const updateScheduleForm = ({ type, value }) => {
+    return findModalForm().vm.$emit('update-schedule-form', {
+      type,
+      value,
+    });
+  };
 
-  const createComponentWithApollo = ({
-    updateHandler = jest.fn().mockResolvedValue(updateScheduleResponse),
+  const updateAllFormFields = () => {
+    updateScheduleForm({
+      type: 'name',
+      value: updatedName,
+    });
+
+    updateScheduleForm({
+      type: 'description',
+      value: updatedDescription,
+    });
+
+    updateScheduleForm({
+      type: 'timezone',
+      value: updatedTimezone,
+    });
+  };
+
+  const createComponent = ({
+    updateHandler = jest.fn().mockResolvedValue(createScheduleResponse),
+    props = {},
   } = {}) => {
     localVue.use(VueApollo);
-    updateScheduleHandler = updateHandler;
+    scheduleHandler = updateHandler;
 
-    const requestHandlers = [[updateOncallScheduleMutation, updateScheduleHandler]];
+    const requestHandlers = [
+      [createOncallScheduleMutation, scheduleHandler],
+      [updateOncallScheduleMutation, scheduleHandler],
+    ];
 
-    fakeApollo = createMockApollo(requestHandlers);
+    mockApollo = createMockApollo(requestHandlers);
 
-    fakeApollo.clients.defaultClient.cache.writeQuery({
+    mockApollo.clients.defaultClient.cache.writeQuery({
       query: getOncallSchedulesWithRotationsQuery,
       variables: {
-        projectPath: 'group/project',
+        projectPath,
       },
       data: getOncallSchedulesQueryResponse.data,
     });
 
     wrapper = shallowMount(AddEditScheduleModal, {
       localVue,
-      apolloProvider: fakeApollo,
+      apolloProvider: mockApollo,
       propsData: {
-        modalId: editScheduleModalId,
-        isEditMode: true,
-        schedule: mockSchedule,
+        ...props,
       },
       provide: {
         projectPath,
         timezones: mockTimezones,
       },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: mockHideModal,
+          },
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
+      },
     });
   };
 
-  const findModal = () => wrapper.findComponent(GlModal);
-  const findAlert = () => wrapper.findComponent(GlAlert);
-  const findModalForm = () => wrapper.findComponent(AddEditScheduleForm);
-
-  const submitForm = () => findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-
-  const updatedName = 'Updated schedule name';
-  const updatedTimezone = mockTimezones[0];
-  const updatedDescription = 'Updated schedule description';
-
-  const updateForm = () => {
-    const emitUpdate = (args) => findModalForm().vm.$emit('update-schedule-form', args);
-
-    emitUpdate({
-      type: 'name',
-      value: updatedName,
-    });
-
-    emitUpdate({
-      type: 'description',
-      value: updatedDescription,
-    });
-
-    emitUpdate({
-      type: 'timezone',
-      value: updatedTimezone,
-    });
-  };
   describe('Schedule create', () => {
     beforeEach(() => {
-      createComponent({ modalId: addScheduleModalId });
+      createComponent({ props: { modalId: addScheduleModalId } });
     });
 
     describe('renders create modal with the correct schedule information', () => {
       it('renders name of correct modal id', () => {
-        expect(findModal().attributes('modalid')).toBe(addScheduleModalId);
+        expect(findModal().props('modalId')).toBe(addScheduleModalId);
       });
 
       it('renders modal title', () => {
-        expect(findModal().attributes('title')).toBe(i18n.addSchedule);
+        expect(findModal().props('title')).toBe(i18n.addSchedule);
       });
     });
 
-    it('prevents form submit if schedule is invalid', () => {
-      createComponent({
-        modalId: addScheduleModalId,
-        data: { form: { name: 'schedule', timezone: null } },
-      });
-      submitForm();
-      expect(mutate).not.toHaveBeenCalled();
-    });
+    it('prevents form submit if schedule is invalid', async () => {
+      updateScheduleForm({ name: 'schedule' });
+      await submitForm();
 
-    it("doesn't hide a modal and shows error alert on fail", async () => {
-      const error = 'some error';
-      mutate.mockImplementation(() => Promise.reject(error));
-      updateForm();
-      await nextTick();
-
-      submitForm();
-      await waitForPromises();
-      const alert = findAlert();
-      expect(mockHideModal).not.toHaveBeenCalled();
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toContain(error);
-    });
-
-    it('makes a request with form data to create a schedule and hides a modal', async () => {
-      mutate.mockImplementation(() =>
-        Promise.resolve({ data: { oncallScheduleCreate: { errors: [] } } }),
-      );
-      updateForm();
-      await nextTick();
-      submitForm();
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: expect.any(Object),
-        update: expect.any(Function),
-        variables: {
-          oncallScheduleCreateInput: {
-            projectPath,
-            name: updatedName,
-            description: updatedDescription,
-            timezone: updatedTimezone.identifier,
-          },
-        },
-      });
-      await waitForPromises();
-      expect(mockHideModal).toHaveBeenCalled();
-    });
-
-    it('should clear the schedule form on a successful creation', () => {
-      mutate.mockImplementation(() =>
-        Promise.resolve({ data: { oncallScheduleCreate: { errors: [] } } }),
-      );
-      submitForm();
-      expect(findModalForm().props('form')).toMatchObject({
-        name: undefined,
-        description: undefined,
-        timezone: undefined,
-      });
+      expect(findModalForm().props('validationState').timezone).toBe(false);
     });
 
     it('should reset the form on modal cancel', async () => {
-      updateForm();
-      await nextTick();
+      updateAllFormFields();
       expect(findModalForm().props('form')).toMatchObject({
         name: updatedName,
         description: updatedDescription,
@@ -207,6 +149,42 @@ describe('AddScheduleModal', () => {
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
       await nextTick();
+      expect(findModalForm().props('form')).toMatchObject({
+        name: undefined,
+        description: undefined,
+        timezone: undefined,
+      });
+    });
+
+    it('displays alert if mutation had a recoverable error', async () => {
+      createComponent({
+        updateHandler: jest.fn().mockResolvedValue(updateScheduleResponseWithErrors),
+        props: { modalId: editScheduleModalId },
+      });
+
+      updateAllFormFields();
+      await submitForm();
+
+      const alert = findAlert();
+      expect(alert.exists()).toBe(true);
+      expect(alert.text()).toContain(
+        updateScheduleResponseWithErrors.data.oncallScheduleUpdate.errors[0],
+      );
+      expect(mockHideModal).not.toHaveBeenCalled();
+    });
+
+    it('calls a mutation with correct parameters and creates a schedule', async () => {
+      updateAllFormFields();
+      await submitForm();
+
+      expect(scheduleHandler).toHaveBeenCalled();
+      expect(wrapper.emitted('scheduleCreated')).toBeDefined();
+    });
+
+    it('should clear the schedule form on a successful creation', async () => {
+      updateAllFormFields();
+      await submitForm();
+
       expect(findModalForm().props('form')).toMatchObject({
         name: undefined,
         description: undefined,
@@ -217,103 +195,41 @@ describe('AddScheduleModal', () => {
 
   describe('Schedule update', () => {
     beforeEach(() => {
-      createComponent({ schedule: mockSchedule, isEditMode: true, modalId: editScheduleModalId });
-    });
-
-    describe('renders update modal with the correct schedule information', () => {
-      it('renders name of correct modal id', () => {
-        expect(findModal().attributes('modalid')).toBe(editScheduleModalId);
-      });
-
-      it('renders modal title', () => {
-        expect(findModal().attributes('title')).toBe(i18n.editSchedule);
+      createComponent({
+        updateHandler: jest.fn().mockResolvedValue(updateScheduleResponse),
+        props: { modalId: editScheduleModalId, schedule: mockSchedule, isEditMode: true },
       });
     });
 
-    it("doesn't hide the modal on fail", async () => {
-      const error = 'some error';
-      mutate.mockRejectedValueOnce(error);
-      submitForm();
-      await waitForPromises();
-      expect(mockHideModal).not.toHaveBeenCalled();
-    });
+    it('makes a request with to update a schedule and hides a modal on successful update', async () => {
+      updateAllFormFields();
+      await submitForm();
 
-    it('makes a request with `oncallScheduleUpdate` to update a schedule and hides a modal on successful update', async () => {
-      mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
-      submitForm();
-
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: expect.any(Object),
-        update: expect.any(Function),
-        variables: {
-          iid: mockSchedule.iid,
-          projectPath,
-          name: mockSchedule.name,
-          description: mockSchedule.description,
-          timezone: mockSchedule.timezone,
-        },
+      expect(findModalForm().props('form')).toMatchObject({
+        name: updatedName,
+        description: updatedDescription,
+        timezone: updatedTimezone,
       });
-      await waitForPromises();
+      expect(scheduleHandler).toHaveBeenCalled();
       expect(mockHideModal).toHaveBeenCalled();
     });
 
-    describe('with mocked Apollo client', () => {
-      it('calls a mutation with correct parameters and updates a schedule', async () => {
-        createComponentWithApollo();
-
-        await updateSchedule(wrapper);
-
-        expect(updateScheduleHandler).toHaveBeenCalled();
+    it('displays alert if mutation had a recoverable error', async () => {
+      createComponent({
+        updateHandler: jest.fn().mockResolvedValue(updateScheduleResponseWithErrors),
+        props: { modalId: editScheduleModalId, schedule: mockSchedule, isEditMode: true },
       });
+      await submitForm();
 
-      it('displays alert if mutation had a recoverable error', async () => {
-        createComponentWithApollo({
-          updateHandler: jest.fn().mockResolvedValue(updateScheduleResponseWithErrors),
-        });
-
-        await updateSchedule(wrapper);
-        await waitForPromises();
-
-        const alert = findAlert();
-        expect(alert.exists()).toBe(true);
-        expect(alert.text()).toContain('Houston, we have a problem');
-      });
-    });
-
-    describe('when the schedule timezone is updated', () => {
-      useMockLocationHelper();
-
-      it('should not reload the page if the timezone has not changed', async () => {
-        mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
-        submitForm();
-        await waitForPromises();
-        expect(window.location.reload).not.toHaveBeenCalled();
-      });
-
-      it('should reload the page if the timezone has changed', async () => {
-        mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
-        updateForm();
-        await nextTick();
-        submitForm();
-        expect(mutate).toHaveBeenCalledWith({
-          mutation: updateOncallScheduleMutation,
-          update: expect.anything(),
-          variables: {
-            iid: mockSchedule.iid,
-            projectPath,
-            name: updatedName,
-            description: updatedDescription,
-            timezone: updatedTimezone.identifier,
-          },
-        });
-        await waitForPromises();
-        expect(window.location.reload).toHaveBeenCalled();
-      });
+      const alert = findAlert();
+      expect(alert.exists()).toBe(true);
+      expect(alert.text()).toContain('Houston, we have a problem');
+      expect(mockHideModal).not.toHaveBeenCalled();
     });
 
     it('should reset the form on modal cancel', async () => {
-      updateForm();
-      await nextTick();
+      updateAllFormFields();
+
       expect(findModalForm().props('form')).toMatchObject({
         name: updatedName,
         description: updatedDescription,
@@ -322,10 +238,28 @@ describe('AddScheduleModal', () => {
 
       findModal().vm.$emit('canceled', { preventDefault: jest.fn() });
       await nextTick();
+
       expect(findModalForm().props('form')).toMatchObject({
         name: mockSchedule.name,
         description: mockSchedule.description,
         timezone: { identifier: mockSchedule.timezone },
+      });
+    });
+
+    describe('when the schedule timezone is updated', () => {
+      useMockLocationHelper();
+
+      it('should not reload the page if the timezone has not changed', async () => {
+        await submitForm();
+
+        expect(window.location.reload).not.toHaveBeenCalled();
+      });
+
+      it('should reload the page if the timezone has changed', async () => {
+        updateAllFormFields();
+        await submitForm();
+
+        expect(window.location.reload).toHaveBeenCalled();
       });
     });
   });

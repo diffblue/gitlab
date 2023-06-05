@@ -912,7 +912,7 @@ module EE
 
     def adjourned_deletion_configured?
       ::Gitlab::CurrentSettings.deletion_adjourned_period > 0 &&
-        group_deletion_mode_configured?
+        !personal?
     end
 
     def marked_for_deletion?
@@ -1196,14 +1196,6 @@ module EE
           end
         end
       end
-    end
-
-    # Return the group's setting for delayed deletion, false for user namespace projects
-    def group_deletion_mode_configured?
-      return true if ::Feature.enabled?(:always_perform_delayed_deletion) && !personal?
-      return false unless group&.namespace_settings
-
-      group.namespace_settings.delayed_project_removal?
     end
 
     # If the project is inside a fork network, the mirror URL must
