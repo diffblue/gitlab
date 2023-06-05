@@ -135,16 +135,6 @@ RSpec.describe ::TodosHelper do
       end
     end
 
-    context 'when the feature flag is disabled' do
-      before do
-        stub_feature_flags(dashboard_saml_reauth_support: false)
-      end
-
-      it 'returns an empty array of groups' do
-        expect(helper.todo_groups_requiring_saml_reauth(todos)).to match_array([])
-      end
-    end
-
     it 'returns root groups for todos with targets in SSO enforced groups' do
       expect(helper.todo_groups_requiring_saml_reauth(todos)).to match_array([restricted_group, restricted_group2])
     end
