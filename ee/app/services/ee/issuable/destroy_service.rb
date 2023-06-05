@@ -7,6 +7,13 @@ module EE
 
       private
 
+      override :before_destroy
+      def before_destroy(issuable)
+        return unless issuable.is_a?(MergeRequest)
+
+        ::Audit::MergeRequestBeforeDestroyAuditor.new(issuable, current_user).execute
+      end
+
       override :after_destroy
       def after_destroy(issuable)
         log_audit_event(issuable)

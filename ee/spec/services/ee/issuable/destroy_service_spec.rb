@@ -86,6 +86,14 @@ RSpec.describe Issuable::DestroyService, feature_category: :team_planning do
 
           service.execute(issuable)
         end
+
+        it 'calls MergeRequestBeforeDestroyAuditor with correct arguments' do
+          expect_next_instance_of(Audit::MergeRequestBeforeDestroyAuditor, issuable, user) do |instance|
+            expect(instance).to receive(:execute)
+          end
+
+          service.execute(issuable)
+        end
       end
     end
   end
