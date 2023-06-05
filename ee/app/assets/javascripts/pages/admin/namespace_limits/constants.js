@@ -18,7 +18,7 @@ export const exclusionDeleteError = s__(
 export const deleteModalTitle = s__('NamespaceLimits|Deletion confirmation');
 
 export const deleteModalBody = s__(
-  'NamespaceLimits|Do you confirm the deletion of the selected namespace?',
+  'NamespaceLimits|Do you confirm the deletion of the selected namespace from the exclusion list?',
 );
 
 export const deleteModalProps = {

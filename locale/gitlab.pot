@@ -29569,7 +29569,7 @@ msgstr ""
 msgid "NamespaceLimits|Deletion confirmation"
 msgstr ""
 
-msgid "NamespaceLimits|Do you confirm the deletion of the selected namespace?"
+msgid "NamespaceLimits|Do you confirm the deletion of the selected namespace from the exclusion list?"
 msgstr ""
 
 msgid "NamespaceLimits|Enter a valid number greater or equal to zero."
