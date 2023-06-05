@@ -57,6 +57,16 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="queryaimessagesrequestids"></a>`requestIds` | [`[ID!]`](#id) | Array of request IDs to fetch. |
 | <a id="queryaimessagesroles"></a>`roles` | [`[AiCachedMessageRole!]`](#aicachedmessagerole) | Array of roles to fetch. |
 
+### `Query.auditEventDefinitions`
+
+Definitions for all audit events available on the instance.
+
+Returns [`AuditEventDefinitionConnection!`](#auditeventdefinitionconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
 ### `Query.boardList`
 
 Find an issue board list.
@@ -7411,6 +7421,29 @@ The edge type for [`ApprovalProjectRule`](#approvalprojectrule).
 | <a id="approvalprojectruleedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="approvalprojectruleedgenode"></a>`node` | [`ApprovalProjectRule`](#approvalprojectrule) | The item at the end of the edge. |
 
+#### `AuditEventDefinitionConnection`
+
+The connection type for [`AuditEventDefinition`](#auditeventdefinition).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="auditeventdefinitionconnectionedges"></a>`edges` | [`[AuditEventDefinitionEdge]`](#auditeventdefinitionedge) | A list of edges. |
+| <a id="auditeventdefinitionconnectionnodes"></a>`nodes` | [`[AuditEventDefinition]`](#auditeventdefinition) | A list of nodes. |
+| <a id="auditeventdefinitionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `AuditEventDefinitionEdge`
+
+The edge type for [`AuditEventDefinition`](#auditeventdefinition).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="auditeventdefinitionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="auditeventdefinitionedgenode"></a>`node` | [`AuditEventDefinition`](#auditeventdefinition) | The item at the end of the edge. |
+
 #### `AuditEventStreamingHeaderConnection`
 
 The connection type for [`AuditEventStreamingHeader`](#auditeventstreamingheader).
@@ -12072,6 +12105,23 @@ Represents a vulnerability asset type.
 | <a id="assettypename"></a>`name` | [`String!`](#string) | Name of the asset. |
 | <a id="assettypetype"></a>`type` | [`String!`](#string) | Type of the asset. |
 | <a id="assettypeurl"></a>`url` | [`String!`](#string) | URL of the asset. |
+
+### `AuditEventDefinition`
+
+Represents the YAML definitions for audit events defined under ee/config/audit_events/types/<event-type-name>.yml and config/audit_events/types/<event-type-name>.yml.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="auditeventdefinitiondescription"></a>`description` | [`String!`](#string) | Description of what action the audit event tracks. |
+| <a id="auditeventdefinitionfeaturecategory"></a>`featureCategory` | [`String!`](#string) | Feature category associated with the event. |
+| <a id="auditeventdefinitionintroducedbyissue"></a>`introducedByIssue` | [`String`](#string) | Link to the issue introducing the event. For olderaudit events, it can be a commit URL rather than amerge request URL. |
+| <a id="auditeventdefinitionintroducedbymr"></a>`introducedByMr` | [`String`](#string) | Link to the merge request introducing the event. Forolder audit events, it can be a commit URL rather thana merge request URL. |
+| <a id="auditeventdefinitionmilestone"></a>`milestone` | [`String!`](#string) | Milestone the event was introduced in. |
+| <a id="auditeventdefinitionname"></a>`name` | [`String!`](#string) | Key name of the audit event. |
+| <a id="auditeventdefinitionsavedtodatabase"></a>`savedToDatabase` | [`Boolean!`](#boolean) | Indicates if the event is saved to PostgreSQL database. |
+| <a id="auditeventdefinitionstreamed"></a>`streamed` | [`Boolean!`](#boolean) | Indicates if the event is streamed to an external destination. |
 
 ### `AuditEventStreamingHeader`
 
