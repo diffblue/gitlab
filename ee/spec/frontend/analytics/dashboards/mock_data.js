@@ -1,81 +1,35 @@
+import { isUndefined } from 'lodash';
 import { nMonthsBefore } from '~/lib/utils/datetime_utility';
 import { DORA_METRICS } from '~/analytics/shared/constants';
 
-const mockMetrics = ([
-  leadTimeForChanges,
-  timeToRestoreService,
-  changeFailureRate,
-  deploymentFrequency,
-  leadTime,
-  cycleTime,
-  issues,
-  issuesCompleted,
-  deploys,
-  vulnerabilityCritical,
-  vulnerabilityHigh,
-  mergeRequestThroughput,
-]) => ({
-  lead_time_for_changes: {
-    value: leadTimeForChanges,
-    label: 'Lead Time for Changes',
-    identifier: 'lead_time_for_changes',
-  },
-  time_to_restore_service: {
-    value: timeToRestoreService,
-    label: 'Time to Restore Service',
-    identifier: 'time_to_restore_service',
-  },
-  change_failure_rate: {
-    value: changeFailureRate,
-    label: 'Change Failure Rate',
-    identifier: 'change_failure_rate',
-  },
-  deployment_frequency: {
-    value: deploymentFrequency,
-    label: 'Deployment Frequency',
-    identifier: 'deployment_frequency',
-  },
-  lead_time: {
-    value: leadTime,
-    label: 'Lead Time',
-    identifier: 'lead_time',
-  },
-  cycle_time: {
-    value: cycleTime,
-    label: 'Cycle Time',
-    identifier: 'cycle_time',
-  },
-  issues: {
-    value: issues,
-    label: 'New Issues',
-    identifier: 'issues',
-  },
-  issues_completed: {
-    value: issuesCompleted,
-    label: 'Closed Issues',
-    identifier: 'issues_completed',
-  },
-  deploys: {
-    value: deploys,
-    label: 'Deploys',
-    identifier: 'deploys',
-  },
-  vulnerability_critical: {
-    value: vulnerabilityCritical,
-    label: 'Critical Vulnerabilities over time',
-    identifier: 'vulnerability_critical',
-  },
-  vulnerability_high: {
-    value: vulnerabilityHigh,
-    label: 'High Vulnerabilities  over time',
-    identifier: 'vulnerability_high',
-  },
-  merge_request_throughput: {
-    value: mergeRequestThroughput,
-    label: 'Merge request throughput',
-    identifier: 'merge_request_throughput',
-  },
-});
+const METRIC_IDENTIFIERS = [
+  'lead_time_for_changes',
+  'time_to_restore_service',
+  'change_failure_rate',
+  'deployment_frequency',
+  'lead_time',
+  'cycle_time',
+  'issues',
+  'issues_completed',
+  'deploys',
+  'vulnerability_critical',
+  'vulnerability_high',
+  'merge_request_throughput',
+];
+
+const hasValue = (obj, key) => !isUndefined(obj[key]) && obj[key] !== null;
+
+const mockMetrics = (mockValues = {}) =>
+  METRIC_IDENTIFIERS.filter((identifier) => hasValue(mockValues, identifier)).reduce(
+    (data, identifier) => ({
+      ...data,
+      [identifier]: {
+        identifier,
+        value: mockValues[identifier],
+      },
+    }),
+    {},
+  );
 
 const THIS_MONTH = {
   key: 'thisMonth',
@@ -135,44 +89,97 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
   },
 ];
 
-export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 10080, 8, 3, 0, 5]);
+export const mockMonthToDate = mockMetrics({
+  lead_time_for_changes: 0.5,
+  time_to_restore_service: 0.05,
+  change_failure_rate: 0.005,
+  deployment_frequency: 0,
+  lead_time: 2,
+  cycle_time: 4,
+  issues: 6,
+  issues_completed: 10080,
+  deploys: 8,
+  vulnerability_critical: 3,
+  vulnerability_high: 0,
+  merge_request_throughput: 5,
+});
+
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 9000, 16, 0, 3, 2]);
+export const mockPreviousMonth = mockMetrics({
+  lead_time_for_changes: 3.6,
+  time_to_restore_service: 20,
+  change_failure_rate: 4,
+  deployment_frequency: 2,
+  lead_time: 4,
+  cycle_time: '-',
+  issues: 12,
+  issues_completed: 9000,
+  deploys: 16,
+  vulnerability_critical: 0,
+  vulnerability_high: 3,
+  merge_request_throughput: 2,
+});
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 6000, 8, 2, 0, 0]);
+export const mockTwoMonthsAgo = mockMetrics({
+  lead_time_for_changes: 9.2,
+  time_to_restore_service: 32,
+  change_failure_rate: 8,
+  deployment_frequency: 4,
+  lead_time: 2,
+  cycle_time: '-',
+  issues: 6,
+  issues_completed: 6000,
+  deploys: 8,
+  vulnerability_critical: 2,
+  vulnerability_high: 0,
+  merge_request_throughput: 0,
+});
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
-export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 8000, 16, 0, 0, 15]);
+export const mockThreeMonthsAgo = mockMetrics({
+  lead_time_for_changes: 20.1,
+  time_to_restore_service: 32,
+  change_failure_rate: 8,
+  deployment_frequency: 2,
+  lead_time: 4,
+  cycle_time: 8,
+  issues: 12,
+  issues_completed: 8000,
+  deploys: 16,
+  vulnerability_critical: 0,
+  vulnerability_high: 0,
+  merge_request_throughput: 15,
+});
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
 export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i) => ({
   ...timePeriod,
-  ...mockMetrics([
-    '-',
-    undefined,
-    0,
-    i,
-    i + 1,
-    i * 2,
-    100 - i * 2,
-    200 - i * 2,
-    i * i,
-    i % 4,
-    i % 2,
-    i,
-  ]),
+  ...mockMetrics({
+    lead_time_for_changes: '-',
+    time_to_restore_service: undefined,
+    change_failure_rate: 0,
+    deployment_frequency: i,
+    lead_time: i + 1,
+    cycle_time: i * 2,
+    issues: 100 - i * 2,
+    issues_completed: 200 - i * 2,
+    deploys: i * i,
+    vulnerability_critical: i % 4,
+    vulnerability_high: i % 2,
+    merge_request_throughput: i,
+  }),
 }));
 
 export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
   (timePeriod, i) => ({
     ...timePeriod,
-    ...mockMetrics([i + 1, 100 - i]),
+    ...mockMetrics({ lead_time_for_changes: i + 1, time_to_restore_service: 100 - i }),
   }),
 );
 
@@ -182,7 +189,6 @@ export const mockComparativeTableData = [
       value: 'Deployment Frequency',
       identifier: 'deployment_frequency',
     },
-    invertTrendColor: undefined,
     thisMonth: {
       value: '0.0/d',
       change: 0,
@@ -296,7 +302,6 @@ export const mockComparativeTableData = [
       value: 'New issues',
       identifier: 'issues',
     },
-    invertTrendColor: undefined,
     lastMonth: {
       change: 1,
       value: 12,
@@ -315,7 +320,6 @@ export const mockComparativeTableData = [
       value: 'Closed issues',
       identifier: 'issues_completed',
     },
-    invertTrendColor: undefined,
     valueLimit: {
       max: 10001,
       mask: '10000+',
@@ -342,7 +346,6 @@ export const mockComparativeTableData = [
       value: 'Deploys',
       identifier: 'deploys',
     },
-    invertTrendColor: undefined,
     lastMonth: {
       change: 1,
       value: 16,
@@ -414,225 +417,98 @@ export const mockComparativeTableData = [
   },
 ];
 
+const mockChartDataValues = (values) => values.map((v) => [expect.anything(), v]);
+
+const mockChartDataWithSameValue = (count, value) =>
+  mockChartDataValues([...Array(count).keys()].map(() => value));
+
 export const mockSubsetChartData = {
   change_failure_rate: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(2, 0),
     tooltipLabel: '%',
   },
   cycle_time: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(2, 0),
     tooltipLabel: 'days',
   },
   deployment_frequency: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(2, 0),
     tooltipLabel: '/day',
   },
   deploys: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
   issues: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
   issues_completed: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
   lead_time: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(2, 0),
     tooltipLabel: 'days',
   },
   lead_time_for_changes: {
-    data: [
-      [expect.anything(), 1],
-      [expect.anything(), 2],
-    ],
+    data: mockChartDataValues([1, 2]),
     tooltipLabel: 'days',
   },
   time_to_restore_service: {
-    data: [
-      [expect.anything(), 100],
-      [expect.anything(), 99],
-    ],
+    data: mockChartDataValues([100, 99]),
     tooltipLabel: 'days',
   },
   vulnerability_critical: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
   vulnerability_high: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
   merge_request_throughput: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataWithSameValue(2, 0),
   },
 };
 
 export const mockChartData = {
   lead_time_for_changes: {
     tooltipLabel: 'days',
-    data: [
-      [expect.anything(), null],
-      [expect.anything(), null],
-      [expect.anything(), null],
-      [expect.anything(), null],
-      [expect.anything(), null],
-      [expect.anything(), null],
-    ],
+    data: mockChartDataWithSameValue(6, null),
   },
   time_to_restore_service: {
     tooltipLabel: 'days',
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(6, 0),
   },
   change_failure_rate: {
     tooltipLabel: '%',
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-      [expect.anything(), 0],
-    ],
+    data: mockChartDataWithSameValue(6, 0),
   },
   deployment_frequency: {
     tooltipLabel: '/day',
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 2],
-      [expect.anything(), 3],
-      [expect.anything(), 4],
-      [expect.anything(), 5],
-    ],
+    data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
   },
   lead_time: {
     tooltipLabel: 'days',
-    data: [
-      [expect.anything(), 1],
-      [expect.anything(), 2],
-      [expect.anything(), 3],
-      [expect.anything(), 4],
-      [expect.anything(), 5],
-      [expect.anything(), 6],
-    ],
+    data: mockChartDataValues([1, 2, 3, 4, 5, 6]),
   },
   cycle_time: {
     tooltipLabel: 'days',
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 2],
-      [expect.anything(), 4],
-      [expect.anything(), 6],
-      [expect.anything(), 8],
-      [expect.anything(), 10],
-    ],
+    data: mockChartDataValues([0, 2, 4, 6, 8, 10]),
   },
   issues: {
-    tooltipLabel: undefined,
-    data: [
-      [expect.anything(), 100],
-      [expect.anything(), 98],
-      [expect.anything(), 96],
-      [expect.anything(), 94],
-      [expect.anything(), 92],
-      [expect.anything(), 90],
-    ],
+    data: mockChartDataValues([100, 98, 96, 94, 92, 90]),
   },
   issues_completed: {
-    tooltipLabel: undefined,
-    data: [
-      [expect.anything(), 200],
-      [expect.anything(), 198],
-      [expect.anything(), 196],
-      [expect.anything(), 194],
-      [expect.anything(), 192],
-      [expect.anything(), 190],
-    ],
+    data: mockChartDataValues([200, 198, 196, 194, 192, 190]),
   },
   deploys: {
-    tooltipLabel: undefined,
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 4],
-      [expect.anything(), 9],
-      [expect.anything(), 16],
-      [expect.anything(), 25],
-    ],
+    data: mockChartDataValues([0, 1, 4, 9, 16, 25]),
   },
   vulnerability_critical: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 2],
-      [expect.anything(), 3],
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataValues([0, 1, 2, 3, 0, 1]),
   },
   vulnerability_high: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataValues([0, 1, 0, 1, 0, 1]),
   },
   merge_request_throughput: {
-    data: [
-      [expect.anything(), 0],
-      [expect.anything(), 1],
-      [expect.anything(), 2],
-      [expect.anything(), 3],
-      [expect.anything(), 4],
-      [expect.anything(), 5],
-    ],
-    tooltipLabel: undefined,
+    data: mockChartDataValues([0, 1, 2, 3, 4, 5]),
   },
 };
 
