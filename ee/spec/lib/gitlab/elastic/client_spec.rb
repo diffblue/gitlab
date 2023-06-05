@@ -34,6 +34,10 @@ RSpec.describe Gitlab::Elastic::Client do
       end
 
       context 'with typhoeus adapter for keep-alive connections' do
+        before do
+          allow(described_class).to receive(:spring_on_macos?).and_return(false)
+        end
+
         it 'sets typhoeus as the adapter' do
           options = client.transport.options
 
