@@ -30,6 +30,13 @@ module QA
         Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_2, Runtime::Env.gitlab_qa_password_2)
       end
 
+      let(:codeowners_file_content) do
+        <<-CONTENT
+            * @#{user2.username}
+            *.txt @#{user.username}
+        CONTENT
+      end
+
       before do
         Flow::Login.sign_in
 
@@ -40,26 +47,20 @@ module QA
           members_page.add_member(user.username)
           members_page.add_member(user2.username)
         end
+
+        Resource::Repository::Commit.fabricate_via_api! do |commit|
+          commit.project = project
+          commit.commit_message = 'Add CODEOWNERS and test files'
+          commit.add_files([
+            { file_path: 'file.txt', content: 'foo' },
+            { file_path: 'README.md', content: 'bar' },
+            { file_path: 'CODEOWNERS', content: codeowners_file_content }
+          ])
+        end
       end
 
       it 'displays owners specified in CODEOWNERS file',
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347763' do
-        codeowners_file_content =
-          <<-CONTENT
-            * @#{user2.username}
-            *.txt @#{user.username}
-          CONTENT
-        files << {
-          name: 'CODEOWNERS',
-          content: codeowners_file_content
-        }
-
-        # Push CODEOWNERS and test files to the project
-        Resource::Repository::ProjectPush.fabricate! do |push|
-          push.project = project
-          push.files = files
-          push.commit_message = 'Add CODEOWNERS and test files'
-        end
         project.visit!
 
         # Check the files and code owners
