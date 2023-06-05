@@ -44,6 +44,21 @@ RSpec.describe Elastic::Latest::ProjectClassProxy, feature_category: :global_sea
         end
       end
 
+      context 'when the search_projects_hide_archived feature flag is disabled' do
+        before do
+          stub_feature_flags(search_projects_hide_archived: false)
+        end
+
+        it 'does not have a filter for archived' do
+          elastic_search.response
+
+          assert_named_queries(
+            'project:match:search_terms',
+            'doc:is_a:project'
+          )
+        end
+      end
+
       context 'when include_archived is set' do
         let(:options) { { include_archived: true } }
 
