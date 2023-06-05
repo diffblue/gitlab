@@ -55,17 +55,5 @@ RSpec.describe 'Querying user AI messages', :clean_gitlab_redis_cache, feature_c
           'timestamp' => Time.current.iso8601 }
       ])
     end
-
-    context 'when ai_redis_cache is disabled' do
-      before do
-        stub_feature_flags(ai_redis_cache: false)
-      end
-
-      it 'returns an empty array' do
-        post_graphql(query, current_user: current_user)
-
-        expect(subject).to be_empty
-      end
-    end
   end
 end

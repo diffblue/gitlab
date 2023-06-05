@@ -22,8 +22,6 @@ module Gitlab
       end
 
       def add(payload)
-        return unless Feature.enabled?(:ai_redis_cache, user)
-
         raise ArgumentError, "Invalid role '#{payload[:role]}'" unless ALLOWED_ROLES.include?(payload[:role])
 
         data = {
