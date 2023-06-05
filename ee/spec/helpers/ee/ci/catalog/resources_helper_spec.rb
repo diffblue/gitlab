@@ -12,6 +12,61 @@ RSpec.describe Ci::Catalog::ResourcesHelper, feature_category: :pipeline_composi
     allow(helper).to receive(:current_user).and_return(user)
   end
 
+  describe '#can_add_catalog_resource?' do
+    subject { helper.can_add_catalog_resource?(project) }
+
+    context 'when FF `ci_namespace_catalog_experimental` is disabled' do
+      before do
+        stub_feature_flags(ci_namespace_catalog_experimental: false)
+        stub_licensed_features(ci_namespace_catalog: true)
+
+        project.add_owner(user)
+      end
+
+      it 'returns false' do
+        expect(subject).to be false
+      end
+    end
+
+    context 'when user is not an owner' do
+      before do
+        stub_licensed_features(ci_namespace_catalog: true)
+
+        project.add_maintainer(user)
+      end
+
+      it 'returns false' do
+        expect(subject).to be false
+      end
+    end
+
+    context 'when user is an owner' do
+      before do
+        project.add_owner(user)
+      end
+
+      context 'when license for namespace catalog is enabled' do
+        before do
+          stub_licensed_features(ci_namespace_catalog: true)
+        end
+
+        it 'returns true' do
+          expect(subject).to be true
+        end
+      end
+
+      context 'when license for namespace catalog is not enabled' do
+        before do
+          stub_licensed_features(ci_namespace_catalog: false)
+        end
+
+        it 'returns false' do
+          expect(subject).to be false
+        end
+      end
+    end
+  end
+
   describe '#can_view_namespace_catalog?' do
     subject { helper.can_view_namespace_catalog?(project) }
 
