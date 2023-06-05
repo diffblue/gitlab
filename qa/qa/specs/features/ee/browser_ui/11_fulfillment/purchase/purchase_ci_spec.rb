@@ -7,6 +7,7 @@ module QA
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     describe 'Purchase CI minutes' do
       let(:purchase_quantity) { 5 }
+      let(:expected_initial_minutes) { CI_MINUTES[:ci_minutes] * purchase_quantity }
       let(:hash) { SecureRandom.hex(4) }
       let(:user) do
         Resource::User.fabricate_via_api! do |user|
@@ -51,13 +52,7 @@ module QA
            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
-          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
-
-            expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
-            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
-          end
+          expect_additional_ci_minutes(expected_initial_minutes.to_s)
         end
       end
 
@@ -68,21 +63,23 @@ module QA
 
         it 'adds additional minutes to group namespace',
            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
+          Gitlab::Page::Group::Settings::Billing.perform do |billing|
+            billing.wait_for_subscription(ULTIMATE[:name])
+          end
+
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
-          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity
-            plan_limits = ULTIMATE[:ci_minutes]
+          expect_additional_ci_minutes(expected_initial_minutes.to_s)
 
-            expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
-            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
-            expect(usage_quota.plan_ci_limits).to eq(plan_limits.to_s)
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            expect(usage_quota.plan_ci_limits).to eq(ULTIMATE[:ci_minutes].to_s)
           end
         end
       end
 
       context 'with existing CI minutes packs' do
+        let(:expected_total_minutes) { expected_initial_minutes * 2 }
+
         before do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
         end
@@ -93,26 +90,25 @@ module QA
 
         it 'adds additional minutes to group namespace',
            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
+          expect_additional_ci_minutes(expected_initial_minutes.to_s)
+
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
-          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
-            expected_minutes = CI_MINUTES[:ci_minutes] * purchase_quantity * 2
-
-            expect { usage_quota.ci_purchase_successful_alert? }
-              .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
-            expect_additional_ci_minutes(usage_quota, expected_minutes.to_s)
-          end
+          expect_additional_ci_minutes(expected_total_minutes.to_s)
         end
       end
     end
 
     private
 
-    def expect_additional_ci_minutes(usage_quota, expected_minutes)
-      expect { usage_quota.additional_ci_minutes_added? }
-        .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
-      expect { usage_quota.additional_ci_limits }
-        .to eventually_eq(expected_minutes).within(max_duration: ZUORA_TIMEOUT, sleep_interval: 2, reload_page: page)
+    def expect_additional_ci_minutes(expected_minutes)
+      Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+        expect { usage_quota.ci_purchase_successful_alert? }
+          .to eventually_be_truthy.within(max_duration: ZUORA_TIMEOUT)
+
+        usage_quota.wait_for_additional_ci_minutes_available
+        usage_quota.wait_for_additional_ci_minute_limits(expected_minutes)
+      end
     end
   end
 end
