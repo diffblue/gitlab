@@ -2,8 +2,8 @@
 data_category: optional
 key_path: counts.merged_merge_requests_using_approval_rules
 description: Count of merge requests merged using approval rules
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: broken

@@ -2,8 +2,8 @@
 data_category: optional
 key_path: compliance_unique_visits.a_compliance_audit_events_api
 description: Unique users that have used the Audit Events API.
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active

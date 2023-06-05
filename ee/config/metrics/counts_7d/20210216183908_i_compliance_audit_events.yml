@@ -2,8 +2,8 @@
 data_category: optional
 key_path: compliance_unique_visits.i_compliance_audit_events
 description: Unique users that have viewed the instance-level audit events screen
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active

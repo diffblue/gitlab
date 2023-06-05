@@ -3,8 +3,8 @@ data_category: operational
 key_path: counts_monthly.aggregated_metrics.compliance_features_track_unique_visits_union
 description: Unique users that have used audit event screen, audit event API, compliance
   dashboard, or credential inventory
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active

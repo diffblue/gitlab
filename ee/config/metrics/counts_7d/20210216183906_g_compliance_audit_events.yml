@@ -2,8 +2,8 @@
 data_category: operational
 key_path: compliance_unique_visits.g_compliance_audit_events
 description: Unique users who have viewed audit events
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active

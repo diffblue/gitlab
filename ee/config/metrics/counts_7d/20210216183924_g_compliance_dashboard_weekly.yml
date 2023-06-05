@@ -2,8 +2,8 @@
 data_category: optional
 key_path: redis_hll_counters.compliance.g_compliance_dashboard_weekly
 description: Unique users who have looked at the compliance report in a given week
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active
