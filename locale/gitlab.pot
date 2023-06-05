@@ -9583,6 +9583,9 @@ msgstr ""
 msgid "Ci config already present"
 msgstr ""
 
+msgid "CiCatalog|CI/CD Catalog resource"
+msgstr ""
+
 msgid "CiCatalog|CI/CD catalog"
 msgstr ""
 
@@ -9595,6 +9598,12 @@ msgstr ""
 msgid "CiCatalog|Learn more"
 msgstr ""
 
+msgid "CiCatalog|Mark project as a CI/CD Catalog resource"
+msgstr ""
+
+msgid "CiCatalog|Mark project as a CI/CD Catalog resource. %{linkStart}What is the CI/CD Catalog?%{linkEnd}"
+msgstr ""
+
 msgid "CiCatalog|Page %{currentPage} of %{totalPage}"
 msgstr ""
 
@@ -9604,7 +9613,22 @@ msgstr ""
 msgid "CiCatalog|Repositories of pipeline components available in this namespace."
 msgstr ""
 
+msgid "CiCatalog|The project must contain a README.md file and a template.yml file. When enabled, the repository is available in the CI/CD Catalog."
+msgstr ""
+
+msgid "CiCatalog|There was a problem fetching the CI/CD Catalog setting."
+msgstr ""
+
+msgid "CiCatalog|There was a problem marking the project as a CI/CD Catalog resource."
+msgstr ""
+
 msgid "CiCatalog|There was an error fetching CI/CD Catalog resources."
+msgstr ""
+
+msgid "CiCatalog|This project is now a CI/CD Catalog resource."
+msgstr ""
+
+msgid "CiCatalog|This project will be marked as a CI/CD Catalog resource and will be visible in the CI/CD Catalog. This action is not reversible."
 msgstr ""
 
 msgid "CiCatalog|We want to help you create and manage pipeline component repositories, while also making it easier to reuse pipeline configurations. Let us know how we're doing!"
