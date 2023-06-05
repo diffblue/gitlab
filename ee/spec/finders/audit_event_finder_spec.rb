@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEventFinder do
+RSpec.describe AuditEventFinder, feature_category: :audit_events do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }
@@ -40,8 +40,24 @@ RSpec.describe AuditEventFinder do
       context 'when group level' do
         let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
 
-        it 'finds all group events' do
-          expect(subject).to contain_exactly(group_audit_event)
+        context 'when audit_log_group_level feature enabled' do
+          before do
+            stub_feature_flags(audit_event_group_rollup: true)
+          end
+
+          it 'finds all group and project events' do
+            expect(subject).to contain_exactly(project_audit_event, subproject_audit_event, group_audit_event)
+          end
+        end
+
+        context 'when audit_log_group_level feature disabled' do
+          before do
+            stub_feature_flags(audit_event_group_rollup: false)
+          end
+
+          it 'finds all group events' do
+            expect(subject).to contain_exactly(group_audit_event)
+          end
         end
       end
 
@@ -194,6 +210,11 @@ RSpec.describe AuditEventFinder do
         let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
         let(:params) { { author_id: group_audit_event.author_id } }
 
+        before do
+          # Only looking for group event, with this on it tests Group and Project events
+          stub_feature_flags(audit_event_group_rollup: false)
+        end
+
         it_behaves_like 'finds the right event' do
           let(:entity_type) { 'Group' }
           let(:audit_event) { group_audit_event }
@@ -300,6 +321,11 @@ RSpec.describe AuditEventFinder do
       context 'Group Event' do
         let(:level) { Gitlab::Audit::Levels::Group.new(group: group) }
         let(:params) { { author_username: user.username } }
+
+        before do
+          # Only looking for group event, with this on it tests Group and Project events
+          stub_feature_flags(audit_event_group_rollup: false)
+        end
 
         it_behaves_like 'finds the right event' do
           let(:entity_type) { 'Group' }

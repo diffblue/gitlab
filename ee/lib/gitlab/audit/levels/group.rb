@@ -9,7 +9,11 @@ module Gitlab
         end
 
         def apply
-          AuditEvent.by_entity('Group', @group)
+          if Feature.enabled?(:audit_event_group_rollup, @group)
+            AuditEvent.by_group(@group)
+          else
+            AuditEvent.by_entity('Group', @group)
+          end
         end
       end
     end
