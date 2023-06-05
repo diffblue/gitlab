@@ -18,14 +18,10 @@ describe('Payment Method', () => {
   let store;
   let wrapper;
 
-  function createComponent(options = {}) {
-    return mount(PaymentMethod, {
-      store,
-      ...options,
-    });
-  }
+  const findStepComponent = () => wrapper.findComponent(Step);
+  const isStepValid = () => findStepComponent().props('isValid');
 
-  beforeEach(() => {
+  const createComponent = (options = {}) => {
     store = createStore();
 
     store.commit(types.UPDATE_PAYMENT_METHOD_ID, 'paymentMethodId');
@@ -36,13 +32,18 @@ describe('Payment Method', () => {
       credit_card_expiration_year: 2009,
     });
 
-    const mockApollo = createMockApolloProvider(STEPS);
-    wrapper = createComponent({ apolloProvider: mockApollo });
+    wrapper = mount(PaymentMethod, {
+      apolloProvider: createMockApolloProvider(STEPS),
+      store,
+      ...options,
+    });
+  };
+
+  beforeEach(() => {
+    createComponent();
   });
 
   describe('validations', () => {
-    const isStepValid = () => wrapper.findComponent(Step).props('isValid');
-
     it('should be valid when paymentMethodId is defined', () => {
       expect(isStepValid()).toBe(true);
     });
@@ -52,6 +53,10 @@ describe('Payment Method', () => {
 
       await nextTick();
       expect(isStepValid()).toBe(false);
+    });
+
+    it('passes the correct text to the edit button', () => {
+      expect(findStepComponent().props('editButtonText')).toBe('Edit');
     });
   });
 
