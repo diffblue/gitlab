@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Ci::Config::Required::Processor do
         let(:required_ci_template_name) { 'Android' }
 
         it 'merges the template content with the config' do
-          expect(subject).to include(image: 'openjdk:8-jdk')
+          expect(subject).to include(image: 'eclipse-temurin:17-jdk-jammy')
         end
       end
     end
