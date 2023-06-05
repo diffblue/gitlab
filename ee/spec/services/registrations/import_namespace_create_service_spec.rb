@@ -56,12 +56,28 @@ RSpec.describe Registrations::ImportNamespaceCreateService, :aggregate_failures,
         )
       end
 
-      it 'tracks automatic_trial_registration assignment event with group information', :experiment do
-        expect(experiment(:automatic_trial_registration)).to track(:assignment, namespace: an_instance_of(Group))
-          .on_next_instance
-          .with_context(actor: user)
+      context 'when automatic_trial_registration experiment is enabled', :experiment do
+        let(:service) { described_class.new(user, params) }
 
-        expect(execute).to be_success
+        before do
+          stub_experiments(automatic_trial_registration: true)
+        end
+
+        it 'tracks automatic_trial_registration assignment event with group information' do
+          expect(experiment(:automatic_trial_registration)).to track(:assignment, namespace: an_instance_of(Group))
+                                                                 .on_next_instance
+                                                                 .with_context(actor: user)
+
+          expect(service.execute).to be_success
+        end
+
+        it 'does not track automatic_trial_registration assignment event when user is not setting up for company' do
+          user.setup_for_company = false
+
+          expect(service).not_to receive(:experiment).with(:automatic_trial_registration, actor: user)
+
+          expect(service.execute).to be_success
+        end
       end
 
       it 'does not attempt to create a trial' do
