@@ -6,8 +6,8 @@ import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_
 import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list.query.graphql';
 import { createAlert } from '~/alert';
 import { convertToSnakeCase, dasherize } from '~/lib/utils/text_utility';
-import { GENERAL_ERROR_MESSAGE } from '../constants';
-import StepHeader from './step_header.vue';
+import { i18n, GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import StepHeader from 'ee/vue_shared/purchase_flow/components/step_header.vue';
 
 export default {
   components: {
@@ -16,6 +16,11 @@ export default {
     StepHeader,
   },
   props: {
+    editButtonText: {
+      type: String,
+      required: false,
+      default: i18n.edit,
+    },
     stepId: {
       type: String,
       required: true,
@@ -115,7 +120,13 @@ export default {
 </script>
 <template>
   <div class="gl-w-full gl-pb-5 gl-border-b gl-mb-5">
-    <step-header :title="title" :is-finished="isFinished" :is-editable="isEditable" @edit="edit" />
+    <step-header
+      :edit-button-text="editButtonText"
+      :title="title"
+      :is-finished="isFinished"
+      :is-editable="isEditable"
+      @edit="edit"
+    />
     <div v-show="isActive" class="gl-mt-5" data-testid="active-step-body" @keyup.enter="nextStep">
       <slot name="body" :active="isActive"></slot>
       <gl-form-group

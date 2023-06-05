@@ -5,6 +5,7 @@ import { STEP_PAYMENT_METHOD, TRACK_SUCCESS_MESSAGE } from 'ee/subscriptions/con
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { sprintf, s__ } from '~/locale';
 import Tracking from '~/tracking';
+import { i18n } from 'ee/vue_shared/purchase_flow/constants';
 import Zuora from './zuora.vue';
 
 export default {
@@ -47,6 +48,7 @@ export default {
     },
   },
   i18n: {
+    stepEditText: i18n.edit,
     stepTitle: s__('Checkout|Payment method'),
     creditCardDetails: s__('Checkout|%{cardType} ending in %{lastFourDigits}'),
     expirationDate: s__('Checkout|Exp %{expirationMonth}/%{expirationYear}'),
@@ -56,6 +58,7 @@ export default {
 </script>
 <template>
   <step
+    :edit-button-text="$options.i18n.stepEditText"
     :step-id="$options.stepId"
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
