@@ -200,6 +200,66 @@ RSpec.shared_examples 'migration adds mapping' do
   end
 end
 
+RSpec.shared_examples 'migration creates a new index' do |version, klass|
+  let(:helper) { Gitlab::Elastic::Helper.new }
+
+  before do
+    allow(subject).to receive(:helper).and_return(helper)
+  end
+
+  subject { described_class.new(version) }
+
+  describe '#migrate' do
+    it 'logs a message and creates a standalone index' do
+      expect(subject).to receive(:log).with(/Creating standalone .* index/)
+      expect(helper).to receive(:create_standalone_indices).with(target_classes: [klass]).and_return(true).once
+
+      subject.migrate
+    end
+
+    describe 'reindexing_cleanup!' do
+      context 'when the index already exists' do
+        before do
+          allow(helper).to receive(:index_exists?).and_return(true)
+          allow(helper).to receive(:create_standalone_indices).and_return(true)
+        end
+
+        it 'deletes the index' do
+          expect(helper).to receive(:delete_index).once
+
+          subject.migrate
+        end
+      end
+    end
+
+    context 'when an error is raised' do
+      let(:error) { 'oops' }
+
+      before do
+        allow(helper).to receive(:create_standalone_indices).and_raise(StandardError, error)
+        allow(subject).to receive(:log).and_return(true)
+      end
+
+      it 'logs a message and raises an error' do
+        expect(subject).to receive(:log).with(/Failed to create index/, error: error)
+
+        expect { subject.migrate }.to raise_error(StandardError, error)
+      end
+    end
+  end
+
+  describe '#completed?' do
+    [true, false].each do |matcher|
+      it 'returns true if the index exists' do
+        allow(helper).to receive(:create_standalone_indices).and_return(true)
+        allow(helper).to receive(:index_exists?).with(index_name: /gitlab-test-/).and_return(matcher)
+
+        expect(subject.completed?).to eq(matcher)
+      end
+    end
+  end
+end
+
 RSpec.shared_examples 'a deprecated Advanced Search migration' do |version|
   subject { described_class.new(version) }
 
