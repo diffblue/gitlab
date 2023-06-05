@@ -89,7 +89,7 @@ module Namespaces
 
         Kernel.format(
           s_(
-            "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} "\
+            "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} " \
             "of namespace storage. Group owners can view namespace storage usage and purchase more from " \
             "%{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. " \
             "%{docs_link_start}How can I manage my storage?%{link_end}." \
