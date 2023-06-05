@@ -21,7 +21,7 @@ module Analytics
 
         stage_event_hash_ids(cursor_data).each do |stage_event_hash_id|
           cursor = cursor_from_data(cursor_data)
-          scope = event_model.where(stage_event_hash_id: stage_event_hash_id).where.not(end_event_timestamp: nil).order_by_end_event(:asc)
+          scope = event_model.where(stage_event_hash_id: stage_event_hash_id).order_by_end_event(:asc)
 
           iterator(scope, cursor).each_batch(of: BATCH_LIMIT) do |relation|
             if @runtime_limiter.over_time?

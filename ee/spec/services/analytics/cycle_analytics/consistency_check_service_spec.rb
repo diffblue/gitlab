@@ -14,13 +14,14 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
   subject(:service_response) { service.execute }
 
   shared_examples 'consistency check examples' do
-    context 'when two records are deleted' do
+    context 'when some records are deleted' do
       before do
         stub_licensed_features(cycle_analytics_for_groups: true)
         Analytics::CycleAnalytics::DataLoaderService.new(group: group, model: event_model.issuable_model).execute
 
         record1.delete
         record3.delete
+        record4.delete
       end
 
       it 'cleans up the stage event records' do
@@ -46,14 +47,16 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
 
         it 'stops early, returns a cursor, and restarts next run from the given cursor' do
           model_name = event_model.issuable_model.name.underscore.pluralize
-          initial_events = event_model.order_by_end_event(:asc).to_a
+          initial_events = event_model
+            .order_by_end_event(:asc)
+            .sort_by(&:stage_event_hash_id) # items are grouped by stage_event_hash_id
 
           cursor_data = {
             "#{model_name}_stage_event_hash_id": nil,
             "#{model_name}_cursor": {}
           }
 
-          3.times do |i|
+          4.times do |i|
             allow(runtime_limiter).to receive(:over_time?).and_return(false, true)
             response = service.execute(runtime_limiter: runtime_limiter, cursor_data: cursor_data)
 
@@ -61,7 +64,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
 
             expect(response.payload[:cursor]).to eq({
               'start_event_timestamp' => last_processed_event.start_event_timestamp.to_s(:inspect),
-              'end_event_timestamp' => last_processed_event.end_event_timestamp.to_s(:inspect),
+              'end_event_timestamp' => last_processed_event.end_event_timestamp&.to_s(:inspect),
               event_model.issuable_id_column.to_s => last_processed_event[event_model.issuable_id_column].to_s
             })
 
@@ -112,6 +115,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
     let!(:record1) { create(:issue, :closed, project: project1, created_at: 2.months.ago) }
     let!(:record2) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
     let!(:record3) { create(:issue, :closed, project: project2, created_at: 1.month.ago) }
+    let!(:record4) { create(:issue, project: project2, created_at: 1.month.ago) } # no closed date, so there is no end event
 
     let!(:stage) { create(:cycle_analytics_stage, namespace: group, start_event_identifier: :issue_created, end_event_identifier: :issue_closed) }
 
@@ -123,6 +127,7 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyCheckService, :aggregate_fa
     let!(:record1) { create(:merge_request, :closed_last_month, project: project1, created_at: 3.months.ago) }
     let!(:record2) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
     let!(:record3) { create(:merge_request, :closed_last_month, project: project2, created_at: 2.months.ago) }
+    let!(:record4) { create(:merge_request, :unique_branches, source_project: project2, target_project: project2, created_at: 2.months.ago) }
 
     let!(:stage) { create(:cycle_analytics_stage, namespace: group, start_event_identifier: :merge_request_created, end_event_identifier: :merge_request_closed) }
 
