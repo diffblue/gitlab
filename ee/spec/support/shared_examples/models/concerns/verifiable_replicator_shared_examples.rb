@@ -794,8 +794,7 @@ RSpec.shared_examples 'a verifiable replicator' do
 
   context 'integration tests' do
     before do
-      model_record.save!
-      model_record&.repository&.create_if_not_exists if model_record.respond_to?(:repository)
+      handle_model_record_before_example
     end
 
     context 'on a primary' do
@@ -857,5 +856,12 @@ RSpec.shared_examples 'a verifiable replicator' do
 
   def verification_state_value(state_name)
     model_record.class.verification_state_value(state_name)
+  end
+
+  # This method can be redefined when including
+  # these examples, to add additional steps required
+  # before running integration tests for a replicator
+  def handle_model_record_before_example
+    model_record.save!
   end
 end
