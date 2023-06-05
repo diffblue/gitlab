@@ -41,14 +41,21 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('dashboard functions', () => {
-    it('list all dashboards from Repo', async () => {
+    it.each`
+      scenario                                            | response                       | expected
+      ${'returns all dashboards for array responses'}     | ${TEST_CUSTOM_DASHBOARDS_LIST} | ${TEST_CUSTOM_DASHBOARDS_LIST}
+      ${'returns an empty array for non-array responses'} | ${'Not an array'}              | ${[]}
+    `('$scenario', async ({ response, expected }) => {
       const expectedUrl = `${dummyUrlRoot}/${
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
       }/-/refs/main/logs_tree/${encodeURIComponent(CUSTOM_DASHBOARDS_PATH.replace(/^\//, ''))}`;
 
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARDS_LIST);
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
       jest.spyOn(axios, 'get');
-      await getCustomDashboards(TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      const result = await getCustomDashboards(TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      expect(result).toStrictEqual(expected);
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
         params: { cb: dummyRandom, format: 'json', offset: 0 },
       });
@@ -111,16 +118,23 @@ describe('AnalyticsDashboard', () => {
   });
 
   describe('visualization functions', () => {
-    it('list all visualizations from Repo', async () => {
+    it.each`
+      scenario                                            | response                       | expected
+      ${'returns all visualizations for array responses'} | ${TEST_CUSTOM_DASHBOARDS_LIST} | ${TEST_CUSTOM_DASHBOARDS_LIST}
+      ${'returns an empty array for non-array responses'} | ${'Not an array'}              | ${[]}
+    `('$scenario', async ({ response, expected }) => {
       const expectedUrl = `${dummyUrlRoot}/${
         TEST_CUSTOM_DASHBOARDS_PROJECT.fullPath
       }/-/refs/main/logs_tree/${encodeURIComponent(
         PRODUCT_ANALYTICS_VISUALIZATIONS_PATH.replace(/^\//, ''),
       )}`;
 
-      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, TEST_CUSTOM_DASHBOARDS_LIST);
+      mock.onGet(expectedUrl).reply(HTTP_STATUS_OK, response);
       jest.spyOn(axios, 'get');
-      await getProductAnalyticsVisualizationList(TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      const result = await getProductAnalyticsVisualizationList(TEST_CUSTOM_DASHBOARDS_PROJECT);
+
+      expect(result).toStrictEqual(expected);
       expect(axios.get).toHaveBeenCalledWith(expectedUrl, {
         params: { cb: dummyRandom, format: 'json', offset: 0 },
       });

@@ -19,7 +19,7 @@ const getFileListFromCustomDashboardProject = async (path, projectInfo) => {
     }/-/refs/${DASHBOARD_BRANCH}/logs_tree/${encodeURIComponent(path.replace(/^\//, ''))}`,
     { params: { format: 'json', offset: 0, cb: Math.random() } },
   );
-  return data;
+  return Array.isArray(data) ? data : [];
 };
 
 // The `cb` parameter is added cache-bust, the API responses are cached by default
