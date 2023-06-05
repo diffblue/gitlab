@@ -16,6 +16,7 @@ describe('ExcludedNamespaces', () => {
   let wrapper;
   let axiosMock;
   const listExclusionsEndpoint = LIST_EXCLUSIONS_ENDPOINT.replace(':version', 'v4');
+  const deleteExclusionEndpoint = DELETE_EXCLUSION_ENDPOINT.replace(':version', 'v4');
 
   const createComponent = ({ mountFn = shallowMount } = {}) => {
     wrapper = mountFn(ExcludedNamespaces);
@@ -85,6 +86,7 @@ describe('ExcludedNamespaces', () => {
         expect(cells.at(0).text()).toEqual(item.namespace_name);
         expect(cells.at(1).text()).toEqual(`${item.namespace_id}`);
         expect(cells.at(2).text()).toEqual(item.reason);
+        expect(cells.at(3).findComponent(GlButton).text()).toBe('Delete');
       });
     });
   });
