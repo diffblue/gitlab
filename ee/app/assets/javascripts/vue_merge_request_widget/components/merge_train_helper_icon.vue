@@ -1,7 +1,7 @@
 <script>
 import { GlIcon, GlLink, GlPopover } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 
 export default {
   name: 'MergeTrainHelperIcon',
@@ -16,7 +16,7 @@ export default {
       'mrWidget|A merge train is a queued list of merge requests waiting to be merged into the target branch. The changes in each merge request are combined with the changes in earlier merge requests and tested before merge.',
     ),
     moreInfo: s__('mrWidget|More information'),
-    learnMore: s__('mrWidget|Learn more'),
+    learnMore: __('Learn more'),
   },
   popoverConstants: {
     target: 'merge-train-help',

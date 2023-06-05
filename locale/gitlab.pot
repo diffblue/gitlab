@@ -9583,9 +9583,6 @@ msgstr ""
 msgid "CiCatalog|Get started with the CI/CD catalog"
 msgstr ""
 
-msgid "CiCatalog|Learn more"
-msgstr ""
-
 msgid "CiCatalog|Mark project as a CI/CD Catalog resource"
 msgstr ""
 
@@ -22032,9 +22029,6 @@ msgid "Groups|Group path is available."
 msgstr ""
 
 msgid "Groups|Group path is unavailable. Path has been replaced with a suggested available path."
-msgstr ""
-
-msgid "Groups|Learn more"
 msgstr ""
 
 msgid "Groups|Learn more about subgroups"
@@ -34968,9 +34962,6 @@ msgstr ""
 msgid "Profiles|Last used:"
 msgstr ""
 
-msgid "Profiles|Learn more"
-msgstr ""
-
 msgid "Profiles|Location"
 msgstr ""
 
@@ -36667,9 +36658,6 @@ msgid "Promotions|Improve search with Advanced Search and GitLab Enterprise Edit
 msgstr ""
 
 msgid "Promotions|Keep track of events in your project"
-msgstr ""
-
-msgid "Promotions|Learn more"
 msgstr ""
 
 msgid "Promotions|Merge request approvals"
@@ -54447,9 +54435,6 @@ msgid "mrWidget|If the %{type} branch exists in your local repository, you can m
 msgstr ""
 
 msgid "mrWidget|If the last pipeline ran in the fork project, it may be inaccurate. Before merge, we advise running a pipeline in this project."
-msgstr ""
-
-msgid "mrWidget|Learn more"
 msgstr ""
 
 msgid "mrWidget|Loading deployment statistics"
