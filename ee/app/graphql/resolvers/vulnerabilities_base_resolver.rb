@@ -9,6 +9,7 @@
 module Resolvers
   class VulnerabilitiesBaseResolver < BaseResolver
     include Gitlab::Utils::StrongMemoize
+    include Gitlab::Graphql::Authorize::AuthorizeResource
 
     protected
 

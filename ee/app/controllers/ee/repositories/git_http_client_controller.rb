@@ -43,6 +43,14 @@ module EE
         prepend_before_action do
           redirect_to(geo_primary_full_url) if geo_redirect?
         end
+
+        # Order of ActionController filters are important. IP must be set prior
+        # to using it in IpRestriction::Enforcer.
+        # However, Repositories::GitHttpClientController#authenticate_user
+        # (triggered via a controller filter) evaluates policies before setting
+        # the IP. The evaluated policies are cached, so IP enforcement is not
+        # checked anymore - even if IP is set at this point.
+        prepend_around_action :set_current_ip_address
       end
 
       private
