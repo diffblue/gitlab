@@ -100,7 +100,7 @@ module QA
         end
 
         it 'manage licenses from the merge request',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039' do
           @merge_request.visit!
 
           Page::MergeRequest::Show.perform do |show|
@@ -233,7 +233,7 @@ module QA
         end
 
         it 'manage licenses from the merge request',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/394713' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/394713' do
           @merge_request.visit!
 
           Page::MergeRequest::Show.perform do |show|

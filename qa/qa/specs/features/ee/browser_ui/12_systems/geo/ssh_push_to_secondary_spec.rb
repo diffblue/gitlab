@@ -14,7 +14,7 @@ module QA
 
       context 'when regular git commit' do
         it 'is proxied to the primary and ultimately replicated to the secondary',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348058' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348058' do
           file_name = 'README.md'
           key_title = "Geo SSH to 2nd #{Time.now.to_f}"
           project = nil
@@ -87,7 +87,7 @@ module QA
 
       context 'when git-lfs commit' do
         it 'is proxied to the primary and ultimately replicated to the secondary',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348057' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348057' do
           key_title = "Geo SSH LFS to 2nd #{Time.now.to_f}"
           file_name_primary = 'README.md'
           file_name_secondary = 'README_MORE.md'
