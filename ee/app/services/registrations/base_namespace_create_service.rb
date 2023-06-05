@@ -18,7 +18,7 @@ module Registrations
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
       Onboarding::Progress.onboard(group)
 
-      unless params[:trial] == 'true'
+      if user.setup_for_company && !::Gitlab::Utils.to_boolean(params[:trial])
         experiment(:automatic_trial_registration, actor: user).track(:assignment,
           namespace: group)
       end
