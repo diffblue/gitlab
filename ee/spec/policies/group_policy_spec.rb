@@ -24,6 +24,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
       read_group_runners
       read_billing
       read_container_image
+      read_confidential_issues
     ]
   end
 
