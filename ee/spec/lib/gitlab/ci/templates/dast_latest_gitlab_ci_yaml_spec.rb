@@ -122,6 +122,28 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml', feature_category: :continuous_integr
             end
           end
 
+          context 'when CI_GITLAB_FIPS_MODE unset' do
+            let(:build_dast) { pipeline.builds.find_by(name: 'dast') }
+            let(:build_variables) { build_dast.variables.pluck(:key, :value) }
+
+            it 'sets DAST_IMAGE_SUFFIX to ""' do
+              expect(build_variables).to be_include(['DAST_IMAGE_SUFFIX', ''])
+            end
+          end
+
+          context 'when CI_GITLAB_FIPS_MODE=true' do
+            let(:build_dast) { pipeline.builds.find_by(name: 'dast') }
+            let(:build_variables) { build_dast.variables.pluck(:key, :value) }
+
+            before do
+              create(:ci_variable, project: project, key: 'CI_GITLAB_FIPS_MODE', value: 'true')
+            end
+
+            it 'sets DAST_IMAGE_SUFFIX to "-fips"' do
+              expect(build_variables).to be_include(['DAST_IMAGE_SUFFIX', '-fips'])
+            end
+          end
+
           context 'when DAST_DISABLED_FOR_DEFAULT_BRANCH=1' do
             before do
               create(:ci_variable, project: project, key: 'DAST_DISABLED_FOR_DEFAULT_BRANCH', value: '1')
