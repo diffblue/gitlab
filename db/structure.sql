@@ -15162,6 +15162,24 @@ CREATE SEQUENCE dependency_proxy_manifests_id_seq
 
 ALTER SEQUENCE dependency_proxy_manifests_id_seq OWNED BY dependency_proxy_manifests.id;
 
+CREATE TABLE dependency_proxy_packages_settings (
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    project_id bigint NOT NULL,
+    enabled boolean DEFAULT false,
+    maven_external_registry_url text,
+    encrypted_maven_external_registry_username bytea,
+    encrypted_maven_external_registry_username_iv bytea,
+    encrypted_maven_external_registry_password bytea,
+    encrypted_maven_external_registry_password_iv bytea,
+    CONSTRAINT check_14a2818907 CHECK (((num_nulls(encrypted_maven_external_registry_username, encrypted_maven_external_registry_password) = 0) OR (num_nulls(encrypted_maven_external_registry_username, encrypted_maven_external_registry_password) = 2))),
+    CONSTRAINT check_353c7ecafd CHECK ((octet_length(encrypted_maven_external_registry_username) <= 1020)),
+    CONSTRAINT check_ac55c514a5 CHECK ((char_length(maven_external_registry_url) <= 255)),
+    CONSTRAINT check_c6f700648d CHECK ((octet_length(encrypted_maven_external_registry_password) <= 1020)),
+    CONSTRAINT check_cdf5f9a434 CHECK ((octet_length(encrypted_maven_external_registry_password_iv) <= 1020)),
+    CONSTRAINT check_fd5def68ba CHECK ((octet_length(encrypted_maven_external_registry_username_iv) <= 1020))
+);
+
 CREATE TABLE deploy_keys_projects (
     id integer NOT NULL,
     deploy_key_id integer NOT NULL,
@@ -27094,6 +27112,9 @@ ALTER TABLE ONLY dependency_proxy_manifest_states
 ALTER TABLE ONLY dependency_proxy_manifests
     ADD CONSTRAINT dependency_proxy_manifests_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY dependency_proxy_packages_settings
+    ADD CONSTRAINT dependency_proxy_packages_settings_pkey PRIMARY KEY (project_id);
+
 ALTER TABLE ONLY deploy_keys_projects
     ADD CONSTRAINT deploy_keys_projects_pkey PRIMARY KEY (id);
 
@@ -36853,6 +36874,9 @@ ALTER TABLE ONLY vulnerability_user_mentions
 
 ALTER TABLE ONLY vulnerability_user_mentions
     ADD CONSTRAINT fk_rails_a18600f210_tmp FOREIGN KEY (note_id) REFERENCES notes(id_convert_to_bigint) ON DELETE CASCADE NOT VALID;
+
+ALTER TABLE ONLY dependency_proxy_packages_settings
+    ADD CONSTRAINT fk_rails_a248d0c26f FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY todos
     ADD CONSTRAINT fk_rails_a27c483435 FOREIGN KEY (group_id) REFERENCES namespaces(id) ON DELETE CASCADE;
