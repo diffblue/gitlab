@@ -15574,6 +15574,9 @@ msgstr ""
 msgid "DesignManagement|Are you sure you want to cancel editing this comment?"
 msgstr ""
 
+msgid "DesignManagement|Cancel"
+msgstr ""
+
 msgid "DesignManagement|Click the image where you'd like to start a new discussion"
 msgstr ""
 
@@ -15598,10 +15601,16 @@ msgstr ""
 msgid "DesignManagement|Could not update comment. Please try again."
 msgstr ""
 
+msgid "DesignManagement|Could not update description. Please try again."
+msgstr ""
+
 msgid "DesignManagement|Could not update discussion. Please try again."
 msgstr ""
 
 msgid "DesignManagement|Deselect all"
+msgstr ""
+
+msgid "DesignManagement|Design description"
 msgstr ""
 
 msgid "DesignManagement|Designs"
@@ -15616,6 +15625,9 @@ msgstr ""
 msgid "DesignManagement|Download design"
 msgstr ""
 
+msgid "DesignManagement|Edit description"
+msgstr ""
+
 msgid "DesignManagement|Error uploading a new design. Please try again."
 msgstr ""
 
@@ -15628,6 +15640,9 @@ msgstr ""
 msgid "DesignManagement|Go to previous design"
 msgstr ""
 
+msgid "DesignManagement|None"
+msgstr ""
+
 msgid "DesignManagement|Requested design version does not exist. Showing latest version instead"
 msgstr ""
 
@@ -15635,6 +15650,9 @@ msgid "DesignManagement|Resolve thread"
 msgstr ""
 
 msgid "DesignManagement|Resolved Comments"
+msgstr ""
+
+msgid "DesignManagement|Save"
 msgstr ""
 
 msgid "DesignManagement|Save comment"
@@ -15665,6 +15683,9 @@ msgid "DesignManagement|Upload designs"
 msgstr ""
 
 msgid "DesignManagement|Upload skipped. %{reason}"
+msgstr ""
+
+msgid "DesignManagement|Write a comment or drag your files here…"
 msgstr ""
 
 msgid "DesignManagement|Your designs are being copied and are on their way… Please refresh to update."
