@@ -10,7 +10,6 @@ module Geo
       inverse_of: :design_management_repository_state,
       class_name: 'DesignManagement::Repository'
 
-    validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :design_management_repository, presence: true
   end
 end

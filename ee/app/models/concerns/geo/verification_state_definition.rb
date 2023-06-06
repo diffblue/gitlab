@@ -7,6 +7,8 @@ module Geo
     include EachBatch
 
     included do
+      validates :verification_failure, length: { maximum: 255 }
+
       state_machine :verification_state, initial: :verification_pending do
         state :verification_pending, value: VerificationState::VERIFICATION_STATE_VALUES[:verification_pending]
         state :verification_started, value: VerificationState::VERIFICATION_STATE_VALUES[:verification_started]

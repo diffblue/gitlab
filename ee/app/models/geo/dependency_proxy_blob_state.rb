@@ -8,7 +8,6 @@ module Geo
 
     belongs_to :dependency_proxy_blob, inverse_of: :dependency_proxy_blob_state, class_name: 'DependencyProxy::Blob'
 
-    validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :dependency_proxy_blob, presence: true
   end
 end
