@@ -22,10 +22,12 @@ RSpec.describe ApprovalWrappedCodeOwnerRule do
 
     with_them do
       let(:rule) do
-        create(:code_owner_rule,
-                merge_request: merge_request,
-                users: create_list(:user, approver_count),
-                approvals_required: approvals_required)
+        create(
+          :code_owner_rule,
+          merge_request: merge_request,
+          users: create_list(:user, approver_count),
+          approvals_required: approvals_required
+        )
       end
 
       let(:branch) { subject.project.repository.branches.find { |b| b.name == merge_request.target_branch } }

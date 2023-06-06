@@ -89,10 +89,12 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
 
       metric = described_class.for_environments(environment).first!
 
-      expect(metric).to have_attributes(deployment_frequency: 1,
-                                        lead_time_for_changes_in_seconds: 2,
-                                        time_to_restore_service_in_seconds: 3,
-                                        incidents_count: 4)
+      expect(metric).to have_attributes(
+        deployment_frequency: 1,
+        lead_time_for_changes_in_seconds: 2,
+        time_to_restore_service_in_seconds: 3,
+        incidents_count: 4
+      )
     end
 
     context 'for production environment' do
@@ -114,22 +116,26 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
     end
 
     it 'when there is an existing metric already overwrites data' do
-      create(:dora_daily_metrics,
-             date: date,
-             environment: environment,
-             deployment_frequency: 90,
-             lead_time_for_changes_in_seconds: 90,
-             time_to_restore_service_in_seconds: 90,
-             incidents_count: 90)
+      create(
+        :dora_daily_metrics,
+        date: date,
+        environment: environment,
+        deployment_frequency: 90,
+        lead_time_for_changes_in_seconds: 90,
+        time_to_restore_service_in_seconds: 90,
+        incidents_count: 90
+      )
 
       subject
 
       metric = described_class.for_environments(environment).first!
 
-      expect(metric).to have_attributes(deployment_frequency: 1,
-                                        lead_time_for_changes_in_seconds: 2,
-                                        time_to_restore_service_in_seconds: 3,
-                                        incidents_count: 4)
+      expect(metric).to have_attributes(
+        deployment_frequency: 1,
+        lead_time_for_changes_in_seconds: 2,
+        time_to_restore_service_in_seconds: 3,
+        incidents_count: 4
+      )
     end
   end
 

@@ -47,10 +47,12 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
 
     context 'with instance type runner' do
       let(:runner) do
-        create(:ci_runner,
-               :instance,
-               private_projects_minutes_cost_factor: 1.1,
-               public_projects_minutes_cost_factor: 0.008)
+        create(
+          :ci_runner,
+          :instance,
+          private_projects_minutes_cost_factor: 1.1,
+          public_projects_minutes_cost_factor: 0.008
+        )
       end
 
       context 'with private visibility level' do
@@ -105,9 +107,11 @@ RSpec.describe Ci::Runner, feature_category: :continuous_integration do
 
     context 'when the project has no cost factor' do
       it 'returns false' do
-        runner = create(:ci_runner, :instance,
-                        private_projects_minutes_cost_factor: 0,
-                        public_projects_minutes_cost_factor: 0)
+        runner = create(
+          :ci_runner, :instance,
+          private_projects_minutes_cost_factor: 0,
+          public_projects_minutes_cost_factor: 0
+        )
 
         expect(runner.cost_factor_enabled?(project)).to be_falsy
       end

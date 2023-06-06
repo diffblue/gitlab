@@ -16,8 +16,10 @@ RSpec.describe Deployments::ApprovalSummary do
   end
 
   let_it_be_with_refind(:approval_rule_group) do
-    create(:protected_environment_approval_rule,
-           group: group, protected_environment: protected_environment, required_approvals: 2)
+    create(
+      :protected_environment_approval_rule,
+      group: group, protected_environment: protected_environment, required_approvals: 2
+    )
   end
 
   let_it_be_with_refind(:approval_rule_user) do
@@ -60,8 +62,10 @@ RSpec.describe Deployments::ApprovalSummary do
 
   shared_context 'with one rule has been rejected' do
     before do
-      create(:deployment_approval, :rejected, deployment: deployment, user: approver_user,
-                                              approval_rule: approval_rule_user)
+      create(
+        :deployment_approval, :rejected, deployment: deployment, user: approver_user,
+        approval_rule: approval_rule_user
+      )
     end
   end
 

@@ -69,11 +69,12 @@ RSpec.describe DependencyProxy::Manifest do
             let(:manifest_with_project_in_group) { create(:dependency_proxy_manifest, group: model) }
             let(:manifest_without_project_in_group) { create(:dependency_proxy_manifest) }
             let(:node) do
-              create(:geo_node_with_selective_sync_for,
-                     model: model,
-                     shards: :model_project,
-                     sync_object_storage: object_storage_sync_enabled
-                    )
+              create(
+                :geo_node_with_selective_sync_for,
+                model: model,
+                shards: :model_project,
+                sync_object_storage: object_storage_sync_enabled
+              )
             end
 
             it 'syncs manifests associated with projects contained in the group' do
