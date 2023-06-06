@@ -45,10 +45,14 @@ module EE
                                 }
 
         scope :available_verifiables, -> { joins(:ci_secure_file_state) }
-        scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
 
         def verification_state_object
           ci_secure_file_state
+        end
+
+        def log_geo_deleted_event
+          # Keep empty for now. Should be addressed in future
+          # by https://gitlab.com/gitlab-org/gitlab/-/issues/259694
         end
       end
 
