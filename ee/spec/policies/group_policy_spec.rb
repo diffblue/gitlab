@@ -2853,6 +2853,18 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
         it { is_expected.to be_allowed(:admin_service_accounts) }
       end
+
+      context 'when the user is an instance admin' do
+        let(:current_user) { admin }
+
+        context 'when admin mode is enabled', :enable_admin_mode do
+          it { is_expected.to be_allowed(:admin_service_accounts) }
+        end
+
+        context 'when admin mode is not enabled' do
+          it { is_expected.to be_disallowed(:admin_service_accounts) }
+        end
+      end
     end
   end
 end
