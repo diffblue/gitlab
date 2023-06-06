@@ -1,0 +1,8 @@
+---
+name: group_level_dependencies
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/120489
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/411257
+milestone: '16.1'
+type: development
+group: group::threat insights
+default_enabled: false

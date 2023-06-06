@@ -4,6 +4,9 @@ module Sbom
   class Occurrence < ApplicationRecord
     include EachBatch
 
+    SBOM_OCCURRENCES_MAX_LIMIT = 100
+    SBOM_OCCURRENCES_DEFAULT_LIMIT = 25
+
     belongs_to :component, optional: false
     belongs_to :component_version
     belongs_to :project, optional: false
@@ -30,7 +33,7 @@ module Sbom
     end
 
     scope :filter_by_package_managers, ->(package_managers) do
-      joins(:source).where("sbom_sources.source->'package_manager'->>'name' IN (?)", package_managers)
+      where(source_id: Sbom::Source.get_ids_filtered_by_package_managers(package_managers))
     end
 
     scope :filter_by_component_names, ->(component_names) do
@@ -44,6 +47,15 @@ module Sbom
         top_level: false,
         ancestors: nil
       }
+    end
+
+    def self.paginate(per_page, page)
+      per_page = per_page < 1 ? SBOM_OCCURRENCES_DEFAULT_LIMIT : per_page
+      limit = [per_page, SBOM_OCCURRENCES_MAX_LIMIT].min
+      offset_multiplier = [page, 1].max - 1
+      offset = offset_multiplier * limit
+
+      limit(limit).offset(offset)
     end
 
     private

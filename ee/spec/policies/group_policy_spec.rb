@@ -1570,7 +1570,7 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
   describe 'read_group_security_dashboard & create_vulnerability_export' do
     let(:abilities) do
-      %i[read_group_security_dashboard create_vulnerability_export read_security_resource]
+      %i[read_group_security_dashboard create_vulnerability_export read_security_resource read_dependencies]
     end
 
     before do

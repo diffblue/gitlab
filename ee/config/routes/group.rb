@@ -195,6 +195,8 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resources :compliance_framework_reports, only: [:index], constraints: { format: :csv }
     end
 
+    resources :dependencies, only: [:index]
+
     resource :push_rules, only: [:update]
 
     resources :protected_branches, only: [:create, :update, :destroy]

@@ -29690,6 +29690,8 @@ CREATE INDEX idx_repository_states_on_wiki_failure_partial ON project_repository
 
 CREATE INDEX idx_repository_states_outdated_checksums ON project_repository_states USING btree (project_id) WHERE (((repository_verification_checksum IS NULL) AND (last_repository_verification_failure IS NULL)) OR ((wiki_verification_checksum IS NULL) AND (last_wiki_verification_failure IS NULL)));
 
+CREATE INDEX idx_sbom_occurrences_on_project_id_and_source_id ON sbom_occurrences USING btree (project_id, source_id);
+
 CREATE UNIQUE INDEX idx_security_scans_on_build_and_scan_type ON security_scans USING btree (build_id, scan_type);
 
 CREATE INDEX idx_security_scans_on_scan_type ON security_scans USING btree (scan_type);
