@@ -113,7 +113,7 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
 
           click_link user.name
 
-          expect(page).to have_content('Quota of CI/CD minutes: 0 / 500')
+          expect(page).to have_content('Compute quota: 0 / 500')
         end
       end
 
@@ -127,7 +127,7 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
 
           click_link user.name
 
-          expect(page).not_to have_content('Quota of CI/CD minutes:')
+          expect(page).not_to have_content('Compute quota:')
         end
       end
     end
@@ -162,7 +162,7 @@ RSpec.describe "Admin::Users", :js, feature_category: :user_management do
 
         click_button "Save changes"
 
-        expect(page).to have_content('Quota of CI/CD minutes: 0 / 500')
+        expect(page).to have_content('Compute quota: 0 / 500')
       end
     end
 

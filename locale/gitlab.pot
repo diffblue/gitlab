@@ -2924,9 +2924,6 @@ msgstr ""
 msgid "Additional diagram formats"
 msgstr ""
 
-msgid "Additional minutes:"
-msgstr ""
-
 msgid "Additional text"
 msgstr ""
 
@@ -2943,6 +2940,9 @@ msgid "Additional text to show on the sign-in page"
 msgstr ""
 
 msgid "Additional units"
+msgstr ""
+
+msgid "Additional units of compute:"
 msgstr ""
 
 msgid "Address"
@@ -11702,6 +11702,9 @@ msgid "Components must have a 'name'"
 msgstr ""
 
 msgid "Compute quota"
+msgstr ""
+
+msgid "Compute quota:"
 msgstr ""
 
 msgid "Confidence"
@@ -34491,10 +34494,10 @@ msgstr ""
 msgid "Private profile:"
 msgstr ""
 
-msgid "Private projects Minutes cost factor"
+msgid "Private projects can be created in your personal namespace with:"
 msgstr ""
 
-msgid "Private projects can be created in your personal namespace with:"
+msgid "Private projects compute cost factor"
 msgstr ""
 
 msgid "Problem with %{name} command: %{message}."
@@ -37171,10 +37174,10 @@ msgstr ""
 msgid "Public pipelines"
 msgstr ""
 
-msgid "Public projects Minutes cost factor"
+msgid "Public projects are an easy way to allow everyone to have read-only access."
 msgstr ""
 
-msgid "Public projects are an easy way to allow everyone to have read-only access."
+msgid "Public projects compute cost factor"
 msgstr ""
 
 msgid "Publish to status page"
@@ -37415,9 +37418,6 @@ msgid "Quick help"
 msgstr ""
 
 msgid "Quick range"
-msgstr ""
-
-msgid "Quota of CI/CD minutes:"
 msgstr ""
 
 msgid "README"
