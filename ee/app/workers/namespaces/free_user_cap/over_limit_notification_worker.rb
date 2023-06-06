@@ -11,8 +11,8 @@ module Namespaces
       sidekiq_options retry: false
       idempotent!
 
-      MAX_RUNNING_JOBS = 5
-      BATCH_SIZE = 1
+      MAX_RUNNING_JOBS = 1
+      BATCH_SIZE = 100
       SCHEDULE_BUFFER_IN_HOURS = 24
 
       def perform_work(*args)
