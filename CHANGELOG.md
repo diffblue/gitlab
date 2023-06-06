@@ -809,6 +809,21 @@ entry.
 - [Add index to group_group_links table](gitlab-org/gitlab@9a3f2c1a90b54074e61d0abf07101ce664198e81) ([merge request](gitlab-org/gitlab!117386))
 - [Validate the projects.creator_id foregin key synchronously](gitlab-org/gitlab@ed9351984a16f20506babf6eab6706b917904ed1) ([merge request](gitlab-org/gitlab!117147))
 
+## 15.11.8 (2023-06-06)
+
+### Fixed (2 changes)
+
+- [Fix memory leak in CI config includes entry](gitlab-org/gitlab@3e367e614c855352295e3bcab25bf5af4ec66bf5) ([merge request](gitlab-org/gitlab!122540))
+- [Fix serialization of pull_requests in Bitbucket Server Import](gitlab-org/gitlab@201ad93dfdf8f4acfb6d6eee32e2bd6a4ff68157) ([merge request](gitlab-org/gitlab!122396))
+
+### Security (1 change)
+
+- [Validate description length in labels](gitlab-org/gitlab@2c821ee0823e37a57a6dc049591097232c933713) ([merge request](gitlab-org/gitlab!122697))
+
+### Performance (1 change)
+
+- [LFS: Serve pre-signed URLs in `/lfs/objects/batch`](gitlab-org/gitlab@df3a9655a0e8f0bdab3433cefcbd37acfb8ebcff) ([merge request](gitlab-org/gitlab!122348))
+
 ## 15.11.7 (2023-06-05)
 
 ### Security (16 changes)
