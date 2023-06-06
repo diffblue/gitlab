@@ -17,6 +17,18 @@ RSpec.describe Security::ScanResultPolicyRead, feature_category: :security_polic
 
     it { is_expected.not_to allow_value(nil).for(:role_approvers) }
     it { is_expected.to(validate_inclusion_of(:role_approvers).in_array(Gitlab::Access.values)) }
+
+    it { is_expected.not_to allow_value(-1).for(:age_value) }
+    it { is_expected.to allow_value(0, 1).for(:age_value) }
+    it { is_expected.to allow_value(nil).for(:age_value) }
+  end
+
+  describe 'enums' do
+    let(:age_operator_values) { { greater_than: 0, less_than: 1 } }
+    let(:age_interval_values) { { day: 0, week: 1, month: 2, year: 3 } }
+
+    it { is_expected.to define_enum_for(:age_operator).with_values(**age_operator_values) }
+    it { is_expected.to define_enum_for(:age_interval).with_values(**age_interval_values) }
   end
 
   describe '#newly_detected?' do
