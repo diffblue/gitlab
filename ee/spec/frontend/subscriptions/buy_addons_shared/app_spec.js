@@ -284,11 +284,11 @@ describe('Buy Addons Shared App', () => {
         await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
-          'x 1,000 minutes per pack = 1,000 CI minutes',
+          'x 1,000 units of compute per pack = 1,000 units of compute',
         );
-        expect(findSummaryLabel().text()).toBe('1 CI minute pack');
-        expect(findSummaryTotal().text()).toBe('Total minutes: 1,000');
-        expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 minutes');
+        expect(findSummaryLabel().text()).toBe('1 compute pack');
+        expect(findSummaryTotal().text()).toBe('Total units of compute: 1,000');
+        expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 units of compute');
         expect(wrapper.text()).toMatchSnapshot();
       });
 
@@ -297,11 +297,11 @@ describe('Buy Addons Shared App', () => {
         await createComponent(mockApollo, injectedProps);
 
         expect(findQuantityText().text()).toMatchInterpolatedText(
-          'x 1,000 minutes per pack = 2,000 CI minutes',
+          'x 1,000 units of compute per pack = 2,000 units of compute',
         );
-        expect(findSummaryLabel().text()).toBe('2 CI minute packs');
-        expect(findSummaryTotal().text()).toBe('Total minutes: 2,000');
-        expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 minutes');
+        expect(findSummaryLabel().text()).toBe('2 compute packs');
+        expect(findSummaryTotal().text()).toBe('Total units of compute: 2,000');
+        expect(findPriceLabel().text()).toBe('$10 per pack of 1,000 units of compute');
         expect(wrapper.text()).toMatchSnapshot();
       });
 
@@ -309,7 +309,9 @@ describe('Buy Addons Shared App', () => {
         const mockApollo = createMockApolloProvider({ plansQueryMock }, { quantity: -1 });
         await createComponent(mockApollo, injectedProps);
 
-        expect(findQuantityText().text()).toMatchInterpolatedText('x 1,000 minutes per pack');
+        expect(findQuantityText().text()).toMatchInterpolatedText(
+          'x 1,000 units of compute per pack',
+        );
         expect(wrapper.text()).toMatchSnapshot();
       });
     });

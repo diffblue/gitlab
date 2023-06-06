@@ -42,7 +42,7 @@ describe('Account verification modal', () => {
     });
 
     it('renders the description', () => {
-      expect(wrapper.find('p').text()).toContain('To use free CI/CD minutes');
+      expect(wrapper.find('p').text()).toContain('To use free units of compute');
     });
 
     it('renders the Zuora component', () => {

@@ -37,11 +37,11 @@ describe('AddonPurchaseDetails', () => {
         Step,
       },
       propsData: {
-        productLabel: 'CI minute pack',
+        productLabel: 'Compute pack',
         quantity: 0,
-        packsFormula: 'x %{packQuantity} minutes per pack = %{strong}',
-        quantityText: '%{quantity} CI minutes',
-        totalPurchase: 'Total minutes: %{quantity}',
+        packsFormula: 'x %{packQuantity} units of compute per pack = %{strong}',
+        quantityText: '%{quantity} units of compute',
+        totalPurchase: 'Total units of compute: %{quantity}',
         ...props,
       },
     });
@@ -63,7 +63,7 @@ describe('AddonPurchaseDetails', () => {
   });
 
   it('shows the correct product label', () => {
-    expect(findProductLabel().text()).toBe('CI minute pack');
+    expect(findProductLabel().text()).toBe('Compute pack');
   });
 
   it('is valid', () => {
