@@ -29934,9 +29934,6 @@ msgstr ""
 msgid "Nav|Sign out and sign in with a different account"
 msgstr ""
 
-msgid "Need help?"
-msgstr ""
-
 msgid "Needs"
 msgstr ""
 

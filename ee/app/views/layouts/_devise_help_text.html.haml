@@ -1,9 +1,0 @@
-- if Gitlab::CurrentSettings.help_text.present?
-  - if Feature.enabled?(:restyle_login_page, @project)
-    = markdown(Gitlab::CurrentSettings.help_text)
-  - else
-    %h3= _("Need help?")
-    %hr
-    %p.slead
-      = markdown(Gitlab::CurrentSettings.help_text)
-
