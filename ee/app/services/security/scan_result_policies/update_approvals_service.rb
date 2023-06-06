@@ -86,9 +86,7 @@ module Security
           findings = undismissed_security_findings(findings)
         end
 
-        if only_new_dismissed_findings?(check_dismissed, vulnerability_states)
-          findings = findings.by_state(:dismissed, check_feedback: true)
-        end
+        findings = findings.by_state(:dismissed) if only_new_dismissed_findings?(check_dismissed, vulnerability_states)
 
         findings.fetch_uuids
       end

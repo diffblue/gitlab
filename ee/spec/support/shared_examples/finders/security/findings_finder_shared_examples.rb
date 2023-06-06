@@ -298,20 +298,12 @@ RSpec.shared_examples 'security findings finder' do
           let(:state) { :dismissed }
 
           before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: deprecate_vulnerabilities_feedback?)
+            vulnerability = create(:vulnerability, :dismissed)
+
+            create(:vulnerabilities_finding, vulnerability: vulnerability, uuid: dismissed_finding_uuid)
           end
 
-          context 'when the `deprecate_vulnerabilities_feedback` FF is disabled' do
-            let(:deprecate_vulnerabilities_feedback?) { false }
-
-            it { is_expected.to match_array([dismissed_finding_uuid]) }
-          end
-
-          context 'when the `deprecate_vulnerabilities_feedback` FF is enabled' do
-            let(:deprecate_vulnerabilities_feedback?) { true }
-
-            it { is_expected.to be_empty }
-          end
+          it { is_expected.to eq([dismissed_finding_uuid]) }
         end
 
         context 'when there is a retried build' do
