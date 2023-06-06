@@ -9,6 +9,7 @@ const mockMetrics = ([
   leadTime,
   cycleTime,
   issues,
+  issuesCompleted,
   deploys,
   vulnerabilityCritical,
   vulnerabilityHigh,
@@ -48,6 +49,11 @@ const mockMetrics = ([
     value: issues,
     label: 'New Issues',
     identifier: 'issues',
+  },
+  issues_completed: {
+    value: issuesCompleted,
+    label: 'Closed Issues',
+    identifier: 'issues_completed',
   },
   deploys: {
     value: deploys,
@@ -129,25 +135,38 @@ export const MOCK_DASHBOARD_TABLE_FIELDS = [
   },
 ];
 
-export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 8, 3, 0, 5]);
+export const mockMonthToDate = mockMetrics([0.5, 0.05, 0.005, 0, 2, 4, 6, 10080, 8, 3, 0, 5]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 16, 0, 3, 2]);
+export const mockPreviousMonth = mockMetrics([3.6, 20, 4, 2, 4, '-', 12, 9000, 16, 0, 3, 2]);
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 8, 2, 0, 0]);
+export const mockTwoMonthsAgo = mockMetrics([9.2, 32, 8, 4, 2, '-', 6, 6000, 8, 2, 0, 0]);
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
-export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 16, 0, 0, 15]);
+export const mockThreeMonthsAgo = mockMetrics([20.1, 32, 8, 2, 4, 8, 12, 8000, 16, 0, 0, 15]);
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
 export const mockChartsTimePeriods = MOCK_CHART_TIME_PERIODS.map((timePeriod, i) => ({
   ...timePeriod,
-  ...mockMetrics(['-', undefined, 0, i, i + 1, i * 2, 100 - i * 2, i * i, i % 4, i % 2, i]),
+  ...mockMetrics([
+    '-',
+    undefined,
+    0,
+    i,
+    i + 1,
+    i * 2,
+    100 - i * 2,
+    200 - i * 2,
+    i * i,
+    i % 4,
+    i % 2,
+    i,
+  ]),
 }));
 
 export const mockSubsetChartsTimePeriods = MOCK_CHART_TIME_PERIODS.slice(4).map(
@@ -293,6 +312,33 @@ export const mockComparativeTableData = [
   },
   {
     metric: {
+      value: 'Closed issues',
+      identifier: 'issues_completed',
+    },
+    invertTrendColor: undefined,
+    valueLimit: {
+      max: 10001,
+      mask: '10000+',
+      description:
+        'This is a lower-bound approximation. Your group has too many issues and MRs to calculate in real time.',
+    },
+    lastMonth: {
+      change: 0.5,
+      value: 9000,
+    },
+    thisMonth: {
+      change: 0.12,
+      value: '10000+',
+      valueLimitMessage:
+        'This is a lower-bound approximation. Your group has too many issues and MRs to calculate in real time.',
+    },
+    twoMonthsAgo: {
+      change: -0.25,
+      value: 6000,
+    },
+  },
+  {
+    metric: {
       value: 'Deploys',
       identifier: 'deploys',
     },
@@ -398,6 +444,13 @@ export const mockSubsetChartData = {
     tooltipLabel: undefined,
   },
   issues: {
+    data: [
+      [expect.anything(), 0],
+      [expect.anything(), 0],
+    ],
+    tooltipLabel: undefined,
+  },
+  issues_completed: {
     data: [
       [expect.anything(), 0],
       [expect.anything(), 0],
@@ -526,6 +579,17 @@ export const mockChartData = {
       [expect.anything(), 90],
     ],
   },
+  issues_completed: {
+    tooltipLabel: undefined,
+    data: [
+      [expect.anything(), 200],
+      [expect.anything(), 198],
+      [expect.anything(), 196],
+      [expect.anything(), 194],
+      [expect.anything(), 192],
+      [expect.anything(), 190],
+    ],
+  },
   deploys: {
     tooltipLabel: undefined,
     data: [
@@ -603,6 +667,29 @@ export const mockFlowMetricsResponseData = {
     title: 'New Issues',
     __typename: 'ValueStreamAnalyticsMetric',
   },
+  issues_completed: {
+    unit: 'issues',
+    value: 109,
+    identifier: 'issues_completed',
+    links: [
+      {
+        label: 'Dashboard',
+        name: 'Issues Completed',
+        docsLink: null,
+        url: '/groups/toolbox/-/issues_analytics',
+        __typename: 'ValueStreamMetricLinkType',
+      },
+      {
+        label: 'Go to docs',
+        name: 'Issues Completed',
+        docsLink: true,
+        url: '/help/user/analytics/index#definitions',
+        __typename: 'ValueStreamMetricLinkType',
+      },
+    ],
+    title: 'Issues Completed',
+    __typename: 'ValueStreamAnalyticsMetric',
+  },
   cycle_time: {
     unit: 'days',
     value: null,
@@ -660,6 +747,7 @@ export const mockEmptyDoraResponse = { metrics: [] };
 export const mockEmptyMergeRequestsResponse = { mergeRequests: {} };
 export const mockEmptyFlowMetricsResponse = {
   issues: null,
+  issues_completed: null,
   deploys: null,
   cycle_time: null,
   lead_time: null,

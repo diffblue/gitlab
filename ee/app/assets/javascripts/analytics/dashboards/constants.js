@@ -1,7 +1,7 @@
 import { s__, __ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import {
-  KEY_METRICS,
+  FLOW_METRICS,
   DORA_METRICS,
   VULNERABILITY_METRICS,
   MERGE_REQUEST_METRICS,
@@ -36,21 +36,32 @@ export const TABLE_METRICS = {
     invertTrendColor: true,
     units: UNITS.PERCENT,
   },
-  [KEY_METRICS.LEAD_TIME]: {
+  [FLOW_METRICS.LEAD_TIME]: {
     label: s__('DORA4Metrics|Lead time'),
     invertTrendColor: true,
     units: UNITS.DAYS,
   },
-  [KEY_METRICS.CYCLE_TIME]: {
+  [FLOW_METRICS.CYCLE_TIME]: {
     label: s__('DORA4Metrics|Cycle time'),
     invertTrendColor: true,
     units: UNITS.DAYS,
   },
-  [KEY_METRICS.ISSUES]: {
+  [FLOW_METRICS.ISSUES]: {
     label: s__('DORA4Metrics|New issues'),
     units: UNITS.COUNT,
   },
-  [KEY_METRICS.DEPLOYS]: {
+  [FLOW_METRICS.ISSUES_COMPLETED]: {
+    label: s__('DORA4Metrics|Closed issues'),
+    units: UNITS.COUNT,
+    valueLimit: {
+      max: 10001,
+      mask: '10000+',
+      description: s__(
+        'DORA4Metrics|This is a lower-bound approximation. Your group has too many issues and MRs to calculate in real time.',
+      ),
+    },
+  },
+  [FLOW_METRICS.DEPLOYS]: {
     label: s__('DORA4Metrics|Deploys'),
     units: UNITS.COUNT,
   },

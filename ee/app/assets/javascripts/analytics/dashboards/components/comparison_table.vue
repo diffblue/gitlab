@@ -1,5 +1,5 @@
 <script>
-import { GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTableLite, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { GlSparklineChart } from '@gitlab/ui/dist/charts';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { CHART_GRADIENT, CHART_GRADIENT_INVERTED } from '../constants';
@@ -15,6 +15,10 @@ export default {
     GlSparklineChart,
     MetricTableCell,
     TrendIndicator,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     requestPath: {
@@ -61,9 +65,22 @@ export default {
       </template>
     </template>
 
-    <template #cell()="{ value: { value, change }, item: { invertTrendColor } }">
+    <template #cell()="{ value: { value, change, valueLimitMessage }, item: { invertTrendColor } }">
       {{ value }}
-      <trend-indicator v-if="change" :change="change" :invert-color="invertTrendColor" />
+      <gl-icon
+        v-if="valueLimitMessage"
+        v-gl-tooltip.hover
+        class="gl-text-blue-600"
+        name="information-o"
+        :title="valueLimitMessage"
+        data-testid="metric_max_value_info_icon"
+      />
+      <trend-indicator
+        v-else-if="change"
+        :change="change"
+        :invert-color="invertTrendColor"
+        data-testid="metric_trend_indicator"
+      />
     </template>
 
     <template #cell(metric)="{ value: { identifier } }">

@@ -106,6 +106,7 @@ export const hasDoraMetricValues = (timePeriods) =>
  * @param {String} units - The type of units used for this metric (ex. days, /day, count)
  * @param {Boolean} invertTrendColor - Inverts the color indicator used for metric trends.
  * @param {Array} timePeriods - Array of the metrics for different time periods
+ * @param {Object} valueLimit - Object representing the maximum value of a metric, mask that replaces the value if the limit is reached and a description to be used in a tooltip.
  * @returns {Object} The metric data formatted for the comparison table.
  */
 const buildMetricComparisonTableRow = ({
@@ -114,8 +115,13 @@ const buildMetricComparisonTableRow = ({
   units,
   invertTrendColor,
   timePeriods,
+  valueLimit,
 }) => {
-  const data = { invertTrendColor, metric: { identifier, value: label } };
+  const data = {
+    invertTrendColor,
+    metric: { identifier, value: label },
+    valueLimit,
+  };
   timePeriods.forEach((timePeriod, index) => {
     // The last timePeriod is not rendered, we just use it
     // to determine the % change for the 2nd last timePeriod
@@ -131,10 +137,15 @@ const buildMetricComparisonTableRow = ({
           previous: hasPreviousValue ? previous.value : 0,
         })
       : null;
+    const valueLimitMessage =
+      hasCurrentValue && current.value >= valueLimit?.max ? valueLimit?.description : undefined;
+    const formattedMetric = hasCurrentValue ? formatMetric(current.value, units) : '-';
+    const value = valueLimitMessage ? valueLimit?.mask : formattedMetric;
 
     data[timePeriod.key] = {
-      value: hasCurrentValue ? formatMetric(current.value, units) : '-',
+      value,
       change,
+      valueLimitMessage,
     };
   });
   return data;
@@ -151,8 +162,15 @@ const buildMetricComparisonTableRow = ({
 export const generateDoraTimePeriodComparisonTable = ({ timePeriods, excludeMetrics = [] }) =>
   Object.entries(TABLE_METRICS)
     .filter(([identifier]) => !excludeMetrics.includes(identifier))
-    .map(([identifier, { label, units, invertTrendColor }]) =>
-      buildMetricComparisonTableRow({ identifier, label, units, invertTrendColor, timePeriods }),
+    .map(([identifier, { label, units, invertTrendColor, valueLimit }]) =>
+      buildMetricComparisonTableRow({
+        identifier,
+        label,
+        units,
+        invertTrendColor,
+        timePeriods,
+        valueLimit,
+      }),
     );
 
 /**

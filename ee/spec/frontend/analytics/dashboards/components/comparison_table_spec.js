@@ -1,4 +1,5 @@
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import {
   TABLE_METRICS,
   CHART_GRADIENT,
@@ -11,9 +12,13 @@ describe('Comparison table', () => {
   let wrapper;
 
   const now = new Date();
+  const mockMetric = { identifier: 'lead_time', value: 'Lead Time' };
 
   const createWrapper = (props = {}) => {
     wrapper = mountExtended(ComparisonTable, {
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         tableData: mockComparativeTableData,
         requestPath: 'groups/test',
@@ -27,6 +32,8 @@ describe('Comparison table', () => {
   const findMetricTableCell = (identifier) => wrapper.findByTestId(`${identifier}_metric_cell`);
   const findChart = () => wrapper.findByTestId('metric_chart');
   const findChartSkeleton = () => wrapper.findByTestId('metric_chart_skeleton');
+  const findTrendIndicator = () => wrapper.findByTestId('metric_trend_indicator');
+  const findValueLimitInfoIcon = () => wrapper.findByTestId('metric_max_value_info_icon');
 
   it.each(Object.keys(TABLE_METRICS))('renders table cell for %s metric', (identifier) => {
     createWrapper();
@@ -34,9 +41,101 @@ describe('Comparison table', () => {
     expect(findMetricTableCell(identifier).props('identifier')).toBe(identifier);
   });
 
-  describe('sparkline chart', () => {
-    const mockMetric = { identifier: 'lead_time', value: 'Lead Time' };
+  describe('date range table cell', () => {
+    const valueLimit = {
+      max: 10001,
+      mask: '10000+',
+      description: 'The maximum value has been exceeded',
+    };
 
+    const mockTimePeriods = [
+      {
+        change: 0.25,
+        value: valueLimit.mask,
+        valueLimitMessage: valueLimit.description,
+      },
+      {
+        change: 0.6,
+        value: 8000,
+      },
+      {
+        change: 0,
+        value: 6000,
+      },
+    ];
+
+    describe('When value has exceeded maximum value', () => {
+      const [timePeriodWithMaximum] = mockTimePeriods;
+
+      beforeEach(() => {
+        createWrapper({
+          tableData: [
+            {
+              metric: mockMetric,
+              thisMonth: timePeriodWithMaximum,
+              valueLimit,
+            },
+          ],
+        });
+      });
+
+      it('displays correct value', () => {
+        const { value } = timePeriodWithMaximum;
+
+        expect(wrapper.findByText(value).exists()).toBe(true);
+      });
+
+      it(`should render value limit info icon with tooltip`, () => {
+        const tooltip = getBinding(findValueLimitInfoIcon().element, 'gl-tooltip');
+
+        expect(findValueLimitInfoIcon().exists()).toBe(true);
+        expect(tooltip).toBeDefined();
+        expect(findValueLimitInfoIcon().attributes('title')).toBe(
+          timePeriodWithMaximum.valueLimitMessage,
+        );
+      });
+
+      it('should not render trend indicator', () => {
+        expect(findTrendIndicator().exists()).toBe(false);
+      });
+    });
+
+    describe.each`
+      description                                               | timePeriod            | shouldRenderTrendIndicator
+      ${'When value has changed from previous month'}           | ${mockTimePeriods[1]} | ${true}
+      ${'When value has not changed or exceeded maximum value'} | ${mockTimePeriods[2]} | ${false}
+    `('$description', ({ timePeriod, shouldRenderTrendIndicator }) => {
+      beforeEach(() => {
+        createWrapper({
+          tableData: [
+            {
+              metric: mockMetric,
+              thisMonth: timePeriod,
+              valueLimit,
+            },
+          ],
+        });
+      });
+
+      it('displays correct value', () => {
+        const { value } = timePeriod;
+
+        expect(wrapper.findByText(`${value}`).exists()).toBe(true);
+      });
+
+      it(`${
+        shouldRenderTrendIndicator ? 'should render' : 'should not render'
+      } trend indicator`, () => {
+        expect(findTrendIndicator().exists()).toBe(shouldRenderTrendIndicator);
+      });
+
+      it(`should not render value limit info icon`, () => {
+        expect(findValueLimitInfoIcon().exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('sparkline chart', () => {
     beforeEach(() => {
       // Needed due to a deprecation in the GlSparkline API:
       // https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2119
