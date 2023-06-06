@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :component,
-        feature_category: :consumables_cost_management do
+  feature_category: :consumables_cost_management do
   using RSpec::Parameterized::TableSyntax
   include NamespaceStorageHelpers
 
