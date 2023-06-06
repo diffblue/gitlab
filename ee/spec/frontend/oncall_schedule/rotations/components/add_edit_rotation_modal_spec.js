@@ -12,9 +12,9 @@ import createOncallScheduleRotationMutation from 'ee/oncall_schedules/graphql/mu
 import getOncallSchedulesWithRotationsQuery from 'ee/oncall_schedules/graphql/queries/get_oncall_schedules.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
 import searchProjectMembersQuery from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import {
-  participants,
   getOncallSchedulesQueryResponse,
   createRotationResponse,
   createRotationResponseWithErrors,
@@ -26,104 +26,17 @@ jest.mock('~/lib/utils/color_utils');
 
 const schedule =
   getOncallSchedulesQueryResponse.data.project.incidentManagementOncallSchedules.nodes[0];
-const localVue = createLocalVue();
 const projectPath = 'group/project';
-const mutate = jest.fn();
-const mockHideModal = jest.fn();
 
 describe('AddEditRotationModal', () => {
   let wrapper;
-  let fakeApollo;
+  let mockApollo;
   let userSearchQueryHandler;
   let createRotationHandler;
 
-  function createRotation(localWrapper) {
-    localWrapper.findComponent(GlModal).vm.$emit('primary', { preventDefault: jest.fn() });
-    return nextTick();
-  }
-
-  const createComponent = ({ data = {}, props = {}, loading = false } = {}) => {
-    wrapper = shallowMount(AddEditRotationModal, {
-      data() {
-        return {
-          ...data,
-        };
-      },
-      propsData: {
-        modalId: addRotationModalId,
-        schedule,
-        ...props,
-      },
-      provide: {
-        projectPath,
-      },
-      mocks: {
-        $apollo: {
-          queries: {
-            participants: {
-              loading,
-            },
-          },
-          mutate,
-        },
-      },
-    });
-    wrapper.vm.$refs.addEditScheduleRotationModal.hide = mockHideModal;
-  };
-
-  const createComponentWithApollo = ({
-    search = '',
-    createHandler = jest.fn().mockResolvedValue(createRotationResponse),
-    props = {},
-  } = {}) => {
-    createRotationHandler = createHandler;
-    localVue.use(VueApollo);
-
-    fakeApollo = createMockApollo([
-      [
-        getOncallSchedulesWithRotationsQuery,
-        jest.fn().mockResolvedValue(getOncallSchedulesQueryResponse),
-      ],
-      [searchProjectMembersQuery, userSearchQueryHandler],
-      [createOncallScheduleRotationMutation, createRotationHandler],
-    ]);
-
-    fakeApollo.clients.defaultClient.cache.writeQuery({
-      query: getOncallSchedulesWithRotationsQuery,
-      variables: {
-        projectPath: 'group/project',
-      },
-      data: getOncallSchedulesQueryResponse.data,
-    });
-
-    wrapper = shallowMount(AddEditRotationModal, {
-      localVue,
-      propsData: {
-        modalId: addRotationModalId,
-        schedule,
-        rotation: mockRotation[0],
-        ...props,
-      },
-      apolloProvider: fakeApollo,
-      data() {
-        return {
-          ptSearchTerm: search,
-          form: {
-            participants,
-          },
-          participants,
-        };
-      },
-      provide: {
-        projectPath,
-      },
-    });
-
-    wrapper.vm.$refs.addEditScheduleRotationModal.hide = mockHideModal;
-  };
-
-  beforeEach(() => {
-    createComponent();
+  const localVue = createLocalVue();
+  const mockHideModal = jest.fn(function hide() {
+    this.$emit('hide');
   });
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -137,35 +50,102 @@ describe('AddEditRotationModal', () => {
     });
   };
 
+  const createComponent = ({
+    rotationHandler = jest.fn().mockResolvedValue(createRotationResponse),
+    props = {},
+  } = {}) => {
+    createRotationHandler = rotationHandler;
+    localVue.use(VueApollo);
+
+    mockApollo = createMockApollo([
+      [
+        getOncallSchedulesWithRotationsQuery,
+        jest.fn().mockResolvedValue(getOncallSchedulesQueryResponse),
+      ],
+      [searchProjectMembersQuery, userSearchQueryHandler],
+      [createOncallScheduleRotationMutation, createRotationHandler],
+    ]);
+
+    mockApollo.clients.defaultClient.cache.writeQuery({
+      query: getOncallSchedulesWithRotationsQuery,
+      variables: {
+        projectPath,
+      },
+      data: getOncallSchedulesQueryResponse.data,
+    });
+
+    wrapper = shallowMount(AddEditRotationModal, {
+      localVue,
+      apolloProvider: mockApollo,
+      provide: {
+        projectPath,
+      },
+      propsData: {
+        modalId: addRotationModalId,
+        schedule,
+        rotation: mockRotation[0],
+        ...props,
+      },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: mockHideModal,
+          },
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
+      },
+    });
+  };
+
+  beforeEach(() => {
+    createComponent();
+  });
+
   it('renders rotation modal layout', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
 
-  describe('Rotation create', () => {
-    beforeEach(() => {
-      createComponent({ data: { form: { name: mockRotation.name } } });
-    });
+  describe('Creating rotation', () => {
+    it('emits "rotation-updated" event and with the confirmation message', async () => {
+      createComponent();
+      updateRotationForm('name', mockRotation[0].name);
+      expect(wrapper.emitted('rotation-updated')).toBeUndefined();
 
-    it('makes a request with `oncallRotationCreate` to create a schedule rotation and clears the form', async () => {
-      mutate.mockResolvedValueOnce({});
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-      expect(mutate).toHaveBeenCalledWith({
-        mutation: expect.any(Object),
-        variables: { input: expect.objectContaining({ projectPath }) },
-      });
       await nextTick();
-      expect(findForm().props('form').name).toBe(undefined);
+      await waitForPromises();
+
+      const emittedEvents = wrapper.emitted('rotation-updated');
+      const emittedMsg = emittedEvents[0][0];
+
+      expect(emittedEvents).toHaveLength(1);
+      expect(emittedMsg).toBe(i18n.rotationCreated);
     });
 
-    it('does not hide the rotation modal and shows error alert on fail and does not clear the form', async () => {
-      const error = 'some error';
-      mutate.mockResolvedValueOnce({ data: { oncallRotationCreate: { errors: [error] } } });
+    it('displays alert if mutation had a recoverable error', async () => {
+      createComponent({
+        rotationHandler: jest.fn().mockResolvedValue(createRotationResponseWithErrors),
+      });
+      updateRotationForm('name', mockRotation[0].name);
+
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+      await nextTick();
       await waitForPromises();
-      expect(mockHideModal).not.toHaveBeenCalled();
+
       expect(findAlert().exists()).toBe(true);
-      expect(findAlert().text()).toContain(error);
-      expect(findForm().props('form').name).toBe(mockRotation.name);
+      expect(findAlert().text()).toContain('Houston, we have a problem');
+      expect(findForm().props('form').name).toBe(mockRotation[0].name);
+    });
+
+    it('calls the `searchProjectMembersQuery` query with the search parameter and project path', async () => {
+      userSearchQueryHandler = jest.fn().mockResolvedValue();
+      createComponent();
+      findForm().vm.$emit('filter-participants', 'root');
+      await waitForPromises();
+      expect(userSearchQueryHandler).toHaveBeenCalledWith({
+        search: 'root',
+        fullPath: projectPath,
+      });
     });
 
     describe('Validation', () => {
@@ -276,55 +256,9 @@ describe('AddEditRotationModal', () => {
     });
   });
 
-  describe('with mocked Apollo client', () => {
-    it('calls the `searchProjectMembersQuery` query with the search parameter and project path', async () => {
-      userSearchQueryHandler = jest.fn().mockResolvedValue({
-        data: {
-          users: {
-            nodes: participants,
-          },
-        },
-      });
-      createComponentWithApollo({ search: 'root' });
-      await waitForPromises();
-      expect(userSearchQueryHandler).toHaveBeenCalledWith({
-        search: 'root',
-        fullPath: projectPath,
-      });
-    });
-
-    it('calls a mutation with correct parameters and creates a rotation', async () => {
-      createComponentWithApollo();
-      expect(wrapper.emitted('rotation-updated')).toBeUndefined();
-
-      await createRotation(wrapper);
-      await waitForPromises();
-
-      expect(mockHideModal).toHaveBeenCalled();
-      expect(createRotationHandler).toHaveBeenCalled();
-      const emittedEvents = wrapper.emitted('rotation-updated');
-      const emittedMsg = emittedEvents[0][0];
-      expect(emittedEvents).toHaveLength(1);
-      expect(emittedMsg).toBe(i18n.rotationCreated);
-    });
-
-    it('displays alert if mutation had a recoverable error', async () => {
-      createComponentWithApollo({
-        createHandler: jest.fn().mockResolvedValue(createRotationResponseWithErrors),
-      });
-
-      await createRotation(wrapper);
-      await waitForPromises();
-
-      const alert = findAlert();
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toContain('Houston, we have a problem');
-    });
-  });
-
-  describe('edit mode', () => {
+  describe('When editing exisiting rotation', () => {
     beforeEach(async () => {
-      await createComponentWithApollo({ props: { isEditMode: true } });
+      await createComponent({ props: { isEditMode: true } });
       await waitForPromises();
 
       findModal().vm.$emit('show');

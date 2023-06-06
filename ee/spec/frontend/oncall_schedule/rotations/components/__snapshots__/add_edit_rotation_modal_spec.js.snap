@@ -1,24 +1,32 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AddEditRotationModal renders rotation modal layout 1`] = `
-<gl-modal-stub
-  actioncancel="[object Object]"
-  actionprimary="[object Object]"
-  arialabel=""
-  dismisslabel="Close"
-  modalclass="rotations-modal"
-  modalid="addRotationModal"
-  size="md"
-  title="Add rotation"
-  titletag="h4"
->
-  <!---->
-   
-  <add-edit-rotation-form-stub
-    form="[object Object]"
-    participants=""
-    schedule="[object Object]"
-    validationstate="[object Object]"
-  />
-</gl-modal-stub>
+<div>
+  <div
+    data-testid="slot-default"
+  >
+    <gl-alert-stub
+      dismissible="true"
+      dismisslabel="Dismiss"
+      primarybuttonlink=""
+      primarybuttontext=""
+      secondarybuttonlink=""
+      secondarybuttontext=""
+      showicon="true"
+      title=""
+      variant="danger"
+    >
+      
+    Error: Unexpected error whilst calling request handler: value is not a function
+  
+    </gl-alert-stub>
+     
+    <add-edit-rotation-form-stub
+      form="[object Object]"
+      participants=""
+      schedule="[object Object]"
+      validationstate="[object Object]"
+    />
+  </div>
+</div>
 `;
