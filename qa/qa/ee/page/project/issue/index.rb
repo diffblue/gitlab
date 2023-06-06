@@ -33,9 +33,13 @@ module QA
             end
 
             def filter_by_title(title)
-              within_element(:issuable_search_container) do
-                fill_in class: 'gl-filtered-search-term-input', with: title
-              end
+              filter_input = page.find('.gl-filtered-search-term-input')
+              filter_input.click
+              filter_input.set("#{title}:")
+
+              filter_first_suggestion = page.find('.gl-filtered-search-suggestion-list') \
+                                            .first('.gl-filtered-search-suggestion')
+              filter_first_suggestion.click
             end
           end
         end

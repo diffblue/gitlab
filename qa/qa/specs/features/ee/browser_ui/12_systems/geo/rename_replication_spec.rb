@@ -28,13 +28,13 @@ module QA
           end
 
           # rename the project
-          Page::Main::Menu.act { go_to_projects }
+          Flow::Login.sign_in
 
           Page::Dashboard::Projects.perform do |dashboard|
             dashboard.go_to_project(geo_project_name)
           end
 
-          Page::Project::Menu.act { click_settings }
+          Page::Project::Menu.perform(&:go_to_general_settings)
 
           Page::Project::Settings::Main.perform do |settings|
             settings.rename_project_to(geo_project_renamed)
