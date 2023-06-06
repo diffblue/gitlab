@@ -277,8 +277,10 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
         let(:success_path) { onboarding_project_learn_gitlab_path(project) }
 
         before do
-          allow_next_instance_of(::Projects::CreateService) do |service|
-            allow(service).to receive(:execute).and_return(project)
+          allow_next_instance_of(Registrations::StandardNamespaceCreateService) do |service|
+            allow(service).to receive(:execute).and_return(
+              ServiceResponse.success(payload: { project: project })
+            )
           end
         end
 
@@ -302,64 +304,56 @@ RSpec.describe Registrations::GroupsController, :experiment, feature_category: :
           end
         end
       end
-    end
-  end
 
-  describe 'POST #import', :saas do
-    subject(:post_import) { post :import, params: params }
+      context 'with import_url in the params', :saas do
+        let(:params) { { group: group_params, import_url: new_import_github_path } }
 
-    let(:params) { { group: group_params, import_url: new_import_github_path } }
-    let(:group_params) do
-      {
-        name: 'Group name',
-        path: 'group-path',
-        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s
-      }
-    end
+        let(:group_params) do
+          {
+            name: 'Group name',
+            path: 'group-path',
+            visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s
+          }
+        end
 
-    context 'with an unauthenticated user' do
-      it { is_expected.to have_gitlab_http_status(:redirect) }
-      it { is_expected.to redirect_to(new_user_session_path) }
-    end
+        it_behaves_like 'hides email confirmation warning'
+        it_behaves_like 'finishing onboarding'
 
-    context 'with an authenticated user' do
-      before do
-        sign_in(user)
-      end
+        context "when a group can't be created" do
+          before do
+            allow_next_instance_of(Registrations::ImportNamespaceCreateService) do |service|
+              allow(service).to receive(:execute).and_return(
+                ServiceResponse.error(message: 'failed', payload: { group: Group.new, project: Project.new })
+              )
+            end
+          end
 
-      it_behaves_like 'hides email confirmation warning'
-      it_behaves_like 'finishing onboarding'
+          it { is_expected.to render_template(:new) }
+        end
 
-      context "when a group can't be created" do
-        before do
-          allow_next_instance_of(::Groups::CreateService) do |service|
-            allow(service).to receive(:execute).and_return(Group.new)
+        context 'when there is no suggested path based from the group name' do
+          let(:group_params) { { name: '⛄⛄⛄', path: '' } }
+
+          it 'creates a group, and redirects' do
+            expect { post_create }.to change { Group.count }.by(1)
+            expect(post_create).to have_gitlab_http_status(:redirect)
           end
         end
 
-        it { is_expected.to render_template(:new) }
-      end
-
-      context 'when there is no suggested path based from the group name' do
-        let(:group_params) { { name: '⛄⛄⛄', path: '' } }
-
-        it 'creates a group, and redirects' do
-          expect { subject }.to change { Group.count }.by(1)
-          expect(subject).to have_gitlab_http_status(:redirect)
-        end
-      end
-
-      context 'when group can be created' do
-        it 'creates a group' do
-          expect { post_import }.to change { Group.count }.by(1)
-        end
-
-        it 'redirects to the import url with a namespace_id parameter' do
-          allow_next_instance_of(::Groups::CreateService) do |service|
-            allow(service).to receive(:execute).and_return(group)
+        context 'when group can be created' do
+          it 'creates a group' do
+            expect { post_create }.to change { Group.count }.by(1)
           end
 
-          expect(post_import).to redirect_to(new_import_github_url(namespace_id: group.id))
+          it 'redirects to the import url with a namespace_id parameter' do
+            allow_next_instance_of(Registrations::ImportNamespaceCreateService) do |service|
+              allow(service).to receive(:execute).and_return(
+                ServiceResponse.success(payload: { group: group })
+              )
+            end
+
+            expect(post_create).to redirect_to(new_import_github_url(namespace_id: group.id))
+          end
         end
       end
     end
