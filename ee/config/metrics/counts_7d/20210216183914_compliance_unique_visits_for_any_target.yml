@@ -2,8 +2,8 @@
 data_category: optional
 key_path: compliance_unique_visits.compliance_unique_visits_for_any_target
 description: Number of unique visits to any compliance page
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: broken

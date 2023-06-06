@@ -2,8 +2,8 @@
 data_category: optional
 key_path: redis_hll_counters.compliance.a_compliance_audit_events_api_monthly
 description: Unique users that have used the Audit Events API in a given month.
-product_section: dev
-product_stage: manage
+product_section: sec
+product_stage: govern
 product_group: compliance
 value_type: number
 status: active
