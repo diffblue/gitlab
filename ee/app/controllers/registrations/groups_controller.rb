@@ -17,7 +17,7 @@ module Registrations
 
     feature_category :onboarding
 
-    urgency :low, [:create, :import]
+    urgency :low, [:create]
 
     def new
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
@@ -27,27 +27,16 @@ module Registrations
     end
 
     def create
-      result = Registrations::StandardNamespaceCreateService.new(current_user, params).execute
+      service_class = if params[:import_url].present?
+                        Registrations::ImportNamespaceCreateService
+                      else
+                        Registrations::StandardNamespaceCreateService
+                      end
+
+      result = service_class.new(current_user, params).execute
 
       if result.success?
-        track_event('successfully_submitted_form')
-        finish_onboarding(current_user)
-        redirect_successful_namespace_creation(result.payload[:project])
-      else
-        @group = result.payload[:group]
-        @project = result.payload[:project]
-
-        render :new
-      end
-    end
-
-    def import
-      result = Registrations::ImportNamespaceCreateService.new(current_user, params).execute
-
-      if result.success?
-        finish_onboarding(current_user)
-        import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{result.payload[:group].id}").to_s
-        redirect_to import_url
+        actions_after_success(result.payload)
       else
         @group = result.payload[:group]
         @project = result.payload[:project]
@@ -57,6 +46,18 @@ module Registrations
     end
 
     private
+
+    def actions_after_success(payload)
+      finish_onboarding(current_user)
+
+      if params[:import_url].present?
+        import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{payload[:group].id}").to_s
+        redirect_to import_url
+      else
+        track_event('successfully_submitted_form')
+        redirect_successful_namespace_creation(payload[:project])
+      end
+    end
 
     def authorize_create_group!
       access_denied! unless can?(current_user, :create_group)
