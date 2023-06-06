@@ -6891,10 +6891,10 @@ heap@^0.2.6:
   resolved "https://registry.yarnpkg.com/heap/-/heap-0.2.7.tgz#1e6adf711d3f27ce35a81fe3b7bd576c2260a8fc"
   integrity sha512-2bsegYkkHO+h/9MGbn6KWcE45cHZgPANo5LXF7EvWdT0yT2EguSVO1nDgU5c8+ZOPwp2vMNa7YFsJhVcDR9Sdg==
 
-highlight.js@^11.5.1, highlight.js@~11.5.0:
-  version "11.5.1"
-  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.5.1.tgz#027c24e4509e2f4dcd00b4a6dda542ce0a1f7aea"
-  integrity sha512-LKzHqnxr4CrD2YsNoIf/o5nJ09j4yi/GcH5BnYz9UnVpZdS4ucMgvP61TDty5xJcFGRjnH4DpujkS9bHT3hq0Q==
+highlight.js@^11.8.0, highlight.js@~11.8.0:
+  version "11.8.0"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.8.0.tgz#966518ea83257bae2e7c9a48596231856555bb65"
+  integrity sha512-MedQhoqVdr0U6SSnWPzfiadUcDHfN/Wzq25AkXiQv9oiOO/sG0S7XkvpFIqWBl9Yq1UYyYOOVORs5UW2XlPyzg==
 
 hmac-drbg@^1.0.1:
   version "1.0.1"
@@ -8507,14 +8507,14 @@ loose-envify@^1.4.0:
   dependencies:
     js-tokens "^3.0.0 || ^4.0.0"
 
-lowlight@^2.6.1:
-  version "2.6.1"
-  resolved "https://registry.yarnpkg.com/lowlight/-/lowlight-2.6.1.tgz#d3cbc7ae0530c848e512b8e6528609587520b44f"
-  integrity sha512-t0ueDL6SIn9FKHipm78CNjWcJQv0xi6WCjYAICyO6GyPzoT7E58yom1mNwvI7AMwVe3pLwwFT0Bt2gml7uaUeQ==
+lowlight@^2.9.0:
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/lowlight/-/lowlight-2.9.0.tgz#70da647a4319c7bfd8e97721a679b13ef5621496"
+  integrity sha512-OpcaUTCLmHuVuBcyNckKfH5B0oA4JUavb/M/8n9iAvanJYNQkrVm4pvyX0SUaqkBG4dnWHKt7p50B3ngAG2Rfw==
   dependencies:
     "@types/hast" "^2.0.0"
     fault "^2.0.0"
-    highlight.js "~11.5.0"
+    highlight.js "~11.8.0"
 
 lru-cache@^4.1.2, lru-cache@^4.1.5:
   version "4.1.5"
