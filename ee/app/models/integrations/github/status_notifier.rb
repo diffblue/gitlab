@@ -20,8 +20,7 @@ module Integrations
       private
 
       def client
-        @client ||= Octokit::Client.new(access_token: @access_token,
-                                        api_endpoint: @api_endpoint)
+        @client ||= Octokit::Client.new(access_token: @access_token, api_endpoint: @api_endpoint)
       end
     end
   end

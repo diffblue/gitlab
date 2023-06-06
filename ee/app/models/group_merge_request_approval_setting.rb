@@ -7,11 +7,11 @@ class GroupMergeRequestApprovalSetting < ApplicationRecord
 
   validates :group, presence: true
   validates :allow_author_approval,
-            :allow_committer_approval,
-            :allow_overrides_to_approver_list_per_merge_request,
-            :retain_approvals_on_push,
-            :require_password_to_approve,
-            inclusion: { in: [true, false], message: N_('must be a boolean value') }
+    :allow_committer_approval,
+    :allow_overrides_to_approver_list_per_merge_request,
+    :retain_approvals_on_push,
+    :require_password_to_approve,
+    inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
   scope :find_or_initialize_by_group, ->(group) { find_or_initialize_by(group: group) }
 

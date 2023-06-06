@@ -20,21 +20,21 @@ module StatusPage
     before_validation :check_secret_changes
 
     validates :status_page_url,
-              length: { maximum: 1024 },
-              addressable_url: { enforce_sanitization: true, ascii_only: true },
-              allow_nil: true
+      length: { maximum: 1024 },
+      addressable_url: { enforce_sanitization: true, ascii_only: true },
+      allow_nil: true
     validates :aws_s3_bucket_name,
-              length: { minimum: 3, maximum: 63 },
-              presence: true,
-              format: { with: AWS_BUCKET_NAME_REGEXP }
+      length: { minimum: 3, maximum: 63 },
+      presence: true,
+      format: { with: AWS_BUCKET_NAME_REGEXP }
     validates :aws_access_key,
-              presence: true,
-              format: { with: AWS_ACCESS_KEY_REGEXP }
+      presence: true,
+      format: { with: AWS_ACCESS_KEY_REGEXP }
     validates :aws_secret_key,
-              presence: true,
-              format: { with: AWS_SECRET_KEY_REGEXP }
+      presence: true,
+      format: { with: AWS_SECRET_KEY_REGEXP }
     validates :project, :aws_region, :encrypted_aws_secret_key,
-              presence: true
+      presence: true
     validates :enabled, inclusion: { in: [true, false] }
 
     scope :enabled, -> { where(enabled: true) }
