@@ -11850,6 +11850,7 @@ CREATE TABLE application_settings (
     instance_level_code_suggestions_enabled boolean DEFAULT false NOT NULL,
     delete_unconfirmed_users boolean DEFAULT false NOT NULL,
     unconfirmed_users_delete_after_days integer DEFAULT 7 NOT NULL,
+    default_branch_protection_defaults jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -18754,6 +18755,7 @@ CREATE TABLE namespace_settings (
     code_suggestions boolean DEFAULT false NOT NULL,
     experiment_features_enabled boolean DEFAULT false NOT NULL,
     third_party_ai_features_enabled boolean DEFAULT true NOT NULL,
+    default_branch_protection_defaults jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT check_0ba93c78c7 CHECK ((char_length(default_branch_name) <= 255)),
     CONSTRAINT namespace_settings_unique_project_download_limit_alertlist_size CHECK ((cardinality(unique_project_download_limit_alertlist) <= 100)),
     CONSTRAINT namespace_settings_unique_project_download_limit_allowlist_size CHECK ((cardinality(unique_project_download_limit_allowlist) <= 100))
@@ -27095,6 +27097,12 @@ ALTER TABLE ONLY dast_site_validations
 
 ALTER TABLE ONLY dast_sites
     ADD CONSTRAINT dast_sites_pkey PRIMARY KEY (id);
+
+ALTER TABLE namespace_settings
+    ADD CONSTRAINT default_branch_protection_defaults_size_constraint CHECK ((octet_length((default_branch_protection_defaults)::text) <= 1024)) NOT VALID;
+
+ALTER TABLE application_settings
+    ADD CONSTRAINT default_branch_protection_defaults_size_constraint CHECK ((octet_length((default_branch_protection_defaults)::text) <= 1024)) NOT VALID;
 
 ALTER TABLE ONLY dependency_list_exports
     ADD CONSTRAINT dependency_list_exports_pkey PRIMARY KEY (id);
