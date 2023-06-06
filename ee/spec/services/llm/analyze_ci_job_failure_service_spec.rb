@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_integration do
+  using RSpec::Parameterized::TableSyntax
+
   subject { described_class.new(user, job, {}) }
 
   describe '#perform', :saas do
@@ -11,68 +13,51 @@ RSpec.describe Llm::AnalyzeCiJobFailureService, feature_category: :continuous_in
     let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
     let_it_be(:job) { create(:ci_build, :trace_live, pipeline: pipeline) }
 
-    shared_examples 'flags disabled' do
-      context 'with feature flag disabled' do
-        before do
-          stub_feature_flags(ai_build_failure_cause: false)
-          stub_feature_flags(openai_experimentation: false)
-        end
-
-        it 'returns an error' do
-          expect(subject.execute).to be_error
-        end
-      end
-    end
-
-    context 'without licensed feature avalible' do
-      context 'without permission' do
-        it 'returns an error' do
-          expect(subject.execute).to be_error
-        end
-
-        it_behaves_like 'flags disabled'
-      end
-
-      context 'with permissons' do
-        before do
-          allow(job).to receive(:debug_mode?).and_return(false)
-          project.add_maintainer(user)
-        end
-
-        it 'returns an error' do
-          expect(subject.execute).to be_error
-        end
-
-        it_behaves_like 'flags disabled'
-      end
-    end
-
-    context 'with licensed feature avalible' do
+    shared_context 'with prerequisites' do
       before do
-        stub_licensed_features(ai_analyze_ci_job_failure: true)
-      end
+        stub_feature_flags(ai_build_failure_cause: flags_enabled)
+        stub_feature_flags(openai_experimentation: flags_enabled)
+        stub_licensed_features(ai_analyze_ci_job_failure: licensed_feature_avalible)
 
-      context 'without permission' do
-        it 'returns an error' do
-          expect(subject.execute).to be_error
-        end
-
-        it_behaves_like 'flags disabled'
-      end
-
-      context 'with read build trace permission' do
-        before do
+        if has_permission
           allow(job).to receive(:debug_mode?).and_return(false)
           project.add_maintainer(user)
         end
 
-        it 'responds successfully' do
-          response = subject.execute
+        allow(Gitlab::Llm::StageCheck).to receive(:available?).and_return(stage_avalible)
+      end
+    end
 
-          expect(response).to be_success
+    context 'when all conditions are satisfied' do
+      where(:flags_enabled, :licensed_feature_avalible, :has_permission, :stage_avalible) do
+        true | true | true | true
+      end
+
+      with_them do
+        include_context 'with prerequisites'
+
+        it 'is successful' do
+          expect(subject.execute).to be_success
         end
+      end
+    end
 
-        it_behaves_like 'flags disabled'
+    context 'when at least one condition is not satisfied' do
+      where(:flags_enabled, :licensed_feature_avalible, :has_permission, :stage_avalible) do
+        # Only enumerate a single value being false since testing
+        # every edge case dosn't bring much value in this case
+        false | true  | true   | true
+        true  | false | true   | true
+        true  | true  | false  | true
+        true  | true  | true   | false
+      end
+
+      with_them do
+        include_context 'with prerequisites'
+
+        it 'returns an error' do
+          expect(subject.execute).to be_error
+        end
       end
     end
   end

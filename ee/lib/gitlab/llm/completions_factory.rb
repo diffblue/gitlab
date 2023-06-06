@@ -36,6 +36,10 @@ module Gitlab
           service_class: ::Gitlab::Llm::VertexAi::Completions::GenerateCommitMessage,
           prompt_class: ::Gitlab::Llm::Templates::GenerateCommitMessage
         },
+        analyze_ci_job_failure: {
+          service_class: Gitlab::Llm::VertexAi::Completions::AnalyzeCiJobFailure,
+          prompt_class: nil
+        },
         chat: {
           service_class: ::Gitlab::Llm::Completions::Chat,
           prompt_class: nil

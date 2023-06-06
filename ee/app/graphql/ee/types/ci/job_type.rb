@@ -17,7 +17,7 @@ module EE
         end
 
         def ai_failure_analysis
-          nil # no-op for now
+          Ai::JobFailureAnalysis.new(object).content
         end
       end
     end
