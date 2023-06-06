@@ -6,6 +6,8 @@ module Gitlab
       module Security
         module Validators
           class DefaultBranchImageValidator
+            IMAGE_WITHOUT_REVISION_REGEX = /.+?(?=:)/
+
             def initialize(project)
               @project = project
               @validated_images = {}
@@ -27,7 +29,7 @@ module Gitlab
             def image_name_exists?(image_name)
               vulnerability_reads
                 .container_scanning
-                .with_container_image(image_name)
+                .with_container_image_starting_with(image_name[IMAGE_WITHOUT_REVISION_REGEX])
                 .exists?
             end
           end

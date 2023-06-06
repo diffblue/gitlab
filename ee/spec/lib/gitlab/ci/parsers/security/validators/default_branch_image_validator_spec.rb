@@ -24,7 +24,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::DefaultBranchImageVali
     end
 
     context 'when image name is present' do
-      let(:image_name) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest' }
+      let(:image_name) { 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0/main:latest-sha' }
 
       context 'when there is no vulnerability with given location for project' do
         it { is_expected.to be false }
@@ -37,7 +37,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Validators::DefaultBranchImageVali
         let_it_be(:finding) do
           create(:vulnerabilities_finding,
             :with_container_scanning_metadata,
-            image: 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0:latest',
+            image: 'registry.gitlab.com/gitlab-org/security-products/dast/webgoat-8.0/main:new-mr-sha',
             vulnerability: vulnerability
           )
         end
