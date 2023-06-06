@@ -28,6 +28,7 @@ module QA
                 element :dast_scan_report
                 element :coverage_fuzzing_report
                 element :api_fuzzing_report
+                element :secret_detection_report
               end
 
               view 'app/assets/javascripts/ci/reports/components/report_section.vue' do
@@ -174,13 +175,21 @@ module QA
             find_element(:vulnerability_report_grouped).has_no_content?("is loading")
           end
 
-          def has_vulnerability_count?
+          def has_vulnerability_count?(expected_count = nil)
             # Match text cut off in order to find both "1 vulnerability" and "X vulnerabilities"
-            find_element(:vulnerability_report_grouped).has_content?(/Security scanning detected/)
+            unless expected_count
+              return find_element(:vulnerability_report_grouped).has_content?(/Security scanning detected/)
+            end
+
+            find_element(:vulnerability_report_grouped).has_content?(/Security scanning detected #{expected_count}( new)?( potential)? vulnerabilit/)
           end
 
           def has_sast_vulnerability_count_of?(expected)
             find_element(:sast_scan_report).has_content?(/SAST detected #{expected}( new)?( potential)? vulnerabilit/)
+          end
+
+          def has_secret_detection_vulnerability_count_of?(expected)
+            find_element(:secret_detection_report).has_content?(/Secret detection detected #{expected}( new)?( potential)? vulnerabilit/)
           end
 
           def has_dependency_vulnerability_count_of?(expected)
