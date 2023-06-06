@@ -52743,7 +52743,7 @@ msgstr ""
 msgid "Your changes have been successfully committed."
 msgstr ""
 
-msgid "Your comment could not be submitted because %{error}"
+msgid "Your comment could not be submitted because %{reason}."
 msgstr ""
 
 msgid "Your comment could not be submitted! Please check your network connection and try again."
