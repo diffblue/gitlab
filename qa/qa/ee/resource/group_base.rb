@@ -77,6 +77,45 @@ module QA
           remove_via_api!
           remove_via_api!(force: true)
         end
+
+        # Get all compliance frameworks in the group
+        #
+        # @return [Array<QA::EE::Resource::ComplianceFramework>]
+        def compliance_frameworks
+          response = process_api_response(
+            api_post_to(
+              '/graphql',
+              <<~GQL
+                query {
+                  group(fullPath: "#{full_path}") {
+                    complianceFrameworks {
+                      nodes {
+                        id
+                        name
+                        description
+                        color
+                        default
+                        pipelineConfigurationFullPath
+                      }
+                    }
+                  }
+                }
+              GQL
+            )
+          )
+          response[:nodes].map do |node|
+            QA::EE::Resource::ComplianceFramework.init do |framework|
+              # `id` field format: "gid://gitlab/ComplianceManagement::Framework/:id"
+              framework.id = node[:id].rpartition('/')[2]
+              framework.group = self
+              framework.name = node[:name]
+              framework.description = node[:description]
+              framework.color = node[:color]
+              framework.default = !!node[:default]
+              framework.pipeline_configuration_full_path = node[:pipelineConfigurationFullPath]
+            end.reload!
+          end
+        end
       end
     end
   end

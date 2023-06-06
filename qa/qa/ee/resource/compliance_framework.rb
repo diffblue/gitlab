@@ -128,6 +128,22 @@ module QA
 
           %(pipelineConfigurationFullPath: "#{pipeline_configuration_full_path}")
         end
+
+        # Return subset of fields for comparing/inspecting compliance frameworks
+        #
+        # @return [Hash]
+        def comparable
+          reload! if api_response.nil?
+
+          api_resource.slice(
+            :id,
+            :name,
+            :description,
+            :color,
+            :default,
+            :pipeline_configuration_full_path
+          )
+        end
       end
     end
   end
