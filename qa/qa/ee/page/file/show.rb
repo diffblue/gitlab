@@ -23,6 +23,10 @@ module QA
                 element :lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
                 element :disabled_lock_button, /data-qa-selector="lockBtnQASelector"/ # rubocop:disable QA/ElementWithPattern
               end
+
+              view 'ee/app/assets/javascripts/vue_shared/components/code_owners/code_owners.vue' do
+                element :collapse_toggle
+              end
             end
           end
 
@@ -49,7 +53,7 @@ module QA
           end
 
           def reveal_code_owners
-            click_on('Show all') if page.has_text?('Show all')
+            click_element(:collapse_toggle) if has_element?(:collapse_toggle, text: 'Show all')
           end
         end
       end

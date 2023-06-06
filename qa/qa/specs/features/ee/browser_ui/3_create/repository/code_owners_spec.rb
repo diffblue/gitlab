@@ -40,13 +40,8 @@ module QA
       before do
         Flow::Login.sign_in
 
-        project.visit!
-
-        Page::Project::Menu.perform(&:click_members)
-        Page::Project::Members.perform do |members_page|
-          members_page.add_member(user.username)
-          members_page.add_member(user2.username)
-        end
+        project.add_member(user)
+        project.add_member(user2)
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
