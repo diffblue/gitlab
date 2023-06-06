@@ -219,15 +219,13 @@ export default {
             if (error) {
               throw error;
             }
-
+            this.loading = false;
             this.$refs.addEditScheduleRotationModal.hide();
             this.$emit('rotation-updated', i18n.rotationCreated);
           },
         )
         .catch((error) => {
           this.error = error;
-        })
-        .finally(() => {
           this.loading = false;
         });
     },
@@ -264,15 +262,13 @@ export default {
             if (error) {
               throw error;
             }
-
+            this.loading = false;
             this.$refs.addEditScheduleRotationModal.hide();
             this.$emit('rotation-updated', i18n.editedRotation);
           },
         )
         .catch((error) => {
           this.error = error;
-        })
-        .finally(() => {
           this.loading = false;
         });
     },
@@ -354,7 +350,6 @@ export default {
     modal-class="rotations-modal"
     @primary.prevent="isEditMode ? editRotation() : createRotation()"
     @show="beforeShowModal"
-    @hide="resetModal"
   >
     <gl-alert v-if="error" variant="danger" @dismiss="error = ''">
       {{ error || $options.i18n.errorMsg }}
