@@ -11,15 +11,27 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
   subject(:result) { described_class.new(projects: project_list, user: user).execute }
 
+  def ability_requirement(ability)
+    ability_definition = MemberRole::ALL_CUSTOMIZABLE_PERMISSIONS[ability]
+    ability_definition[:requirement]
+  end
+
+  def create_member_role(ability, member)
+    create(:member_role, :guest, namespace: project.group).tap do |record|
+      record[ability] = true
+      record[ability_requirement(ability)] = true if ability_requirement(ability)
+      record.save!
+      record.members << member
+    end
+  end
+
   shared_examples 'custom roles' do |ability|
+    let(:expected_abilities) { [ability, ability_requirement(ability)].compact }
+
     context 'when custom_roles license is not enabled on project root ancestor' do
       it 'skips preload' do
         stub_licensed_features(custom_roles: false)
-        create(:member_role, :guest, namespace: project.group).tap do |record|
-          record[ability] = true
-          record.save!
-          record.members << project_member
-        end
+        create_member_role(ability, project_member)
 
         expect(result).to eq({})
       end
@@ -32,17 +44,13 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
       context 'when project has custom role' do
         let_it_be(:member_role) do
-          create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = true
-            record.save!
-            record.members << project_member
-          end
+          create_member_role(ability, project_member)
         end
 
         context 'when custom role has ability: true' do
           context 'when Array of project passed' do
             it 'returns the project_id with a value array that includes the ability' do
-              expect(result).to eq({ project.id => [ability] })
+              expect(result[project.id]).to match_array(expected_abilities)
             end
           end
 
@@ -50,7 +58,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
             let(:project_list) { Project.where(id: project.id) }
 
             it 'returns the project_id with a value array that includes the ability' do
-              expect(result).to eq({ project.id => [ability] })
+              expect(result[project.id]).to match_array(expected_abilities)
             end
           end
         end
@@ -59,15 +67,11 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
       context 'when project namespace has a custom role with ability: true' do
         let_it_be(:group_member) { create(:group_member, :guest, user: user, source: project.namespace) }
         let_it_be(:member_role) do
-          create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = true
-            record.save!
-            record.members << group_member
-          end
+          create_member_role(ability, group_member)
         end
 
         it 'returns the project_id with a value array that includes the ability' do
-          expect(result).to eq({ project.id => [ability] })
+          expect(result[project.id]).to match_array(expected_abilities)
         end
       end
 
@@ -75,18 +79,14 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
         let_it_be(:group_member) { create(:group_member, :guest, user: user, source: project.group) }
 
         it 'project value array includes the ability' do
+          create_member_role(ability, group_member)
           create(:member_role, :guest, namespace: project.group).tap do |record|
             record[ability] = false
             record.save!
             record.members << project_member
           end
-          create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = true
-            record.save!
-            record.members << project_member
-          end
 
-          expect(result[project.id]).to match_array([ability])
+          expect(result[project.id]).to match_array(expected_abilities)
         end
       end
 
@@ -123,11 +123,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
           # subgroup is within parent group of project but not above project
           subgroup = create(:group, parent: project.group)
           subgroup_member = create(:group_member, :guest, user: user, source: subgroup)
-          _custom_role_outside_hierarchy = create(:member_role, :guest, namespace: project.group).tap do |record|
-            record[ability] = false
-            record.save!
-            record.members << subgroup_member
-          end
+          create_member_role(ability, subgroup_member)
 
           expect(result).to eq({ project.id => [] })
         end
@@ -137,4 +133,5 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader, feature_category:
 
   it_behaves_like 'custom roles', :read_code
   it_behaves_like 'custom roles', :read_vulnerability
+  it_behaves_like 'custom roles', :admin_vulnerability
 end

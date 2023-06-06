@@ -225,6 +225,13 @@ module EE
         @user.custom_permission_for?(project, :read_vulnerability)
       end
 
+      desc "Custom role on project that enables admin vulnerability"
+      condition(:role_enables_admin_vulnerability) do
+        next unless @user.is_a?(User)
+
+        @user.custom_permission_for?(project, :admin_vulnerability)
+      end
+
       with_scope :subject
       condition(:suggested_reviewers_available) do
         @subject.can_suggest_reviewers?
@@ -576,6 +583,9 @@ module EE
         enable :read_vulnerability
         enable :read_security_resource
         enable :create_vulnerability_export
+      end
+      rule { custom_roles_allowed & custom_roles_vulnerabilities_allowed & role_enables_admin_vulnerability }.policy do
+        enable :admin_vulnerability
       end
 
       rule { can?(:create_issue) & okrs_enabled }.policy do

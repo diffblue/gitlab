@@ -96,6 +96,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => false,
                   "read_vulnerability" => true,
+                  "admin_vulnerability" => false,
                   "group_id" => group_id
                 },
                 {
@@ -103,6 +104,7 @@ RSpec.describe API::MemberRoles, api: true, feature_category: :system_access do
                   "base_access_level" => ::Gitlab::Access::REPORTER,
                   "read_code" => true,
                   "read_vulnerability" => false,
+                  "admin_vulnerability" => false,
                   "group_id" => group_id
                 }
               ]

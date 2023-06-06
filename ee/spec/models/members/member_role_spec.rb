@@ -126,6 +126,32 @@ RSpec.describe MemberRole, feature_category: :system_access do
           end
         end
       end
+
+      context 'when requirement is not met' do
+        context 'when custom_roles_vulnerability FF is enabled' do
+          it 'creates a validation error' do
+            member_role.base_access_level = Gitlab::Access::GUEST
+            member_role.admin_vulnerability = true
+
+            expect(member_role).not_to be_valid
+            expect(member_role.errors[:admin_vulnerability])
+              .to include(s_("MemberRole|read_vulnerability has to be enabled in order to enable admin_vulnerability."))
+          end
+        end
+
+        context 'when custom_roles_vulnerability FF is disabled' do
+          before do
+            stub_feature_flags(custom_roles_vulnerability: false)
+          end
+
+          it 'is valid' do
+            member_role.base_access_level = Gitlab::Access::GUEST
+            member_role.admin_vulnerability = true
+
+            expect(member_role).to be_valid
+          end
+        end
+      end
     end
   end
 

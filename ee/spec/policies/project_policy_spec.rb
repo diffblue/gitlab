@@ -2545,6 +2545,10 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         end
 
         it_behaves_like 'custom roles abilities'
+
+        it 'does not enable to admin_vulnerability' do
+          expect(subject).to be_disallowed(:admin_vulnerability)
+        end
       end
 
       context 'with custom_roles_vulnerability FF disabled' do
@@ -2556,6 +2560,30 @@ RSpec.describe ProjectPolicy, feature_category: :system_access do
         let(:disallowed_abilities) do
           [:read_vulnerability, :read_security_resource, :create_vulnerability_export]
         end
+
+        it { is_expected.to be_disallowed(*disallowed_abilities) }
+      end
+    end
+
+    context 'for a member role with admin_vulnerability true' do
+      context 'with custom_roles_vulnerability FF enabled' do
+        before do
+          stub_feature_flags(custom_roles_vulnerability: [project.group])
+        end
+
+        let(:member_role_abilities) { { read_vulnerability: true, admin_vulnerability: true } }
+        let(:allowed_abilities) { [:read_vulnerability, :admin_vulnerability] }
+
+        it_behaves_like 'custom roles abilities'
+      end
+
+      context 'with custom_roles_vulnerability FF disabled' do
+        before do
+          stub_feature_flags(custom_roles_vulnerability: false)
+          create_member_role(group_member_guest)
+        end
+
+        let(:disallowed_abilities) { [:admin_vulnerability] }
 
         it { is_expected.to be_disallowed(*disallowed_abilities) }
       end
