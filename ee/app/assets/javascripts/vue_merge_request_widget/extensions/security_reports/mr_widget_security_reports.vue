@@ -607,6 +607,7 @@ export default {
     SAST: 'sast_scan_report',
     DAST: 'dast_scan_report',
     DEPENDENCY_SCANNING: 'dependency_scan_report',
+    SECRET_DETECTION: 'secret_detection_report',
     CONTAINER_SCANNING: 'container_scan_report',
     COVERAGE_FUZZING: 'coverage_fuzzing_report',
     API_FUZZING: 'api_fuzzing_report',

@@ -18,6 +18,8 @@ module QA
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/selection_summary.vue' do
               element :vulnerability_card_status_dropdown
               element :change_status_button
+              element :dismissal_reason_listbox
+              element :change_status_comment_textbox
             end
 
             view 'ee/app/assets/javascripts/security_dashboard/components/shared/vulnerability_report/vulnerability_report_header.vue' do
@@ -48,10 +50,21 @@ module QA
               click_element(:vulnerability_status_content, status_description: vulnerability_name)
             end
 
-            def change_state(status)
+            def change_state(status, dismissal_reason = "not_applicable")
               click_element(:vulnerability_card_status_dropdown)
-              click_element("item_status_#{status.downcase}")
+              click_element(:"listbox_item_#{status}")
+
+              if status.include?("dismissed")
+                click_element(:dismissal_reason_listbox)
+                select_dismissal_reason(dismissal_reason)
+              end
+
+              fill_element(:change_status_comment_textbox, "E2E Test")
               click_element(:change_status_button)
+            end
+
+            def select_dismissal_reason(reason)
+              click_element(:"listbox_item_#{reason}")
             end
 
             def has_remediated_badge?(vulnerability_name)
