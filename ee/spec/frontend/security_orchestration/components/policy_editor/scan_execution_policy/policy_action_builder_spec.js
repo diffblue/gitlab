@@ -80,7 +80,10 @@ describe('PolicyActionBuilder', () => {
     await nextTick();
 
     expect(findActionSeperator().exists()).toBe(false);
-    expect(findDropdown().props('selected')).toBe('dast');
+    expect(findDropdown().props()).toMatchObject({
+      selected: 'dast',
+      headerText: __('Select a scanner'),
+    });
   });
 
   it('renders correctly the message with DAST as the default scanner', async () => {
