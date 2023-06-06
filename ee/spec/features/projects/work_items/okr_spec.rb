@@ -5,13 +5,13 @@ require 'spec_helper'
 RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   include DragTo
 
-  let_it_be_with_reload(:user) { create(:user, name: 'Sherlock Holmes') }
-  let_it_be(:user2) { create(:user, name: 'John') }
-  let_it_be(:group) { create(:group, :public) }
-  let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:objective) { create(:work_item, :objective, project: project) }
-  let_it_be(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
-  let_it_be(:key_result) { create(:work_item, :key_result, project: project) }
+  let(:user) { create(:user, name: 'Sherlock Holmes') }
+  let(:user2) { create(:user, name: 'John') }
+  let(:group) { create(:group, :public) }
+  let(:project) { create(:project, namespace: group) }
+  let(:objective) { create(:work_item, :objective, project: project) }
+  let(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
+  let(:key_result) { create(:work_item, :key_result, project: project) }
 
   before do
     group.add_developer(user)
