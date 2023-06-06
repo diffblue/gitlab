@@ -50,7 +50,7 @@
       "type": "array",
       "description": "List of tuples representing licenses and corresponding versions that are not the default for a package.",
       "minItems": 0,
-      "maxItems": 10,
+      "maxItems": 20,
       "items": {
         "$ref": "#/definitions/licenses_versions_tuple"
       }
@@ -83,7 +83,7 @@
       "type": "array",
       "description": "List of spdx_identifiers.",
       "minItems": 1,
-      "maxItems": 10,
+      "maxItems": 100,
       "items": {
         "$ref": "#/definitions/spdx_identifier"
       }
@@ -92,7 +92,7 @@
       "type": "array",
       "description": "List of versions.",
       "minItems": 1,
-      "maxItems": 50,
+      "maxItems": 500,
       "items": {
         "$ref": "#/definitions/version"
       }
