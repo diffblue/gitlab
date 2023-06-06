@@ -441,6 +441,7 @@ module EE
       rule { can?(:read_group_security_dashboard) }.policy do
         enable :create_vulnerability_export
         enable :read_security_resource
+        enable :read_dependencies
       end
 
       rule { admin | owner }.policy do
