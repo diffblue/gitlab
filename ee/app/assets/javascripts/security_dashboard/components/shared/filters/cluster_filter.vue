@@ -56,14 +56,18 @@ export default {
     selectedItems() {
       return this.selected.length ? this.selected : [ALL_ID];
     },
-  },
-  watch: {
-    selected() {
-      const gids = this.clusterAgents
+    clusterAgentIds() {
+      return this.clusterAgents
         .filter(({ value }) => this.selected.includes(value))
         .map(({ gid }) => gid);
-
-      this.$emit('filter-changed', { clusterAgentId: gids });
+    },
+  },
+  watch: {
+    clusterAgentIds: {
+      immediate: true,
+      handler() {
+        this.$emit('filter-changed', { clusterAgentId: this.clusterAgentIds });
+      },
     },
   },
   methods: {
