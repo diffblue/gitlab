@@ -25,7 +25,7 @@ module Llm
 
       case resource
       when User
-        ai_integration_enabled? && user_can_send_to_ai?
+        ai_integration_enabled? && user == resource && user_can_send_to_ai?
       else
         ai_integration_enabled?
       end
@@ -78,7 +78,9 @@ module Llm
     def user_can_send_to_ai?
       return true unless ::Gitlab.com?
 
-      user.paid_namespaces(plans: ::EE::User::AI_SUPPORTED_PLANS).any?(&:third_party_ai_features_enabled)
+      user.paid_namespaces(plans: ::EE::User::AI_SUPPORTED_PLANS).any? do |namespace|
+        namespace.third_party_ai_features_enabled && namespace.experiment_features_enabled
+      end
     end
 
     def success(data = {})

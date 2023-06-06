@@ -15,11 +15,13 @@ RSpec.describe API::Ai::Llm::GitCommand, feature_category: :source_code_manageme
   end
 
   describe 'POST /ai/llm/git_command', :saas do
-    let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
 
     before_all do
-      ultimate_group.add_developer(current_user)
+      group.add_developer(current_user)
     end
+
+    include_context 'with ai features enabled for group'
 
     it_behaves_like 'delegates AI request to Workhorse' do
       let(:expected_params) do

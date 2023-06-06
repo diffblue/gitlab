@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Llm::BaseService, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
-  let_it_be(:group) { create(:group, :public) }
+RSpec.describe Llm::BaseService, :saas, feature_category: :no_category do # rubocop: disable RSpec/InvalidFeatureCategory
+  let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:resource) { create(:issue, project: project) }
   let(:options) { {} }
 
@@ -26,13 +26,33 @@ RSpec.describe Llm::BaseService, feature_category: :no_category do # rubocop: di
     end
   end
 
+  shared_examples 'success when implemented' do
+    subject do
+      Class.new(described_class) do
+        def perform
+          worker_perform(user, resource, :test, {})
+        end
+      end.new(user, resource, options)
+    end
+
+    it 'runs the worker' do
+      expect(SecureRandom).to receive(:uuid).twice.and_return('uuid')
+      expect(::Llm::CompletionWorker)
+        .to receive(:perform_async)
+        .with(user.id, expected_resource_id, expected_resource_class, :test, { request_id: 'uuid' })
+
+      expect(subject.execute).to be_success
+    end
+  end
+
   context 'when user has no access' do
     it_behaves_like 'returns an error'
   end
 
   context 'when user has access' do
     before do
-      project.add_guest(user)
+      project.add_developer(user)
+      group.add_developer(user)
     end
 
     it_behaves_like 'raises a NotImplementedError'
@@ -45,52 +65,46 @@ RSpec.describe Llm::BaseService, feature_category: :no_category do # rubocop: di
       it_behaves_like 'returns an error'
     end
 
-    context 'when resource should not be sent to AI' do
-      let_it_be(:project) { create(:project, :private) }
+    context 'when ai features are enabled' do
+      let(:expected_resource_id) { resource.id }
+      let(:expected_resource_class) { resource.class.name.to_s }
 
-      it_behaves_like 'returns an error'
-    end
-
-    context 'when resource does not have a resource parent' do
-      let_it_be(:resource) { user }
+      include_context 'with ai features enabled for group'
 
       it_behaves_like 'raises a NotImplementedError'
+
+      context 'when resource is an issue' do
+        let_it_be(:resource) { create(:issue, project: project) }
+
+        it_behaves_like 'success when implemented'
+      end
+
+      context 'when resource is a user' do
+        let_it_be(:resource) { user }
+
+        it_behaves_like 'success when implemented'
+      end
+
+      context 'when resource is not the current user' do
+        let_it_be(:resource) { create(:user) }
+
+        it_behaves_like 'returns an error'
+      end
     end
 
     context 'when resource is a user' do
       let_it_be(:resource) { user }
 
-      context 'on Gitlab.com', :saas do
-        let_it_be_with_reload(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
-
-        before do
-          allow(ultimate_group.namespace_settings).to receive(:ai_settings_allowed?).and_return(true)
-          allow(Gitlab).to receive(:com?).and_return(true)
-        end
+      context 'when third party features are disabled' do
+        include_context 'with third party features disabled for group'
 
         it_behaves_like 'returns an error'
+      end
 
-        context 'when the user belongs to a group with an ultimate plan' do
-          before do
-            ultimate_group.add_developer(user)
-          end
+      context 'when experiment features are disabled' do
+        include_context 'with experiment features disabled for group'
 
-          context 'when the group has third party AI features enabled' do
-            before do
-              ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: true)
-            end
-
-            it_behaves_like 'raises a NotImplementedError'
-          end
-
-          context 'when the group does not have third party AI features enabled' do
-            before do
-              ultimate_group.namespace_settings.update!(third_party_ai_features_enabled: false)
-            end
-
-            it_behaves_like 'returns an error'
-          end
-        end
+        it_behaves_like 'returns an error'
       end
     end
   end

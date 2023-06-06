@@ -7,11 +7,11 @@ module Gitlab
         TOOLS = [Gitlab::Llm::Chain::Tools::IssueIdentifier].freeze
 
         def execute(user, resource, options)
-          # The Agent currently only supports Vertex as it relies on VertexAi::Client specific methods.
+          # The Agent currently only supports Anthropic as it relies on the client's specific methods.
           client = ::Gitlab::Llm::Anthropic::Client.new(user)
           context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
-            container: resource.resource_parent.root_ancestor,
+            container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
             ai_client: client
           )

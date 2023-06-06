@@ -9,10 +9,7 @@ module Llm
     end
 
     def valid?
-      super &&
-        resource.resource_parent.licensed_feature_available?(:ai_chat) &&
-        Gitlab::Llm::StageCheck.available?(resource.resource_parent.root_ancestor, :chat) &&
-        Feature.enabled?(:gitlab_duo, user)
+      super && Feature.enabled?(:gitlab_duo, user)
     end
 
     # We need to broadcast this content over the websocket as well
