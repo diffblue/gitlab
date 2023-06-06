@@ -107,6 +107,7 @@ describe('Analytics Dashboards utils', () => {
         expect(Object.keys(row)).toEqual([
           'invertTrendColor',
           'metric',
+          'valueLimit',
           'thisMonth',
           'lastMonth',
           'twoMonthsAgo',

@@ -16,7 +16,7 @@ import GroupDoraMetricsQuery from 'ee/analytics/dashboards/graphql/group_dora_me
 import ProjectDoraMetricsQuery from 'ee/analytics/dashboards/graphql/project_dora_metrics.query.graphql';
 import GroupMergeRequestsQuery from 'ee/analytics/dashboards/graphql/group_merge_requests.query.graphql';
 import ProjectMergeRequestsQuery from 'ee/analytics/dashboards/graphql/project_merge_requests.query.graphql';
-import { DORA_METRICS, VULNERABILITY_METRICS } from '~/analytics/shared/constants';
+import { DORA_METRICS, VULNERABILITY_METRICS, FLOW_METRICS } from '~/analytics/shared/constants';
 import * as utils from '~/analytics/shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -437,7 +437,11 @@ describe('Comparison chart', () => {
       await createWrapperWithRESTApi({ apolloProvider: mockApolloProvider });
 
       const metricNames = getTableData().map(({ metric }) => metric);
-      expect(metricNames).toEqual(mockComparativeTableData.map(({ metric }) => metric));
+      expect(metricNames).toEqual(
+        mockComparativeTableData
+          .filter(({ metric }) => metric.identifier !== FLOW_METRICS.ISSUES_COMPLETED)
+          .map(({ metric }) => metric),
+      );
     });
 
     it('does not render DORA metrics that were in excludeMetrics', async () => {

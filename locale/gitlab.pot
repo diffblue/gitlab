@@ -13755,6 +13755,9 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
+msgid "DORA4Metrics|Closed issues"
+msgstr ""
+
 msgid "DORA4Metrics|Critical Vulnerabilities over time"
 msgstr ""
 
@@ -13873,6 +13876,9 @@ msgid "DORA4Metrics|The chart displays the frequency of deployments to productio
 msgstr ""
 
 msgid "DORA4Metrics|The chart displays the median time between a merge request being merged and deployed to production environment(s) that are based on the %{linkStart}deployment_tier%{linkEnd} value."
+msgstr ""
+
+msgid "DORA4Metrics|This is a lower-bound approximation. Your group has too many issues and MRs to calculate in real time."
 msgstr ""
 
 msgid "DORA4Metrics|Time to Restore Service"
@@ -49724,6 +49730,9 @@ msgid "ValueStreamAnalytics|New Value Stream"
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of commits pushed to the default branch"
+msgstr ""
+
+msgid "ValueStreamAnalytics|Number of issues closed by month."
 msgstr ""
 
 msgid "ValueStreamAnalytics|Number of new issues created."

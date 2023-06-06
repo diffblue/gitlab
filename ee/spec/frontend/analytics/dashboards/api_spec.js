@@ -5,6 +5,7 @@ import { HTTP_STATUS_NOT_FOUND, HTTP_STATUS_OK } from '~/lib/utils/http_status';
 import {
   VULNERABILITY_CRITICAL_TYPE,
   VULNERABILITY_HIGH_TYPE,
+  ISSUES_COMPLETED_TYPE,
   MERGE_REQUEST_THROUGHPUT_TYPE,
 } from '~/analytics/shared/constants';
 import {
@@ -96,6 +97,7 @@ describe('Analytics Dashboards api', () => {
         LEAD_TIME_METRIC_TYPE,
         CYCLE_TIME_METRIC_TYPE,
         ISSUES_METRIC_TYPE,
+        ISSUES_COMPLETED_TYPE,
         DEPLOYS_METRIC_TYPE,
         VULNERABILITY_CRITICAL_TYPE,
         VULNERABILITY_HIGH_TYPE,
@@ -170,12 +172,13 @@ describe('Analytics Dashboards api', () => {
       cycle_time: { identifier: 'cycle_time', value: '-' },
       deploys: { identifier: 'deploys', value: 751 },
       issues: { identifier: 'issues', value: 10 },
+      issues_completed: { identifier: 'issues_completed', value: 109 },
       lead_time: { identifier: 'lead_time', value: 10 },
     };
 
     it('returns each flow metric', () => {
       const keys = Object.keys(extractGraphqlFlowData(mockFlowMetricsResponseData));
-      expect(keys).toEqual(['lead_time', 'cycle_time', 'issues', 'deploys']);
+      expect(keys).toEqual(['lead_time', 'cycle_time', 'issues', 'issues_completed', 'deploys']);
     });
 
     it('replaces null values with `-`', () => {

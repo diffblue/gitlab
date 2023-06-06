@@ -7,6 +7,9 @@ query projectFlowMetricsQuery($fullPath: ID!, $startDate: Time!, $endDate: Time!
       issues: issueCount(from: $startDate, to: $endDate) {
         ...FlowMetricItem
       }
+      issues_completed: issuesCompletedCount(from: $startDate, to: $endDate) {
+        ...FlowMetricItem
+      }
       cycle_time: cycleTime(from: $startDate, to: $endDate) {
         ...FlowMetricItem
       }

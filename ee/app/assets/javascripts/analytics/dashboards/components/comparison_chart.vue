@@ -3,6 +3,7 @@ import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { createAlert } from '~/alert';
 import { fetchMetricsData, toYmd } from '~/analytics/shared/utils';
+import { FLOW_METRICS } from '~/analytics/shared/constants';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import GroupVulnerabilitiesQuery from '../graphql/group_vulnerabilities.query.graphql';
@@ -104,6 +105,12 @@ export default {
         isProject: this.isProject,
         fullPath: this.requestPath,
       };
+    },
+    excludedMetrics() {
+      return [
+        ...this.excludeMetrics,
+        ...(this.useGraphqlEndpoint ? [] : [FLOW_METRICS.ISSUES_COMPLETED]),
+      ];
     },
   },
   async mounted() {
@@ -247,9 +254,11 @@ export default {
           this.apiQueryFn,
         );
 
-        const { excludeMetrics } = this;
         this.tableData = hasDoraMetricValues(timePeriods)
-          ? generateDoraTimePeriodComparisonTable({ timePeriods, excludeMetrics })
+          ? generateDoraTimePeriodComparisonTable({
+              timePeriods,
+              excludeMetrics: this.excludedMetrics,
+            })
           : [];
       } catch (error) {
         createAlert({ message: DASHBOARD_LOADING_FAILURE, error, captureError: true });
