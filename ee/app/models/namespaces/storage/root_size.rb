@@ -6,6 +6,7 @@ module Namespaces
       CURRENT_SIZE_CACHE_KEY = 'root_storage_current_size'
       EXPIRATION_TIME = 10.minutes
       LIMIT_CACHE_NAME = 'root_storage_size_limit'
+      COST_FACTOR_FOR_FORKS = 1.0
 
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
@@ -25,7 +26,7 @@ module Namespaces
 
       def current_size
         @current_size ||= Rails.cache.fetch(current_size_cache_key, expires_in: EXPIRATION_TIME) do
-          root_namespace.root_storage_statistics&.storage_size || 0
+          (actual_storage_size - forks_size_reduction).round
         end
       end
 
@@ -101,6 +102,26 @@ module Namespaces
 
       def limit_cache_name
         LIMIT_CACHE_NAME
+      end
+
+      def actual_storage_size
+        root_namespace.root_storage_statistics&.storage_size || 0
+      end
+
+      def forks_size_reduction
+        return 0 if root_namespace.root_storage_statistics.nil?
+
+        statistics = root_namespace.root_storage_statistics
+
+        total = statistics.public_forks_storage_size +
+          statistics.internal_forks_storage_size +
+          (root_namespace.paid? ? statistics.private_forks_storage_size : 0)
+
+        total * inverted_cost_factor_for_forks
+      end
+
+      def inverted_cost_factor_for_forks
+        1 - COST_FACTOR_FOR_FORKS
       end
     end
   end
