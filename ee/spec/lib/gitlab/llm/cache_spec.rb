@@ -64,20 +64,6 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
       expect { subject.add(payload) }.to raise_error(ArgumentError, "Invalid role 'bot'")
     end
 
-    context 'when ai_redis_cache is disabled' do
-      before do
-        stub_feature_flags(ai_redis_cache: false)
-      end
-
-      it 'does not add new message' do
-        expect(subject.find_all).to be_empty
-
-        subject.add(payload)
-
-        expect(subject.find_all).to be_empty
-      end
-    end
-
     context 'with MAX_MESSAGES limit' do
       before do
         stub_const('Gitlab::Llm::Cache::MAX_MESSAGES', 2)

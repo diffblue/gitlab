@@ -14,7 +14,7 @@ module Resolvers
         description: 'Array of roles to fetch.'
 
       def resolve(**args)
-        return [] unless current_user && Feature.enabled?(:ai_redis_cache, current_user)
+        return [] unless current_user
 
         ::Gitlab::Llm::Cache.new(current_user).find_all(args)
       end
