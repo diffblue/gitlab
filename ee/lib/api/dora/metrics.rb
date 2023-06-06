@@ -42,15 +42,12 @@ module API
 
           return render_api_error!(result[:message], result[:http_status]) unless result[:status] == :success
 
-          present backwards_compatibility(result[:data])
+          present transform_data(result[:data])
         end
 
-        def backwards_compatibility(data)
+        def transform_data(data)
           params = declared_params(include_missing: false)
           metric = params[:metric]
-
-          # @see https://gitlab.com/gitlab-org/gitlab/-/issues/334821
-          return data.first[metric] if params[:interval] == :all
 
           data.map { |row| { 'date' => row['date'], 'value' => row[metric] } }
         end
