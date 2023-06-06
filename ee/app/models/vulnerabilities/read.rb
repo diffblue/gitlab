@@ -45,6 +45,7 @@ module Vulnerabilities
     scope :with_severities, -> (severities) { where(severity: severities) }
     scope :with_states, -> (states) { where(state: states) }
     scope :with_container_image, -> (images) { where(location_image: images) }
+    scope :with_container_image_starting_with, -> (image) { where(arel_table[:location_image].matches("#{image}%")) }
     scope :with_cluster_agent_ids, -> (agent_ids) { where(cluster_agent_id: agent_ids) }
     scope :with_resolution, -> (has_resolution = true) { where(resolved_on_default_branch: has_resolution) }
     scope :with_issues, -> (has_issues = true) { where(has_issues: has_issues) }

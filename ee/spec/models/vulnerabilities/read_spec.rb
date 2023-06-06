@@ -360,6 +360,25 @@ RSpec.describe Vulnerabilities::Read, type: :model, feature_category: :vulnerabi
     end
   end
 
+  describe '.with_container_image_starting_with' do
+    let_it_be(:vulnerability) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding) { create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata, project: project, vulnerability: vulnerability) }
+
+    let_it_be(:vulnerability_with_different_image) { create(:vulnerability, project: project, report_type: 'cluster_image_scanning') }
+    let_it_be(:finding_with_different_image) do
+      create(:vulnerabilities_finding, :with_cluster_image_scanning_scanning_metadata,
+        project: project, vulnerability: vulnerability_with_different_image, location_image: 'alpine:latest')
+    end
+
+    let_it_be(:image) { finding.location['image'][0, 10] }
+
+    subject(:cluster_vulnerabilities) { described_class.with_container_image_starting_with(image) }
+
+    it 'returns vulnerabilities with given image' do
+      expect(cluster_vulnerabilities).to contain_exactly(vulnerability.vulnerability_read)
+    end
+  end
+
   describe '.with_resolution' do
     let_it_be(:vulnerability_with_resolution) { create(:vulnerability, :with_finding, resolved_on_default_branch: true) }
     let_it_be(:vulnerability_without_resolution) { create(:vulnerability, :with_finding, resolved_on_default_branch: false) }
