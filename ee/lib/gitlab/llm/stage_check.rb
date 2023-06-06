@@ -4,6 +4,7 @@ module Gitlab
   module Llm
     class StageCheck
       EXPERIMENTAL_FEATURES = [
+        :ai_analyze_ci_job_failure,
         :summarize_notes,
         :summarize_my_mr_code_review,
         :explain_code,

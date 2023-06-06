@@ -4,19 +4,21 @@ module Llm
   class AnalyzeCiJobFailureService < BaseService
     extend ::Gitlab::Utils::Override
 
+    alias_method :job, :resource
+
     override :valid
     def valid?
       super &&
-        ::License.feature_available?(:ai_analyze_ci_job_failure) &&
-        Feature.enabled?(:ai_build_failure_cause, resource.resource_parent) &&
-        user.can?(:read_build_trace, resource)
+        user.can?(:read_build_trace, job) &&
+        Feature.enabled?(:ai_build_failure_cause, job.project) &&
+        job.project.licensed_feature_available?(:ai_analyze_ci_job_failure) &&
+        Gitlab::Llm::StageCheck.available?(job.resource_parent.root_ancestor, :ai_analyze_ci_job_failure)
     end
 
     private
 
-    # no-op since the feature is in development
     def perform
-      success
+      worker_perform(user, job, :analyze_ci_job_failure, options)
     end
   end
 end
