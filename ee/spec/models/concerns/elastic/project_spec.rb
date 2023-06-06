@@ -220,9 +220,10 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
         'visibility_level',
         'last_activity_at'
       ).merge({
+        'ci_catalog' => project.catalog_resource.present?,
         'join_field' => project.es_type,
         'type' => project.es_type,
-        'schema_version' => 2301,
+        'schema_version' => 2306,
         'traversal_ids' => project.elastic_namespace_ancestry,
         'name_with_namespace' => project.full_name,
         'path_with_namespace' => project.full_path
@@ -239,6 +240,16 @@ RSpec.describe Project, :elastic, :clean_gitlab_redis_shared_state, feature_cate
       )
 
       expect(project.__elasticsearch__.as_indexed_json).to eq(expected_hash)
+    end
+
+    context 'when the add_ci_catalog_to_project migration has not finished' do
+      before do
+        set_elasticsearch_migration_to(:add_ci_catalog_to_project, including: false)
+      end
+
+      it 'does not include the ci_catalog field' do
+        expect(project.__elasticsearch__.as_indexed_json).not_to have_key('ci_catalog')
+      end
     end
   end
 end
