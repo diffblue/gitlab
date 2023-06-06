@@ -68,7 +68,7 @@ export const LABEL_CI_MINUTES_DISABLED = s__(
   'UsageQuota|%{linkStart}Shared runners%{linkEnd} are disabled, so there are no limits set on pipeline usage',
 );
 export const ADDITIONAL_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes', {
-  anchor: 'purchase-additional-cicd-minutes-free-saas',
+  anchor: 'purchase-additional-units-of-compute',
 });
 export const SHARED_RUNNERS_DOC_LINK = helpPagePath('ci/runners/index.md');
 export const CI_MINUTES_HELP_LINK = helpPagePath('ci/pipelines/cicd_minutes');

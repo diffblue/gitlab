@@ -366,7 +366,7 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
           { title: s_('BillingPlans|Executive level insights') },
           { title: s_('BillingPlans|Compliance automation') },
           { title: s_('BillingPlans|Free guest users') },
-          { title: s_('BillingPlans|50000 CI/CD minutes') }
+          { title: s_('BillingPlans|50000 units of compute') }
         ]
       })
     end
