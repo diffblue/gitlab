@@ -170,6 +170,9 @@ module Elastic
         indexes :last_activity_at, type: :date
         indexes :last_pushed_at, type: :date
 
+        indexes :ci_catalog, type: :boolean
+        indexes :readme_content, type: :text
+
         ### REPOSITORIES
         indexes :blob do
           indexes :type, type: :keyword

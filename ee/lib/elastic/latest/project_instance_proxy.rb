@@ -41,9 +41,13 @@ module Elastic
 
         # Schema version. The format is Date.today.strftime('%y_%m')
         # Please update if you're changing the schema of the document
-        data['schema_version'] = 23_01
+        data['schema_version'] = 23_06
 
         data['traversal_ids'] = target.elastic_namespace_ancestry
+
+        if ::Elastic::DataMigrationService.migration_has_finished?(:add_ci_catalog_to_project)
+          data['ci_catalog'] = target.catalog_resource.present?
+        end
 
         TRACKED_FEATURE_SETTINGS.each do |feature|
           data[feature] = if target.project_feature.present?
