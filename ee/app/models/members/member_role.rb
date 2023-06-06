@@ -1,9 +1,6 @@
 # frozen_string_literal: true
 
 class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
-  include IgnorableColumns
-  ignore_column :download_code, remove_with: '15.9', remove_after: '2023-01-22'
-
   MAX_COUNT_PER_GROUP_HIERARCHY = 10
   ALL_CUSTOMIZABLE_PERMISSIONS = {
     read_code:
