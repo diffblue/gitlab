@@ -9,7 +9,12 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
     read_code:
       { description: 'Permission to read code', minimal_level: Gitlab::Access::GUEST },
     read_vulnerability:
-      { descripition: 'Permission to read vulnerability', minimal_level: Gitlab::Access::GUEST }
+      { descripition: 'Permission to read vulnerability', minimal_level: Gitlab::Access::GUEST },
+    admin_vulnerability: {
+      descripition: 'Permission to admin vulnerability',
+      minimal_level: Gitlab::Access::GUEST,
+      requirement: :read_vulnerability
+    }
   }.freeze
   CUSTOMIZABLE_PERMISSIONS_EXEMPT_FROM_CONSUMING_SEAT = [:read_code].freeze
   NON_PERMISSION_COLUMNS = [:id, :namespace_id, :created_at, :updated_at, :base_access_level].freeze
@@ -24,6 +29,9 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
   validate :validate_namespace_locked, on: :update
   validate :attributes_locked_after_member_associated, on: :update
   validate :validate_minimal_base_access_level, if: ->(member_role) do
+    Feature.enabled?(:custom_roles_vulnerability, member_role.namespace&.root_ancestor)
+  end
+  validate :validate_requirements, if: ->(member_role) do
     Feature.enabled?(:custom_roles_vulnerability, member_role.namespace&.root_ancestor)
   end
 
@@ -81,6 +89,21 @@ class MemberRole < ApplicationRecord # rubocop:disable Gitlab/NamespacedClass
       errors.add(:base_access_level,
         format(s_("MemberRole|minimal base access level must be %{min_access_level}."),
           min_access_level: "#{Gitlab::Access.options_with_owner.key(min_level)} (#{min_level})")
+      )
+    end
+  end
+
+  def validate_requirements
+    ALL_CUSTOMIZABLE_PERMISSIONS.each do |permission, params|
+      requirement = params[:requirement]
+
+      next unless self[permission] # skipping permissions not set for the object
+      next unless requirement # skipping permissions that have no requirement
+      next if self[requirement] # the requierement is met
+
+      errors.add(permission,
+        format(s_("MemberRole|%{requirement} has to be enabled in order to enable %{permission}."),
+          requirement: requirement, permission: permission)
       )
     end
   end
