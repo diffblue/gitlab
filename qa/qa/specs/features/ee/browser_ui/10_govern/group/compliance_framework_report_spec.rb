@@ -52,8 +52,12 @@ module QA
       end
 
       after do
+        # Remove now because the cleanup tool can't remove GraphQL resources yet
         default_compliance_framework.remove_via_api!(delete_default: true)
         another_framework.remove_via_api!
+
+        # Clean up all compliance frameworks, just in case previous previous attempts (e.g. retries) left some behind
+        subgroup.sandbox.compliance_frameworks.each { |framework| framework.remove_via_api!(delete_default: true) }
       end
 
       it(
