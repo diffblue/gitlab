@@ -542,7 +542,6 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
 
           let(:version_gid) { "null" }
           let(:opts) { {} }
-          let(:spam_params) { double }
           let(:widget_params) { { description_widget: { description: "updated description" } } }
 
           let(:service) do
@@ -550,13 +549,11 @@ RSpec.describe 'Query.work_item(id)', feature_category: :team_planning do
               container: project,
               current_user: developer,
               params: opts,
-              spam_params: spam_params,
               widget_params: widget_params
             )
           end
 
           before do
-            stub_spam_services
             service.execute(work_item)
           end
 

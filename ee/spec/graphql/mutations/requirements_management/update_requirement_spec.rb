@@ -20,10 +20,6 @@ RSpec.describe Mutations::RequirementsManagement::UpdateRequirement do
 
   subject(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
 
-  before do
-    stub_spam_services
-  end
-
   describe '#resolve' do
     shared_examples 'requirements not available' do
       it 'raises a not accessible error' do

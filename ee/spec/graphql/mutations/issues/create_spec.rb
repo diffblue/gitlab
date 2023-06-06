@@ -50,7 +50,6 @@ RSpec.describe Mutations::Issues::Create do
   describe '#resolve' do
     before do
       stub_licensed_features(issuable_health_status: true)
-      stub_spam_services
     end
 
     subject(:resolved_mutation) { mutation.resolve(**mutation_params) }

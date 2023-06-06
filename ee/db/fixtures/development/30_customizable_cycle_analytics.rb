@@ -127,16 +127,14 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       Issues::UpdateService.new(
         container: project,
         current_user: user,
-        params: { label_ids: [in_dev_label.id] },
-        spam_params: nil
+        params: { label_ids: [in_dev_label.id] }
       ).execute(issue)
 
       travel_to(random_duration_in_hours.hours.from_now)
       Issues::UpdateService.new(
         container: project,
         current_user: user,
-        params: { label_ids: [in_review_label.id] },
-        spam_params: nil
+        params: { label_ids: [in_review_label.id] }
       ).execute(issue)
     end
   end
@@ -172,7 +170,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
         assignees: [project.team.users.sample]
       }
 
-      Issues::CreateService.new(container: @project, current_user: project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
+      Issues::CreateService.new(container: @project, current_user: project.team.users.sample, params: issue_params, perform_spam_check: false).execute[:issue]
     end
   end
 

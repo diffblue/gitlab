@@ -23,7 +23,7 @@ module QualityManagement
             description: description,
             label_ids: label_ids
           },
-          spam_params: nil
+          perform_spam_check: false
         ).execute
       end
 

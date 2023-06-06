@@ -44,7 +44,6 @@ module Mutations
         requirement_iid = args.delete(:iid)
         work_item_iid = args.delete(:work_item_iid)
         requirement = authorized_find!(project_path: project_path, iid: requirement_iid, work_item_iid: work_item_iid)
-        spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
         # Keeps the mutation state argument backwards compatible
         # because this now updates an issue.
@@ -54,7 +53,7 @@ module Mutations
           container: requirement.project,
           current_user: context[:current_user],
           params: args,
-          spam_params: spam_params
+          perform_spam_check: true
         ).execute(requirement.requirement_issue)
 
         {

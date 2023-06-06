@@ -28,7 +28,6 @@ RSpec.describe Mutations::RequirementsManagement::CreateRequirement do
     context 'when the user can create requirements' do
       before do
         project.add_developer(user)
-        stub_spam_services
       end
 
       context 'when requirements feature is available' do
