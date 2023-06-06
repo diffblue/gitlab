@@ -14,13 +14,11 @@ module Mutations
         project_path = args.delete(:project_path)
         project = authorized_find!(project_path)
         args[:issue_type] = :requirement
-        spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
         result = ::Issues::CreateService.new(
           container: project,
           current_user: current_user,
-          params: args,
-          spam_params: spam_params
+          params: args
         ).execute
 
         check_spam_action_response!(result[:issue]) if result[:issue]

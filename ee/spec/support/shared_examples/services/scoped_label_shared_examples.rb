@@ -37,8 +37,6 @@ RSpec.shared_examples 'new issuable with scoped labels' do
         end
 
         it 'adds only last selected exclusive scoped label' do
-          args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-
           expect(issuable.labels).to match_array([label1, label2])
         end
       end
@@ -53,8 +51,6 @@ RSpec.shared_examples 'new issuable with scoped labels' do
         end
 
         it 'adds only last selected exclusive scoped label' do
-          args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-
           expect(issuable.labels).to match_array([label1, label2])
         end
       end
@@ -79,8 +75,6 @@ RSpec.shared_examples 'new issuable with scoped labels' do
       end
 
       it 'adds all scoped labels' do
-        args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-
         expect(issuable.labels).to match_array([label1, label2, label3, label4])
       end
     end

@@ -8,7 +8,6 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
   let_it_be(:project) { create(:project, group: group).tap { |proj| proj.add_developer(developer) } }
   let_it_be(:work_item, refind: true) { create(:work_item, project: project) }
 
-  let(:spam_params) { double }
   let(:current_user) { developer }
 
   describe '#execute' do
@@ -17,16 +16,11 @@ RSpec.describe WorkItems::UpdateService, feature_category: :team_planning do
         container: project,
         current_user: current_user,
         params: {},
-        spam_params: spam_params,
         widget_params: widget_params
       )
     end
 
     subject { service.execute(work_item) }
-
-    before do
-      stub_spam_services
-    end
 
     it_behaves_like 'work item widgetable service' do
       let(:widget_params) do
