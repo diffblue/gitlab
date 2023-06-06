@@ -3,7 +3,7 @@
 module Mutations
   module AuditEvents
     module GoogleCloudLoggingConfigurations
-      class Destroy < BaseMutation
+      class Destroy < Base
         graphql_name 'GoogleCloudLoggingConfigurationDestroy'
 
         authorize :admin_external_audit_events
@@ -16,6 +16,8 @@ module Mutations
           config = authorized_find!(id)
 
           if config.destroy
+            audit(config, action: :deleted)
+
             { errors: [] }
           else
             { errors: Array(config.errors) }

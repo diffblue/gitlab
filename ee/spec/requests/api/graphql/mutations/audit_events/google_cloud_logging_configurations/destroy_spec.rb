@@ -15,6 +15,17 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
 
   subject(:mutate) { post_graphql_mutation(mutation, current_user: owner) }
 
+  shared_examples 'a mutation that does not destroy a configuration' do
+    it 'does not destroy the configuration' do
+      expect { mutate }
+        .not_to change { AuditEvents::GoogleCloudLoggingConfiguration.count }
+    end
+
+    it 'does not create audit event' do
+      expect { mutate }.not_to change { AuditEvent.count }
+    end
+  end
+
   context 'when feature is licensed' do
     before do
       stub_licensed_features(external_audit_events: true)
@@ -23,11 +34,25 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
     context 'when current user is a group owner' do
       before do
         group.add_owner(owner)
+        allow(Gitlab::Audit::Auditor).to receive(:audit)
       end
 
       it 'destroys the configuration' do
         expect { mutate }
           .to change { AuditEvents::GoogleCloudLoggingConfiguration.count }.by(-1)
+      end
+
+      it 'audits the deletion' do
+        subject
+
+        expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
+          expect(args[:name]).to eq('google_cloud_logging_configuration_deleted')
+          expect(args[:author]).to eq(current_user)
+          expect(args[:scope]).to eq(group)
+          expect(args[:target]).to eq(group)
+          expect(args[:message]).to eq("Deleted Google Cloud logging configuration with project id: " \
+                                       "#{config.google_project_id_name} and log id: #{config.log_id_name}")
+        end
       end
 
       context 'when there is an error during destroy' do
@@ -59,6 +84,7 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
+      it_behaves_like 'a mutation that does not destroy a configuration'
     end
 
     context 'when current user is a group developer' do
@@ -67,6 +93,7 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
+      it_behaves_like 'a mutation that does not destroy a configuration'
     end
 
     context 'when current user is a group guest' do
@@ -75,6 +102,7 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
       end
 
       it_behaves_like 'a mutation on an unauthorized resource'
+      it_behaves_like 'a mutation that does not destroy a configuration'
     end
   end
 
@@ -84,5 +112,6 @@ RSpec.describe 'Destroy Google Cloud logging configuration', feature_category: :
     end
 
     it_behaves_like 'a mutation on an unauthorized resource'
+    it_behaves_like 'a mutation that does not destroy a configuration'
   end
 end

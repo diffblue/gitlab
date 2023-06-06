@@ -10,7 +10,7 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
   let_it_be(:google_project_id_name) { 'test-project' }
   let_it_be(:client_email) { 'test-email@example.com' }
   let_it_be(:private_key) { OpenSSL::PKey::RSA.new(4096).to_pem }
-  let_it_be(:default_log_id_name) { 'audit_events' }
+  let_it_be(:log_id_name) { 'audit_events' }
 
   let(:current_user) { owner }
   let(:mutation) { graphql_mutation(:google_cloud_logging_configuration_create, input) }
@@ -27,10 +27,33 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
 
   subject(:mutate) { post_graphql_mutation(mutation, current_user: owner) }
 
+  shared_examples 'creates an audit event' do
+    before do
+      allow(Gitlab::Audit::Auditor).to receive(:audit)
+    end
+
+    it 'audits the creation' do
+      subject
+
+      expect(Gitlab::Audit::Auditor).to have_received(:audit) do |args|
+        expect(args[:name]).to eq('google_cloud_logging_configuration_created')
+        expect(args[:author]).to eq(current_user)
+        expect(args[:scope]).to eq(group)
+        expect(args[:target]).to eq(group)
+        expect(args[:message]).to eq("Created Google Cloud logging configuration with project id: " \
+                                     "#{google_project_id_name} and log id: #{log_id_name}")
+      end
+    end
+  end
+
   shared_examples 'a mutation that does not create a configuration' do
-    it 'does not destroy the configuration' do
+    it 'does not create the configuration' do
       expect { mutate }
         .not_to change { AuditEvents::GoogleCloudLoggingConfiguration.count }
+    end
+
+    it 'does not create audit event' do
+      expect { mutate }.not_to change { AuditEvent.count }
     end
   end
 
@@ -63,9 +86,11 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
         expect(config.group).to eq(group)
         expect(config.google_project_id_name).to eq(google_project_id_name)
         expect(config.client_email).to eq(client_email)
-        expect(config.log_id_name).to eq(default_log_id_name)
+        expect(config.log_id_name).to eq(log_id_name)
         expect(config.private_key).to eq(private_key)
       end
+
+      it_behaves_like 'creates an audit event', 'audit_events'
 
       context 'when overriding log id name' do
         let_it_be(:log_id_name) { 'test-log-id' }
@@ -91,6 +116,8 @@ RSpec.describe 'Create Google Cloud logging configuration', feature_category: :a
           expect(config.log_id_name).to eq(log_id_name)
           expect(config.private_key).to eq(private_key)
         end
+
+        it_behaves_like 'creates an audit event'
       end
 
       context 'when there is error while saving' do
