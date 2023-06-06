@@ -16,6 +16,7 @@ query epicBoardListEpics(
       lists(id: $id) {
         nodes {
           id
+          listType
           epics(first: $first, after: $after, filters: $filters) {
             nodes {
               ...EpicNode

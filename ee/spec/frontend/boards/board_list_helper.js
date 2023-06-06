@@ -1,8 +1,8 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardList from '~/boards/components/board_list.vue';
 import BoardNewIssue from '~/boards/components/board_new_issue.vue';
@@ -10,12 +10,21 @@ import BoardNewItem from '~/boards/components/board_new_item.vue';
 import defaultState from '~/boards/stores/state';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import listQuery from 'ee_else_ce/boards/graphql/board_lists_deferred.query.graphql';
+import listIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
+import listEpicsQuery from 'ee/boards/graphql/lists_epics.query.graphql';
+import epicListDeferredQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
   mockList,
-  mockIssuesByListId,
-  issues,
   mockGroupProjects,
   boardListQueryResponse,
+  epicBoardListQueryResponse,
+} from 'jest/boards/mock_data';
+import {
+  mockIssuesByListId,
+  issues,
+  mockGroupIssuesResponse,
+  mockGroupEpicsResponse,
+  rawIssue,
 } from './mock_data';
 
 export default function createComponent({
@@ -42,6 +51,58 @@ export default function createComponent({
     [listQuery, jest.fn().mockResolvedValue(boardListQueryResponse({ issuesCount }))],
     ...apolloQueryHandlers,
   ]);
+
+  const baseListQueryVariables = {
+    fullPath: 'gitlab-org',
+    boardId: 'gid://gitlab/Board/1',
+    filters: {},
+    isGroup: true,
+    isProject: false,
+    first: 10,
+  };
+
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listQuery,
+    variables: { id: 'gid://gitlab/List/1', filters: {} },
+    data: boardListQueryResponse({ listId: 'gid://gitlab/List/1' }).data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listQuery,
+    variables: { id: 'gid://gitlab/List/2', filters: {} },
+    data: boardListQueryResponse({ listId: 'gid://gitlab/List/2' }).data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listIssuesQuery,
+    variables: { ...baseListQueryVariables, id: 'gid://gitlab/List/1' },
+    data: mockGroupIssuesResponse('gid://gitlab/List/1', [
+      { ...rawIssue, id: 'gid://gitlab/Issue/437' },
+    ]).data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listIssuesQuery,
+    variables: { ...baseListQueryVariables, id: 'gid://gitlab/List/2' },
+    data: mockGroupIssuesResponse('gid://gitlab/List/2', [{ ...rawIssue, iid: '28' }]).data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: epicListDeferredQuery,
+    variables: { id: 'gid://gitlab/Boards::EpicList/4', filters: {} },
+    data: epicBoardListQueryResponse().data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: epicListDeferredQuery,
+    variables: { id: 'gid://gitlab/Boards::EpicList/5', filters: {} },
+    data: epicBoardListQueryResponse().data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listEpicsQuery,
+    variables: { ...baseListQueryVariables, id: 'gid://gitlab/Boards::EpicList/4' },
+    data: mockGroupEpicsResponse.data,
+  });
+  fakeApollo.clients.defaultClient.writeQuery({
+    query: listEpicsQuery,
+    variables: { ...baseListQueryVariables, id: 'gid://gitlab/Boards::EpicList/5' },
+    data: mockGroupEpicsResponse.data,
+  });
 
   const store = new Vuex.Store({
     state: {
@@ -84,7 +145,7 @@ export default function createComponent({
     list.issuesCount = 1;
   }
 
-  const component = shallowMount(BoardList, {
+  const component = shallowMountExtended(BoardList, {
     apolloProvider: fakeApollo,
     store,
     propsData: {

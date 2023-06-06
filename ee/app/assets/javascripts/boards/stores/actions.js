@@ -617,7 +617,7 @@ export default {
         },
       })
       .then(({ data }) => {
-        if (data?.epicMoveList?.errors.length) {
+        if (data?.issuableMoveList?.errors.length) {
           throw new Error();
         }
       })
