@@ -1994,24 +1994,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
       end
     end
-
-    context 'slack' do
-      where(:development, :slack_app_enabled, :disabled_integrations) do
-        true | true | []
-        true | false | []
-        false | true | %w[slack_slash_commands]
-        false | false | %w[gitlab_slack_application]
-      end
-
-      with_them do
-        before do
-          allow(Rails.env).to receive(:development?).and_return(development)
-          allow(Gitlab::CurrentSettings).to receive(:slack_app_enabled).and_return(slack_app_enabled)
-        end
-
-        it { is_expected.to include(*disabled_integrations) }
-      end
-    end
   end
 
   describe '#pull_mirror_available?' do
@@ -2087,38 +2069,6 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       expect(project.import_url).to eq('')
       expect(project.import_data.user).to be_nil
       expect(project.import_data.password).to eq('pass')
-    end
-  end
-
-  describe '#with_slack_application_disabled' do
-    let_it_be(:project1) { create(:project) }
-    let_it_be(:project2) { create(:project) }
-    let_it_be(:project3) { create(:project) }
-
-    before_all do
-      create(:gitlab_slack_application_integration, project: project2)
-      create(:gitlab_slack_application_integration, project: project3).update!(active: false)
-    end
-
-    context 'when slack applications are available' do
-      it 'returns projects where Slack application is disabled or absent' do
-        projects = described_class.with_slack_application_disabled
-
-        expect(projects).to include(project1, project3)
-        expect(projects).not_to include(project2)
-      end
-    end
-
-    context 'when slack applications are not available' do
-      before do
-        allow(::Gitlab).to receive(:dev_or_test_env?).and_return(false)
-      end
-
-      it 'returns projects where Slack application is disabled or absent' do
-        projects = described_class.with_slack_application_disabled
-
-        expect(projects).to include(project1, project2, project3)
-      end
     end
   end
 

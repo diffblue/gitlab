@@ -40,7 +40,6 @@ RSpec.describe Projects::Settings::IntegrationsController, feature_category: :in
 
     it 'enables GitlabSlackApplication and disables SlackSlashCommands' do
       stub_application_setting(slack_app_enabled: true)
-      allow(::Gitlab).to receive(:com?).and_return(true)
 
       get :index, params: { namespace_id: project.namespace, project_id: project }
 

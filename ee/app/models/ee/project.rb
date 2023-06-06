@@ -55,7 +55,6 @@ module EE
       has_one :index_status
 
       has_one :github_integration, class_name: 'Integrations::Github'
-      has_one :gitlab_slack_application_integration, class_name: 'Integrations::GitlabSlackApplication'
 
       has_one :status_page_setting, inverse_of: :project, class_name: 'StatusPage::ProjectSetting'
       has_one :compliance_framework_setting, class_name: 'ComplianceManagement::ComplianceFramework::ProjectSettings', inverse_of: :project
@@ -417,20 +416,6 @@ module EE
 
       def search_by_visibility(level)
         where(visibility_level: ::Gitlab::VisibilityLevel.string_options[level])
-      end
-
-      def with_slack_application_disabled
-        # Using Arel to avoid exposing what the column backing the type: attribute is
-        # rubocop: disable GitlabSecurity/PublicSend
-        with_active_slack = ::Integration.active.by_name(:gitlab_slack_application)
-        join_contraint = arel_table[:id].eq(::Integration.arel_table[:project_id])
-        constraint = with_active_slack.where_clause.send(:predicates).reduce(join_contraint) { |a, b| a.and(b) }
-        join = arel_table.join(::Integration.arel_table, Arel::Nodes::OuterJoin).on(constraint).join_sources
-        # rubocop: enable GitlabSecurity/PublicSend
-
-        joins(join).where(integrations: { id: nil })
-      rescue ::Integration::UnknownType
-        all
       end
 
       override :with_web_entity_associations
@@ -814,15 +799,8 @@ module EE
     def disabled_integrations
       strong_memoize(:disabled_integrations) do
         gh = github_integration_enabled? ? [] : %w[github]
-        slack = if Rails.env.development?
-                  []
-                elsif ::Gitlab::CurrentSettings.slack_app_enabled
-                  %w[slack_slash_commands]
-                else
-                  %w[gitlab_slack_application]
-                end
 
-        super + gh + slack
+        super + gh
       end
     end
 
