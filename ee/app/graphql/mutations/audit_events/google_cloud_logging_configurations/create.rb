@@ -3,7 +3,7 @@
 module Mutations
   module AuditEvents
     module GoogleCloudLoggingConfigurations
-      class Create < BaseMutation
+      class Create < Base
         graphql_name 'GoogleCloudLoggingConfigurationCreate'
 
         authorize :admin_external_audit_events
@@ -53,6 +53,8 @@ module Mutations
           config = ::AuditEvents::GoogleCloudLoggingConfiguration.new(config_attributes)
 
           if config.save
+            audit(config, action: :created)
+
             { google_cloud_logging_configuration: config, errors: [] }
           else
             { google_cloud_logging_configuration: nil, errors: Array(config.errors) }

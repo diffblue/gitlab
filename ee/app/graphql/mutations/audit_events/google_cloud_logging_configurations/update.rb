@@ -3,7 +3,7 @@
 module Mutations
   module AuditEvents
     module GoogleCloudLoggingConfigurations
-      class Update < BaseMutation
+      class Update < Base
         graphql_name 'GoogleCloudLoggingConfigurationUpdate'
 
         authorize :admin_external_audit_events
@@ -48,6 +48,8 @@ module Mutations
           }.compact
 
           if config.update(config_attributes)
+            audit(config, action: :updated)
+
             { google_cloud_logging_configuration: config, errors: [] }
           else
             { google_cloud_logging_configuration: nil, errors: Array(config.errors) }
