@@ -1389,22 +1389,24 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     end
   end
 
-  describe '#latest_pipeline_for_target_branch' do
+  describe '#latest_completed_target_branch_pipeline_for_scan_result_policy' do
     context 'without pipeline' do
       it 'return nil' do
-        expect(merge_request.latest_pipeline_for_target_branch).to be_nil
+        expect(merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy).to be_nil
       end
     end
 
     context 'with existing pipeline' do
       let!(:target_branch_pipeline) do
-        create(:ee_ci_pipeline,
-                project: project,
-                ref: merge_request.target_branch)
+        create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
+      end
+
+      let!(:target_branch_running_pipeline) do
+        create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
       end
 
       it 'returns the pipeline related to the target branch' do
-        expect(merge_request.latest_pipeline_for_target_branch).to eq(target_branch_pipeline)
+        expect(merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy).to eq(target_branch_pipeline)
       end
     end
   end

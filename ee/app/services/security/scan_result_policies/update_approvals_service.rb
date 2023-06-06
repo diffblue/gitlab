@@ -5,12 +5,11 @@ module Security
     class UpdateApprovalsService
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :pipeline, :merge_request, :target_pipeline, :pipeline_security_findings
+      attr_reader :pipeline, :merge_request, :pipeline_security_findings
 
       def initialize(merge_request:, pipeline:, pipeline_findings:)
         @pipeline = pipeline
         @merge_request = merge_request
-        @target_pipeline = merge_request.latest_pipeline_for_target_branch
         @pipeline_security_findings = pipeline_findings
       end
 
@@ -28,6 +27,8 @@ module Security
 
       private
 
+      delegate :project, to: :pipeline
+
       def violates_approval_rule?(approval_rule)
         target_pipeline_uuids = uuids_from_findings(target_pipeline_security_findings, approval_rule)
 
@@ -40,6 +41,15 @@ module Security
       def scan_removed?
         (Array.wrap(target_pipeline&.security_scan_types) - pipeline.security_scan_types).any?
       end
+
+      def target_pipeline
+        if Feature.enabled?(:scan_result_policy_latest_completed_pipeline, project)
+          merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
+        else
+          merge_request.latest_pipeline_for_target_branch
+        end
+      end
+      strong_memoize_attr :target_pipeline
 
       def target_pipeline_security_findings
         target_pipeline&.security_findings || Security::Finding.none
@@ -106,7 +116,7 @@ module Security
       end
 
       def undismissed_security_findings(findings)
-        if Feature.enabled?(:deprecate_vulnerabilities_feedback, pipeline.project)
+        if Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
           findings.undismissed_by_vulnerability
         else
           findings.undismissed
@@ -125,7 +135,7 @@ module Security
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)
         VulnerabilitiesCountService.new(
-          project: pipeline.project,
+          project: project,
           uuids: uuids,
           states: states_without_newly_detected(approval_rule.vulnerability_states),
           allowed_count: approval_rule.vulnerabilities_allowed
