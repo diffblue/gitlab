@@ -22,7 +22,7 @@ module EE
               end
 
               if large_blob
-                raise ::Gitlab::GitAccess::ForbiddenError, %Q{File "#{large_blob.path}" is larger than the allowed size of #{max_file_size} MB. Use Git LFS to manage this file.}
+                raise ::Gitlab::GitAccess::ForbiddenError, %Q{File "#{large_blob.path}" is larger than the allowed size of #{max_file_size} MiB. Use Git LFS to manage this file.}
               end
             end
           end

@@ -20,7 +20,7 @@ RSpec.describe Namespaces::Storage::LimitAlertComponent, :saas, type: :component
   let(:usage_ratio) { 0.8 }
   let(:above_size_limit) { false }
   let(:alert_title) { /You have used \d+% of the storage quota for #{group.name}/ }
-  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MB for #{group.name}" }
+  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MiB for #{group.name}" }
 
   let(:alert_message_below_limit) do
     "If #{group.name} exceeds the storage quota, your ability to write new data to this namespace will be " \

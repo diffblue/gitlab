@@ -324,7 +324,7 @@ feature_category: :global_search do
     end
 
     it 'outputs estimates' do
-      expect { subject }.to output(/your cluster size should be at least 20.5 MB/).to_stdout
+      expect { subject }.to output(/your cluster size should be at least 20.5 MiB/).to_stdout
     end
   end
 

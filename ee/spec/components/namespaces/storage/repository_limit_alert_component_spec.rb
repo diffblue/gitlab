@@ -6,23 +6,23 @@ RSpec.describe Namespaces::Storage::RepositoryLimitAlertComponent, :saas, type: 
   let(:group) { build_stubbed(:group) }
   let(:user) { build_stubbed(:user) }
   let(:alert_title) { /You have used \d+% of the storage quota for #{group.name}/ }
-  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MB on 72 projects" }
+  let(:alert_title_free_tier) { "You have reached the free storage limit of 1,000 MiB on 72 projects" }
 
   let(:alert_message_below_limit) do
-    "If a project reaches 100% of the storage quota (1,000 MB) the project will be in a read-only state, " \
+    "If a project reaches 100% of the storage quota (1,000 MiB) the project will be in a read-only state, " \
       "and you won't be able to push to your repository or add large files. To reduce storage usage, " \
       "reduce git repository and git LFS storage. For more information about storage limits, see our FAQ."
   end
 
   let(:alert_message_above_limit_no_purchased_storage) do
     "You have consumed all available storage and you can't push or add large files to projects over the " \
-      "free tier limit (1,000 MB). To remove the read-only state, reduce git repository and git LFS storage, " \
+      "free tier limit (1,000 MiB). To remove the read-only state, reduce git repository and git LFS storage, " \
       "or purchase more storage. For more information about storage limits, see our FAQ."
   end
 
   let(:alert_message_above_limit_with_purchased_storage) do
     "You have consumed all available storage and you can't push or add large files to projects over the " \
-      "free tier limit (1,000 MB). To remove the read-only state, reduce git repository and git LFS storage, " \
+      "free tier limit (1,000 MiB). To remove the read-only state, reduce git repository and git LFS storage, " \
       "or purchase more storage. For more information about storage limits, see our FAQ."
   end
 

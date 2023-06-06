@@ -48,7 +48,7 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
 
     it 'returns the expected message' do
       expected_message = "##### ERROR ##### You have used 120% of the storage quota for " \
-        "#{namespace.name} (12 MB of 10 MB). #{namespace.name} is now read-only. " \
+        "#{namespace.name} (12 MiB of 10 MiB). #{namespace.name} is now read-only. " \
         "Projects under this namespace are locked and actions will be restricted. " \
         "To manage storage, or purchase additional storage, " \
         "see #{usage_quotas_guide}. " \
@@ -62,7 +62,7 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
   describe '#new_changes_error' do
     it 'returns the expected message' do
       expected_message = "Your push to this repository has been rejected because " \
-        "it would exceed the namespace storage limit of 10 MB. " \
+        "it would exceed the namespace storage limit of 10 MiB. " \
         "Reduce your namespace storage or purchase additional storage."
 
       expect(error_message.new_changes_error).to eq(expected_message)
@@ -71,8 +71,8 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
 
   describe '#above_size_limit_message' do
     it 'returns the expected message' do
-      expected_message = "The namespace storage size (12 MB) exceeds the limit of 10 MB " \
-        "by 2 MB. You won't be able to push new code to this project. " \
+      expected_message = "The namespace storage size (12 MiB) exceeds the limit of 10 MiB " \
+        "by 2 MiB. You won't be able to push new code to this project. " \
         "Please contact your GitLab administrator for more information."
 
       expect(error_message.above_size_limit_message).to eq(expected_message)

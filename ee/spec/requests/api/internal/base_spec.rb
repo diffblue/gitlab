@@ -366,7 +366,7 @@ RSpec.describe API::Internal::Base do
             expect(json_response["status"]).to eq(false)
             expect(json_response["message"]).to eq(
               'Your push to this repository has been rejected because ' \
-              'it would exceed the namespace storage limit of 4 MB. ' \
+              'it would exceed the namespace storage limit of 4 MiB. ' \
               'Reduce your namespace storage or purchase additional storage.'
             )
           end

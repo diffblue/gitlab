@@ -134,7 +134,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
             {
               "message" =>
                 "Your push has been rejected, because this repository " \
-                "has exceeded its size limit of 10 Bytes by 45 Bytes. " \
+                "has exceeded its size limit of 10 B by 45 B. " \
                 "Please contact your GitLab administrator for more information.",
               "type" => "alert"
             }
@@ -153,7 +153,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
             {
               "message" =>
                 "##### WARNING ##### You have used 95% of the storage quota for #{namespace.name} " \
-                "(0 Bytes of 0 Bytes). If #{namespace.name} exceeds the storage quota, all projects " \
+                "(0 B of 0 B). If #{namespace.name} exceeds the storage quota, all projects " \
                 "in the namespace will be locked and actions will be restricted. To manage storage, " \
                 "or purchase additional storage, see " \
                 "http://localhost/help/user/usage_quotas#manage-your-storage-usage. To learn more about " \
@@ -183,7 +183,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
 
           it 'returns warning message' do
             expect(subject).to match_array([{ "message" => "##### WARNING ##### You have used 96% of the storage quota for #{project.namespace.name} " \
-                                                           "(11 Bytes of 12 Bytes). If #{project.namespace.name} exceeds the storage quota, " \
+                                                           "(11 B of 12 B). If #{project.namespace.name} exceeds the storage quota, " \
                                                            "all projects in the namespace will be locked and actions will be restricted. " \
                                                            "To manage storage, or purchase additional storage, " \
                                                            "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \
@@ -202,7 +202,7 @@ RSpec.describe PostReceiveService, :geo, feature_category: :team_planning do
 
           it 'returns warning message' do
             expect(subject).to match_array([{ "message" => "##### WARNING ##### You have used 96% of the storage quota for #{group.name} " \
-                                                           "(11 Bytes of 12 Bytes). If #{group.name} exceeds the storage quota, " \
+                                                           "(11 B of 12 B). If #{group.name} exceeds the storage quota, " \
                                                            "all projects in the namespace will be locked and actions will be restricted. " \
                                                            "To manage storage, or purchase additional storage, " \
                                                            "see http://localhost/help/user/usage_quotas#manage-your-storage-usage. " \

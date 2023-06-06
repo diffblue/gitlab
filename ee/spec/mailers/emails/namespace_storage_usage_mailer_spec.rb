@@ -25,7 +25,7 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
       expect(mail).to have_subject "Action required: Storage has been exceeded for #{namespace.name}"
       expect(mail).to bcc_to recipients
       expect(mail).to have_body_text(
-        "You have used 101% of the storage quota for #{usage_quotas_link} (101 MB of 100 MB)"
+        "You have used 101% of the storage quota for #{usage_quotas_link} (101 MiB of 100 MiB)"
       )
       expect(mail).to have_body_text buy_storage_url(namespace)
     end
@@ -42,7 +42,9 @@ RSpec.describe Emails::NamespaceStorageUsageMailer do
 
       expect(mail).to have_subject "You have used 75% of the storage quota for #{namespace.name}"
       expect(mail).to bcc_to recipients
-      expect(mail).to have_body_text "You have used 75% of the storage quota for #{usage_quotas_link} (75 MB of 100 MB)"
+      expect(mail).to have_body_text(
+        "You have used 75% of the storage quota for #{usage_quotas_link} (75 MiB of 100 MiB)"
+      )
       expect(mail).to have_body_text buy_storage_url(namespace)
     end
   end
