@@ -368,6 +368,15 @@ module EE
           .find_by(ref: target_branch)
     end
 
+    def latest_completed_target_branch_pipeline_for_scan_result_policy
+      @latest_completed_pipeline ||= project
+          .all_pipelines
+          .ci_and_security_orchestration_sources
+          .complete
+          .order(id: :desc)
+          .find_by(ref: target_branch)
+    end
+
     override :can_suggest_reviewers?
     def can_suggest_reviewers?
       open? && modified_paths.any?

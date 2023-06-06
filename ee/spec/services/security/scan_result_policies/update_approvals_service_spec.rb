@@ -13,7 +13,10 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     let_it_be(:merge_request) { create(:merge_request, source_branch: 'feature-branch', target_branch: 'master') }
     let_it_be(:project) { merge_request.project }
     let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
-    let_it_be(:target_pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.target_branch) }
+    let_it_be(:target_pipeline) do
+      create(:ee_ci_pipeline, :success, project: project, ref: merge_request.target_branch)
+    end
+
     let_it_be(:pipeline_scan) { create(:security_scan, pipeline: pipeline, scan_type: 'dependency_scanning') }
     let_it_be(:pipeline_findings) do
       create_list(:security_finding, 5, scan: pipeline_scan, severity: 'high') do |finding, i|
@@ -84,6 +87,26 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
       let_it_be(:pipeline) { create(:ee_ci_pipeline, project: project, ref: merge_request.source_branch) }
 
       it_behaves_like 'does not update approvals_required'
+    end
+
+    context 'with scan_result_policy_latest_completed_pipeline feature flag' do
+      let(:vulnerability_states) { %w[newly_detected] }
+
+      let_it_be(:running_target_pipeline) do
+        create(:ee_ci_pipeline, :running, project: project, ref: merge_request.target_branch)
+      end
+
+      context 'when feature flag is disabled' do
+        before do
+          stub_feature_flags(scan_result_policy_latest_completed_pipeline: false)
+        end
+
+        it_behaves_like 'does not update approvals_required'
+      end
+
+      context 'when feature flag is enabled' do
+        it_behaves_like 'sets approvals_required to 0'
+      end
     end
 
     context 'when there are no violated approval rules' do
