@@ -20,10 +20,6 @@ RSpec.describe "Custom file template classes" do
     'LICENSE/bar.txt' => 'CustomLicenseTemplate Bar',
     'LICENSE/bad.xyz' => 'CustomLicenseTemplate Bad',
 
-    'metrics-dashboards/foo.yml' => 'CustomMetricsDashboardYmlTemplate Foo',
-    'metrics-dashboards/bar.yml' => 'CustomMetricsDashboardYmlTemplate Bar',
-    'metrics-dashboards/bad.xyz' => 'CustomMetricsDashboardYmlTemplate Bad',
-
     'Dockerfile/category/baz.txt' => 'CustomDockerfileTemplate category baz',
     'gitignore/category/baz.txt' => 'CustomGitignoreTemplate category baz',
     'gitlab-ci/category/baz.yml' => 'CustomGitlabCiYmlTemplate category baz',
@@ -47,7 +43,6 @@ RSpec.describe "Custom file template classes" do
     { class_name: ::Gitlab::Template::CustomGitignoreTemplate, category: 'Custom' },
     { class_name: ::Gitlab::Template::CustomGitlabCiYmlTemplate, category: 'Custom' },
     { class_name: ::Gitlab::Template::CustomLicenseTemplate, category: 'Custom' },
-    { class_name: ::Gitlab::Template::CustomMetricsDashboardYmlTemplate, category: 'Custom' },
     { class_name: ::Gitlab::Template::IssueTemplate, category: 'Project Templates' },
     { class_name: ::Gitlab::Template::MergeRequestTemplate, category: 'Project Templates' }
   ].freeze
