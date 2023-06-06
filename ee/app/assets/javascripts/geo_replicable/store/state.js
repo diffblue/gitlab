@@ -1,5 +1,5 @@
 import { parseBoolean } from '~/lib/utils/common_utils';
-import { FILTER_STATES, DEFAULT_PAGE_SIZE } from '../constants';
+import { DEFAULT_PAGE_SIZE } from '../constants';
 
 const createState = ({
   replicableType,
@@ -30,7 +30,6 @@ const createState = ({
   },
 
   searchFilter: '',
-  currentFilterIndex: 0,
-  filterOptions: Object.values(FILTER_STATES),
+  statusFilter: '',
 });
 export default createState;

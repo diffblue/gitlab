@@ -49,12 +49,14 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
     after = state.paginationData.endCursor;
   }
 
+  const replicationState = state.statusFilter ? state.statusFilter.toUpperCase() : null;
+
   const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
 
   client
     .query({
       query: buildReplicableTypeQuery(state.graphqlFieldName, state.verificationEnabled),
-      variables: { first, last, before, after },
+      variables: { first, last, before, after, replicationState },
     })
     .then((res) => {
       // Query.geoNode to be renamed to Query.geoSite => https://gitlab.com/gitlab-org/gitlab/-/issues/396739
@@ -78,14 +80,12 @@ export const fetchReplicableItemsGraphQl = ({ state, dispatch }, direction) => {
 };
 
 export const fetchReplicableItemsRestful = ({ state, dispatch }) => {
-  const { filterOptions, currentFilterIndex, searchFilter, paginationData } = state;
-
-  const statusFilter = currentFilterIndex ? filterOptions[currentFilterIndex] : filterOptions[0];
+  const { statusFilter, searchFilter, paginationData } = state;
 
   const query = {
     page: paginationData.page,
     search: searchFilter || null,
-    sync_status: statusFilter.value === FILTER_STATES.ALL.value ? null : statusFilter.value,
+    sync_status: statusFilter === FILTER_STATES.ALL.value ? null : statusFilter,
   };
 
   Api.getGeoReplicableItems(state.replicableType, query)
@@ -162,8 +162,8 @@ export const initiateReplicableSync = ({ state, dispatch }, { projectId, name, a
 };
 
 // Filtering/Pagination
-export const setFilter = ({ commit }, filterIndex) => {
-  commit(types.SET_FILTER, filterIndex);
+export const setStatusFilter = ({ commit }, filter) => {
+  commit(types.SET_STATUS_FILTER, filter);
 };
 
 export const setSearch = ({ commit }, search) => {

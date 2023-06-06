@@ -20,7 +20,7 @@ export default {
     },
   },
   computed: {
-    ...mapState(['isLoading', 'replicableItems', 'useGraphQl']),
+    ...mapState(['isLoading', 'replicableItems']),
     hasReplicableItems() {
       return this.replicableItems.length > 0;
     },
@@ -37,7 +37,7 @@ export default {
 <template>
   <article class="geo-replicable-container">
     <!-- Filtering not currently supported via GraphQl -->
-    <geo-replicable-filter-bar v-if="!useGraphQl" />
+    <geo-replicable-filter-bar />
     <gl-loading-icon v-if="isLoading" size="xl" />
     <template v-else>
       <geo-replicable v-if="hasReplicableItems" />

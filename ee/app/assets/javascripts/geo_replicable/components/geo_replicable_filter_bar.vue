@@ -10,7 +10,13 @@ import {
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { s__, __, sprintf } from '~/locale';
-import { DEFAULT_SEARCH_DELAY, ACTION_TYPES, FILTER_STATES, RESYNC_MODAL_ID } from '../constants';
+import {
+  DEFAULT_SEARCH_DELAY,
+  ACTION_TYPES,
+  FILTER_STATES,
+  RESYNC_MODAL_ID,
+  FILTER_OPTIONS,
+} from '../constants';
 
 export default {
   name: 'GeoReplicableFilterBar',
@@ -35,7 +41,7 @@ export default {
     GlModalDirective,
   },
   computed: {
-    ...mapState(['currentFilterIndex', 'filterOptions', 'searchFilter', 'paginationData']),
+    ...mapState(['statusFilter', 'searchFilter', 'paginationData', 'useGraphQl']),
     ...mapGetters(['replicableTypeName']),
     search: {
       get() {
@@ -46,8 +52,8 @@ export default {
         this.fetchReplicableItems();
       },
     },
-    hasReplicableItems() {
-      return this.paginationData.total > 0;
+    showResyncAction() {
+      return !this.useGraphQl && this.paginationData.total > 0;
     },
     resyncText() {
       return sprintf(this.$options.i18n.resyncAllReplicables, {
@@ -55,11 +61,24 @@ export default {
         total: this.paginationData.total > 1 ? `${this.paginationData.total} ` : null,
       });
     },
+    filterOptions() {
+      if (this.useGraphQl) {
+        return FILTER_OPTIONS;
+      }
+
+      // Non-GraphQL endpoint does not support `started` as a filter
+      return FILTER_OPTIONS.filter((option) => option.value !== FILTER_STATES.STARTED.value);
+    },
   },
   methods: {
-    ...mapActions(['setFilter', 'setSearch', 'fetchReplicableItems', 'initiateAllReplicableSyncs']),
-    filterChange(filterIndex) {
-      this.setFilter(filterIndex);
+    ...mapActions([
+      'setStatusFilter',
+      'setSearch',
+      'fetchReplicableItems',
+      'initiateAllReplicableSyncs',
+    ]),
+    filterChange(filter) {
+      this.setStatusFilter(filter);
       this.fetchReplicableItems();
     },
   },
@@ -82,12 +101,15 @@ export default {
       <div
         class="gl-display-flex gl-align-items-center gl-flex-direction-column gl-sm-flex-direction-row"
       >
-        <gl-dropdown :text="$options.i18n.dropdownTitle" class="gl-w-full">
+        <gl-dropdown
+          :text="$options.i18n.dropdownTitle"
+          :class="useGraphQl ? 'gl-w-half' : 'gl-w-full'"
+        >
           <gl-dropdown-item
-            v-for="(filter, index) in filterOptions"
-            :key="index"
-            :class="{ 'gl-bg-gray-50': index === currentFilterIndex }"
-            @click="filterChange(index)"
+            v-for="filter in filterOptions"
+            :key="filter.value"
+            :class="{ 'gl-bg-gray-50': filter.value === statusFilter }"
+            @click="filterChange(filter.value)"
           >
             <span v-if="filter === $options.filterStates.ALL"
               >{{ filter.label }} {{ replicableTypeName }}</span
@@ -96,6 +118,7 @@ export default {
           </gl-dropdown-item>
         </gl-dropdown>
         <gl-search-box-by-type
+          v-if="!useGraphQl"
           v-model="search"
           :debounce="$options.debounce"
           class="gl-w-full gl-mt-3 gl-ml-0 gl-sm-mt-0 gl-sm-ml-3"
@@ -103,7 +126,7 @@ export default {
         />
       </div>
       <gl-button
-        v-if="hasReplicableItems"
+        v-if="showResyncAction"
         v-gl-modal-directive="$options.RESYNC_MODAL_ID"
         class="gl-ml-auto"
         >{{ $options.i18n.resyncAll }}</gl-button
