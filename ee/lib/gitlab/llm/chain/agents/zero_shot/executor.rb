@@ -35,7 +35,9 @@ module Gitlab
 
                 return answer if answer.is_final?
 
-                options[:agent_scratchpad] << answer.content.to_s << answer.suggestions.to_s
+                options[:agent_scratchpad] << "\nThought: #{answer.suggestions}"
+                options[:agent_scratchpad] << answer.content.to_s
+
                 tool_class = answer.tool
                 logger.debug(message: "Picked tool", tool: tool_class.to_s)
 

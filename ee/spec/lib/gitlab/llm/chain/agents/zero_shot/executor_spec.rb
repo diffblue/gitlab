@@ -38,7 +38,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, feature_category:
       it 'returns' do
         stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
 
-        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nActionInput: #3")
+        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nAction Input: #3")
         expect(agent).to receive(:request).twice.times
 
         answer = agent.execute
