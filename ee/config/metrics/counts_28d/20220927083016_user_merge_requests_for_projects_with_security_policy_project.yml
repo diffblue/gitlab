@@ -16,3 +16,6 @@
   - ee
   tier:
   - ultimate
+  performance_indicator_type:
+  - gmau
+  - paid_gmau
