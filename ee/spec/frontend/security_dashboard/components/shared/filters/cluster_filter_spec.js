@@ -94,18 +94,34 @@ describe('ClusterFilter component', () => {
     });
 
     describe('filter-changed event', () => {
+      const getLastEmittedClusterAgentId = () => {
+        return wrapper.emitted('filter-changed').at(-1)[0].clusterAgentId;
+      };
+
       it('emits filter-changed event when selected item is changed', async () => {
         const ids = [];
         await clickListboxItem(ALL_ID);
 
-        expect(wrapper.emitted('filter-changed')[0][0].clusterAgentId).toEqual([]);
+        expect(getLastEmittedClusterAgentId()).toEqual([]);
 
         for await (const { id, name } of mockClusters) {
           await clickListboxItem(name);
           ids.push(id);
 
-          expect(wrapper.emitted('filter-changed')[ids.length][0].clusterAgentId).toEqual(ids);
+          expect(getLastEmittedClusterAgentId()).toEqual(ids);
         }
+      });
+
+      it('emits filter-changed event when item was selected with querystring sync', async () => {
+        createWrapper();
+
+        // First emit is empty because `getClusterAgents` query has not returned yet to match
+        expect(getLastEmittedClusterAgentId()).toEqual([]);
+
+        wrapper.findComponent(QuerystringSync).vm.$emit('input', [mockClusters[0].name]);
+        await waitForPromises();
+
+        expect(getLastEmittedClusterAgentId()).toEqual([mockClusters[0].id]);
       });
     });
 
