@@ -210,6 +210,25 @@ describe('SecurityScanRuleBuilder', () => {
     expect(wrapper.emitted('changed')).toHaveLength(1);
   });
 
+  it.each`
+    currentComponent      | selectedFilter    | emittedPayload
+    ${findSeverityFilter} | ${SEVERITY}       | ${{ ...UPDATED_RULE, severity_levels: [] }}
+    ${findStatusFilter}   | ${NEWLY_DETECTED} | ${{ ...UPDATED_RULE, vulnerability_states: [] }}
+  `(
+    'removes existing filters for saved policies',
+    ({ currentComponent, selectedFilter, emittedPayload }) => {
+      factory({
+        initRule: UPDATED_RULE,
+      });
+
+      expect(currentComponent().exists()).toBe(true);
+
+      currentComponent().vm.$emit('remove', selectedFilter);
+
+      expect(wrapper.emitted('changed')).toEqual([[emittedPayload]]);
+    },
+  );
+
   it('can change scan type', () => {
     factory({ initRule: securityScanBuildRule() });
     findScanTypeSelect().vm.$emit('select', SCAN_FINDING);

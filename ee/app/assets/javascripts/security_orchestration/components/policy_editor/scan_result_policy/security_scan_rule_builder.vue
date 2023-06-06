@@ -111,7 +111,11 @@ export default {
       const rule = getDefaultRule(value);
       this.$emit('set-scan-type', rule);
     },
-    removeFilter(filter) {
+    removeSeverityFilter() {
+      this.filters[SEVERITY] = null;
+      this.emitSeverityFilterChanges();
+    },
+    removeStatusFilter(filter) {
       this.filters[filter] = null;
       this.emitStatusFilterChanges();
     },
@@ -131,6 +135,10 @@ export default {
       ];
 
       this.triggerChanged({ vulnerability_states: states });
+    },
+    emitSeverityFilterChanges() {
+      const states = [...(this.filters[SEVERITY] || [])];
+      this.triggerChanged({ severity_levels: states });
     },
   },
   REPORT_TYPES_DEFAULT_KEYS: Object.keys(REPORT_TYPES_DEFAULT),
@@ -206,14 +214,14 @@ export default {
           v-if="isSeverityFilterSelected"
           :selected="severityLevelsToAdd"
           class="gl-bg-white!"
-          @remove="removeFilter"
+          @remove="removeSeverityFilter"
           @input="triggerChanged({ severity_levels: $event })"
         />
 
         <status-filters
           v-if="isStatusFilterSelected"
           :selected="filters"
-          @remove="removeFilter"
+          @remove="removeStatusFilter"
           @input="setStatus"
         />
 
