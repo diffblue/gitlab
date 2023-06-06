@@ -29,7 +29,7 @@ export default {
       ),
       btnText: __('Give us some feedback'),
     },
-    learnMore: s__('CiCatalog|Learn more'),
+    learnMore: __('Learn more'),
   },
   learnMorePath: helpPagePath('architecture/blueprints/ci_pipeline_components/index'),
 };
