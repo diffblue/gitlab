@@ -51,7 +51,7 @@ module QA
 
           expect_error_on_push(
             file: large_file,
-            error: 'File "file" is larger than the allowed size of 1 MB')
+            error: 'File "file" is larger than the allowed size of 1 MiB')
           expect_error_on_push(
             file: wrongly_named_file,
             error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))

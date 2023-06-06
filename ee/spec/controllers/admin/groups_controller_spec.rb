@@ -32,7 +32,7 @@ RSpec.describe Admin::GroupsController, feature_category: :continuous_integratio
   end
 
   describe 'PUT #update' do
-    it 'converts the user entered MB value into bytes' do
+    it 'converts the user entered MiB value into bytes' do
       put :update, params: { id: group, group: { repository_size_limit: '5000' } }
 
       expect(controller).to set_flash[:notice].to 'Group was successfully updated.'

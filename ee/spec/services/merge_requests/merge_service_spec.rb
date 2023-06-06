@@ -27,7 +27,7 @@ RSpec.describe MergeRequests::MergeService, feature_category: :source_code_manag
 
         expect(merge_request.merge_error).to eq(
           'This merge request cannot be merged, ' \
-          'because this repository has exceeded its size limit of 5 Bytes by 3 Bytes'
+          'because this repository has exceeded its size limit of 5 B by 3 B'
         )
       end
     end

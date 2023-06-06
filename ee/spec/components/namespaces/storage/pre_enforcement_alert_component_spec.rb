@@ -48,7 +48,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       render_inline(component)
 
       storage_size = 5.gigabytes / 1.gigabyte
-      expect(page).to have_text "The namespace is currently using #{storage_size} GB of namespace storage"
+      expect(page).to have_text "The namespace is currently using #{storage_size} GiB of namespace storage"
     end
 
     it 'renders the correct callout data' do

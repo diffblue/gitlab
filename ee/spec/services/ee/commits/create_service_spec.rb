@@ -34,7 +34,7 @@ RSpec.describe Commits::CreateService, feature_category: :source_code_management
         expect(result[:status]).to be(:error)
         expect(result[:message]).to eq(
           'Your changes could not be committed, because this ' \
-          'repository has exceeded its size limit of 1 Byte by 1 Byte'
+          'repository has exceeded its size limit of 1 B by 1 B'
         )
       end
     end

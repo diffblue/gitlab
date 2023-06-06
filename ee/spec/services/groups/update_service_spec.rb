@@ -180,7 +180,7 @@ RSpec.describe Groups::UpdateService, '#execute', feature_category: :groups_and_
     context 'when param present' do
       let(:opts) { { repository_size_limit: '100' } }
 
-      it 'converts from MB to Bytes' do
+      it 'converts from MiB to Bytes' do
         update_group(group, user, opts)
 
         expect(group.reload.repository_size_limit).to eql(100 * 1024 * 1024)

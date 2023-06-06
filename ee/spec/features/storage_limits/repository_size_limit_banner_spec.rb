@@ -34,7 +34,7 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
 
       visit(group_path(free_group))
 
-      expect(page).to have_text("You have reached the free storage limit of 10 MB on 1 project")
+      expect(page).to have_text("You have reached the free storage limit of 10 MiB on 1 project")
     end
 
     it 'shows the banner when a project repository in a paid group has exceed the storage limit' do
@@ -42,7 +42,7 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
 
       visit(group_path(paid_group))
 
-      expect(page).to have_text("You have reached the free storage limit of 10 MB on 1 project")
+      expect(page).to have_text("You have reached the free storage limit of 10 MiB on 1 project")
     end
   end
 
@@ -56,7 +56,7 @@ RSpec.describe "Repository size limit banner", :js, :saas, feature_category: :co
 
       visit(group_path(paid_group))
 
-      expect(page).to have_text("You have reached the free storage limit of 10 MB on 1 project")
+      expect(page).to have_text("You have reached the free storage limit of 10 MiB on 1 project")
     end
   end
 end

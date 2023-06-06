@@ -72,7 +72,7 @@ RSpec.describe Emails::Requirements do
         }
       end
 
-      specify { expect(subject).to have_content('This attachment has been truncated to avoid exceeding the maximum allowed attachment size of 15 MB.') }
+      specify { expect(subject).to have_content('This attachment has been truncated to avoid exceeding the maximum allowed attachment size of 15 MiB.') }
     end
   end
 end
