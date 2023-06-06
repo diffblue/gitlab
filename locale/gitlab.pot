@@ -29596,7 +29596,7 @@ msgstr ""
 msgid "NamespaceLimits|Storage Phased Notification"
 msgstr ""
 
-msgid "NamespaceLimits|There was an error deleting the namespace, try again after refreshing the page."
+msgid "NamespaceLimits|There was an error deleting the namespace: \"%{errorMessage}\"."
 msgstr ""
 
 msgid "NamespaceLimits|There was an error fetching the exclusion list, try refreshing the page."

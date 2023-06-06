@@ -12,7 +12,7 @@ export const excludedNamespacesDescription = s__(
 );
 
 export const exclusionDeleteError = s__(
-  'NamespaceLimits|There was an error deleting the namespace, try again after refreshing the page.',
+  'NamespaceLimits|There was an error deleting the namespace: "%{errorMessage}".',
 );
 
 export const deleteModalTitle = s__('NamespaceLimits|Deletion confirmation');

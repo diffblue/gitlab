@@ -2,7 +2,7 @@
 import { GlAlert, GlTable, GlLoadingIcon, GlButton, GlModal } from '@gitlab/ui';
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import {
   LIST_EXCLUSIONS_ENDPOINT,
   DELETE_EXCLUSION_ENDPOINT,
@@ -74,8 +74,9 @@ export default {
       try {
         await axios.delete(endpoint);
         this.fetchExclusions();
-      } catch {
-        this.fetchError = exclusionDeleteError;
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        this.fetchError = sprintf(exclusionDeleteError, { errorMessage });
       }
     },
   },
