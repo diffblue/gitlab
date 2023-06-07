@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Subscription flow for user picking company for paid plan', :js, :saas_registration, feature_category: :onboarding do
   where(:case_name, :sign_up_method) do
     [
-      ['with regular sign up', -> { subscription_regular_sign_up }]
-      # TODO: does not work, issue to address: https://gitlab.com/gitlab-org/gitlab/-/issues/413995
-      # ['with sso sign up', -> { sso_subscription_sign_up }]
+      ['with regular sign up', -> { subscription_regular_sign_up }],
+      ['with sso sign up', -> { sso_subscription_sign_up }]
     ]
   end
 

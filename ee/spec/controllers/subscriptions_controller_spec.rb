@@ -10,7 +10,7 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
 
     context 'for unauthenticated subscription request' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
-      it { is_expected.to redirect_to new_user_registration_path(redirect_from: 'checkout') }
+      it { is_expected.to redirect_to new_user_registration_path }
 
       it 'stores subscription URL for later' do
         get_new

@@ -40,7 +40,11 @@ module EE
 
     override :perform_registration_tasks
     def perform_registration_tasks(user, provider)
-      super
+      # We need to do this here since the subscription flow relies on what was set in the stored_location_for(:user)
+      # that was set on initial redirect from the SubscriptionsController#new and super will wipe that out.
+      # Then the IdentityVerificationController#success will get whatever is set in super instead of the subscription
+      # path we desire.
+      super unless helpers.in_subscription_flow?
 
       # This also protects the sub classes group saml and ldap from staring onboarding
       # as we don't want those to onboard.
