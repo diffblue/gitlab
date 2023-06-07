@@ -2,8 +2,7 @@
 
 module EE
   module Packages
-    module Package
-      extend ActiveSupport::Concern
+    module Downloadable
       extend ::Gitlab::Utils::Override
 
       override :touch_last_downloaded_at
