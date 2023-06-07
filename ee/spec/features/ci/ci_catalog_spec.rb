@@ -33,7 +33,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
     end
 
     it 'shows CI Catalog title in id page' do
-      expect(page).to have_content('Catalog item details page')
+      expect(page).to have_content('About this project')
     end
   end
 end
