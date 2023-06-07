@@ -31,6 +31,8 @@ module Gitlab
 
           return final_answer(context: context, content: default_final_answer) unless tool
 
+          logger.debug(message: "Answer", content: content)
+
           new(
             status: :ok,
             context: context,
@@ -42,6 +44,8 @@ module Gitlab
         end
 
         def self.final_answer(context:, content:)
+          logger.debug(message: "Final answer", content: content)
+
           new(
             status: :ok,
             context: context,
@@ -53,10 +57,14 @@ module Gitlab
         end
 
         def self.default_final_answer
+          logger.debug(message: "Default final answer")
+
           s_("AI|I don't see how I can help. Please give better instructions!")
         end
 
         def self.error_answer(context:, content:)
+          logger.error(message: "Error", error: content)
+
           new(
             status: :error,
             content: content,
@@ -64,6 +72,10 @@ module Gitlab
             tool: nil,
             is_final: true
           )
+        end
+
+        private_class_method def self.logger
+          Gitlab::Llm::Logger.build
         end
       end
     end

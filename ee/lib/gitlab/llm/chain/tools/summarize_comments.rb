@@ -23,6 +23,7 @@ module Gitlab
                         "#{resource_name(resource)} ##{resource.iid} has no comments to be summarized."
                       end
 
+            logger.debug(message: "Answer", class: self.class.to_s, content: content)
             ::Gitlab::Llm::Chain::Answer.new(
               status: :ok, context: context, content: content, tool: nil, is_final: false
             )
