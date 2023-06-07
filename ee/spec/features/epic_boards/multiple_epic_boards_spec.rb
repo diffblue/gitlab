@@ -3,11 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group, :public) }
-
-  let_it_be(:epic_board) { create(:epic_board, group: group) }
-  let_it_be(:epic_board2) { create(:epic_board, group: group) }
+  # please do not switch below `let!` to `let_it_be` due to potential flakiness.
+  # see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/122712#note_1420351482
+  let!(:user)        { create(:user) }
+  let!(:group)       { create(:group, :public) }
+  let!(:epic_board)  { create(:epic_board, group: group, name: "EPIC BOARD 1") }
+  let!(:epic_board2) { create(:epic_board, group: group, name: "EPIC BOARD 2") }
 
   context 'multiple epic boards' do
     before do
@@ -56,7 +57,7 @@ RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
       expect(page).to have_button('This is a new board')
     end
 
-    it 'deletes an epic board', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/396791' do
+    it 'deletes an epic board' do
       in_boards_switcher_dropdown do
         aggregate_failures do
           expect(page).to have_content(epic_board.name)
