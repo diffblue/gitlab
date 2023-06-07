@@ -96,6 +96,28 @@ RSpec.describe AuditEvents::Strategies::InstanceExternalDestinationStrategy, fea
 
           include_examples 'streams audit events to external destination'
         end
+
+        context 'when the destination has custom headers' do
+          it 'sends the headers with the payload' do
+            create_list(:instance_audit_events_streaming_header,
+              2,
+              instance_external_audit_event_destination: destination
+            )
+
+            # rubocop:disable Lint/DuplicateHashKey
+            expected_hash = {
+              /key-\d/ => "bar",
+              /key-\d/ => "bar"
+            }
+            # rubocop:enable Lint/DuplicateHashKey
+
+            expect(Gitlab::HTTP).to receive(:post).with(
+              an_instance_of(String), a_hash_including(headers: a_hash_including(expected_hash))
+            ).once
+
+            subject
+          end
+        end
       end
     end
 
