@@ -24,6 +24,8 @@ RSpec.describe Projects::MarkForDeletionService do
       subject { described_class.new(project, user).execute }
 
       it 'marks project as archived and marked for deletion' do
+        expect(Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+         .with(project.namespace_id).and_call_original
         expect(subject[:status]).to eq(:success)
         expect(Project.unscoped.all).to include(project)
         expect(project.archived).to eq(true)
@@ -78,6 +80,9 @@ RSpec.describe Projects::MarkForDeletionService do
       end
 
       it 'does not change project attributes' do
+        expect(Namespaces::ScheduleAggregationWorker).not_to receive(:perform_async)
+         .with(project.namespace.id)
+
         result = described_class.new(project, user).execute
 
         expect(result[:status]).to eq(:error)
