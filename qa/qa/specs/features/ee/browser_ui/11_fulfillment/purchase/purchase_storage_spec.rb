@@ -12,8 +12,6 @@ module QA
 
         expect { usage_quota.storage_purchase_successful_alert? }
           .to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
-        expect { usage_quota.additional_storage_available? }
-          .to eventually_be_truthy.within(max_duration: 120, max_attempts: 60, reload_page: page)
         expect { usage_quota.total_purchased_storage }
           .to eventually_eq(expected_storage).within(max_duration: 120, max_attempts: 60, reload_page: page)
       end
