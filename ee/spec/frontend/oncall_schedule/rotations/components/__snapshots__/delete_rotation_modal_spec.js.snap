@@ -4,10 +4,14 @@ exports[`DeleteRotationModal renders delete rotation modal layout 1`] = `
 <div
   data-testid="delete-rotation-modal-gid://gitlab/IncidentManagement::OncallRotation/2"
 >
-  <!---->
-   
-  <gl-sprintf-stub
-    message="Are you sure you want to delete the \\"%{deleteRotation}\\" rotation? This action cannot be undone."
-  />
+  <div
+    data-testid="slot-default"
+  >
+    <!---->
+     
+    <gl-sprintf-stub
+      message="Are you sure you want to delete the \\"%{deleteRotation}\\" rotation? This action cannot be undone."
+    />
+  </div>
 </div>
 `;
