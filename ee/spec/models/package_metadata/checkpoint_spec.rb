@@ -60,13 +60,64 @@ RSpec.describe PackageMetadata::Checkpoint, type: :model, feature_category: :sof
     end
   end
 
-  describe '.with_purl_type' do
+  describe '.with_path_components' do
     let(:checkpoints) { create_list(:pm_checkpoint, 12) }
 
     it 'returns the checkpoint for the given parameters' do
       checkpoints.each do |checkpoint|
-        actual = described_class.with_purl_type(checkpoint.purl_type)
+        actual = described_class.with_path_components(checkpoint.data_type,
+          checkpoint.version_format, checkpoint.purl_type)
         expect(actual).to eq(checkpoint)
+      end
+    end
+  end
+
+  describe '#update' do
+    let(:data_type) { 'licenses' }
+    let(:version_format) { 'v1' }
+    let(:purl_type) { 'npm' }
+
+    let!(:checkpoint) do
+      create(:pm_checkpoint, data_type: 'licenses', version_format: 'v1', purl_type: 'npm',
+        sequence: 0, chunk: 0)
+    end
+
+    subject(:update!) do
+      described_class.find_by(data_type: data_type, version_format: version_format, purl_type: purl_type)
+        &.update!(sequence: 1, chunk: 1)
+    end
+
+    context 'when all attributes are the same' do
+      it 'updates the checkpoint' do
+        expect { update! }.to change { [checkpoint.reload.sequence, checkpoint.reload.chunk] }
+          .from([0, 0])
+          .to([1, 1])
+      end
+    end
+
+    context 'when an attribute differs' do
+      context 'and it is data_type' do
+        let(:data_type) { 'advisories' }
+
+        it 'does not update the checkpoint' do
+          expect { update! }.not_to change { [checkpoint.reload.sequence, checkpoint.reload.chunk] }
+        end
+      end
+
+      context 'and it is version_format' do
+        let(:version_format) { 'v2' }
+
+        it 'does not update the checkpoint' do
+          expect { update! }.not_to change { [checkpoint.reload.sequence, checkpoint.reload.chunk] }
+        end
+      end
+
+      context 'and it is purl_type' do
+        let(:purl_type) { 'maven' }
+
+        it 'does not update the checkpoint' do
+          expect { update! }.not_to change { [checkpoint.reload.sequence, checkpoint.reload.chunk] }
+        end
       end
     end
   end

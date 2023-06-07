@@ -3,8 +3,9 @@
 module PackageMetadata
   class SyncService
     UnknownAdapterError = Class.new(StandardError)
-    INGEST_SLICE_SIZE = 1000
+    INGEST_SLICE_SIZE = 200
     THROTTLE_RATE = 0.75.seconds
+    LICENSES_DATA_TYPE = :licenses
 
     def self.execute(signal)
       SyncConfiguration.all_by_enabled_purl_type.each do |config|
@@ -38,16 +39,16 @@ module PackageMetadata
     end
 
     def execute
-      connector.data_after(checkpoint).each do |csv_file|
+      connector.data_after(checkpoint).each do |data_file|
         Gitlab::AppJsonLogger.debug(class: self.class.name,
-          message: "Evaluating data for #{purl_type}/#{version_format}/#{csv_file.sequence}/#{csv_file.chunk}")
+          message: "Evaluating data for #{purl_type}/#{version_format}/#{data_file.sequence}/#{data_file.chunk}")
 
-        csv_file.each_slice(INGEST_SLICE_SIZE) do |data_objects|
+        data_file.each_slice(INGEST_SLICE_SIZE) do |data_objects|
           ingest(data_objects)
           sleep(THROTTLE_RATE)
         end
 
-        checkpoint.update(sequence: csv_file.sequence, chunk: csv_file.chunk)
+        checkpoint.update(sequence: data_file.sequence, chunk: data_file.chunk)
 
         if signal.stop?
           return Gitlab::AppJsonLogger.debug(class: self.class.name,
@@ -56,16 +57,24 @@ module PackageMetadata
       end
     end
 
+    def data_type
+      LICENSES_DATA_TYPE
+    end
+
     private
 
     attr_accessor :connector, :version_format, :purl_type, :signal
 
     def ingest(data)
-      PackageMetadata::Ingestion::IngestionService.execute(data)
+      if version_format == SyncConfiguration::VERSION_FORMAT_V2
+        PackageMetadata::Ingestion::CompressedPackage::IngestionService.execute(data)
+      else
+        PackageMetadata::Ingestion::IngestionService.execute(data)
+      end
     end
 
     def checkpoint
-      @checkpoint ||= PackageMetadata::Checkpoint.with_purl_type(purl_type)
+      @checkpoint ||= PackageMetadata::Checkpoint.with_path_components(data_type, version_format, purl_type)
     end
   end
 end

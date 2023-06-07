@@ -7,6 +7,8 @@ module PackageMetadata
 
     has_many :package_versions, inverse_of: :package, foreign_key: :pm_package_id
 
+    include BulkInsertSafe
+
     enum purl_type: ::Enums::PackageMetadata.purl_types
 
     validates :purl_type, presence: true

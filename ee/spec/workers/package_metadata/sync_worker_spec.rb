@@ -20,26 +20,6 @@ RSpec.describe PackageMetadata::SyncWorker, type: :worker, feature_category: :so
       stub_licensed_features(license_scanning: true)
     end
 
-    context 'with feature flag enabled' do
-      it 'calls the sync service to do the work' do
-        expect(PackageMetadata::SyncService).to receive(:execute) do |signal|
-          expect(signal).to respond_to(:stop?)
-        end
-        perform
-      end
-    end
-
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(package_metadata_synchronization: false)
-      end
-
-      it 'does not call the sync service to do the work' do
-        expect(PackageMetadata::SyncService).not_to receive(:execute)
-        perform
-      end
-    end
-
     context 'when exclusive lease could not be obtained' do
       subject(:instance) { described_class.new }
 

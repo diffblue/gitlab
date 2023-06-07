@@ -15,7 +15,7 @@
       "$ref": "#/definitions/highest_version"
     },
     {
-      "$ref": "#/definitions/non_default_licenses"
+      "$ref": "#/definitions/other_licenses"
     }
   ],
   "definitions": {
@@ -46,7 +46,7 @@
         }
       ]
     },
-    "non_default_licenses": {
+    "other_licenses": {
       "type": "array",
       "description": "List of tuples representing licenses and corresponding versions that are not the default for a package.",
       "minItems": 0,

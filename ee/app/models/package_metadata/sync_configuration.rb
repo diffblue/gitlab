@@ -3,7 +3,8 @@
 module PackageMetadata
   class SyncConfiguration
     BUCKET_NAME = 'prod-export-license-bucket-1a6c642fc4de57d4'
-    VERSION_FORMAT = 'v1'
+    VERSION_FORMAT_V1 = 'v1'
+    VERSION_FORMAT_V2 = 'v2'
     OFFLINE_STORAGE_LOCATION = Rails.root.join('vendor/package_metadata_db').freeze
     PURL_TYPE_TO_REGISTRY_ID = {
       composer: "packagist",
@@ -24,9 +25,21 @@ module PackageMetadata
     def self.all_by_enabled_purl_type
       storage_type = get_storage_type
 
-      permitted_purl_types.map do |purl_type, _|
-        new(storage_type, BUCKET_NAME, VERSION_FORMAT, purl_type)
+      configs = []
+
+      if Feature.enabled?(:compressed_package_metadata_synchronization)
+        configs.concat(permitted_purl_types.map do |purl_type, _|
+          new(storage_type, BUCKET_NAME, VERSION_FORMAT_V2, purl_type)
+        end)
       end
+
+      if Feature.enabled?(:package_metadata_synchronization)
+        configs.concat(permitted_purl_types.map do |purl_type, _|
+          new(storage_type, BUCKET_NAME, VERSION_FORMAT_V1, purl_type)
+        end)
+      end
+
+      configs
     end
 
     def self.get_storage_type
