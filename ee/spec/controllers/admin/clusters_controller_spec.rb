@@ -76,14 +76,4 @@ RSpec.describe Admin::ClustersController do
       get_cluster
     end
   end
-
-  private
-
-  def prometheus_proxy_params(params = {})
-    {
-      id: cluster.id.to_s,
-      proxy_path: 'query',
-      query: '1'
-    }.merge(params)
-  end
 end
