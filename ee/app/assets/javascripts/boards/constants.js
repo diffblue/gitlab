@@ -46,11 +46,6 @@ export const IterationFilterType = {
   current: 'Current',
 };
 
-export const MilestoneFilterType = {
-  any: 'Any',
-  none: 'None',
-};
-
 export const WeightFilterType = {
   none: 'None',
 };
