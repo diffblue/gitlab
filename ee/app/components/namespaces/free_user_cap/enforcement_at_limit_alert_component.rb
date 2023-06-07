@@ -6,7 +6,6 @@ module Namespaces
       private
 
       ENFORCEMENT_AT_LIMIT_ALERT = 'enforcement_at_limit_alert'
-      PROMOTION_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer'
 
       def breached_cap_limit?
         ::Namespaces::FreeUserCap::Enforcement.new(namespace).at_limit?
@@ -29,23 +28,14 @@ module Namespaces
             n_("To invite more users, you can reduce the number of users in your " \
                "top-level group to %{free_limit} user or less. You can also upgrade to " \
                "a paid tier which do not have user limits. If you need additional " \
-               "time, you can start a free 30-day trial which includes unlimited users. " \
-               "To minimize the impact to your operations, for a limited time, GitLab is " \
-               "offering a %{promotion_link_start}one-time 70 percent discount%{link_end} " \
-               "off the list price at time of purchase for a new, one year subscription of " \
-               "GitLab Premium SaaS. The offer is valid until 2023-08-13.",
+               "time, you can start a free 30-day trial which includes unlimited users.", \
                "To invite more users, you can reduce the number of users in your " \
                "top-level group to %{free_limit} users or less. You can also upgrade to " \
                "a paid tier which do not have user limits. If you need additional " \
-               "time, you can start a free 30-day trial which includes unlimited users. " \
-               "To minimize the impact to your operations, for a limited time, GitLab is " \
-               "offering a %{promotion_link_start}one-time 70 percent discount%{link_end} " \
-               "off the list price at time of purchase for a new, one year subscription of " \
-               "GitLab Premium SaaS. The offer is valid until 2023-08-13.",
+               "time, you can start a free 30-day trial which includes unlimited users.",
               free_user_limit
             ),
             free_limit: free_user_limit,
-            promotion_link_start: "<a href='#{PROMOTION_URL}' target='_blank' rel='noopener noreferrer'>".html_safe,
             link_end: link_end
           ).html_safe,
           primary_cta: namespace_primary_cta,
