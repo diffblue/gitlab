@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Groups::SuperSidebarPanel, feature_category: :navigation do
-  let_it_be(:user) { create(:user) }
-  let_it_be(:group) { create(:group).tap { |group| group.add_owner(user) } }
+  let(:user) { build_stubbed(:user) }
+  let(:group) { create(:group).tap { |group| group.add_owner(user) } }
 
   let(:context) do
     Sidebars::Groups::Context.new(
