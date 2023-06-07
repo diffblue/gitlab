@@ -290,6 +290,9 @@ export default {
 
       return cancelable && userPermissions.updatePipeline;
     },
+    showComputeCredits() {
+      return this.isFinished && this.computeCredits !== '0.0';
+    },
   },
   methods: {
     reportFailure(errorType, errorMessages = []) {
@@ -513,7 +516,7 @@ export default {
             {{ totalJobsText }}
           </span>
           <span
-            v-if="isFinished"
+            v-if="showComputeCredits"
             v-gl-tooltip
             :title="$options.i18n.computeCreditsTooltip"
             class="gl-ml-2"
