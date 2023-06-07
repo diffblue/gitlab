@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::DoraType do
+RSpec.describe Types::DoraType, feature_category: :dora_metrics do
   it 'has the expected fields' do
     expect(described_class).to have_graphql_fields(:metrics)
   end

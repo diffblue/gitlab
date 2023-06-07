@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Types::Dora::PerformanceScoreCountType, feature_category: :devops_reports do
+RSpec.describe Types::Dora::PerformanceScoreCountType, feature_category: :dora_metrics do
   describe 'fields' do
     subject(:fields) { described_class.fields }
 

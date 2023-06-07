@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category: :devops_reports do
+RSpec.describe 'Query.[project|group](fullPath).dora.metrics', feature_category: :dora_metrics do
   include GraphqlHelpers
 
   let_it_be(:reporter) { create(:user) }

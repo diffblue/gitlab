@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', feature_category: :devops_reports do
+RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01', feature_category: :dora_metrics do
   include GraphqlHelpers
 
   let_it_be(:guest) { create(:user) }
