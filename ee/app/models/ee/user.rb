@@ -652,9 +652,7 @@ module EE
 
     override :should_delay_delete?
     def should_delay_delete?(*args)
-      return false if has_paid_namespace?(exclude_trials: true)
-
-      super
+      super && !has_paid_namespace?(exclude_trials: true)
     end
   end
 end

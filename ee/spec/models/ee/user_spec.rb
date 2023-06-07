@@ -2576,6 +2576,10 @@ RSpec.describe User, feature_category: :system_access do
 
       subject { user.delete_async(deleted_by: user) }
 
+      before do
+        allow(user).to receive(:has_possible_spam_contributions?).and_return(true)
+      end
+
       context 'when user is not a member of a namespace with a paid plan subscription (excluding trials)' do
         it 'schedules the user for deletion with delay' do
           expect(user).to receive(:has_paid_namespace?).with(exclude_trials: true).and_return(false)
