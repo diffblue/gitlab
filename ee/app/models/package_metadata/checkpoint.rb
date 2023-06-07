@@ -2,8 +2,6 @@
 
 module PackageMetadata
   class Checkpoint < ApplicationRecord
-    self.primary_key = :purl_type
-
     enum purl_type: ::Enums::PackageMetadata.purl_types
     enum data_type: ::Enums::PackageMetadata.data_types
     enum version_format: ::Enums::PackageMetadata.version_formats
@@ -14,8 +12,10 @@ module PackageMetadata
     validates :chunk, presence: true, numericality: { only_integer: true }
     validates :purl_type, presence: true, uniqueness: { scope: [:data_type, :version_format] }
 
-    scope :with_purl_type, ->(purl_type) do
-      find_or_initialize_by(purl_type: purl_type)
+    # These components uniquely identify the last sync position for a
+    # path determined by data_type_bucket_or_dir/version_format/purl_type.
+    def self.with_path_components(data_type, version_format, purl_type)
+      find_or_initialize_by(data_type: data_type, purl_type: purl_type, version_format: version_format)
     end
   end
 end

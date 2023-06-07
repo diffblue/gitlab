@@ -26,6 +26,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     before do
       allow(PackageMetadata::Ingestion::IngestionService).to receive(:execute)
+      allow(PackageMetadata::Ingestion::CompressedPackage::IngestionService).to receive(:execute)
       allow(file1).to receive(:sequence).and_return(1675363107)
       allow(file1).to receive(:chunk).and_return(0)
       allow(file2).to receive(:sequence).and_return(1675366673)
@@ -35,7 +36,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     shared_examples_for 'it syncs imported data' do
       let(:checkpoint) do
-        PackageMetadata::Checkpoint.first_or_initialize(purl_type: purl_type)
+        PackageMetadata::Checkpoint.first_or_initialize(purl_type: purl_type, version_format: version_format,
+          data_type: service.data_type)
       end
 
       it 'calls connector with the correct checkpoint' do
@@ -43,9 +45,25 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
         expect(connector).to have_received(:data_after).with(checkpoint)
       end
 
-      it 'calls ingestion service to store the data' do
-        execute
-        expect(PackageMetadata::Ingestion::IngestionService).to have_received(:execute).with(data_objects).twice
+      context 'when ingesting' do
+        context 'if version_format is v2' do
+          subject(:version_format) { 'v2' }
+
+          it 'calls compressed package ingestion service to store data' do
+            execute
+            expect(PackageMetadata::Ingestion::CompressedPackage::IngestionService)
+              .to have_received(:execute).with(data_objects).twice
+          end
+        end
+
+        context 'if version_format is v1' do
+          subject(:version_format) { 'v1' }
+
+          it 'calls compressed package ingestion service to store data' do
+            execute
+            expect(PackageMetadata::Ingestion::IngestionService).to have_received(:execute).with(data_objects).twice
+          end
+        end
       end
 
       it 'throttles calls to ingestion service after each ingested slice' do
@@ -55,7 +73,9 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
     end
 
     context 'when checkpoint exists' do
-      let(:checkpoint) { create(:pm_checkpoint, purl_type: purl_type) }
+      let(:checkpoint) do
+        create(:pm_checkpoint, purl_type: purl_type, version_format: version_format, data_type: service.data_type)
+      end
 
       it_behaves_like 'it syncs imported data'
 
@@ -72,7 +92,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
         expect { execute }.to change { PackageMetadata::Checkpoint.count }
           .from(0).to(1)
 
-        checkpoint = PackageMetadata::Checkpoint.where(purl_type: purl_type).first
+        checkpoint = PackageMetadata::Checkpoint.where(purl_type: purl_type, version_format: version_format,
+          data_type: service.data_type).first
         expect(checkpoint.sequence).to eq(file2.sequence)
         expect(checkpoint.chunk).to eq(file2.chunk)
       end
@@ -100,7 +121,8 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
       it 'terminates after checkpointing' do
         execute
-        checkpoint = PackageMetadata::Checkpoint.where(purl_type: purl_type).first
+        checkpoint = PackageMetadata::Checkpoint.where(purl_type: purl_type, version_format: version_format,
+          data_type: service.data_type).first
         expect(checkpoint.sequence).to eq(file1.sequence)
         expect(checkpoint.chunk).to eq(file1.chunk)
         expect(PackageMetadata::Ingestion::IngestionService).to have_received(:execute).with(data_objects).once
@@ -116,6 +138,7 @@ RSpec.describe PackageMetadata::SyncService, feature_category: :software_composi
 
     before do
       stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
+      stub_feature_flags(compressed_package_metadata_synchronization: false)
     end
 
     context 'when stop_signal.stop? is false' do

@@ -3,6 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_composition_analysis do
+  before do
+    stub_feature_flags(package_metadata_synchronization: true)
+    stub_feature_flags(compressed_package_metadata_synchronization: false)
+  end
+
   describe '.all_by_enabled_purl_type' do
     subject(:configurations) { described_class.all_by_enabled_purl_type }
 
@@ -12,33 +17,136 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
         stub_application_setting(package_metadata_purl_types: Enums::PackageMetadata.purl_types.values)
       end
 
-      it 'returns a configuration instance for each known purl type' do
-        expect(configurations).to match_array([
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'composer'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'conan'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'gem'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'golang'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'maven'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'npm'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'nuget'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'pypi'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'apk'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'rpm'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'deb'),
-          have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'cbl_mariner')
-        ])
+      context 'when only feature flag package_metadata_synchronization is set' do
+        before do
+          stub_feature_flags(package_metadata_synchronization: true)
+          stub_feature_flags(compressed_package_metadata_synchronization: false)
+        end
+
+        it 'returns a configuration instance for each known purl type' do
+          expect(configurations).to match_array([
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'composer'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'conan'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'gem'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'golang'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'maven'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'npm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'nuget'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'pypi'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'apk'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'rpm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'deb'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'cbl_mariner')
+          ])
+        end
+      end
+
+      context 'when only feature flag compressed_package_metadata_synchronization is set' do
+        before do
+          stub_feature_flags(package_metadata_synchronization: false)
+          stub_feature_flags(compressed_package_metadata_synchronization: true)
+        end
+
+        it 'returns a configuration instance for each known purl type' do
+          expect(configurations).to match_array([
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'composer'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'conan'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'gem'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'golang'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'maven'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'npm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'nuget'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'pypi'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'apk'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'rpm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'deb'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'cbl_mariner')
+          ])
+        end
+      end
+
+      context 'when both feature flags are set' do
+        before do
+          stub_feature_flags(package_metadata_synchronization: true)
+          stub_feature_flags(compressed_package_metadata_synchronization: true)
+        end
+
+        it 'returns a configuration instance for each known purl type' do
+          expect(configurations).to match_array([
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'composer'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'conan'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'gem'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'golang'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'maven'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'npm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'nuget'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'pypi'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'apk'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'rpm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'deb'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v2', purl_type: 'cbl_mariner'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'composer'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'conan'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'gem'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'golang'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'maven'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'npm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'nuget'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'pypi'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'apk'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'rpm'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'deb'),
+            have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
+              version_format: 'v1', purl_type: 'cbl_mariner')
+          ])
+        end
       end
     end
 
@@ -50,9 +158,9 @@ RSpec.describe PackageMetadata::SyncConfiguration, feature_category: :software_c
       it 'returns a configuration instance only for selected types' do
         expect(configurations).to match_array([
           have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'composer'),
+            version_format: 'v1', purl_type: 'composer'),
           have_attributes(storage_type: :gcp, base_uri: described_class::BUCKET_NAME,
-            version_format: described_class::VERSION_FORMAT, purl_type: 'maven')
+            version_format: 'v1', purl_type: 'maven')
         ])
       end
     end

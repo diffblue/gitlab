@@ -36,10 +36,8 @@ module Gitlab
       class Gcp
         def initialize(bucket_name, version_format, purl_type)
           @bucket_name = bucket_name
+          @version_format = version_format
           @purl_type = purl_type
-
-          registry_id = ::PackageMetadata::SyncConfiguration.registry_id(purl_type)
-          @file_prefix = "#{version_format}/#{registry_id}/"
         end
 
         def data_after(checkpoint)
@@ -58,22 +56,24 @@ module Gitlab
 
         private
 
-        attr_reader :bucket_name, :file_prefix, :purl_type
+        attr_reader :bucket_name, :version_format, :purl_type
 
-        class CsvFile
+        class DataFile
           include Enumerable
 
-          attr_reader :sequence, :chunk, :purl_type
+          attr_reader :sequence, :chunk, :version_format, :purl_type
 
-          def initialize(file, file_prefix, purl_type)
+          def initialize(file, file_prefix, file_suffix, version_format, purl_type)
             @file = file
-            @sequence, @chunk = file.name.delete_prefix(file_prefix).delete_suffix('.csv').split('/').map(&:to_i)
+            @sequence, @chunk = file.name.delete_prefix(file_prefix).delete_suffix(".#{file_suffix}")
+              .split('/').map(&:to_i)
+            @version_format = version_format
             @purl_type = purl_type
           end
 
           def each(&blk)
             @file.download(skip_decompress: true).each_line do |line|
-              data_object = ::PackageMetadata::DataObject.from_csv(line, purl_type)
+              data_object = parse(line, purl_type)
 
               yield data_object if data_object
             end
@@ -82,10 +82,30 @@ module Gitlab
           def checkpoint?(checkpoint)
             sequence == checkpoint.sequence && chunk == checkpoint.chunk
           end
+
+          def parse(line, purl_type)
+            if version_format == ::PackageMetadata::SyncConfiguration::VERSION_FORMAT_V2
+              ::PackageMetadata::CompressedPackageDataObject.parse(line, purl_type)
+            else
+              ::PackageMetadata::DataObject.from_csv(line, purl_type)
+            end
+          end
         end
 
         def all_files
-          bucket.files(prefix: file_prefix).all.lazy.map { |file| CsvFile.new(file, file_prefix, purl_type) }
+          bucket.files(prefix: file_prefix).all.lazy
+            .map do |file|
+              DataFile.new(file, file_prefix, file_suffix, version_format, purl_type)
+            end
+        end
+
+        def file_prefix
+          registry_id = ::PackageMetadata::SyncConfiguration.registry_id(purl_type)
+          "#{version_format}/#{registry_id}/"
+        end
+
+        def file_suffix
+          version_format == ::PackageMetadata::SyncConfiguration::VERSION_FORMAT_V2 ? 'ndjson' : 'csv'
         end
 
         def bucket
