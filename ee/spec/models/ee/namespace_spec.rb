@@ -18,6 +18,7 @@ RSpec.describe Namespace do
   it { is_expected.to have_one(:storage_limit_exclusion) }
   it { is_expected.to have_many(:ci_minutes_additional_packs) }
   it { is_expected.to have_many(:member_roles) }
+  it { is_expected.to have_many(:subscription_add_on_purchases).class_name('GitlabSubscriptions::AddOnPurchase') }
 
   it { is_expected.to delegate_method(:trial?).to(:gitlab_subscription) }
   it { is_expected.to delegate_method(:trial_ends_on).to(:gitlab_subscription) }

@@ -1,0 +1,19 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe GitlabSubscriptions::AddOn, feature_category: :subscription_management do
+  subject { build(:add_on) }
+
+  describe 'associations' do
+    it { is_expected.to have_many(:add_on_purchases).with_foreign_key(:subscription_add_on_id).inverse_of(:add_on) }
+  end
+
+  describe 'validations' do
+    it { is_expected.to validate_presence_of(:name) }
+    it { is_expected.to validate_uniqueness_of(:name).ignoring_case_sensitivity }
+
+    it { is_expected.to validate_presence_of(:description) }
+    it { is_expected.to validate_length_of(:description).is_at_most(512) }
+  end
+end
