@@ -1,7 +1,10 @@
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import AxiosMockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
+import axios from '~/lib/utils/axios_utils';
+import Api from 'ee/api';
 import Zuora from 'ee/subscriptions/new/components/checkout/zuora.vue';
 import { mockTracking } from 'helpers/tracking_helper';
 import { STEPS } from 'ee/subscriptions/constants';
@@ -10,11 +13,14 @@ import createStore from 'ee/subscriptions/new/store';
 import * as types from 'ee/subscriptions/new/store/mutation_types';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
+import { HTTP_STATUS_OK } from '~/lib/utils/http_status';
+import { stubComponent } from 'helpers/stub_component';
 
 describe('Payment Method', () => {
   Vue.use(Vuex);
   Vue.use(VueApollo);
 
+  let axiosMock;
   let store;
   let wrapper;
 
@@ -35,12 +41,17 @@ describe('Payment Method', () => {
     wrapper = mount(PaymentMethod, {
       apolloProvider: createMockApolloProvider(STEPS),
       store,
+      stubs: {
+        Zuora: stubComponent(Zuora),
+      },
       ...options,
     });
   };
 
   beforeEach(() => {
     createComponent();
+    axiosMock = new AxiosMockAdapter(axios);
+    axiosMock.onGet(Api.paymentFormPath).reply(HTTP_STATUS_OK, {});
   });
 
   describe('validations', () => {

@@ -83,12 +83,12 @@ export default {
     handleError(error) {
       createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
     },
-    async nextStep() {
+    nextStep() {
       if (!this.isValid) {
         return;
       }
       this.loading = true;
-      await this.$apollo
+      this.$apollo
         .mutate({
           mutation: activateNextStepMutation,
         })
@@ -100,10 +100,10 @@ export default {
           this.$emit('nextStep');
         });
     },
-    async edit() {
+    edit() {
       this.loading = true;
       this.$emit('stepEdit', this.stepId);
-      await this.$apollo
+      return this.$apollo
         .mutate({
           mutation: updateStepMutation,
           variables: { id: this.stepId },

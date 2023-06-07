@@ -1,6 +1,6 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
-import { mapState } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 import { STEP_PAYMENT_METHOD, TRACK_SUCCESS_MESSAGE } from 'ee/subscriptions/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { sprintf, s__ } from '~/locale';
@@ -28,6 +28,11 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['fetchPaymentFormParams']),
+    didEditStep() {
+      this.fetchPaymentFormParams();
+      this.trackStepEdit();
+    },
     trackStepSuccess() {
       this.track('click_button', {
         label: 'review_order',
@@ -62,7 +67,7 @@ export default {
     :step-id="$options.stepId"
     :title="$options.i18n.stepTitle"
     :is-valid="isValid"
-    @stepEdit="trackStepEdit"
+    @stepEdit="didEditStep"
   >
     <template #body="props">
       <zuora :active="props.active" @success="trackStepSuccess" @error="trackStepError" />
