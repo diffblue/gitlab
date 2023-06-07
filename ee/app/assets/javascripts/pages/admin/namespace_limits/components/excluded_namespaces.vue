@@ -1,19 +1,26 @@
 <script>
-import { GlAlert, GlTable, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlTable, GlLoadingIcon, GlButton, GlModal } from '@gitlab/ui';
 import Api from '~/api';
 import axios from '~/lib/utils/axios_utils';
-import { __ } from '~/locale';
+import { __, sprintf } from '~/locale';
 import {
   LIST_EXCLUSIONS_ENDPOINT,
+  DELETE_EXCLUSION_ENDPOINT,
   exclusionListFetchError,
+  exclusionDeleteError,
   excludedNamespacesDescription,
+  deleteModalBody,
+  deleteModalTitle,
+  deleteModalProps,
 } from '../constants';
 import ExcludedNamespacesForm from './excluded_namespaces_form.vue';
 
 export default {
   components: {
     GlAlert,
+    GlButton,
     GlTable,
+    GlModal,
     GlLoadingIcon,
     ExcludedNamespacesForm,
   },
@@ -28,14 +35,14 @@ export default {
         'operations',
       ],
       fetchError: null,
+      namespaceIdToBeConfirmed: null,
     };
   },
   created() {
     this.fetchExclusions();
   },
-  i18n: {
-    excludedNamespacesDescription,
-  },
+  i18n: { excludedNamespacesDescription, deleteModalTitle, deleteModalBody },
+  deleteModalProps,
   methods: {
     async fetchExclusions() {
       const endpoint = Api.buildUrl(LIST_EXCLUSIONS_ENDPOINT);
@@ -50,6 +57,26 @@ export default {
         this.fetchError = exclusionListFetchError;
       } finally {
         this.loading = false;
+      }
+    },
+    openConfirmationModal(namespaceId) {
+      this.namespaceIdToBeConfirmed = namespaceId;
+      this.$refs.modal.show();
+    },
+    handleModalConfirmation() {
+      this.deleteExclusion(this.namespaceIdToBeConfirmed);
+      // reset namespaceIdToBeConfirmed to be ready for next usage
+      this.namespaceIdToBeConfirmed = null;
+    },
+    async deleteExclusion(namespaceId) {
+      const endpoint = Api.buildUrl(DELETE_EXCLUSION_ENDPOINT).replace(':id', namespaceId);
+
+      try {
+        await axios.delete(endpoint);
+        this.fetchExclusions();
+      } catch (error) {
+        const errorMessage = error.response?.data?.message || error.message;
+        this.fetchError = sprintf(exclusionDeleteError, { errorMessage });
       }
     },
   },
@@ -71,7 +98,25 @@ export default {
           <gl-loading-icon />
         </div>
       </template>
+      <template #cell(operations)="{ item }">
+        <gl-button
+          category="primary"
+          variant="danger"
+          @click="openConfirmationModal(item.namespace_id)"
+          >{{ __('Delete') }}</gl-button
+        >
+      </template>
     </gl-table>
+    <gl-modal
+      ref="modal"
+      modal-id="namespace-exclusion-modal"
+      :title="$options.i18n.deleteModalTitle"
+      :action-primary="$options.deleteModalProps.primaryProps"
+      :action-cancel="$options.deleteModalProps.cancelProps"
+      @primary="handleModalConfirmation"
+    >
+      {{ $options.i18n.deleteModalBody }}
+    </gl-modal>
     <br />
     <excluded-namespaces-form @added="fetchExclusions" />
   </div>

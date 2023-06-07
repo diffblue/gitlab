@@ -1,10 +1,11 @@
 import { shallowMount, mount } from '@vue/test-utils';
-import { GlAlert, GlTable } from '@gitlab/ui';
+import { GlAlert, GlTable, GlButton, GlModal } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import ExcludedNamespacesForm from 'ee/pages/admin/namespace_limits/components/excluded_namespaces_form.vue';
 import {
   LIST_EXCLUSIONS_ENDPOINT,
+  DELETE_EXCLUSION_ENDPOINT,
   exclusionListFetchError,
 } from 'ee/pages/admin/namespace_limits/constants';
 import ExcludedNamespaces from 'ee/pages/admin/namespace_limits/components/excluded_namespaces.vue';
@@ -16,15 +17,18 @@ describe('ExcludedNamespaces', () => {
   let wrapper;
   let axiosMock;
   const listExclusionsEndpoint = LIST_EXCLUSIONS_ENDPOINT.replace(':version', 'v4');
+  const deleteExclusionEndpoint = DELETE_EXCLUSION_ENDPOINT.replace(':version', 'v4');
 
   const createComponent = ({ mountFn = shallowMount } = {}) => {
     wrapper = mountFn(ExcludedNamespaces);
+    wrapper.vm.$refs.modal.show = jest.fn();
   };
 
   const findForm = () => wrapper.findComponent(ExcludedNamespacesForm);
   const findTable = () => wrapper.findComponent(GlTable);
   const findTableRowCells = (row) => findTable().find('tbody').findAll('tr').at(row).findAll('td');
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findModal = () => wrapper.findComponent(GlModal);
 
   beforeEach(() => {
     window.gon = { api_version: 'v4' };
@@ -58,6 +62,13 @@ describe('ExcludedNamespaces', () => {
   });
 
   describe('exclusion table', () => {
+    it('calls the exclusion list endpoint on component mount', async () => {
+      axiosMock.onGet(listExclusionsEndpoint).replyOnce(HTTP_STATUS_OK, mockData);
+      createComponent();
+      await waitForPromises();
+      expect(axiosMock.history.get.length).toBe(1);
+    });
+
     it('renders an error if there is a problem fetching the list', async () => {
       axiosMock.onGet(listExclusionsEndpoint).replyOnce(HTTP_STATUS_BAD_REQUEST);
       createComponent();
@@ -78,7 +89,33 @@ describe('ExcludedNamespaces', () => {
         expect(cells.at(0).text()).toEqual(item.namespace_name);
         expect(cells.at(1).text()).toEqual(`${item.namespace_id}`);
         expect(cells.at(2).text()).toEqual(item.reason);
+        expect(cells.at(3).findComponent(GlButton).text()).toBe('Delete');
       });
+    });
+  });
+
+  describe('deleting exclusion', () => {
+    beforeEach(async () => {
+      axiosMock.onGet(listExclusionsEndpoint).replyOnce(HTTP_STATUS_OK, [mockData[0]]);
+      axiosMock.onDelete(deleteExclusionEndpoint).replyOnce(HTTP_STATUS_OK);
+
+      createComponent({ mountFn: mount });
+      await waitForPromises();
+      wrapper.findComponent(GlTable).findComponent(GlButton).trigger('click');
+    });
+
+    it('opens confirmation modal when delete button is clicked', () => {
+      expect(wrapper.vm.$refs.modal.show).toHaveBeenCalled();
+      expect(findModal().props()).toMatchObject({
+        title: 'Deletion confirmation',
+        actionPrimary: { text: 'Confirm deletion' },
+      });
+    });
+
+    it('sends deletion request to the backend when deletion modal is confirmed', async () => {
+      findModal().vm.$emit('primary');
+      await waitForPromises();
+      expect(axiosMock.history.delete.length).toBe(1);
     });
   });
 });
