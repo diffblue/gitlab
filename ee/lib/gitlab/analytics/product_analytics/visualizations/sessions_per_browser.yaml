@@ -8,8 +8,8 @@ data:
     measures:
       - SnowplowSessions.count
     dimensions:
-      - SnowplowSessions.brFamily
-      - SnowplowSessions.brVersion
+      - SnowplowSessions.agentName
+      - SnowplowSessions.agentVersion
     limit: 100
     timezone: UTC
     filters: []

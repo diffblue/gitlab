@@ -8,8 +8,8 @@ data:
     measures:
       - SnowplowTrackedEvents.uniqueUsersCount
     dimensions:
-      - SnowplowTrackedEvents.brFamily
-      - SnowplowTrackedEvents.brVersion
+      - SnowplowTrackedEvents.agentName
+      - SnowplowTrackedEvents.agentVersion
     limit: 100
     timezone: UTC
     filters: []
