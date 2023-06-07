@@ -8,7 +8,9 @@ import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
 import { TANUKI_BOT_TRACKING_EVENT_NAME } from 'ee/ai/tanuki_bot/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
+import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { helpCenterState } from '~/super_sidebar/constants';
@@ -18,24 +20,28 @@ import {
   MOCK_USER_ID,
   MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_BOT_MUTATATION_RES,
+  MOCK_CHAT_CACHED_MESSAGES_RES,
 } from '../mock_data';
 
 Vue.use(Vuex);
 Vue.use(VueApollo);
 
-describe('TanukiBotChatApp', () => {
+describe('GitLab Chat', () => {
   let wrapper;
 
   const actionSpies = {
     sendUserMessage: jest.fn(),
     receiveTanukiBotMessage: jest.fn(),
     tanukiBotMessageError: jest.fn(),
+    setMessages: jest.fn(),
   };
 
   let subscriptionHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_SUCCESS_RES);
-  let mutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
+  const tanukiMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
+  let chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
+  const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
-  const createComponent = (initialState = {}) => {
+  const createComponent = (initialState = {}, glFeatures = { gitlabDuo: true }) => {
     const store = new Vuex.Store({
       actions: actionSpies,
       state: {
@@ -45,7 +51,9 @@ describe('TanukiBotChatApp', () => {
 
     const apolloProvider = createMockApollo([
       [aiResponseSubscription, subscriptionHandlerMock],
-      [tanukiBotMutation, mutationHandlerMock],
+      [chatMutation, chatMutationHandlerMock],
+      [tanukiBotMutation, tanukiMutationHandlerMock],
+      [getAiMessages, queryHandlerMock],
     ]);
 
     wrapper = shallowMountExtended(TanukiBotChatApp, {
@@ -57,6 +65,9 @@ describe('TanukiBotChatApp', () => {
       stubs: {
         AiGenieChat,
         GlSprintf,
+      },
+      provide: {
+        glFeatures,
       },
     });
   };
@@ -139,6 +150,10 @@ describe('TanukiBotChatApp', () => {
       expect(findGenieChat().exists()).toBe(true);
     });
 
+    it('fetches the cached messages on mount', () => {
+      expect(queryHandlerMock).toHaveBeenCalled();
+    });
+
     it('renders the User Feedback component for every assistent mesage', () => {
       const getPromptLocationSpy = jest.spyOn(AiGenieChat.methods, 'getPromptLocation');
       getPromptLocationSpy.mockReturnValue('foo');
@@ -163,12 +178,22 @@ describe('TanukiBotChatApp', () => {
         );
       });
 
-      it('calls GraphQL mutation when input is submitted', () => {
-        expect(mutationHandlerMock).toHaveBeenCalledWith({
-          resourceId: MOCK_USER_ID,
-          question: MOCK_USER_MESSAGE.msg,
-        });
-      });
+      it.each`
+        isFlagEnabled | expectedMutation
+        ${true}       | ${chatMutationHandlerMock}
+        ${false}      | ${tanukiMutationHandlerMock}
+      `(
+        'calls correct GraphQL mutation when input is submitted and feature flag is $isFlagEnabled',
+        async ({ isFlagEnabled, expectedMutation } = {}) => {
+          createComponent({}, { gitlabDuo: isFlagEnabled });
+          findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
+          await nextTick();
+          expect(expectedMutation).toHaveBeenCalledWith({
+            resourceId: MOCK_USER_ID,
+            question: MOCK_USER_MESSAGE.msg,
+          });
+        },
+      );
 
       it('once response arrives via GraphQL subscription calls receiveTanukiBotMessage', () => {
         expect(subscriptionHandlerMock).toHaveBeenCalledWith({
@@ -205,7 +230,7 @@ describe('TanukiBotChatApp', () => {
 
     describe('when mutation fails', () => {
       beforeEach(async () => {
-        mutationHandlerMock = jest.fn().mockRejectedValue();
+        chatMutationHandlerMock = jest.fn().mockRejectedValue();
         createComponent();
 
         helpCenterState.showTanukiBotChatDrawer = true;

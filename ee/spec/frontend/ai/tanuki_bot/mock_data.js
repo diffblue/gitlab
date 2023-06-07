@@ -51,6 +51,14 @@ export const MOCK_TANUKI_ERROR_RES = {
   },
 };
 
+export const MOCK_CHAT_CACHED_MESSAGES_RES = {
+  data: {
+    aiMessages: {
+      nodes: [MOCK_USER_MESSAGE, MOCK_TANUKI_MESSAGE],
+    },
+  },
+};
+
 export const MOCK_TANUKI_BOT_MUTATATION_RES = { data: { aiAction: { errors: [] } } };
 
 export const MOCK_USER_ID = 'gid://gitlab/User/1';

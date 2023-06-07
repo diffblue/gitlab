@@ -1,0 +1,6 @@
+mutation chat($question: String!, $resourceId: AiModelID!) {
+  aiAction(input: { chat: { resourceId: $resourceId, content: $question } }) {
+    requestId
+    errors
+  }
+}
