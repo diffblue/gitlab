@@ -102,10 +102,15 @@ export default {
     isLastMessage(index) {
       return index === this.messages.length - 1;
     },
+    isAssistantMessage(message) {
+      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.assistant;
+    },
+    isUserMessage(message) {
+      return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
+    },
     renderMarkdown,
   },
   i18n,
-  GENIE_CHAT_MODEL_ROLES,
 };
 </script>
 <template>
@@ -177,16 +182,18 @@ export default {
               :ref="isLastMessage(index) ? 'lastMessage' : undefined"
               class="gl-py-3 gl-px-4 gl-mb-4 gl-rounded-lg gl-line-height-20 ai-genie-chat-message"
               :class="{
-                'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none':
-                  message.role === $options.GENIE_CHAT_MODEL_ROLES.user,
-                'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50':
-                  message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant,
+                'gl-ml-auto gl-bg-blue-100 gl-text-blue-900 gl-rounded-bottom-right-none': isUserMessage(
+                  message,
+                ),
+                'gl-rounded-bottom-left-none gl-text-gray-900 gl-bg-gray-50': isAssistantMessage(
+                  message,
+                ),
                 'gl-mb-0!': isLastMessage(index) && !isLoading,
               }"
             >
               <div v-safe-html="renderMarkdown(message.content)"></div>
               <slot
-                v-if="message.role === $options.GENIE_CHAT_MODEL_ROLES.assistant"
+                v-if="isAssistantMessage(message)"
                 name="feedback"
                 :prompt-location="getPromptLocation(index)"
                 :message="message"

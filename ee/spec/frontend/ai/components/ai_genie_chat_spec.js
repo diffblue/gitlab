@@ -60,27 +60,29 @@ describe('AiGenieChat', () => {
 
       describe('the feedback slot', () => {
         const slotElement = `<template>${slotContent}</template>`;
-        const messages = [
-          {
-            role: GENIE_CHAT_MODEL_ROLES.user,
-            content: 'User foo',
-          },
-          {
-            role: GENIE_CHAT_MODEL_ROLES.assistant,
-            content: 'Assistent bar',
-          },
-        ];
 
-        it('renders the content passed to the "feedback" slot for assistant messages only', () => {
-          createComponent({
-            propsData: {
-              messages,
-            },
-            scopedSlots: { feedback: slotElement },
-          });
-          expect(findChatMessages().at(0).text()).not.toContain(slotContent);
-          expect(findChatMessages().at(1).text()).toContain(slotContent);
-        });
+        it.each(['assistant', 'ASSISTANT'])(
+          'renders the content passed to the "feedback" slot when role is %s',
+          (role) => {
+            createComponent({
+              propsData: {
+                messages: [
+                  {
+                    role: GENIE_CHAT_MODEL_ROLES.user,
+                    content: 'User foo',
+                  },
+                  {
+                    role,
+                    content: 'Assistent bar',
+                  },
+                ],
+              },
+              scopedSlots: { feedback: slotElement },
+            });
+            expect(findChatMessages().at(0).text()).not.toContain(slotContent);
+            expect(findChatMessages().at(1).text()).toContain(slotContent);
+          },
+        );
 
         it('sends correct `message` in the `slotProps` for the components users to consume', () => {
           createComponent({

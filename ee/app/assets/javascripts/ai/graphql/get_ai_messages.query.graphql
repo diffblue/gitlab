@@ -1,0 +1,11 @@
+query getAiMessages {
+  aiMessages {
+    nodes {
+      id
+      requestId
+      content
+      errors
+      role
+    }
+  }
+}

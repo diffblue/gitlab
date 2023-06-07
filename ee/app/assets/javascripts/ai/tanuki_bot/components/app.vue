@@ -2,7 +2,10 @@
 import { GlIcon, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__, n__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
+import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
+import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
@@ -30,6 +33,7 @@ export default {
     GlLink,
     UserFeedback,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     userId: {
       type: String,
@@ -55,6 +59,17 @@ export default {
         },
       },
     },
+    aiMessages: {
+      query: getAiMessages,
+      result({ data }) {
+        if (data?.aiMessages?.nodes?.length) {
+          this.setMessages(data.aiMessages.nodes);
+        }
+      },
+      error() {
+        this.tanukiBotMessageError();
+      },
+    },
   },
   data() {
     return {
@@ -65,13 +80,18 @@ export default {
     ...mapState(['loading', 'messages']),
   },
   methods: {
-    ...mapActions(['sendUserMessage', 'receiveTanukiBotMessage', 'tanukiBotMessageError']),
+    ...mapActions([
+      'sendUserMessage',
+      'receiveTanukiBotMessage',
+      'tanukiBotMessageError',
+      'setMessages',
+    ]),
     sendMessage(question) {
       this.sendUserMessage(question);
-
+      const mutation = this.glFeatures.gitlabDuo ? chatMutation : tanukiBotMutation;
       this.$apollo
         .mutate({
-          mutation: tanukiBotMutation,
+          mutation,
           variables: {
             question,
             resourceId: this.userId,
