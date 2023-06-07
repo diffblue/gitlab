@@ -57,7 +57,7 @@ describe('AiSummary component', () => {
   });
 
   it('shows "AI-generated summary"', () => {
-    expect(findIcon('tanuki').exists()).toBe(true);
+    expect(findIcon('tanuki-ai').exists()).toBe(true);
     expect(findBadge().text()).toBe(i18n.EXPERIMENT_BADGE);
     expect(wrapper.text()).toContain('AI-generated summary');
   });
