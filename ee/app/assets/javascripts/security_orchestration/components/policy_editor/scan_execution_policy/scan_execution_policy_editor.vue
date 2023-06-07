@@ -89,6 +89,7 @@ export default {
       : DEFAULT_SCAN_EXECUTION_POLICY;
 
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
+    const parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
 
     return {
       isCreatingMR: false,
@@ -96,7 +97,7 @@ export default {
       newlyCreatedPolicyProject: null,
       policy,
       hasParsingError,
-      parsingError: this.$options.i18n.PARSING_ERROR_MESSAGE,
+      parsingError,
       yamlEditorValue,
       mode: EDITOR_MODE_RULE,
       documentationPath: setUrlFragment(
@@ -203,7 +204,7 @@ export default {
 
       this.yamlEditorValue = manifest;
       this.hasParsingError = hasParsingError;
-      this.parsingError = this.$options.i18n.PARSING_ERROR_MESSAGE;
+      this.parsingError = hasParsingError ? this.$options.i18n.PARSING_ERROR_MESSAGE : '';
       this.policy = policy;
     },
     updateYamlEditorValue(policy) {

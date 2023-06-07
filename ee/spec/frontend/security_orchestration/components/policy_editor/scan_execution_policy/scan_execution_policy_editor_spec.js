@@ -100,6 +100,19 @@ describe('ScanExecutionPolicyEditor', () => {
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
   const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
+  describe('default', () => {
+    beforeEach(() => {
+      factory();
+    });
+
+    it('should render correctly', () => {
+      expect(findPolicyEditorLayout().props()).toMatchObject({
+        hasParsingError: false,
+        parsingError: '',
+      });
+    });
+  });
+
   describe('saving a policy', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                  | currentlyAssignedPolicyProject
@@ -152,14 +165,20 @@ describe('ScanExecutionPolicyEditor', () => {
       const newManifest = `name: test
 enabled: true`;
 
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_EXECUTION_POLICY);
-      expect(findPolicyEditorLayout().props('policy')).toMatchObject(
-        fromYaml({ manifest: DEFAULT_SCAN_EXECUTION_POLICY }),
-      );
+      expect(findPolicyEditorLayout().props()).toMatchObject({
+        hasParsingError: false,
+        parsingError: '',
+        policy: fromYaml({ manifest: DEFAULT_SCAN_EXECUTION_POLICY }),
+        yamlEditorValue: DEFAULT_SCAN_EXECUTION_POLICY,
+      });
       findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
       await nextTick();
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(newManifest);
-      expect(findPolicyEditorLayout().props('policy')).toMatchObject({ enabled: true });
+      expect(findPolicyEditorLayout().props()).toMatchObject({
+        hasParsingError: false,
+        parsingError: '',
+        policy: expect.objectContaining({ enabled: true }),
+        yamlEditorValue: newManifest,
+      });
     });
 
     it.each`

@@ -26,9 +26,11 @@ export default {
   mixins: [dastProfileConfiguratorMixin()],
   provide() {
     return {
-      projectPath: this.fullPath,
+      // rename namespacePath to projectPath for dastProfilesDrawer
+      projectPath: this.namespacePath,
     };
   },
+  inject: ['namespacePath'],
   data() {
     return {
       activeProfile: undefined,
@@ -52,27 +54,35 @@ export default {
     },
   },
   watch: {
+    scannerProfiles() {
+      this.hasDastProfileError();
+    },
+    siteProfiles() {
+      this.hasDastProfileError();
+    },
     selectedScannerProfile: 'updateProfiles',
     selectedSiteProfile: 'updateProfiles',
-  },
-  mounted() {
-    if (
-      this.savedScannerProfileName &&
-      !this.doesProfileExist(this.scannerProfiles, this.savedScannerProfileName)
-    ) {
-      this.$emit('error');
-    }
-
-    if (
-      this.savedSiteProfileName &&
-      !this.doesProfileExist(this.siteProfiles, this.savedSiteProfileName)
-    ) {
-      this.$emit('error');
-    }
   },
   methods: {
     doesProfileExist(profiles = [], savedProfileName) {
       return profiles.some(({ profileName }) => profileName === savedProfileName);
+    },
+    hasDastProfileError() {
+      if (this.isLoadingProfiles) {
+        return;
+      }
+
+      const savedScannerProfileDoesNotExist =
+        this.savedScannerProfileName &&
+        !this.doesProfileExist(this.scannerProfiles, this.savedScannerProfileName);
+
+      const savedSiteProfileDoesNotExist =
+        this.savedSiteProfileName &&
+        !this.doesProfileExist(this.siteProfiles, this.savedSiteProfileName);
+
+      if (savedScannerProfileDoesNotExist || savedSiteProfileDoesNotExist) {
+        this.$emit('error');
+      }
     },
     updateProfiles() {
       this.$emit('profiles-selected', {
@@ -121,6 +131,7 @@ export default {
 
     <dast-profiles-drawer
       :active-profile="activeProfile"
+      :full-path="namespacePath"
       :open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       :profiles="selectedProfiles"
