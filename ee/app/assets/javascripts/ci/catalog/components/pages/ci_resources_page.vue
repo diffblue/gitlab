@@ -67,6 +67,7 @@ export default {
 
         this.currentPage -= 1;
       } catch (e) {
+        this.$apollo.queries.catalogResources.stop();
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
       }
     },
@@ -80,6 +81,8 @@ export default {
 
         this.currentPage += 1;
       } catch (e) {
+        this.$apollo.queries.catalogResources.stop();
+
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
       }
     },

@@ -97,7 +97,7 @@ describe('CiResourcesList', () => {
 
   describe('when there is an error getting the page count', () => {
     beforeEach(() => {
-      createComponent({ props: { totalCount: null } });
+      createComponent({ props: { totalCount: 0 } });
     });
 
     it('hides the page count', () => {

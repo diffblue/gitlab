@@ -354,6 +354,16 @@ msgid_plural "%d more comments"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d opened Issue"
+msgid_plural "%d opened Issues"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%d opened Merge Request"
+msgid_plural "%d opened Merge Requests"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d package"
 msgid_plural "%d packages"
 msgstr[0] ""
@@ -9568,6 +9578,9 @@ msgstr ""
 msgid "Ci config already present"
 msgstr ""
 
+msgid "CiCatalog|About this project"
+msgstr ""
+
 msgid "CiCatalog|CI/CD Catalog resource"
 msgstr ""
 
@@ -9578,6 +9591,12 @@ msgid "CiCatalog|Create a pipeline component repository and make reusing pipelin
 msgstr ""
 
 msgid "CiCatalog|Get started with the CI/CD catalog"
+msgstr ""
+
+msgid "CiCatalog|Go to the project"
+msgstr ""
+
+msgid "CiCatalog|Last release at %{date}"
 msgstr ""
 
 msgid "CiCatalog|Mark project as a CI/CD Catalog resource"

@@ -10,12 +10,17 @@ const generateResourcesNodes = (count = 20, startId = 0) => {
       description: `This is a component that does a bunch of stuff and is really just a number: ${i}`,
       icon: 'my-icon',
       lastUpdate: {
+        id: '1',
         time: Date.now(),
         user: { id: 1, webUrl: 'profile/1', name: 'username' },
       },
       statistics: {
-        favorites: 1,
-        forks: 12,
+        id: '1',
+        starCount: 1,
+        forkCount: 12,
+      },
+      versions: {
+        nodes: [{ id: '1', tagName: '1.0.0' }],
       },
     });
   }

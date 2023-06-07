@@ -1,0 +1,30 @@
+query getCiCatalogResourceDetails {
+  ciCatalogResourcesDetails @client {
+    nodes {
+      id
+      icon
+      name
+      description
+      readmeHtml
+      rootNamespace {
+        id
+        fullPath
+        name
+      }
+      statistics {
+        id
+        starCount
+        forkCount
+        issues
+        mergeRequests
+      }
+      versions {
+        nodes {
+          id
+          releasedAt
+          tagName
+        }
+      }
+    }
+  }
+}

@@ -19,6 +19,7 @@ describe('CiResourcesListItem', () => {
       },
       stubs: {
         GlSprintf,
+        RouterLink: true,
       },
     });
   };
@@ -74,6 +75,7 @@ describe('CiResourcesListItem', () => {
         createComponent({
           props: {
             resource: {
+              ...mockCatalogResourceItem,
               statistics: {},
               lastUpdate: {
                 user: {

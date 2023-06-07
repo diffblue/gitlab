@@ -26,8 +26,8 @@ query getCiCatalogResources(
       group @client
       name
       namespace @client
-      latestVersion @client
       lastUpdate @client {
+        id
         time
         user {
           id
@@ -36,8 +36,15 @@ query getCiCatalogResources(
         }
       }
       statistics @client {
-        forks
-        favorites
+        id
+        forkCount
+        starCount
+      }
+      versions @client {
+        nodes {
+          id
+          tagName
+        }
       }
     }
   }

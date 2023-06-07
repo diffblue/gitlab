@@ -214,7 +214,7 @@ describe('CiResourcesPage', () => {
           await createComponent();
         });
 
-        it('does not increment the page and calls createAlert', async () => {
+        it('does not decrement the page and calls createAlert', async () => {
           expect(findCiResourcesList().props().currentPage).toBe(1);
 
           findCiResourcesList().vm.$emit('onNextPage');
@@ -222,7 +222,7 @@ describe('CiResourcesPage', () => {
 
           expect(findCiResourcesList().props().currentPage).toBe(2);
 
-          findCiResourcesList().vm.$emit('onPreviousPage');
+          findCiResourcesList().vm.$emit('onPrevPage');
           await waitForPromises();
 
           expect(findCiResourcesList().props().currentPage).toBe(2);
