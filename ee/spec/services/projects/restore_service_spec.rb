@@ -22,10 +22,12 @@ RSpec.describe Projects::RestoreService do
     subject { described_class.new(project, user).execute }
 
     it 'marks project as not hidden, unarchived and not marked for deletion' do
+      expect(Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+        .with(project.namespace.id).and_call_original
+
       subject
 
       expect(Project.unscoped.all).to include(project)
-
       expect(project.archived).to eq(false)
       expect(project.hidden).to eq(false)
       expect(project.marked_for_deletion_at).to be_nil

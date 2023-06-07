@@ -11,8 +11,15 @@ module Projects
         current_user,
         project_update_service_params
       ).execute
-      log_event if result[:status] == :success
       log_error(result[:message]) if result[:status] == :error
+
+      if result[:status] == :success
+        log_event
+
+        ## Trigger root statistics refresh, to skip project_statistics of
+        ## projects marked for deletion
+        Namespaces::ScheduleAggregationWorker.perform_async(project.namespace_id)
+      end
 
       result
     end

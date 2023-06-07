@@ -19,7 +19,14 @@ module Projects
           name: updated_value(project.name),
           path: updated_value(project.path) }
       ).execute
-      log_event if result[:status] == :success
+
+      if result[:status] == :success
+        log_event
+
+        ## Trigger root namespace statistics refresh, to add project_statistics of
+        ## projects restored from deletion
+        Namespaces::ScheduleAggregationWorker.perform_async(project.namespace_id)
+      end
 
       result
     end
