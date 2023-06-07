@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'compliance_management/compliance_framework/_project_settings.html.haml' do
+RSpec.describe 'compliance_management/compliance_framework/_project_settings.html.haml', feature_category: :compliance_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:group_owner) { create(:user) }
   let_it_be(:project) { create(:project, :with_compliance_framework, namespace: group) }
@@ -129,6 +129,16 @@ RSpec.describe 'compliance_management/compliance_framework/_project_settings.htm
       it 'hides the submit button' do
         expect(rendered).not_to have_button('Save changes')
       end
+    end
+  end
+
+  describe 'project is in a user namespace' do
+    let_it_be(:project) { create(:project, namespace: group_owner.namespace) }
+
+    it 'hides the expand button' do
+      render
+
+      expect(rendered).to have_text 'Frameworks can not be added to projects in personal namespaces. What are personal namespaces?'
     end
   end
 end
