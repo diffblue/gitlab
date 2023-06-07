@@ -18,6 +18,7 @@ module Gitlab
             @tools = tools
             @context = context
             @iterations = 0
+            @logger = Gitlab::Llm::Logger.build
           end
 
           PROMPT_TEMPLATE = [
@@ -55,6 +56,7 @@ module Gitlab
 
               input_variables[:agent_scratchpad] << answer.content.to_s << answer.suggestions.to_s
               tool_class = answer.tool
+              logger.debug(message: "Picked tool", tool: tool_class.to_s)
 
               tool = tool_class.new(
                 context: context,
@@ -75,6 +77,8 @@ module Gitlab
           end
 
           private
+
+          attr_reader :logger
 
           # This method should not be memoized because the input variables change over time
           def prompt

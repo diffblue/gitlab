@@ -80,7 +80,9 @@ module Gitlab
             return already_identified_answer if already_identified?
 
             MAX_RETRIES.times do
+              logger.debug(message: "Prompt", class: self.class.to_s, content: prompt)
               response = request(prompt)
+
               json = extract_json(response)
               issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
@@ -91,15 +93,20 @@ module Gitlab
               context.resource = issue
 
               content = "I now have the JSON information about the issue ##{issue.iid}."
+
+              logger.debug(message: "Answer", class: self.class.to_s, content: content)
               return Answer.new(status: :ok, context: context, content: content, tool: nil)
             rescue JSON::ParserError
               # try to help out AI to fix the JSON format by adding the error as an observation
               self.retries += 1
 
               error_message = "\nObservation: JSON has an invalid format. Please retry"
+              logger.error(message: "Error", class: self.class.to_s, error: error_message)
+
               options[:suggestions] += error_message
-            rescue StandardError
-              # todo: add exception logging
+            rescue StandardError => e
+              logger.error(message: "Error", error: e.message, class: self.class.to_s)
+
               return Answer.error_answer(context: context, content: _("Unexpected error"))
             end
 
@@ -170,6 +177,7 @@ module Gitlab
           def already_identified_answer
             resource = context.resource
             content = "You already have identified the issue ##{resource.iid}, read carefully."
+            logger.debug(message: "Answer", class: self.class.to_s, content: content)
 
             ::Gitlab::Llm::Chain::Answer.new(
               status: :ok, context: context, content: content, tool: nil, is_final: false

@@ -15,6 +15,7 @@ module Gitlab
           def initialize(context:, options:)
             @context = context
             @options = options
+            @logger = Gitlab::Llm::Logger.build
           end
 
           def execute
@@ -36,6 +37,10 @@ module Gitlab
             end
           end
           strong_memoize_attr :projects_from_context
+
+          private
+
+          attr_reader :logger
         end
       end
     end
