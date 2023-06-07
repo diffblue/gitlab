@@ -6,7 +6,7 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
   subject { described_class.new(user, user, options) }
 
   describe '#perform', :saas do
-    let_it_be(:ultimate_group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
     let_it_be(:user) { create(:user) }
 
     let_it_be(:options) do
@@ -14,6 +14,8 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
         prompt: 'list 10 commit titles'
       }
     end
+
+    include_context 'with ai features enabled for group'
 
     it 'returns an error' do
       expect(subject.execute).to be_error
@@ -23,7 +25,7 @@ RSpec.describe Llm::GitCommandService, feature_category: :source_code_management
       before do
         stub_licensed_features(ai_git_command: true)
 
-        ultimate_group.add_developer(user)
+        group.add_developer(user)
       end
 
       it 'responds successfully' do

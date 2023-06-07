@@ -12,6 +12,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let(:ai_client) { instance_double(Gitlab::Llm::Anthropic::Client) }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:options) { { request_id: 'uuid', content: content } }
+  let(:container) { group }
   let(:answer) do
     ::Gitlab::Llm::Chain::Answer.new(
       status: :ok, context: context, content: content, tool: nil, is_final: true
@@ -20,11 +21,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
   subject { described_class.new(nil).execute(user, resource, options) }
 
-  describe '#execute' do
-    before do
-      allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(ai_client)
-    end
-
+  shared_examples 'success' do
     it 'calls the ZeroShot Agent with the right parameters' do
       expected_params = [
         user_input: content,
@@ -37,9 +34,26 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
       end
 
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-        .with(current_user: user, container: group, resource: resource, ai_client: ai_client).and_return(context)
+        .with(current_user: user, container: container, resource: resource, ai_client: ai_client).and_return(context)
 
       subject
+    end
+  end
+
+  describe '#execute' do
+    before do
+      allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(ai_client)
+    end
+
+    context 'when resource is an issue' do
+      it_behaves_like 'success'
+    end
+
+    context 'when resource is a user' do
+      let(:container) { nil }
+      let_it_be(:resource) { user }
+
+      it_behaves_like 'success'
     end
   end
 end
