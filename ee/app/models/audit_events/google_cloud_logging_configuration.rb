@@ -42,6 +42,14 @@ module AuditEvents
 
     validate :root_level_group?
 
+    def allowed_to_stream?(*)
+      true
+    end
+
+    def full_log_path
+      "projects/#{google_project_id_name}/logs/#{log_id_name}"
+    end
+
     private
 
     def root_level_group?

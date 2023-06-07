@@ -5,6 +5,10 @@ require 'spec_helper'
 RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audit_events do
   before do
     stub_licensed_features(external_audit_events: true)
+
+    allow_next_instance_of(::GoogleCloud::Authentication) do |instance|
+      allow(instance).to receive(:generate_access_token).and_return("sample-token")
+    end
   end
 
   describe '#stream_to_destinations' do
@@ -25,10 +29,11 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
       before do
         create(:external_audit_event_destination, group: group)
         create_list(:instance_external_audit_event_destination, 2)
+        create(:google_cloud_logging_configuration, group: group)
       end
 
-      it 'makes two HTTP calls' do
-        expect(Gitlab::HTTP).to receive(:post).thrice
+      it 'makes correct number of HTTP calls' do
+        expect(Gitlab::HTTP).to receive(:post).exactly(4).times
 
         subject
       end
@@ -45,17 +50,18 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
       it { is_expected.to be_falsey }
     end
 
+    context 'when all of them are streamable' do
+      before do
+        create(:external_audit_event_destination, group: group)
+        create(:instance_external_audit_event_destination)
+        create(:google_cloud_logging_configuration, group: group)
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
     context 'when atleast one of them is streamable' do
-      context 'when all of them are streamable' do
-        before do
-          create(:external_audit_event_destination, group: group)
-          create(:instance_external_audit_event_destination)
-        end
-
-        it { is_expected.to be_truthy }
-      end
-
-      context 'when group is streamable but instance is not' do
+      context 'when only group external destination is streamable' do
         before do
           create(:external_audit_event_destination, group: group)
         end
@@ -63,9 +69,17 @@ RSpec.describe AuditEvents::ExternalDestinationStreamer, feature_category: :audi
         it { is_expected.to be_truthy }
       end
 
-      context 'when instance is streamable but group is not' do
+      context 'when only instance destination is streamable' do
         before do
           create(:instance_external_audit_event_destination)
+        end
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when only google cloud logging destination is streamable' do
+        before do
+          create(:google_cloud_logging_configuration, group: group)
         end
 
         it { is_expected.to be_truthy }

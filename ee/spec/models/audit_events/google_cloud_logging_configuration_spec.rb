@@ -84,6 +84,21 @@ RSpec.describe AuditEvents::GoogleCloudLoggingConfiguration, feature_category: :
     end
   end
 
+  describe '#allowed_to_stream?' do
+    it 'always returns true' do
+      expect(google_cloud_logging_config.allowed_to_stream?).to eq(true)
+    end
+  end
+
+  describe '#full_log_path' do
+    it 'returns the full log path for the google project' do
+      google_cloud_logging_config.google_project_id_name = "test-project"
+      google_cloud_logging_config.log_id_name = "test-log"
+
+      expect(google_cloud_logging_config.full_log_path).to eq("projects/test-project/logs/test-log")
+    end
+  end
+
   it_behaves_like 'includes Limitable concern' do
     subject { build(:google_cloud_logging_configuration, group: create(:group)) }
   end

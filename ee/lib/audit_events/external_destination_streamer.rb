@@ -6,7 +6,8 @@ module AuditEvents
 
     STRATEGIES = [
       AuditEvents::Strategies::GroupExternalDestinationStrategy,
-      AuditEvents::Strategies::InstanceExternalDestinationStrategy
+      AuditEvents::Strategies::InstanceExternalDestinationStrategy,
+      AuditEvents::Strategies::GoogleCloudLoggingDestinationStrategy
     ].freeze
 
     def initialize(event_name, audit_event)
