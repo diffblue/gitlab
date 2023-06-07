@@ -119,7 +119,7 @@ export default () => ({
       return [ERROR_FETCH_SCANNER_PROFILES, ERROR_FETCH_SITE_PROFILES].includes(this.errorType);
     },
     isLoadingProfiles() {
-      return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
+      return this.$apollo.loading;
     },
     isScannerProfile() {
       return this.profileType === SCANNER_TYPE;
