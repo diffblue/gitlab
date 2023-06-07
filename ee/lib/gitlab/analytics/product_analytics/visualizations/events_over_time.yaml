@@ -6,7 +6,7 @@ data:
   type: cube_analytics
   query:
     measures:
-      - SnowplowTrackedEvents.pageViewsCount
+      - SnowplowTrackedEvents.count
     timeDimensions:
       - dimension: SnowplowTrackedEvents.derivedTstamp
         granularity: day
