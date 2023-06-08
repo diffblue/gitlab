@@ -4,7 +4,11 @@ module QA
   RSpec.describe 'Fulfillment', :requires_admin,
                  only: { subdomain: :staging },
                  feature_flag: { name: 'namespace_storage_limit', scope: :group },
-                 product_group: :utilization do
+                 product_group: :utilization,
+                 quarantine: {
+                   issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/412812',
+                   type: :stale
+                 } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
