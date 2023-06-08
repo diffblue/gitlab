@@ -35,8 +35,9 @@ A vulnerability's status can be:
 - **Dismissed**: A user has seen this vulnerability and dismissed it because it is not accurate or
   otherwise not to be resolved. Dismissed vulnerabilities are ignored if detected in subsequent
   scans.
-- **Resolved**: The vulnerability has been fixed or is no longer present. Resolved vulnerabilities
-  that are reintroduced and detected by subsequent scans have a _new_ vulnerability record created.
+- **Resolved**: The vulnerability has been fixed or is no longer present. If a resolved
+  vulnerability is reintroduced and detected again, its record is reinstated and its status set to
+  detected.
 
 ## Vulnerability dismissal reasons
 
