@@ -83,7 +83,7 @@ describe('TanukiBot Store Actions', () => {
         expectedMutations: [
           { type: types.SET_LOADING, payload: false },
           { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
-          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE.content },
+          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE },
         ],
       });
     });
@@ -93,7 +93,7 @@ describe('TanukiBot Store Actions', () => {
         payload: [MOCK_TANUKI_MESSAGE, MOCK_USER_MESSAGE],
         state,
         expectedMutations: [
-          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE.content },
+          { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE },
           { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
         ],
       });
@@ -118,6 +118,27 @@ describe('TanukiBot Store Actions', () => {
           { type: types.SET_LOADING, payload: false },
           { type: types.ADD_USER_MESSAGE, payload: MOCK_USER_MESSAGE.content },
           { type: types.ADD_TANUKI_MESSAGE, payload: contentObject },
+        ],
+      });
+    });
+    it('if messge has an error, it correctly commits the ADD_ERROR_MESSAGE nmutation', () => {
+      return testAction({
+        action: actions.setMessages,
+        payload: [
+          {
+            ...MOCK_USER_MESSAGE,
+            errors: ['foo'],
+          },
+          {
+            ...MOCK_TANUKI_MESSAGE,
+            errors: ['foo'],
+          },
+        ],
+        state,
+        expectedMutations: [
+          { type: types.SET_LOADING, payload: false },
+          { type: types.ADD_ERROR_MESSAGE },
+          { type: types.ADD_ERROR_MESSAGE },
         ],
       });
     });
