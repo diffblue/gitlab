@@ -38,7 +38,7 @@ module QA
               find('button', text: 'Add an existing issue').click
               fill_element :add_issue_field, issue_url
               # Clicking the title blurs the input
-              click_element :title_content
+              click_element :issue_title
               click_element :add_issue_button
             end
 

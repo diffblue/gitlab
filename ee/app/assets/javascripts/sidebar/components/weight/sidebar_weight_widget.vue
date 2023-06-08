@@ -211,7 +211,6 @@ export default {
         <span
           :class="hasWeight ? 'gl-text-gray-900 gl-font-weight-bold' : 'gl-text-gray-500'"
           data-testid="sidebar-weight-value"
-          data-qa-selector="weight_label_value"
         >
           {{ weightLabel }}
         </span>

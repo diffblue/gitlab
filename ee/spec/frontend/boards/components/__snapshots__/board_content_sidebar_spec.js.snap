@@ -102,7 +102,6 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           
         <button
           class="btn gl-text-gray-900! gl-ml-auto hide-collapsed gl-mr-n2 shortcut-sidebar-dropdown-toggle btn-default btn-sm gl-button btn-default-tertiary"
-          data-qa-selector="edit_link"
           data-testid="edit-button"
           id=""
           type="button"
