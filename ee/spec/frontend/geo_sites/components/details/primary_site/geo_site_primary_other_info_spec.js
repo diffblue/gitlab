@@ -74,7 +74,7 @@ describe('GeoSitePrimaryOtherInfo', () => {
       });
 
       it('renders 0 bytes', () => {
-        expect(findReplicationSlotWAL().text()).toBe('0 bytes');
+        expect(findReplicationSlotWAL().text()).toBe('0 B');
       });
     });
 
