@@ -2,32 +2,26 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, feature_category: :shared do
   let(:input) { 'foo' }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
-  let(:client_double) { instance_double(Gitlab::Llm::Anthropic::Client) }
+  let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar') }
-  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::Tool) }
-  let(:tools) { [Gitlab::Llm::Chain::Tools::Tool] }
-  let(:response_double_1) do
-    { 'completion' => "I need to execute tool Foo\nAction: Base Tool\nAction Input: Foo\n" }
-  end
-
-  let(:response_double_2) do
-    { 'completion' => "I know the final answer\nFinal Answer: FooBar" }
-  end
+  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
+  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
+  let(:response_double) { "I know the final answer\nFinal Answer: FooBar" }
 
   subject(:agent) { described_class.new(user_input: input, tools: tools, context: context) }
 
   describe '#execute' do
     before do
-      allow(context).to receive(:ai_client).and_return(client_double)
-      allow(client_double).to receive(:complete).and_return(response_double_1, response_double_2)
+      allow(context).to receive(:ai_request).and_return(ai_request_double)
+      allow(ai_request_double).to receive(:request).and_return(response_double)
       allow(tool_double).to receive(:execute).and_return(tool_answer)
       allow_next_instance_of(Gitlab::Llm::Chain::Answer) do |answer|
-        allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::Tool)
+        allow(answer).to receive(:tool).and_return(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
       end
-      allow(Gitlab::Llm::Chain::Tools::Tool)
+      allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor)
         .to receive(:new)
         .with(context: context, options: anything)
         .and_return(tool_double)
@@ -42,9 +36,10 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot, feature_category: :shared d
 
     context 'when max iterations reached' do
       it 'returns' do
-        stub_const("#{described_class.name}::MAX_ITERATIONS", 0)
+        stub_const("#{described_class.name}::MAX_ITERATIONS", 2)
 
-        expect(agent).not_to receive(:request)
+        allow(agent).to receive(:request).and_return("Action: IssueIdentifier\nActionInput: #3")
+        expect(agent).to receive(:request).twice.times
 
         answer = agent.execute
 

@@ -2,12 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_category: :shared do
   RSpec.shared_examples 'success response' do
     it 'returns success response' do
-      ai_client = double
-      allow(ai_client).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
-      allow(context).to receive(:ai_client).and_return(ai_client)
+      ai_request = double
+      allow(ai_request).to receive(:request).and_return(ai_response)
+      allow(context).to receive(:ai_request).and_return(ai_request)
 
       response = "I now have the JSON information about the issue ##{resource_iid}."
       expect(tool.execute.content).to eq(response)
@@ -74,7 +74,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
           container: project,
           resource: issue1,
           current_user: user,
-          ai_client: double
+          ai_request: double
         )
       end
 
@@ -203,9 +203,9 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier, feature_category: :sh
           end
 
           it 'returns already identified response' do
-            ai_client = double
-            allow(ai_client).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
-            allow(context).to receive(:ai_client).and_return(ai_client)
+            ai_request = double
+            allow(ai_request).to receive_message_chain(:complete, :dig, :to_s, :strip).and_return(ai_response)
+            allow(context).to receive(:ai_request).and_return(ai_request)
 
             response = "You already have identified the issue ##{context.resource.iid}, read carefully."
             expect(tool.execute.content).to eq(response)

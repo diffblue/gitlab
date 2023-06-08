@@ -1,0 +1,24 @@
+# frozen_string_literal: true
+
+require 'spec_helper'
+
+RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature_category: :shared do
+  describe '.prompt' do
+    it 'returns prompt' do
+      options = {
+        tools_definitions: "tool definitions",
+        tool_names: "tool names",
+        user_input: 'foo?',
+        agent_scratchpad: "some observation"
+      }
+      prompt = described_class.prompt(options)
+
+      expect(prompt).to include('Human:')
+      expect(prompt).to include('Assistant:')
+      expect(prompt).to include('foo?')
+      expect(prompt).to include('tool definitions')
+      expect(prompt).to include('tool names')
+      expect(prompt).to include('Answer the following questions as best you can. Start with identifying the resource')
+    end
+  end
+end

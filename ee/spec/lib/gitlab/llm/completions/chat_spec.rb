@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let_it_be(:resource) { create(:issue, project: project) }
 
   let(:content) { 'Summarize issue' }
-  let(:ai_client) { instance_double(Gitlab::Llm::Anthropic::Client) }
+  let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:options) { { request_id: 'uuid', content: content } }
   let(:container) { group }
@@ -23,18 +23,22 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
   shared_examples 'success' do
     it 'calls the ZeroShot Agent with the right parameters' do
+      tools = [
+        ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+        ::Gitlab::Llm::Chain::Tools::SummarizeComments
+      ]
       expected_params = [
         user_input: content,
-        tools: match_array([::Gitlab::Llm::Chain::Tools::IssueIdentifier]),
+        tools: match_array(tools),
         context: context
       ]
 
-      expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot, *expected_params) do |instance|
+      expect_next_instance_of(::Gitlab::Llm::Chain::Agents::ZeroShot::Executor, *expected_params) do |instance|
         expect(instance).to receive(:execute).and_return(answer)
       end
 
       expect(::Gitlab::Llm::Chain::GitlabContext).to receive(:new)
-        .with(current_user: user, container: container, resource: resource, ai_client: ai_client).and_return(context)
+        .with(current_user: user, container: container, resource: resource, ai_request: ai_request).and_return(context)
 
       subject
     end
@@ -42,7 +46,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
   describe '#execute' do
     before do
-      allow(::Gitlab::Llm::Anthropic::Client).to receive(:new).and_return(ai_client)
+      allow(Gitlab::Llm::Chain::Requests::Anthropic).to receive(:new).and_return(ai_request)
     end
 
     context 'when resource is an issue' do

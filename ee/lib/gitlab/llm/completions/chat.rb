@@ -4,19 +4,22 @@ module Gitlab
   module Llm
     module Completions
       class Chat < Base
-        TOOLS = [Gitlab::Llm::Chain::Tools::IssueIdentifier].freeze
+        TOOLS = [
+          Gitlab::Llm::Chain::Tools::IssueIdentifier,
+          Gitlab::Llm::Chain::Tools::SummarizeComments
+        ].freeze
 
         def execute(user, resource, options)
           # The Agent currently only supports Anthropic as it relies on the client's specific methods.
-          client = ::Gitlab::Llm::Anthropic::Client.new(user)
+          ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
           context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,
             resource: resource,
-            ai_client: client
+            ai_request: ai_request
           )
 
-          response = Gitlab::Llm::Chain::Agents::ZeroShot.new(
+          response = Gitlab::Llm::Chain::Agents::ZeroShot::Executor.new(
             user_input: options[:content],
             tools: TOOLS,
             context: context
