@@ -128,6 +128,17 @@ export const createScheduleResponse = {
   },
 };
 
+export const createScheduleResponseWithErrors = {
+  data: {
+    oncallScheduleCreate: {
+      errors: ['Houston, we have a problem'],
+      oncallSchedule: {
+        ...oncallScheduleInput,
+      },
+    },
+  },
+};
+
 export const updateScheduleResponseWithErrors = {
   data: {
     oncallScheduleUpdate: {

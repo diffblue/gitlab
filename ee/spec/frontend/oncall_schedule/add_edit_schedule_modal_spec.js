@@ -1,6 +1,6 @@
 import { GlModal, GlAlert } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
-import { nextTick } from 'vue';
+import { shallowMount } from '@vue/test-utils';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import mockTimezones from 'test_fixtures/timezones/full.json';
 import AddEditScheduleForm from 'ee/oncall_schedules/components/add_edit_schedule_form.vue';
@@ -20,6 +20,7 @@ import {
   getOncallSchedulesQueryResponse,
   updateScheduleResponse,
   createScheduleResponse,
+  createScheduleResponseWithErrors,
   updateScheduleResponseWithErrors,
 } from './mocks/apollo_mock';
 
@@ -39,14 +40,13 @@ describe('AddScheduleModal', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModalForm = () => wrapper.findComponent(AddEditScheduleForm);
 
-  const localVue = createLocalVue();
   const mockHideModal = jest.fn(function hide() {
     this.$emit('hide');
   });
 
   const submitForm = async () => {
     findModal().vm.$emit('primary', { preventDefault: jest.fn() });
-    await nextTick;
+    await nextTick();
     await waitForPromises();
   };
 
@@ -78,7 +78,7 @@ describe('AddScheduleModal', () => {
     updateHandler = jest.fn().mockResolvedValue(createScheduleResponse),
     props = {},
   } = {}) => {
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
     scheduleHandler = updateHandler;
 
     const requestHandlers = [
@@ -97,7 +97,6 @@ describe('AddScheduleModal', () => {
     });
 
     wrapper = shallowMount(AddEditScheduleModal, {
-      localVue,
       apolloProvider: mockApollo,
       propsData: {
         ...props,
@@ -122,13 +121,25 @@ describe('AddScheduleModal', () => {
       createComponent({ props: { modalId: addScheduleModalId } });
     });
 
+    it('renders correct buttons for modal actions', () => {
+      expect(findModal().props('actionCancel').text).toBe(i18n.cancel);
+      expect(findModal().props('actionPrimary').text).toBe(i18n.addSchedule);
+      expect(findModal().props('actionPrimary').attributes).toEqual({
+        variant: 'confirm',
+        loading: false,
+        disabled: false,
+        'data-qa-selector': 'add_schedule_button',
+      });
+    });
+
     describe('renders create modal with the correct schedule information', () => {
       it('renders name of correct modal id', () => {
         expect(findModal().props('modalId')).toBe(addScheduleModalId);
       });
 
-      it('renders modal title', () => {
+      it('renders modal title and button with copy for creating the schedule', () => {
         expect(findModal().props('title')).toBe(i18n.addSchedule);
+        expect(findModal().props('actionPrimary').text).toBe(i18n.addSchedule);
       });
     });
 
@@ -156,21 +167,12 @@ describe('AddScheduleModal', () => {
       });
     });
 
-    it('displays alert if mutation had a recoverable error', async () => {
-      createComponent({
-        updateHandler: jest.fn().mockResolvedValue(updateScheduleResponseWithErrors),
-        props: { modalId: editScheduleModalId },
-      });
-
+    it('shows loading spinner on action button while calling a mutation', async () => {
       updateAllFormFields();
-      await submitForm();
+      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+      await nextTick();
 
-      const alert = findAlert();
-      expect(alert.exists()).toBe(true);
-      expect(alert.text()).toContain(
-        updateScheduleResponseWithErrors.data.oncallScheduleUpdate.errors[0],
-      );
-      expect(mockHideModal).not.toHaveBeenCalled();
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(true);
     });
 
     it('calls a mutation with correct parameters and creates a schedule', async () => {
@@ -181,14 +183,47 @@ describe('AddScheduleModal', () => {
       expect(wrapper.emitted('scheduleCreated')).toBeDefined();
     });
 
-    it('should clear the schedule form on a successful creation', async () => {
+    it('should clear the schedule form and remove loading state on a successful creation', async () => {
       updateAllFormFields();
       await submitForm();
 
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(false);
       expect(findModalForm().props('form')).toMatchObject({
         name: undefined,
         description: undefined,
         timezone: undefined,
+      });
+    });
+
+    describe('throws an error', () => {
+      beforeEach(async () => {
+        createComponent({
+          updateHandler: jest.fn().mockResolvedValue(createScheduleResponseWithErrors),
+          props: { modalId: editScheduleModalId },
+        });
+
+        updateAllFormFields();
+        await submitForm();
+      });
+
+      it('displays alert if mutation had a recoverable error', () => {
+        const alert = findAlert();
+        expect(alert.exists()).toBe(true);
+        expect(alert.text()).toContain(
+          createScheduleResponseWithErrors.data.oncallScheduleCreate.errors[0],
+        );
+        expect(mockHideModal).not.toHaveBeenCalled();
+      });
+
+      it('the error is cleared on alert dismissal', async () => {
+        expect(findAlert().text()).toContain(
+          createScheduleResponseWithErrors.data.oncallScheduleCreate.errors[0],
+        );
+
+        findAlert().vm.$emit('dismiss', { preventDefault: jest.fn() });
+        await nextTick();
+
+        expect(findAlert().exists()).toBe(false);
       });
     });
   });
@@ -201,7 +236,20 @@ describe('AddScheduleModal', () => {
       });
     });
 
-    it('makes a request with to update a schedule and hides a modal on successful update', async () => {
+    it('renders modal title and button with copy for editing the schedule', () => {
+      expect(findModal().props('title')).toBe(i18n.editSchedule);
+      expect(findModal().props('actionPrimary').text).toBe(i18n.saveChanges);
+    });
+
+    it('shows loading spinner on action button while calling a mutation', async () => {
+      updateAllFormFields();
+      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+      await nextTick();
+
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(true);
+    });
+
+    it('makes a request to update a schedule and hides a modal on successful update', async () => {
       updateAllFormFields();
       await submitForm();
 
@@ -211,6 +259,7 @@ describe('AddScheduleModal', () => {
         timezone: updatedTimezone,
       });
       expect(scheduleHandler).toHaveBeenCalled();
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(false);
       expect(mockHideModal).toHaveBeenCalled();
     });
 
