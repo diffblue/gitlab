@@ -36,51 +36,55 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
         )
       end
 
-      context 'when resource has no comments to summarize' do
-        it 'responds without making an AI call' do
-          expect(tool).not_to receive(:request)
+      context 'when user has permission to read resource' do
+        before do
+          stub_application_setting(check_namespace_plan: true)
+          stub_licensed_features(summarize_notes: true, ai_features: true)
 
-          response = "Issue ##{issue1.iid} has no comments to be summarized."
-          expect(tool.execute.content).to eq(response)
+          project.add_developer(user)
+          project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
         end
-      end
 
-      context 'when resource has comments to summarize' do
-        let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issue1) }
-
-        context 'when no permissions to use ai features' do
-          it 'responds with error' do
+        context 'when resource has no comments to summarize' do
+          it 'responds without making an AI call' do
             expect(tool).not_to receive(:request)
 
-            response = "Issue #1: AI features are not enabled or resource is not permitted to be sent."
+            response = "Issue ##{issue1.iid} has no comments to be summarized."
             expect(tool.execute.content).to eq(response)
           end
         end
 
-        context 'when resource was already summarized' do
-          before do
-            input_variables[:suggestions] = "Action: SummarizeComments\n"
-            input_variables[:suggestions] += "I know the summary of the notes, comments, discussions for the"
-            input_variables[:suggestions] += "Action: SummarizeComments"
+        context 'when resource has comments to summarize' do
+          let_it_be(:notes) { create_pair(:note_on_issue, project: project, noteable: issue1) }
+
+          context 'when no permissions to use ai features' do
+            before do
+              stub_licensed_features(summarize_notes: false, ai_features: false)
+            end
+
+            it 'responds with error' do
+              expect(tool).not_to receive(:request)
+
+              response = "Issue #1: AI features are not enabled or resource is not permitted to be sent."
+              expect(tool.execute.content).to eq(response)
+            end
           end
 
-          it 'returns already symmarized response' do
-            expect(tool).not_to receive(:request)
+          context 'when resource was already summarized' do
+            before do
+              input_variables[:suggestions] = "Action: SummarizeComments\n"
+              input_variables[:suggestions] += "I know the summary of the notes, comments, discussions for the"
+              input_variables[:suggestions] += "Action: SummarizeComments"
+            end
 
-            response = "You already have the summary of the notes, comments, discussions for the " \
-                       "Issue ##{issue1.iid} in your context, read carefully."
+            it 'returns already symmarized response' do
+              expect(tool).not_to receive(:request)
 
-            expect(tool.execute.content).to include(response)
-          end
-        end
+              response = "You already have the summary of the notes, comments, discussions for the " \
+                         "Issue ##{issue1.iid} in your context, read carefully."
 
-        context 'when user has permission to read resource' do
-          before do
-            stub_application_setting(check_namespace_plan: true)
-            stub_licensed_features(summarize_notes: true, ai_features: true)
-
-            project.add_developer(user)
-            project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+              expect(tool.execute.content).to include(response)
+            end
           end
 
           it 'responds with summary' do

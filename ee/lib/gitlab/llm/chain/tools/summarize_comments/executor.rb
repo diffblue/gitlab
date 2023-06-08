@@ -10,7 +10,7 @@ module Gitlab
             DESCRIPTION = "This tool is useful when you need to create a summary of all notes, " \
                           "comments or discussions on a given resource."
 
-            def execute
+            def perform
               return already_summarized_answer if already_summarized?
 
               content = if resource.is_a?(Noteable) && resource.notes.by_humans.exists?
@@ -20,7 +20,7 @@ module Gitlab
 
                           build_answer(resource, service_response)
                         else
-                          "#{resource_name(resource)} ##{resource.iid} has no comments to be summarized."
+                          "#{resource_name} ##{resource.iid} has no comments to be summarized."
                         end
 
               logger.debug(message: "Answer", class: self.class.to_s, content: content)
@@ -32,14 +32,16 @@ module Gitlab
 
             private
 
+            def authorize
+              Utils::Authorizer.context_authorized?(context: context)
+            end
+
             def build_answer(resource, service_response)
-              if service_response.error?
-                return "#{resource_name(resource)} ##{resource.iid}: #{service_response.message}"
-              end
+              return "#{resource_name} ##{resource.iid}: #{service_response.message}" if service_response.error?
 
               [
                 "I know the summary of the notes, comments, discussions for the
-               #{resource_name(resource)} ##{resource.iid} is the following:",
+                #{resource_name} ##{resource.iid} is the following:",
                 "\"\"\"",
                 (service_response.payload[:content] || service_response.payload[:errors]&.join("\n")).to_s,
                 "\"\"\""
@@ -48,7 +50,7 @@ module Gitlab
 
             def already_summarized_answer
               content = "You already have the summary of the notes, comments, discussions for the " \
-                        "#{resource_name(resource)} ##{resource.iid} in your context, read carefully."
+                        "#{resource_name} ##{resource.iid} in your context, read carefully."
 
               ::Gitlab::Llm::Chain::Answer.new(
                 status: :ok, context: context, content: content, tool: nil, is_final: false
@@ -69,7 +71,7 @@ module Gitlab
               @resource ||= context.resource
             end
 
-            def resource_name(resource)
+            def resource_name
               @resource_name ||= resource.to_ability_name.humanize
             end
           end
