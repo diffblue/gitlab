@@ -34,8 +34,7 @@ RSpec.describe Security::ScanResultPolicies::SyncFindingsToApprovalRulesService,
       it 'calls UpdateApprovalsService for merge request' do
         expect(Security::ScanResultPolicies::UpdateApprovalsService).to receive(:new).with(
           merge_request: merge_request,
-          pipeline: pipeline,
-          pipeline_findings: pipeline.security_findings
+          pipeline: pipeline
         ).and_call_original
 
         execute

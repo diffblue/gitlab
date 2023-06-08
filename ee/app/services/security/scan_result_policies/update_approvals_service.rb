@@ -5,12 +5,11 @@ module Security
     class UpdateApprovalsService
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :pipeline, :merge_request, :pipeline_security_findings
+      attr_reader :pipeline, :merge_request
 
-      def initialize(merge_request:, pipeline:, pipeline_findings:)
+      def initialize(merge_request:, pipeline:)
         @pipeline = pipeline
         @merge_request = merge_request
-        @pipeline_security_findings = pipeline_findings
       end
 
       def execute
@@ -34,7 +33,7 @@ module Security
       delegate :project, to: :pipeline
 
       def violates_approval_rule?(approval_rule)
-        target_pipeline_uuids = uuids_from_findings(target_pipeline_security_findings, approval_rule)
+        target_pipeline_uuids = findings_uuids(target_pipeline, approval_rule)
 
         return true if findings_count_violated?(approval_rule, target_pipeline_uuids)
         return true if preexisting_findings_count_violated?(approval_rule, target_pipeline_uuids)
@@ -62,15 +61,10 @@ module Security
       end
       strong_memoize_attr :target_pipeline
 
-      def target_pipeline_security_findings
-        target_pipeline&.security_findings || Security::Finding.none
-      end
-      strong_memoize_attr :target_pipeline_security_findings
-
       def findings_count_violated?(approval_rule, target_pipeline_uuids)
         vulnerabilities_allowed = approval_rule.vulnerabilities_allowed
 
-        pipeline_uuids = uuids_from_findings(pipeline_security_findings, approval_rule, true)
+        pipeline_uuids = findings_uuids(pipeline, approval_rule, true)
         new_uuids = pipeline_uuids - target_pipeline_uuids
 
         if only_newly_detected?(approval_rule)
@@ -97,41 +91,6 @@ module Security
         vulnerabilities_count[:exceeded_allowed_count]
       end
 
-      def uuids_from_findings(security_findings, approval_rule, check_dismissed = false)
-        vulnerability_states = approval_rule.vulnerability_states_for_branch
-
-        findings = security_findings.by_severity_levels(approval_rule.severity_levels)
-        findings = findings.by_report_types(approval_rule.scanners) if approval_rule.scanners.present?
-
-        if only_new_undismissed_findings?(check_dismissed, vulnerability_states)
-          findings = undismissed_security_findings(findings)
-        end
-
-        findings = findings.by_state(:dismissed) if only_new_dismissed_findings?(check_dismissed, vulnerability_states)
-
-        findings.fetch_uuids
-      end
-
-      def only_new_dismissed_findings?(check_dismissed, vulnerability_states)
-        check_dismissed &&
-          vulnerability_states.include?(ApprovalProjectRule::NEW_DISMISSED) &&
-          vulnerability_states.exclude?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
-      end
-
-      def only_new_undismissed_findings?(check_dismissed, vulnerability_states)
-        check_dismissed &&
-          vulnerability_states.exclude?(ApprovalProjectRule::NEW_DISMISSED) &&
-          vulnerability_states.include?(ApprovalProjectRule::NEW_NEEDS_TRIAGE)
-      end
-
-      def undismissed_security_findings(findings)
-        if Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
-          findings.undismissed_by_vulnerability
-        else
-          findings.undismissed
-        end
-      end
-
       def include_newly_detected?(approval_rule)
         (approval_rule.vulnerability_states_for_branch & ApprovalProjectRule::NEWLY_DETECTED_STATUSES).any?
       end
@@ -140,6 +99,15 @@ module Security
         approval_rule.vulnerability_states_for_branch.all? do |state|
           state.in?(ApprovalProjectRule::NEWLY_DETECTED_STATUSES)
         end
+      end
+
+      def findings_uuids(pipeline, approval_rule, check_dismissed = false)
+        Security::ScanResultPolicies::FindingsFinder.new(pipeline, {
+          vulnerability_states: approval_rule.vulnerability_states_for_branch,
+          severity_levels: approval_rule.severity_levels,
+          scanners: approval_rule.scanners,
+          check_dismissed: check_dismissed
+        }).execute.fetch_uuids
       end
 
       def vulnerabilities_count_for_uuids(uuids, approval_rule)

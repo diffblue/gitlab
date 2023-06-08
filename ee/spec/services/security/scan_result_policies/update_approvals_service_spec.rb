@@ -48,11 +48,7 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
     end
 
     subject(:service) do
-      described_class.new(
-        merge_request: merge_request,
-        pipeline: pipeline,
-        pipeline_findings: pipeline.security_findings
-      ).execute
+      described_class.new(merge_request: merge_request, pipeline: pipeline).execute
     end
 
     shared_examples_for 'does not update approvals_required' do
@@ -163,14 +159,6 @@ RSpec.describe Security::ScanResultPolicies::UpdateApprovalsService, feature_cat
 
       context 'when vulnerability_states has only new_needs_triage' do
         it_behaves_like 'new vulnerability_states', ['new_needs_triage']
-
-        context 'when deprecate_vulnerabilities_feedback is disabled' do
-          before do
-            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-          end
-
-          it_behaves_like 'new vulnerability_states', ['new_needs_triage']
-        end
       end
 
       context 'when vulnerability_states has only new_dismissed' do
