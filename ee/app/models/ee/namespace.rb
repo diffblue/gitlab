@@ -29,9 +29,9 @@ module EE
       has_one :namespace_limit, inverse_of: :namespace
       has_one :storage_limit_exclusion, class_name: 'Namespaces::Storage::LimitExclusion'
       has_one :security_orchestration_policy_configuration,
-              class_name: 'Security::OrchestrationPolicyConfiguration',
-              foreign_key: :namespace_id,
-              inverse_of: :namespace
+        class_name: 'Security::OrchestrationPolicyConfiguration',
+        foreign_key: :namespace_id,
+        inverse_of: :namespace
       has_one :upcoming_reconciliation, inverse_of: :namespace, class_name: "GitlabSubscriptions::UpcomingReconciliation"
 
       has_many :automation_rules, class_name: '::Automation::Rule'
@@ -43,13 +43,12 @@ module EE
       accepts_nested_attributes_for :gitlab_subscription, update_only: true
       accepts_nested_attributes_for :namespace_limit
 
-      has_many :search_index_assignments,
-               class_name: 'Search::NamespaceIndexAssignment'
+      has_many :search_index_assignments, class_name: 'Search::NamespaceIndexAssignment'
 
       has_many :search_indices,
-               through: :search_index_assignments,
-               source: 'index',
-               class_name: 'Search::Index'
+        through: :search_index_assignments,
+        source: 'index',
+        class_name: 'Search::Index'
 
       scope :include_gitlab_subscription, -> { includes(:gitlab_subscription) }
       scope :include_gitlab_subscription_with_hosted_plan, -> { includes(gitlab_subscription: :hosted_plan) }
@@ -102,9 +101,10 @@ module EE
 
       validate :validate_shared_runner_minutes_support
 
-      validates :max_pages_size,
-                numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
-                                less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte }
+      validates :max_pages_size, numericality: {
+        only_integer: true, greater_than_or_equal_to: 0, allow_nil: true,
+        less_than: ::Gitlab::Pages::MAX_SIZE / 1.megabyte
+      }
 
       delegate :trial_ends_on, :trial_starts_on, to: :gitlab_subscription, allow_nil: true
 

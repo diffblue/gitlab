@@ -13,22 +13,26 @@ module IncidentManagement
 
     validates :status, presence: true
     validates :elapsed_time_seconds,
-              presence: true,
-              numericality: {
-                only_integer: true,
-                greater_than_or_equal_to: 0,
-                less_than_or_equal_to: ::IncidentManagement::Escalatable::MAX_ESCALATION_DELAY
-              }
+      presence: true,
+      numericality: {
+        only_integer: true,
+        greater_than_or_equal_to: 0,
+        less_than_or_equal_to: ::IncidentManagement::Escalatable::MAX_ESCALATION_DELAY
+      }
 
     validate :schedule_or_rule_present
     validates :oncall_schedule_id,
-              uniqueness: { scope: [:policy_id, :status, :elapsed_time_seconds],
-                            message: N_('must be unique by status and elapsed time within a policy') },
-              allow_nil: true
+      uniqueness: {
+        scope: [:policy_id, :status, :elapsed_time_seconds],
+        message: N_('must be unique by status and elapsed time within a policy')
+      },
+      allow_nil: true
     validates :user_id,
-              uniqueness: { scope: [:policy_id, :status, :elapsed_time_seconds],
-                            message: N_('must be unique by status and elapsed time within a policy') },
-              allow_nil: true
+      uniqueness: {
+        scope: [:policy_id, :status, :elapsed_time_seconds],
+        message: N_('must be unique by status and elapsed time within a policy')
+      },
+      allow_nil: true
 
     scope :not_removed, -> { where(is_removed: false) }
     scope :removed, -> { where(is_removed: true) }
