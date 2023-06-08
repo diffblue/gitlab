@@ -35,17 +35,12 @@ jest.mock('~/google_tag_manager');
 
 describe('PipelineUsageApp', () => {
   let wrapper;
+  const ciMinutesHandler = jest.fn().mockResolvedValue(mockGetCiMinutesUsageNamespace);
 
-  const createMockApolloProvider = ({
-    reject = false,
-    mockCiMinutesUsageQuery = mockGetCiMinutesUsageNamespace,
-  } = {}) => {
+  const createMockApolloProvider = ({ reject = false } = {}) => {
     const rejectResponse = jest.fn().mockRejectedValue(new Error('GraphQL error'));
     const requestHandlers = [
-      [
-        getCiMinutesUsageNamespace,
-        reject ? rejectResponse : jest.fn().mockResolvedValue(mockCiMinutesUsageQuery),
-      ],
+      [getCiMinutesUsageNamespace, reject ? rejectResponse : ciMinutesHandler],
     ];
 
     return createMockApollo(requestHandlers);
@@ -197,7 +192,7 @@ describe('PipelineUsageApp', () => {
           },
         });
         const expectedUsageOverviewInstances = showAdditionalMinutes ? 2 : 1;
-        expect(wrapper.findAllComponents(UsageOverview).length).toBe(
+        expect(wrapper.findAllComponents(UsageOverview)).toHaveLength(
           expectedUsageOverviewInstances,
         );
       },
@@ -268,14 +263,12 @@ describe('PipelineUsageApp', () => {
     });
 
     it('makes a query to fetch more data when `fetchMore` is emitted', async () => {
-      jest
-        .spyOn(wrapper.vm.$apollo.queries.ciMinutesUsage, 'fetchMore')
-        .mockImplementation(jest.fn().mockResolvedValue());
+      expect(ciMinutesHandler).toHaveBeenCalledTimes(1);
 
       findProjectList().vm.$emit('fetchMore');
       await nextTick();
 
-      expect(wrapper.vm.$apollo.queries.ciMinutesUsage.fetchMore).toHaveBeenCalledTimes(1);
+      expect(ciMinutesHandler).toHaveBeenCalledTimes(2);
     });
   });
 });
