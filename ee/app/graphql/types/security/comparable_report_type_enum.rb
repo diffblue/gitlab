@@ -6,7 +6,7 @@ module Types
       graphql_name 'ComparableSecurityReportType'
       description 'Comparable security report type'
 
-      (::Enums::Vulnerability.report_types.keys - %w[generic cluster_image_scanning]).each do |report_type|
+      ::Security::MergeRequestSecurityReportGenerationService::ALLOWED_REPORT_TYPES.each do |report_type|
         human_type = case report_type.to_sym
                      when :dast, :sast then report_type.upcase
                      when :api_fuzzing then 'API Fuzzing'

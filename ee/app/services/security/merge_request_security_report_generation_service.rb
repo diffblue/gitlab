@@ -5,6 +5,8 @@ module Security
     include Gitlab::Utils::StrongMemoize
 
     DEFAULT_FINDING_STATE = 'detected'
+    ALLOWED_REPORT_TYPES = %w[sast secret_detection container_scanning
+      dependency_scanning dast coverage_fuzzing api_fuzzing].freeze
 
     InvalidReportTypeError = Class.new(ArgumentError)
 
@@ -61,6 +63,8 @@ module Security
     end
 
     strong_memoize_attr def report
+      validate_report_type!
+
       case report_type
       when 'sast'
         merge_request.compare_sast_reports(nil)
@@ -76,9 +80,11 @@ module Security
         merge_request.compare_coverage_fuzzing_reports(nil)
       when 'api_fuzzing'
         merge_request.compare_api_fuzzing_reports(nil)
-      else
-        raise InvalidReportTypeError
       end
+    end
+
+    def validate_report_type!
+      raise InvalidReportTypeError unless ALLOWED_REPORT_TYPES.include?(report_type)
     end
   end
 end

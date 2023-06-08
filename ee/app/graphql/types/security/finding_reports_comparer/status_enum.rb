@@ -7,7 +7,7 @@ module Types
         graphql_name 'FindingReportsComparerStatus'
         description 'Report comparison status'
 
-        value 'PARSED', value: :parsed, description: "Report is generated."
+        value 'PARSED', value: :parsed, description: "Report was generated."
         value 'PARSING', value: :parsing, description: "Report is being generated."
         value 'ERROR', value: :error, description: "An error happened while generating the report."
       end
