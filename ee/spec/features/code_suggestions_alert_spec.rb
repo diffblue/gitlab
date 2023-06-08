@@ -55,36 +55,49 @@ RSpec.describe 'Code suggestions alert', :saas, :js, feature_category: :code_sug
   end
 
   context 'when new navigation alert is present' do
-    let_it_be(:user) { create(:user, use_new_navigation: true) }
-
     before do
       sign_in(user)
       visit group_path(group)
+      allow(Gitlab).to receive(:com?).and_return(true)
     end
 
-    it 'does not show code suggestions alert' do
-      expect_new_nav_alert_to_be_present
-      expect_group_page_for(group)
-      expect_banner_to_be_absent
-    end
+    context 'when user was created before the new navigation rollout' do
+      let_it_be(:user) { create(:user, created_at: Date.new(2023, 6, 1), use_new_navigation: true) }
 
-    context 'when user dismisses new navigation alert' do
-      it 'hides new nav alert and shows code suggestions alert' do
+      it 'does not show code suggestions alert' do
         expect_new_nav_alert_to_be_present
+        expect_group_page_for(group)
+        expect_banner_to_be_absent
+      end
 
-        page.within(find('[data-feature-id="new_navigation_callout"]')) do
-          find('[data-testid="close-icon"]').click
+      context 'when user dismisses new navigation alert' do
+        it 'hides new nav alert and shows code suggestions alert' do
+          expect_new_nav_alert_to_be_present
+
+          page.within(find('[data-feature-id="new_navigation_callout"]')) do
+            find('[data-testid="close-icon"]').click
+          end
+
+          wait_for_requests
+
+          # simulate delay in showing code suggestions alert
+          travel_to(Time.current + 31.minutes) do
+            visit group_path(group)
+
+            expect_new_nav_alert_be_absent
+            expect_banner_to_be_present
+          end
         end
+      end
+    end
 
-        wait_for_requests
+    context 'when user was created after the new navigation rollout' do
+      let_it_be(:user) { create(:user, created_at: Date.new(2023, 6, 2), use_new_navigation: true) }
 
-        # simulate delay in showing code suggestions alert
-        travel_to(Time.current + 31.minutes) do
-          visit group_path(group)
-
-          expect_new_nav_alert_be_absent
-          expect_banner_to_be_present
-        end
+      it 'shows code suggestions alert' do
+        expect_new_nav_alert_be_absent
+        expect_group_page_for(group)
+        expect_banner_to_be_present
       end
     end
   end
