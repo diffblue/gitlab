@@ -11,7 +11,7 @@ import {
   DURATION_OVERVIEW_CHART_NO_DATA_LEGEND_ITEM,
 } from 'ee/analytics/cycle_analytics/constants';
 import {
-  durationOverviewChartPlottableData,
+  durationOverviewChartPlottableData as mockDurationOverviewChartPlottableData,
   durationOverviewDataSeries,
   durationOverviewDataNullSeries,
   durationOverviewChartOptionsData,
@@ -26,14 +26,13 @@ const fakeStore = ({ initialGetters, initialState, rootGetters, rootState }) =>
       ...rootState,
     },
     getters: {
-      isOverviewStageSelected: () => true,
       ...rootGetters,
     },
     modules: {
       durationChart: {
         namespaced: true,
         getters: {
-          durationChartPlottableData: () => durationOverviewChartPlottableData,
+          durationOverviewChartPlottableData: () => mockDurationOverviewChartPlottableData,
           ...initialGetters,
         },
         state: {
@@ -116,7 +115,7 @@ describe('DurationOverviewChart', () => {
       ]);
 
       expect(chartLegendSeriesInfoProps).toHaveLength(
-        durationOverviewChartPlottableData.length + 1,
+        mockDurationOverviewChartPlottableData.length + 1,
       );
     });
   });
@@ -125,7 +124,7 @@ describe('DurationOverviewChart', () => {
     beforeEach(() => {
       createComponent({
         initialGetters: {
-          durationChartPlottableData: () => [],
+          durationOverviewChartPlottableData: () => [],
         },
       });
     });

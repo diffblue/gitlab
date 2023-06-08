@@ -5,9 +5,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import {
   DURATION_STAGE_TIME_DESCRIPTION,
-  DURATION_TOTAL_TIME_DESCRIPTION,
   DURATION_STAGE_TIME_NO_DATA,
-  DURATION_TOTAL_TIME_NO_DATA,
 } from 'ee/analytics/cycle_analytics/constants';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -26,7 +24,6 @@ const fakeStore = ({ initialGetters, initialState, rootGetters, rootState }) =>
       ...rootState,
     },
     getters: {
-      isOverviewStageSelected: () => true,
       ...rootGetters,
     },
     modules: {
@@ -55,7 +52,6 @@ function createComponent({
   return shallowMount(DurationChart, {
     store: fakeStore({ initialState, initialGetters, rootGetters, rootState }),
     propsData: {
-      stages,
       ...props,
     },
     stubs: {
@@ -73,61 +69,13 @@ describe('DurationChart', () => {
   const findDurationChart = (_wrapper) => _wrapper.findComponent(GlLineChart);
   const findLoader = (_wrapper) => _wrapper.findComponent(ChartSkeletonLoader);
 
-  describe('with the overiew stage selected', () => {
-    beforeEach(() => {
-      wrapper = createComponent({});
-    });
-
-    it('renders the duration chart', () => {
-      expect(wrapper.element).toMatchSnapshot();
-    });
-
-    it('correctly sets the chart options data property', () => {
-      const chartDataProps = findDurationChart(wrapper).props('data');
-      const [dataSeries, nullSeries] = chartDataProps;
-      const expectedParams = ['areaStyle', 'data', 'itemStyle', 'lineStyle', 'name', 'showSymbol'];
-
-      expectedParams.forEach((param) => {
-        expect(dataSeries[param]).toEqual(durationDataSeries[param]);
-        expect(nullSeries[param]).toEqual(durationDataNullSeries[param]);
-      });
-    });
-
-    it('renders the chart', () => {
-      expect(findDurationChart(wrapper).exists()).toBe(true);
-    });
-
-    it('renders the chart description', () => {
-      expect(findChartDescription(wrapper).attributes('title')).toBe(
-        DURATION_TOTAL_TIME_DESCRIPTION,
-      );
-    });
-
-    describe('with no chart data', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          initialGetters: {
-            durationChartPlottableData: () => [],
-          },
-        });
-      });
-
-      it('renders the no data available message', () => {
-        expect(findContainer(wrapper).text()).toContain(DURATION_TOTAL_TIME_NO_DATA);
-      });
-    });
-  });
-
-  describe('with a value stream stage selected', () => {
+  describe('default', () => {
     const [selectedStage] = stages;
 
     beforeEach(() => {
       wrapper = createComponent({
         rootState: {
           selectedStage,
-        },
-        rootGetters: {
-          isOverviewStageSelected: () => false,
         },
       });
     });
@@ -161,9 +109,6 @@ describe('DurationChart', () => {
           },
           rootState: {
             selectedStage,
-          },
-          rootGetters: {
-            isOverviewStageSelected: () => false,
           },
         });
       });

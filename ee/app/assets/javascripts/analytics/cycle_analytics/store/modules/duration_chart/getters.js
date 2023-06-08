@@ -1,21 +1,26 @@
 import { getDurationChartData, getDurationOverviewChartData } from '../../../utils';
 
-export const hasPlottableData = ({ durationData = [] }) =>
-  durationData.some(({ data }) => data.length);
-
-export const durationChartPlottableData = (state, _, rootState, rootGetters) => {
+export const durationChartPlottableData = (state, _, rootState) => {
   const { createdAfter, createdBefore, selectedStage } = rootState;
   const { durationData } = state;
-  const { isOverviewStageSelected } = rootGetters;
-  const selectedStagesDurationData = isOverviewStageSelected
-    ? durationData
-    : durationData.filter((stage) => stage.id === selectedStage.id);
+  const selectedStageDurationData = durationData.find((stage) => stage.id === selectedStage.id);
 
-  if (!hasPlottableData({ durationData: selectedStagesDurationData })) {
+  if (!selectedStageDurationData?.data?.length) {
     return [];
   }
 
-  return isOverviewStageSelected
-    ? getDurationOverviewChartData(selectedStagesDurationData)
-    : getDurationChartData(selectedStagesDurationData, createdAfter, createdBefore);
+  return getDurationChartData([selectedStageDurationData], createdAfter, createdBefore);
+};
+
+export const hasPlottableData = ({ durationData = [] }) =>
+  durationData.some(({ data }) => data.length);
+
+export const durationOverviewChartPlottableData = (state) => {
+  const { durationData } = state;
+
+  if (!hasPlottableData({ durationData })) {
+    return [];
+  }
+
+  return getDurationOverviewChartData(durationData);
 };
