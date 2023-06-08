@@ -65,7 +65,7 @@ module Security
           | #{message}                                |
 
           #{format('Learn more about [Security and Compliance policies](%{url}).',
-            url: Rails.application.routes.url_helpers.help_page_url('user/application_security/policies'))}
+            url: Rails.application.routes.url_helpers.help_page_url('user/application_security/policies/index'))}
         MARKDOWN
       end
     end
