@@ -406,4 +406,37 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       end
     end
   end
+
+  describe '#scope' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project) { create(:project, :public) }
+
+    subject(:service) { described_class.new(user, project, scope: scope) }
+
+    context 'when scope passed is included in allowed_scopes' do
+      let(:scope) { 'issues' }
+
+      it 'returns that scope' do
+        expect(service.scope).to eq('issues')
+      end
+
+      context 'when user does not have permission for the scope' do
+        it 'chooses the first allowed scope which the user has permission for' do
+          allow(Ability).to receive(:allowed?).and_call_original
+          allow(Ability).to receive(:allowed?).with(user, :read_issue, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :read_code, project).and_return(false)
+
+          expect(service.scope).to eq('merge_requests')
+        end
+      end
+    end
+
+    context 'when scope passed is not included in allowed_scopes' do
+      let(:scope) { 'epics' }
+
+      it 'chooses the first allowed scope which the user has permission for' do
+        expect(service.scope).to eq('blobs')
+      end
+    end
+  end
 end

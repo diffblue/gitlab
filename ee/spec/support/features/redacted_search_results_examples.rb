@@ -54,8 +54,9 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
 
     it 'redacts private features the user does not have access to' do
       visit search_path
-
       submit_search('searchabletext')
+
+      expect(page).to have_selector('[data-testid="search-filter"]')
 
       # Projects scope is never available for searching within a project
       if has_search_scope?('Projects')
@@ -102,6 +103,8 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
         visit search_path
 
         submit_search('searchabletext')
+
+        expect(page).to have_selector('[data-testid="search-filter"]')
 
         # Projects scope is never available for searching within a project
         if has_search_scope?('Projects')
