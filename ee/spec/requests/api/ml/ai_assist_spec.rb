@@ -8,6 +8,7 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
   let(:plan) { nil }
   let(:group_code_suggestions_setting) { true }
   let(:user_code_suggestions_setting) { false }
+  let(:third_party_ai_features_enabled) { false }
 
   let(:group_user) do
     create(:user).tap do |record|
@@ -19,6 +20,7 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
     create(:group_with_plan, plan: plan).tap do |record|
       record.add_owner(group_user)
       record.update_attribute(:code_suggestions, group_code_suggestions_setting)
+      record.update_attribute(:third_party_ai_features_enabled, third_party_ai_features_enabled)
     end
   end
 
@@ -70,9 +72,10 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
       let(:current_user) { group_user }
       let(:user_code_suggestions_setting) { true }
 
-      where(:feature_flag, :result, :body) do
-        false | :not_found | { "message" => "404 Not Found" }
-        true  | :ok        | { "user_is_allowed" => true }
+      where(:feature_flag, :third_party_ai_features_enabled, :result, :body) do
+        false | false | :not_found | { "message" => "404 Not Found" }
+        true  | false | :ok        | { "third_party_ai_features_enabled" => false, "user_is_allowed" => true }
+        true  | true  | :ok        | { "third_party_ai_features_enabled" => true, "user_is_allowed" => true }
       end
 
       with_them do
@@ -149,7 +152,7 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
 
       where(:feature_flag, :result, :body) do
         false | :not_found | { "message" => "404 Not Found" }
-        true  | :ok        | { "user_is_allowed" => true }
+        true  | :ok        | { "third_party_ai_features_enabled" => false, "user_is_allowed" => true }
       end
 
       with_them do
