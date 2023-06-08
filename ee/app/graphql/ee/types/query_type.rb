@@ -85,12 +85,6 @@ module EE
               alpha: { milestone: '16.0' },
               resolver: ::Resolvers::RemoteDevelopment::WorkspacesResolver,
               description: 'Find workspaces owned by the current user by their IDs.'
-        field :ci_catalog_resources,
-              ::Types::Ci::Catalog::ResourceType.connection_type,
-              null: true,
-              alpha: { milestone: '15.11' },
-              description: 'CI Catalog resources visible to the current user',
-              resolver: ::Resolvers::Ci::Catalog::ResourcesResolver
 
         field :instance_external_audit_event_destinations,
               ::Types::AuditEvents::InstanceExternalAuditEventDestinationType.connection_type,
@@ -102,6 +96,19 @@ module EE
               resolver: ::Resolvers::Ai::MessagesResolver,
               alpha: { milestone: '16.1' },
               description: 'Find AI messages.'
+
+        field :ci_catalog_resources,
+              ::Types::Ci::Catalog::ResourceType.connection_type,
+              null: true,
+              alpha: { milestone: '15.11' },
+              description: 'All CI/CD Catalog resources under a common namespace, visible to an authorized user',
+              resolver: ::Resolvers::Ci::Catalog::ResourcesResolver
+        field :ci_catalog_resource,
+              ::Types::Ci::Catalog::ResourceType,
+              null: true,
+              alpha: { milestone: '16.1' },
+              description: 'A single CI/CD Catalog resource visible to an authorized user',
+              resolver: ::Resolvers::Ci::Catalog::ResourceResolver
       end
 
       def vulnerability(id:)

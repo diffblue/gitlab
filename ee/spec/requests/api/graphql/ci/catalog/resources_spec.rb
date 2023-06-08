@@ -101,7 +101,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     end
 
     context 'when the current user does not have permission to read the namespace catalog' do
-      it 'returns an empty response' do
+      it 'returns nil' do
         namespace.add_guest(user)
 
         post_query
@@ -112,7 +112,7 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
   end
 
   context 'when the CI Namespace Catalog feature is not available' do
-    it 'returns an empty response' do
+    it 'returns nil' do
       namespace.add_developer(user)
 
       post_query
