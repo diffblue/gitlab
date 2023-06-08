@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'clusters/clusters/show' do
   let_it_be(:user) { create(:user) }
 
-  shared_examples 'cluster health section' do
+  shared_examples 'cluster details section' do
     let(:cluster_presenter) { cluster.present(current_user: user) }
 
     let(:clusterable_presenter) do
@@ -17,10 +17,10 @@ RSpec.describe 'clusters/clusters/show' do
       allow(view).to receive(:clusterable).and_return(clusterable_presenter)
     end
 
-    it 'displays the Cluster health section' do
+    it 'displays the Cluster details section' do
       render
 
-      expect(rendered).to have_selector('[data-testid="cluster-health-tab"]', text: 'Health')
+      expect(rendered).to have_selector('[data-testid="cluster-details-tab"]', text: 'Details')
     end
   end
 
@@ -34,14 +34,14 @@ RSpec.describe 'clusters/clusters/show' do
       let(:cluster) { create(:cluster, :project, :provided_by_gcp) }
       let(:clusterable) { cluster.project }
 
-      it_behaves_like 'cluster health section'
+      it_behaves_like 'cluster details section'
     end
 
     context 'with group level cluster' do
       let(:cluster) { create(:cluster, :group, :provided_by_gcp) }
       let(:clusterable) { cluster.group }
 
-      it_behaves_like 'cluster health section'
+      it_behaves_like 'cluster details section'
     end
   end
 end
