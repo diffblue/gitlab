@@ -10,7 +10,7 @@ RSpec.describe 'OKR', :js, feature_category: :portfolio_management do
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, namespace: group) }
   let(:objective) { create(:work_item, :objective, project: project) }
-  let(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
+  let!(:emoji_upvote) { create(:award_emoji, :upvote, awardable: objective, user: user2) }
   let(:key_result) { create(:work_item, :key_result, project: project) }
 
   before do
