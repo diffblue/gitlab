@@ -4,7 +4,7 @@ import { GlTab, GlTabs, GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
+import { ROUTE_STANDARDS_ADHERENCE, ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS, TABS } from '../constants';
 import MergeCommitsExportButton from './violations_report/shared/merge_commits_export_button.vue';
 import ReportHeader from './shared/report_header.vue';
 
@@ -20,6 +20,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['adherenceReportUiEnabled'],
   props: {
     mergeCommitsCsvExportPath: {
       type: String,
@@ -56,15 +57,17 @@ export default {
       }
     },
   },
+  ROUTE_STANDARDS: ROUTE_STANDARDS_ADHERENCE,
   ROUTE_VIOLATIONS,
   ROUTE_FRAMEWORKS,
   i18n: {
-    frameworksTab: s__('Compliance Report|Frameworks'),
     export: s__('Compliance Report|Export as CSV'),
     exportTitle: s__(
       'Compliance Report|Export frameworks as CSV. You will be emailed after export is processed.',
     ),
+    frameworksTab: s__('Compliance Report|Frameworks'),
     heading: __('Compliance report'),
+    standardsAdherenceTab: s__('Compliance Report|Standards Adherence'),
     subheading: __('Compliance violations and compliance frameworks for the group.'),
     violationsTab: s__('Compliance Report|Violations'),
   },
@@ -98,6 +101,12 @@ export default {
     </report-header>
 
     <gl-tabs :value="tabIndex" content-class="gl-p-0" lazy>
+      <gl-tab
+        v-if="adherenceReportUiEnabled"
+        :title="$options.i18n.standardsAdherenceTab"
+        data-testid="standards-adherence-tab"
+        @click="goTo($options.ROUTE_STANDARDS)"
+      />
       <gl-tab
         :title="$options.i18n.violationsTab"
         data-testid="violations-tab"

@@ -11483,6 +11483,9 @@ msgstr ""
 msgid "Compliance Report|Frameworks"
 msgstr ""
 
+msgid "Compliance Report|Standards Adherence"
+msgstr ""
+
 msgid "Compliance Report|Violations"
 msgstr ""
 

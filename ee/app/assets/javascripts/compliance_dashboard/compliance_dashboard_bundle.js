@@ -20,6 +20,7 @@ export default () => {
     rootAncestorPath,
     pipelineConfigurationFullPathEnabled,
     pipelineConfigurationEnabled,
+    adherenceReportUiEnabled,
   } = el.dataset;
 
   Vue.use(VueApollo);
@@ -33,6 +34,7 @@ export default () => {
     mergeCommitsCsvExportPath,
     groupPath,
     rootAncestorPath,
+    adherenceReportUiEnabled: parseBoolean(adherenceReportUiEnabled),
   });
 
   return new Vue({
@@ -45,6 +47,7 @@ export default () => {
       canAddEdit,
       pipelineConfigurationFullPathEnabled: parseBoolean(pipelineConfigurationFullPathEnabled),
       pipelineConfigurationEnabled: parseBoolean(pipelineConfigurationEnabled),
+      adherenceReportUiEnabled: parseBoolean(adherenceReportUiEnabled),
     },
     render: (createElement) =>
       createElement(ReportsApp, {

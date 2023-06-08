@@ -2,14 +2,27 @@ import VueRouter from 'vue-router';
 
 import { joinPaths } from '~/lib/utils/url_utility';
 
-import { ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS } from './constants';
+import { ROUTE_STANDARDS_ADHERENCE, ROUTE_FRAMEWORKS, ROUTE_VIOLATIONS } from './constants';
 import ViolationsReport from './components/violations_report/report.vue';
 import FrameworksReport from './components/frameworks_report/report.vue';
+import StandardsReport from './components/standards_adherence_report/report.vue';
 
 export function createRouter(basePath, props) {
-  const { mergeCommitsCsvExportPath, groupPath, rootAncestorPath } = props;
+  const {
+    adherenceReportUiEnabled,
+    mergeCommitsCsvExportPath,
+    groupPath,
+    rootAncestorPath,
+  } = props;
+
+  const defaultRoute = adherenceReportUiEnabled ? ROUTE_STANDARDS_ADHERENCE : ROUTE_VIOLATIONS;
 
   const routes = [
+    {
+      path: '/standards_adherence',
+      name: ROUTE_STANDARDS_ADHERENCE,
+      component: StandardsReport,
+    },
     {
       path: '/violations',
       name: ROUTE_VIOLATIONS,
@@ -28,7 +41,7 @@ export function createRouter(basePath, props) {
         rootAncestorPath,
       },
     },
-    { path: '*', redirect: { name: ROUTE_VIOLATIONS } },
+    { path: '*', redirect: { name: defaultRoute } },
   ];
 
   return new VueRouter({
