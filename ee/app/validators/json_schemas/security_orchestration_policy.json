@@ -50,6 +50,23 @@
             "additionalItems": false,
             "items": {
               "type": "object",
+              "oneOf": [
+                {
+                  "required": [
+                    "branches"
+                  ]
+                },
+                {
+                  "required": [
+                    "branch_type"
+                  ]
+                },
+                {
+                  "required": [
+                    "agents"
+                  ]
+                }
+              ],
               "required": [
                 "type"
               ],
@@ -70,6 +87,15 @@
                     "minLength": 1,
                     "type": "string"
                   }
+                },
+                "branch_type": {
+                  "type": "string",
+                  "description": "Which types of branches to scan.",
+                  "enum": [
+                    "default",
+                    "protected",
+                    "all"
+                  ]
                 },
                 "cadence": {
                   "description": "Specifies when this policy should schedule a new pipeline with enforced `actions`. Uses cron expression as a format (ie. `0 22 * * 1-5`). Supported only when `type` is set to `schedule`.",

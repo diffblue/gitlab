@@ -49,7 +49,9 @@ module Security
       def blank_branch_for_rule?
         return false if scan_result_policy?
 
-        policy[:rules].any? { |rule| rule[:agents].blank? && rule[:branches].blank? }
+        policy[:rules].any? do |rule|
+          rule.values_at(:agents, :branches, :branch_type).all?(&:blank?)
+        end
       end
 
       def missing_branch_for_rule?
