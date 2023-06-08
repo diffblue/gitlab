@@ -2,27 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::IntegrationsHelper do
-  include Devise::Test::ControllerHelpers
-
-  let(:controller_class) do
-    helper_mod = described_class
-
-    # rubocop:disable Rails/ApplicationController
-    Class.new(ActionController::Base) do
-      include helper_mod
-      include ActionView::Helpers::AssetUrlHelper
-
-      def slack_auth_project_settings_slack_url(project)
-        "http://some-path/project/1"
-      end
-    end
-    # rubocop:enable Rails/ApplicationController
-  end
-
+RSpec.describe EE::IntegrationsHelper, feature_category: :integrations do
   let_it_be_with_refind(:project) { create(:project) }
-
-  subject { controller_class.new }
 
   describe '#integration_form_data' do
     let(:integration) { build(:jenkins_integration) }
@@ -42,10 +23,6 @@ RSpec.describe EE::IntegrationsHelper do
 
     it 'does not include Jira-specific fields' do
       is_expected.not_to include(*jira_fields.keys)
-    end
-
-    it 'does not include Slack-specific fields' do
-      is_expected.not_to include(:upgrade_slack_url)
     end
 
     context 'with a Jira integration' do
@@ -76,59 +53,6 @@ RSpec.describe EE::IntegrationsHelper do
           )
         end
       end
-    end
-
-    context 'with a GitLab Slack App integration' do
-      let(:integration) { build(:gitlab_slack_application_integration, project: project) }
-
-      before do
-        stub_ee_application_setting(slack_app_id: 'MOCK_APP_ID')
-      end
-
-      it 'includes Slack app upgrade URL' do
-        redirect_url = "http://test.host/#{project.full_path}/-/settings/slack/slack_auth"
-
-        expect(form_data[:upgrade_slack_url]).to start_with(
-          [
-            Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL,
-            '?client_id=MOCK_APP_ID',
-            "&redirect_uri=#{CGI.escape(redirect_url)}"
-          ].join
-        )
-      end
-
-      it 'includes the flag to upgrade Slack app, set to true' do
-        expect(form_data[:should_upgrade_slack]).to eq 'true'
-      end
-
-      context 'when the integration includes all necessary scopes' do
-        let(:integration) { create(:gitlab_slack_application_integration, :all_features_supported, project: project) }
-
-        it 'includes the flag to upgrade Slack app, set to false' do
-          expect(form_data[:should_upgrade_slack]).to eq 'false'
-        end
-      end
-    end
-  end
-
-  describe '#add_to_slack_link' do
-    let(:slack_link) { subject.add_to_slack_link(project, 'A12345') }
-    let(:query) { Rack::Utils.parse_query(URI.parse(slack_link).query) }
-
-    before do
-      expect(subject).to receive(:form_authenticity_token).and_return('a token')
-    end
-
-    it 'returns the endpoint URL with all needed params' do
-      expect(slack_link).to start_with(Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL)
-      expect(slack_link).to include('&state=a+token')
-
-      expect(query).to include(
-        'scope' => 'commands,chat:write,chat:write.public',
-        'client_id' => 'A12345',
-        'redirect_uri' => subject.slack_auth_project_settings_slack_url(project),
-        'state' => 'a token'
-      )
     end
   end
 
@@ -187,56 +111,6 @@ RSpec.describe EE::IntegrationsHelper do
       it 'strips all tags and sanitizes' do
         is_expected.to eq('<img width="15" height="15" class="gl-mr-2 lazy" data-src="/assets/logos/zentao-91a4a40cfe1a1640cb4fcf645db75e0ce23fbb9984f649c0675e616d6ff8c632.svg" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" /><a target="_blank" rel="noopener noreferrer" class="gl-display-flex gl-align-items-center gl-white-space-nowrap">my-ref</a>')
       end
-    end
-  end
-
-  describe '#gitlab_slack_application_data' do
-    let_it_be(:projects) { create_list(:project, 3) }
-
-    def relation
-      Project.id_in(projects.pluck(:id)).inc_routes
-    end
-
-    let(:request) do
-      double(
-        :Request,
-        optional_port: nil,
-        path_parameters: {},
-        protocol: 'https',
-        routes: nil,
-        env: { 'warden' => warden },
-        engine_script_name: nil,
-        original_script_name: nil,
-        host: 'example.com'
-      )
-    end
-
-    before do
-      allow(subject).to receive(:request).and_return(request)
-    end
-
-    it 'includes the required keys' do
-      additions = subject.gitlab_slack_application_data(relation)
-      expect(additions.keys).to include(
-        :projects,
-        :sign_in_path,
-        :is_signed_in,
-        :slack_link_path,
-        :gitlab_logo_path,
-        :slack_logo_path
-      )
-    end
-
-    it 'does not suffer from N+1 performance issues' do
-      baseline = ActiveRecord::QueryRecorder.new { subject.gitlab_slack_application_data(relation.limit(1)) }
-
-      expect do
-        subject.gitlab_slack_application_data(relation)
-      end.not_to exceed_query_limit(baseline)
-    end
-
-    it 'serializes nil projects without error' do
-      expect(subject.gitlab_slack_application_data(nil)).to include(projects: '[]')
     end
   end
 end
