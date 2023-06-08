@@ -9,6 +9,12 @@ module QA
                    :policy_name,
                    :project_path
 
+        MAX_MUTATION_RETRY_ATTEMPTS = 3
+
+        def initialize
+          @mutation_retry_attempts = 0
+        end
+
         def resource_web_url(resource)
           super
         rescue ResourceURLMissingError
@@ -41,6 +47,22 @@ module QA
                 }
               }
           GQL
+        end
+
+        # Overrides QA::Resource::ApiFabricator#api_post
+        #
+        # @return [Hash]
+        def api_post
+          super
+        rescue ResourceFabricationFailedError => e
+          raise unless e.message.include?('Required approvals exceed eligible approvers')
+          raise if @mutation_retry_attempts >= MAX_MUTATION_RETRY_ATTEMPTS
+
+          # The error above can be raised if project authorization isn't updated quickly enough.
+          # See https://gitlab.com/gitlab-org/gitlab/-/issues/413667
+          @mutation_retry_attempts += 1
+          sleep 5
+          retry
         end
 
         # GraphQl endpoint to create a Scan result policy commit
