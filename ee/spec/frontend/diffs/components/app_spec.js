@@ -12,7 +12,7 @@ jest.mock('~/mr_notes/stores', () => jest.requireActual('helpers/mocks/mr_notes/
 Vue.config.ignoredElements = ['copy-code'];
 
 describe('diffs/components/app', () => {
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, baseConfig = {}) => {
     store.reset();
 
     store.getters.isNotesFetched = false;
@@ -29,20 +29,24 @@ describe('diffs/components/app', () => {
     store.state.diffs.isLoading = false;
     store.state.diffs.isTreeLoaded = true;
 
+    store.dispatch('diffs/setBaseConfig', {
+      endpoint: TEST_ENDPOINT,
+      endpointMetadata: `${TEST_HOST}/diff/endpointMetadata`,
+      endpointBatch: `${TEST_HOST}/diff/endpointBatch`,
+      endpointDiffForPath: TEST_ENDPOINT,
+      projectPath: 'namespace/project',
+      dismissEndpoint: '',
+      showSuggestPopover: true,
+      mrReviews: {},
+      ...baseConfig,
+    });
+
     return shallowMount(App, {
       propsData: {
-        endpoint: TEST_ENDPOINT,
-        endpointMetadata: `${TEST_HOST}/diff/endpointMetadata`,
-        endpointBatch: `${TEST_HOST}/diff/endpointBatch`,
-        endpointDiffForPath: TEST_ENDPOINT,
         endpointCoverage: `${TEST_HOST}/diff/endpointCoverage`,
         endpointCodequality: `${TEST_HOST}/diff/endpointCodequality`,
-        projectPath: 'namespace/project',
         currentUser: {},
         changesEmptyStateIllustration: '',
-        dismissEndpoint: '',
-        showSuggestPopover: true,
-        fileByFileUserPreference: false,
         ...props,
       },
       mocks: {
@@ -53,19 +57,21 @@ describe('diffs/components/app', () => {
 
   describe('EE codequality diff', () => {
     it('fetches code quality data when endpoint is provided', () => {
-      const wrapper = createComponent();
-      jest.spyOn(wrapper.vm, 'fetchCodequality');
-      wrapper.vm.fetchData(false);
+      createComponent({ shouldShow: true });
+      jest.spyOn(store, 'dispatch');
 
-      expect(wrapper.vm.fetchCodequality).toHaveBeenCalled();
+      expect(store.dispatch.mock.calls.some(([name]) => name === 'diffs/fetchCodequality')).toBe(
+        true,
+      );
     });
 
     it('does not fetch code quality data when endpoint is blank', () => {
-      const wrapper = createComponent({ endpointCodequality: '' });
-      jest.spyOn(wrapper.vm, 'fetchCodequality');
-      wrapper.vm.fetchData(false);
+      createComponent({ shouldShow: true, endpointCodequality: '' });
+      jest.spyOn(store, 'dispatch');
 
-      expect(wrapper.vm.fetchCodequality).not.toHaveBeenCalled();
+      expect(store.dispatch.mock.calls.some(([name]) => name === 'diffs/fetchCodequality')).toBe(
+        false,
+      );
     });
   });
 });
