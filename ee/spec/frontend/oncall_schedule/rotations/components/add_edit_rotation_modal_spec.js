@@ -1,7 +1,7 @@
 import { GlAlert, GlModal } from '@gitlab/ui';
-import { createLocalVue, shallowMount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
 import { cloneDeep } from 'lodash';
 import AddEditRotationForm from 'ee/oncall_schedules/components/rotations/components/add_edit_rotation_form.vue';
 import AddEditRotationModal, {
@@ -34,7 +34,6 @@ describe('AddEditRotationModal', () => {
   let userSearchQueryHandler;
   let createRotationHandler;
 
-  const localVue = createLocalVue();
   const mockHideModal = jest.fn(function hide() {
     this.$emit('hide');
   });
@@ -55,7 +54,7 @@ describe('AddEditRotationModal', () => {
     props = {},
   } = {}) => {
     createRotationHandler = rotationHandler;
-    localVue.use(VueApollo);
+    Vue.use(VueApollo);
 
     mockApollo = createMockApollo([
       [
@@ -75,7 +74,6 @@ describe('AddEditRotationModal', () => {
     });
 
     wrapper = shallowMount(AddEditRotationModal, {
-      localVue,
       apolloProvider: mockApollo,
       provide: {
         projectPath,
@@ -105,9 +103,26 @@ describe('AddEditRotationModal', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
 
+  it('renders correct buttons for modal actions', () => {
+    expect(findModal().props('actionCancel').text).toBe(i18n.cancel);
+    expect(findModal().props('actionPrimary').text).toBe(i18n.addRotation);
+    expect(findModal().props('actionPrimary').attributes).toEqual({
+      variant: 'confirm',
+      loading: false,
+      disabled: true,
+    });
+  });
+
   describe('Creating rotation', () => {
+    it('shows loading spinner on action button while calling a mutation', async () => {
+      updateRotationForm('name', mockRotation[0].name);
+      findModal().vm.$emit('primary', { preventDefault: jest.fn() });
+      await nextTick();
+
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(true);
+    });
+
     it('emits "rotation-updated" event and with the confirmation message', async () => {
-      createComponent();
       updateRotationForm('name', mockRotation[0].name);
       expect(wrapper.emitted('rotation-updated')).toBeUndefined();
 
@@ -120,6 +135,7 @@ describe('AddEditRotationModal', () => {
 
       expect(emittedEvents).toHaveLength(1);
       expect(emittedMsg).toBe(i18n.rotationCreated);
+      expect(findModal().props('actionPrimary').attributes.loading).toBe(false);
     });
 
     it('displays alert if mutation had a recoverable error', async () => {
