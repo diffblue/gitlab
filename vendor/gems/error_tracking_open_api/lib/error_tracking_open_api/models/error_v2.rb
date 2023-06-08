@@ -14,12 +14,25 @@ require 'date'
 require 'time'
 
 module ErrorTrackingOpenAPI
-  class ErrorUpdatePayload
+  class ErrorV2
+    attr_accessor :id
+
+    attr_accessor :project
+
+    attr_accessor :title
+
+    attr_accessor :actor
+
+    attr_accessor :count
+
+    attr_accessor :user_count
+
+    attr_accessor :last_seen
+
+    attr_accessor :first_seen
+
     # Status of the error
     attr_accessor :status
-
-    # GitLab user id who triggered the update
-    attr_accessor :updated_by_id
 
     class EnumAttributeValidator
       attr_reader :datatype
@@ -46,8 +59,15 @@ module ErrorTrackingOpenAPI
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'status' => :'status',
-        :'updated_by_id' => :'updated_by_id'
+        :'id' => :'id',
+        :'project' => :'project',
+        :'title' => :'title',
+        :'actor' => :'actor',
+        :'count' => :'count',
+        :'user_count' => :'userCount',
+        :'last_seen' => :'lastSeen',
+        :'first_seen' => :'firstSeen',
+        :'status' => :'status'
       }
     end
 
@@ -59,8 +79,15 @@ module ErrorTrackingOpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'status' => :'String',
-        :'updated_by_id' => :'Integer'
+        :'id' => :'String',
+        :'project' => :'Project',
+        :'title' => :'String',
+        :'actor' => :'String',
+        :'count' => :'String',
+        :'user_count' => :'Integer',
+        :'last_seen' => :'Time',
+        :'first_seen' => :'Time',
+        :'status' => :'String'
       }
     end
 
@@ -74,23 +101,51 @@ module ErrorTrackingOpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::ErrorUpdatePayload` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::ErrorV2` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!self.class.attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::ErrorUpdatePayload`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::ErrorV2`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'status')
-        self.status = attributes[:'status']
+      if attributes.key?(:'id')
+        self.id = attributes[:'id']
       end
 
-      if attributes.key?(:'updated_by_id')
-        self.updated_by_id = attributes[:'updated_by_id']
+      if attributes.key?(:'project')
+        self.project = attributes[:'project']
+      end
+
+      if attributes.key?(:'title')
+        self.title = attributes[:'title']
+      end
+
+      if attributes.key?(:'actor')
+        self.actor = attributes[:'actor']
+      end
+
+      if attributes.key?(:'count')
+        self.count = attributes[:'count']
+      end
+
+      if attributes.key?(:'user_count')
+        self.user_count = attributes[:'user_count']
+      end
+
+      if attributes.key?(:'last_seen')
+        self.last_seen = attributes[:'last_seen']
+      end
+
+      if attributes.key?(:'first_seen')
+        self.first_seen = attributes[:'first_seen']
+      end
+
+      if attributes.key?(:'status')
+        self.status = attributes[:'status']
       end
     end
 
@@ -124,8 +179,15 @@ module ErrorTrackingOpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          status == o.status &&
-          updated_by_id == o.updated_by_id
+          id == o.id &&
+          project == o.project &&
+          title == o.title &&
+          actor == o.actor &&
+          count == o.count &&
+          user_count == o.user_count &&
+          last_seen == o.last_seen &&
+          first_seen == o.first_seen &&
+          status == o.status
     end
 
     # @see the `==` method
@@ -137,7 +199,7 @@ module ErrorTrackingOpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [status, updated_by_id].hash
+      [id, project, title, actor, count, user_count, last_seen, first_seen, status].hash
     end
 
     # Builds the object from hash
