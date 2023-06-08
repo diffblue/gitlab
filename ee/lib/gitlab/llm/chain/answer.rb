@@ -20,14 +20,14 @@ module Gitlab
           parser = Parsers::ChainOfThoughtParser.new(output: response_body)
           parser.parse
 
-          return final_answer(context: context, content: response_body) if parser.final_answer
+          return final_answer(context: context, content: parser.final_answer) if parser.final_answer
 
           action = parser.action
           action_input = parser.action_input
           thought = parser.thought
           content = "\nAction: #{action}\nAction Input: #{action_input}\n"
 
-          tool = tools.find { |tool_class| tool_class::NAME == action }
+          tool = tools.find { |tool_class| tool_class::Executor::NAME == action }
 
           return final_answer(context: context, content: default_final_answer) unless tool
 
@@ -37,7 +37,7 @@ module Gitlab
             status: :ok,
             context: context,
             content: content,
-            tool: tool,
+            tool: tool::Executor,
             suggestions: thought,
             is_final: false
           )

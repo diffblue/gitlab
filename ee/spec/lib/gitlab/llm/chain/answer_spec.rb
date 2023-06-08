@@ -4,13 +4,13 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :shared do
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
-  let(:tools) { [Gitlab::Llm::Chain::Tools::Tool] }
-  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::Tool) }
+  let(:tools) { [Gitlab::Llm::Chain::Tools::IssueIdentifier] }
+  let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
 
   let(:input) do
     <<-INPUT
       Thought: thought
-      Action: Base Tool
+      Action: IssueIdentifier
       Action Input: Bar
     INPUT
   end
@@ -19,12 +19,12 @@ RSpec.describe Gitlab::Llm::Chain::Answer, feature_category: :shared do
     subject(:answer) { described_class.from_response(response_body: input, tools: tools, context: context) }
 
     before do
-      allow(Gitlab::Llm::Chain::Tools::Tool).to receive(:new).and_return(tool_double)
+      allow(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor).to receive(:new).and_return(tool_double)
     end
 
     it 'returns intermediate answer with parsed values and a tool' do
       expect(answer.is_final?).to eq(false)
-      expect(answer.tool::NAME).to eq('Base Tool')
+      expect(answer.tool::NAME).to eq('IssueIdentifier')
     end
 
     context 'when parsed response is final' do
