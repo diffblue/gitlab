@@ -266,12 +266,7 @@ export default {
         />
         <div :class="[isOverviewStageSelected ? 'gl-mt-2' : 'gl-mt-6']">
           <duration-overview-chart v-if="isOverviewStageSelected" class="gl-mb-6" />
-          <duration-chart
-            v-else
-            class="gl-mb-6"
-            :stages="activeStages"
-            :selected-stage="selectedStage"
-          />
+          <duration-chart v-else class="gl-mb-6" />
           <type-of-work-charts v-if="shouldRenderTasksByType" class="gl-mb-6" />
         </div>
         <stage-table

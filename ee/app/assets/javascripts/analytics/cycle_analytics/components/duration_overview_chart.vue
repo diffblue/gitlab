@@ -45,11 +45,11 @@ export default {
   },
   computed: {
     ...mapState('durationChart', ['isLoading', 'errorMessage']),
-    ...mapGetters('durationChart', ['durationChartPlottableData']),
+    ...mapGetters('durationChart', ['durationOverviewChartPlottableData']),
     hasData() {
       return Boolean(
         !this.isLoading &&
-          this.durationChartPlottableData.some(({ data }) =>
+          this.durationOverviewChartPlottableData.some(({ data }) =>
             data.some(([, metric]) => metric !== null),
           ),
       );
@@ -61,7 +61,7 @@ export default {
       const nonNullSeries = [];
       const nullSeries = [];
 
-      this.durationChartPlottableData.forEach(({ name: seriesName, data: seriesData }) => {
+      this.durationOverviewChartPlottableData.forEach(({ name: seriesName, data: seriesData }) => {
         const valuesSeries = {
           name: seriesName,
           data: seriesData,

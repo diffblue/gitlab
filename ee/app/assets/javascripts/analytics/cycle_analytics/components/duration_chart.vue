@@ -15,9 +15,6 @@ import {
   DURATION_STAGE_TIME_DESCRIPTION,
   DURATION_STAGE_TIME_NO_DATA,
   DURATION_STAGE_TIME_LABEL,
-  DURATION_TOTAL_TIME_DESCRIPTION,
-  DURATION_TOTAL_TIME_NO_DATA,
-  DURATION_TOTAL_TIME_LABEL,
   DURATION_CHART_X_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
@@ -38,19 +35,12 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  props: {
-    stages: {
-      type: Array,
-      required: true,
-    },
-  },
   data() {
     return { tooltipTitle: '', tooltipContent: [] };
   },
   computed: {
     ...mapState(['selectedStage']),
     ...mapState('durationChart', ['isLoading', 'errorMessage']),
-    ...mapGetters(['isOverviewStageSelected']),
     ...mapGetters('durationChart', ['durationChartPlottableData']),
     hasData() {
       return Boolean(
@@ -62,21 +52,15 @@ export default {
       if (this.errorMessage) {
         return this.errorMessage;
       }
-      return this.isOverviewStageSelected
-        ? DURATION_TOTAL_TIME_NO_DATA
-        : DURATION_STAGE_TIME_NO_DATA;
+      return DURATION_STAGE_TIME_NO_DATA;
     },
     title() {
-      return this.isOverviewStageSelected
-        ? DURATION_TOTAL_TIME_LABEL
-        : sprintf(DURATION_STAGE_TIME_LABEL, {
-            title: capitalizeFirstCharacter(this.selectedStage.title),
-          });
+      return sprintf(DURATION_STAGE_TIME_LABEL, {
+        title: capitalizeFirstCharacter(this.selectedStage.title),
+      });
     },
     tooltipText() {
-      return this.isOverviewStageSelected
-        ? DURATION_TOTAL_TIME_DESCRIPTION
-        : DURATION_STAGE_TIME_DESCRIPTION;
+      return DURATION_STAGE_TIME_DESCRIPTION;
     },
     chartData() {
       const valuesSeries = [
