@@ -22,7 +22,7 @@ module API
           ]
         end
         post do
-          token = Gitlab::CodeSuggestions::AccessToken.new
+          token = Gitlab::CodeSuggestions::AccessToken.new(current_user)
           present token, with: Entities::CodeSuggestionsAccessToken
         end
       end

@@ -11,19 +11,20 @@ module Gitlab
 
       attr_reader :issued_at
 
-      def initialize
+      def initialize(user)
         @id = SecureRandom.uuid
         @audience = JWT_AUDIENCE
         @issuer = Doorkeeper::OpenidConnect.configuration.issuer
         @issued_at = Time.now.to_i
         @not_before = @issued_at - NOT_BEFORE_TIME
         @expire_time = @issued_at + EXPIRES_IN
+        @user = user
       end
 
       def encoded
         headers = { typ: 'JWT' }
 
-        JWT.encode(payload, key, 'RS256', headers)
+        JWT.encode(payload.merge(claims), key, 'RS256', headers)
       end
 
       def payload
@@ -38,6 +39,12 @@ module Gitlab
       end
 
       private
+
+      def claims
+        {
+          third_party_ai_features_enabled: @user.third_party_ai_features_enabled?
+        }
+      end
 
       def key
         key_data = Rails.application.secrets.openid_connect_signing_key

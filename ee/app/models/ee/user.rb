@@ -546,6 +546,14 @@ module EE
         group.owned_by?(user)
     end
 
+    def third_party_ai_features_enabled?
+      accessible_root_groups = groups.by_parent(nil)
+      return false if accessible_root_groups.empty?
+
+      disabled_by_any_group = accessible_root_groups.reject(&:third_party_ai_features_enabled).any?
+      !disabled_by_any_group
+    end
+
     protected
 
     override :password_required?

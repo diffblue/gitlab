@@ -22,7 +22,10 @@ module API
           success EE::API::Entities::Ml::AiAssist
         end
         get 'ai-assist' do
-          response = { user_is_allowed: true }
+          response = {
+            user_is_allowed: true,
+            third_party_ai_features_enabled: current_user.third_party_ai_features_enabled?
+          }
           present response, with: EE::API::Entities::Ml::AiAssist
         end
       end

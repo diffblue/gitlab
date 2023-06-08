@@ -3,7 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::CodeSuggestions::AccessToken, feature_category: :code_suggestions do
-  subject(:token) { described_class.new }
+  let_it_be(:user) { create(:user) }
+
+  subject(:token) { described_class.new(user) }
 
   describe '#payload' do
     subject(:payload) { token.payload }
@@ -32,7 +34,8 @@ RSpec.describe Gitlab::CodeSuggestions::AccessToken, feature_category: :code_sug
         payload, headers = JWT.decode(jwt, public_key, true, { algorithm: 'RS256' })
 
         expect(headers).to eq("alg" => "RS256", "typ" => "JWT")
-        expect(payload.keys).to contain_exactly("jti", "aud", "iss", "iat", "nbf", "exp")
+        expect(payload.keys).to contain_exactly("jti", "aud", "iss", "iat", "nbf", "exp",
+          "third_party_ai_features_enabled")
       end
     end
 
