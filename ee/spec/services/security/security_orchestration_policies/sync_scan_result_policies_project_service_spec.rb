@@ -21,7 +21,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesPr
     context 'with delay' do
       let(:delay) { 1.minute }
 
-      subject(:execute) { described_class.new(configuration, delay: delay).execute(project_id) }
+      subject(:execute) { described_class.new(configuration).execute(project_id, delay: delay) }
 
       it 'schedules job for the configuration and provided project_id' do
         expect(Security::ProcessScanResultPolicyWorker).to receive(:perform_in).with(delay,
