@@ -1,9 +1,7 @@
 import { nextTick } from 'vue';
 import { GlFormInput, GlModal, GlAlert, GlLink } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import NamespaceLimitsSection, {
-  MODAL_ID,
-} from 'ee/pages/admin/namespace_limits/components/namespace_limits_section.vue';
+import NamespaceLimitsSection from 'ee/pages/admin/namespace_limits/components/namespace_limits_section.vue';
 
 const sampleChangelogEntries = [
   {
@@ -25,6 +23,7 @@ describe('NamespaceLimitsSection', () => {
 
   const defaultProps = {
     label: 'Set notifications limit',
+    modalBody: 'Do you confirm changing notifications limits for all free namespaces?',
     changelogEntries: sampleChangelogEntries,
   };
   const glModalDirective = jest.fn();
@@ -69,6 +68,13 @@ describe('NamespaceLimitsSection', () => {
       createComponent();
     });
 
+    it('assigns the modal a unique ID', () => {
+      const firstInstanceModalId = findModal().props('modalId');
+      createComponent();
+      const secondInstanceModalId = findModal().props('modalId');
+      expect(firstInstanceModalId).not.toEqual(secondInstanceModalId);
+    });
+
     describe('rendering form elements', () => {
       it('renders limit input and update limit button', () => {
         expect(findInput().exists()).toBe(true);
@@ -84,8 +90,7 @@ describe('NamespaceLimitsSection', () => {
     });
 
     it('shows a confirmation modal', () => {
-      expect(findModal().props('modalId')).toBe(MODAL_ID);
-      expect(glModalDirective).toHaveBeenCalledWith(MODAL_ID);
+      expect(glModalDirective).toHaveBeenCalled();
     });
 
     it('passes the correct attributes to modal primary action', () => {
@@ -102,7 +107,7 @@ describe('NamespaceLimitsSection', () => {
         it('emits limit-change event when modal is confirmed', () => {
           findInput().setValue(150);
           findModal().vm.$emit('primary');
-          expect(wrapper.emitted('limit-change')).toStrictEqual([[150]]);
+          expect(wrapper.emitted('limit-change')).toStrictEqual([['150']]);
         });
       });
 
@@ -120,6 +125,16 @@ describe('NamespaceLimitsSection', () => {
 
         it('shows a validation error', () => {
           expect(findAlert().text()).toEqual('Enter a valid number greater or equal to zero.');
+        });
+
+        it('clears any previous error message when resubmitting', async () => {
+          expect(findAlert().exists()).toBe(true);
+
+          findInput().setValue(10);
+          findModal().vm.$emit('primary');
+          await nextTick();
+
+          expect(findAlert().exists()).toBe(false);
         });
       });
     });
