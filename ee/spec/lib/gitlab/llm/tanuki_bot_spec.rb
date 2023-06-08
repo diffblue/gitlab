@@ -97,6 +97,32 @@ RSpec.describe Gitlab::Llm::TanukiBot, feature_category: :global_search do
       end
     end
 
+    describe '#show_breadcrumbs_entry_point_for' do
+      before do
+        allow(described_class).to receive(:enabled_for?).and_return(:enabled_for_return_value)
+      end
+
+      context 'when tanuki_bot_breadcrumbs_entry_point feature flag is enabled' do
+        before do
+          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: true)
+        end
+
+        it 'returns enabled_for?\'s return value' do
+          expect(described_class.show_breadcrumbs_entry_point_for?(user: user)).to be(:enabled_for_return_value)
+        end
+      end
+
+      context 'when tanuki_bot_breadcrumbs_entry_point feature flag is disabled' do
+        before do
+          stub_feature_flags(tanuki_bot_breadcrumbs_entry_point: false)
+        end
+
+        it 'returns false' do
+          expect(described_class.show_breadcrumbs_entry_point_for?(user: user)).to be(false)
+        end
+      end
+    end
+
     describe 'execute' do
       before do
         allow(License).to receive(:feature_available?).and_return(true)

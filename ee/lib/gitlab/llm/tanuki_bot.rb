@@ -36,6 +36,12 @@ module Gitlab
         user.any_group_with_ai_available?
       end
 
+      def self.show_breadcrumbs_entry_point_for?(user:)
+        return false unless Feature.enabled?(:tanuki_bot_breadcrumbs_entry_point, user)
+
+        enabled_for?(user: user)
+      end
+
       def initialize(current_user:, question:, logger: nil)
         @current_user = current_user
         @question = question

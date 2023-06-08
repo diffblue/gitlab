@@ -3,13 +3,13 @@ import { GlIcon, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__, n__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { helpCenterState } from '~/super_sidebar/constants';
 import aiResponseSubscription from 'ee/graphql_shared/subscriptions/ai_completion_response.subscription.graphql';
 import getAiMessages from 'ee/ai/graphql/get_ai_messages.query.graphql';
 import chatMutation from 'ee/ai/graphql/chat.mutation.graphql';
 import tanukiBotMutation from 'ee/ai/graphql/tanuki_bot.mutation.graphql';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
 import { i18n } from 'ee/ai/constants';
-import { helpCenterState } from '~/super_sidebar/constants';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
 import { SOURCE_TYPES, TANUKI_BOT_TRACKING_EVENT_NAME } from '../constants';
 
