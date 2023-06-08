@@ -8,7 +8,6 @@ module Geo
 
     belongs_to :container_repository, inverse_of: :container_repository_state
 
-    validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :container_repository, presence: true
   end
 end

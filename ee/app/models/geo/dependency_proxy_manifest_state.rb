@@ -10,7 +10,6 @@ module Geo
       inverse_of: :dependency_proxy_manifest_state,
       class_name: 'DependencyProxy::Manifest'
 
-    validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :dependency_proxy_manifest, presence: true
   end
 end
