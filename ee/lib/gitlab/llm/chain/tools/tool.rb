@@ -19,6 +19,16 @@ module Gitlab
           end
 
           def execute
+            return not_found unless authorize
+
+            perform
+          end
+
+          def authorize
+            raise NotImplementedError
+          end
+
+          def perform
             raise NotImplementedError
           end
 
@@ -41,6 +51,12 @@ module Gitlab
           private
 
           attr_reader :logger
+
+          def not_found
+            content = "I am sorry, I am unable to find the #{resource_name} you are looking for."
+
+            Answer.error_answer(context: context, content: content)
+          end
         end
       end
     end

@@ -36,37 +36,12 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
     end
   end
 
-  describe '#execute' do
-    context 'when ai response has invalid JSON' do
-      it 'retries the ai call' do
-        input_variables = { input: "user input", suggestions: "" }
-        tool = described_class.new(context: double, options: input_variables)
-
-        allow(tool).to receive(:request).and_return("random string")
-        allow(Gitlab::Json).to receive(:parse).and_raise(JSON::ParserError)
-
-        expect(tool).to receive(:request).exactly(3).times
-
-        response = "I am sorry, I am unable to find the issue you are looking for."
-        expect(tool.execute.content).to eq(response)
-      end
-    end
-
-    context 'when there is a StandardError' do
-      it 'returns an error' do
-        input_variables = { input: "user input", suggestions: "" }
-        tool = described_class.new(context: double, options: input_variables)
-
-        allow(tool).to receive(:request).and_raise(StandardError)
-
-        expect(tool.execute.content).to eq("Unexpected error")
-      end
-    end
+  describe '#execute', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be_with_reload(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be_with_reload(:project) { create(:project, group: group) }
 
     context 'when issue is identified' do
-      let_it_be(:user) { create(:user) }
-      let_it_be(:group) { create(:group) }
-      let_it_be(:project) { create(:project, group: group) }
       let_it_be(:issue1) { create(:issue, project: project) }
       let_it_be(:issue2) { create(:issue, project: project) }
       let(:context) do
@@ -100,9 +75,7 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
         context 'when is issue identified with url' do
           let(:url) { Gitlab::Routing.url_helpers.project_issue_url(project, issue2) }
-          let(:ai_response) do
-            "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": #{url}}"
-          end
+          let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
 
           it_behaves_like 'issue not found response'
         end
@@ -110,7 +83,37 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
       context 'when user has permission to read resource' do
         before do
+          stub_application_setting(check_namespace_plan: true)
+          stub_licensed_features(summarize_notes: true, ai_features: true)
+
           project.add_guest(user)
+          project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+        end
+
+        context 'when ai response has invalid JSON' do
+          it 'retries the ai call' do
+            input_variables = { input: "user input", suggestions: "" }
+            tool = described_class.new(context: context, options: input_variables)
+
+            allow(tool).to receive(:request).and_return("random string")
+            allow(Gitlab::Json).to receive(:parse).and_raise(JSON::ParserError)
+
+            expect(tool).to receive(:request).exactly(3).times
+
+            response = "I am sorry, I am unable to find the issue you are looking for."
+            expect(tool.execute.content).to eq(response)
+          end
+        end
+
+        context 'when there is a StandardError' do
+          it 'returns an error' do
+            input_variables = { input: "user input", suggestions: "" }
+            tool = described_class.new(context: context, options: input_variables)
+
+            allow(tool).to receive(:request).and_raise(StandardError)
+
+            expect(tool.execute.content).to eq("Unexpected error")
+          end
         end
 
         context 'when issue is the current issue in context' do
@@ -129,19 +132,19 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
 
         context 'when is issue identified with reference' do
           let(:resource_iid) { issue2.iid }
+          let(:reference) { issue2.to_reference(full: true) }
           let(:ai_response) do
-            "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{issue2.to_reference(full: true)}\"}"
+            "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
           end
 
           it_behaves_like 'success response'
         end
 
-        context 'when is issue identified with url' do
+        # Skipped pending https://gitlab.com/gitlab-org/gitlab/-/issues/413509
+        xcontext 'when is issue identified with url' do
           let(:resource_iid) { issue2.iid }
-          let(:url) { Gitlab::Routing.url_helpers.project_issue_url(project, issue2) }
-          let(:ai_response) do
-            "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{url}\"}"
-          end
+          let(:url) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
+          let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
 
           it_behaves_like 'success response'
         end

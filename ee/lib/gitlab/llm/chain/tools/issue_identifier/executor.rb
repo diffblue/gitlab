@@ -73,7 +73,7 @@ module Gitlab
                 ```
 
                 Begin!
-              PROMPT
+                PROMPT
               ),
               Utils::Prompt.as_assistant("%<suggestions>s"),
               Utils::Prompt.as_user("Question: %<input>s")
@@ -84,7 +84,7 @@ module Gitlab
               @retries = 0
             end
 
-            def execute
+            def perform
               return already_identified_answer if already_identified?
 
               MAX_RETRIES.times do
@@ -92,7 +92,7 @@ module Gitlab
                 issue = identify_issue(json[:ResourceIdentifierType], json[:ResourceIdentifier])
 
                 # if issue not found then return an error as the answer.
-                return issue_not_found unless issue
+                return not_found unless issue
 
                 # now the issue in context is being referenced in user input.
                 context.resource = issue
@@ -113,10 +113,14 @@ module Gitlab
                 return Answer.error_answer(context: context, content: _("Unexpected error"))
               end
 
-              issue_not_found
+              not_found
             end
 
             private
+
+            def authorize
+              Utils::Authorizer.context_authorized?(context: context)
+            end
 
             def already_identified?
               identifier_action_regex = /(?=Action: IssueIdentifier)/
@@ -136,7 +140,7 @@ module Gitlab
             end
 
             def identify_issue(resource_identifier_type, resource_identifier)
-              return context.resource if current_resource?(resource_identifier, RESOURCE_NAME)
+              return context.resource if current_resource?(resource_identifier, resource_name)
 
               issue = case resource_identifier_type
                       when 'iid'
@@ -145,7 +149,7 @@ module Gitlab
                         extract_issue(resource_identifier)
                       end
 
-              return issue if context.current_user.can?(:read_issue, issue)
+              return issue if Utils::Authorizer.resource_authorized?(resource: issue, user: context.current_user)
             end
 
             def by_iid(resource_identifier)
@@ -162,12 +166,6 @@ module Gitlab
               return issues.first if issues.one?
             end
 
-            def issue_not_found
-              content = _("I am sorry, I am unable to find the issue you are looking for.")
-
-              Answer.error_answer(context: context, content: content)
-            end
-
             # This method should not be memoized because the options change over time
             def base_prompt
               Utils::Prompt.no_role_text(PROMPT_TEMPLATE, options)
@@ -181,6 +179,10 @@ module Gitlab
               ::Gitlab::Llm::Chain::Answer.new(
                 status: :ok, context: context, content: content, tool: nil, is_final: false
               )
+            end
+
+            def resource_name
+              RESOURCE_NAME
             end
           end
         end
