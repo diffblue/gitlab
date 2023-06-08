@@ -218,4 +218,36 @@ RSpec.describe Gitlab::CodeOwners::Loader, feature_category: :source_code_manage
       end
     end
   end
+
+  describe '#track_file_validation' do
+    subject { loader.track_file_validation }
+
+    context 'when file has no linting error' do
+      it 'sends no snowplow event' do
+        subject
+
+        expect_no_snowplow_event(category: described_class.name)
+      end
+    end
+
+    context 'when file has linting error' do
+      let(:codeowner_content) do
+        <<~CODEOWNERS
+        [Documentation]
+        docs/*
+        docs/CODEOWNERS @owner-1 owner2@gitlab.org @owner-3 @documentation-owner
+        [Testing
+        spec/* @test-owner @test-group @test-group/nested-group
+        CODEOWNERS
+      end
+
+      it 'sends the expected snowplow event' do
+        subject
+
+        expect_snowplow_event(category: described_class.name, action: 'file_validation', label: 'missing_entry_owner', project: project, extra: { file_path: "CODEOWNERS", line_number: 2 })
+        expect_snowplow_event(category: described_class.name, action: 'file_validation', label: 'invalid_section_format', project: project, extra: { file_path: "CODEOWNERS", line_number: 4 })
+        expect_snowplow_event(category: described_class.name, action: 'file_validation', label: 'missing_entry_owner', project: project, extra: { file_path: "CODEOWNERS", line_number: 4 })
+      end
+    end
+  end
 end

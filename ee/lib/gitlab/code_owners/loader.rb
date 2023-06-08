@@ -51,6 +51,23 @@ module Gitlab
         code_owners_file&.optional_section?(section)
       end
 
+      def track_file_validation
+        return if code_owners_file.valid?
+
+        code_owners_file.errors.each do |error|
+          Gitlab::Tracking.event(
+            self.class.name,
+            'file_validation',
+            label: error.message.to_s,
+            project: @project,
+            extra: {
+              file_path: error.path,
+              line_number: error.line_number
+            }
+          )
+        end
+      end
+
       private
 
       def load_bare_entries_for_paths

@@ -32,6 +32,8 @@ RSpec.describe MergeRequestApproverPresenter do
       merge_request.target_branch,
       file_paths
     ).and_return(code_owner_loader)
+
+    expect(code_owner_loader).to receive(:track_file_validation).and_return(nil)
   end
 
   def expect_git_log_call(*stub_return_users)
