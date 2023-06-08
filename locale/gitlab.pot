@@ -14696,7 +14696,9 @@ msgid "Delete code block"
 msgstr ""
 
 msgid "Delete column"
-msgstr ""
+msgid_plural "Delete %d columns"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Delete comment"
 msgstr ""
@@ -14756,7 +14758,9 @@ msgid "Delete release %{release}?"
 msgstr ""
 
 msgid "Delete row"
-msgstr ""
+msgid_plural "Delete %d rows"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Delete selected"
 msgstr ""
@@ -28235,6 +28239,11 @@ msgstr ""
 
 msgid "Merge"
 msgstr ""
+
+msgid "Merge %d cell"
+msgid_plural "Merge %d cells"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Merge Conflicts"
 msgstr ""
@@ -43613,6 +43622,9 @@ msgid "Spent at"
 msgstr ""
 
 msgid "Spent at can't be a future date and time."
+msgstr ""
+
+msgid "Split cell"
 msgstr ""
 
 msgid "Squash commit message"
