@@ -16,9 +16,7 @@ module Projects
       def slack_auth
         result = Projects::SlackApplicationInstallService.new(project, current_user, params).execute
 
-        if result[:status] == :error
-          flash[:alert] = result[:message]
-        end
+        flash[:alert] = result[:message] if result[:status] == :error
 
         session[:slack_install_success] = true
         redirect_to_service_page
@@ -30,8 +28,7 @@ module Projects
         redirect_to_service_page
       end
 
-      def edit
-      end
+      def edit; end
 
       def update
         if slack_integration.update(slack_integration_params)
@@ -59,10 +56,10 @@ module Projects
       end
 
       def handle_oauth_error
-        if params[:error] == 'access_denied'
-          flash[:alert] = 'Access denied'
-          redirect_to_service_page
-        end
+        return unless params[:error] == 'access_denied'
+
+        flash[:alert] = 'Access denied'
+        redirect_to_service_page
       end
 
       def slack_integration

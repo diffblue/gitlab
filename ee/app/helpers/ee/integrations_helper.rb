@@ -24,34 +24,7 @@ module EE
         )
       end
 
-      if integration.is_a?(::Integrations::GitlabSlackApplication)
-        form_data[:upgrade_slack_url] = add_to_slack_link(project, slack_app_id)
-        form_data[:should_upgrade_slack] = integration.upgrade_needed?.to_s
-      end
-
       form_data
-    end
-
-    def add_to_slack_link(project, slack_app_id)
-      query = {
-        scope: SlackIntegration::SCOPES.join(','),
-        client_id: slack_app_id,
-        redirect_uri: slack_auth_project_settings_slack_url(project),
-        state: form_authenticity_token
-      }
-
-      "#{::Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL}?#{query.to_query}"
-    end
-
-    def gitlab_slack_application_data(projects)
-      {
-        projects: (projects || []).to_json(only: [:id, :name], methods: [:avatar_url, :name_with_namespace]),
-        sign_in_path: new_session_path(:user, redirect_to_referer: 'yes'),
-        is_signed_in: current_user.present?.to_s,
-        slack_link_path: slack_link_profile_slack_path,
-        gitlab_logo_path: image_path('illustrations/gitlab_logo.svg'),
-        slack_logo_path: image_path('illustrations/slack_logo.svg')
-      }
     end
 
     def jira_issues_show_data

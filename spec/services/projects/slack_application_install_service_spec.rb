@@ -33,7 +33,7 @@ RSpec.describe Projects::SlackApplicationInstallService, feature_category: :inte
       .to_return(body: response.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
-  context 'Slack responds with an error' do
+  context 'when Slack responds with an error' do
     let(:response) do
       {
         ok: false,
@@ -48,7 +48,7 @@ RSpec.describe Projects::SlackApplicationInstallService, feature_category: :inte
     end
   end
 
-  context 'Slack responds with an access token' do
+  context 'when Slack responds with an access token' do
     let_it_be(:team_id) { 'T11111' }
     let_it_be(:team_name) { 'Team name' }
     let_it_be(:user_id) { 'U11111' }

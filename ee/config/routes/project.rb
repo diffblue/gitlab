@@ -44,12 +44,6 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
 
         resources :automations, only: [:index]
 
-        namespace :settings do
-          resource :slack, only: [:destroy, :edit, :update] do
-            get :slack_auth
-          end
-        end
-
         resources :subscriptions, only: [:create, :destroy]
 
         resource :learn_gitlab, only: :show, controller: :learn_gitlab, param: :project_id do
