@@ -314,6 +314,11 @@ module EE
       epic_issue.present?
     end
 
+    def serialize_instance(user:)
+      IssueSerializer.new(current_user: user,
+        project: project).represent(self)
+    end
+
     private
 
     def blocking_issues_ids

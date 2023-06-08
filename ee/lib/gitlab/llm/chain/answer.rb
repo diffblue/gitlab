@@ -22,14 +22,18 @@ module Gitlab
 
           return final_answer(context: context, content: parser.final_answer) if parser.final_answer
 
+          executor = nil
           action = parser.action
           action_input = parser.action_input
           thought = parser.thought
           content = "\nAction: #{action}\nAction Input: #{action_input}\n"
 
-          tool = tools.find { |tool_class| tool_class::Executor::NAME == action }
+          if tools.present?
+            tool = tools.find { |tool_class| tool_class::Executor::NAME == action }
+            executor = tool::Executor if tool
 
-          return final_answer(context: context, content: default_final_answer) unless tool
+            return final_answer(context: context, content: default_final_answer) unless tool
+          end
 
           logger.debug(message: "Answer", content: content)
 
@@ -37,7 +41,7 @@ module Gitlab
             status: :ok,
             context: context,
             content: content,
-            tool: tool::Executor,
+            tool: executor,
             suggestions: thought,
             is_final: false
           )
