@@ -9,6 +9,7 @@ import {
   GlModal,
   GlModalDirective,
 } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
 import { __, s__ } from '~/locale';
 
 const i18n = {
@@ -18,9 +19,6 @@ const i18n = {
   ),
   updateLimitsButton: s__('NamespaceLimits|Update limit'),
   modalTitle: __('Are you sure?'),
-  modalBody: s__(
-    'NamespaceLimits|This will limit the amount of notifications your namespace receives, this can be removed in the future.',
-  ),
   limitValidationError: s__('NamespaceLimits|Enter a valid number greater or equal to zero.'),
 };
 
@@ -35,8 +33,6 @@ const modalActionsProps = {
     },
   },
 };
-
-export const MODAL_ID = 'confirm-limits-change-modal';
 
 export default {
   name: 'NamespaceLimitsSection',
@@ -64,26 +60,37 @@ export default {
       required: false,
       default: '',
     },
+    modalBody: {
+      type: String,
+      required: true,
+    },
   },
   data() {
     return {
-      limit: 0,
-      error: this.errorMessage,
+      limit: '0',
+      validationError: '',
+      modalId: uniqueId('namespace-limits-'),
     };
+  },
+  computed: {
+    error() {
+      return this.errorMessage || this.validationError;
+    },
   },
   i18n,
   ...modalActionsProps,
-  MODAL_ID,
   methods: {
     confirmChangingLimits() {
-      const limit = Number(this.limit);
+      // clear any previous validation errors
+      this.validationError = '';
+
       // validate the limit is a positive number
-      if (limit < 0) {
-        this.error = i18n.limitValidationError;
+      if (!this.limit || Number(this.limit) < 0) {
+        this.validationError = i18n.limitValidationError;
         return;
       }
 
-      this.$emit('limit-change', limit);
+      this.$emit('limit-change', this.limit);
     },
   },
 };
@@ -96,19 +103,19 @@ export default {
         {{ error }}
       </gl-alert>
       <gl-form-group :label="label" :description="description" class="gl-lg-w-half">
-        <gl-form-input v-model="limit" size="md" type="number" />
+        <gl-form-input v-model="limit" size="md" type="number" min="0" />
       </gl-form-group>
-      <gl-button v-gl-modal="$options.MODAL_ID" variant="danger">{{
+      <gl-button v-gl-modal="modalId" variant="danger">{{
         $options.i18n.updateLimitsButton
       }}</gl-button>
       <gl-modal
-        :modal-id="$options.MODAL_ID"
+        :modal-id="modalId"
         :title="$options.i18n.modalTitle"
         :action-primary="$options.modalConfirmProps"
         :action-cancel="$options.modalCancelProps"
         @primary="confirmChangingLimits"
       >
-        {{ $options.i18n.modalBody }}
+        {{ modalBody }}
       </gl-modal>
     </div>
     <template v-if="changelogEntries.length">
