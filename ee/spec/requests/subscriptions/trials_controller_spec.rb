@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialsController, :saas, feature_category: :purchase do
+RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purchase do
   let_it_be(:user, reload: true) { create(:user) }
   let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
 
