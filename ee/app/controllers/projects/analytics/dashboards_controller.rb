@@ -13,17 +13,28 @@ module Projects
         push_frontend_feature_flag(:product_analytics_snowplow_support)
         push_frontend_feature_flag(:combined_analytics_dashboards_editor, project)
       end
+      before_action :track_usage, only: [:index], if: :viewing_single_dashboard?
 
-      def index
-        ::Gitlab::UsageDataCounters::ProductAnalyticsCounter.count(:view_dashboard) if
-          params[:vueroute].present?
-      end
+      def index; end
 
       private
 
       def dashboards_enabled!
         render_404 unless ::Feature.enabled?(:combined_analytics_dashboards, project) &&
           project.licensed_feature_available?(:combined_project_analytics_dashboards)
+      end
+
+      def viewing_single_dashboard?
+        params[:vueroute].present?
+      end
+
+      def track_usage
+        ::Gitlab::UsageDataCounters::ProductAnalyticsCounter.count(:view_dashboard)
+
+        ::Gitlab::UsageDataCounters::HLLRedisCounter.track_usage_event(
+          'user_visited_dashboard',
+          current_user.id
+        )
       end
     end
   end

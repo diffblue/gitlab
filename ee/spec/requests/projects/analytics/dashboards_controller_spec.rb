@@ -25,6 +25,13 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
 
         send_dashboards_request
       end
+
+      it 'does not track unique user dashboard view' do
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+          .not_to receive(:track_usage_event)
+
+        send_dashboards_request
+      end
     end
 
     shared_examples 'returns success' do
@@ -36,6 +43,13 @@ RSpec.describe Projects::Analytics::DashboardsController, type: :request, featur
 
       it 'increments counter' do
         expect(Gitlab::UsageDataCounters::ProductAnalyticsCounter).to receive(:count).with(:view_dashboard)
+
+        send_dashboards_request
+      end
+
+      it 'tracks unique user dashboard view' do
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
+          .to receive(:track_usage_event).with('user_visited_dashboard', user.id)
 
         send_dashboards_request
       end
