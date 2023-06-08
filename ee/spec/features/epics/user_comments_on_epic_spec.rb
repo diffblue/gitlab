@@ -52,4 +52,18 @@ RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_manage
       end
     end
   end
+
+  context 'when someone else adds a comment' do
+    it 'displays the new comment in real-time' do
+      wait_for_requests
+
+      content = 'A new note from someone else'
+
+      expect(page).not_to have_content(content)
+
+      create(:note, noteable: epic, author: epic.author, note: content)
+
+      expect(page).to have_content(content)
+    end
+  end
 end
