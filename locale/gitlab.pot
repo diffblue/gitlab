@@ -48468,6 +48468,9 @@ msgstr ""
 msgid "Unexpected error"
 msgstr ""
 
+msgid "Unexpected error: Cannot serialize resource"
+msgstr ""
+
 msgid "Unexpected scope"
 msgstr ""
 

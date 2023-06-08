@@ -8,7 +8,13 @@ module Gitlab
           STOP_REGEX = /Observation:/
 
           def self.text_before_stop_word(text)
-            text.split(STOP_REGEX, 2).first
+            text.split(STOP_REGEX).first
+          end
+
+          def self.extract_keys(input)
+            input.scan(/\[.*?\]/)
+                 .map { |x| x[1..-2].delete("\"").delete("'") }
+                 .map { |x| x =~ /^(\d)+$/ ? Integer(x) : x }
           end
         end
       end

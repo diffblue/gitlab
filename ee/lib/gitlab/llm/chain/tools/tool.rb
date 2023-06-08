@@ -12,6 +12,8 @@ module Gitlab
 
           attr_reader :context, :options
 
+          delegate :resource, to: :context
+
           def initialize(context:, options:)
             @context = context
             @options = options
