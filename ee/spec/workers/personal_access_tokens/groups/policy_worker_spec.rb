@@ -11,7 +11,6 @@ RSpec.describe PersonalAccessTokens::Groups::PolicyWorker, type: :worker, featur
     create(:personal_access_token, expires_at: expires_at, user: create(:user, managing_group: group))
   end
 
-  let(:expires_at) { nil }
   let(:limit) { 7 }
   let(:expires_after_max_token_lifetime) { (limit + 1).days.from_now.to_date }
   let(:expires_before_max_token_lifetime) { (limit - 1).days.from_now.to_date }
@@ -27,6 +26,7 @@ RSpec.describe PersonalAccessTokens::Groups::PolicyWorker, type: :worker, featur
 
     it_behaves_like 'an idempotent worker' do
       let(:job_args) { [group.id] }
+      let(:expires_at) { 1.month.from_now }
 
       context 'when the group has set a PAT expiry policy' do
         context 'valid PATs' do
