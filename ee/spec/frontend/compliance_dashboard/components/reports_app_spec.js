@@ -23,8 +23,9 @@ describe('ComplianceReportsApp component', () => {
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findFrameworksTab = () => wrapper.findByTestId('frameworks-tab');
   const findViolationsTab = () => wrapper.findByTestId('violations-tab');
+  const findStandardsAdherenceTab = () => wrapper.findByTestId('standards-adherence-tab');
 
-  const createComponent = (props = {}, mountFn = shallowMount, mocks = {}) => {
+  const createComponent = (props = {}, mountFn = shallowMount, mocks = {}, provide = {}) => {
     return extendedWrapper(
       mountFn(ComplianceReportsApp, {
         propsData: {
@@ -40,9 +41,23 @@ describe('ComplianceReportsApp component', () => {
         stubs: {
           'router-view': stubComponent({}),
         },
+        provide: {
+          adherenceReportUiEnabled: false,
+          ...provide,
+        },
       }),
     );
   };
+
+  describe('adherence standards report', () => {
+    beforeEach(() => {
+      wrapper = createComponent(defaultProps, mount, {}, { adherenceReportUiEnabled: true });
+    });
+
+    it('renders the standards adherence report tab', () => {
+      expect(findStandardsAdherenceTab().exists()).toBe(true);
+    });
+  });
 
   describe('violations report', () => {
     beforeEach(() => {
