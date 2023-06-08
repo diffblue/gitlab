@@ -30,20 +30,24 @@ export const setMessages = ({ commit }, messages) => {
   }
   messages.forEach((msg) => {
     let parsedProps;
-    switch (msg.role.toLowerCase()) {
-      case MESSAGE_TYPES.USER:
-        commit(types.ADD_USER_MESSAGE, msg.content);
-        break;
-      case MESSAGE_TYPES.TANUKI:
-        try {
-          parsedProps = JSON.parse(msg.content);
-        } catch {
-          parsedProps = msg.content;
-        }
-        commit(types.ADD_TANUKI_MESSAGE, parsedProps);
-        break;
-      default:
-        break;
+    if (msg.errors?.length) {
+      commit(types.ADD_ERROR_MESSAGE);
+    } else {
+      switch (msg.role.toLowerCase()) {
+        case MESSAGE_TYPES.USER:
+          commit(types.ADD_USER_MESSAGE, msg.content);
+          break;
+        case MESSAGE_TYPES.TANUKI:
+          try {
+            parsedProps = JSON.parse(msg.content);
+          } catch {
+            parsedProps = msg;
+          }
+          commit(types.ADD_TANUKI_MESSAGE, parsedProps);
+          break;
+        default:
+          break;
+      }
     }
   });
 };
