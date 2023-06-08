@@ -208,11 +208,11 @@ module Gitlab
 
     def self.l1_cache
       SafeRequestStore[:geo_l1_cache] ||=
-        Gitlab::JsonCache.new(namespace: :geo, backend: ::Gitlab::ProcessMemoryCache.cache_backend, cache_key_strategy: :version)
+        Gitlab::Cache::JsonCaches::RedisKeyed.new(namespace: :geo, backend: ::Gitlab::ProcessMemoryCache.cache_backend, cache_key_strategy: :version)
     end
 
     def self.l2_cache
-      SafeRequestStore[:geo_l2_cache] ||= Gitlab::JsonCache.new(namespace: :geo, cache_key_strategy: :version)
+      SafeRequestStore[:geo_l2_cache] ||= Gitlab::Cache::JsonCaches::RedisKeyed.new(namespace: :geo, cache_key_strategy: :version)
     end
 
     # Default to a short expire time as we can't manually expire on a secondary node
