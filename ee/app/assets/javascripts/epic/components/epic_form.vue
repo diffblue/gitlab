@@ -13,17 +13,32 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { WORKSPACE_GROUP } from '~/issues/constants';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { s__ } from '~/locale';
-import MarkdownField from '~/vue_shared/components/markdown/field.vue';
+import { s__, __ } from '~/locale';
+import MarkdownEditor from '~/vue_shared/components/markdown/markdown_editor.vue';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { DEFAULT_COLOR } from '~/vue_shared/components/color_select_dropdown/constants';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { CLEAR_AUTOSAVE_ENTRY_EVENT } from '~/vue_shared/constants';
+import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
 import createEpic from '../queries/create_epic.mutation.graphql';
+
+const i18n = {
+  confidentialityLabel: s__(`
+      Epics|This epic and any containing child epics are confidential
+      and should only be visible to team members with at least Reporter access.
+    `),
+  epicDatesHint: s__('Epics|Leave empty to inherit from milestone dates'),
+  colorHelp: s__(
+    `Epics|The color for the epic when it's visualized, such as on roadmap timeline bars.`,
+  ),
+  descriptionPlaceholder: __('Write a comment or drag your files here…'),
+};
 
 export default {
   WORKSPACE_GROUP,
   components: {
+    MarkdownEditor,
     ColorSelectDropdown,
     GlButton,
     GlDatepicker,
@@ -32,7 +47,6 @@ export default {
     GlFormGroup,
     GlFormInput,
     LabelsSelectWidget,
-    MarkdownField,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['groupPath', 'groupEpicsPath', 'markdownPreviewPath', 'markdownDocsPath'],
@@ -55,37 +69,37 @@ export default {
     isEpicColorEnabled() {
       return this.glFeatures.epicColorHighlight;
     },
+    autosaveKey() {
+      const { pathname, search } = document.location;
+      return [pathname, search];
+    },
+    titleAutosaveKey() {
+      return [...this.autosaveKey, 'title'];
+    },
+    descriptionAutosaveKey() {
+      return [...this.autosaveKey, 'description'].join('/');
+    },
   },
-  i18n: {
-    confidentialityLabel: s__(`
-      Epics|This epic and any containing child epics are confidential
-      and should only be visible to team members with at least Reporter access.
-    `),
-    epicDatesHint: s__('Epics|Leave empty to inherit from milestone dates'),
-    colorHelp: s__(
-      `Epics|The color for the epic when it's visualized, such as on roadmap timeline bars.`,
-    ),
+  i18n,
+  descriptionFormFieldProps: {
+    placeholder: i18n.descriptionPlaceholder,
+    id: 'epic-description',
+    name: 'epic-description',
   },
   mounted() {
     this.initAutosave();
   },
   methods: {
     initAutosave() {
-      const { titleInput, descriptionInput } = this.$refs;
-      const { pathname, search } = document.location;
+      const { titleInput } = this.$refs;
 
-      if (!titleInput || !descriptionInput) return;
+      if (!titleInput) return;
 
-      /**
-       * We'd need to update Autosave to work with plain HTML elements instead of
-       * jQuery instance, but until then, we'd have to rely on jQuery.
-       */
-      this.autosaveTitle = new Autosave(titleInput.$el, [pathname, search, 'title']);
-      this.autosaveDescription = new Autosave(descriptionInput, [pathname, search, 'description']);
+      this.autosaveTitle = new Autosave(titleInput.$el, this.titleAutosaveKey);
     },
     resetAutosave() {
       this.autosaveTitle.reset();
-      this.autosaveDescription.reset();
+      markdownEditorEventHub.$emit(CLEAR_AUTOSAVE_ENTRY_EVENT, this.descriptionAutosaveKey);
     },
     save() {
       this.loading = true;
@@ -164,33 +178,18 @@ export default {
           autofocus
         />
       </gl-form-group>
-
       <gl-form-group :label="__('Description')" label-for="epic-description">
-        <markdown-field
-          :markdown-preview-path="markdownPreviewPath"
+        <markdown-editor
+          v-model="description"
+          :form-field-props="$options.descriptionFormFieldProps"
+          :render-markdown-path="markdownPreviewPath"
+          :enable-content-editor="Boolean(glFeatures.contentEditorOnIssues)"
           :markdown-docs-path="markdownDocsPath"
-          :can-suggest="false"
-          :can-attach-file="true"
-          :enable-autocomplete="true"
-          :add-spacing-classes="false"
-          :textarea-value="description"
-          :label="__('Description')"
-          class="md-area"
-        >
-          <template #textarea>
-            <textarea
-              id="epic-description"
-              ref="descriptionInput"
-              v-model="description"
-              data-testid="epic-description"
-              class="note-textarea js-gfm-input js-autosize markdown-area"
-              dir="auto"
-              data-supports-quick-actions="true"
-              :placeholder="__('Write a comment or drag your files here…')"
-              :aria-label="__('Description')"
-            ></textarea>
-          </template>
-        </markdown-field>
+          :autosave-key="descriptionAutosaveKey"
+          enable-autocomplete
+          supports-quick-actions
+          data-testid="epic-description"
+        />
       </gl-form-group>
       <gl-form-group :label="__('Confidentiality')" label-for="epic-confidentiality">
         <gl-form-checkbox
@@ -231,7 +230,7 @@ export default {
         </div>
         <gl-button
           v-show="startDateFixed"
-          variant="tertiary"
+          category="tertiary"
           class="gl-white-space-nowrap"
           data-testid="clear-start-date"
           @click="updateStartDate(null)"
@@ -249,7 +248,7 @@ export default {
         </div>
         <gl-button
           v-show="dueDateFixed"
-          variant="tertiary"
+          category="tertiary"
           class="gl-white-space-nowrap"
           data-testid="clear-due-date"
           @click="updateDueDate(null)"

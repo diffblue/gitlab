@@ -4,10 +4,13 @@ import { nextTick } from 'vue';
 import EpicForm from 'ee/epic/components/epic_form.vue';
 import createEpic from 'ee/epic/queries/create_epic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
+import setWindowLocation from 'helpers/set_window_location_helper';
 import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
 import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
+import { CLEAR_AUTOSAVE_ENTRY_EVENT } from '~/vue_shared/constants';
+import markdownEditorEventHub from '~/vue_shared/components/markdown/eventhub';
 
 jest.mock('~/lib/utils/url_utility', () => ({
   visitUrl: jest.fn(),
@@ -33,9 +36,6 @@ describe('ee/epic/components/epic_form.vue', () => {
         glFeatures: {
           epicColorHighlight: true,
         },
-      },
-      stubs: {
-        MarkdownField: { template: '<div><slot name="textarea"></slot></div>' },
       },
       mocks: {
         $apollo: {
@@ -67,11 +67,8 @@ describe('ee/epic/components/epic_form.vue', () => {
       expect(findForm().exists()).toBe(true);
     });
 
-    it('initializes autosave support on title and description fields', () => {
-      expect(Autosave.mock.calls).toEqual([
-        [expect.any(Element), ['/', '', 'title']],
-        [expect.any(Element), ['/', '', 'description']],
-      ]);
+    it('initializes autosave support on title field', () => {
+      expect(Autosave.mock.calls).toEqual([[expect.any(Element), ['/', '', 'title']]]);
     });
 
     it('can be canceled', () => {
@@ -122,7 +119,7 @@ describe('ee/epic/components/epic_form.vue', () => {
         createWrapper();
 
         findTitle().vm.$emit('input', title);
-        findDescription().setValue(description);
+        findDescription().vm.$emit('input', description);
         findConfidentialityCheck().vm.$emit('input', confidential);
         findLabels().vm.$emit('updateSelectedLabels', {
           labels: [{ id: 'gid://gitlab/GroupLabel/1' }],
@@ -177,17 +174,23 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
 
     it('resets automatically saved title and description when request succeeds', async () => {
+      setWindowLocation('/my-group/epics/new?q=my-query');
       createWrapper();
       jest.spyOn(Autosave.prototype, 'reset');
+      jest.spyOn(markdownEditorEventHub, '$emit');
 
       findTitle().vm.$emit('input', title);
-      findDescription().setValue(description);
+      findDescription().vm.$emit('input', description);
 
       findForm().vm.$emit('submit', { preventDefault: () => {} });
 
       await nextTick();
 
-      expect(Autosave.prototype.reset).toHaveBeenCalledTimes(2);
+      expect(Autosave.prototype.reset).toHaveBeenCalledTimes(1);
+      expect(markdownEditorEventHub.$emit).toHaveBeenCalledWith(
+        CLEAR_AUTOSAVE_ENTRY_EVENT,
+        '/my-group/epics/new/?q=my-query/description',
+      );
     });
   });
 });
