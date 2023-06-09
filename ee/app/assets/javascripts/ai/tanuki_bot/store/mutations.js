@@ -1,3 +1,4 @@
+import { isObject } from 'lodash';
 import { MESSAGE_TYPES, ERROR_MESSAGE } from '../constants';
 import * as types from './mutation_types';
 
@@ -13,19 +14,28 @@ export default {
     });
   },
   [types.ADD_TANUKI_MESSAGE](state, data) {
-    const { msg, content, ...rest } = data;
-    state.messages.push({
-      id: state.messages.length,
-      role: MESSAGE_TYPES.TANUKI,
-      ...rest,
-      content: content || msg,
-    });
+    if (isObject(data)) {
+      const { msg, content, ...rest } = data;
+      state.messages.push({
+        id: state.messages.length,
+        role: MESSAGE_TYPES.TANUKI,
+        ...rest,
+        content: content || msg,
+      });
+    } else {
+      state.messages.push({
+        id: state.messages.length,
+        role: MESSAGE_TYPES.TANUKI,
+        content: data,
+      });
+    }
   },
   [types.ADD_ERROR_MESSAGE](state) {
     state.messages.push({
       id: state.messages.length,
       role: MESSAGE_TYPES.TANUKI,
-      content: ERROR_MESSAGE,
+      content: '',
+      errors: [ERROR_MESSAGE],
     });
   },
 };

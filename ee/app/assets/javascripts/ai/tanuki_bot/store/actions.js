@@ -14,7 +14,14 @@ export const receiveTanukiBotMessage = ({ commit, dispatch }, data) => {
     dispatch('tanukiBotMessageError');
   } else if (response) {
     commit(types.SET_LOADING, false);
-    commit(types.ADD_TANUKI_MESSAGE, JSON.parse(response));
+
+    let parsedResponse;
+    try {
+      parsedResponse = JSON.parse(response);
+    } catch {
+      parsedResponse = { content: response };
+    }
+    commit(types.ADD_TANUKI_MESSAGE, parsedResponse);
   }
 };
 

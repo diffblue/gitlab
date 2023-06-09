@@ -182,6 +182,20 @@ describe('AiGenieChat', () => {
       expect(findChatMessages().at(0).text()).toBe(promptStr);
     });
 
+    it('converts content of the message from Markdown into HTML', () => {
+      createComponent({
+        propsData: {
+          messages: [
+            {
+              role: GENIE_CHAT_MODEL_ROLES.user,
+              content: '**foo**',
+            },
+          ],
+        },
+      });
+      expect(findChatMessages().at(0).element.innerHTML).toContain('<strong>foo</strong>');
+    });
+
     it('hides the chat on button click and emits an event', () => {
       createComponent({ propsData: { messages } });
       expect(wrapper.vm.$data.isHidden).toBe(false);

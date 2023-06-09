@@ -108,6 +108,9 @@ export default {
     isUserMessage(message) {
       return message.role.toLowerCase() === GENIE_CHAT_MODEL_ROLES.user;
     },
+    getMessageContent(message) {
+      return renderMarkdown(message.content || message.errors[0]);
+    },
     renderMarkdown,
   },
   i18n,
@@ -191,7 +194,7 @@ export default {
                 'gl-mb-0!': isLastMessage(index) && !isLoading,
               }"
             >
-              <div v-safe-html="renderMarkdown(message.content)"></div>
+              <div v-safe-html="getMessageContent(message)"></div>
               <slot
                 v-if="isAssistantMessage(message)"
                 name="feedback"
