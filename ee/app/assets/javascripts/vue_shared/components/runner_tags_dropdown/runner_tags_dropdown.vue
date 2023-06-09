@@ -1,7 +1,7 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { s__ } from '~/locale';
+import { s__, __ } from '~/locale';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import projectRunnerTags from './graphql/get_project_runner_tags.query.graphql';
 import groupRunnerTags from './graphql/get_group_runner_tags.query.graphql';
@@ -13,6 +13,8 @@ export default {
     noRunnerTagsText: s__('RunnerTags|No tags exist'),
     runnerEmptyStateText: s__('RunnerTags|No matching results'),
     runnerSearchHeader: s__('RunnerTags|Select runner tags'),
+    resetButtonLabel: __('Clear all'),
+    selectAllButtonLabel: __('Select all'),
   },
   name: 'RunnerTagsDropdown',
   components: {
@@ -177,10 +179,12 @@ export default {
     :no-results-text="$options.i18n.runnerEmptyStateText"
     :selected="selected"
     :reset-button-label="$options.i18n.resetButtonLabel"
+    :show-select-all-button-label="$options.i18n.selectAllButtonLabel"
     :toggle-text="text"
     @hidden="sortTags"
     @reset="setSelection([])"
     @search="debouncedSearchKeyUpdate"
     @select="setSelection"
+    @select-all="setSelection(tags)"
   />
 </template>

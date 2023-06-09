@@ -228,4 +228,36 @@ describe('RunnerTagsDropdown', () => {
       },
     );
   });
+
+  describe('select all option', () => {
+    it('should select all tags', async () => {
+      await waitForPromises();
+
+      findTagsList().vm.$emit('select-all');
+
+      expect(wrapper.emitted('input')).toEqual([[getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK)]]);
+    });
+
+    it('should reset all selections', async () => {
+      const uniqueTags = getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK);
+
+      createComponent({
+        value: uniqueTags,
+      });
+      await waitForPromises();
+
+      uniqueTags.forEach((_, index) => {
+        expect(findDropdownItems().at(index).props('isSelected')).toBe(true);
+      });
+
+      findTagsList().vm.$emit('reset');
+      await nextTick();
+
+      uniqueTags.forEach((_, index) => {
+        expect(findDropdownItems().at(index).props('isSelected')).toBe(false);
+      });
+
+      expect(wrapper.emitted('input')).toEqual([[[]]]);
+    });
+  });
 });
