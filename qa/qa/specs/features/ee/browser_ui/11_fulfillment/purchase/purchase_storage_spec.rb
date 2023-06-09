@@ -56,12 +56,12 @@ module QA
     end
 
     context 'without active subscription',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347571' do
+      testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347571' do
       it_behaves_like 'Purchase storage', 5
     end
 
     context 'with an active subscription',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348472' do
+      testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348472' do
       before do
         Flow::Purchase.upgrade_subscription(plan: PREMIUM)
 
@@ -74,7 +74,7 @@ module QA
     end
 
     context 'with existing CI minutes packs',
-            testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348470' do
+      testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348470' do
       let(:ci_purchase_quantity) { 5 }
 
       before do

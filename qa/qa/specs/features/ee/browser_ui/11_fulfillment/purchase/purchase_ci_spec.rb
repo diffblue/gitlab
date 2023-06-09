@@ -49,7 +49,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347622' do
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)
 
           expect_additional_ci_minutes(expected_initial_minutes.to_s)
@@ -62,7 +62,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347569' do
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
             billing.wait_for_subscription(ULTIMATE[:name])
           end
@@ -89,7 +89,7 @@ module QA
         end
 
         it 'adds additional minutes to group namespace',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347568' do
           expect_additional_ci_minutes(expected_initial_minutes.to_s)
 
           Flow::Purchase.purchase_ci_minutes(quantity: purchase_quantity)

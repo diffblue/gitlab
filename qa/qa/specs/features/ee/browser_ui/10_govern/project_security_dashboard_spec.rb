@@ -31,8 +31,10 @@ module QA
 
       let!(:vulnerability_report) do
         vulnerabilities.each do |name, description|
-          Support::Retrier.retry_on_exception(sleep_interval: 2,
-message: "Retrying vulnerability create graphql api") do
+          Support::Retrier.retry_on_exception(
+            sleep_interval: 2,
+            message: "Retrying vulnerability create graphql api"
+          ) do
             QA::EE::Resource::VulnerabilityItem.fabricate_via_api! do |vulnerability|
               vulnerability.id = project.id
               vulnerability.severity = vuln_severity
@@ -53,7 +55,7 @@ message: "Retrying vulnerability create graphql api") do
       end
 
       it 'shows vulnerability details', :reliable,
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348076' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348076' do
         Page::Project::Menu.perform(&:go_to_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|

@@ -45,7 +45,7 @@ module QA
       end
 
       context "for add user access as guest",
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347906' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347906' do
         before do
           project.visit!
 
@@ -91,7 +91,7 @@ module QA
       end
 
       context "for export file download", :skip_live_env,
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
         before do
           QA::Support::Retrier.retry_until do
             project = Resource::Project.fabricate_via_api! do |project|
@@ -123,7 +123,7 @@ module QA
       end
 
       context "for project archive and unarchive",
-              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347903' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347903' do
         before do
           project.visit!
 

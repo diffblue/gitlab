@@ -42,8 +42,7 @@ module QA
       let(:premade_report_path) { "qa/ee/fixtures/secure_premade_reports/gl-container-scanning-report.json" }
       let(:commit_branch) { "new_branch_#{SecureRandom.hex(8)}" }
       let!(:approver) do
-        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1,
-                                                       Runtime::Env.gitlab_qa_password_1)
+        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
       end
 
       let(:scan_result_policy_commit) do
@@ -72,7 +71,7 @@ module QA
       end
 
       it 'requires approval when a pipeline report has findings matching the scan result policy', :reliable,
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/365005' do
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/365005' do
         expect(scan_result_policy_commit.api_response).to have_key(:branch)
         expect(scan_result_policy_commit.api_response[:branch]).not_to be nil
 
