@@ -5,8 +5,8 @@ import testAction from 'helpers/vuex_action_helper';
 import {
   MOCK_USER_MESSAGE,
   MOCK_TANUKI_MESSAGE,
-  MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_ERROR_RES,
+  GENERATE_MOCK_TANUKI_RES,
 } from '../mock_data';
 
 describe('TanukiBot Store Actions', () => {
@@ -36,17 +36,29 @@ describe('TanukiBot Store Actions', () => {
 
   describe('receiveTanukiBotMessage', () => {
     describe('with response', () => {
-      it(`should dispatch the correct mutations`, () => {
-        return testAction({
-          action: actions.receiveTanukiBotMessage,
-          payload: MOCK_TANUKI_SUCCESS_RES.data,
-          state,
-          expectedMutations: [
-            { type: types.SET_LOADING, payload: false },
-            { type: types.ADD_TANUKI_MESSAGE, payload: MOCK_TANUKI_MESSAGE },
-          ],
-        });
-      });
+      const documentationResponse = {
+        content: 'Documentation foo',
+        sources: { foo: 'bar' },
+      };
+
+      it.each`
+        responseBody                             | expectedPayload
+        ${'foo'}                                 | ${{ content: 'foo' }}
+        ${JSON.stringify(documentationResponse)} | ${documentationResponse}
+      `(
+        'should dispatch the correct mutations for "$responseBody" response',
+        ({ responseBody, expectedPayload }) => {
+          return testAction({
+            action: actions.receiveTanukiBotMessage,
+            payload: GENERATE_MOCK_TANUKI_RES(responseBody).data,
+            state,
+            expectedMutations: [
+              { type: types.SET_LOADING, payload: false },
+              { type: types.ADD_TANUKI_MESSAGE, payload: expectedPayload },
+            ],
+          });
+        },
+      );
     });
 
     describe('with error', () => {
