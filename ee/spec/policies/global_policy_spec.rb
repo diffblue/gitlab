@@ -502,4 +502,57 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
       end
     end
   end
+
+  describe 'access_code_suggestions' do
+    using RSpec::Parameterized::TableSyntax
+
+    let_it_be_with_reload(:current_user) { create(:user) }
+    let_it_be_with_reload(:first_group) { create(:group) }
+    let_it_be_with_reload(:second_group) { create(:group) }
+
+    context 'when on .org or .com' do
+      where(:user_code_suggestions_setting, :group_1_cs_setting, :group_2_cs_setting, :code_suggestions_matcher) do
+        false | false | false | be_disallowed(:access_code_suggestions)
+        true  | false | false | be_disallowed(:access_code_suggestions)
+        false | false | true  | be_disallowed(:access_code_suggestions)
+        true  | false | true  | be_disallowed(:access_code_suggestions)
+        false | true  | true  | be_disallowed(:access_code_suggestions)
+        true  | true  | true  | be_allowed(:access_code_suggestions)
+      end
+
+      with_them do
+        before do
+          allow(::Gitlab).to receive(:org_or_com?).and_return(true)
+
+          current_user.update_attribute(:code_suggestions, user_code_suggestions_setting)
+          first_group.update_attribute(:code_suggestions, group_1_cs_setting)
+          second_group.update_attribute(:code_suggestions, group_2_cs_setting)
+
+          first_group.add_owner(current_user)
+          second_group.add_owner(current_user)
+        end
+
+        it { is_expected.to code_suggestions_matcher }
+      end
+    end
+
+    context 'when not on .org or .com' do
+      where(:instance_level_code_suggestions_enabled, :ai_access_token, :code_suggestions_matcher) do
+        false | nil                  | be_disallowed(:access_code_suggestions)
+        true  | nil                  | be_disallowed(:access_code_suggestions)
+        false | 'glpat-access_token' | be_disallowed(:access_code_suggestions)
+        true  | 'glpat-access_token' | be_allowed(:access_code_suggestions)
+      end
+
+      with_them do
+        before do
+          allow(::Gitlab).to receive(:org_or_com?).and_return(false)
+          stub_ee_application_setting(instance_level_code_suggestions_enabled: instance_level_code_suggestions_enabled)
+          stub_ee_application_setting(ai_access_token: ai_access_token)
+        end
+
+        it { is_expected.to code_suggestions_matcher }
+      end
+    end
+  end
 end

@@ -8,7 +8,7 @@ module API
       authenticate!
 
       not_found! unless Feature.enabled?(:code_suggestions_tokens_api, type: :ops)
-      unauthorized!('Code Suggestions is disabled for user') unless current_user.can?(:access_code_suggestions)
+      unauthorized! unless current_user.can?(:access_code_suggestions)
     end
 
     namespace 'code_suggestions' do
