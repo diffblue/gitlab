@@ -21,14 +21,14 @@ RSpec.describe Groups::ClustersController, feature_category: :deployment_managem
     before do
       stub_licensed_features(cluster_deployments: true)
 
-      create(:deployment, :success, cluster: cluster)
+      create(:deployment, :success)
     end
 
     it 'avoids N+1 database queries' do
       control_count = ActiveRecord::QueryRecorder.new(skip_cached: false) { go }.count
       deployment_count = 2
 
-      create_list(:deployment, deployment_count, :success, cluster: cluster)
+      create_list(:deployment, deployment_count, :success)
 
       # TODO remove this leeway when we refactor away from deployment_platform
       # (https://gitlab.com/gitlab-org/gitlab/issues/13635)

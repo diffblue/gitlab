@@ -63,7 +63,7 @@ RSpec.describe Groups::ClustersController, feature_category: :deployment_managem
     let(:cluster) { create(:cluster_for_group, groups: [group]) }
 
     before do
-      create(:deployment, :success, cluster: cluster)
+      create(:deployment, :success)
     end
 
     def get_cluster_environments

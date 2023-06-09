@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Environment, :use_clean_rails_memory_store_caching do
+RSpec.describe Environment, :use_clean_rails_memory_store_caching, feature_category: :environment_management do
   include ReactiveCachingHelpers
 
   let_it_be_with_refind(:group) { create(:group) }
@@ -48,9 +48,10 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
     context 'when the non-cluster deployment is latest' do
       let(:cluster) { create(:cluster) }
+      let(:deployment_cluster) { create(:deployment_cluster, cluster: cluster) }
 
       before do
-        create(:deployment, :success, cluster: cluster, environment: environment)
+        create(:deployment, :success, deployment_cluster: deployment_cluster, environment: environment)
         create(:deployment, :success, environment: environment)
       end
 
@@ -224,9 +225,10 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
     context 'with a group cluster' do
       let(:cluster) { create(:cluster, :group) }
+      let(:deployment_cluster) { create(:deployment_cluster, cluster: cluster) }
 
       before do
-        create(:deployment, :success, environment: environment, cluster: cluster)
+        create(:deployment, :success, environment: environment, deployment_cluster: deployment_cluster)
       end
 
       it 'expires the environments path for the group cluster' do
@@ -246,9 +248,10 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
     context 'with an instance cluster' do
       let(:cluster) { create(:cluster, :instance) }
+      let(:deployment_cluster) { create(:deployment_cluster, cluster: cluster) }
 
       before do
-        create(:deployment, :success, environment: environment, cluster: cluster)
+        create(:deployment, :success, environment: environment, deployment_cluster: deployment_cluster)
       end
 
       it 'expires the environments path for the group cluster' do
