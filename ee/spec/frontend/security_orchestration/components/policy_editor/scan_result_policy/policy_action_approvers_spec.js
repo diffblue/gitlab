@@ -50,7 +50,7 @@ describe('PolicyActionApprovers', () => {
   const findGroupSelect = () => wrapper.findComponent(GroupSelect);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
   const findAddButton = () => wrapper.findByTestId('add-approver');
-  const findRemoveButton = () => wrapper.findByTestId('remove-rule');
+  const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
   const findMessage = () => wrapper.findComponent(GlSprintf);
 
   describe('single type', () => {
@@ -75,7 +75,7 @@ describe('PolicyActionApprovers', () => {
     });
 
     it('does not render the remove button', () => {
-      expect(findRemoveButton().exists()).toBe(false);
+      expect(findBaseLayoutComponent().props('showRemoveButton')).toBe(false);
     });
 
     it('does not render the user select when the "user" type approver is not selected', () => {
@@ -162,7 +162,7 @@ describe('PolicyActionApprovers', () => {
 
     it('triggers an update when removing a new type', async () => {
       expect(wrapper.emitted('removeApproverType')).toEqual(undefined);
-      await findRemoveButton().vm.$emit('click');
+      await findBaseLayoutComponent().vm.$emit('remove');
       expect(wrapper.emitted('removeApproverType')).toEqual([['']]);
     });
 
@@ -171,7 +171,7 @@ describe('PolicyActionApprovers', () => {
     });
 
     it('renders the remove button', () => {
-      expect(findRemoveButton().exists()).toBe(true);
+      expect(findBaseLayoutComponent().props('showRemoveButton')).toBe(true);
     });
   });
 

@@ -1,12 +1,12 @@
 <script>
-import { GlButton } from '@gitlab/ui';
+import GenericBaseLayoutComponent from '../../generic_base_layout_component.vue';
 import { getDefaultRule } from '../lib';
 import ScanTypeSelect from './scan_type_select.vue';
 
 export default {
   name: 'BaseLayoutComponent',
   components: {
-    GlButton,
+    GenericBaseLayoutComponent,
     ScanTypeSelect,
   },
   props: {
@@ -31,11 +31,6 @@ export default {
       default: true,
     },
   },
-  computed: {
-    showLabel() {
-      return Boolean(this.ruleLabel);
-    },
-  },
   methods: {
     setScanType(value) {
       const rule = getDefaultRule(value);
@@ -46,21 +41,12 @@ export default {
 </script>
 
 <template>
-  <div class="gl-display-flex gl-gap-3 security-policies-bg-gray-10 gl-rounded-base gl-p-5">
-    <div v-if="showLabel" class="gl-min-w-7">
-      <label
-        data-testid="base-label"
-        for="content"
-        class="gl-text-transform-uppercase gl-font-lg gl-w-6 gl-pl-2"
-      >
-        {{ ruleLabel }}
-      </label>
-    </div>
-
-    <div
-      id="content"
-      class="gl-flex-grow-1 gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap"
-    >
+  <generic-base-layout-component
+    :rule-label="ruleLabel"
+    :show-remove-button="showRemoveButton"
+    @remove="$emit('remove')"
+  >
+    <template #selector>
       <slot name="selector">
         <scan-type-select
           v-if="showScanTypeDropdown"
@@ -70,17 +56,7 @@ export default {
           @select="setScanType"
         />
       </slot>
-      <slot name="content"></slot>
-    </div>
-
-    <div v-if="showRemoveButton" class="gl-min-w-7 gl-ml-4">
-      <gl-button
-        icon="remove"
-        category="tertiary"
-        :aria-label="__('Remove')"
-        data-testid="remove-rule"
-        @click="$emit('remove')"
-      />
-    </div>
-  </div>
+    </template>
+    <template #content><slot name="content"></slot></template>
+  </generic-base-layout-component>
 </template>

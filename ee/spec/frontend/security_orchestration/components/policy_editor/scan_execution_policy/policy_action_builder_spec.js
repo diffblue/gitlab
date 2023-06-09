@@ -8,6 +8,7 @@ import ProjectDastProfileSelector from 'ee/security_orchestration/components/pol
 import projectRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_project_runner_tags.query.graphql';
 import groupRunnerTags from 'ee/vue_shared/components/runner_tags_dropdown/graphql/get_group_runner_tags.query.graphql';
 import GroupDastProfileSelector from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/group_dast_profile_selector.vue';
+import GenericBaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/generic_base_layout_component.vue';
 import { buildScannerAction } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
@@ -68,7 +69,8 @@ describe('PolicyActionBuilder', () => {
   };
 
   const findActionSeperator = () => wrapper.findByTestId('action-and-label');
-  const findRemoveButton = () => wrapper.findByRole('button', { name: __('Remove') });
+  const findGenericBaseLayoutComponent = () =>
+    wrapper.findAllComponents(GenericBaseLayoutComponent).at(1);
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSprintf = () => wrapper.findComponent(GlSprintf);
   const findTagsList = () => wrapper.findComponent(RunnerTagsList);
@@ -87,7 +89,10 @@ describe('PolicyActionBuilder', () => {
   });
 
   it('renders correctly the message with DAST as the default scanner', async () => {
-    factory({ mountFn: shallowMountExtended, stubs: { GlCollapsibleListbox: true } });
+    factory({
+      mountFn: shallowMountExtended,
+      stubs: { GenericBaseLayoutComponent, GlCollapsibleListbox: true },
+    });
     await nextTick();
 
     expect(findSprintf().attributes('message')).toBe(DAST_HUMANIZED_TEMPLATE);
@@ -107,7 +112,10 @@ describe('PolicyActionBuilder', () => {
   it('renders correctly the message with non-DAST scanner action', async () => {
     factory({
       mountFn: shallowMountExtended,
-      props: { initAction: buildScannerAction({ scanner: 'sast' }) },
+      props: {
+        initAction: buildScannerAction({ scanner: 'sast' }),
+      },
+      stubs: { GenericBaseLayoutComponent },
     });
     await nextTick();
 
@@ -156,10 +164,10 @@ describe('PolicyActionBuilder', () => {
 
     expect(wrapper.emitted('remove')).toBe(undefined);
 
-    findRemoveButton().vm.$emit('click');
+    findGenericBaseLayoutComponent().vm.$emit('remove');
     await nextTick();
 
-    expect(wrapper.emitted('remove')).toStrictEqual([[undefined]]);
+    expect(wrapper.emitted('remove')).toStrictEqual([[]]);
   });
 
   describe('parsing error', () => {

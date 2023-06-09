@@ -21,19 +21,7 @@ describe('BaseLayoutComponent', () => {
     createComponent({ ruleLabel: 'ruleLabel' });
   });
 
-  const findBaseLayoutLabel = () => wrapper.findByTestId('base-label');
-  const findRemoveButton = () => wrapper.findByTestId('remove-rule');
   const findScannerTypeSelector = () => wrapper.findComponent(ScanTypeSelect);
-
-  it('displays label and remove button by default', () => {
-    expect(findBaseLayoutLabel().exists()).toBe(true);
-    expect(findRemoveButton().exists()).toBe(true);
-  });
-
-  it('removes base layout', () => {
-    findRemoveButton().vm.$emit('click');
-    expect(wrapper.emitted('remove')).toHaveLength(1);
-  });
 
   describe('type selector', () => {
     beforeEach(() => {
@@ -47,17 +35,6 @@ describe('BaseLayoutComponent', () => {
     it('can select scan type', () => {
       findScannerTypeSelector().vm.$emit('select', SCAN_FINDING);
       expect(wrapper.emitted('changed')).toEqual([[getDefaultRule(SCAN_FINDING)]]);
-    });
-  });
-
-  describe('layout configuration', () => {
-    it('can hide label and remove button', () => {
-      createComponent({
-        showRemoveButton: false,
-      });
-
-      expect(findBaseLayoutLabel().exists()).toBe(false);
-      expect(findRemoveButton().exists()).toBe(false);
     });
   });
 });
