@@ -33,7 +33,7 @@ RSpec.describe Admin::ClustersController do
     let(:cluster) { create(:cluster, :instance, :provided_by_gcp) }
 
     before do
-      create(:deployment, :success, cluster: cluster)
+      create(:deployment, :success)
     end
 
     def get_cluster_environments

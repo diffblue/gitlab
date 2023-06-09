@@ -14,6 +14,7 @@ module EE
         environments = model.arel_table
         deployments = ::Deployment.arel_table
         later_deployments = ::Deployment.arel_table.alias('latest_deployments')
+
         join_conditions = later_deployments[:environment_id]
           .eq(deployments[:environment_id])
           .and(deployments[:id].lt(later_deployments[:id]))
@@ -22,10 +23,10 @@ module EE
           .join(later_deployments, Arel::Nodes::OuterJoin)
           .on(join_conditions)
 
-        joins(:successful_deployments)
+        joins(successful_deployments: :deployment_cluster)
           .joins(join.join_sources)
           .where(later_deployments[:id].eq(nil))
-          .where(deployments[:cluster_id].eq(cluster.id))
+          .where('deployment_cluster.cluster_id' => cluster.id)
           .where(deployments[:project_id].eq(environments[:project_id]))
       end
 
