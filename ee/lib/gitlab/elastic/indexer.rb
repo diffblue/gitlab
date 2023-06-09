@@ -44,8 +44,10 @@ module Gitlab
       # - Run the `gitlab-elasticsearch-indexer`;
       # - Update the `index_status` for the associated project;
       #
-      # ref - Git ref up to which the indexation will run (default: HEAD)
-      def run(ref = 'HEAD')
+      # ref - Git ref up to which the indexation will run (default: nil)
+      # Default uses root_ref to avoid when HEAD points to non-existent branch
+      # https://gitlab.com/gitlab-org/gitaly/-/issues/1446
+      def run(ref = nil)
         commit = find_indexable_commit(ref)
         commit_sha = commit&.sha
 
