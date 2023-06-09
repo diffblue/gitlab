@@ -14,40 +14,22 @@ require 'date'
 require 'time'
 
 module ErrorTrackingOpenAPI
-  class ErrorUpdatePayload
-    # Status of the error
-    attr_accessor :status
+  class Project
+    # ID of the project
+    attr_accessor :id
 
-    # GitLab user id who triggered the update
-    attr_accessor :updated_by_id
+    # Name of the project
+    attr_accessor :name
 
-    class EnumAttributeValidator
-      attr_reader :datatype
-      attr_reader :allowable_values
-
-      def initialize(datatype, allowable_values)
-        @allowable_values = allowable_values.map do |value|
-          case datatype.to_s
-          when /Integer/i
-            value.to_i
-          when /Float/i
-            value.to_f
-          else
-            value
-          end
-        end
-      end
-
-      def valid?(value)
-        !value || allowable_values.include?(value)
-      end
-    end
+    # Slug of the project
+    attr_accessor :slug
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'status' => :'status',
-        :'updated_by_id' => :'updated_by_id'
+        :'id' => :'id',
+        :'name' => :'name',
+        :'slug' => :'slug'
       }
     end
 
@@ -59,8 +41,9 @@ module ErrorTrackingOpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'status' => :'String',
-        :'updated_by_id' => :'Integer'
+        :'id' => :'String',
+        :'name' => :'String',
+        :'slug' => :'String'
       }
     end
 
@@ -74,23 +57,27 @@ module ErrorTrackingOpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::ErrorUpdatePayload` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::Project` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!self.class.attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::ErrorUpdatePayload`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::Project`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'status')
-        self.status = attributes[:'status']
+      if attributes.key?(:'id')
+        self.id = attributes[:'id']
       end
 
-      if attributes.key?(:'updated_by_id')
-        self.updated_by_id = attributes[:'updated_by_id']
+      if attributes.key?(:'name')
+        self.name = attributes[:'name']
+      end
+
+      if attributes.key?(:'slug')
+        self.slug = attributes[:'slug']
       end
     end
 
@@ -104,19 +91,7 @@ module ErrorTrackingOpenAPI
     # Check to see if the all the properties in the model are valid
     # @return true if the model is valid
     def valid?
-      status_validator = EnumAttributeValidator.new('String', ["unresolved", "resolved", "ignored"])
-      return false unless status_validator.valid?(@status)
       true
-    end
-
-    # Custom attribute writer method checking allowed values (enum).
-    # @param [Object] status Object to be assigned
-    def status=(status)
-      validator = EnumAttributeValidator.new('String', ["unresolved", "resolved", "ignored"])
-      unless validator.valid?(status)
-        fail ArgumentError, "invalid value for \"status\", must be one of #{validator.allowable_values}."
-      end
-      @status = status
     end
 
     # Checks equality by comparing each attribute.
@@ -124,8 +99,9 @@ module ErrorTrackingOpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          status == o.status &&
-          updated_by_id == o.updated_by_id
+          id == o.id &&
+          name == o.name &&
+          slug == o.slug
     end
 
     # @see the `==` method
@@ -137,7 +113,7 @@ module ErrorTrackingOpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [status, updated_by_id].hash
+      [id, name, slug].hash
     end
 
     # Builds the object from hash

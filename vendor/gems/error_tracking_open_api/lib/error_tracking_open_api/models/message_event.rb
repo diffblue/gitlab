@@ -14,40 +14,34 @@ require 'date'
 require 'time'
 
 module ErrorTrackingOpenAPI
-  class ErrorUpdatePayload
-    # Status of the error
-    attr_accessor :status
+  class MessageEvent
+    attr_accessor :project_id
 
-    # GitLab user id who triggered the update
-    attr_accessor :updated_by_id
+    attr_accessor :event_id
 
-    class EnumAttributeValidator
-      attr_reader :datatype
-      attr_reader :allowable_values
+    attr_accessor :timestamp
 
-      def initialize(datatype, allowable_values)
-        @allowable_values = allowable_values.map do |value|
-          case datatype.to_s
-          when /Integer/i
-            value.to_i
-          when /Float/i
-            value.to_f
-          else
-            value
-          end
-        end
-      end
+    attr_accessor :level
 
-      def valid?(value)
-        !value || allowable_values.include?(value)
-      end
-    end
+    attr_accessor :message
+
+    attr_accessor :release
+
+    attr_accessor :environment
+
+    attr_accessor :platform
 
     # Attribute mapping from ruby-style variable name to JSON key.
     def self.attribute_map
       {
-        :'status' => :'status',
-        :'updated_by_id' => :'updated_by_id'
+        :'project_id' => :'projectId',
+        :'event_id' => :'eventId',
+        :'timestamp' => :'timestamp',
+        :'level' => :'level',
+        :'message' => :'message',
+        :'release' => :'release',
+        :'environment' => :'environment',
+        :'platform' => :'platform'
       }
     end
 
@@ -59,8 +53,14 @@ module ErrorTrackingOpenAPI
     # Attribute type mapping.
     def self.openapi_types
       {
-        :'status' => :'String',
-        :'updated_by_id' => :'Integer'
+        :'project_id' => :'Integer',
+        :'event_id' => :'String',
+        :'timestamp' => :'Time',
+        :'level' => :'String',
+        :'message' => :'String',
+        :'release' => :'String',
+        :'environment' => :'String',
+        :'platform' => :'String'
       }
     end
 
@@ -74,23 +74,47 @@ module ErrorTrackingOpenAPI
     # @param [Hash] attributes Model attributes in the form of hash
     def initialize(attributes = {})
       if (!attributes.is_a?(Hash))
-        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::ErrorUpdatePayload` initialize method"
+        fail ArgumentError, "The input argument (attributes) must be a hash in `ErrorTrackingOpenAPI::MessageEvent` initialize method"
       end
 
       # check to see if the attribute exists and convert string to symbol for hash key
       attributes = attributes.each_with_object({}) { |(k, v), h|
         if (!self.class.attribute_map.key?(k.to_sym))
-          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::ErrorUpdatePayload`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
+          fail ArgumentError, "`#{k}` is not a valid attribute in `ErrorTrackingOpenAPI::MessageEvent`. Please check the name to make sure it's valid. List of attributes: " + self.class.attribute_map.keys.inspect
         end
         h[k.to_sym] = v
       }
 
-      if attributes.key?(:'status')
-        self.status = attributes[:'status']
+      if attributes.key?(:'project_id')
+        self.project_id = attributes[:'project_id']
       end
 
-      if attributes.key?(:'updated_by_id')
-        self.updated_by_id = attributes[:'updated_by_id']
+      if attributes.key?(:'event_id')
+        self.event_id = attributes[:'event_id']
+      end
+
+      if attributes.key?(:'timestamp')
+        self.timestamp = attributes[:'timestamp']
+      end
+
+      if attributes.key?(:'level')
+        self.level = attributes[:'level']
+      end
+
+      if attributes.key?(:'message')
+        self.message = attributes[:'message']
+      end
+
+      if attributes.key?(:'release')
+        self.release = attributes[:'release']
+      end
+
+      if attributes.key?(:'environment')
+        self.environment = attributes[:'environment']
+      end
+
+      if attributes.key?(:'platform')
+        self.platform = attributes[:'platform']
       end
     end
 
@@ -104,19 +128,7 @@ module ErrorTrackingOpenAPI
     # Check to see if the all the properties in the model are valid
     # @return true if the model is valid
     def valid?
-      status_validator = EnumAttributeValidator.new('String', ["unresolved", "resolved", "ignored"])
-      return false unless status_validator.valid?(@status)
       true
-    end
-
-    # Custom attribute writer method checking allowed values (enum).
-    # @param [Object] status Object to be assigned
-    def status=(status)
-      validator = EnumAttributeValidator.new('String', ["unresolved", "resolved", "ignored"])
-      unless validator.valid?(status)
-        fail ArgumentError, "invalid value for \"status\", must be one of #{validator.allowable_values}."
-      end
-      @status = status
     end
 
     # Checks equality by comparing each attribute.
@@ -124,8 +136,14 @@ module ErrorTrackingOpenAPI
     def ==(o)
       return true if self.equal?(o)
       self.class == o.class &&
-          status == o.status &&
-          updated_by_id == o.updated_by_id
+          project_id == o.project_id &&
+          event_id == o.event_id &&
+          timestamp == o.timestamp &&
+          level == o.level &&
+          message == o.message &&
+          release == o.release &&
+          environment == o.environment &&
+          platform == o.platform
     end
 
     # @see the `==` method
@@ -137,7 +155,7 @@ module ErrorTrackingOpenAPI
     # Calculates hash code according to all attributes.
     # @return [Integer] Hash code
     def hash
-      [status, updated_by_id].hash
+      [project_id, event_id, timestamp, level, message, release, environment, platform].hash
     end
 
     # Builds the object from hash
