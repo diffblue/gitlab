@@ -19,11 +19,10 @@ module EE
           order(arel_table[:next_over_limit_check_at].asc.nulls_first)
         end
 
-        scope :lock_for_over_limit_check, ->(limit, namespace_ids) do
+        scope :for_over_limit_check, ->(limit, namespace_ids) do
           scheduled_for_over_limit_check
             .where(namespace_id: namespace_ids)
             .limit(limit)
-            .lock('FOR UPDATE SKIP LOCKED')
         end
       end
     end

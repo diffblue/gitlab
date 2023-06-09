@@ -2,9 +2,7 @@
 
 require 'spec_helper'
 
-# Interim feature category experimentation_activation used here while waiting for
-# https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_requests/113300 to merge
-RSpec.describe Namespaces::FreeUserCap::OverLimitNotificationWorker, :saas, feature_category: :experimentation_activation, type: :worker do
+RSpec.describe Namespaces::FreeUserCap::OverLimitNotificationWorker, :saas, feature_category: :measurement_and_locking, type: :worker do
   using RSpec::Parameterized::TableSyntax
 
   describe '#perform' do
@@ -26,14 +24,30 @@ RSpec.describe Namespaces::FreeUserCap::OverLimitNotificationWorker, :saas, feat
       stub_ee_application_setting should_check_namespace_plan: true
     end
 
-    it 'runs notify service and marks next check for the namespace' do
-      stub_ee_application_setting dashboard_limit_enabled: true
+    context 'when dashboard_limit_enabled is true' do
+      before do
+        stub_ee_application_setting dashboard_limit_enabled: true
+      end
 
-      expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(root_namespace: namespace)
+      it 'runs notify service and marks next check for the namespace' do
+        expect(::Namespaces::FreeUserCap::NotifyOverLimitService).to receive(:execute).with(root_namespace: namespace)
 
-      next_check_time = frozen_time + described_class::SCHEDULE_BUFFER_IN_HOURS.hours
+        next_check_time = frozen_time + described_class::SCHEDULE_BUFFER_IN_HOURS.hours
 
-      expect { worker }.to change { namespace.reload.namespace_details.next_over_limit_check_at }.to(next_check_time)
+        expect { worker }.to change { namespace.reload.namespace_details.next_over_limit_check_at }.to(next_check_time)
+      end
+
+      context 'when there are no results for next batch' do
+        before do
+          namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it 'gracefully handles and does not make any updates' do
+          expect(::Namespaces::FreeUserCap::NotifyOverLimitService).not_to receive(:execute)
+
+          expect { worker }.not_to change { namespace.reload.namespace_details.next_over_limit_check_at }
+        end
+      end
     end
 
     context 'with feature flags enabled/disabled' do
