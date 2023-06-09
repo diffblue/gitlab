@@ -106,6 +106,23 @@ RSpec.describe 'Query.vulnerabilities.details', feature_category: :vulnerability
           }
           name
         }
+        ... on VulnerabilityDetailNamedList {
+          __typename
+          name
+          fieldName
+          description
+          items {
+            __typename
+            name
+            fieldName
+            description
+            value {
+              __typename
+              #{all_field_types_for_query}
+            }
+          }
+          name
+        }
       }
     QUERY
   end
