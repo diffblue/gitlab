@@ -62,7 +62,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
 
           it 'reports new licenses' do
             expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'BSD'),
+            expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
               a_hash_including('name' => 'unknown')])
           end
         end
@@ -75,7 +75,7 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
 
           it 'reports new licenses' do
             expect(subject[:status]).to eq(:parsed)
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'BSD'),
+            expect(subject[:data]['new_licenses']).to match_array([a_hash_including('name' => 'BSD-4-Clause'),
               a_hash_including('name' => 'unknown')])
           end
         end
@@ -192,12 +192,12 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
           end
 
           it 'reports new licenses' do
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache-2.0')])
+            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
           end
 
           it 'reports existing licenses' do
             expect(subject[:data]['existing_licenses']).to match(
-              [a_hash_including('name' => 'BSD'), a_hash_including('name' => 'unknown')]
+              [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
             )
           end
 
@@ -220,12 +220,12 @@ RSpec.describe Ci::CompareLicenseScanningReportsService, feature_category: :soft
           end
 
           it 'reports new licenses' do
-            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache-2.0')])
+            expect(subject[:data]['new_licenses']).to match([a_hash_including('name' => 'Apache 2.0 License')])
           end
 
           it 'reports existing licenses' do
             expect(subject[:data]['existing_licenses']).to match(
-              [a_hash_including('name' => 'BSD'), a_hash_including('name' => 'unknown')]
+              [a_hash_including('name' => 'BSD-4-Clause'), a_hash_including('name' => 'unknown')]
             )
           end
 

@@ -32,7 +32,6 @@ module Gitlab
         use_replica_if_available do
           # build caches for faster lookups of licenses and component_version data
           build_component_versions_cache
-          build_licenses_cache
 
           # For each batch of components, we execute two queries:
           #
@@ -48,7 +47,7 @@ module Gitlab
                 license_ids = package.license_ids_for(version: version)
 
                 add_record_with_known_licenses(purl_type: package.purl_type, name: package.name,
-                  version: version, licenses: spdx_ids(license_ids: license_ids))
+                  version: version, license_ids: license_ids)
               end
             end
           end
@@ -97,16 +96,29 @@ module Gitlab
         end
       end
 
-      # there's only about 500 licenses in the pm_licenses table, and the data doesn't change often,
-      # so we use a cache to avoid a separate sql query for every spdx identifier.
-      def build_licenses_cache
-        @cached_licenses = ::PackageMetadata::License.all.to_h { |license| [license.id, license.spdx_identifier] }
+      # there's only about 500 licenses in the pm_licenses table, and the data doesn't change often, so we use
+      # a cache to avoid a separate sql query every time we need to convert from license_id to spdx_identifier.
+      def spdx_id_for(license_id:)
+        @pm_licenses ||= ::PackageMetadata::License.all.to_h { |license| [license.id, license.spdx_identifier] }
+        @pm_licenses[license_id]
       end
 
-      def spdx_ids(license_ids:)
-        return [UNKNOWN_LICENSE] if license_ids.blank?
+      # there's only about 500 _valid_ licenses in the software_licenses table, and the data doesn't change often,
+      # so we use a cache to avoid a separate sql query every time we need to convert from spdx_identifier to
+      # license name.
+      def license_name_for(spdx_id:)
+        @software_licenses ||= SoftwareLicense.spdx.to_h { |license| [license.spdx_identifier, license.name] }
+        @software_licenses[spdx_id] || spdx_id
+      end
 
-        license_ids.map { |license_id| cached_licenses[license_id] }
+      def licenses_with_names_for(license_ids:)
+        return [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }] if license_ids.blank?
+
+        license_ids.map do |license_id|
+          spdx_id = spdx_id_for(license_id: license_id)
+
+          { spdx_identifier: spdx_id, name: license_name_for(spdx_id: spdx_id) }
+        end
       end
 
       def requested_versions_for_package(package)
@@ -117,15 +129,16 @@ module Gitlab
       # This allows us to determine which components do not have licenses.
       # Adds a single record with known licenses. This method is used by both the
       # uncompressed and compressed queries.
-      def add_record_with_known_licenses(purl_type:, name:, version:, licenses:)
+      def add_record_with_known_licenses(purl_type:, name:, version:, license_ids:)
         all_records[component_key(name: name, version: version, purl_type: purl_type)] =
-          Hashie::Mash.new(purl_type: purl_type, name: name, version: version, licenses: licenses)
+          Hashie::Mash.new(purl_type: purl_type, name: name, version: version,
+            licenses: licenses_with_names_for(license_ids: license_ids))
       end
 
       # Adds multiple records with known licenses
       def add_records_with_known_licenses(records)
-        records.each do |purl_type, name, version, licenses|
-          add_record_with_known_licenses(purl_type: purl_type, name: name, version: version, licenses: licenses)
+        records.each do |purl_type, name, version, license_ids|
+          add_record_with_known_licenses(purl_type: purl_type, name: name, version: version, license_ids: license_ids)
         end
       end
 
@@ -137,8 +150,9 @@ module Gitlab
           next if all_records[key]
 
           # record unknown license if the license data for the component wasn't found in the db
-          all_records[key] = Hashie::Mash.new(purl_type: component.purl_type,
-            name: component.name, version: component.version, licenses: [UNKNOWN_LICENSE])
+          all_records[key] = Hashie::Mash.new(
+            purl_type: component.purl_type, name: component.name, version: component.version,
+            licenses: [{ spdx_identifier: UNKNOWN_LICENSE, name: UNKNOWN_LICENSE }])
         end
       end
 
@@ -212,7 +226,7 @@ module Gitlab
             )
           )
           .group(search_fields)
-          .pluck(*search_fields, "ARRAY_AGG(pm_licenses.spdx_identifier)")
+          .pluck(*search_fields, "ARRAY_AGG(pm_licenses.id)")
         # rubocop: enable CodeReuse/ActiveRecord
       end
 

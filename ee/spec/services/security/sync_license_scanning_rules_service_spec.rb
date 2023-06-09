@@ -16,15 +16,6 @@ RSpec.describe Security::SyncLicenseScanningRulesService, feature_category: :sec
   let(:license_report) { ::Gitlab::LicenseScanning.scanner_for_pipeline(project, pipeline).report }
   let!(:ee_ci_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline, project: project) }
 
-  before_all do
-    create(:pm_package_version_license, :with_all_relations,
-      name: "nokogiri",
-      purl_type: "gem",
-      version: "1.8.0",
-      license_name: "MIT"
-    )
-  end
-
   before do
     stub_licensed_features(license_scanning: true)
   end

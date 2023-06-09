@@ -17,8 +17,9 @@ module Gitlab
 
         ::Gitlab::Ci::Reports::LicenseScanning::Report.new.tap do |license_scanning_report|
           package_licenses.each do |package_license|
-            package_license.licenses.each do |license_string|
-              license = license_scanning_report.add_license(id: license_string, name: license_string)
+            package_license.licenses.each do |license_hash|
+              license = license_scanning_report.add_license(
+                id: license_hash["spdx_identifier"], name: license_hash["name"])
 
               license.add_dependency(
                 name: package_license.name,
