@@ -28384,7 +28384,7 @@ msgstr ""
 msgid "Merge request title"
 msgstr ""
 
-msgid "Merge request was scheduled to merge after pipeline succeeds"
+msgid "Merge request was set to auto-merge"
 msgstr ""
 
 msgid "Merge requests"
@@ -55280,7 +55280,7 @@ msgstr ""
 msgid "vulnerability|dismissed"
 msgstr ""
 
-msgid "was scheduled to merge after pipeline succeeds by"
+msgid "was set to auto-merge by"
 msgstr ""
 
 msgid "weekly"
