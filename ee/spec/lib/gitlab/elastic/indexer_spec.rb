@@ -69,11 +69,11 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
   end
 
   describe '#find_indexable_commit' do
-    it 'is truthy for reachable commits' do
-      expect(indexer.find_indexable_commit(project.repository.commit.sha)).to be_an_instance_of(::Commit)
+    it 'returns a commit for reachable commits' do
+      expect(indexer.find_indexable_commit(project.repository.commit.sha)).to eq(project.repository.commit)
     end
 
-    it 'is falsey for unreachable commits', :aggregate_failures do
+    it 'returns nil for unreachable commits', :aggregate_failures do
       expect(indexer.find_indexable_commit(Gitlab::Git::BLANK_SHA)).to be_nil
       expect(indexer.find_indexable_commit(Gitlab::Git::EMPTY_TREE_ID)).to be_nil
     end
@@ -81,8 +81,28 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     context 'when repository project is empty' do
       let_it_be(:project) { create(:project, :empty_repo) }
 
-      it 'returns nil for empty repository project' do
+      it 'returns nil' do
         expect(indexer.find_indexable_commit('HEAD')).to be_nil
+      end
+    end
+
+    context 'when ref is nil' do
+      it 'returns the commit from the default branch' do
+        expect(indexer.find_indexable_commit(nil)).to eq(project.repository.commit)
+      end
+    end
+
+    context 'when specific ref is requested' do
+      context 'when ref exists' do
+        it 'returns the commit' do
+          expect(indexer.find_indexable_commit('test')).to eq(project.repository.commit('test'))
+        end
+      end
+
+      context 'when ref does not exist' do
+        it 'returns nil' do
+          expect(indexer.find_indexable_commit('does-not-exist')).to be_nil
+        end
       end
     end
   end
