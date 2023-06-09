@@ -71,5 +71,69 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
         expect(parser.final_answer).to include('answer')
       end
     end
+
+    describe 'thought' do
+      let(:output) do
+        <<-OUTPUT
+          something else
+          Thought: Thought: Thought: thought
+          Action: This is an action
+        OUTPUT
+      end
+
+      context 'when thought is prefixed with Thought:' do
+        it 'removes the prefix' do
+          parser.parse
+
+          expect(parser.thought).to eq('thought')
+        end
+      end
+    end
+
+    describe 'action input' do
+      context 'when Observation stop word is present' do
+        let(:output) do
+          <<-OUTPUT
+            Action Input: This is an action input
+            Observation: this is an observation
+          OUTPUT
+        end
+
+        it 'returns action input before Observation stop word' do
+          parser.parse
+
+          expect(parser.action_input).to eq('This is an action input')
+        end
+      end
+
+      context 'when Final Answer stop word is present' do
+        let(:output) do
+          <<-OUTPUT
+            Action Input: This is an action input
+            Final Answer: this is a final answer
+          OUTPUT
+        end
+
+        it 'returns action input before Final Answer stop word' do
+          parser.parse
+
+          expect(parser.action_input).to eq('This is an action input')
+        end
+      end
+
+      context 'when none of the stop words are present' do
+        let(:output) do
+          <<-OUTPUT
+            Action Input: This is an action input
+          OUTPUT
+        end
+
+        it 'returns action input' do
+          parser.parse
+
+          expect(parser.action_input).to eq('This is an action input')
+        end
+      end
+    end
   end
 end

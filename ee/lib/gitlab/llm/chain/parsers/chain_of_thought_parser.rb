@@ -11,25 +11,39 @@ module Gitlab
             @output = Utils::TextProcessing.text_before_stop_word(output) || output
 
             parse_action
+            parse_action_input
             parse_thought
             parse_final_answer
           end
 
           private
 
+          # Match the first occurrence of "Action: " and capture everything until "Action Input"
           def parse_action
-            /Action\s*\d*\s*:\s*(?<action>.*?)\s*Action\s*\d*\s*Input\s*\d*\s*:\s*(?<action_input>.*)/ =~ output
+            /Action: (?<action>.+?)(?=Action Input)/m =~ output
 
             @action = action&.strip
+          end
+
+          # Match the first occurrence of "Action Input: " and capture everything until:
+          # - "Observation" if it's present
+          # - "Final Answer" if it's present
+          # - End of string
+          def parse_action_input
+            /(?<=Action Input: )(?<action_input>.*?)(?=Observation|Final Answer|\z)/m =~ output
+
             @action_input = action_input&.strip
           end
 
+          # Match everything before "Action:" or "Final Answer:" and remove
+          # everything before and including "Thought: " if it's present
           def parse_thought
-            /Thought: (?<thought>.+?)(?=Action|Final Answer)/m =~ output
+            /^(?<thought>.*?)(?=Action:|Final Answer:)/m =~ output
 
-            @thought = thought&.strip
+            @thought = thought&.sub(/.*Thought:/m, '')&.strip
           end
 
+          # Match the first occurrence of "Final Answer: " and capture everything
           def parse_final_answer
             /Final Answer: (?<final_answer>.+)/m =~ output
 
