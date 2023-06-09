@@ -21,7 +21,9 @@ module MergeTrains
 
     after_destroy do |merge_train|
       run_after_commit do
-        merge_train.pipeline&.cancel_running(retries: 1)
+        ::Ci::CancelPipelineService.new( # rubocop: disable CodeReuse/ServiceClass
+          pipeline: merge_train.pipeline,
+          current_user: nil).force_execute
         merge_train.cleanup_ref
       end
     end
@@ -156,18 +158,6 @@ module MergeTrains
 
     def pipeline_not_succeeded?
       has_pipeline? && pipeline.complete? && !pipeline.success?
-    end
-
-    def cancel_pipeline!(new_pipeline)
-      pipeline&.cancel_running(
-        auto_canceled_by_pipeline_id: new_pipeline.id,
-        retries: 1,
-        cascade_to_children: true
-      )
-    rescue ActiveRecord::StaleObjectError
-      # Often the pipeline has already been canceled by the default cancellation
-      # mechanizm `Ci::CreatePipelineService#cancel_pending_pipelines`. In this
-      # case, we can ignore the exception as it's already canceled.
     end
 
     def mergeable?
