@@ -739,31 +739,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     end
   end
 
-  describe '#code_suggestions_enabled?' do
-    where(:feature_ai_assist_flag, :code_suggestions, :result) do
-      true  | true  | true
-      true  | false | false
-      false | true  | false
-      false | false | false
-    end
-
-    subject { group.code_suggestions_enabled? }
-
-    with_them do
-      let(:group) do
-        build_stubbed(
-          :group, namespace_settings: build_stubbed(:namespace_settings, code_suggestions: code_suggestions)
-        )
-      end
-
-      before do
-        stub_feature_flags(ai_assist_flag: feature_ai_assist_flag)
-      end
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#actual_size_limit' do
     let(:group) { build(:group) }
 

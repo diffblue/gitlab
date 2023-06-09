@@ -1924,6 +1924,31 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#code_suggestions_enabled?' do
+    where(:feature_ai_assist_flag, :code_suggestions, :result) do
+      true  | true  | true
+      true  | false | false
+      false | true  | false
+      false | false | false
+    end
+
+    subject { namespace.code_suggestions_enabled? }
+
+    with_them do
+      let(:namespace) do
+        build_stubbed(
+          :namespace, namespace_settings: build_stubbed(:namespace_settings, code_suggestions: code_suggestions)
+        )
+      end
+
+      before do
+        stub_feature_flags(ai_assist_flag: feature_ai_assist_flag)
+      end
+
+      it { is_expected.to eq(result) }
+    end
+  end
+
   describe '#reached_project_access_token_limit?' do
     it 'returns false' do
       expect(namespace.reached_project_access_token_limit?).to eq(false)
