@@ -50,7 +50,7 @@ class ApprovalProjectRule < ApplicationRecord
   validates :protected_branches, presence: true, if: -> { scan_finding? && !applies_to_all_protected_branches? }
 
   def applies_to_branch?(branch)
-    return true if protected_branches.empty?
+    return !applies_to_all_protected_branches? if protected_branches.empty?
 
     protected_branches.matching(branch).any?
   end
