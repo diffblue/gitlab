@@ -1,8 +1,0 @@
----
-name: gitlab_employee_badge
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/212259
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/410312
-milestone: '13.0'
-type: development
-group: group::tenant scale
-default_enabled: false

@@ -137,56 +137,5 @@ RSpec.describe IssuablesHelper, feature_category: :team_planning do
         end
       end
     end
-
-    describe '#gitlab_team_member_badge' do
-      let(:user) { create(:user) }
-      let(:issue) { build(:issue, author: user) }
-
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-      end
-
-      context 'when `:gitlab_employee_badge` feature flag is disabled' do
-        include_context 'gitlab team member'
-
-        before do
-          stub_feature_flags(gitlab_employee_badge: false)
-        end
-
-        it 'returns nil' do
-          expect(helper.gitlab_team_member_badge(issue.author)).to be_nil
-        end
-      end
-
-      context 'when issue author is not a GitLab team member' do
-        it 'returns nil' do
-          expect(helper.gitlab_team_member_badge(issue.author)).to be_nil
-        end
-      end
-
-      context 'when issue author is a GitLab team member' do
-        include_context 'gitlab team member'
-
-        it 'returns span with svg icon' do
-          expect(helper.gitlab_team_member_badge(issue.author)).to have_selector('span > svg')
-        end
-
-        context 'when `css_class` parameter is passed' do
-          it 'adds CSS classes' do
-            expect(helper.gitlab_team_member_badge(issue.author, css_class: 'foo bar baz')).to have_selector('span.foo.bar.baz')
-          end
-        end
-      end
-    end
-
-    describe '#issuable_meta_author_slot' do
-      it 'invoked gitlab_team_member_badge method' do
-        user = double
-
-        expect(helper).to receive(:gitlab_team_member_badge).with(user, css_class: nil)
-
-        helper.issuable_meta_author_slot(user)
-      end
-    end
   end
 end

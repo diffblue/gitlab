@@ -1,18 +1,38 @@
 {
   "type": "object",
   "allOf": [
-    { "$ref": "../../../../../../spec/fixtures/api/schemas/entities/note_user_entity.json" },
     {
-      "properties" : {
-        "id": { "type": "integer" },
-        "state": { "type": "string" },
-        "avatar_url": { "type": [ "string", "null" ] },
-        "path": { "type": "string" },
-        "name": { "type": "string" },
-        "username": { "type": "string" },
-        "status_tooltip_html": { "$ref": "../../../../../../spec/fixtures/api/schemas/types/nullable_string.json" },
-        "show_status": { "type": "boolean" },
-        "is_gitlab_employee": { "type": "boolean" }
+      "$ref": "../../../../../../spec/fixtures/api/schemas/entities/note_user_entity.json"
+    },
+    {
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "state": {
+          "type": "string"
+        },
+        "avatar_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        },
+        "status_tooltip_html": {
+          "$ref": "../../../../../../spec/fixtures/api/schemas/types/nullable_string.json"
+        },
+        "show_status": {
+          "type": "boolean"
+        }
       },
       "additionalProperties": false,
       "required": [

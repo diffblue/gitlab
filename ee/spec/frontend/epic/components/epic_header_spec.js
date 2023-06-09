@@ -206,15 +206,6 @@ describe('EpicHeaderComponent', () => {
       );
     });
 
-    it('renders GitLab team member badge when `author.isGitlabEmployee` is `true`', async () => {
-      createComponent();
-      store.state.author.isGitlabEmployee = true;
-
-      // Wait for dynamic imports to resolve
-      await waitForPromises();
-      expect(wrapper.vm.$refs.gitlabTeamMemberBadge).not.toBeUndefined();
-    });
-
     it('does not render new epic button if user cannot create it', async () => {
       createComponent();
       store.state.canCreate = false;

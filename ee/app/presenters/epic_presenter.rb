@@ -128,8 +128,7 @@ class EpicPresenter < Gitlab::View::Presenter::Delegated
       name: epic.author.name,
       url: user_path(epic.author),
       username: "@#{epic.author.username}",
-      src: author_icon,
-      is_gitlab_employee: epic.author.gitlab_employee? && ::Feature.enabled?(:gitlab_employee_badge)
+      src: author_icon
     }
   end
 
