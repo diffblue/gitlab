@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBuildsMetric do
   RSpec.shared_examples 'a correct secure type instrumented metric value' do |params|
     let(:expected_value) { params[:expected_value] }
+    let(:builds_table_name) { Ci::Build.table_name }
 
     before_all do
       user = create(:user)
@@ -35,9 +36,9 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBui
       let(:build_names) { "(#{described_class::SECURE_PRODUCT_TYPES.map { |e| "'#{e}'" }.join(', ')})" }
       let(:expected_query) do
         if params[:time_frame] == '28d'
-          %{SELECT COUNT(DISTINCT "ci_builds"."user_id") FROM "ci_builds" WHERE "ci_builds"."type" = 'Ci::Build' AND "ci_builds"."created_at" BETWEEN '#{start}' AND '#{finish}' AND "ci_builds"."name" IN #{build_names}}
+          %{SELECT COUNT(DISTINCT "#{builds_table_name}"."user_id") FROM "#{builds_table_name}" WHERE "#{builds_table_name}"."type" = 'Ci::Build' AND "#{builds_table_name}"."created_at" BETWEEN '#{start}' AND '#{finish}' AND "#{builds_table_name}"."name" IN #{build_names}}
         else
-          %{SELECT COUNT(DISTINCT "ci_builds"."user_id") FROM "ci_builds" WHERE "ci_builds"."type" = 'Ci::Build' AND "ci_builds"."name" IN #{build_names}}
+          %{SELECT COUNT(DISTINCT "#{builds_table_name}"."user_id") FROM "#{builds_table_name}" WHERE "#{builds_table_name}"."type" = 'Ci::Build' AND "#{builds_table_name}"."name" IN #{build_names}}
         end
       end
 
@@ -106,7 +107,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBui
   end
 
   context 'with time_frame all' do
-    let(:expected_query) { "SELECT COUNT(DISTINCT \"ci_builds\".\"user_id\") FROM \"ci_builds\" WHERE \"ci_builds\".\"type\" = 'Ci::Build' AND \"ci_builds\".\"name\" = '#{secure_type}'" }
+    let(:expected_query) { "SELECT COUNT(DISTINCT \"#{builds_table_name}\".\"user_id\") FROM \"#{builds_table_name}\" WHERE \"#{builds_table_name}\".\"type\" = 'Ci::Build' AND \"#{builds_table_name}\".\"name\" = '#{secure_type}'" }
 
     it_behaves_like 'a correct secure type instrumented metric value', { time_frame: 'all', expected_value: 2 }
   end
@@ -114,7 +115,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBui
   context 'with time_frame 28d' do
     let(:start) { 30.days.ago.to_s(:db) }
     let(:finish) { 2.days.ago.to_s(:db) }
-    let(:expected_query) { "SELECT COUNT(DISTINCT \"ci_builds\".\"user_id\") FROM \"ci_builds\" WHERE \"ci_builds\".\"type\" = 'Ci::Build' AND \"ci_builds\".\"created_at\" BETWEEN '#{start}' AND '#{finish}' AND \"ci_builds\".\"name\" = '#{secure_type}'" }
+    let(:expected_query) { "SELECT COUNT(DISTINCT \"#{builds_table_name}\".\"user_id\") FROM \"#{builds_table_name}\" WHERE \"#{builds_table_name}\".\"type\" = 'Ci::Build' AND \"#{builds_table_name}\".\"created_at\" BETWEEN '#{start}' AND '#{finish}' AND \"#{builds_table_name}\".\"name\" = '#{secure_type}'" }
 
     it_behaves_like 'a correct secure type instrumented metric value', { time_frame: '28d', expected_value: 1 }
   end
