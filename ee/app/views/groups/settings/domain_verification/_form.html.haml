@@ -27,8 +27,4 @@
 - if can_verify_group_domain?(domain_presenter)
   = render 'dns'
 
-- if can_add_group_domain_custom_certificate?
-  = render 'certificate', f: f
-- else
-  .nothing-here-block
-    = _("Support for custom certificates is disabled. Ask your system's administrator to enable it.")
+= render 'certificate', f: f
