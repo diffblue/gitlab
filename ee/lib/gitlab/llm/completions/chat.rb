@@ -6,12 +6,15 @@ module Gitlab
       class Chat < Base
         TOOLS = [
           Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          Gitlab::Llm::Chain::Tools::SummarizeComments
+          Gitlab::Llm::Chain::Tools::SummarizeComments,
+          Gitlab::Llm::Chain::Tools::JsonReader,
+          Gitlab::Llm::Chain::Tools::ExplainCode
         ].freeze
 
         def execute(user, resource, options)
-          # The Agent currently only supports Anthropic as it relies on the client's specific methods.
-          ai_request = ::Gitlab::Llm::Chain::Requests::Anthropic.new(user)
+          # we should be able to switch between different providers that we know agent supports, by initializing the
+          # one we like.
+          ai_request = ::Gitlab::Llm::Chain::Requests::VertexAi.new(user)
           context = ::Gitlab::Llm::Chain::GitlabContext.new(
             current_user: user,
             container: resource.try(:resource_parent)&.root_ancestor,
