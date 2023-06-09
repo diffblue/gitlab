@@ -11199,7 +11199,10 @@ msgstr ""
 msgid "Command line instructions"
 msgstr ""
 
-msgid "CommandPalette|Commands"
+msgid "CommandPalette|Global Commands"
+msgstr ""
+
+msgid "CommandPalette|Pages"
 msgstr ""
 
 msgid "CommandPalette|Type %{commandHandle} for command, %{userHandle} for user or perform generic search..."
@@ -12930,9 +12933,6 @@ msgid "Create a new issue"
 msgstr ""
 
 msgid "Create a new project"
-msgstr ""
-
-msgid "Create a new project/repository"
 msgstr ""
 
 msgid "Create a new repository"
