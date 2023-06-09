@@ -15,13 +15,15 @@ module Namespaces
       BATCH_SIZE = 100
       SCHEDULE_BUFFER_IN_HOURS = 24
 
-      def perform_work(*args)
-        next_batch.map(&:namespace_id).each do |namespace_id|
-          notify namespace_id: namespace_id
+      def perform_work(*_args)
+        ::Gitlab::Database::LoadBalancing::Session.current.use_replicas_for_read_queries do
+          Array.wrap(next_batch).map(&:namespace_id).each do |namespace_id|
+            notify namespace_id: namespace_id
+          end
         end
       end
 
-      def remaining_work_count(*args)
+      def remaining_work_count(*_args)
         (Namespace::Detail.scheduled_for_over_limit_check.limit(MAX_RUNNING_JOBS * BATCH_SIZE).count / BATCH_SIZE).ceil
       end
 
@@ -43,28 +45,28 @@ module Namespaces
 
       def next_batch
         Namespace::Detail.transaction do
-          Namespace::Detail.find_by_sql next_batch_sql # rubocop: disable CodeReuse/ActiveRecord
+          ids = item_ids
+          Namespace::Detail.find_by_sql(perform_update_sql(ids)) if ids.present? # rubocop: disable CodeReuse/ActiveRecord
         end
       end
 
-      def next_batch_sql
-        # The alterntive to setting the timestamp would be using something like
+      def perform_update_sql(ids)
+        # The alternative to setting the timestamp would be using something like
         # SET "next_over_limit_check_at" = NOW() + INTERVAL '#{SCHEDULE_BUFFER_IN_HOURS} hours'
         # that makes it quite hared to spec, since the DB doesn't freeze time along with ruby
         <<~SQL.squish
-        UPDATE "namespace_details"
-        SET "next_over_limit_check_at" = to_timestamp(#{schedule.to_i})
-          WHERE "namespace_details"."namespace_id" IN (#{locked_item_ids_sql})
-          RETURNING *
+          UPDATE "namespace_details"
+          SET "next_over_limit_check_at" = to_timestamp(#{schedule.to_i})
+            WHERE "namespace_details"."namespace_id" IN (#{ids.join(', ')})
+            RETURNING *
         SQL
       end
 
-      def locked_item_ids_sql
+      def item_ids
         Namespace::Detail
           .not_over_limit_notified
-          .lock_for_over_limit_check(BATCH_SIZE, namespace_ids)
-          .select(:namespace_id)
-          .to_sql
+          .for_over_limit_check(BATCH_SIZE, namespace_ids)
+          .pluck(:namespace_id) # rubocop: disable CodeReuse/ActiveRecord
       end
 
       def namespace_ids

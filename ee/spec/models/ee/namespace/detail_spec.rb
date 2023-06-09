@@ -55,11 +55,11 @@ RSpec.describe Namespace::Detail, type: :model, feature_category: :experimentati
       end
     end
 
-    context 'for lock_for_over_limit_check' do
+    context 'for for_over_limit_check' do
       let(:limit) { 2 }
       let(:scheduled_items) { [group_1.namespace_details, group_2.namespace_details] }
 
-      subject(:lock_scope_result) { described_class.lock_for_over_limit_check(limit, namespace_ids) }
+      subject(:lock_scope_result) { described_class.for_over_limit_check(limit, namespace_ids) }
 
       it 'only returns scheduled entries up to the limit' do
         expect(lock_scope_result).to eq(scheduled_items)
