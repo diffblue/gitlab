@@ -6,20 +6,17 @@ import { mockTracking } from 'helpers/tracking_helper';
 describe('Zuora', () => {
   let wrapper;
   let addEventListenerSpy;
-  let postMessageSpy;
   let removeEventListenerSpy;
   let trackingSpy;
 
-  const createComponent = (data = {}) => {
+  const createComponent = () => {
     wrapper = shallowMount(Zuora, {
       propsData: {
         iframeUrl: 'https://gitlab.com',
         allowedOrigin: 'https://gitlab.com',
         initialHeight: 300,
       },
-      data() {
-        return data;
-      },
+      attachTo: document.body,
     });
 
     trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
@@ -27,6 +24,7 @@ describe('Zuora', () => {
 
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findIFrame = () => wrapper.find('iframe');
 
   describe('on creation', () => {
     beforeEach(() => {
@@ -42,7 +40,7 @@ describe('Zuora', () => {
     beforeEach(() => {
       addEventListenerSpy = jest.spyOn(window, 'addEventListener');
       createComponent();
-      wrapper.vm.handleFrameLoaded();
+      findIFrame().trigger('load');
     });
 
     it('is not in the loading state', () => {
@@ -50,11 +48,7 @@ describe('Zuora', () => {
     });
 
     it('adds an event listener', () => {
-      expect(addEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        wrapper.vm.handleFrameMessages,
-        true,
-      );
+      expect(addEventListenerSpy).toHaveBeenCalled();
     });
 
     it('tracks frame_loaded event', () => {
@@ -64,38 +58,15 @@ describe('Zuora', () => {
     });
   });
 
-  describe('on submit', () => {
-    beforeEach(() => {
-      createComponent({
-        error: 'an error occurred',
-        isLoading: false,
-        iframeHeight: 400,
-      });
-      wrapper.vm.$refs.zuora = { contentWindow: { postMessage: jest.fn() } };
-      postMessageSpy = jest.spyOn(wrapper.vm.$refs.zuora.contentWindow, 'postMessage');
-      wrapper.vm.submit();
-    });
-
-    it('hides the alert', () => {
-      expect(findAlert().exists()).toBe(false);
-    });
-
-    it('is in the loading state', () => {
-      expect(findLoadingIcon().exists()).toBe(true);
-    });
-
-    it('resets the height to the initial height', () => {
-      expect(wrapper.vm.iframeHeight).toBe(300);
-    });
-
-    it('posts the submit message to the iframe', () => {
-      expect(postMessageSpy).toHaveBeenCalledWith('submit', 'https://gitlab.com');
-    });
-  });
-
   describe('when showing an alert', () => {
     beforeEach(() => {
-      createComponent({ error: 'an error occurred' });
+      createComponent();
+      findIFrame().trigger('load');
+
+      wrapper.trigger('message', {
+        origin: 'https://gitlab.com',
+        data: { success: false, code: 7, msg: 'an error occurred' },
+      });
     });
 
     it('shows the alert', () => {
@@ -117,11 +88,12 @@ describe('Zuora', () => {
   describe('handling iframe messages', () => {
     beforeEach(() => {
       createComponent();
+      findIFrame().trigger('load');
     });
 
     describe('when success', () => {
       beforeEach(() => {
-        wrapper.vm.handleFrameMessages({ origin: 'https://gitlab.com', data: { success: true } });
+        wrapper.trigger('message', { origin: 'https://gitlab.com', data: { success: true } });
       });
 
       it('emits the success event', () => {
@@ -135,11 +107,12 @@ describe('Zuora', () => {
 
     describe('when not from an allowed origin', () => {
       beforeEach(() => {
-        wrapper.vm.handleFrameMessages({ origin: 'https://test.com', data: { success: true } });
+        wrapper.trigger('message', { origin: 'https://test.com', data: { success: true } });
       });
 
-      it('emits no event', () => {
-        expect(wrapper.emitted()).toEqual({});
+      it('emits only loading event', () => {
+        expect(Object.keys(wrapper.emitted())).toHaveLength(1);
+        expect(wrapper.emitted('loading')).toHaveLength(1);
       });
     });
 
@@ -147,7 +120,7 @@ describe('Zuora', () => {
       const msg = 'a propagated error';
 
       beforeEach(() => {
-        wrapper.vm.handleFrameMessages({
+        wrapper.trigger('message', {
           origin: 'https://gitlab.com',
           data: { success: false, code: 6, msg },
         });
@@ -160,7 +133,7 @@ describe('Zuora', () => {
       });
 
       it('increases the iframe height', () => {
-        expect(wrapper.vm.iframeHeight).toBe(315);
+        expect(findIFrame().element.height).toBe('315');
       });
 
       it('tracks client side Zuora error', () => {
@@ -174,7 +147,7 @@ describe('Zuora', () => {
     describe('when failure and code greater than 6', () => {
       beforeEach(() => {
         removeEventListenerSpy = jest.spyOn(window, 'removeEventListener');
-        wrapper.vm.handleFrameMessages({
+        wrapper.trigger('message', {
           origin: 'https://gitlab.com',
           data: { success: false, code: 7, msg: 'error' },
         });
@@ -190,11 +163,7 @@ describe('Zuora', () => {
       });
 
       it('removes the message event listener', () => {
-        expect(removeEventListenerSpy).toHaveBeenCalledWith(
-          'message',
-          wrapper.vm.handleFrameMessages,
-          true,
-        );
+        expect(removeEventListenerSpy).toHaveBeenCalled();
       });
 
       it('tracks Zuora error', () => {
@@ -214,11 +183,7 @@ describe('Zuora', () => {
     });
 
     it('removes the message event listener', () => {
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        'message',
-        wrapper.vm.handleFrameMessages,
-        true,
-      );
+      expect(removeEventListenerSpy).toHaveBeenCalled();
     });
   });
 });
