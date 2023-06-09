@@ -9,7 +9,7 @@ export default {
   i18n: {
     groupSelectLabel: __('This subscription is for'),
     defaultToggleText: __('Please select a group'),
-    newGroupNameLabel: __('New Group Name'),
+    newGroupNameLabel: __('New group name'),
   },
   inputSize: { md: 'lg' },
   components: { GlFormGroup, GlFormInput, ListboxInput },

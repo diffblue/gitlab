@@ -184,13 +184,13 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
   end
 
   def expect_to_be_on_namespace_creation
-    expect(page).to have_content('New Group Name')
+    expect(page).to have_content('New group name')
     expect(page).to have_content('Who will be using GitLab?')
     expect(page).not_to have_content('This subscription is for')
   end
 
   def expect_to_be_on_namespace_creation_without_company_question
-    expect(page).to have_content('New Group Name')
+    expect(page).to have_content('New group name')
     expect(page).not_to have_content('Who will be using GitLab?')
     expect(page).not_to have_content('This subscription is for')
   end
