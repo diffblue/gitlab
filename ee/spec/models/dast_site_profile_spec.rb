@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe DastSiteProfile, :dynamic_analysis,
-                                feature_category: :dynamic_application_security_testing,
-                                type: :model do
+  feature_category: :dynamic_application_security_testing,
+  type: :model do
   let_it_be(:project) { create(:project) }
 
   subject { create(:dast_site_profile, :with_dast_site_validation, project: project) }
@@ -103,9 +103,11 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
     describe '#scan_file_path' do
       context 'when the scan_file_path is nil' do
         subject do
-          build(:dast_site_profile, dast_site: dast_site, project: project,
-                                    target_type: target_type,
-                                    scan_file_path: nil)
+          build(
+            :dast_site_profile, dast_site: dast_site, project: project,
+            target_type: target_type,
+            scan_file_path: nil
+          )
         end
 
         context 'when the target_type is website' do
@@ -129,10 +131,12 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
         let_it_be(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
 
         subject do
-          build(:dast_site_profile, dast_site: dast_site, project: project,
-                                    target_type: target_type,
-                                    scan_method: scan_method,
-                                    scan_file_path: scan_file_path)
+          build(
+            :dast_site_profile, dast_site: dast_site, project: project,
+            target_type: target_type,
+            scan_method: scan_method,
+            scan_file_path: scan_file_path
+          )
         end
 
         context 'when the target_type is api' do
@@ -376,9 +380,11 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
 
         shared_examples 'an api target' do
           subject do
-            build(:dast_site_profile, target_type: :api, scan_method: scan_method,
-                                      scan_file_path: scan_file_path,
-                                      dast_site: dast_site)
+            build(
+              :dast_site_profile, target_type: :api, scan_method: scan_method,
+              scan_file_path: scan_file_path,
+              dast_site: dast_site
+            )
           end
 
           it 'has the correct collection of variables', :aggregate_failures do
@@ -607,8 +613,9 @@ RSpec.describe DastSiteProfile, :dynamic_analysis,
       let(:scan_file_path) { nil }
 
       subject do
-        create(:dast_site_profile, scan_method: scan_method, target_type: target_type,
-                                   scan_file_path: scan_file_path)
+        create(
+          :dast_site_profile, scan_method: scan_method, target_type: target_type, scan_file_path: scan_file_path
+        )
       end
 
       context 'when the target_type is website' do
