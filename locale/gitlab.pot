@@ -36303,19 +36303,22 @@ msgstr ""
 msgid "ProjectSettings|Determine what happens to the commit history when you merge a merge request."
 msgstr ""
 
-msgid "ProjectSettings|Disable email notifications"
-msgstr ""
-
 msgid "ProjectSettings|Do not allow"
 msgstr ""
 
 msgid "ProjectSettings|Enable \"Delete source branch\" option by default"
 msgstr ""
 
+msgid "ProjectSettings|Enable email notifications"
+msgstr ""
+
 msgid "ProjectSettings|Enable merge trains"
 msgstr ""
 
 msgid "ProjectSettings|Enable merged results pipelines"
+msgstr ""
+
+msgid "ProjectSettings|Enable sending email notifications for this project"
 msgstr ""
 
 msgid "ProjectSettings|Enable suggested reviewers"
@@ -36469,9 +36472,6 @@ msgid "ProjectSettings|Only signed commits can be pushed to this repository."
 msgstr ""
 
 msgid "ProjectSettings|Override instance analytics configuration for this project"
-msgstr ""
-
-msgid "ProjectSettings|Override user notification preferences for all project members."
 msgstr ""
 
 msgid "ProjectSettings|Package registry"
