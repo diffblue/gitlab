@@ -1,6 +1,6 @@
 <script>
 import { GlIntersectionObserver, GlLoadingIcon } from '@gitlab/ui';
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import { EPIC_DETAILS_CELL_WIDTH, TIMELINE_CELL_MIN_WIDTH, EPIC_ITEM_HEIGHT } from '../constants';
@@ -60,6 +60,10 @@ export default {
       'pageInfo',
       'epicsFetchForNextPageInProgress',
     ]),
+    ...mapGetters(['isScopedRoadmap']),
+    hasNextPage() {
+      return this.pageInfo?.hasNextPage;
+    },
     emptyRowContainerVisible() {
       return this.displayedEpics.length < this.bufferSize;
     },
@@ -97,8 +101,11 @@ export default {
   methods: {
     ...mapActions(['setBufferSize', 'toggleEpic', 'fetchEpics']),
     initMounted() {
+      const containerInnerHeight = this.isScopedRoadmap
+        ? this.$root.$el.clientHeight
+        : window.innerHeight;
       this.roadmapShellEl = this.$root.$el && this.$root.$el.querySelector('.js-roadmap-shell');
-      this.setBufferSize(Math.ceil((window.innerHeight - this.$el.offsetTop) / EPIC_ITEM_HEIGHT));
+      this.setBufferSize(Math.ceil((containerInnerHeight - this.$el.offsetTop) / EPIC_ITEM_HEIGHT));
 
       // Wait for component render to complete
       this.$nextTick(() => {
@@ -123,8 +130,11 @@ export default {
     getEmptyRowContainerStyles() {
       if (this.displayedEpics.length && this.$refs.emptyRowContainer) {
         const { top } = this.$refs.emptyRowContainer.getBoundingClientRect();
+        const { offsetTop } = this.$refs.emptyRowContainer;
         return {
-          height: `calc(100vh - ${top}px)`,
+          height: this.isScopedRoadmap
+            ? `calc(${this.$root.$el.clientHeight}px - ${offsetTop}px)`
+            : `calc(100vh - ${top}px)`,
         };
       }
       return {};
@@ -133,6 +143,8 @@ export default {
       this.showBottomShadow = Math.ceil(scrollTop) + clientHeight < scrollHeight;
     },
     handleScrolledToEnd() {
+      if (!this.pageInfo) return;
+
       const { hasNextPage, endCursor } = this.pageInfo;
       if (!this.epicsFetchForNextPageInProgress && hasNextPage) {
         this.fetchEpics({ endCursor });
@@ -162,22 +174,23 @@ export default {
       :children-flags="childrenFlags"
       :has-filters-applied="hasFiltersApplied"
     />
-    <div
-      v-if="emptyRowContainerVisible"
-      ref="emptyRowContainer"
-      :style="emptyRowContainerStyles"
-      class="epics-list-item epics-list-item-empty clearfix"
-    >
-      <span class="epic-details-cell"></span>
-      <span
-        v-for="(timeframeItem, index) in timeframe"
-        :key="index"
-        class="epic-timeline-cell gl-display-flex"
+    <div v-if="emptyRowContainerVisible" class="epic-item-container">
+      <div
+        ref="emptyRowContainer"
+        :style="emptyRowContainerStyles"
+        class="epics-list-item epics-list-item-empty clearfix"
       >
-        <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
-      </span>
+        <span class="epic-details-cell"></span>
+        <span
+          v-for="(timeframeItem, index) in timeframe"
+          :key="index"
+          class="epic-timeline-cell gl-display-flex"
+        >
+          <current-day-indicator :preset-type="presetType" :timeframe-item="timeframeItem" />
+        </span>
+      </div>
     </div>
-    <gl-intersection-observer @appear="handleScrolledToEnd">
+    <gl-intersection-observer v-if="hasNextPage" @appear="handleScrolledToEnd">
       <div
         v-if="epicsFetchForNextPageInProgress"
         class="gl-text-center gl-py-3"

@@ -1,5 +1,5 @@
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 
 import eventHub from '../event_hub';
 import { MILESTONES_GROUP, MILESTONES_SUBGROUP, MILESTONES_PROJECT } from '../constants';
@@ -43,6 +43,7 @@ export default {
   },
   computed: {
     ...mapState(['defaultInnerHeight', 'isShowingMilestones', 'milestonesType', 'milestones']),
+    ...mapGetters(['isScopedRoadmap']),
     displayMilestones() {
       return Boolean(this.milestones.length) && this.isShowingMilestones;
     },
@@ -77,7 +78,7 @@ export default {
     getContainerStyles() {
       const { top } = this.$el.getBoundingClientRect();
       return {
-        height: `calc(100vh - ${top}px)`,
+        height: this.isScopedRoadmap ? '100%' : `calc(100vh - ${top}px)`,
       };
     },
   },

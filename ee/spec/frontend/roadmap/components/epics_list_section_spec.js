@@ -144,6 +144,7 @@ describe('EpicsListSectionComponent', () => {
         // $nextTick call in EpicsListSectionComponent's mounted hook.
         // https://gitlab.com/gitlab-org/gitlab/-/merge_requests/27992#note_319213990
         wrapper.destroy();
+        wrapper.vm.$store.state.epicIid = undefined;
         wrapper = createComponent();
       });
 

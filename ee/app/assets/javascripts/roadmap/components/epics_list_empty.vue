@@ -144,7 +144,12 @@ export default {
 </script>
 
 <template>
-  <gl-empty-state :title="message" :svg-path="emptyStateIllustrationPath" v-bind="extraProps">
+  <gl-empty-state
+    :title="message"
+    :svg-path="emptyStateIllustrationPath"
+    class="gl-mt-0"
+    v-bind="extraProps"
+  >
     <template #description>
       <p v-safe-html="subMessage" data-testid="sub-title"></p>
     </template>

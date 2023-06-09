@@ -72,22 +72,8 @@
 }
 
 .related-items-tree-container {
-  .roadmap-app-container {
-    .js-roadmap-shell {
-      border-radius: $gl-border-radius-base;
-    }
-
-    .epics-list-item-empty {
-      display: none;
-    }
-
-    // This is a hacky CSS to remove the border-bottom from the
-    // last list in the roadmap.
-    .epic-item-container:nth-last-child(4) {
-      .epic-details-cell,
-      .epic-timeline-cell {
-        border-bottom: 0;
-      }
-    }
+  .roadmap-app {
+    min-height: 600px;
+    height: 50vh;
   }
 }

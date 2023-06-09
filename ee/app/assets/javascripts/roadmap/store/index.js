@@ -12,4 +12,7 @@ export default () =>
     actions,
     mutations,
     state: state(),
+    getters: {
+      isScopedRoadmap: (s) => Boolean(s.epicIid),
+    },
   });

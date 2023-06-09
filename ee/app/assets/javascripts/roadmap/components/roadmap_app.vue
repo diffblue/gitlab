@@ -72,8 +72,15 @@ export default {
 
 <template>
   <div class="roadmap-app-container gl-h-full">
-    <roadmap-filters v-if="showFilteredSearchbar && !epicIid" @toggleSettings="toggleSettings" />
-    <div :class="{ 'overflow-reset': epicsFetchResultEmpty }" class="roadmap-container gl-relative">
+    <roadmap-filters
+      v-if="showFilteredSearchbar && !epicIid"
+      ref="roadmapFilters"
+      @toggleSettings="toggleSettings"
+    />
+    <div
+      :class="{ 'overflow-reset': epicsFetchResultEmpty }"
+      class="roadmap-container gl-rounded-bottom-base gl-relative"
+    >
       <gl-loading-icon v-if="epicsFetchInProgress" class="gl-my-5" size="lg" />
       <epics-list-empty
         v-else-if="epicsFetchResultEmpty"
@@ -94,12 +101,12 @@ export default {
         :has-filters-applied="hasFiltersApplied"
         :is-settings-sidebar-open="isSettingsSidebarOpen"
       />
-      <roadmap-settings
-        :is-open="isSettingsSidebarOpen"
-        :timeframe-range-type="timeframeRangeType"
-        data-testid="roadmap-settings"
-        @toggleSettings="toggleSettings"
-      />
     </div>
+    <roadmap-settings
+      :is-open="isSettingsSidebarOpen"
+      :timeframe-range-type="timeframeRangeType"
+      data-testid="roadmap-settings"
+      @toggleSettings="toggleSettings"
+    />
   </div>
 </template>

@@ -29,8 +29,10 @@ describe('RoadmapSettings', () => {
 
   describe('template', () => {
     it('renders drawer and title', () => {
-      expect(findSettingsDrawer().exists()).toBe(true);
-      expect(findSettingsDrawer().text()).toContain('Roadmap settings');
+      const settingsDrawer = findSettingsDrawer();
+      expect(settingsDrawer.exists()).toBe(true);
+      expect(settingsDrawer.text()).toContain('Roadmap settings');
+      expect(settingsDrawer.props('headerHeight')).toBe('0px');
     });
 
     it('renders roadmap daterange component', () => {
