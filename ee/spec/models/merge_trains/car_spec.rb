@@ -454,29 +454,6 @@ RSpec.describe MergeTrains::Car, feature_category: :merge_trains do
     end
   end
 
-  describe '#cancel_pipeline!' do
-    subject { train_car.cancel_pipeline!(new_pipeline) }
-
-    let(:train_car) { merge_request.merge_train_car }
-    let!(:merge_request) { create_merge_request_on_train }
-    let!(:pipeline) { create(:ci_pipeline, :running, project: train_car.project) }
-    let!(:build) { create(:ci_build, :running, pipeline: pipeline) }
-    let!(:new_pipeline) { create(:ci_pipeline, project: train_car.project) }
-
-    before do
-      train_car.update!(pipeline: pipeline)
-    end
-
-    it 'cancels the existing pipeline', :sidekiq_inline do
-      expect { subject }.to change { build.reload.status }.from('running').to('canceled')
-
-      pipeline.reload
-
-      expect(pipeline.status).to eq('canceled')
-      expect(pipeline.auto_canceled_by).to eq(new_pipeline)
-    end
-  end
-
   describe '#mergeable?' do
     subject { train_car.mergeable? }
 
