@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
+RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew, feature_category: :incident_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
   let_it_be(:chat_name) { create(:chat_name, user: user) }

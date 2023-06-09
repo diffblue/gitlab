@@ -4,8 +4,9 @@ import { createAlert } from '~/alert';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { helpPagePath } from '~/helpers/help_page_helper';
 
-import { addProjectToSlack } from '../api';
 import { i18n } from '../constants';
+
+import { addProjectToSlack } from '../api';
 import ProjectsDropdown from './projects_dropdown.vue';
 
 export default {

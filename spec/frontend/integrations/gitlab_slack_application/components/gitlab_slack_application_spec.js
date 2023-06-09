@@ -1,10 +1,10 @@
 import { GlButton, GlLink } from '@gitlab/ui';
 
 import { nextTick } from 'vue';
-import GitlabSlackApplication from 'ee/integrations/gitlab_slack_application/components/gitlab_slack_application.vue';
-import { addProjectToSlack } from 'ee/integrations/gitlab_slack_application/api';
-import { i18n } from 'ee/integrations/gitlab_slack_application/constants';
-import ProjectsDropdown from 'ee/integrations/gitlab_slack_application/components/projects_dropdown.vue';
+import GitlabSlackApplication from '~/integrations/gitlab_slack_application/components/gitlab_slack_application.vue';
+import { addProjectToSlack } from '~/integrations/gitlab_slack_application/api';
+import { i18n } from '~/integrations/gitlab_slack_application/constants';
+import ProjectsDropdown from '~/integrations/gitlab_slack_application/components/projects_dropdown.vue';
 
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -12,7 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { redirectTo } from '~/lib/utils/url_utility'; // eslint-disable-line import/no-deprecated
 import { mockProjects } from '../mock_data';
 
-jest.mock('ee/integrations/gitlab_slack_application/api');
+jest.mock('~/integrations/gitlab_slack_application/api');
 jest.mock('~/lib/utils/url_utility');
 
 describe('GitlabSlackApplication', () => {

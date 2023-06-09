@@ -31,22 +31,6 @@ RSpec.describe Projects::Settings::IntegrationsController, feature_category: :in
     let(:active_services) { assigns(:integrations).map(&:model_name) }
     let(:disabled_integrations) { %w[Integrations::Github] }
 
-    it 'enables SlackSlashCommands and disables GitlabSlackApplication' do
-      get :index, params: { namespace_id: project.namespace, project_id: project }
-
-      expect(active_services).to include('Integrations::SlackSlashCommands')
-      expect(active_services).not_to include('Integrations::GitlabSlackApplication')
-    end
-
-    it 'enables GitlabSlackApplication and disables SlackSlashCommands' do
-      stub_application_setting(slack_app_enabled: true)
-
-      get :index, params: { namespace_id: project.namespace, project_id: project }
-
-      expect(active_services).to include('Integrations::GitlabSlackApplication')
-      expect(active_services).not_to include('Integrations::SlackSlashCommands')
-    end
-
     context 'without a license key' do
       it_behaves_like 'endpoint with some disabled integrations'
     end
