@@ -31,10 +31,11 @@ module Namespaces
                   "offering a %{promotion_link_start}one-time 70 percent discount%{link_end} " \
                   "off the list price at time of purchase for a new, one year subscription of " \
                   "GitLab Premium SaaS to %{offer_availability_link_start}qualifying top-level groups%{link_end}. " \
-                  "The offer is valid until 2023-08-13.").html_safe % {
+                  "The offer is valid until %{offer_date}.").html_safe % {
             link_start: free_user_limit_link_start,
             promotion_link_start: promotion_link_start_short,
             offer_availability_link_start: offer_availability_link_start_short,
+            offer_date: l(Date.new(2023, 8, 13), format: :long),
             link_end: link_end,
             free_limit: free_user_limit
           },
