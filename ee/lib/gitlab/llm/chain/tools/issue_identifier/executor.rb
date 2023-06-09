@@ -22,6 +22,11 @@ module Gitlab
               vertex_ai: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::VertexAi
             }.freeze
 
+            PROJECT_REGEX = {
+              'url' => Issue.link_reference_pattern,
+              'reference' => Issue.reference_pattern
+            }.freeze
+
             # our template
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
@@ -146,24 +151,36 @@ module Gitlab
                       when 'iid'
                         by_iid(resource_identifier)
                       when 'url', 'reference'
-                        extract_issue(resource_identifier)
+                        extract_issue(resource_identifier, resource_identifier_type)
                       end
 
               return issue if Utils::Authorizer.resource_authorized?(resource: issue, user: context.current_user)
             end
 
             def by_iid(resource_identifier)
+              return unless projects_from_context
+
               issues = Issue.in_projects(projects_from_context).iid_in(resource_identifier)
 
               return issues.first if issues.one?
             end
 
-            def extract_issue(text)
-              extractor = Gitlab::ReferenceExtractor.new(projects_from_context&.first, context.current_user)
+            def extract_issue(text, type)
+              project = extract_project(text, type)
+              return unless project
+
+              extractor = Gitlab::ReferenceExtractor.new(project, context.current_user)
               extractor.analyze(text, {})
               issues = extractor.issues
 
               return issues.first if issues.one?
+            end
+
+            def extract_project(text, type)
+              projects_from_context.first unless projects_from_context.blank?
+
+              project_path = text.match(PROJECT_REGEX[type])&.values_at(:namespace, :project)
+              context.current_user.authorized_projects.find_by_full_path(project_path.join('/')) if project_path
             end
 
             # This method should not be memoized because the options change over time

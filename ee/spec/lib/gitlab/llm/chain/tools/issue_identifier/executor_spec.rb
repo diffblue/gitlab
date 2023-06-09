@@ -195,6 +195,54 @@ RSpec.describe Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor, feature_cat
           end
         end
 
+        context 'when context container is nil' do
+          before do
+            context.container = nil
+          end
+
+          context 'when issue is identified by iid' do
+            let(:resource_iid) { issue2.iid }
+            let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue2.iid}}" }
+
+            it_behaves_like 'issue not found response'
+          end
+
+          context 'when issue is the current issue in context' do
+            let(:resource_iid) { issue1.iid }
+            let(:ai_response) { "{\"ResourceIdentifierType\": \"current\", \"ResourceIdentifier\": \"current\"}" }
+
+            it_behaves_like 'success response'
+          end
+
+          context 'when is issue identified with reference' do
+            let(:resource_iid) { issue2.iid }
+            let(:reference) { issue2.to_reference(full: true) }
+            let(:ai_response) do
+              "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
+            end
+
+            it_behaves_like 'success response'
+          end
+
+          context 'when is issue identified with not-full reference' do
+            let(:resource_iid) { issue2.iid }
+            let(:reference) { issue2.to_reference(full: false) }
+            let(:ai_response) do
+              "{\"ResourceIdentifierType\": \"reference\", \"ResourceIdentifier\": \"#{reference}\"}"
+            end
+
+            it_behaves_like 'issue not found response'
+          end
+
+          xcontext 'when is issue identified with url' do
+            let(:resource_iid) { issue2.iid }
+            let(:url) { Gitlab::Saas.com_url + Gitlab::Routing.url_helpers.project_issue_path(project, issue2) }
+            let(:ai_response) { "{\"ResourceIdentifierType\": \"url\", \"ResourceIdentifier\": \"#{url}\"}" }
+
+            it_behaves_like 'success response'
+          end
+        end
+
         context 'when issue was already identified' do
           let(:resource_iid) { issue1.iid }
           let(:ai_response) { "{\"ResourceIdentifierType\": \"iid\", \"ResourceIdentifier\": #{issue1.iid}}" }
