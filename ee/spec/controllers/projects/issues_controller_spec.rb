@@ -371,58 +371,6 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         it_behaves_like 'user cannot see confidential issue', Gitlab::Access::NO_ACCESS
       end
     end
-
-    context 'is_gitlab_employee attribute' do
-      subject { get :discussions, params: { namespace_id: project.namespace, project_id: project, id: issue.iid } }
-
-      before do
-        sign_in(user)
-        allow(Gitlab).to receive(:com?).and_return(true)
-        discussion.update!(author: user)
-      end
-
-      shared_context 'non inclusion of gitlab team member badge' do |result|
-        it 'does not render the is_gitlab_employee attribute' do
-          subject
-
-          note_json = json_response.first['notes'].first
-
-          expect(note_json['author']['is_gitlab_employee']).to be result
-        end
-      end
-
-      context 'when user is a gitlab team member' do
-        include_context 'gitlab team member'
-
-        it 'renders the is_gitlab_employee attribute' do
-          subject
-
-          note_json = json_response.first['notes'].first
-
-          expect(note_json['author']['is_gitlab_employee']).to be true
-        end
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(gitlab_employee_badge: false)
-          end
-
-          it_behaves_like 'non inclusion of gitlab team member badge', nil
-        end
-      end
-
-      context 'when user is not a gitlab team member' do
-        it_behaves_like 'non inclusion of gitlab team member badge', false
-
-        context 'when feature flag is disabled' do
-          before do
-            stub_feature_flags(gitlab_employee_badge: false)
-          end
-
-          it_behaves_like 'non inclusion of gitlab team member badge', nil
-        end
-      end
-    end
   end
 
   describe 'PUT #update' do
@@ -441,7 +389,7 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
       put :update, params: params
     end
 
-    context 'changing the assignee' do
+    context 'when changing the assignee' do
       let(:assignee) { create(:user) }
 
       before do
@@ -449,39 +397,11 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         sign_in(assignee)
       end
 
-      context 'when the gitlab_employee_badge flag is off' do
-        it 'does not expose the is_gitlab_employee attribute on the assignee' do
-          stub_feature_flags(gitlab_employee_badge: false)
+      it 'exposes expected attributes' do
+        update_issue(issue_params: { assignee_ids: [assignee.id] })
 
-          update_issue(issue_params: { assignee_ids: [assignee.id] })
-
-          expect(json_response['assignees'].first.keys)
-            .to match_array(%w(id name username avatar_url state web_url))
-        end
-      end
-
-      context 'when the gitlab_employee_badge flag is on but we are not on gitlab.com' do
-        it 'does not expose the is_gitlab_employee attribute on the assignee' do
-          stub_feature_flags(gitlab_employee_badge: true)
-          allow(Gitlab).to receive(:com?).and_return(false)
-
-          update_issue(issue_params: { assignee_ids: [assignee.id] })
-
-          expect(json_response['assignees'].first.keys)
-            .to match_array(%w(id name username avatar_url state web_url))
-        end
-      end
-
-      context 'when the gitlab_employee_badge flag is on and we are on gitlab.com' do
-        it 'exposes the is_gitlab_employee attribute on the assignee' do
-          stub_feature_flags(gitlab_employee_badge: true)
-          allow(Gitlab).to receive(:com?).and_return(true)
-
-          update_issue(issue_params: { assignee_ids: [assignee.id] })
-
-          expect(json_response['assignees'].first.keys)
-            .to match_array(%w(id name username avatar_url state web_url is_gitlab_employee))
-        end
+        expect(json_response['assignees'].first.keys)
+          .to match_array(%w[id name username avatar_url state web_url])
       end
     end
   end

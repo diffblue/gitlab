@@ -28,9 +28,6 @@
               "web_url": {
                 "type": "string",
                 "format": "uri"
-              },
-              "is_gitlab_employee": {
-                "type": "boolean"
               }
             },
             "required": [

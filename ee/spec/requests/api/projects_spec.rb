@@ -572,38 +572,6 @@ RSpec.describe API::Projects, :aggregate_failures, feature_category: :groups_and
         expect(first_user['username']).to eq(user.username)
         expect(first_user['name']).to eq(user.name)
       end
-
-      context 'when the gitlab_employee_badge flag is off' do
-        it 'does not expose the is_gitlab_employee attribute on the user' do
-          stub_feature_flags(gitlab_employee_badge: false)
-
-          get api("/projects/#{project.id}/users", current_user)
-
-          expect(json_response.first.keys).to contain_exactly(*%w[name username id state avatar_url web_url])
-        end
-      end
-
-      context 'when the gitlab_employee_badge flag is on but we are not on gitlab.com' do
-        it 'does not expose the is_gitlab_employee attribute on the user' do
-          stub_feature_flags(gitlab_employee_badge: true)
-          allow(Gitlab).to receive(:com?).and_return(false)
-
-          get api("/projects/#{project.id}/users", current_user)
-
-          expect(json_response.first.keys).to contain_exactly(*%w[name username id state avatar_url web_url])
-        end
-      end
-
-      context 'when the gitlab_employee_badge flag is on and we are on gitlab.com' do
-        it 'exposes the is_gitlab_employee attribute on the user' do
-          stub_feature_flags(gitlab_employee_badge: true)
-          allow(Gitlab).to receive(:com?).and_return(true)
-
-          get api("/projects/#{project.id}/users", current_user)
-
-          expect(json_response.first.keys).to contain_exactly(*%w[name username id state avatar_url web_url is_gitlab_employee])
-        end
-      end
     end
 
     context 'when unauthenticated' do

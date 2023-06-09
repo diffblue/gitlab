@@ -57,8 +57,6 @@ export default {
     TimeagoTooltip,
     ConfidentialityBadge,
     SidebarSubscriptionsWidget,
-    GitlabTeamMemberBadge: () =>
-      import('ee_component/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue'),
   },
   i18n: {
     deleteButtonText: __('Delete epic'),
@@ -192,10 +190,6 @@ export default {
             :tooltip-text="author.username"
             :username="author.name"
             img-css-classes="avatar-inline"
-          />
-          <gitlab-team-member-badge
-            v-if="author && author.isGitlabEmployee"
-            ref="gitlabTeamMemberBadge"
           />
         </strong>
       </div>

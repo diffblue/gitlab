@@ -45,31 +45,5 @@ module EE
         projectId: issuable.project_id
       )
     end
-
-    override :issuable_meta_author_slot
-    def issuable_meta_author_slot(author, css_class: nil)
-      gitlab_team_member_badge(author, css_class: css_class)
-    end
-
-    def gitlab_team_member_badge(author, css_class: nil)
-      return unless author.gitlab_employee? && ::Feature.enabled?(:gitlab_employee_badge)
-
-      default_css_class = 'd-inline-block align-middle'
-      gitlab_team_member = _('GitLab Team Member')
-
-      content_tag(
-        :span,
-        class: css_class ? "#{default_css_class} #{css_class}" : default_css_class,
-        data: { toggle: 'tooltip', title: gitlab_team_member, container: 'body' },
-        role: 'img',
-        aria: { label: gitlab_team_member }
-      ) do
-        sprite_icon(
-          'tanuki-verified',
-          size: 16,
-          css_class: 'gl-text-purple-600 d-block'
-        )
-      end
-    end
   end
 end

@@ -1058,37 +1058,6 @@ RSpec.describe API::Members, feature_category: :groups_and_projects do
         expect(response).to match_response_schema('public_api/v4/members', dir: 'ee')
       end
 
-      context 'when the flag gitlab_employee_badge is on and we are on gitlab.com' do
-        it 'includes is_gitlab_employee in the response' do
-          stub_feature_flags(gitlab_employee_badge: true)
-          allow(Gitlab).to receive(:com?).and_return(true)
-
-          get api("/groups/#{group.to_param}/members", owner)
-
-          expect(json_response.first.keys).to include('is_gitlab_employee')
-        end
-      end
-
-      context 'when the flag gitlab_employee_badge is off' do
-        it 'does not include is_gitlab_employee in the response' do
-          stub_feature_flags(gitlab_employee_badge: false)
-
-          get api("/groups/#{group.to_param}/members", owner)
-
-          expect(json_response.first.keys).not_to include('is_gitlab_employee')
-        end
-      end
-
-      context 'when we are not on gitlab.com' do
-        it 'does not include is_gitlab_employee in the response' do
-          allow(Gitlab).to receive(:com?).and_return(false)
-
-          get api("/groups/#{group.to_param}/members", owner)
-
-          expect(json_response.first.keys).not_to include('is_gitlab_employee')
-        end
-      end
-
       context 'when a group has SAML provider configured' do
         let(:maintainer) { create(:user) }
 
