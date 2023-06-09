@@ -38,10 +38,10 @@
                 root_url: root_url } }
 
               .form-group
-                .form-check.gl-mb-3
-                  = check_box_tag 'project[initialize_with_readme]', '1', true, class: 'form-check-input'
-                  = label_tag 'project[initialize_with_readme]', s_('ProjectsNew|Include a Getting Started README'), class: 'form-check-label'
-                  .form-text.text-muted
+                = render Pajamas::CheckboxTagComponent.new(name: 'project[initialize_with_readme]', checked: true) do |c|
+                  = c.with_label do
+                    = s_('ProjectsNew|Include a Getting Started README')
+                  = c.with_help_text do
                     = s_('ProjectsNew|Recommended if you\'re new to GitLab')
 
               = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { qa_selector: 'submit_button' }
