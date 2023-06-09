@@ -149,6 +149,7 @@ module EE
         inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :cube_api_base_url,
+        length: { maximum: 512 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
         presence: true,
         if: :product_analytics_enabled
@@ -158,35 +159,49 @@ module EE
         allow_blank: true
 
       validates :jitsu_host,
+        length: { maximum: 255 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
         presence: true,
-        if: :product_analytics_enabled
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
 
       validates :jitsu_project_xid,
+        length: { maximum: 255 },
         presence: true,
-        if: :product_analytics_enabled
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
 
       validates :jitsu_administrator_email,
+        length: { maximum: 255 },
         presence: true,
         devise_email: true,
-        if: :product_analytics_enabled
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
 
       validates :jitsu_administrator_password,
+        length: { maximum: 255 },
         presence: true,
-        if: :product_analytics_enabled
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
 
       validates :product_analytics_clickhouse_connection_string,
+        length: { maximum: 512 },
+        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
+        presence: true,
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.disabled?(:product_analytics_snowplow_support) }
+
+      validates :cube_api_key,
+        length: { maximum: 255 },
         presence: true,
         if: :product_analytics_enabled
 
-      validates :cube_api_key,
+      validates :product_analytics_configurator_connection_string,
+        length: { maximum: 512 },
+        addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
         presence: true,
-        if: :product_analytics_enabled
+        if: ->(setting) { setting.product_analytics_enabled && ::Feature.enabled?(:product_analytics_snowplow_support) }
 
       validates :security_policy_global_group_approvers_enabled,
         inclusion: { in: [true, false], message: 'must be a boolean value' }
 
       validates :product_analytics_data_collector_host,
+        length: { maximum: 255 },
         addressable_url: ::ApplicationSetting::ADDRESSABLE_URL_VALIDATION_OPTIONS.merge({ allow_localhost: true }),
         presence: true,
         if: :product_analytics_enabled

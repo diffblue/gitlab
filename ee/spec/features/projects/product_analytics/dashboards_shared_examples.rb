@@ -2,6 +2,29 @@
 
 require 'spec_helper'
 
+# Shared examples for testing that the product analytics dashboards functionality works as expected
+#
+# The tests will check that a user can view the dashboards list, create/edit dashboards, and view dashboards.
+# They also test that new dashboard data sources can be set up.
+#
+# The following let variables can be used to set up the testing environment:
+# - `project_settings` - A hash of project settings that need to be set.
+#   - An instrumentation key of some kind should be set on the project to test the product analytics data source
+# - `application_settings` - A hash of application settings that need to be set.
+#   - The `product_analytics_enabled?` application setting is enabled automatically
+#
+# Example
+#
+#   it_behaves_like 'product analytics dashboards' do
+#     let(:project_settings) { { product_analytics_instrumentation_key: 456 } }
+#     let(:application_settings) do
+#     {
+#       product_analytics_configurator_connection_string: 'https://configurator.example.com',
+#       product_analytics_data_collector_host: 'https://collector.example.com',
+#       cube_api_base_url: 'https://cube.example.com',
+#       cube_api_key: '123'
+#     }
+#   end
 RSpec.shared_examples 'product analytics dashboards' do
   using RSpec::Parameterized::TableSyntax
 
@@ -10,6 +33,7 @@ RSpec.shared_examples 'product analytics dashboards' do
   let_it_be(:query_response_with_data) { fixture_file('cube_js/query_with_data.json', dir: 'ee') }
 
   let(:cube_api_url) { "https://cube.example.com/cubejs-api/v1/load" }
+  let(:is_jitsu) { project_settings.has_key?(:jitsu_key) }
 
   shared_examples 'does not render the product analytics list item' do
     before do
@@ -64,15 +88,7 @@ RSpec.shared_examples 'product analytics dashboards' do
   context 'with the required application settings' do
     before do
       stub_application_setting(product_analytics_enabled?: true)
-      stub_application_setting(product_analytics_configurator_connection_string: 'https://configurator.example.com')
-      stub_application_setting(jitsu_host: 'https://jitsu.example.com')
-      stub_application_setting(jitsu_project_xid: '123')
-      stub_application_setting(jitsu_administrator_email: 'test@example.com')
-      stub_application_setting(jitsu_administrator_password: 'password')
-      stub_application_setting(product_analytics_data_collector_host: 'https://collector.example.com')
-      stub_application_setting(product_analytics_clickhouse_connection_string: 'clickhouse://localhost:9000')
-      stub_application_setting(cube_api_base_url: 'https://cube.example.com')
-      stub_application_setting(cube_api_key: '123')
+      stub_application_setting(**application_settings)
     end
 
     context 'with the feature flag disabled' do
@@ -106,192 +122,184 @@ RSpec.shared_examples 'product analytics dashboards' do
         end
 
         context 'with the correct user permissions' do
-          where(:project_setting, :snowplow_feature_flag_enabled) do
-            { jitsu_key: 123 } | false
-            { product_analytics_instrumentation_key: 456 } | true
+          before do
+            project.add_maintainer(user)
           end
 
-          with_them do
+          it 'renders the onboarding list item' do
+            visit_page
+            expect(page).to have_content(s_('Product Analytics'))
+          end
+
+          context 'when setting up a new instance' do
             before do
-              project.add_maintainer(user)
-              stub_feature_flags(product_analytics_snowplow_support: snowplow_feature_flag_enabled)
-            end
-
-            it 'renders the onboarding list item' do
               visit_page
-              expect(page).to have_content(s_('Product Analytics'))
+              wait_for_requests
+              click_link _('Set up')
             end
 
-            context 'when setting up a new instance' do
+            it 'renders the onboarding empty state' do
+              expect(page).to have_content(s_('ProductAnalytics|Analyze your product with Product Analytics'))
+            end
+
+            it 'renders the creating instance loading screen and then the setup page' do
+              click_button s_('ProductAnalytics|Set up product analytics')
+
+              expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
+
+              wait_for_requests
+
+              project.project_setting.update!(project_settings)
+              project.reload
+
+              stub_cube_proxy_zero_count
+              ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
+
+              travel_to(1.minute.from_now) do
+                expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
+              end
+            end
+
+            context 'and a new instance is already being intialized' do
               before do
-                visit_page
-                wait_for_requests
-                click_link _('Set up')
+                ::ProductAnalytics::InitializeStackService.new(container: project).lock!
               end
 
-              it 'renders the onboarding empty state' do
-                expect(page).to have_content(s_('ProductAnalytics|Analyze your product with Product Analytics'))
-              end
-
-              it 'renders the creating instance loading screen and then the setup page' do
+              it 'renders an error alert when setting up a new instance' do
                 click_button s_('ProductAnalytics|Set up product analytics')
 
-                expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
-
-                wait_for_requests
-
-                project.project_setting.update!(project_setting)
-                project.reload
-
-                stub_cube_proxy_zero_count
-                ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
-
-                travel_to(1.minute.from_now) do
-                  expect(page).to have_content(s_('ProductAnalytics|Instrument your application'))
-                end
-              end
-
-              context 'and a new instance is already being intialized' do
-                before do
-                  ::ProductAnalytics::InitializeStackService.new(container: project).lock!
-                end
-
-                it 'renders an error alert when setting up a new instance' do
-                  click_button s_('ProductAnalytics|Set up product analytics')
-
-                  expect(find('[data-testid="alert-danger"]'))
-                    .to have_text(/Product analytics initialization is already (completed|in progress)/)
-                end
+                expect(find('[data-testid="alert-danger"]'))
+                  .to have_text(/Product analytics initialization is already (completed|in progress)/)
               end
             end
+          end
 
-            context 'when the instance is loading' do
+          context 'when the instance is loading' do
+            before do
+              project.project_setting.update!(project_settings)
+              project.reload
+
+              ::ProductAnalytics::InitializeStackService.new(container: project).lock!
+
+              visit_page
+              wait_for_requests
+              click_link _('Set up')
+            end
+
+            it 'renders the loading view' do
+              expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
+            end
+          end
+
+          context 'when waiting for events' do
+            before do
+              project.project_setting.update!(project_settings)
+              project.reload
+
+              ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
+            end
+
+            context 'when the cube API returns an unhandled error' do
               before do
-                project.project_setting.update!(project_setting)
-                project.reload
-
-                ::ProductAnalytics::InitializeStackService.new(container: project).lock!
-
+                stub_cube_proxy_error
                 visit_page
-                wait_for_requests
-                click_link _('Set up')
               end
 
-              it 'renders the loading view' do
-                expect(page).to have_content(s_('ProductAnalytics|Creating your product analytics instance...'))
-              end
-            end
+              it 'renders the error alert' do
+                error_msg =
+                  s_('ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.')
 
-            context 'when waiting for events' do
-              before do
-                project.project_setting.update!(project_setting)
-                project.reload
-
-                ::ProductAnalytics::InitializeStackService.new(container: project).unlock!
-              end
-
-              context 'when the cube API returns an unhandled error' do
-                before do
-                  stub_cube_proxy_error
-                  visit_page
-                end
-
-                it 'renders the error alert' do
-                  error_msg =
-                    s_('ProductAnalytics|An error occurred while fetching data. Refresh the page to try again.')
-
-                  expect(find('[data-testid="alert-danger"]')).to have_text(error_msg)
-                end
-              end
-
-              context 'when the clickhouse database does not exist' do
-                before do
-                  stub_cube_no_database_error
-                  visit_page
-                end
-
-                it_behaves_like 'renders the setup view'
-              end
-
-              context 'when the cube API returns zero data' do
-                before do
-                  stub_cube_proxy_zero_count
-                end
-
-                it_behaves_like 'renders the setup view'
-              end
-
-              context 'when the cube API returns data' do
-                before do
-                  stub_cube_proxy_success(snowplow_feature_flag_enabled)
-                  visit_page
-                end
-
-                it_behaves_like 'renders the product analytics dashboards'
-              end
-
-              context 'when the cube API returns data while onboarding' do
-                before do
-                  stub_cube_proxy_zero_count
-                  visit_page
-                end
-
-                it 'renders the dashboard view after polling' do
-                  travel_to(1.minute.from_now) do
-                    expect(page).to have_content(s_('ProductAnalytics|Waiting for events'))
-                  end
-
-                  stub_cube_proxy_success(snowplow_feature_flag_enabled)
-
-                  travel_to(1.minute.from_now) do
-                    expect(page).to have_content('Understand your audience')
-                  end
-                end
+                expect(find('[data-testid="alert-danger"]')).to have_text(error_msg)
               end
             end
 
-            context 'with the setup completed' do
+            context 'when the clickhouse database does not exist' do
               before do
-                project.project_setting.update!(project_setting)
-                stub_cube_proxy_success(snowplow_feature_flag_enabled)
+                stub_cube_no_database_error
+                visit_page
+              end
+
+              it_behaves_like 'renders the setup view'
+            end
+
+            context 'when the cube API returns zero data' do
+              before do
+                stub_cube_proxy_zero_count
+              end
+
+              it_behaves_like 'renders the setup view'
+            end
+
+            context 'when the cube API returns data' do
+              before do
+                stub_cube_proxy_success
+                visit_page
               end
 
               it_behaves_like 'renders the product analytics dashboards'
+            end
 
-              context 'when combined_analytics_dashboards_editor is enabled' do
-                before do
-                  stub_feature_flags(combined_analytics_dashboards_editor: true)
-                end
-
-                context 'and custom dashboards is configured' do
-                  before do
-                    create(:analytics_dashboards_pointer, :project_based, project: project)
-                  end
-
-                  it_behaves_like 'renders the new dashboard button'
-                end
-
-                context 'and custom dashboards is not configured' do
-                  it_behaves_like 'does not render the new dashboard button'
-                end
+            context 'when the cube API returns data while onboarding' do
+              before do
+                stub_cube_proxy_zero_count
+                visit_page
               end
 
-              context 'when combined_analytics_dashboards_editor is disabled' do
+              it 'renders the dashboard view after polling' do
+                travel_to(1.minute.from_now) do
+                  expect(page).to have_content(s_('ProductAnalytics|Waiting for events'))
+                end
+
+                stub_cube_proxy_success
+
+                travel_to(1.minute.from_now) do
+                  expect(page).to have_content('Understand your audience')
+                end
+              end
+            end
+          end
+
+          context 'with the setup completed' do
+            before do
+              project.project_setting.update!(project_settings)
+              stub_cube_proxy_success
+            end
+
+            it_behaves_like 'renders the product analytics dashboards'
+
+            context 'when combined_analytics_dashboards_editor is enabled' do
+              before do
+                stub_feature_flags(combined_analytics_dashboards_editor: true)
+              end
+
+              context 'and custom dashboards is configured' do
                 before do
-                  stub_feature_flags(combined_analytics_dashboards_editor: false)
+                  create(:analytics_dashboards_pointer, :project_based, project: project)
                 end
 
-                context 'and custom dashboards is configured' do
-                  before do
-                    create(:analytics_dashboards_pointer, :project_based, project: project)
-                  end
+                it_behaves_like 'renders the new dashboard button'
+              end
 
-                  it_behaves_like 'does not render the new dashboard button'
+              context 'and custom dashboards is not configured' do
+                it_behaves_like 'does not render the new dashboard button'
+              end
+            end
+
+            context 'when combined_analytics_dashboards_editor is disabled' do
+              before do
+                stub_feature_flags(combined_analytics_dashboards_editor: false)
+              end
+
+              context 'and custom dashboards is configured' do
+                before do
+                  create(:analytics_dashboards_pointer, :project_based, project: project)
                 end
 
-                context 'and custom dashboards is not configured' do
-                  it_behaves_like 'does not render the new dashboard button'
-                end
+                it_behaves_like 'does not render the new dashboard button'
+              end
+
+              context 'and custom dashboards is not configured' do
+                it_behaves_like 'does not render the new dashboard button'
               end
             end
           end
@@ -319,11 +327,11 @@ RSpec.shared_examples 'product analytics dashboards' do
         .to_return(status: 200, body: query_object.to_json, headers: {})
     end
 
-    def stub_cube_proxy_success(product_analytics_snowplow_support)
+    def stub_cube_proxy_success
       query_object = Gitlab::Json.parse(query_response_with_data)
 
       # rubocop:disable RSpec/AvoidConditionalStatements
-      unless product_analytics_snowplow_support
+      if is_jitsu
         query_object['results'][0]['data'][0]['TrackedEvents.pageViewsCount'] =
           query_object['results'][0]['data'][0].delete('SnowplowTrackedEvents.pageViewsCount')
       end
