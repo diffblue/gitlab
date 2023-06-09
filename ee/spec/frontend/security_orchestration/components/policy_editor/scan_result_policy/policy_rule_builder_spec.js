@@ -1,7 +1,5 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import Api from 'ee/api';
 import DefaultRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/default_rule_builder.vue';
-import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import SecurityScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/security_scan_rule_builder.vue';
 import LicenseScanRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/license_scan_rule_builder.vue';
@@ -40,48 +38,14 @@ describe('PolicyRuleBuilder', () => {
       provide: {
         namespaceId: '1',
         namespaceType: NAMESPACE_TYPES.PROJECT,
-        softwareLicenses: '[]',
         ...provide,
-      },
-      stubs: {
-        DefaultRuleBuilder,
-        BaseLayoutComponent,
       },
     });
   };
 
-  const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
   const findEmptyScanRuleBuilder = () => wrapper.findComponent(DefaultRuleBuilder);
   const findSecurityScanRule = () => wrapper.findComponent(SecurityScanRuleBuilder);
   const findLicenseScanRule = () => wrapper.findComponent(LicenseScanRuleBuilder);
-
-  beforeEach(() => {
-    jest
-      .spyOn(Api, 'projectProtectedBranches')
-      .mockReturnValue(Promise.resolve(PROTECTED_BRANCHES_MOCK));
-  });
-
-  describe('initial rendering', () => {
-    beforeEach(() => {
-      factory();
-    });
-
-    it('does not render the license scan or security scan rule', () => {
-      expect(findEmptyScanRuleBuilder().exists()).toBe(true);
-      expect(findLicenseScanRule().exists()).toBe(false);
-      expect(findSecurityScanRule().exists()).toBe(false);
-    });
-
-    it('renders the delete button', () => {
-      expect(findDeleteBtn().exists()).toBe(true);
-    });
-
-    it('emits the remove event when removing the rule', async () => {
-      await findDeleteBtn().vm.$emit('click');
-
-      expect(wrapper.emitted().remove).toHaveLength(1);
-    });
-  });
 
   describe('when a rule type is selected', () => {
     it.each`
@@ -134,5 +98,21 @@ describe('PolicyRuleBuilder', () => {
       expect(wrapper.emitted('changed')[0]).toEqual([updatedLicenceRule]);
       expect(wrapper.emitted('changed')[1]).toEqual([securityScanBuildRule()]);
     });
+  });
+
+  describe('removing a rule', () => {
+    it.each`
+      ruleType           | rule                     | findComponent
+      ${'unselected'}    | ${emptyBuildRule()}      | ${findEmptyScanRuleBuilder}
+      ${'security scan'} | ${SECURITY_SCAN_RULE}    | ${findSecurityScanRule}
+      ${'license scan'}  | ${LICENSE_SCANNING_RULE} | ${findLicenseScanRule}
+    `(
+      'emits the remove event when removing the $ruleType rule',
+      async ({ findComponent, rule }) => {
+        factory({ propsData: { initRule: rule } });
+        await findComponent().vm.$emit('remove');
+        expect(wrapper.emitted().remove).toHaveLength(1);
+      },
+    );
   });
 });
