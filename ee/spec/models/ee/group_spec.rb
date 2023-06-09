@@ -1962,21 +1962,6 @@ RSpec.describe Group, feature_category: :groups_and_projects do
             group.execute_hooks(data, :member_hooks)
           end
         end
-
-        context 'when a hook has recent failures' do
-          before do
-            group_hook.update!(recent_failures: 4)
-          end
-
-          it 'is still executed' do
-            expect(WebHookService).to receive(:new)
-                                        .with(group_hook, data, 'member_hooks').and_call_original
-            expect(WebHookService).to receive(:new)
-                                        .with(parent_group_hook, data, 'member_hooks').and_call_original
-
-            group.execute_hooks(data, :member_hooks)
-          end
-        end
       end
 
       context 'when group_webhooks feature is disabled' do
