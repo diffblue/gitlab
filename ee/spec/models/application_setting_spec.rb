@@ -400,46 +400,64 @@ RSpec.describe ApplicationSetting do
           setting.product_analytics_enabled = true
         end
 
-        it { is_expected.to allow_value(false).for(:product_analytics_enabled) }
-        it { is_expected.to allow_value("").for(:product_analytics_enabled) }
+        it { is_expected.to allow_value(false, '').for(:product_analytics_enabled) }
 
-        it { is_expected.to allow_value("https://jitsu.gitlab.com").for(:jitsu_host) }
-        it { is_expected.to allow_value("http://localhost:8000").for(:jitsu_host) }
-        it { is_expected.not_to allow_value("invalid.host").for(:jitsu_host) }
-        it { is_expected.not_to allow_value(nil).for(:jitsu_host) }
-        it { is_expected.not_to allow_value("").for(:jitsu_host) }
-
-        it { is_expected.to allow_value('g0maofw84gx5sjxgse2k').for(:jitsu_project_xid) }
-        it { is_expected.not_to allow_value(nil).for(:jitsu_project_xid) }
-        it { is_expected.not_to allow_value("").for(:jitsu_project_xid) }
-
-        it { is_expected.to allow_value('jitsu.admin@gitlab.com').for(:jitsu_administrator_email) }
-        it { is_expected.not_to allow_value('invalid_admin_email.com').for(:jitsu_administrator_email) }
-        it { is_expected.not_to allow_value(nil).for(:jitsu_administrator_email) }
-        it { is_expected.not_to allow_value("").for(:jitsu_administrator_email) }
-
-        it { is_expected.to allow_value('xxxxxxxx').for(:jitsu_administrator_password) }
-        it { is_expected.not_to allow_value(nil).for(:jitsu_administrator_password) }
-        it { is_expected.not_to allow_value("").for(:jitsu_administrator_password) }
-
-        it { is_expected.to allow_value('https://user:pass@clickhouse.gitlab.com:8123').for(:product_analytics_clickhouse_connection_string) }
-        it { is_expected.not_to allow_value(nil).for(:product_analytics_clickhouse_connection_string) }
-        it { is_expected.not_to allow_value("").for(:product_analytics_clickhouse_connection_string) }
-
-        it { is_expected.to allow_value('https://cube.gitlab.com').for(:cube_api_base_url) }
-        it { is_expected.to allow_value('https://localhost:4000').for(:cube_api_base_url) }
-        it { is_expected.not_to allow_value(nil).for(:cube_api_base_url) }
-        it { is_expected.not_to allow_value("").for(:cube_api_base_url) }
+        it { is_expected.to allow_value('https://cube.gitlab.com', 'https://localhost:4000').for(:cube_api_base_url) }
+        it { is_expected.not_to allow_value('invalid.host').for(:cube_api_base_url) }
+        it { is_expected.to validate_presence_of(:cube_api_base_url) }
+        it { is_expected.to validate_length_of(:cube_api_base_url).is_at_most(512) }
 
         it { is_expected.to allow_value('420d0e1b73b2ad4acd21c92e533be327').for(:cube_api_key) }
-        it { is_expected.not_to allow_value(nil).for(:cube_api_key) }
-        it { is_expected.not_to allow_value("").for(:cube_api_key) }
+        it { is_expected.to validate_presence_of(:cube_api_key) }
+        it { is_expected.to validate_length_of(:cube_api_key).is_at_most(255) }
 
-        it { is_expected.to allow_value("https://collector.gitlab.com").for(:product_analytics_data_collector_host) }
-        it { is_expected.to allow_value("http://localhost:8000").for(:product_analytics_data_collector_host) }
-        it { is_expected.not_to allow_value("invalid.host").for(:product_analytics_data_collector_host) }
-        it { is_expected.not_to allow_value(nil).for(:product_analytics_data_collector_host) }
-        it { is_expected.not_to allow_value("").for(:product_analytics_data_collector_host) }
+        it { is_expected.to allow_value('https://collector.gitlab.com', 'http://localhost:8000').for(:product_analytics_data_collector_host) }
+        it { is_expected.not_to allow_value('invalid.host').for(:product_analytics_data_collector_host) }
+        it { is_expected.to validate_presence_of(:product_analytics_data_collector_host) }
+        it { is_expected.to validate_length_of(:product_analytics_data_collector_host).is_at_most(255) }
+
+        it { is_expected.to allow_value('https://configurator.gitlab.com', 'http://localhost:8000').for(:product_analytics_configurator_connection_string) }
+        it { is_expected.not_to allow_value("invalid.host").for(:product_analytics_configurator_connection_string) }
+        it { is_expected.to validate_presence_of(:product_analytics_configurator_connection_string) }
+        it { is_expected.to validate_length_of(:product_analytics_configurator_connection_string).is_at_most(512) }
+
+        it { is_expected.to allow_value(nil, '').for(:jitsu_host) }
+        it { is_expected.to allow_value(nil, '').for(:jitsu_project_xid) }
+        it { is_expected.to allow_value(nil, '').for(:jitsu_administrator_email) }
+        it { is_expected.to allow_value(nil, '').for(:jitsu_administrator_password) }
+        it { is_expected.to allow_value(nil, '').for(:product_analytics_clickhouse_connection_string) }
+
+        context 'when snowplow is disabled' do
+          before do
+            stub_feature_flags(product_analytics_snowplow_support: false)
+          end
+
+          it { is_expected.to allow_value('https://jitsu.gitlab.com', 'http://localhost:8000').for(:jitsu_host) }
+          it { is_expected.not_to allow_value('invalid.host').for(:jitsu_host) }
+          it { is_expected.to validate_presence_of(:jitsu_host) }
+          it { is_expected.to validate_length_of(:jitsu_host).is_at_most(255) }
+
+          it { is_expected.to allow_value('g0maofw84gx5sjxgse2k').for(:jitsu_project_xid) }
+          it { is_expected.to validate_presence_of(:jitsu_project_xid) }
+          it { is_expected.to validate_length_of(:jitsu_project_xid).is_at_most(255) }
+
+          it { is_expected.to allow_value('jitsu.admin@gitlab.com').for(:jitsu_administrator_email) }
+          it { is_expected.not_to allow_value('invalid_admin_email.com').for(:jitsu_administrator_email) }
+          it { is_expected.to validate_presence_of(:jitsu_administrator_email) }
+          it { is_expected.to validate_length_of(:jitsu_administrator_email).is_at_most(255) }
+
+          it { is_expected.to allow_value('xxxxxxxx').for(:jitsu_administrator_password) }
+          it { is_expected.to validate_presence_of(:jitsu_administrator_password) }
+          it { is_expected.to validate_length_of(:jitsu_administrator_password).is_at_most(255) }
+
+          it { is_expected.to allow_value('https://user:pass@clickhouse.gitlab.com:8123').for(:product_analytics_clickhouse_connection_string) }
+          it { is_expected.not_to allow_value('invalid.host').for(:product_analytics_clickhouse_connection_string) }
+          it { is_expected.to validate_presence_of(:product_analytics_clickhouse_connection_string) }
+          it { is_expected.to validate_length_of(:product_analytics_clickhouse_connection_string).is_at_most(512) }
+
+          it { is_expected.to allow_value(nil).for(:product_analytics_configurator_connection_string) }
+          it { is_expected.to allow_value("").for(:product_analytics_configurator_connection_string) }
+        end
       end
 
       context 'when product analytics is disabled' do
@@ -455,6 +473,7 @@ RSpec.describe ApplicationSetting do
         it { is_expected.to allow_value(nil).for(:cube_api_base_url) }
         it { is_expected.to allow_value(nil).for(:cube_api_key) }
         it { is_expected.to allow_value(nil).for(:product_analytics_data_collector_host) }
+        it { is_expected.to allow_value(nil).for(:product_analytics_configurator_connection_string) }
       end
     end
 
