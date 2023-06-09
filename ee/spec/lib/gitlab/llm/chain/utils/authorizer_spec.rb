@@ -7,6 +7,36 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
   let(:container) { instance_double(Project) }
   let(:user) { instance_double(User) }
 
+  shared_examples 'user authorization' do
+    let(:namespace1) { instance_double(Namespaces::UserNamespace) }
+    let(:namespace2) { instance_double(Group) }
+
+    it 'returns true if user has paid namespaces with third party AI features enabled' do
+      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
+        .and_return([namespace1, namespace2])
+      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
+      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(true)
+      expect(namespace2).to receive(:experiment_features_enabled).and_return(true)
+
+      expect(subject).to be(true)
+    end
+
+    it 'returns false if user has no paid namespaces' do
+      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([])
+
+      expect(subject).to be(false)
+    end
+
+    it 'returns false if user has paid namespaces but no third party AI features enabled' do
+      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
+        .and_return([namespace1, namespace2])
+      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
+      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(false)
+
+      expect(subject).to be(false)
+    end
+  end
+
   describe '.context_authorized?' do
     let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
 
@@ -115,8 +145,14 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
   describe '.resource_authorized?' do
     let(:root_ancestor) { instance_double(Group) }
 
-    it 'returns false if resource is not present' do
-      expect(described_class.resource_authorized?(resource: nil, user: user)).to be_nil
+    subject { described_class.resource_authorized?(resource: resource, user: user) }
+
+    context 'when resource is nil' do
+      let(:resource) { nil }
+
+      it 'returns false' do
+        expect(subject).to be_nil
+      end
     end
 
     it 'returns false if resource parent is not authorized' do
@@ -124,7 +160,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
       expect(root_ancestor).to receive(:root_ancestor).and_return(root_ancestor)
       expect(Gitlab::Llm::StageCheck).to receive(:available?).with(root_ancestor, :chat).and_return(false)
 
-      expect(described_class.resource_authorized?(resource: resource, user: user)).to be(false)
+      expect(subject).to be(false)
     end
 
     it 'calls user.can? with the appropriate arguments' do
@@ -134,37 +170,19 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
       expect(resource).to receive(:to_ability_name).and_return('ability_name')
       expect(user).to receive(:can?).with('read_ability_name', resource)
 
-      described_class.resource_authorized?(resource: resource, user: user)
+      subject
+    end
+
+    context 'when resource is current user' do
+      let(:resource) { user }
+
+      it_behaves_like 'user authorization'
     end
   end
 
   describe '.user_authorized?' do
-    let(:namespace1) { instance_double(Namespaces::UserNamespace) }
-    let(:namespace2) { instance_double(Group) }
+    subject { described_class.user_authorized?(user: user) }
 
-    it 'returns true if user has paid namespaces with third party AI features enabled' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
-        .and_return([namespace1, namespace2])
-      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
-      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(true)
-      expect(namespace2).to receive(:experiment_features_enabled).and_return(true)
-
-      expect(described_class.user_authorized?(user: user)).to be(true)
-    end
-
-    it 'returns false if user has no paid namespaces' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS).and_return([])
-
-      expect(described_class.user_authorized?(user: user)).to be(false)
-    end
-
-    it 'returns false if user has paid namespaces but no third party AI features enabled' do
-      expect(user).to receive(:paid_namespaces).with(plans: ::EE::User::AI_SUPPORTED_PLANS)
-        .and_return([namespace1, namespace2])
-      expect(namespace1).to receive(:third_party_ai_features_enabled).and_return(false)
-      expect(namespace2).to receive(:third_party_ai_features_enabled).and_return(false)
-
-      expect(described_class.user_authorized?(user: user)).to be(false)
-    end
+    it_behaves_like 'user authorization'
   end
 end
