@@ -29681,16 +29681,43 @@ msgstr ""
 msgid "NamespaceLimits|%{linkStart}%{username}%{linkEnd} changed the limit to %{limit} at %{date}"
 msgstr ""
 
+msgid "NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to enforce storage usage for namespaces on free plan. To remove the limit, set the value to 0 and click \"Update limit\" button."
+msgstr ""
+
+msgid "NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to set the dashboard limit for namespaces on free plan. To remove the limit, set the value to 0 and click \"Update limit\" button."
+msgstr ""
+
+msgid "NamespaceLimits|Add minimum free storage amount (in GiB) that will be used to show notifications for namespace on free plan. To remove the limit, set the value to 0 and click \"Update limit\" button."
+msgstr ""
+
 msgid "NamespaceLimits|Confirm deletion"
 msgstr ""
 
 msgid "NamespaceLimits|Confirm limits change"
 msgstr ""
 
+msgid "NamespaceLimits|Dashboard Limit"
+msgstr ""
+
+msgid "NamespaceLimits|Dashboard limit was successfully added"
+msgstr ""
+
+msgid "NamespaceLimits|Dashboard limit was successfully removed"
+msgstr ""
+
 msgid "NamespaceLimits|Deletion confirmation"
 msgstr ""
 
 msgid "NamespaceLimits|Do you confirm the deletion of the selected namespace from the exclusion list?"
+msgstr ""
+
+msgid "NamespaceLimits|Enforcement Limit"
+msgstr ""
+
+msgid "NamespaceLimits|Enforcement limit was successfully added"
+msgstr ""
+
+msgid "NamespaceLimits|Enforcement limit was successfully removed"
 msgstr ""
 
 msgid "NamespaceLimits|Enter a valid number greater or equal to zero."
@@ -29702,16 +29729,37 @@ msgstr ""
 msgid "NamespaceLimits|Exclude namespace"
 msgstr ""
 
+msgid "NamespaceLimits|Excluded Namespaces"
+msgstr ""
+
 msgid "NamespaceLimits|Exclusion added successfully"
 msgstr ""
 
 msgid "NamespaceLimits|Free Tier"
 msgstr ""
 
+msgid "NamespaceLimits|Notifications Limit"
+msgstr ""
+
+msgid "NamespaceLimits|Notifications limit was successfully added"
+msgstr ""
+
+msgid "NamespaceLimits|Notifications limit was successfully removed"
+msgstr ""
+
 msgid "NamespaceLimits|Reason"
 msgstr ""
 
 msgid "NamespaceLimits|Reason for excluding this namespace"
+msgstr ""
+
+msgid "NamespaceLimits|Set Dashboard limit"
+msgstr ""
+
+msgid "NamespaceLimits|Set Enforcement limit"
+msgstr ""
+
+msgid "NamespaceLimits|Set Notifications limit"
 msgstr ""
 
 msgid "NamespaceLimits|Storage Phased Notification"
@@ -29724,6 +29772,15 @@ msgid "NamespaceLimits|There was an error fetching the exclusion list, try refre
 msgstr ""
 
 msgid "NamespaceLimits|These namespaces won't receive any notifications nor any degraded functionality while they remain on this list"
+msgstr ""
+
+msgid "NamespaceLimits|This will change the dashboard limit for all free namespaces except the excluded namespaces, the limit can be removed later."
+msgstr ""
+
+msgid "NamespaceLimits|This will change when free namespaces get storage enforcement except the excluded namespaces, the limit can be removed later."
+msgstr ""
+
+msgid "NamespaceLimits|This will limit the amount of notifications all free namespaces receives except the excluded namespaces, the limit can be removed later."
 msgstr ""
 
 msgid "NamespaceLimits|Update limit"
