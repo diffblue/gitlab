@@ -24,6 +24,7 @@ module Gitlab
 
           def self.resource_authorized?(resource:, user:)
             return unless resource
+            return user_authorized?(user: user) if resource == user
 
             container = resource&.resource_parent&.root_ancestor
             return false if !container || !container_authorized?(container: container)
