@@ -46391,6 +46391,9 @@ msgstr ""
 msgid "This %{issuable} is locked. Only %{strong_open}project members%{strong_close} can comment."
 msgstr ""
 
+msgid "This %{issuable} is locked. Only project members can comment."
+msgstr ""
+
 msgid "This %{noteableTypeText} is %{confidentialLinkStart}confidential%{confidentialLinkEnd} and %{lockedLinkStart}locked%{lockedLinkEnd}."
 msgstr ""
 
@@ -46719,6 +46722,9 @@ msgid "This issue is hidden because its author has been banned"
 msgstr ""
 
 msgid "This issue is in a child epic of the filtered epic"
+msgstr ""
+
+msgid "This issue is locked. Only project members can comment."
 msgstr ""
 
 msgid "This job could not start because it could not retrieve the needed artifacts%{punctuation}%{invalid_dependencies}"
