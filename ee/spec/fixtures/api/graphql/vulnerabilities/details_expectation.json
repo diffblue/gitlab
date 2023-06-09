@@ -92,29 +92,47 @@
     "value": "Here\nis\ncode"
   },
   {
-    "__typename": "VulnerabilityDetailList",
-    "description": null,
+    "__typename": "VulnerabilityDetailNamedList",
+    "name": "A Named List",
     "fieldName": "named_list",
+    "description": null,
     "items": [
       {
-        "__typename": "VulnerabilityDetailText",
-        "description": "The description for field 1",
-        "fieldName": "field1",
+        "__typename": "VulnerabilityDetailNamedListItem",
         "name": "Field 1",
-        "value": "Text"
+        "fieldName": "field1",
+        "description": "The description for field 1",
+        "value": {
+          "__typename": "VulnerabilityDetailText",
+          "description": "The description for field 1",
+          "fieldName": null,
+          "name": "Field 1",
+          "value": "Text"
+        }
       },
       {
-        "__typename": "VulnerabilityDetailText",
-        "description": "The description for field 2",
-        "fieldName": "field2",
+        "__typename": "VulnerabilityDetailNamedListItem",
         "name": "Field 2",
-        "value": "Text"
+        "fieldName": "field2",
+        "description": "The description for field 2",
+        "value": {
+          "__typename": "VulnerabilityDetailText",
+          "description": "The description for field 2",
+          "fieldName": null,
+          "name": "Field 2",
+          "value": "Text"
+        }
       },
       {
-        "__typename": "VulnerabilityDetailList"
+        "__typename": "VulnerabilityDetailNamedListItem",
+        "name": "Nested Ints",
+        "fieldName": "nested_ints",
+        "description": null,
+        "value": {
+          "__typename": "VulnerabilityDetailList"
+        }
       }
-    ],
-    "name": "A Named List"
+    ]
   },
   {
     "__typename": "VulnerabilityDetailTable",
