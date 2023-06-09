@@ -866,7 +866,8 @@ content 2
     expect(
       serialize(
         details(
-          detailsContent(paragraph('dream level 1')),
+          // if paragraph contains special characters, it should be escaped and rendered as block
+          detailsContent(paragraph('dream level 1*')),
           detailsContent(
             details(
               detailsContent(paragraph('dream level 2')),
@@ -883,7 +884,10 @@ content 2
     ).toBe(
       `
 <details>
-<summary>dream level 1</summary>
+<summary>
+
+dream level 1\\*
+</summary>
 
 <details>
 <summary>dream level 2</summary>
@@ -1124,7 +1128,8 @@ _An elephant at sunset_
         table(
           tableRow(
             tableHeader(paragraph('examples of')),
-            tableHeader(paragraph('block content')),
+            // if a node contains special characters, it should be escaped and rendered as block
+            tableHeader(paragraph('block content*')),
             tableHeader(paragraph('in tables')),
             tableHeader(paragraph('in content editor')),
           ),
@@ -1181,7 +1186,10 @@ _An elephant at sunset_
 <table>
 <tr>
 <th>examples of</th>
-<th>block content</th>
+<th>
+
+block content\\*
+</th>
 <th>in tables</th>
 <th>in content editor</th>
 </tr>
