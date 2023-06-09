@@ -45,6 +45,8 @@ jest.mock('~/emoji');
 
 const tiptapEditor = createTiptapEditor([Sourcemap]);
 
+const text = (val) => tiptapEditor.state.schema.text(val);
+
 const {
   builders: {
     audio,
@@ -154,14 +156,18 @@ describe('markdownSerializer', () => {
   });
 
   it('correctly serializes code blocks wrapped by italics and bold marks', () => {
-    const text = 'code block';
+    const codeBlockContent = 'code block';
 
-    expect(serialize(paragraph(italic(code(text))))).toBe(`_\`${text}\`_`);
-    expect(serialize(paragraph(code(italic(text))))).toBe(`_\`${text}\`_`);
-    expect(serialize(paragraph(bold(code(text))))).toBe(`**\`${text}\`**`);
-    expect(serialize(paragraph(code(bold(text))))).toBe(`**\`${text}\`**`);
-    expect(serialize(paragraph(strike(code(text))))).toBe(`~~\`${text}\`~~`);
-    expect(serialize(paragraph(code(strike(text))))).toBe(`~~\`${text}\`~~`);
+    expect(serialize(paragraph(italic(code(codeBlockContent))))).toBe(`_\`${codeBlockContent}\`_`);
+    expect(serialize(paragraph(code(italic(codeBlockContent))))).toBe(`_\`${codeBlockContent}\`_`);
+    expect(serialize(paragraph(bold(code(codeBlockContent))))).toBe(`**\`${codeBlockContent}\`**`);
+    expect(serialize(paragraph(code(bold(codeBlockContent))))).toBe(`**\`${codeBlockContent}\`**`);
+    expect(serialize(paragraph(strike(code(codeBlockContent))))).toBe(
+      `~~\`${codeBlockContent}\`~~`,
+    );
+    expect(serialize(paragraph(code(strike(codeBlockContent))))).toBe(
+      `~~\`${codeBlockContent}\`~~`,
+    );
   });
 
   it('correctly serializes inline diff', () => {
@@ -172,7 +178,7 @@ describe('markdownSerializer', () => {
           inlineDiff({ type: 'deletion' }, '-10 lines'),
         ),
       ),
-    ).toBe('{++30 lines+}{--10 lines-}');
+    ).toBe('{+\\+30 lines+}{-\\-10 lines-}');
   });
 
   it('correctly serializes highlight', () => {
@@ -203,6 +209,12 @@ hi
 - c-->
       `.trim(),
     );
+  });
+
+  it('escapes < and > in a paragraph', () => {
+    expect(
+      serialize(paragraph(text("some prose: <this> and </this> looks like code, but isn't"))),
+    ).toBe("some prose: \\<this\\> and \\</this\\> looks like code, but isn't");
   });
 
   it('correctly serializes a line break', () => {
@@ -1527,9 +1539,6 @@ paragraph
     ${'link'}              | ${'link(https://www.gitlab.com)'}               | ${'modified link(https://www.gitlab.com)'}               | ${prependContentEditAction}
     ${'link'}              | ${'link(engineering@gitlab.com)'}               | ${'modified link(engineering@gitlab.com)'}               | ${prependContentEditAction}
     ${'link'}              | ${'link <https://www.gitlab.com>'}              | ${'modified link <https://www.gitlab.com>'}              | ${prependContentEditAction}
-    ${'link'}              | ${'link [https://www.gitlab.com>'}              | ${'modified link \\[https://www.gitlab.com>'}            | ${prependContentEditAction}
-    ${'link'}              | ${'link <https://www.gitlab.com'}               | ${'modified link <https://www.gitlab.com'}               | ${prependContentEditAction}
-    ${'link'}              | ${'link https://www.gitlab.com>'}               | ${'modified link https://www.gitlab.com>'}               | ${prependContentEditAction}
     ${'link'}              | ${'link https://www.gitlab.com/path'}           | ${'modified link https://www.gitlab.com/path'}           | ${prependContentEditAction}
     ${'link'}              | ${'link https://www.gitlab.com?query=search'}   | ${'modified link https://www.gitlab.com?query=search'}   | ${prependContentEditAction}
     ${'link'}              | ${'link https://www.gitlab.com/#fragment'}      | ${'modified link https://www.gitlab.com/#fragment'}      | ${prependContentEditAction}
