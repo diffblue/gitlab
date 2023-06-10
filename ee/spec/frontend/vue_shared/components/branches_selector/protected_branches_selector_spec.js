@@ -9,6 +9,7 @@ import {
   PLACEHOLDER,
 } from 'ee/vue_shared/components/branches_selector/constants';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import { TEST_PROTECTED_BRANCHES } from './mock_data';
 
 const branchNames = (branches = TEST_PROTECTED_BRANCHES) => branches.map((branch) => branch.name);
@@ -17,7 +18,6 @@ const error = new Error('Something went wrong');
 
 describe('Protected Branches Selector', () => {
   let wrapper;
-  let closeSpy;
 
   const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findSelectableBranches = () =>
@@ -28,7 +28,7 @@ describe('Protected Branches Selector', () => {
   const findAllProtectedBranchesOption = () =>
     wrapper.findByTestId('all-protected-branches-option');
 
-  const createComponent = (props = {}) => {
+  const createComponent = (props = {}, { stubs = {} } = {}) => {
     wrapper = mountExtended(ProtectedBranchesSelector, {
       propsData: {
         projectId: '1',
@@ -36,6 +36,7 @@ describe('Protected Branches Selector', () => {
       },
       stubs: {
         GlDropdownItem: true,
+        ...stubs,
       },
     });
   };
@@ -147,14 +148,24 @@ describe('Protected Branches Selector', () => {
     });
 
     it('closes the dropdown when clicked', async () => {
-      createComponent({
-        [prop]: true,
-      });
-      closeSpy = jest.spyOn(wrapper.vm.$refs.branches, 'close');
-
+      const closeMock = jest.fn();
+      createComponent(
+        {
+          [prop]: true,
+        },
+        {
+          stubs: {
+            GlCollapsibleListbox: stubComponent(GlCollapsibleListbox, {
+              template: `<div><slot name="footer"></slot></div>`,
+              methods: {
+                close: closeMock,
+              },
+            }),
+          },
+        },
+      );
       await findFn().vm.$emit('click');
-
-      expect(closeSpy).toHaveBeenCalled();
+      expect(closeMock).toHaveBeenCalled();
     });
   });
 
