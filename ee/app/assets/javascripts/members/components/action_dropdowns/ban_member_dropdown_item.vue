@@ -1,11 +1,11 @@
 <script>
 import { mapState } from 'vuex';
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import csrf from '~/lib/utils/csrf';
 
 export default {
   name: 'BanMemberDropdownItem',
-  components: { GlDropdownItem },
+  components: { GlDisclosureDropdownItem },
   inject: ['namespace'],
   props: {
     member: {
@@ -34,11 +34,13 @@ export default {
 };
 </script>
 <template>
-  <gl-dropdown-item @click="submitForm">
-    <form ref="banForm" :action="banPath" method="post">
-      <input :value="csrfToken" type="hidden" name="authenticity_token" />
-      <input type="hidden" name="_method" value="put" />
-    </form>
-    <slot></slot>
-  </gl-dropdown-item>
+  <gl-disclosure-dropdown-item @action="submitForm">
+    <template #list-item>
+      <form ref="banForm" :action="banPath" method="post">
+        <input :value="csrfToken" type="hidden" name="authenticity_token" />
+        <input type="hidden" name="_method" value="put" />
+      </form>
+      <slot></slot>
+    </template>
+  </gl-disclosure-dropdown-item>
 </template>

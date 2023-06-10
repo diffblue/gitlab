@@ -1,4 +1,4 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -44,7 +44,7 @@ describe('LdapOverrideDropdownItem', () => {
     });
   };
 
-  const findDropdownItem = () => wrapper.findComponent(GlDropdownItem);
+  const findDropdownItem = () => wrapper.findComponent(GlDisclosureDropdownItem);
 
   beforeEach(() => {
     createComponent();
@@ -55,7 +55,7 @@ describe('LdapOverrideDropdownItem', () => {
   });
 
   it('calls Vuex action to open LDAP override confirmation modal when clicked', () => {
-    findDropdownItem().vm.$emit('click');
+    findDropdownItem().vm.$emit('action');
 
     expect(actions.showLdapOverrideConfirmationModal).toHaveBeenCalledWith(
       expect.any(Object),

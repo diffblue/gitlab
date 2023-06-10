@@ -1,4 +1,4 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -55,7 +55,7 @@ describe('BanMemberDropdownItem', () => {
 
   it('submits the form when clicked', () => {
     const submitSpy = jest.spyOn(wrapper.vm.$refs.banForm, 'submit');
-    wrapper.findComponent(GlDropdownItem).vm.$emit('click');
+    wrapper.findComponent(GlDisclosureDropdownItem).vm.$emit('action');
     expect(submitSpy).toHaveBeenCalled();
   });
 });

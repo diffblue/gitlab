@@ -1,10 +1,10 @@
 <script>
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 
 export default {
   name: 'LdapOverrideDropdownItem',
-  components: { GlDropdownItem },
+  components: { GlDisclosureDropdownItem },
   inject: ['namespace'],
   props: {
     member: {
@@ -23,7 +23,9 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown-item @click="showLdapOverrideConfirmationModal(member)">
-    <slot></slot>
-  </gl-dropdown-item>
+  <gl-disclosure-dropdown-item @action="showLdapOverrideConfirmationModal(member)">
+    <template #list-item>
+      <slot></slot>
+    </template>
+  </gl-disclosure-dropdown-item>
 </template>
