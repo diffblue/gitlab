@@ -132,29 +132,13 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     end
 
     context 'when the state is `dismissed`' do
-      subject { described_class.by_state(:dismissed, check_feedback: check_feedback?) }
+      subject { described_class.by_state(:dismissed) }
 
       before do
-        create(:vulnerability_feedback,
-           :dismissal,
-           project: scan_2.project,
-           category: scan_2.scan_type,
-           finding_uuid: finding_2.uuid)
-
         create(:vulnerabilities_finding, :dismissed, uuid: finding_1.uuid)
       end
 
-      context 'when the `check_feedback` argument is false' do
-        let(:check_feedback?) { false }
-
-        it { is_expected.to match_array([finding_1]) }
-      end
-
-      context 'when the `check_feedback` argument is true' do
-        let(:check_feedback?) { true }
-
-        it { is_expected.to match_array([finding_1, finding_2]) }
-      end
+      it { is_expected.to match_array([finding_1]) }
     end
 
     context 'when the state is `confirmed`' do

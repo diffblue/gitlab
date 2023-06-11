@@ -134,9 +134,7 @@ module Security
     def by_state(relation)
       return relation unless params[:state].present?
 
-      check_feedback = Feature.disabled?(:deprecate_vulnerabilities_feedback, project)
-
-      relation.by_state(params[:state], check_feedback: check_feedback)
+      relation.by_state(params[:state])
     end
 
     def by_confidence_levels(relation)
