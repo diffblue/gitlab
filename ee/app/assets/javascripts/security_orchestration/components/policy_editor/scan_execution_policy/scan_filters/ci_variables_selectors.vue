@@ -1,5 +1,5 @@
 <script>
-import { isEmpty } from 'lodash';
+import { isEmpty, uniqueId } from 'lodash';
 import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import GenericBaseLayoutComponent from '../../generic_base_layout_component.vue';
@@ -32,18 +32,22 @@ export default {
       default: () => ({}),
     },
   },
+  data() {
+    return {
+      variableTracker: Object.entries(this.selected).map(() => uniqueId()),
+    };
+  },
   computed: {
     hasEmptyVariable() {
       return this.variables.some(([key]) => key === '');
     },
     variables() {
-      return this.selected && Object.entries(this.selected).length
-        ? Object.entries(this.selected)
-        : [['', '']];
+      return Object.entries(this.selected).length ? Object.entries(this.selected) : [['', '']];
     },
   },
   methods: {
     addVariable() {
+      this.variableTracker.push(uniqueId());
       this.$emit('input', { variables: { ...this.selected, '': '' } });
     },
     reduceVariablesToObject(array) {
@@ -55,7 +59,8 @@ export default {
     remove() {
       this.$emit('remove', CI_VARIABLE);
     },
-    removeVariable(variable) {
+    removeVariable(variable, index) {
+      this.variableTracker.splice(index, 1);
       const remainingVariables = this.variables.filter(([key]) => variable !== key);
 
       const variablesObject = this.reduceVariablesToObject(remainingVariables);
@@ -87,14 +92,13 @@ export default {
       <p class="gl-mb-0">{{ $options.i18n.subLabel }}</p>
       <ci-variable-selector
         v-for="([key, value], index) in variables"
-        :key="key"
+        :key="variableTracker[index]"
         :variable="key"
         :value="value"
         :scan-type="scanType"
         :selected="selected"
         @input="updateVariable($event, index)"
-        @remove="removeVariable"
-        @error="$emit('error')"
+        @remove="removeVariable($event, index)"
       />
       <span v-gl-tooltip.hover="$options.i18n.tooltipText">
         <gl-button

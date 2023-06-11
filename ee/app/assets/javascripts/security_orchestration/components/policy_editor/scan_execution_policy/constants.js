@@ -57,7 +57,6 @@ export const DAST_HUMANIZED_TEMPLATE = s__(
 
 export const POLICY_ACTION_BUILDER_TAGS_ERROR_KEY = 'tags';
 export const POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY = 'profiles';
-export const POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY = 'variables';
 
 export const RUNNER_TAGS_PARSING_ERROR = s__(
   'SecurityOrchestration|Non-existing tags have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing tags from the policy yaml.',
@@ -67,12 +66,7 @@ export const DAST_SCANNERS_PARSING_ERROR = s__(
   'SecurityOrchestration|Non-existing DAST profiles have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing profiles from the policy yaml.',
 );
 
-export const VARIABLES_PARSING_ERROR = s__(
-  'SecurityOrchestration|Non-existing CI variables have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing CI variables from the policy yaml.',
-);
-
 export const ERROR_MESSAGE_MAP = {
   [POLICY_ACTION_BUILDER_TAGS_ERROR_KEY]: RUNNER_TAGS_PARSING_ERROR,
-  [POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY]: VARIABLES_PARSING_ERROR,
   [POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY]: DAST_SCANNERS_PARSING_ERROR,
 };

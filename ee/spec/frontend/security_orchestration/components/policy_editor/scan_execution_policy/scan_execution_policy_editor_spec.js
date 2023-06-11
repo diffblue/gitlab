@@ -25,10 +25,8 @@ import {
   SCAN_EXECUTION_PIPELINE_RULE,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
-  POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY,
   RUNNER_TAGS_PARSING_ERROR,
   DAST_SCANNERS_PARSING_ERROR,
-  VARIABLES_PARSING_ERROR,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib/rules';
 
@@ -326,10 +324,9 @@ enabled: true`;
 
   describe('parsing tags errors', () => {
     it.each`
-      name                      | errorKey                                         | expectedErrorMessage
-      ${'tags '}                | ${POLICY_ACTION_BUILDER_TAGS_ERROR_KEY}          | ${RUNNER_TAGS_PARSING_ERROR}
-      ${'DAST profiles '}       | ${POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY} | ${DAST_SCANNERS_PARSING_ERROR}
-      ${'custom ci variables '} | ${POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY}     | ${VARIABLES_PARSING_ERROR}
+      name                | errorKey                                         | expectedErrorMessage
+      ${'tags '}          | ${POLICY_ACTION_BUILDER_TAGS_ERROR_KEY}          | ${RUNNER_TAGS_PARSING_ERROR}
+      ${'DAST profiles '} | ${POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY} | ${DAST_SCANNERS_PARSING_ERROR}
     `(
       'disables rule editor when parsing of $name fails',
       async ({ errorKey, expectedErrorMessage }) => {

@@ -217,11 +217,6 @@ describe('PolicyActionBuilder', () => {
           [{ ...DEFAULT_ACTION, variables: NEW_VARIABLES }],
         ]);
       });
-
-      it('emits "error" with the correct error message when a variable error occurs', () => {
-        findCiVariablesSelectors().vm.$emit('remove');
-        expect(wrapper.emitted('parsing-error')).toEqual([['variables']]);
-      });
     });
 
     describe('scan filter selector', () => {

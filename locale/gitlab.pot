@@ -40413,9 +40413,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|Select a scanner"
 msgstr ""
 
-msgid "ScanExecutionPolicy|Select a variable"
-msgstr ""
-
 msgid "ScanExecutionPolicy|Select agent"
 msgstr ""
 
@@ -40423,6 +40420,9 @@ msgid "ScanExecutionPolicy|Select branches"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Select namespaces"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Select or Create a Key"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Select scanner profile"
@@ -40441,6 +40441,9 @@ msgid "ScanExecutionPolicy|Tags"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Triggers:"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Use a custom key"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Value"
@@ -41327,9 +41330,6 @@ msgid "SecurityOrchestration|No rules defined - policy will not run."
 msgstr ""
 
 msgid "SecurityOrchestration|No tags available"
-msgstr ""
-
-msgid "SecurityOrchestration|Non-existing CI variables have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing CI variables from the policy yaml."
 msgstr ""
 
 msgid "SecurityOrchestration|Non-existing DAST profiles have been detected in the policy yaml. As a result, rule mode has been disabled. To enable rule mode, remove those non-existing profiles from the policy yaml."

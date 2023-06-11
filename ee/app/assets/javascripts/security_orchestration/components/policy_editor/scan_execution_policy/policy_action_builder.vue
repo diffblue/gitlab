@@ -21,7 +21,6 @@ import {
   SCANNER_HUMANIZED_TEMPLATE,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
-  POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY,
 } from './constants';
 import ProjectDastProfileSelector from './project_dast_profile_selector.vue';
 import GroupDastProfileSelector from './group_dast_profile_selector.vue';
@@ -35,7 +34,6 @@ export default {
   SCANNERS: RULE_MODE_SCANNERS,
   POLICY_ACTION_BUILDER_DAST_PROFILES_ERROR_KEY,
   POLICY_ACTION_BUILDER_TAGS_ERROR_KEY,
-  POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY,
   components: {
     GlCollapsibleListbox,
     GlFormGroup,
@@ -251,7 +249,6 @@ export default {
           :selected="initAction.variables"
           @remove="removeCiFilter"
           @input="triggerChanged"
-          @error="$emit('parsing-error', $options.POLICY_ACTION_BUILDER_VARIABLES_ERROR_KEY)"
         />
 
         <scan-filter-selector
