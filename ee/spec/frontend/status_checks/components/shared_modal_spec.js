@@ -32,6 +32,8 @@ describe('Shared modal', () => {
   let store;
   const glModalDirective = jest.fn();
   const action = jest.fn();
+  const hideMock = jest.fn();
+  const submitMock = jest.fn();
 
   const createWrapper = (props = {}) => {
     store = new Vuex.Store({
@@ -61,11 +63,18 @@ describe('Shared modal', () => {
         GlButton: stubComponent(GlButton, {
           props: ['v-gl-modal', 'loading'],
         }),
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: hideMock,
+          },
+        }),
+        StatusCheckForm: stubComponent(Form, {
+          methods: {
+            submit: submitMock,
+          },
+        }),
       },
     });
-
-    wrapper.vm.$refs.modal.hide = jest.fn();
-    wrapper.vm.$refs.form.submit = jest.fn();
   };
 
   const findModal = () => wrapper.findComponent(GlModal);
@@ -122,7 +131,7 @@ describe('Shared modal', () => {
         await findForm().vm.$emit('submit', formData);
         await waitForPromises();
 
-        expect(wrapper.vm.$refs.form.submit).toHaveBeenCalled();
+        expect(submitMock).toHaveBeenCalled();
         expect(action).toHaveBeenCalledWith({
           externalUrl: formData.url,
           id: expected?.id,
@@ -130,7 +139,7 @@ describe('Shared modal', () => {
           protectedBranchIds: formData.branches.map(({ id }) => id),
         });
 
-        expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
+        expect(hideMock).toHaveBeenCalled();
       });
 
       it('submits the values, the API fails and does not hide the modal', async () => {
@@ -144,7 +153,7 @@ describe('Shared modal', () => {
         await findForm().vm.$emit('submit', formData);
         await waitForPromises();
 
-        expect(wrapper.vm.$refs.form.submit).toHaveBeenCalled();
+        expect(submitMock).toHaveBeenCalled();
 
         expect(action).toHaveBeenCalledWith({
           externalUrl: formData.url,
@@ -153,7 +162,7 @@ describe('Shared modal', () => {
           protectedBranchIds: formData.branches.map(({ id }) => id),
         });
 
-        expect(wrapper.vm.$refs.modal.hide).not.toHaveBeenCalled();
+        expect(hideMock).not.toHaveBeenCalled();
 
         expect(findForm().props()).toMatchObject({
           projectId,
