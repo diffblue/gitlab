@@ -1142,7 +1142,8 @@ Payload example:
           "key": "NESTOR_PROD_ENVIRONMENT",
           "value": "us-west-1"
         }
-      ]
+      ],
+      "url": "http://example.com/gitlab-org/gitlab-test/-/pipelines/31"
    },
     "merge_request": {
       "id": 1,
