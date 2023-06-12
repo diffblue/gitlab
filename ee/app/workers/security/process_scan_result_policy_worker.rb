@@ -20,7 +20,7 @@ module Security
 
       sync_policies(project, configuration, active_scan_result_policies)
 
-      if Feature.enabled?(:sync_mr_approval_rules_security_policies, @project)
+      if Feature.enabled?(:sync_mr_approval_rules_security_policies, project)
         Security::ScanResultPolicies::SyncOpenedMergeRequestsWorker.perform_async(project_id, configuration_id)
       else
         Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
