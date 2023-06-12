@@ -42,6 +42,7 @@ module Elastic
         indexes :visibility_level, type: :integer
         indexes :repository_access_level, type: :integer
         indexes :hashed_root_namespace_id, type: :integer
+        indexes :schema_version, type: :integer
       end
     end
   end

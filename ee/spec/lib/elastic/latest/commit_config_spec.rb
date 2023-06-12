@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_relative './config_shared_examples'
 
-RSpec.describe Elastic::Latest::CommitConfig do
+RSpec.describe Elastic::Latest::CommitConfig, feature_category: :global_search do
   describe '.settings' do
     it_behaves_like 'config settings return correct values'
   end
