@@ -12,7 +12,8 @@ module Gitlab
             TextUtils = Gitlab::Llm::Chain::Utils::TextProcessing
 
             NAME = 'JsonReader'
-            DESCRIPTION = 'A tool useful to handle JSON data format'
+            DESCRIPTION = 'A tool useful to handle JSON data format. ' \
+                          'Action Input for this tools always starts with: `data`'
 
             # anthropic token limit:
             # https://www.anthropic.com/index/100k-context-windows#:~:text=context%20window%20from%209K

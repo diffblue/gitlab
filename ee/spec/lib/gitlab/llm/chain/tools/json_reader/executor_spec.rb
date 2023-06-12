@@ -34,6 +34,19 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
     stub_const("#{described_class.name}::MAX_TOKENS", 4)
   end
 
+  describe '#name' do
+    it 'returns tool name' do
+      expect(described_class::NAME).to eq('JsonReader')
+    end
+  end
+
+  describe '#description' do
+    it 'returns tool description' do
+      expect(described_class::DESCRIPTION)
+        .to include('A tool useful to handle JSON data format. Action Input for this tools always starts with: `data`')
+    end
+  end
+
   describe '#execute' do
     context 'when execution is successful' do
       context 'when resource length equals or exceeds max tokens' do
