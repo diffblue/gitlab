@@ -131,6 +131,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
   skip_factory_defaults = %i[
     ci_job_token_project_scope_link
     ci_subscriptions_project
+    compliance_standards_adherence
     evidence
     exported_protected_branch
     fork_network_member
