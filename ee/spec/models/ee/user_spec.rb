@@ -1438,6 +1438,36 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  context 'zoekt namespaces', feature_category: :global_search do
+    let_it_be(:indexed_parent_namespace) { create(:group) }
+    let_it_be(:unindexed_namespace) { create(:namespace) }
+    let_it_be(:shard) { Zoekt::Shard.create!(index_base_url: 'http://example.com:1234/', search_base_url: 'http://example.com:4567/') }
+    let_it_be(:zoekt_indexed_namespace) { Zoekt::IndexedNamespace.create!(shard: shard, namespace: indexed_parent_namespace) }
+
+    let(:user) { create(:user, namespace: create(:user_namespace)) }
+
+    describe '#zoekt_indexed_namespaces' do
+      it 'returns zoekt indexed namespaces for user' do
+        indexed_parent_namespace.add_maintainer(user)
+        expect(user.zoekt_indexed_namespaces).to match_array([zoekt_indexed_namespace])
+      end
+
+      it 'returns empty array if there are user is not have access of reporter or above' do
+        expect(user.zoekt_indexed_namespaces).to match_array([])
+      end
+    end
+
+    describe '#has_zoekt_indexed_namespace?' do
+      it 'returns true if there are zoekt_indexed_namespaces' do
+        allow(user).to receive(:zoekt_indexed_namespaces).and_return([zoekt_indexed_namespace])
+        expect(user).to be_has_zoekt_indexed_namespace
+
+        allow(user).to receive(:zoekt_indexed_namespaces).and_return([])
+        expect(user).not_to be_has_zoekt_indexed_namespace
+      end
+    end
+  end
+
   context 'paid namespaces', :saas do
     using RSpec::Parameterized::TableSyntax
 
