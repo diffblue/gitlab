@@ -29,6 +29,10 @@ module Dependencies
         transition running: :finished
       end
 
+      event :reset_state do
+        transition running: :created
+      end
+
       event :failed do
         transition [:created, :running] => :failed
       end
