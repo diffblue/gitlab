@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import { createMockSubscription as createMockApolloSubscription } from 'mock-apollo-client';
 
 import approvedByCurrentUser from 'test_fixtures/graphql/merge_requests/approvals/approvals.query.graphql.json';
 import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
@@ -54,6 +55,7 @@ import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.gr
 import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/states/ready_to_merge.query.graphql';
 import mergeQuery from '~/vue_merge_request_widget/queries/states/new_ready_to_merge.query.graphql';
 import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
+import approvedBySubscription from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.subscription.graphql';
 import securityReportSummaryQuery from 'ee/vue_shared/security_reports/graphql/mr_security_report_summary.graphql';
 
 import mockData from './mock_data';
@@ -71,32 +73,58 @@ const COVERAGE_FUZZING_SELECTOR = '.js-coverage-fuzzing-widget';
 const API_FUZZING_SELECTOR = '.js-api-fuzzing-widget';
 
 describe('ee merge request widget options', () => {
+  const allSubscriptions = {};
   let wrapper;
   let mock;
 
   const createComponent = (options) => {
+    const queryHandlers = [
+      [approvalsQuery, jest.fn().mockResolvedValue(approvedByCurrentUser)],
+      [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
+      [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
+      [
+        securityReportMergeRequestDownloadPathsQuery,
+        jest.fn().mockResolvedValue({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
+      ],
+      [securityReportSummaryQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
+      [
+        mergeQuery,
+        jest.fn().mockResolvedValue({
+          data: {
+            project: { id: 1, mergeRequest: { id: 1, userPermissions: { canMerge: true } } },
+          },
+        }),
+      ],
+    ];
+    const subscriptionHandlers = [
+      [
+        approvedBySubscription,
+        () => {
+          // Please see https://github.com/Mike-Gibson/mock-apollo-client/blob/c85746f1433b42af83ef6ca0d2904ccad6076666/README.md#multiple-subscriptions
+          // for why subscriptions must be mocked this way, in this context
+          // Note that the keyed object -> array structure is so that:
+          //  A) when necessary, we can publish (.next) events into the stream
+          //  B) we can do that by name (per subscription) rather than as a single array of all subscriptions
+          const sym = Symbol.for('approvedBySubscription');
+          const newSub = createMockApolloSubscription();
+          const container = allSubscriptions[sym] || [];
+
+          container.push(newSub);
+          allSubscriptions[sym] = container;
+
+          return newSub;
+        },
+      ],
+    ];
+    const apolloProvider = createMockApollo(queryHandlers);
+
+    subscriptionHandlers.forEach(([query, stream]) => {
+      apolloProvider.defaultClient.setRequestHandler(query, stream);
+    });
+
     wrapper = mount(MrWidgetOptions, {
       ...options,
-      apolloProvider: createMockApollo([
-        [approvalsQuery, jest.fn().mockResolvedValue(approvedByCurrentUser)],
-        [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
-        [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
-        [
-          securityReportMergeRequestDownloadPathsQuery,
-          jest
-            .fn()
-            .mockResolvedValue({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
-        ],
-        [securityReportSummaryQuery, jest.fn().mockResolvedValue({ data: { project: null } })],
-        [
-          mergeQuery,
-          jest.fn().mockResolvedValue({
-            data: {
-              project: { id: 1, mergeRequest: { id: 1, userPermissions: { canMerge: true } } },
-            },
-          }),
-        ],
-      ]),
+      apolloProvider,
       data() {
         return {
           loading: false,
