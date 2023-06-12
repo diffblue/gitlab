@@ -11,6 +11,7 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
 
   let(:response) { Arkose::VerifyResponse.new(arkose_verify_response) }
   let(:service) { described_class.new(response: response, user: user) }
+  let(:user_scores) { Abuse::UserTrustScore.new(user) }
 
   describe '#execute' do
     it 'adds new custom attributes to the user' do
@@ -38,8 +39,8 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
 
       # Response mock json values from arkose_verify_response are stored after executing the service,
       # we should expect `arkose_global_score` and `arkose_custom_score` to point to these values
-      expect(user.arkose_global_score).to eq(0.0)
-      expect(user.arkose_custom_score).to eq(0.0)
+      expect(user_scores.arkose_global_score).to eq(0.0)
+      expect(user_scores.arkose_custom_score).to eq(0.0)
     end
 
     it 'returns a success response' do
@@ -64,8 +65,8 @@ RSpec.describe Arkose::RecordUserDataService, feature_category: :instance_resili
         # Due to failed verification, there are no returned scores in arkose_verify_response,
         # we should expect `arkose_global_score` and `arkose_custom_score` not to be overwritten
         # and remain as the initial scores
-        expect(user.arkose_global_score).to eq(13.0)
-        expect(user.arkose_custom_score).to eq(11.0)
+        expect(user_scores.arkose_global_score).to eq(13.0)
+        expect(user_scores.arkose_custom_score).to eq(11.0)
       end
 
       it 'returns an error response' do
