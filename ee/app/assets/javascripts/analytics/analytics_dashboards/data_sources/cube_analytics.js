@@ -29,7 +29,7 @@ const convertToCommonChartFormat = (resultSet) => {
 const getLinkDimensions = (key, visualizationOptions) =>
   visualizationOptions?.links?.find(({ text, href }) => [text, href].includes(key));
 
-const convertToTableFormat = (resultSet, _query, visualizationOptions) => {
+export const convertToTableFormat = (resultSet, _query, visualizationOptions) => {
   const columns = resultSet.tableColumns();
   const rows = resultSet.tablePivot();
 

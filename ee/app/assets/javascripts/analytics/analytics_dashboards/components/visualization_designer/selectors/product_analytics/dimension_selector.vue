@@ -4,7 +4,8 @@ import { GlLabel, GlButton, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { DATE_RANGE_FILTER_DIMENSIONS } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 import { s__, sprintf } from '~/locale';
 import {
-  EVENTS_DB_TABLE_NAME,
+  EVENTS_TABLE_NAME,
+  SESSIONS_TABLE_NAME,
   DIMENSION_COLOR,
   ANALYTICS_FIELD_CATEGORIES,
   ANALYTICS_FIELDS,
@@ -72,19 +73,22 @@ export default {
   methods: {
     selectDimension(dimensionField) {
       if (typeof dimensionField === 'string') {
-        this.addDimensions(`${EVENTS_DB_TABLE_NAME}.${dimensionField}`);
+        this.addDimensions(`${EVENTS_TABLE_NAME}.${dimensionField}`);
       } else {
         dimensionField.forEach((dimension) => {
-          this.addDimensions(`${EVENTS_DB_TABLE_NAME}.${dimension}`);
+          this.addDimensions(`${EVENTS_TABLE_NAME}.${dimension}`);
         });
       }
 
       this.selectedDimensionMode = false;
     },
     setGranularity(selectedGranularity) {
+      const eventsMeasure = EVENTS_TABLE_NAME.toLowerCase();
+      const sessionsMeasure = SESSIONS_TABLE_NAME.toLowerCase();
+
       const dimensionFieldName =
         DATE_RANGE_FILTER_DIMENSIONS[
-          this.measureType === 'sessions' ? this.measureType : 'trackedevents'
+          this.measureType === sessionsMeasure ? this.measureType : eventsMeasure
         ];
 
       this.setTimeDimensions([{ dimension: dimensionFieldName, granularity: selectedGranularity }]);
@@ -166,7 +170,7 @@ export default {
                 icon="documents"
                 category="tertiary"
                 variant="confirm"
-                @click="selectDimension('eventType')"
+                @click="selectDimension('event')"
                 >{{ s__('ProductAnalytics|Event Type') }}</gl-button
               >
             </li>

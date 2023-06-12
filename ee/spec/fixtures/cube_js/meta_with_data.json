@@ -1,13 +1,13 @@
 {
   "cubes": [
     {
-      "name": "Sessions",
-      "title": "Sessions",
+      "name": "SnowplowSessions",
+      "title": "Snowplow Sessions",
       "connectedComponent": 1,
       "measures": [
         {
-          "name": "Sessions.count",
-          "title": "Sessions Count",
+          "name": "SnowplowSessions.count",
+          "title": "Snowplow Sessions Count",
           "shortTitle": "Count",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -27,8 +27,8 @@
           "isVisible": true
         },
         {
-          "name": "Sessions.averagePerUser",
-          "title": "Sessions Average Per User",
+          "name": "SnowplowSessions.averagePerUser",
+          "title": "Snowplow Sessions Average Per User",
           "shortTitle": "Average Per User",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -48,8 +48,8 @@
           "isVisible": true
         },
         {
-          "name": "Sessions.averageDurationMinutes",
-          "title": "Sessions Average Duration Minutes",
+          "name": "SnowplowSessions.averageDurationMinutes",
+          "title": "Snowplow Sessions Average Duration Minutes",
           "shortTitle": "Average Duration Minutes",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -69,8 +69,8 @@
           "isVisible": true
         },
         {
-          "name": "Sessions.uniqueUsersCount",
-          "title": "Sessions Unique Users Count",
+          "name": "SnowplowSessions.uniqueUsersCount",
+          "title": "Snowplow Sessions Unique Users Count",
           "shortTitle": "Unique Users Count",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -90,8 +90,8 @@
           "isVisible": true
         },
         {
-          "name": "Sessions.repeatPercent",
-          "title": "Sessions Repeat Percent",
+          "name": "SnowplowSessions.repeatPercent",
+          "title": "Snowplow Sessions Repeat Percent",
           "description": "Percent of Repeat Sessions",
           "shortTitle": "Repeat Percent",
           "format": "percent",
@@ -113,8 +113,8 @@
           "isVisible": true
         },
         {
-          "name": "Sessions.repeatCount",
-          "title": "Sessions Repeat Count",
+          "name": "SnowplowSessions.repeatCount",
+          "title": "Snowplow Sessions Repeat Count",
           "description": "Repeat Sessions Count",
           "shortTitle": "Repeat Count",
           "cumulativeTotal": false,
@@ -137,194 +137,186 @@
       ],
       "dimensions": [
         {
-          "name": "Sessions.isFirst",
-          "title": "Sessions Is First",
+          "name": "SnowplowSessions.isFirst",
+          "title": "Snowplow Sessions Is First",
           "type": "string",
           "shortTitle": "Is First",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.anonymousId",
-          "title": "Sessions Anonymous Id",
+          "name": "SnowplowSessions.userId",
+          "title": "Snowplow Sessions User Id",
           "type": "string",
-          "shortTitle": "Anonymous Id",
+          "shortTitle": "User Id",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.numberEvents",
-          "title": "Sessions Number Events",
+          "name": "SnowplowSessions.numberEvents",
+          "title": "Snowplow Sessions Number Events",
           "type": "number",
           "shortTitle": "Number Events",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.startAt",
-          "title": "Sessions Start at",
+          "name": "SnowplowSessions.startAt",
+          "title": "Snowplow Sessions Start at",
           "type": "time",
           "shortTitle": "Start at",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.nextStartAt",
-          "title": "Sessions Next Start at",
+          "name": "SnowplowSessions.nextStartAt",
+          "title": "Snowplow Sessions Next Start at",
           "type": "time",
           "shortTitle": "Next Start at",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.endAt",
-          "title": "Sessions End at",
+          "name": "SnowplowSessions.endAt",
+          "title": "Snowplow Sessions End at",
           "type": "time",
           "shortTitle": "End at",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.durationMinutes",
-          "title": "Sessions Duration Minutes",
+          "name": "SnowplowSessions.durationMinutes",
+          "title": "Snowplow Sessions Duration Minutes",
           "type": "number",
           "shortTitle": "Duration Minutes",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.parsedUaUaFamily",
-          "title": "Sessions Parsed Ua Ua Family",
+          "name": "SnowplowSessions.agentName",
+          "title": "Snowplow Sessions Agent Name",
           "type": "string",
-          "shortTitle": "Parsed Ua Ua Family",
+          "shortTitle": "Agent Name",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.docHost",
-          "title": "Sessions Doc Host",
+          "name": "SnowplowSessions.pageUrlhost",
+          "title": "Snowplow Sessions Page Urlhost",
           "type": "string",
-          "shortTitle": "Doc Host",
+          "shortTitle": "Page Urlhost",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.docPath",
-          "title": "Sessions Doc Path",
+          "name": "SnowplowSessions.pageUrlpath",
+          "title": "Snowplow Sessions Page Urlpath",
           "type": "string",
-          "shortTitle": "Doc Path",
+          "shortTitle": "Page Urlpath",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.docSearch",
-          "title": "Sessions Doc Search",
+          "name": "SnowplowSessions.event",
+          "title": "Snowplow Sessions Event",
           "type": "string",
-          "shortTitle": "Doc Search",
+          "shortTitle": "Event",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.eventType",
-          "title": "Sessions Event Type",
+          "name": "SnowplowSessions.eventId",
+          "title": "Snowplow Sessions Event Id",
           "type": "string",
-          "shortTitle": "Event Type",
+          "shortTitle": "Event Id",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.eventnCtxEventId",
-          "title": "Sessions Eventn Ctx Event Id",
-          "type": "string",
-          "shortTitle": "Eventn Ctx Event Id",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "Sessions.localTzOffset",
-          "title": "Sessions Local Tz Offset",
-          "type": "string",
-          "shortTitle": "Local Tz Offset",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "Sessions.pageTitle",
-          "title": "Sessions Page Title",
+          "name": "SnowplowSessions.pageTitle",
+          "title": "Snowplow Sessions Page Title",
           "type": "string",
           "shortTitle": "Page Title",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.parsedUaOsFamily",
-          "title": "Sessions Parsed Ua Os Family",
+          "name": "SnowplowSessions.osFamily",
+          "title": "Snowplow Sessions Os Family",
           "type": "string",
-          "shortTitle": "Parsed Ua Os Family",
+          "shortTitle": "Os Family",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.parsedUaOsVersion",
-          "title": "Sessions Parsed Ua Os Version",
+          "name": "SnowplowSessions.osName",
+          "title": "Snowplow Sessions Os Name",
           "type": "string",
-          "shortTitle": "Parsed Ua Os Version",
+          "shortTitle": "Os Name",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.parsedUaUaVersion",
-          "title": "Sessions Parsed Ua Ua Version",
+          "name": "SnowplowSessions.osVersion",
+          "title": "Snowplow Sessions Os Version",
           "type": "string",
-          "shortTitle": "Parsed Ua Ua Version",
+          "shortTitle": "Os Version",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.referer",
-          "title": "Sessions Referer",
+          "name": "SnowplowSessions.osVersionMajor",
+          "title": "Snowplow Sessions Os Version Major",
           "type": "string",
-          "shortTitle": "Referer",
+          "shortTitle": "Os Version Major",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.screenResolution",
-          "title": "Sessions Screen Resolution",
+          "name": "SnowplowSessions.agentVersion",
+          "title": "Snowplow Sessions Agent Version",
+          "type": "string",
+          "shortTitle": "Agent Version",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "SnowplowSessions.pageReferrer",
+          "title": "Snowplow Sessions Page Referrer",
+          "type": "string",
+          "shortTitle": "Page Referrer",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "SnowplowSessions.screenResolution",
+          "title": "Snowplow Sessions Screen Resolution",
           "type": "string",
           "shortTitle": "Screen Resolution",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.url",
-          "title": "Sessions Url",
+          "name": "SnowplowSessions.browserLanguage",
+          "title": "Snowplow Sessions Browser Language",
           "type": "string",
-          "shortTitle": "Url",
+          "shortTitle": "Browser Language",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.src",
-          "title": "Sessions Src",
+          "name": "SnowplowSessions.documentLanguage",
+          "title": "Snowplow Sessions Document Language",
           "type": "string",
-          "shortTitle": "Src",
+          "shortTitle": "Document Language",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "Sessions.sourceIp",
-          "title": "Sessions Source Ip",
+          "name": "SnowplowSessions.viewportSize",
+          "title": "Snowplow Sessions Viewport Size",
           "type": "string",
-          "shortTitle": "Source Ip",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "Sessions.userLanguage",
-          "title": "Sessions User Language",
-          "type": "string",
-          "shortTitle": "User Language",
+          "shortTitle": "Viewport Size",
           "suggestFilterValues": true,
           "isVisible": true
         }
@@ -334,42 +326,13 @@
       ]
     },
     {
-      "name": "TrackedEvents",
-      "title": "Tracked Events",
-      "connectedComponent": 1,
+      "name": "SnowplowTrackedEvents",
+      "title": "Snowplow Tracked Events",
+      "connectedComponent": 2,
       "measures": [
         {
-          "name": "TrackedEvents.count",
-          "title": "Tracked Events Count",
-          "shortTitle": "Count",
-          "cumulativeTotal": false,
-          "cumulative": false,
-          "type": "number",
-          "aggType": "count",
-          "drillMembers": [
-            "TrackedEvents.eventnCtxEventId",
-            "TrackedEvents.idsAjsAnonymousId",
-            "TrackedEvents.pageTitle",
-            "TrackedEvents.userAnonymousId",
-            "TrackedEvents.userHashedAnonymousId"
-          ],
-          "drillMembersGrouped": {
-            "measures": [
-
-            ],
-            "dimensions": [
-              "TrackedEvents.eventnCtxEventId",
-              "TrackedEvents.idsAjsAnonymousId",
-              "TrackedEvents.pageTitle",
-              "TrackedEvents.userAnonymousId",
-              "TrackedEvents.userHashedAnonymousId"
-            ]
-          },
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.pageViewsCount",
-          "title": "Tracked Events Page Views Count",
+          "name": "SnowplowTrackedEvents.pageViewsCount",
+          "title": "Snowplow Tracked Events Page Views Count",
           "shortTitle": "Page Views Count",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -389,8 +352,8 @@
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.uniqueUsersCount",
-          "title": "Tracked Events Unique Users Count",
+          "name": "SnowplowTrackedEvents.uniqueUsersCount",
+          "title": "Snowplow Tracked Events Unique Users Count",
           "shortTitle": "Unique Users Count",
           "cumulativeTotal": false,
           "cumulative": false,
@@ -408,198 +371,173 @@
             ]
           },
           "isVisible": true
+        },
+        {
+          "name": "SnowplowTrackedEvents.count",
+          "title": "Snowplow Tracked Events Count",
+          "shortTitle": "Count",
+          "cumulativeTotal": false,
+          "cumulative": false,
+          "type": "number",
+          "aggType": "count",
+          "drillMembers": [
+            "SnowplowTrackedEvents.eventId",
+            "SnowplowTrackedEvents.pageTitle"
+          ],
+          "drillMembersGrouped": {
+            "measures": [
+
+            ],
+            "dimensions": [
+              "SnowplowTrackedEvents.eventId",
+              "SnowplowTrackedEvents.pageTitle"
+            ]
+          },
+          "isVisible": true
         }
       ],
       "dimensions": [
         {
-          "name": "TrackedEvents.apiKey",
-          "title": "Tracked Events Api Key",
+          "name": "SnowplowTrackedEvents.pageUrlhosts",
+          "title": "Snowplow Tracked Events Page Urlhosts",
           "type": "string",
-          "shortTitle": "Api Key",
+          "shortTitle": "Page Urlhosts",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.docEncoding",
-          "title": "Tracked Events Doc Encoding",
+          "name": "SnowplowTrackedEvents.pageUrlpath",
+          "title": "Snowplow Tracked Events Page Urlpath",
           "type": "string",
-          "shortTitle": "Doc Encoding",
+          "shortTitle": "Page Urlpath",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.docHost",
-          "title": "Tracked Events Doc Host",
+          "name": "SnowplowTrackedEvents.event",
+          "title": "Snowplow Tracked Events Event",
           "type": "string",
-          "shortTitle": "Doc Host",
+          "shortTitle": "Event",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.docPath",
-          "title": "Tracked Events Doc Path",
-          "type": "string",
-          "shortTitle": "Doc Path",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.docSearch",
-          "title": "Tracked Events Doc Search",
-          "type": "string",
-          "shortTitle": "Doc Search",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.eventType",
-          "title": "Tracked Events Event Type",
-          "type": "string",
-          "shortTitle": "Event Type",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.idsAjsAnonymousId",
-          "title": "Tracked Events Ids Ajs Anonymous Id",
-          "type": "string",
-          "shortTitle": "Ids Ajs Anonymous Id",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.localTzOffset",
-          "title": "Tracked Events Local Tz Offset",
-          "type": "string",
-          "shortTitle": "Local Tz Offset",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.pageTitle",
-          "title": "Tracked Events Page Title",
+          "name": "SnowplowTrackedEvents.pageTitle",
+          "title": "Snowplow Tracked Events Page Title",
           "type": "string",
           "shortTitle": "Page Title",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.parsedUaOsFamily",
-          "title": "Tracked Events Parsed Ua Os Family",
+          "name": "SnowplowTrackedEvents.osFamily",
+          "title": "Snowplow Tracked Events Os Family",
           "type": "string",
-          "shortTitle": "Parsed Ua Os Family",
+          "shortTitle": "Os Family",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.parsedUaOsVersion",
-          "title": "Tracked Events Parsed Ua Os Version",
+          "name": "SnowplowTrackedEvents.osName",
+          "title": "Snowplow Tracked Events Os Name",
           "type": "string",
-          "shortTitle": "Parsed Ua Os Version",
+          "shortTitle": "Os Name",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.parsedUaUaFamily",
-          "title": "Tracked Events Parsed Ua Ua Family",
+          "name": "SnowplowTrackedEvents.osVersion",
+          "title": "Snowplow Tracked Events Os Version",
           "type": "string",
-          "shortTitle": "Parsed Ua Ua Family",
+          "shortTitle": "Os Version",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.parsedUaUaVersion",
-          "title": "Tracked Events Parsed Ua Ua Version",
+          "name": "SnowplowTrackedEvents.osVersionMajor",
+          "title": "Snowplow Tracked Events Os Version Major",
           "type": "string",
-          "shortTitle": "Parsed Ua Ua Version",
+          "shortTitle": "Os Version Major",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.referer",
-          "title": "Tracked Events Referer",
+          "name": "SnowplowTrackedEvents.agentName",
+          "title": "Snowplow Tracked Events Agent Name",
           "type": "string",
-          "shortTitle": "Referer",
+          "shortTitle": "Agent Name",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.screenResolution",
-          "title": "Tracked Events Screen Resolution",
+          "name": "SnowplowTrackedEvents.agentVersion",
+          "title": "Snowplow Tracked Events Agent Version",
           "type": "string",
-          "shortTitle": "Screen Resolution",
+          "shortTitle": "Agent Version",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.sourceIp",
-          "title": "Tracked Events Source Ip",
+          "name": "SnowplowTrackedEvents.pageReferrer",
+          "title": "Snowplow Tracked Events Page Referrer",
           "type": "string",
-          "shortTitle": "Source Ip",
+          "shortTitle": "Page Referrer",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.src",
-          "title": "Tracked Events Src",
+          "name": "SnowplowTrackedEvents.pageUrl",
+          "title": "Snowplow Tracked Events Page Url",
           "type": "string",
-          "shortTitle": "Src",
+          "shortTitle": "Page Url",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.url",
-          "title": "Tracked Events Url",
+          "name": "SnowplowTrackedEvents.useragent",
+          "title": "Snowplow Tracked Events Useragent",
           "type": "string",
-          "shortTitle": "Url",
+          "shortTitle": "Useragent",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.userAgent",
-          "title": "Tracked Events User Agent",
+          "name": "SnowplowTrackedEvents.userId",
+          "title": "Snowplow Tracked Events User Id",
           "type": "string",
-          "shortTitle": "User Agent",
+          "shortTitle": "User Id",
           "suggestFilterValues": true,
           "isVisible": true
         },
         {
-          "name": "TrackedEvents.userAnonymousId",
-          "title": "Tracked Events User Anonymous Id",
-          "type": "string",
-          "shortTitle": "User Anonymous Id",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.userHashedAnonymousId",
-          "title": "Tracked Events User Hashed Anonymous Id",
-          "type": "string",
-          "shortTitle": "User Hashed Anonymous Id",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.userLanguage",
-          "title": "Tracked Events User Language",
-          "type": "string",
-          "shortTitle": "User Language",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.vpSize",
-          "title": "Tracked Events Vp Size",
-          "type": "string",
-          "shortTitle": "Vp Size",
-          "suggestFilterValues": true,
-          "isVisible": true
-        },
-        {
-          "name": "TrackedEvents.utcTime",
-          "title": "Tracked Events Utc Time",
+          "name": "SnowplowTrackedEvents.derivedTstamp",
+          "title": "Snowplow Tracked Events Derived Tstamp",
           "type": "time",
-          "shortTitle": "Utc Time",
+          "shortTitle": "Derived Tstamp",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "SnowplowTrackedEvents.browserLanguage",
+          "title": "Snowplow Tracked Events Browser Language",
+          "type": "string",
+          "shortTitle": "Browser Language",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "SnowplowTrackedEvents.documentLanguage",
+          "title": "Snowplow Tracked Events Document Language",
+          "type": "string",
+          "shortTitle": "Document Language",
+          "suggestFilterValues": true,
+          "isVisible": true
+        },
+        {
+          "name": "SnowplowTrackedEvents.viewportSize",
+          "title": "Snowplow Tracked Events Viewport Size",
+          "type": "string",
+          "shortTitle": "Viewport Size",
           "suggestFilterValues": true,
           "isVisible": true
         }

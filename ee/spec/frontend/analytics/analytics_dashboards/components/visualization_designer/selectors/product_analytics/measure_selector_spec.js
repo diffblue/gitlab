@@ -1,7 +1,7 @@
 import { nextTick } from 'vue';
 import { GlLabel } from '@gitlab/ui';
 import {
-  EVENTS_DB_TABLE_NAME,
+  EVENTS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
 } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
@@ -81,7 +81,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
     ${'clickevents-button'} | ${'clickevents-all-button'} | ${'click'}      | ${'clickEvents::all'}
     ${'events-button'}      | ${'events-all-button'}      | ${''}           | ${'events::all'}
   `(
-    'navigates from overview to event subpage $selectMethod',
+    'navigates from overview to event subpage $summaryString',
     async ({ startbutton, showAllbutton, eventType, summaryString }) => {
       createWrapper();
 
@@ -96,11 +96,11 @@ describe('ProductAnalyticsMeasureSelector', () => {
       const summarySubValues = summaryString.split('::');
       expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
 
-      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.count`, summaryString);
+      await checkFinalStep(`${EVENTS_TABLE_NAME}.count`, summaryString);
 
       if (eventType) {
         expect(addFilters).toHaveBeenCalledWith({
-          member: `${EVENTS_DB_TABLE_NAME}.eventType`,
+          member: `${EVENTS_TABLE_NAME}.event`,
           operator: 'equals',
           values: [eventType],
         });
@@ -112,7 +112,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
     startbutton           | showAllbutton             | summaryString
     ${'pageviews-button'} | ${'pageviews-all-button'} | ${'pageViews::all'}
   `(
-    'navigates from overview to event subpage $selectMethod',
+    'navigates from overview to event subpage $summaryString',
     async ({ startbutton, showAllbutton, summaryString }) => {
       createWrapper();
 
@@ -128,7 +128,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
       const summarySubValues = summaryString.split('::');
       expect(wrapper.emitted('measureSelected')).toEqual([[summarySubValues[0]], summarySubValues]);
 
-      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.pageViewsCount`, summaryString);
+      await checkFinalStep(`${EVENTS_TABLE_NAME}.pageViewsCount`, summaryString);
     },
   );
 
@@ -136,7 +136,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
     startbutton       | summaryString
     ${'users-button'} | ${'uniqueUsers::all'}
   `(
-    'navigates from overview to users subpage $selectMethod',
+    'navigates from overview to users subpage $summaryString',
     async ({ startbutton, summaryString }) => {
       createWrapper();
 
@@ -147,7 +147,7 @@ describe('ProductAnalyticsMeasureSelector', () => {
         [summarySubValues[0], summarySubValues[1]],
       ]);
 
-      await checkFinalStep(`${EVENTS_DB_TABLE_NAME}.uniqueUsersCount`, summaryString);
+      await checkFinalStep(`${EVENTS_TABLE_NAME}.uniqueUsersCount`, summaryString);
     },
   );
 

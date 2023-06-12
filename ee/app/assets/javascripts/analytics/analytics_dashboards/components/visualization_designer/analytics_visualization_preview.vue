@@ -5,6 +5,7 @@ import { createAlert } from '~/alert';
 import { s__, sprintf } from '~/locale';
 
 import DataTable from 'ee/analytics/analytics_dashboards/components/visualizations/data_table.vue';
+import { convertToTableFormat } from 'ee/analytics/analytics_dashboards/data_sources/cube_analytics';
 
 import {
   PANEL_DISPLAY_TYPES,
@@ -49,6 +50,11 @@ export default {
       type: Object,
       required: false,
       default: null,
+    },
+  },
+  computed: {
+    dataTableResults() {
+      return convertToTableFormat(this.resultSet);
     },
   },
   methods: {
@@ -114,7 +120,7 @@ export default {
           <div class="gl-overflow-y-auto gl-h-full">
             <!-- Using Datatable specifically for data preview here -->
             <data-table
-              :data="resultSet.tablePivot()"
+              :data="dataTableResults"
               data-testid="preview-datatable"
               @error="(error) => handleVisualizationError('TITLE', error)"
             />
