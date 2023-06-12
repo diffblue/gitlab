@@ -261,7 +261,6 @@ rspec:deprecations:
   stage: post-test
   allow_failure: true
   needs:
-    # FOSS/EE jobs
     - job: rspec:artifact-collector unit
       optional: true
     - job: rspec:artifact-collector system
@@ -282,34 +281,42 @@ rspec:deprecations:
     paths:
       - deprecations/
 
-.coverage-collector:
+# The jobs built upon `.artifact-collector` are to work around the
+# needs: [] limit of a maximum of 50 dependencies.
+# These intermediate jobs allow us to collect the artifacts of
+# more than 50 jobs and still use `needs:` to ensure a timely execution
+.artifact-collector:
   stage: post-test
+  variables:
+    GIT_STRATEGY: none
   image: alpine:3.17
   script:
-    - mkdir -p coverage
-    - ls coverage/
+    - mkdir -p coverage deprecations
+    - ls coverage/ deprecations/
   artifacts:
     expire_in: 7d
     when: always
-    paths: !reference ['.base-artifacts', 'artifacts', 'paths']
+    paths:
+      - coverage/
+      - deprecations/
 
 rspec:artifact-collector unit:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:ee-and-foss-unit
   needs:
     - rspec unit pg14 # 28 jobs
 
 rspec:artifact-collector system:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:ee-and-foss-system
   needs:
     - rspec system pg14 # 28 jobs
 
 rspec:artifact-collector remainder:
   extends:
-    - .coverage-collector
+    - .artifact-collector
   needs:
     - job: rspec integration pg14 # 12 jobs
       optional: true
@@ -320,21 +327,21 @@ rspec:artifact-collector remainder:
 
 rspec:artifact-collector as-if-foss unit:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:as-if-foss-unit
   needs:
     - rspec unit pg14-as-if-foss # 28 jobs
 
 rspec:artifact-collector as-if-foss system:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:as-if-foss-system
   needs:
     - rspec system pg14-as-if-foss  # 28 jobs
 
 rspec:artifact-collector as-if-foss remainder:
   extends:
-    - .coverage-collector
+    - .artifact-collector
   needs:
     - job: rspec integration pg14-as-if-foss # 12 jobs
       optional: true
@@ -345,7 +352,7 @@ rspec:artifact-collector as-if-foss remainder:
 
 rspec:artifact-collector single-redis:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:single-redis
   needs:
     - rspec unit pg14 single-redis # 28 jobs
@@ -353,14 +360,14 @@ rspec:artifact-collector single-redis:
 
 rspec:artifact-collector system single-redis:
   extends:
-    - .coverage-collector
+    - .artifact-collector
     - .rails:rules:single-redis
   needs:
     - rspec system pg14 single-redis # 28 jobs
 
 rspec:artifact-collector ee single-redis:
   extends:
-    - .coverage-collector
+    - .artifact-collector
   needs:
     # FOSS/EE jobs
     - job: rspec-ee unit pg14 single-redis # 18 jobs
@@ -372,7 +379,7 @@ rspec:artifact-collector ee single-redis:
 
 rspec:artifact-collector ee:
   extends:
-    - .coverage-collector
+    - .artifact-collector
   needs:
     # FOSS/EE jobs
     - job: rspec-ee migration pg14 # 2 jobs
@@ -391,8 +398,6 @@ rspec:coverage:
     - .coverage-base
     - .rails:rules:rspec-coverage
   stage: post-test
-  # We cannot use needs since it would mean needing 84 jobs (since most are parallelized)
-  # so we use `dependencies` here.
   needs:
     - setup-test-env
     # FOSS/EE jobs
