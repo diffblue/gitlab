@@ -26,6 +26,24 @@ RSpec.describe Vulnerabilities::DismissService, feature_category: :vulnerability
     let(:dismissal_reason) { 'false_positive' }
     let(:service) { described_class.new(user, vulnerability, comment, dismissal_reason, dismiss_findings: dismiss_findings) }
 
+    context 'when a vulnerability read record exists' do
+      let(:vulnerability_read) { Vulnerabilities::Read.find_by(vulnerability_id: vulnerability.id) }
+
+      it 'updates the dismissal reason' do
+        expect { dismiss_vulnerability }.to change { vulnerability_read.reload.dismissal_reason }.from(nil).to('false_positive')
+      end
+    end
+
+    context 'when a vulnerability read record does not exist' do
+      let(:vulnerability) { create(:vulnerability, :detected, :with_findings, project: project, present_on_default_branch: false) }
+      let(:vulnerability_read) { vulnerability.vulnerability_read }
+
+      it 'does not fail' do
+        expect(vulnerability_read).to be_nil
+        expect { dismiss_vulnerability }.not_to change { Vulnerabilities::Read.count }
+      end
+    end
+
     it 'creates a vulnerability state transition record' do
       expect(::Vulnerabilities::StateTransition).to receive(:create!).with(
         vulnerability: vulnerability,
