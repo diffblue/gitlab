@@ -1,11 +1,11 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
+import RoadmapShell from 'jh_else_ee/roadmap/components/roadmap_shell.vue';
 
 import EpicsListEmpty from './epics_list_empty.vue';
 import RoadmapFilters from './roadmap_filters.vue';
 import RoadmapSettings from './roadmap_settings.vue';
-import RoadmapShell from './roadmap_shell.vue';
 
 export default {
   components: {
