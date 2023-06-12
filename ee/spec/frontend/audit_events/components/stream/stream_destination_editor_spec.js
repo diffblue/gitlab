@@ -145,15 +145,9 @@ describe('StreamDestinationEditor', () => {
         it('should render the table', () => {
           expect(findHeadersRows()).toHaveLength(1);
 
-          expect(findHeadersHeaderCell(0).text()).toBe(
-            ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_NAME_LABEL,
-          );
-          expect(findHeadersHeaderCell(1).text()).toBe(
-            ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_VALUE_LABEL,
-          );
-          expect(findHeadersHeaderCell(2).text()).toBe(
-            ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_ACTIVE_LABEL,
-          );
+          expect(findHeadersHeaderCell(0).text()).toBe('');
+          expect(findHeadersHeaderCell(1).text()).toBe('');
+          expect(findHeadersHeaderCell(2).text()).toBe('');
           expect(findHeadersHeaderCell(3).text()).toBe('');
 
           expect(findHeaderNameInput(0).attributes('placeholder')).toBe(

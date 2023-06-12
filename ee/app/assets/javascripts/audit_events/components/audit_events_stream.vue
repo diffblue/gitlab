@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { createAlert } from '~/alert';
 import {
   ADD_STREAM,
@@ -22,7 +22,6 @@ export default {
     GlAlert,
     GlButton,
     GlLoadingIcon,
-    GlIcon,
     StreamDestinationEditor,
     StreamEmptyState,
     StreamItem,
@@ -145,7 +144,6 @@ export default {
     </gl-alert>
     <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-4">
       <label class="gl-m-0">
-        <gl-icon name="live-stream" />
         {{ $options.i18n.streamsLabel(destinationsCount) }}
       </label>
       <gl-button variant="confirm" @click="setEditorVisibility(true)">

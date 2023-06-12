@@ -8,6 +8,8 @@ import {
   GlFormCheckbox,
   GlFormGroup,
   GlFormInput,
+  GlFormInputGroup,
+  GlInputGroupText,
   GlLink,
   GlSprintf,
   GlTableLite,
@@ -15,7 +17,6 @@ import {
 import { isEmpty, isEqual } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import { GlTooltipDirective as GlTooltip } from '@gitlab/ui/dist/directives/tooltip';
-import { thWidthPercent } from '~/lib/utils/table_utility';
 import externalAuditEventDestinationCreate from '../../graphql/mutations/create_external_destination.mutation.graphql';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
 import externalAuditEventDestinationHeaderCreate from '../../graphql/mutations/create_external_destination_header.mutation.graphql';
@@ -43,8 +44,8 @@ import StreamFilters from './stream_filters.vue';
 
 const { CREATING_ERROR, UPDATING_ERROR } = AUDIT_STREAMS_NETWORK_ERRORS;
 
-const thClasses = `gl-border-top-0! gl-p-3!`;
-const tdClasses = `gl-p-3!`;
+const thClasses = `gl-p-0! gl-border-0!`;
+const tdClasses = `gl-p-3! gl-border-0!`;
 
 export default {
   components: {
@@ -56,6 +57,8 @@ export default {
     GlFormCheckbox,
     GlFormGroup,
     GlFormInput,
+    GlFormInputGroup,
+    GlInputGroupText,
     GlLink,
     GlSprintf,
     GlTableLite,
@@ -517,21 +520,21 @@ export default {
   i18n: { ...ADD_STREAM_EDITOR_I18N, CREATING_ERROR },
   fields: [
     {
+      key: 'active',
+      label: '',
+      thClass: thClasses,
+      tdClass: tdClasses,
+    },
+    {
       key: 'name',
-      label: ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_NAME_LABEL,
-      thClass: `${thClasses} ${thWidthPercent(40)}`,
+      label: '',
+      thClass: thClasses,
       tdClass: tdClasses,
     },
     {
       key: 'value',
-      label: ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_VALUE_LABEL,
-      thClass: `${thClasses} ${thWidthPercent(50)}`,
-      tdClass: tdClasses,
-    },
-    {
-      key: 'active',
-      label: ADD_STREAM_EDITOR_I18N.TABLE_COLUMN_ACTIVE_LABEL,
-      thClass: `${thClasses} ${thWidthPercent(10)}`,
+      label: '',
+      thClass: thClasses,
       tdClass: tdClasses,
     },
     {
@@ -585,6 +588,16 @@ export default {
       <div v-if="!isInstance" class="gl-mb-5">
         <strong class="gl-display-block gl-mb-3">{{ $options.i18n.HEADERS_LABEL }}</strong>
         <gl-table-lite :items="headers" :fields="$options.fields">
+          <template #cell(active)="{ index, item: { active } }">
+            <gl-form-checkbox
+              class="gl-mt-3"
+              :checked="active"
+              :disabled="true"
+              @input="handleHeaderActiveInput(index, $event)"
+            >
+              {{ $options.i18n.TABLE_COLUMN_ACTIVE_LABEL }}
+            </gl-form-checkbox>
+          </template>
           <template
             #cell(name)="{
               index,
@@ -595,11 +608,16 @@ export default {
               },
             }"
           >
-            <gl-form-group
+            <gl-form-input-group
               class="gl-m-0"
               label-class="gl-m-0! gl-p-0!"
               :invalid-feedback="feedback"
             >
+              <template #prepend>
+                <gl-input-group-text>
+                  {{ $options.i18n.TABLE_COLUMN_NAME_LABEL }}
+                </gl-input-group-text>
+              </template>
               <gl-form-input
                 :value="name"
                 :placeholder="$options.i18n.HEADER_INPUT_PLACEHOLDER"
@@ -608,10 +626,15 @@ export default {
                 data-testid="header-name-input"
                 @input="handleHeaderNameInput(index, $event)"
               />
-            </gl-form-group>
+            </gl-form-input-group>
           </template>
           <template #cell(value)="{ index, item: { disabled, value } }">
-            <gl-form-group class="gl-m-0" label-class="gl-m-0! gl-p-0!">
+            <gl-form-input-group class="gl-m-0" label-class="gl-m-0! gl-p-0!">
+              <template #prepend>
+                <gl-input-group-text>
+                  {{ $options.i18n.TABLE_COLUMN_VALUE_LABEL }}
+                </gl-input-group-text>
+              </template>
               <gl-form-input
                 :value="value"
                 :placeholder="$options.i18n.VALUE_INPUT_PLACEHOLDER"
@@ -619,15 +642,7 @@ export default {
                 data-testid="header-value-input"
                 @input="handleHeaderValueInput(index, $event)"
               />
-            </gl-form-group>
-          </template>
-          <template #cell(active)="{ index, item: { active } }">
-            <gl-form-checkbox
-              class="gl-mt-3"
-              :checked="active"
-              :disabled="true"
-              @input="handleHeaderActiveInput(index, $event)"
-            />
+            </gl-form-input-group>
           </template>
           <template #cell(actions)="{ index, item: { deletionDisabled } }">
             <gl-button
