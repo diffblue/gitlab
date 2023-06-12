@@ -34429,6 +34429,9 @@ msgstr ""
 msgid "Preferences|Enable Gitpod integration"
 msgstr ""
 
+msgid "Preferences|Enable Zoekt code search"
+msgstr ""
+
 msgid "Preferences|Enable follow users"
 msgstr ""
 
@@ -34502,6 +34505,9 @@ msgid "Preferences|Time preferences"
 msgstr ""
 
 msgid "Preferences|Turns on or off the ability to follow or be followed by other users."
+msgstr ""
+
+msgid "Preferences|Turns on or off the preference to search with Zoekt instead of Elasticsearch."
 msgstr ""
 
 msgid "Preferences|Use relative times"

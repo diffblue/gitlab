@@ -49,6 +49,9 @@ module EE
       delegate :code_suggestions_enabled?, :code_suggestions, :code_suggestions=,
         to: :namespace
 
+      delegate :enabled_zoekt?, :enabled_zoekt, :enabled_zoekt=,
+        to: :user_preference
+
       has_many :epics,                    foreign_key: :author_id
       has_many :test_reports,             foreign_key: :author_id, inverse_of: :author, class_name: 'RequirementsManagement::TestReport'
       has_many :assigned_epics,           foreign_key: :assignee_id, class_name: "Epic"
@@ -320,6 +323,19 @@ module EE
         .where(parent_id: nil)
         .where(gitlab_subscriptions: { trial_ends_on: nil })
         .any?
+    end
+
+    # Returns true if the user is a Reporter or higher on any namespace
+    # that is associated as a Zoekt::IndexedNamespace
+    def has_zoekt_indexed_namespace?
+      zoekt_indexed_namespaces.any?
+    end
+
+    def zoekt_indexed_namespaces
+      ::Zoekt::IndexedNamespace.where(
+        namespace: ::Namespace
+          .from("(#{namespace_union_for_reporter_developer_maintainer_owned}) #{::Namespace.table_name}")
+      )
     end
 
     # Returns true if the user is a Reporter or higher on any namespace

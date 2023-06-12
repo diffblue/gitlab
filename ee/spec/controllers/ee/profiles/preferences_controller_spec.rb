@@ -10,6 +10,16 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
   end
 
   describe 'PATCH update' do
+    def go(params: {}, format: :json)
+      params.reverse_merge!(
+        color_scheme_id: '1',
+        dashboard: 'stars',
+        theme_id: '1'
+      )
+
+      patch :update, params: { user: params }, format: format
+    end
+
     context 'when updating security dashboard feature' do
       subject { patch :update, params: { user: { group_view: group_view } }, format: :json }
 
@@ -73,6 +83,38 @@ RSpec.describe Profiles::PreferencesController, feature_category: :user_profile 
           end.not_to change {
             user_on_com.reload.code_suggestions
           }
+        end
+      end
+    end
+
+    context 'on zoekt indexed namespaces', feature_category: :global_search do
+      context 'when user is not a member of any zoekt indexed namespaces' do
+        before do
+          allow(::Zoekt::IndexedNamespace).to receive(:where).and_return([])
+        end
+
+        it 'does not update enabled_zoekt preference of user' do
+          prefs = { enabled_zoekt: false }
+
+          go params: prefs
+          user.reload
+
+          expect(user.enabled_zoekt).to eq(true)
+        end
+      end
+
+      context 'when user is a member of a zoekt indexed namespace' do
+        before do
+          allow(::Zoekt::IndexedNamespace).to receive(:where).and_return([::Zoekt::IndexedNamespace.new])
+        end
+
+        it 'updates enabled_zoekt preference of user' do
+          prefs = { enabled_zoekt: false }
+
+          go params: prefs
+          user.reload
+
+          expect(user.enabled_zoekt).to eq(false)
         end
       end
     end

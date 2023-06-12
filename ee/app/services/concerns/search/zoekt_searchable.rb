@@ -4,9 +4,9 @@ module Search
   module ZoektSearchable
     def use_zoekt?
       return false if params[:basic_search]
-      return false if params[:advanced_search]
       return false unless ::Feature.enabled?(:search_code_with_zoekt, current_user)
       return false unless ::License.feature_available?(:zoekt_code_search)
+      return false unless current_user&.enabled_zoekt?
 
       scope == 'blobs' &&
         zoekt_searchable_scope.respond_to?(:use_zoekt?) &&

@@ -78,12 +78,14 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
     end
 
     let(:use_zoekt) { true }
+    let(:user_preference_enabled_zoekt) { true }
     let(:scope) { 'blobs' }
     let(:basic_search) { nil }
     let(:advanced_search) { nil }
 
     before do
       allow(project).to receive(:use_zoekt?).and_return(use_zoekt)
+      allow(user).to receive(:enabled_zoekt?).and_return(user_preference_enabled_zoekt)
     end
 
     it 'searches with Zoekt' do
@@ -119,11 +121,11 @@ RSpec.describe Search::ProjectService, feature_category: :global_search do
       end
     end
 
-    context 'when advanced search is requested' do
-      let(:advanced_search) { true }
+    context 'when user set enabled_zoekt preference to false' do
+      let(:user_preference_enabled_zoekt) { false }
 
       it 'does not search with Zoekt' do
-        expect(service.use_zoekt?).to eq(false)
+        expect(service).not_to be_use_zoekt
         expect(service.execute).not_to be_kind_of(::Gitlab::Zoekt::SearchResults)
       end
     end
