@@ -3,6 +3,8 @@ module AuditEvents
   module Streaming
     module Headers
       class Base < ::BaseGroupService
+        include AuditEvents::Streaming::HeadersOperations
+
         attr_reader :destination
 
         def initialize(destination:, current_user: nil, params: {})

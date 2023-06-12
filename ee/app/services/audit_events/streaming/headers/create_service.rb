@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module AuditEvents
   module Streaming
     module Headers
@@ -6,14 +7,11 @@ module AuditEvents
         def execute
           super
 
-          header = destination.headers.new(key: params[:key], value: params[:value])
+          success, response, header = create_header(destination, params[:key], params[:value])
 
-          if header.save
-            audit(action: :create, header: header, message: audit_message(header.key))
-            ServiceResponse.success(payload: { header: header, errors: [] })
-          else
-            ServiceResponse.error(message: Array(header.errors))
-          end
+          audit(action: :create, header: header, message: audit_message(header.key)) if success
+
+          response
         end
 
         private
