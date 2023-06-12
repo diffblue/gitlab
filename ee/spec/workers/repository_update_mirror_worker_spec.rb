@@ -37,6 +37,17 @@ RSpec.describe RepositoryUpdateMirrorWorker, feature_category: :source_code_mana
       expect(project.reload.import_status).to eq('failed')
     end
 
+    context 'when service returns an GRPC::Core::CallError' do
+      it 'fails correctly' do
+        allow_next_instance_of(Projects::UpdateMirrorService) do |instance|
+          allow(instance).to receive(:execute).and_raise(GRPC::Core::CallError)
+        end
+
+        expect { subject.perform(project.id) }.to raise_error(RepositoryUpdateMirrorWorker::UpdateError)
+        expect(import_state.reload.status).to eq('failed')
+      end
+    end
+
     context 'with association preloading' do
       it 'loads association before the first write operation' do
         project = create(:project, :repository, :mirror, :import_started)
