@@ -349,4 +349,16 @@ RSpec.describe GroupsHelper do
       })
     end
   end
+
+  describe '#subgroup_creation_data' do
+    subject { helper.subgroup_creation_data(group) }
+
+    context 'when self-managed' do
+      it { is_expected.to include(is_saas: 'false') }
+    end
+
+    context 'when on .com', :saas do
+      it { is_expected.to include(is_saas: 'true') }
+    end
+  end
 end
