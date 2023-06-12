@@ -1,12 +1,13 @@
 import { GlModal, GlSprintf, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import DevopsAdoptionDeleteModal from 'ee/analytics/devops_reports/devops_adoption/components/devops_adoption_delete_modal.vue';
 import disableDevopsAdoptionNamespaceMutation from 'ee/analytics/devops_reports/devops_adoption/graphql/mutations/disable_devops_adoption_namespace.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import { stubComponent } from 'helpers/stub_component';
 import {
   genericDeleteErrorMessage,
   dataErrorMessage,
@@ -16,6 +17,7 @@ import {
 Vue.use(VueApollo);
 
 const mockEvent = { preventDefault: jest.fn() };
+const hideMock = jest.fn();
 const mutate = jest.fn().mockResolvedValue({
   data: {
     disableDevopsAdoptionNamespace: {
@@ -52,6 +54,11 @@ describe('DevopsAdoptionDeleteModal', () => {
       },
       stubs: {
         GlSprintf,
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: hideMock,
+          },
+        }),
       },
     });
   };
@@ -60,11 +67,12 @@ describe('DevopsAdoptionDeleteModal', () => {
   const cancelButtonDisabledState = () => findModal().props('actionCancel').attributes.disabled;
   const actionButtonLoadingState = () => findModal().props('actionPrimary').attributes.loading;
   const findAlert = () => findModal().findComponent(GlAlert);
+  const submitModalForm = () => findModal().vm.$emit('primary', mockEvent);
 
   describe('default display', () => {
     beforeEach(() => createComponent());
 
-    it('contains the corrrect id', () => {
+    it('contains the correct id', () => {
       const modal = findModal();
 
       expect(modal.exists()).toBe(true);
@@ -104,9 +112,7 @@ describe('DevopsAdoptionDeleteModal', () => {
       it('disables the cancel button', async () => {
         expect(cancelButtonDisabledState()).toBe(false);
 
-        findModal().vm.$emit('primary', mockEvent);
-
-        await nextTick();
+        await submitModalForm();
 
         expect(cancelButtonDisabledState()).toBe(true);
       });
@@ -114,9 +120,7 @@ describe('DevopsAdoptionDeleteModal', () => {
       it('sets the action button state to loading', async () => {
         expect(actionButtonLoadingState()).toBe(false);
 
-        findModal().vm.$emit('primary', mockEvent);
-
-        await nextTick();
+        await submitModalForm();
 
         expect(actionButtonLoadingState()).toBe(true);
       });
@@ -126,9 +130,8 @@ describe('DevopsAdoptionDeleteModal', () => {
       beforeEach(async () => {
         createComponent();
 
-        wrapper.vm.$refs.modal.hide = jest.fn();
+        submitModalForm();
 
-        findModal().vm.$emit('primary', mockEvent);
         await waitForPromises();
       });
 
@@ -138,14 +141,14 @@ describe('DevopsAdoptionDeleteModal', () => {
         });
       });
 
-      it('emits dNamespacesRemoved with the correct variables', () => {
+      it('emits enabledNamespacesRemoved with the correct variables', () => {
         const [params] = wrapper.emitted().enabledNamespacesRemoved[0];
 
         expect(params).toStrictEqual([devopsAdoptionNamespaceData.nodes[0].id]);
       });
 
       it('closes the modal after a successful mutation', () => {
-        expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
+        expect(hideMock).toHaveBeenCalled();
       });
     });
 
@@ -159,7 +162,7 @@ describe('DevopsAdoptionDeleteModal', () => {
         async ({ mutationSpy, message }) => {
           createComponent({ deleteEnabledNamespacesSpy: mutationSpy });
 
-          findModal().vm.$emit('primary', mockEvent);
+          submitModalForm();
 
           await waitForPromises();
 
@@ -176,7 +179,7 @@ describe('DevopsAdoptionDeleteModal', () => {
 
         createComponent({ deleteEnabledNamespacesSpy: mutateWithErrors });
 
-        findModal().vm.$emit('primary', mockEvent);
+        submitModalForm();
 
         await waitForPromises();
 
