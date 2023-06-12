@@ -26516,6 +26516,9 @@ msgstr ""
 msgid "Last 2 weeks"
 msgstr ""
 
+msgid "Last 24 hours"
+msgstr ""
+
 msgid "Last Accessed On"
 msgstr ""
 
@@ -47400,6 +47403,9 @@ msgid "Timeago|just now"
 msgstr ""
 
 msgid "Timeago|right now"
+msgstr ""
+
+msgid "Timeline"
 msgstr ""
 
 msgid "Timeline event added successfully."
