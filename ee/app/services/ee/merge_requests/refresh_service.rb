@@ -71,6 +71,13 @@ module EE
         merge_request.rebase_commit_is_different?(newrev) && !merge_request.merge_train_car && super
       end
 
+      override :abort_auto_merges?
+      def abort_auto_merges?(merge_request)
+        return true if merge_request.merge_train_car
+
+        super
+      end
+
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
       def check_merge_train_status
         return unless @push.branch_updated?
