@@ -291,14 +291,15 @@ rspec:deprecations:
     GIT_STRATEGY: none
   image: alpine:3.17
   script:
-    - mkdir -p coverage deprecations
-    - ls coverage/ deprecations/
+    - mkdir -p coverage deprecations rspec
+    - ls coverage/ deprecations/ rspec/
   artifacts:
     expire_in: 7d
     when: always
     paths:
       - coverage/
       - deprecations/
+      - rspec/
 
 rspec:artifact-collector unit:
   extends:
@@ -369,7 +370,6 @@ rspec:artifact-collector ee single-redis:
   extends:
     - .artifact-collector
   needs:
-    # FOSS/EE jobs
     - job: rspec-ee unit pg14 single-redis # 18 jobs
       optional: true
     - job: rspec-ee integration pg14 single-redis # 6 jobs
@@ -381,7 +381,6 @@ rspec:artifact-collector ee:
   extends:
     - .artifact-collector
   needs:
-    # FOSS/EE jobs
     - job: rspec-ee migration pg14 # 2 jobs
       optional: true
     - job: rspec-ee background_migration pg14 # 2 jobs
