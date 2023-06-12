@@ -76,7 +76,8 @@ module Gitlab
                 PROMPT
               ),
               Utils::Prompt.as_assistant("%<suggestions>s"),
-              Utils::Prompt.as_user("Question: %<input>s")
+              Utils::Prompt.as_user("Question: %<input>s"),
+              Utils::Prompt.as_user("Response:")
             ].freeze
 
             def initialize(context:, options:)

@@ -79,7 +79,7 @@ module Gitlab
             stream_body: true
           )
 
-          logger.debug(message: "Received response from Vertex")
+          logger.debug(message: "Received response from Vertex", response: response)
 
           response
         end
