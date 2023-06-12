@@ -182,6 +182,7 @@ module API
         mount ::API::Admin::BatchedBackgroundMigrations
         mount ::API::Admin::Ci::Variables
         mount ::API::Admin::InstanceClusters
+        mount ::API::Admin::Migrations
         mount ::API::Admin::PlanLimits
         mount ::API::AlertManagementAlerts
         mount ::API::Appearance
