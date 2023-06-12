@@ -1,4 +1,4 @@
-import { GlDropdownItem } from '@gitlab/ui';
+import { GlDisclosureDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -49,7 +49,7 @@ describe('DisableTwoFactorDropdownItem', () => {
     });
   };
 
-  const findDropdownItem = () => wrapper.findComponent(GlDropdownItem);
+  const findDropdownItem = () => wrapper.findComponent(GlDisclosureDropdownItem);
 
   beforeEach(() => {
     createComponent();
@@ -60,7 +60,7 @@ describe('DisableTwoFactorDropdownItem', () => {
   });
 
   it('calls Vuex action to show the modal to disable the two factor authentication', () => {
-    findDropdownItem().vm.$emit('click');
+    findDropdownItem().vm.$emit('action');
 
     expect(actions.showDisableTwoFactorModal).toHaveBeenCalledWith(expect.any(Object), {
       message: modalMessage,
