@@ -1,9 +1,6 @@
 import { nextTick } from 'vue';
 import { GlLabel, GlDropdownItem } from '@gitlab/ui';
-import {
-  EVENTS_DB_TABLE_NAME,
-  SESSIONS_TABLE_NAME,
-} from 'ee/analytics/analytics_dashboards/constants';
+import { EVENTS_TABLE_NAME } from 'ee/analytics/analytics_dashboards/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import ProductAnalyticsDimensionSelector from 'ee/analytics/analytics_dashboards/components/visualization_designer/selectors/product_analytics/dimension_selector.vue';
 
@@ -45,21 +42,19 @@ describe('ProductAnalyticsDimensionSelector', () => {
   });
 
   const measuredSubTypes = [
-    ['pages-url-button', 'url'],
-    ['pages-docPath-button', 'docPath'],
+    ['pages-pageUrl-button', 'pageUrl'],
+    ['pages-pageUrlpath-button', 'pageUrlpath'],
     ['pages-pageTitle-button', 'pageTitle'],
-    ['pages-docEncoding-button', 'docEncoding'],
-    ['pages-docHost-button', 'docHost'],
-    ['users-referer-button', 'referer'],
-    ['users-userLanguage-button', 'userLanguage'],
-    ['users-vpSize-button', 'vpSize'],
-    ['users-parsedUaUaFamily-button', 'parsedUaUaFamily'],
-    ['users-parsedUaOsFamily-button', 'parsedUaOsFamily'],
+    ['pages-documentLanguage-button', 'documentLanguage'],
+    ['pages-pageUrlhosts-button', 'pageUrlhosts'],
+    ['users-pageReferrer-button', 'pageReferrer'],
+    ['users-browserLanguage-button', 'browserLanguage'],
+    ['users-viewportSize-button', 'viewportSize'],
+    ['users-agentName-button', 'agentName'],
   ];
 
   const measuredSubTypesMultiValues = [
-    ['users-parsedUaUaFamily-parsedUaUaVersion-button', ['parsedUaUaFamily', 'parsedUaUaVersion']],
-    ['users-parsedUaOsFamily-parsedUaOsVersion-button', ['parsedUaOsFamily', 'parsedUaOsVersion']],
+    ['users-agentName-agentVersion-button', ['agentName', 'agentVersion']],
   ];
 
   describe('calls from overview', () => {
@@ -74,7 +69,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
 
       await nextTick();
 
-      expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_DB_TABLE_NAME}.${selectMethod}`);
+      expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_TABLE_NAME}.${selectMethod}`);
     });
 
     it.each(measuredSubTypesMultiValues)(
@@ -91,8 +86,8 @@ describe('ProductAnalyticsDimensionSelector', () => {
         await nextTick();
 
         // Detail selection checks
-        expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_DB_TABLE_NAME}.${selectMethod[0]}`);
-        expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_DB_TABLE_NAME}.${selectMethod[1]}`);
+        expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_TABLE_NAME}.${selectMethod[0]}`);
+        expect(addDimensions).toHaveBeenCalledWith(`${EVENTS_TABLE_NAME}.${selectMethod[1]}`);
       },
     );
   });
@@ -162,7 +157,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
 
       expect(setTimeDimensions).toHaveBeenCalledWith([
         {
-          dimension: `${EVENTS_DB_TABLE_NAME}.utcTime`,
+          dimension: `${EVENTS_TABLE_NAME}.derivedTstamp`,
           granularity: 'seconds',
         },
       ]);
@@ -172,7 +167,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
       createWrapper({
         timeDimensions: [
           {
-            dimension: `${EVENTS_DB_TABLE_NAME}.utcTime`,
+            dimension: `${EVENTS_TABLE_NAME}.utcTime`,
             granularity: 'seconds',
           },
         ],
@@ -210,7 +205,7 @@ describe('ProductAnalyticsDimensionSelector', () => {
 
       expect(setTimeDimensions).toHaveBeenCalledWith([
         {
-          dimension: `${SESSIONS_TABLE_NAME}.startAt`,
+          dimension: `${EVENTS_TABLE_NAME}.derivedTstamp`,
           granularity: 'seconds',
         },
       ]);
@@ -223,21 +218,21 @@ describe('ProductAnalyticsDimensionSelector', () => {
       createWrapper({
         dimensions: [
           {
-            name: `${EVENTS_DB_TABLE_NAME}.url`,
+            name: `${EVENTS_TABLE_NAME}.pageUrl`,
             title: 'Test',
             type: 'string',
-            shortTitle: `${EVENTS_DB_TABLE_NAME}.url`,
+            shortTitle: `${EVENTS_TABLE_NAME}.pageUrl`,
             suggestFilterValues: true,
             isVisible: true,
           },
         ],
       });
-      wrapper.findByTestId('pages-url-button').vm.$emit('click');
+      wrapper.findByTestId('pages-pageUrl-button').vm.$emit('click');
       await nextTick();
 
       await wrapper.findByTestId('another-dimension-button').vm.$emit('click');
 
-      expect(wrapper.findByTestId('pages-url-button').exists()).toBe(true);
+      expect(wrapper.findByTestId('pages-pageUrl-button').exists()).toBe(true);
       expect(findDimensionSummary().exists()).toBe(true);
       expect(wrapper.findByTestId('another-dimension-button').exists()).toBe(false);
     });

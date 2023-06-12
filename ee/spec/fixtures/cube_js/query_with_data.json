@@ -6,6 +6,8 @@
         "measures": [
           "SnowplowTrackedEvents.pageViewsCount"
         ],
+        "limit": 100,
+        "rowLimit": 100,
         "timezone": "UTC",
         "order": [
 
@@ -26,11 +28,11 @@
           "SnowplowTrackedEvents.pageViewsCount": "335"
         }
       ],
-      "lastRefreshTime": "2022-11-25T15:37:31.835Z",
+      "lastRefreshTime": "2023-06-07T01:51:48.546Z",
       "refreshKeyValues": [
         [
           {
-            "refresh_key": "166939063"
+            "refresh_key": "168610247"
           }
         ]
       ],
@@ -132,30 +134,22 @@
 
         ]
       },
-      "requestId": "7c3d84eb-3217-4365-ba03-31019313b8ce-span-1",
+      "requestId": "e3bc6e94-163e-4c60-935b-cc8becc87874-span-1",
       "annotation": {
         "measures": {
           "SnowplowTrackedEvents.pageViewsCount": {
-            "title": "TrackedEvents Count",
-            "shortTitle": "Count",
+            "title": "Snowplow Tracked Events Page Views Count",
+            "shortTitle": "Page Views Count",
             "type": "number",
             "drillMembers": [
-              "TrackedEvents.eventnCtxEventId",
-              "TrackedEvents.idsAjsAnonymousId",
-              "TrackedEvents.pageTitle",
-              "TrackedEvents.userAnonymousId",
-              "TrackedEvents.userHashedAnonymousId"
+
             ],
             "drillMembersGrouped": {
               "measures": [
 
               ],
               "dimensions": [
-                "TrackedEvents.eventnCtxEventId",
-                "TrackedEvents.idsAjsAnonymousId",
-                "TrackedEvents.pageTitle",
-                "TrackedEvents.userAnonymousId",
-                "TrackedEvents.userHashedAnonymousId"
+
               ]
             }
           }
@@ -179,6 +173,8 @@
     "measures": [
       "SnowplowTrackedEvents.pageViewsCount"
     ],
+    "limit": 100,
+    "rowLimit": 100,
     "timezone": "UTC",
     "order": [
 

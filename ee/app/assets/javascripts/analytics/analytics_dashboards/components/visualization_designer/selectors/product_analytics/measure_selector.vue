@@ -1,7 +1,7 @@
 <script>
 import { GlLabel, GlButton } from '@gitlab/ui';
 import {
-  EVENTS_DB_TABLE_NAME,
+  EVENTS_TABLE_NAME,
   SESSIONS_TABLE_NAME,
   MEASURE_COLOR,
   isTrackedEvent,
@@ -51,11 +51,11 @@ export default {
 
       if (this.measureType && this.measureSubType) {
         const measureMap = {
-          pageViews: [`${EVENTS_DB_TABLE_NAME}.pageViewsCount`],
-          featureUsages: [`${EVENTS_DB_TABLE_NAME}.count`],
-          clickEvents: [`${EVENTS_DB_TABLE_NAME}.count`],
-          events: [`${EVENTS_DB_TABLE_NAME}.count`],
-          uniqueUsers: [`${EVENTS_DB_TABLE_NAME}.uniqueUsersCount`],
+          pageViews: [`${EVENTS_TABLE_NAME}.pageViewsCount`],
+          featureUsages: [`${EVENTS_TABLE_NAME}.count`],
+          clickEvents: [`${EVENTS_TABLE_NAME}.count`],
+          events: [`${EVENTS_TABLE_NAME}.count`],
+          uniqueUsers: [`${EVENTS_TABLE_NAME}.uniqueUsersCount`],
           sessions: [`${SESSIONS_TABLE_NAME}.${this.measureSubType}`],
         };
 
@@ -69,7 +69,7 @@ export default {
           const selectedEventType = eventTypeMap[this.measureType];
           if (selectedEventType) {
             this.addFilters({
-              member: `${EVENTS_DB_TABLE_NAME}.eventType`,
+              member: `${EVENTS_TABLE_NAME}.event`,
               operator: 'equals',
               values: [selectedEventType],
             });

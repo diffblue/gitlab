@@ -23,7 +23,7 @@ describe('AnalyticsVisualizationPreview', () => {
         selectDisplayType,
         isQueryPresent: false,
         loading: false,
-        resultSet: { tablePivot: () => {} },
+        resultSet: { tableColumns: () => [], tablePivot: () => [] },
         resultVisualization: {},
         ...props,
       },

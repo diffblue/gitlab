@@ -70,8 +70,8 @@ export const PANEL_DISPLAY_TYPE_ITEMS = [
 export const MEASURE_COLOR = '#00b140';
 export const DIMENSION_COLOR = '#c3e6cd';
 
-export const EVENTS_DB_TABLE_NAME = 'TrackedEvents';
-export const SESSIONS_TABLE_NAME = 'Sessions';
+export const EVENTS_TABLE_NAME = 'SnowplowTrackedEvents';
+export const SESSIONS_TABLE_NAME = 'SnowplowSessions';
 
 export const ANALYTICS_FIELD_CATEGORIES = [
   {
@@ -88,13 +88,13 @@ export const ANALYTICS_FIELDS = [
   {
     name: s__('Analytics|URL'),
     category: 'pages',
-    dbField: 'url',
+    dbField: 'pageUrl',
     icon: 'documents',
   },
   {
     name: s__('Analytics|Page Path'),
     category: 'pages',
-    dbField: 'docPath',
+    dbField: 'pageUrlpath',
     icon: 'documents',
   },
   {
@@ -106,55 +106,55 @@ export const ANALYTICS_FIELDS = [
   {
     name: s__('Analytics|Page Language'),
     category: 'pages',
-    dbField: 'docEncoding',
+    dbField: 'documentLanguage',
     icon: 'documents',
   },
   {
     name: s__('Analytics|Host'),
     category: 'pages',
-    dbField: 'docHost',
+    dbField: 'pageUrlhosts',
     icon: 'documents',
   },
   {
     name: s__('Analytics|Referer'),
     category: 'users',
-    dbField: 'referer',
+    dbField: 'pageReferrer',
     icon: 'user',
   },
   {
     name: s__('Analytics|Language'),
     category: 'users',
-    dbField: 'userLanguage',
+    dbField: 'browserLanguage',
     icon: 'user',
   },
   {
     name: s__('Analytics|Viewport'),
     category: 'users',
-    dbField: 'vpSize',
+    dbField: 'viewportSize',
     icon: 'user',
   },
   {
     name: s__('Analytics|Browser Family'),
     category: 'users',
-    dbField: 'parsedUaUaFamily',
+    dbField: 'agentName',
     icon: 'user',
   },
   {
     name: s__('Analytics|Browser'),
     category: 'users',
-    dbField: ['parsedUaUaFamily', 'parsedUaUaVersion'],
+    dbField: ['agentName', 'agentVersion'],
     icon: 'user',
   },
   {
     name: s__('Analytics|OS'),
     category: 'users',
-    dbField: 'parsedUaOsFamily',
+    dbField: 'osName',
     icon: 'user',
   },
   {
     name: s__('Analytics|OS Version'),
     category: 'users',
-    dbField: ['parsedUaOsFamily', 'parsedUaOsVersion'],
+    dbField: ['osName', 'osVersion'],
     icon: 'user',
   },
 ];
