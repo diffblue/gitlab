@@ -404,6 +404,13 @@ describe('ScanResultPolicyEditor', () => {
       verifiesParsingError();
     });
 
+    it('creates an error when vulnerability_attributes are invalid', async () => {
+      factoryWithExistingPolicy({ rules: [{ vulnerability_attributes: [{ invalid: true }] }] });
+
+      await changesToRuleMode();
+      verifiesParsingError();
+    });
+
     describe('existing approvers', () => {
       const existingPolicyWithUserId = {
         actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [1] }],

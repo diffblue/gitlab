@@ -1,3 +1,4 @@
+import { isEmpty } from 'lodash';
 import { s__, sprintf } from '~/locale';
 import Api from 'ee/api';
 import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
@@ -15,6 +16,7 @@ import {
   PREVIOUSLY_EXISTING,
   AGE_INTERVALS,
   VULNERABILITY_AGE_ALLOWED_KEYS,
+  VULNERABILITY_ATTRIBUTES,
 } from '../scan_filters/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
@@ -84,6 +86,26 @@ export const invalidScanners = (rules) => invalidRuleValues(rules, 'scanners', R
 
 export const invalidVulnerabilityStates = (rules) =>
   invalidRuleValues(rules, 'vulnerability_states', VULNERABILITY_STATE_KEYS);
+
+export const invalidVulnerabilityAttributes = (rules) => {
+  if (!rules) {
+    return false;
+  }
+
+  const validAttributes = VULNERABILITY_ATTRIBUTES.map(({ value }) => value);
+
+  return rules
+    .filter((rule) => !isEmpty(rule.vulnerability_attributes))
+    .flatMap((rule) => rule.vulnerability_attributes)
+    .some((attribute) => {
+      if (typeof attribute !== 'object') {
+        return true;
+      }
+      return Object.entries(attribute).some(
+        ([key, value]) => !validAttributes.includes(key) || typeof value !== 'boolean',
+      );
+    });
+};
 
 export const invalidVulnerabilitiesAllowed = (rules) => {
   if (!rules) {
