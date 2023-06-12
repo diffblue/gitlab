@@ -42,7 +42,7 @@ class Admin::PushRulesController < Admin::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
-    if @push_rule.available?(:commit_committer_name_check) && Feature.enabled?(:commit_committer_name_check_ff)
+    if @push_rule.available?(:commit_committer_name_check)
       allowed_fields << :commit_committer_name_check
     end
 

@@ -1,8 +1,0 @@
----
-name: commit_committer_name_check_ff
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101909
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/381694
-milestone: '15.6'
-type: development
-group: group::source code
-default_enabled: false

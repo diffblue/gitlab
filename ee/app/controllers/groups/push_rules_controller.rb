@@ -42,8 +42,7 @@ class Groups::PushRulesController < Groups::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
-    if can?(current_user, :change_commit_committer_name_check, group) &&
-        Feature.enabled?(:commit_committer_name_check_ff)
+    if can?(current_user, :change_commit_committer_name_check, group)
       allowed_fields << :commit_committer_name_check
     end
 

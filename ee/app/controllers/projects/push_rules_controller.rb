@@ -45,8 +45,7 @@ class Projects::PushRulesController < Projects::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
-    if can?(current_user, :change_commit_committer_name_check, project) &&
-        Feature.enabled?(:commit_committer_name_check_ff)
+    if can?(current_user, :change_commit_committer_name_check, project)
       allowed_fields << :commit_committer_name_check
     end
 

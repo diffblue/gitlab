@@ -133,52 +133,24 @@ RSpec.describe Projects::PushRulesController, feature_category: :source_code_man
           stub_licensed_features(commit_committer_name_check: true)
         end
 
-        context 'when commit_committer_name_check_ff enabled' do
-          context 'as an admin' do
-            let(:user) { create(:admin) }
+        context 'as an admin' do
+          let(:user) { create(:admin) }
 
-            it_behaves_like 'updates push rule commit_committer_name_check of project', true
-          end
-
-          context 'as a maintainer user' do
-            before do
-              project.add_maintainer(user)
-            end
-            it_behaves_like 'updates push rule commit_committer_name_check of project', true
-          end
-
-          context 'as a developer user' do
-            before do
-              project.add_developer(user)
-            end
-            it_behaves_like 'updates push rule commit_committer_name_check of project', false
-          end
+          it_behaves_like 'updates push rule commit_committer_name_check of project', true
         end
 
-        context 'when commit_committer_name_check_ff disabled' do
+        context 'as a maintainer user' do
           before do
-            stub_feature_flags(commit_committer_name_check_ff: false)
+            project.add_maintainer(user)
           end
+          it_behaves_like 'updates push rule commit_committer_name_check of project', true
+        end
 
-          context 'as an admin' do
-            let(:user) { create(:admin) }
-
-            it_behaves_like 'updates push rule commit_committer_name_check of project', false
+        context 'as a developer user' do
+          before do
+            project.add_developer(user)
           end
-
-          context 'as a maintainer user' do
-            before do
-              project.add_maintainer(user)
-            end
-            it_behaves_like 'updates push rule commit_committer_name_check of project', false
-          end
-
-          context 'as a developer user' do
-            before do
-              project.add_developer(user)
-            end
-            it_behaves_like 'updates push rule commit_committer_name_check of project', false
-          end
+          it_behaves_like 'updates push rule commit_committer_name_check of project', false
         end
       end
     end
