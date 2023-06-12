@@ -35,7 +35,7 @@ class RepositoryUpdateMirrorWorker
   rescue UpdateError => ex
     fail_mirror(project, ex.message)
     raise
-  rescue StandardError => ex
+  rescue StandardError, GRPC::Core::CallError => ex
     return unless project
 
     fail_mirror(project, ex.message)
