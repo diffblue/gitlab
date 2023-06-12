@@ -162,6 +162,8 @@ describe('AI actions dropdown component', () => {
     it('emits response from action', async () => {
       const responseBody = 'FooBar';
 
+      await clickAction();
+
       aiResponseSubscriptionHandler.next({
         data: {
           aiCompletionResponse: {
@@ -170,7 +172,6 @@ describe('AI actions dropdown component', () => {
         },
       });
 
-      await clickAction();
       await waitForPromises();
 
       expect(wrapper.emitted('input')).toStrictEqual([[responseBody]]);
@@ -215,10 +216,14 @@ describe('AI actions dropdown component', () => {
       );
     });
 
-    it('shows an error and logs to Sentry when the AI subscription fails', () => {
+    it('shows an error and logs to Sentry when the AI subscription fails', async () => {
       const mockError = new Error('ding');
 
+      await clickAction();
+
       aiResponseSubscriptionHandler.error(mockError);
+
+      await waitForPromises();
 
       expect(createAlert).toHaveBeenCalledWith(
         expect.objectContaining({

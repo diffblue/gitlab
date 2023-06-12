@@ -72,8 +72,6 @@ export default {
           this.afterAction();
         },
         result({ data }) {
-          this.loading = false;
-
           if (data.error) {
             this.handleError(new Error(data.error));
             this.afterAction();
@@ -82,10 +80,11 @@ export default {
 
           if (data?.aiCompletionResponse?.responseBody) {
             this.insertResponse(data.aiCompletionResponse.responseBody);
+            this.loading = false;
           }
         },
         skip() {
-          return this.actions.every((action) => !('apolloMutation' in action));
+          return !this.loading;
         },
       },
     },
@@ -128,9 +127,7 @@ export default {
             // this mutation only launches a subscription
             // so we only need to trigger this on error
             this.afterAction();
-            return;
           }
-          this.$apollo.subscriptions.aiCompletionResponse.start();
         })
         .catch((error) => {
           this.handleError(error);
