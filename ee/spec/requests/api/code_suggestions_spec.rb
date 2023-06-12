@@ -40,6 +40,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
   describe 'POST /code_suggestions/tokens' do
     let(:headers) { {} }
     let(:access_code_suggestions) { true }
+    let(:is_gitlab_org_or_com) { true }
 
     subject(:post_api) { post api('/code_suggestions/tokens', current_user), headers: headers }
 
@@ -47,6 +48,7 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       allow(Ability).to receive(:allowed?).and_call_original
       allow(Ability).to receive(:allowed?).with(an_instance_of(User), :access_code_suggestions, :global)
          .and_return(access_code_suggestions)
+      allow(Gitlab).to receive(:org_or_com?).and_return(is_gitlab_org_or_com)
     end
 
     context 'when user is not logged in' do
@@ -78,7 +80,53 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
       end
 
       context 'with access to code suggestions' do
-        include_examples 'a successful response'
+        context 'when on .org or .com' do
+          include_examples 'a successful response'
+
+          context 'when request was proxied from self managed instance' do
+            let(:headers) { { 'User-Agent' => 'gitlab-workhorse' } }
+
+            include_examples 'a successful response'
+
+            context 'with instance admin feature flag is disabled' do
+              before do
+                stub_feature_flags(code_suggestions_for_instance_admin_enabled: false)
+              end
+
+              include_examples 'an unauthorized response'
+            end
+          end
+        end
+
+        context 'when not on .org and .com' do
+          let(:is_gitlab_org_or_com) { false }
+          let(:ai_access_token) { 'ai_access_token' }
+
+          before do
+            stub_ee_application_setting(ai_access_token: ai_access_token)
+          end
+
+          it 'proxy request to saas' do
+            expect(Gitlab::Workhorse).to receive(:send_url)
+              .with(
+                'https://gitlab.com/api/v4/code_suggestions/tokens',
+                include(headers: include("Authorization" => ["Bearer ai_access_token"]))
+              )
+
+            post_api
+          end
+
+          context 'when request was proxied from self managed instance' do
+            let(:headers) { { 'User-Agent' => 'gitlab-workhorse' } }
+
+            include_examples 'a response', '500' do
+              let(:result) { 500 }
+              let(:body) do
+                { "message" => include('Proxying is only supported under .org or .com') }
+              end
+            end
+          end
+        end
       end
     end
   end
