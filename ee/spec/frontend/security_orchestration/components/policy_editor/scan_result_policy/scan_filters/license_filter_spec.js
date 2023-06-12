@@ -80,5 +80,36 @@ describe('LicenseFilter', () => {
         expect(listBox.props('toggleText')).toBe('2 licenses');
       });
     });
+
+    describe('multiple actions', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('can select single licence types', () => {
+        findLicenseTypeListBox().vm.$emit('select', parsedSoftwareLicenses[0].value);
+        expect(wrapper.emitted('changed')).toEqual([
+          [expect.objectContaining({ license_types: parsedSoftwareLicenses[0].value })],
+        ]);
+      });
+
+      it('can select single all licence types', () => {
+        findLicenseTypeListBox().vm.$emit('select-all');
+        expect(wrapper.emitted('changed')).toEqual([
+          [expect.objectContaining({ license_types: parsedSoftwareLicenses })],
+        ]);
+      });
+
+      it('can clear all selected licence types', () => {
+        createComponent();
+
+        findLicenseTypeListBox().vm.$emit('select-all');
+        findLicenseTypeListBox().vm.$emit('reset');
+
+        expect(wrapper.emitted('changed')[1]).toEqual([
+          expect.objectContaining({ license_types: [] }),
+        ]);
+      });
+    });
   });
 });

@@ -11,6 +11,9 @@ export default {
     label: s__('ScanResultPolicy|License is:'),
     licenseType: s__('ScanResultPolicy|Select license types'),
     matchTypeToggleText: s__('ScanResultPolicy|matching type'),
+    selectAllLabel: s__('ScanResultPolicy|Select all'),
+    clearAllLabel: s__('ScanResultPolicy|Clear all'),
+    licenseTypeHeader: s__('ScanResultPolicy|Select licenses'),
   },
   matchTypeOptions: [
     {
@@ -92,6 +95,14 @@ export default {
     triggerChanged(value) {
       this.$emit('changed', value);
     },
+    resetLicenseTypes() {
+      this.triggerChanged({
+        license_types: [],
+      });
+    },
+    selectAllLicenseTypes() {
+      this.triggerChanged({ license_types: this.filteredLicenses });
+    },
   },
 };
 </script>
@@ -113,10 +124,15 @@ export default {
           class="gl-vertical-align-middle gl-display-inline!"
           :items="filteredLicenses"
           :toggle-text="toggleText"
+          :header-text="$options.i18n.licenseTypeHeader"
+          :show-select-all-button-label="$options.i18n.selectAllLabel"
+          :reset-button-label="$options.i18n.clearAllLabel"
           searchable
           multiple
           data-testid="license-type-select"
           @search="filterList"
+          @select-all="selectAllLicenseTypes"
+          @reset="resetLicenseTypes"
         />
       </slot>
     </template>
