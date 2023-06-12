@@ -30,6 +30,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     it { is_expected.to have_one(:status_page_setting).class_name('StatusPage::ProjectSetting') }
     it { is_expected.to have_one(:compliance_framework_setting).class_name('ComplianceManagement::ComplianceFramework::ProjectSettings') }
     it { is_expected.to have_one(:compliance_management_framework).class_name('ComplianceManagement::Framework') }
+    it { is_expected.to have_many(:compliance_standards_adherence).class_name('Projects::ComplianceStandards::Adherence') }
     it { is_expected.to have_one(:security_setting).class_name('ProjectSecuritySetting') }
     it { is_expected.to have_one(:vulnerability_statistic).class_name('Vulnerabilities::Statistic') }
     it { is_expected.to have_one(:security_orchestration_policy_configuration).class_name('Security::OrchestrationPolicyConfiguration').inverse_of(:project) }
