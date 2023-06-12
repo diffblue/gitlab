@@ -357,6 +357,7 @@ export default {
             id="create-value-stream-name"
             v-model.trim="name"
             name="create-value-stream-name"
+            data-testid="create-value-stream-name-input"
             :placeholder="$options.i18n.FORM_FIELD_NAME_PLACEHOLDER"
             :state="isValueStreamNameValid"
             required
