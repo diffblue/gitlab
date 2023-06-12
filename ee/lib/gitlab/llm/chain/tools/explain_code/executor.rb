@@ -10,6 +10,7 @@ module Gitlab
 
             NAME = 'ExplainCode'
             DESCRIPTION = 'Useful tool to explain code snippets.'
+            RESOURCE_NAME = 'explain code answer'
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::Anthropic,
               vertex_ai: ::Gitlab::Llm::Chain::Tools::ExplainCode::Prompts::VertexAi
@@ -27,10 +28,20 @@ module Gitlab
               Utils::Prompt.as_user("%<input>s")
             ].freeze
 
-            def execute
+            def perform
               Answer.new(status: :ok, context: context, content: request, tool: nil)
             rescue StandardError
               Answer.error_answer(context: context, content: _("Unexpected error"))
+            end
+
+            private
+
+            def authorize
+              Utils::Authorizer.context_authorized?(context: context)
+            end
+
+            def resource_name
+              RESOURCE_NAME
             end
           end
         end

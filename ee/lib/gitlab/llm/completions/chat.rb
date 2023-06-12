@@ -5,10 +5,10 @@ module Gitlab
     module Completions
       class Chat < Base
         TOOLS = [
-          Gitlab::Llm::Chain::Tools::IssueIdentifier,
-          Gitlab::Llm::Chain::Tools::SummarizeComments,
-          Gitlab::Llm::Chain::Tools::JsonReader,
-          Gitlab::Llm::Chain::Tools::ExplainCode
+          ::Gitlab::Llm::Chain::Tools::ExplainCode,
+          ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
+          ::Gitlab::Llm::Chain::Tools::JsonReader,
+          ::Gitlab::Llm::Chain::Tools::SummarizeComments
         ].freeze
 
         def execute(user, resource, options)

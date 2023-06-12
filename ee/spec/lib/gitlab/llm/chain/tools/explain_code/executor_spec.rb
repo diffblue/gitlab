@@ -20,19 +20,38 @@ RSpec.describe Gitlab::Llm::Chain::Tools::ExplainCode::Executor, feature_categor
   end
 
   describe '#execute' do
-    context 'when response is successful' do
-      it 'returns success answer' do
-        allow(tool).to receive(:request).and_return('response')
+    context 'when context is authorized' do
+      before do
+        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_authorized?).and_return(true)
+      end
 
-        expect(tool.execute.content).to eq('response')
+      context 'when response is successful' do
+        it 'returns success answer' do
+          allow(tool).to receive(:request).and_return('response')
+
+          expect(tool.execute.content).to eq('response')
+        end
+      end
+
+      context 'when error is raised during a request' do
+        it 'returns error answer' do
+          allow(tool).to receive(:request).and_raise(StandardError)
+
+          expect(tool.execute.content).to eq('Unexpected error')
+        end
       end
     end
 
-    context 'when error is raised during a request' do
-      it 'returns error answer' do
-        allow(tool).to receive(:request).and_raise(StandardError)
+    context 'when context is not authorized' do
+      before do
+        allow(Gitlab::Llm::Chain::Utils::Authorizer).to receive(:context_authorized?).and_return(false)
+      end
 
-        expect(tool.execute.content).to eq('Unexpected error')
+      it 'returns error answer' do
+        allow(tool).to receive(:authorize).and_return(false)
+
+        expect(tool.execute.content)
+          .to eq('I am sorry, I am unable to find the explain code answer you are looking for.')
       end
     end
   end

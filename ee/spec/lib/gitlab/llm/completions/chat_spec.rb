@@ -24,10 +24,10 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   shared_examples 'success' do
     it 'calls the ZeroShot Agent with the right parameters' do
       tools = [
+        ::Gitlab::Llm::Chain::Tools::ExplainCode,
         ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
-        ::Gitlab::Llm::Chain::Tools::SummarizeComments,
-        Gitlab::Llm::Chain::Tools::JsonReader,
-        Gitlab::Llm::Chain::Tools::ExplainCode
+        ::Gitlab::Llm::Chain::Tools::JsonReader,
+        ::Gitlab::Llm::Chain::Tools::SummarizeComments
       ]
       expected_params = [
         user_input: content,
