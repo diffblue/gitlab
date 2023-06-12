@@ -1639,6 +1639,45 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
       it_behaves_like 'issues link quick action', :blocks
       it_behaves_like 'issues link quick action', :blocked_by
     end
+
+    context 'unlink command' do
+      let_it_be(:other_issue) { create(:issue, project: project) }
+      let(:content) { "/unlink #{other_issue.to_reference(issue)}" }
+
+      subject(:unlink_issues) { service.execute(content, issue) }
+
+      shared_examples 'command applied successfully' do
+        it 'executes command successfully' do
+          expect { unlink_issues }.to change { IssueLink.count }.by(-1)
+          expect(unlink_issues[2]).to eq("Removed link with #{other_issue.to_reference(issue)}.")
+          expect(issue.notes.last.note).to eq("removed the relation with #{other_issue.to_reference}")
+          expect(other_issue.notes.last.note).to eq("removed the relation with #{issue.to_reference}")
+        end
+      end
+
+      context 'when command includes blocking issue' do
+        before do
+          create(:issue_link, source: other_issue, target: issue, link_type: 'blocks')
+        end
+
+        it_behaves_like 'command applied successfully'
+      end
+
+      context 'when command includes blocked issue' do
+        before do
+          create(:issue_link, source: issue, target: other_issue, link_type: 'blocks')
+        end
+
+        it_behaves_like 'command applied successfully'
+      end
+
+      context 'when provided issue is not linked' do
+        it 'fails to execute command' do
+          expect { unlink_issues }.not_to change { IssueLink.count }
+          expect(unlink_issues[2]).to eq('No linked issue matches the provided parameter.')
+        end
+      end
+    end
   end
 
   describe '#explain' do

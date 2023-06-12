@@ -42,7 +42,7 @@ module EE
         private
 
         def can_block_issues?
-          License.feature_available?(:blocked_issues) && can_relate_issues?
+          License.feature_available?(:blocked_issues) && can_admin_link?
         end
       end
     end
