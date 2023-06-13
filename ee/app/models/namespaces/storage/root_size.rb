@@ -113,9 +113,8 @@ module Namespaces
 
         statistics = root_namespace.root_storage_statistics
 
-        total = statistics.public_forks_storage_size +
-          statistics.internal_forks_storage_size +
-          (root_namespace.paid? ? statistics.private_forks_storage_size : 0)
+        total = statistics.public_forks_storage_size + statistics.internal_forks_storage_size
+        total += statistics.private_forks_storage_size if root_namespace.paid?
 
         total * inverted_cost_factor_for_forks
       end
