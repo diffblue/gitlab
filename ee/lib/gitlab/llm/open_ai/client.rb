@@ -115,7 +115,7 @@ module Gitlab
 
           response = client.public_send(endpoint, **options) # rubocop:disable GitlabSecurity/PublicSend
 
-          logger.debug(message: "Received response from OpenAI")
+          logger.debug(message: "Received response from OpenAI", response: response)
 
           track_cost(endpoint, response.parsed_response&.dig('usage'))
 
