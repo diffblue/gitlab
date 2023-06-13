@@ -91,7 +91,7 @@ export const PRIMARY_POLICY_KEYS = ['type', 'name', 'description', 'enabled', 'r
 
 export const SPECIFIC_BRANCHES = {
   id: 'SPECIFIC_BRANCHES',
-  text: __('Specific branches'),
+  text: __('Specific protected branches'),
   value: 'SPECIFIC_BRANCHES',
 };
 
