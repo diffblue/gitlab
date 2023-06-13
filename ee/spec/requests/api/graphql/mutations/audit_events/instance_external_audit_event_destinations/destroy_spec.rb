@@ -19,6 +19,8 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
 
   let(:mutation_response) { graphql_mutation_response(:instance_external_audit_event_destination_destroy) }
 
+  let_it_be(:current_user) { admin }
+
   shared_examples 'a mutation that does not destroy a destination' do
     it 'does not destroy the destination' do
       expect { post_graphql_mutation(mutation, current_user: current_user) }
@@ -40,6 +42,26 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
           expect { post_graphql_mutation(mutation, current_user: admin) }
             .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(-1)
         end
+
+        context 'when the destination id is invalid' do
+          let_it_be(:invalid_destination_input) do
+            {
+              id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1"
+            }
+          end
+
+          let(:mutation) do
+            graphql_mutation(:instance_external_audit_event_destination_destroy, invalid_destination_input)
+          end
+
+          it 'does not destroy the destination' do
+            expect { post_graphql_mutation(mutation, current_user: admin) }
+              .to change { AuditEvents::InstanceExternalAuditEventDestination.count }.by(0)
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors',
+            errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
+        end
       end
 
       context 'when feature flag ff_external_audit_events is disabled' do
@@ -47,9 +69,7 @@ RSpec.describe 'Destroy an instance external audit event destination', feature_c
           stub_feature_flags(ff_external_audit_events: false)
         end
 
-        it_behaves_like 'a mutation that does not destroy a destination' do
-          let_it_be(:current_user) { admin }
-        end
+        it_behaves_like 'a mutation that does not destroy a destination'
       end
     end
 

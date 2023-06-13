@@ -17,9 +17,13 @@ module Mutations
         private
 
         def find_object(destination_gid)
-          GitlabSchema.object_from_id(
+          destination = GitlabSchema.object_from_id(
             destination_gid,
             expected_type: ::AuditEvents::InstanceExternalAuditEventDestination).sync
+
+          raise_resource_not_available_error! if destination.blank?
+
+          destination
         end
       end
     end

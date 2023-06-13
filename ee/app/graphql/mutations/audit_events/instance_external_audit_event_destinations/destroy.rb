@@ -13,9 +13,7 @@ module Mutations
           description: 'ID of the external instance audit event destination to destroy.'
 
         def resolve(id:)
-          destination = find_object(id)
-
-          destination.destroy
+          find_object(id).destroy
 
           {
             instance_external_audit_event_destination: nil,
