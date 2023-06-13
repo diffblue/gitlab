@@ -48,4 +48,5 @@ end
 FactoryBot.define do
   factory :auditor, parent: :user, traits: [:auditor]
   factory :external_user, parent: :user, traits: [:external]
+  factory :service_account, parent: :user, traits: [:service_account]
 end

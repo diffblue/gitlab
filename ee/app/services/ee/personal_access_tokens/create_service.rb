@@ -3,6 +3,8 @@
 module EE
   module PersonalAccessTokens
     module CreateService
+      extend ::Gitlab::Utils::Override
+
       def execute
         super.tap do |response|
           send_audit_event(response)
@@ -27,6 +29,18 @@ module EE
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      override :creation_permitted?
+      def creation_permitted?
+        return true if super
+
+        return false unless target_user.service_account?
+
+        return false unless params[:group]
+
+        Ability.allowed?(current_user, :admin_service_accounts, params[:group]) &&
+          target_user.provisioned_by_group_id == params[:group].id
       end
     end
   end
