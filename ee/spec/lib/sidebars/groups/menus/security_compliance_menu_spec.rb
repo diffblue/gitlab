@@ -199,5 +199,32 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu, feature_category
         specify { is_expected.to be_nil }
       end
     end
+
+    describe 'Dependency List' do
+      let(:item_id) { :dependency_list }
+
+      before do
+        stub_licensed_features(security_dashboard: false)
+        stub_feature_flags(group_level_dependencies: false)
+      end
+
+      specify { is_expected.to be_nil }
+
+      context 'when security_dashboard feature is enabled' do
+        before do
+          stub_licensed_features(security_dashboard: true)
+        end
+
+        specify { is_expected.to be_nil }
+
+        context 'with group_level_dependencies feature flag enabled' do
+          before do
+            stub_feature_flags(group_level_dependencies: true)
+          end
+
+          specify { is_expected.not_to be_nil }
+        end
+      end
+    end
   end
 end

@@ -8,6 +8,7 @@ module Sidebars
         def configure_menu_items
           add_item(security_dashboard_menu_item)
           add_item(vulnerability_report_menu_item)
+          add_item(dependencies_menu_item)
           add_item(compliance_menu_item)
           add_item(credentials_menu_item)
           add_item(scan_policies_menu_item)
@@ -77,6 +78,20 @@ module Sidebars
             super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
             active_routes: { path: 'vulnerabilities#index' },
             item_id: :vulnerability_report
+          )
+        end
+
+        def dependencies_menu_item
+          unless read_group_level_dependencies_available?
+            return ::Sidebars::NilMenuItem.new(item_id: :dependency_list)
+          end
+
+          ::Sidebars::MenuItem.new(
+            title: _('Dependency list'),
+            link: group_dependencies_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::SecureMenu,
+            active_routes: { path: 'dependencies#index' },
+            item_id: :dependency_list
           )
         end
 
@@ -154,6 +169,12 @@ module Sidebars
         def group_level_audit_events_available?
           context.group.licensed_feature_available?(:audit_events) &&
             can?(context.current_user, :read_group_audit_events, context.group)
+        end
+
+        def read_group_level_dependencies_available?
+          context.group.licensed_feature_available?(:security_dashboard) &&
+            can?(context.current_user, :read_dependencies, context.group) &&
+            Feature.enabled?(:group_level_dependencies, context.group)
         end
       end
     end
