@@ -31,7 +31,7 @@ describe('Policy Rule Multi Select', () => {
 
   const findDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findDropdownItems = () => wrapper.findAllComponents(GlListboxItem);
-  const findAllSelectedItem = () => wrapper.findByTestId('all-items-selected');
+  const findAllSelectedItem = () => wrapper.findByTestId('listbox-select-all-button');
 
   describe('Initialization', () => {
     it('renders dropdown', () => {
@@ -108,7 +108,12 @@ describe('Policy Rule Multi Select', () => {
         expect(findDropdown().props('toggleText')).toBe(expectedValue);
       });
 
-      it('has select all item selected', () => {
+      it('has no select all item selected when at least one item is selected', () => {
+        expect(findAllSelectedItem().exists()).toBe(false);
+      });
+
+      it('has select all item selected when no items', () => {
+        createComponent();
         expect(findAllSelectedItem().exists()).toBe(true);
       });
     });

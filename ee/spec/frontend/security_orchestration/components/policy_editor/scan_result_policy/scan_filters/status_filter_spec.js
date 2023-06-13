@@ -24,6 +24,7 @@ describe('StatusFilter', () => {
       stubs: {
         BaseLayoutComponent,
         GlCollapsibleListbox,
+        PolicyRuleMultiSelect,
       },
     });
   };
@@ -31,6 +32,7 @@ describe('StatusFilter', () => {
   const findBaseLayoutComponent = () => wrapper.findComponent(BaseLayoutComponent);
   const findListBox = () => wrapper.findComponent(GlCollapsibleListbox);
   const findPolicyRuleMultiSelect = () => wrapper.findComponent(PolicyRuleMultiSelect);
+  const findAllSelectedItem = () => wrapper.findByTestId('listbox-select-all-button');
 
   it('renders both dropdowns', () => {
     createComponent();
@@ -61,6 +63,12 @@ describe('StatusFilter', () => {
       await findListBox().vm.$emit('select', PREVIOUSLY_EXISTING);
 
       expect(wrapper.emitted('change-group')).toEqual([[PREVIOUSLY_EXISTING]]);
+    });
+
+    it('should select all statuses', () => {
+      findAllSelectedItem().vm.$emit('click');
+
+      expect(wrapper.emitted('input')).toEqual([[['new_needs_triage', 'new_dismissed']]]);
     });
 
     it('disregard previously selected values when changing filter', async () => {

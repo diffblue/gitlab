@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
+import { GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
 
 import { s__, sprintf } from '~/locale';
 
@@ -8,7 +8,6 @@ const ONE_ITEM_SELECTED = 1;
 
 export default {
   components: {
-    GlButton,
     GlCollapsibleListbox,
     GlTruncate,
   },
@@ -45,6 +44,9 @@ export default {
       return sprintf(this.$options.i18n.selectPolicyListboxHeader, {
         itemTypeName: this.itemTypeName,
       });
+    },
+    selectAllLabel() {
+      return this.includeSelectAll ? this.$options.i18n.selectAllLabel : '';
     },
     text() {
       switch (this.selected.length) {
@@ -97,31 +99,19 @@ export default {
 <template>
   <gl-collapsible-listbox
     multiple
+    data-testid="policy-rule-multi-select"
     :header-text="listBoxHeader"
     :items="listBoxItems"
     :selected="selected"
+    :show-select-all-button-label="selectAllLabel"
     :reset-button-label="$options.i18n.clearAllLabel"
     :toggle-text="text"
     @reset="setSelected([])"
     @select="setSelected"
+    @select-all="setSelected(itemsKeys)"
   >
     <template #list-item="{ item }">
       <gl-truncate :text="item.text" />
-    </template>
-    <template #footer>
-      <div
-        v-if="includeSelectAll"
-        class="gl-border-t-solid gl-border-t-1 gl-border-t-gray-100 gl-display-flex gl-flex-direction-column gl-p-2"
-      >
-        <gl-button
-          category="tertiary"
-          class="gl-justify-content-start!"
-          data-testid="all-items-selected"
-          @click="setSelected(itemsKeys)"
-        >
-          {{ $options.i18n.selectAllLabel }}
-        </gl-button>
-      </div>
     </template>
   </gl-collapsible-listbox>
 </template>
