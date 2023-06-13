@@ -4,24 +4,29 @@ const generateResourcesNodes = (count = 20, startId = 0) => {
     nodes.push({
       __typename: 'CiCatalogResource',
       id: `gid://gitlab/CiCatalogResource/${i}`,
-      name: `My component #${i}`,
-      group: 'awesome-group',
-      namespace: 'my_namespace',
       description: `This is a component that does a bunch of stuff and is really just a number: ${i}`,
+      forksCount: 5,
       icon: 'my-icon',
-      lastUpdate: {
-        id: '1',
-        time: Date.now(),
-        user: { id: 1, webUrl: 'profile/1', name: 'username' },
+      name: `My component #${i}`,
+      rootNamespace: {
+        id: 1,
+        __typename: 'Namespace',
+        name: 'namespaceName',
+        path: 'namespacePath',
       },
-      statistics: {
-        id: '1',
-        starCount: 1,
-        forkCount: 12,
-      },
+      starCount: 10,
       versions: {
-        nodes: [{ id: '1', tagName: '1.0.0' }],
+        __typename: 'ReleaseConnection',
+        nodes: [
+          {
+            id: '3',
+            tagName: '1.0.0',
+            releasedAt: Date.now(),
+            author: { id: 1, webUrl: 'profile/1', name: 'username' },
+          },
+        ],
       },
+      webPath: 'path/to/project',
     });
   }
 

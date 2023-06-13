@@ -41,46 +41,6 @@ export const cacheConfig = {
           },
         },
       },
-      CiCatalogResource: {
-        fields: {
-          versions: {
-            read() {
-              return {
-                nodes: [{ tagName: '1.0.0', id: 'myId' }],
-              };
-            },
-          },
-          rootNamespace: {
-            read() {
-              return { id: '1', fullPath: '/group/project', name: '/my-dumb-project' };
-            },
-          },
-          statistics: {
-            read() {
-              return { id: '1', forkCount: 2, starCount: 1 };
-            },
-          },
-          lastUpdate: {
-            read() {
-              return {
-                id: '1',
-                time: new Date(),
-                user: { id: 1, name: 'FinnTheHuman', webUrl: '' },
-              };
-            },
-          },
-          group: {
-            read() {
-              return 'jake_and_others';
-            },
-          },
-          namespace: {
-            read() {
-              return 'Adventure_Time';
-            },
-          },
-        },
-      },
     },
   },
 };

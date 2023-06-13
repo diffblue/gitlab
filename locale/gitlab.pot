@@ -9635,6 +9635,9 @@ msgstr ""
 msgid "CiCatalog|This project will be marked as a CI/CD Catalog resource and will be visible in the CI/CD Catalog. This action is not reversible."
 msgstr ""
 
+msgid "CiCatalog|Unreleased"
+msgstr ""
+
 msgid "CiCatalog|We want to help you create and manage pipeline component repositories, while also making it easier to reuse pipeline configurations. Let us know how we're doing!"
 msgstr ""
 

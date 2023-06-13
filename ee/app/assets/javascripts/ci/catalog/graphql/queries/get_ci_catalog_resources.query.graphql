@@ -22,30 +22,28 @@ query getCiCatalogResources(
     nodes {
       id
       description
+      forksCount
       icon
-      group @client
       name
-      namespace @client
-      lastUpdate @client {
+      rootNamespace {
         id
-        time
-        user {
-          id
-          name
-          webUrl
-        }
+        name
+        path
       }
-      statistics @client {
-        id
-        forkCount
-        starCount
-      }
-      versions @client {
+      starCount
+      versions(first: 1) {
         nodes {
           id
           tagName
+          releasedAt
+          author {
+            id
+            name
+            webUrl
+          }
         }
       }
+      webPath
     }
   }
 }
