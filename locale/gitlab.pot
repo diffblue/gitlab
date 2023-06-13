@@ -16664,6 +16664,9 @@ msgstr ""
 msgid "Edit sidebar"
 msgstr ""
 
+msgid "Edit single file"
+msgstr ""
+
 msgid "Edit table"
 msgstr ""
 
