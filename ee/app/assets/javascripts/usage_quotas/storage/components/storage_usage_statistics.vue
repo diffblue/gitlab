@@ -1,13 +1,16 @@
 <script>
-import { GlIcon, GlLink, GlButton } from '@gitlab/ui';
+import { GlIcon, GlLink, GlButton, GlCard, GlSkeletonLoader } from '@gitlab/ui';
+import { sprintf } from '~/locale';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { projectHelpPaths } from '~/usage_quotas/storage/constants';
+import { formatSizeAndSplit } from 'ee/usage_quotas/storage/utils';
 import {
   BUY_STORAGE,
   STORAGE_STATISTICS_USAGE_QUOTA_LEARN_MORE,
   STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
+  STORAGE_STATISTICS_PLAN_STORAGE,
   STORAGE_STATISTICS_PURCHASED_STORAGE,
-  STORAGE_STATISTICS_PURCHASED_STORAGE_USED,
+  STORAGE_STATISTICS_TOTAL_STORAGE,
   NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
 } from '../constants';
 
@@ -16,9 +19,16 @@ export default {
     GlIcon,
     GlLink,
     GlButton,
+    GlCard,
+    GlSkeletonLoader,
     StorageStatisticsCard,
   },
-  inject: ['purchaseStorageUrl', 'buyAddonTargetAttr'],
+  inject: [
+    'purchaseStorageUrl',
+    'buyAddonTargetAttr',
+    'namespacePlanName',
+    'namespacePlanStorageIncluded',
+  ],
   props: {
     additionalPurchasedStorageSize: {
       type: Number,
@@ -58,6 +68,8 @@ export default {
     purchaseButtonText: BUY_STORAGE,
     totalUsageDescription: STORAGE_STATISTICS_NAMESPACE_STORAGE_USED,
     namespaceStorageOverviewSubtitle: NAMESPACE_STORAGE_OVERVIEW_SUBTITLE,
+    storageStatisticsPurchasedStorage: STORAGE_STATISTICS_PURCHASED_STORAGE,
+    storageStatisticsTotalStorage: STORAGE_STATISTICS_TOTAL_STORAGE,
   },
   computed: {
     usedStorageAmount() {
@@ -72,21 +84,35 @@ export default {
       }
       return totalRepositorySize;
     },
-    purchasedUsageDescription() {
-      if (this.additionalPurchasedStorageSize) {
-        return STORAGE_STATISTICS_PURCHASED_STORAGE_USED;
+    storageStatisticsPlanStorage() {
+      if (!this.namespacePlanName) {
+        return '';
       }
-      return STORAGE_STATISTICS_PURCHASED_STORAGE;
+
+      return sprintf(STORAGE_STATISTICS_PLAN_STORAGE, {
+        planName: this.namespacePlanName,
+      });
     },
     repositorySizeLimit() {
       return this.actualRepositorySizeLimit;
     },
-    purchasedTotalStorage() {
-      return this.additionalPurchasedStorageSize;
+    includedStorage() {
+      const formatted = formatSizeAndSplit(this.namespacePlanStorageIncluded || 0);
+
+      return `${formatted.value} ${formatted.unit}`;
     },
-    purchasedUsedStorage() {
-      // we don't want to show the used value if there's no purchased storage
-      return this.additionalPurchasedStorageSize ? this.totalRepositorySizeExcess : 0;
+    purchasedTotalStorage() {
+      const formatted = formatSizeAndSplit(this.additionalPurchasedStorageSize || 0);
+
+      return `${formatted.value} ${formatted.unit}`;
+    },
+    totalStorage() {
+      const totalStorage =
+        Number(this.namespacePlanStorageIncluded || 0) +
+        Number(this.additionalPurchasedStorageSize || 0);
+      const formatted = formatSizeAndSplit(totalStorage);
+
+      return `${formatted.value} ${formatted.unit}`;
     },
   },
 };
@@ -99,7 +125,7 @@ export default {
       <gl-button
         v-if="purchaseStorageUrl"
         :href="purchaseStorageUrl"
-        target="_blank"
+        :target="buyAddonTargetAttr"
         category="primary"
         variant="confirm"
         data-qa-selector="purchase_more_storage"
@@ -115,7 +141,7 @@ export default {
         :loading="loading"
         data-testid="namespace-usage-card"
         data-qa-selector="namespace_usage_total"
-        class="gl-flex-grow-1"
+        class="gl-w-full"
       >
         <template #description>
           {{ $options.i18n.totalUsageDescription }}
@@ -130,29 +156,38 @@ export default {
           </gl-link>
         </template>
       </storage-statistics-card>
-
-      <storage-statistics-card
-        v-if="purchaseStorageUrl"
-        :used-storage="purchasedUsedStorage"
-        :total-storage="purchasedTotalStorage"
-        :show-progress-bar="storageLimitEnforced"
-        :loading="loading"
-        data-testid="purchased-usage-card"
-        data-qa-selector="purchased_usage_total"
-        class="gl-flex-grow-1"
+      <gl-card
+        v-if="namespacePlanName"
+        class="gl-w-full gl-lg-w-50p"
+        data-testid="storage-detail-card"
       >
-        <template #description>
-          {{ purchasedUsageDescription }}
-          <gl-link
-            :href="$options.i18n.purchasedUsageHelpLink"
-            target="_blank"
-            class="gl-ml-2"
-            :aria-label="$options.i18n.purchasedUsageHelpText"
+        <gl-skeleton-loader v-if="loading" :height="64">
+          <rect width="140" height="30" x="5" y="0" rx="4" />
+          <rect width="240" height="10" x="5" y="40" rx="4" />
+          <rect width="340" height="10" x="5" y="54" rx="4" />
+        </gl-skeleton-loader>
+        <div v-else>
+          <div
+            class="gl-display-flex gl-justify-content-space-between gl-gap-5"
+            data-testid="storage-included-in-plan"
           >
-            <gl-icon name="question-o" />
-          </gl-link>
-        </template>
-      </storage-statistics-card>
+            <div class="gl-w-80p">{{ storageStatisticsPlanStorage }}</div>
+            <div>{{ includedStorage }}</div>
+          </div>
+          <div
+            class="gl-display-flex gl-justify-content-space-between"
+            data-testid="storage-purchased"
+          >
+            <div class="gl-w-80p">{{ $options.i18n.storageStatisticsPurchasedStorage }}</div>
+            <div>{{ purchasedTotalStorage }}</div>
+          </div>
+          <hr />
+          <div class="gl-display-flex gl-justify-content-space-between" data-testid="total-storage">
+            <div class="gl-w-80p">{{ $options.i18n.storageStatisticsTotalStorage }}</div>
+            <div>{{ totalStorage }}</div>
+          </div>
+        </div>
+      </gl-card>
     </div>
   </div>
 </template>

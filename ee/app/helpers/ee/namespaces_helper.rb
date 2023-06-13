@@ -68,10 +68,20 @@ module EE
       return super unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
 
       super.merge({
+        namespace_plan_name: namespace.actual_plan_name.capitalize,
+        namespace_plan_storage_included: namespace_plan_storage_included(namespace),
         purchase_storage_url: buy_storage_path(namespace),
         buy_addon_target_attr: buy_addon_target_attr(namespace),
         storage_limit_enforced: ::Namespaces::Storage::Enforcement.enforce_limit?(namespace).to_s
       })
+    end
+
+    def namespace_plan_storage_included(namespace)
+      if namespace.root_storage_size.enforcement_type == :project_repository_limit
+        ::Gitlab::CurrentSettings.repository_size_limit
+      else
+        ::Namespaces::Storage::Enforcement.enforceable_storage_limit(namespace).megabytes
+      end
     end
 
     def project_storage_limit_enforced?(namespace)

@@ -49026,6 +49026,9 @@ msgstr ""
 msgid "UsageQuota|Group settings &gt; Usage quotas"
 msgstr ""
 
+msgid "UsageQuota|Included in %{planName} subscription"
+msgstr ""
+
 msgid "UsageQuota|Includes artifacts, repositories, wiki, and other items."
 msgstr ""
 
@@ -49069,12 +49072,6 @@ msgid "UsageQuota|Pipeline artifacts created by CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Pipelines"
-msgstr ""
-
-msgid "UsageQuota|Purchased storage"
-msgstr ""
-
-msgid "UsageQuota|Purchased storage used"
 msgstr ""
 
 msgid "UsageQuota|Recalculate repository usage"
@@ -49135,6 +49132,12 @@ msgid "UsageQuota|This namespace has no projects which used shared runners in th
 msgstr ""
 
 msgid "UsageQuota|This table omits projects that used 0 units of compute or 0 shared runners duration"
+msgstr ""
+
+msgid "UsageQuota|Total purchased storage"
+msgstr ""
+
+msgid "UsageQuota|Total storage"
 msgstr ""
 
 msgid "UsageQuota|Transfer"

@@ -1,7 +1,6 @@
 import { GlLink, GlSprintf, GlProgressBar } from '@gitlab/ui';
 import StorageStatisticsCard from 'ee/usage_quotas/storage/components/storage_statistics_card.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import { projectHelpPaths } from '~/usage_quotas/storage/constants';
 import { NAMESPACE_STORAGE_OVERVIEW_SUBTITLE } from 'ee/usage_quotas/storage/constants';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 
@@ -24,6 +23,8 @@ describe('StorageUsageStatistics', () => {
       provide: {
         purchaseStorageUrl: 'some-fancy-url',
         buyAddonTargetAttr: '_self',
+        namespacePlanName: 'Free',
+        namespacePlanStorageIncluded: withRootStorageStatistics.actualRepositorySizeLimit,
         ...provide,
       },
       stubs: {
@@ -36,7 +37,10 @@ describe('StorageUsageStatistics', () => {
   };
 
   const findNamespaceStorageCard = () => wrapper.findByTestId('namespace-usage-card');
-  const findPurchasedStorageCard = () => wrapper.findByTestId('purchased-usage-card');
+  const findStorageDetailCard = () => wrapper.findByTestId('storage-detail-card');
+  const findStorageIncludedInPlan = () => wrapper.findByTestId('storage-included-in-plan');
+  const findStoragePurchased = () => wrapper.findByTestId('storage-purchased');
+  const findTotalStorage = () => wrapper.findByTestId('total-storage');
   const findOverviewSubtitle = () => wrapper.findByTestId('overview-subtitle');
 
   describe('namespace storage card', () => {
@@ -98,64 +102,34 @@ describe('StorageUsageStatistics', () => {
     });
   });
 
-  describe('purchased storage card', () => {
+  describe('storage detail card', () => {
     beforeEach(() => {
       createComponent();
     });
 
-    it('passes the correct props when storageLimitEnforced is true', () => {
-      createComponent({ props: { storageLimitEnforced: true } });
-      expect(findPurchasedStorageCard().props()).toEqual({
-        loading: false,
-        showProgressBar: true,
-        totalStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
-        usedStorage: withRootStorageStatistics.totalRepositorySizeExcess,
-      });
-    });
-    it('passes the correct props when storageLimitEnforced is false', () => {
-      createComponent({ props: { storageLimitEnforced: false } });
-      expect(findPurchasedStorageCard().props()).toEqual({
-        loading: false,
-        showProgressBar: false,
-        totalStorage: withRootStorageStatistics.additionalPurchasedStorageSize,
-        usedStorage: withRootStorageStatistics.totalRepositorySizeExcess,
-      });
+    it('renders storage included in the plan', () => {
+      expect(findStorageIncludedInPlan().text()).toContain('978.8 KiB');
     });
 
-    it('renders card description with help link', () => {
-      expect(findPurchasedStorageCard().text()).toContain('Purchased storage used');
-      expect(findPurchasedStorageCard().findComponent(GlLink).exists()).toBe(true);
-      expect(findPurchasedStorageCard().findComponent(GlLink).attributes('href')).toBe(
-        projectHelpPaths.usageQuotasNamespaceStorageLimit,
-      );
+    it('renders purchased storage', () => {
+      expect(findStoragePurchased().text()).toContain('0.3 KiB');
     });
 
-    describe('when purchaseStorageUrl is not passed', () => {
+    it('renders total storage', () => {
+      expect(findTotalStorage().text()).toContain('979.1 KiB');
+    });
+
+    describe('when GitLab instance has no Plan attatched to namespace', () => {
       beforeEach(() => {
         createComponent({
           provide: {
-            purchaseStorageUrl: null,
+            namespacePlanName: null,
           },
         });
       });
 
-      it('does not render storage card if purchase storage url is not pased', () => {
-        expect(findPurchasedStorageCard().exists()).toBe(false);
-      });
-    });
-
-    describe('when there is no additional storage purchased', () => {
-      it('renders card description with correct text', () => {
-        createComponent({
-          props: {
-            totalRepositorySize: withRootStorageStatistics.totalRepositorySize,
-            actualRepositorySizeLimit: withRootStorageStatistics.actualRepositorySizeLimit,
-            totalRepositorySizeExcess: withRootStorageStatistics.totalRepositorySizeExcess,
-            additionalPurchasedStorageSize: 0,
-          },
-        });
-
-        expect(findPurchasedStorageCard().text()).toContain('Purchased storage');
+      it('does not render storage card if there is no plan information', () => {
+        expect(findStorageDetailCard().exists()).toBe(false);
       });
     });
   });

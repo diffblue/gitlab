@@ -267,24 +267,44 @@ RSpec.describe EE::NamespacesHelper, feature_category: :groups_and_projects do
   end
 
   describe '#storage_usage_app_data', feature_category: :consumables_cost_management do
+    using RSpec::Parameterized::TableSyntax
+
     let_it_be(:namespace) { create(:namespace) }
     let_it_be(:admin) { create(:user, namespace: namespace) }
 
-    before do
-      allow(helper).to receive(:current_user).and_return(admin)
-      stub_ee_application_setting(should_check_namespace_plan: true)
+    let(:repository_size_limit) { 1000 }
+    let(:enforceable_storage_limit) { 1 }
+
+    where(:enforcement_type, :expected_storage_included) do
+      :project_repository_limit | ref(:repository_size_limit)
+      :namespace_repository_limit | lazy { enforceable_storage_limit * 1.megabyte }
     end
 
-    it 'returns a hash with storage data' do
-      expect(helper.storage_usage_app_data(namespace)).to eql({
-        namespace_id: namespace.id,
-        namespace_path: namespace.full_path,
-        user_namespace: namespace.user_namespace?.to_s,
-        default_per_page: Kaminari.config.default_per_page,
-        purchase_storage_url: more_storage_url,
-        buy_addon_target_attr: '_blank',
-        storage_limit_enforced: 'false'
-      })
+    with_them do
+      before do
+        namespace.actual_plan.actual_limits.update!(enforcement_limit: enforceable_storage_limit)
+        allow(Namespaces::Storage::Enforcement).to(
+          receive(:enforce_limit?).and_return(enforcement_type == :namespace_repository_limit)
+        )
+        allow(namespace.root_storage_size).to receive(:enforcement_type).and_return(enforcement_type)
+        allow(helper).to receive(:current_user).and_return(admin)
+        stub_ee_application_setting(should_check_namespace_plan: true)
+        stub_ee_application_setting(repository_size_limit: repository_size_limit)
+      end
+
+      it 'returns a hash with storage data' do
+        expect(helper.storage_usage_app_data(namespace)).to eql({
+          namespace_id: namespace.id,
+          namespace_path: namespace.full_path,
+          user_namespace: namespace.user_namespace?.to_s,
+          default_per_page: Kaminari.config.default_per_page,
+          namespace_plan_name: namespace.actual_plan_name.capitalize,
+          namespace_plan_storage_included: expected_storage_included,
+          purchase_storage_url: more_storage_url,
+          buy_addon_target_attr: '_blank',
+          storage_limit_enforced: (enforcement_type == :namespace_repository_limit).to_s
+        })
+      end
     end
   end
 end

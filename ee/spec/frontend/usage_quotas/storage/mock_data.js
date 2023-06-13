@@ -13,6 +13,8 @@ export const defaultNamespaceProvideValues = {
   defaultPerPage: 20,
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
+  namespacePlanName: 'Free',
+  namespacePlanStorageIncluded: 1002321,
   storageLimitEnforced: false,
   helpLinks: projectHelpLinks,
 };
