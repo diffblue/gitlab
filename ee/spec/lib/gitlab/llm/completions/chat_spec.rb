@@ -9,7 +9,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
   let_it_be(:resource) { create(:issue, project: project) }
 
   let(:content) { 'Summarize issue' }
-  let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::VertexAi) }
+  let(:ai_request) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
   let(:options) { { request_id: 'uuid', content: content } }
   let(:container) { group }
@@ -48,7 +48,7 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
 
   describe '#execute' do
     before do
-      allow(Gitlab::Llm::Chain::Requests::VertexAi).to receive(:new).and_return(ai_request)
+      allow(Gitlab::Llm::Chain::Requests::Anthropic).to receive(:new).and_return(ai_request)
     end
 
     context 'when resource is an issue' do
