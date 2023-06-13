@@ -461,8 +461,13 @@ RSpec.describe WorkItem, feature_category: :portfolio_management do
 
           it 'does not allow to change types' do
             expect(child.valid?).to eq(false)
-            expect(child.errors[:work_item_type_id])
-              .to include("cannot be changed to #{new_type.name} with #{parent.work_item_type.name} as parent type.")
+            expect(child.errors[:work_item_type_id]).to include(
+              format(
+                "cannot be changed to %{type_name} when linked to a parent %{parent_name}.",
+                type_name: new_type.name.downcase,
+                parent_name: parent.work_item_type.name.downcase
+              )
+            )
           end
         end
       end
