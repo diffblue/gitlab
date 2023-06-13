@@ -43,7 +43,6 @@ module Gitlab
             )
             response_modifier = Gitlab::Llm::OpenAi::ResponseModifiers::Chat.new(ai_response)
 
-            response_options = { request_id: params[:request_id] }
             ::Gitlab::Llm::GraphqlSubscriptionResponseService.new(
               user, issuable, response_modifier, options: response_options
             ).execute

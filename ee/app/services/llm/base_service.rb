@@ -45,7 +45,7 @@ module Llm
       message = content(action_name)
       payload = { request_id: request_id, role: ::Gitlab::Llm::Cache::ROLE_USER, content: message }
 
-      ::Gitlab::Llm::Cache.new(user).add(payload)
+      ::Gitlab::Llm::Cache.new(user).add(payload) unless options[:skip_cache]
       return success(payload) if no_worker_message?(message)
 
       logger.debug(

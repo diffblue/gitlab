@@ -31,7 +31,7 @@ module Gitlab
 
         response_data = data.slice(:request_id, :errors, :role).merge(content: data[:response_body])
 
-        Gitlab::Llm::Cache.new(user).add(response_data)
+        Gitlab::Llm::Cache.new(user).add(response_data) unless options[:skip_cache]
         GraphqlTriggers.ai_completion_response(user.to_global_id, resource.to_global_id, data)
 
         response_data
