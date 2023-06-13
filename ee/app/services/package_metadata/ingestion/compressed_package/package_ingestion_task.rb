@@ -25,16 +25,15 @@ module PackageMetadata
         # validate checks the list of provided package models and returns
         # only those which are valid and logs the invalid packages as an error
         def validate(packages)
-          valid = []
-          packages.each do |package|
+          packages.filter do |package|
             if package.valid?
-              valid << package
+              true
             else
               Gitlab::AppJsonLogger.error(class: self.class.name,
                 message: "invalid package #{package.purl_type}/#{package.name}", errors: package.errors.to_hash)
+              false
             end
-          end
-          valid
+          end.uniq(&:name)
         end
 
         def packages
