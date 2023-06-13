@@ -64,6 +64,19 @@ RSpec.describe PackageMetadata::Ingestion::CompressedPackage::PackageIngestionTa
       end
     end
 
+    context 'when valid packages duplicated' do
+      let(:package1) { build(:pm_compressed_data_object, purl_type: 'pypi', name: 'pypatchmatch') }
+      let(:package2) { build(:pm_compressed_data_object, purl_type: 'pypi', name: 'PyPatchMatch') }
+      let(:import_data) { [package1, package2] }
+
+      it "creates only unique valid packages" do
+        expect { execute }
+          .to change { PackageMetadata::Package.all.pluck(:purl_type, :name) }
+          .from([%w[gem rails]])
+          .to([%w[gem rails], %w[pypi pypatchmatch]])
+      end
+    end
+
     context 'when invalid packages' do
       let(:valid_package) { build(:pm_compressed_data_object) }
       let(:invalid_package) { build(:pm_compressed_data_object, default_licenses: []) }
