@@ -11,12 +11,10 @@ module AuditEvents
 
           audit_message = audit_message(header.key, params[:key])
 
-          if header.update(key: params[:key], value: params[:value])
-            audit(action: :update, header: header, message: audit_message)
-            ServiceResponse.success(payload: { header: header, errors: [] })
-          else
-            ServiceResponse.error(message: Array(header.errors))
-          end
+          success, response = update_header(header, params[:key], params[:value])
+
+          audit(action: :update, header: header, message: audit_message) if success
+          response
         end
 
         private

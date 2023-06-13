@@ -10,6 +10,14 @@ module AuditEvents
 
         [false, ServiceResponse.error(message: Array(header.errors)), nil]
       end
+
+      def update_header(header, key, value)
+        if header.update(key: key, value: value)
+          [true, ServiceResponse.success(payload: { header: header, errors: [] })]
+        else
+          [false, ServiceResponse.error(message: Array(header.errors))]
+        end
+      end
     end
   end
 end

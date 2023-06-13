@@ -29,6 +29,16 @@ module Mutations
 
             destination
           end
+
+          def find_header(header_id)
+            header = GitlabSchema.object_from_id(
+              header_id, expected_type: ::AuditEvents::Streaming::InstanceHeader
+            ).sync
+
+            raise_resource_not_available_error! if header.blank?
+
+            header
+          end
         end
       end
     end

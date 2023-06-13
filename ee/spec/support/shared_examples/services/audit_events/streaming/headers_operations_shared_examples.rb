@@ -27,3 +27,40 @@ RSpec.shared_examples 'header creation successful' do
     expect(header.value).to eq('a_value')
   end
 end
+
+RSpec.shared_examples 'header updation' do
+  context 'when header updation is successful' do
+    it 'has the header in the response payload' do
+      expect(response).to be_success
+      expect(response.payload[:header].key).to eq 'new'
+      expect(response.payload[:header].value).to eq 'new'
+    end
+
+    it 'updates the header' do
+      expect(response).to be_success
+      expect(header.reload.key).to eq 'new'
+      expect(header.value).to eq 'new'
+    end
+  end
+
+  context 'when header updation is unsuccessful' do
+    let(:params) do
+      {
+        header: header,
+        key: '',
+        value: 'new'
+      }
+    end
+
+    it 'does not update the header' do
+      expect { subject }.not_to change { header.reload.key }
+      expect(header.value).to eq 'old'
+    end
+
+    it 'has an error response' do
+      expect(response).to be_error
+      expect(response.errors)
+        .to match_array ["Key can't be blank"]
+    end
+  end
+end
