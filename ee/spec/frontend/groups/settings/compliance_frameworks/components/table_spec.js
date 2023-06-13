@@ -240,7 +240,7 @@ describe('Table', () => {
 
     it('displays the label', () => {
       expect(findLabels().at(0).props()).toMatchObject({
-        title: 'GDPR',
+        title: 'GDPR (default)',
         backgroundColor: '#1aaa55',
         disabled: false,
         description: 'Edit framework',
@@ -248,7 +248,7 @@ describe('Table', () => {
     });
 
     it('displays the default label', () => {
-      const localWrapper = wrapper.findByTestId('compliance-framework-default-badge');
+      const localWrapper = wrapper.findByTestId('compliance-framework-default-label');
       expect(localWrapper.exists()).toBe(true);
       expect(localWrapper.element).toMatchSnapshot();
     });

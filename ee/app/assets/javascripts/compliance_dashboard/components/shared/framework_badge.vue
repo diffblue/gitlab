@@ -1,5 +1,5 @@
 <script>
-import { GlBadge, GlButton, GlLabel, GlPopover } from '@gitlab/ui';
+import { GlButton, GlLabel, GlPopover } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 import { FRAMEWORK_BADGE_SIZE_MD, FRAMEWORK_BADGE_SIZES } from '../../constants';
@@ -8,7 +8,6 @@ export default {
   name: 'ComplianceFrameworkBadge',
   components: {
     GlLabel,
-    GlBadge,
     GlButton,
     GlPopover,
   },
@@ -37,6 +36,16 @@ export default {
   computed: {
     showDefaultBadge() {
       return this.showDefault && this.framework.default;
+    },
+    frameworkName() {
+      return this.showDefaultBadge
+        ? `${this.framework.name} (${this.$options.i18n.default})`
+        : this.framework.name;
+    },
+    frameworkTestId() {
+      return this.showDefaultBadge
+        ? 'compliance-framework-default-label'
+        : 'compliance-framework-label';
     },
   },
   methods: {
@@ -69,20 +78,13 @@ export default {
     <span ref="label">
       <gl-label
         data-qa-selector="framework_label"
+        :data-testid="frameworkTestId"
         :background-color="framework.color"
-        :title="framework.name"
+        :title="frameworkName"
         :size="size"
         :show-close-button="closeable"
         @close="$emit('close')"
       />
     </span>
-    <gl-badge
-      v-if="showDefaultBadge"
-      :size="size"
-      class="gl-display-flex gl-w-max-content gl-mt-2"
-      variant="info"
-      data-qa-selector="framework_badge"
-      >{{ $options.i18n.default }}
-    </gl-badge>
   </div>
 </template>

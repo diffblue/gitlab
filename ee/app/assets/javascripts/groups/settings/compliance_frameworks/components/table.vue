@@ -1,14 +1,6 @@
 <script>
 import Vue from 'vue';
-import {
-  GlAlert,
-  GlBadge,
-  GlButton,
-  GlLoadingIcon,
-  GlTableLite,
-  GlLabel,
-  GlToast,
-} from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlTableLite, GlLabel, GlToast } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -30,7 +22,6 @@ export default {
     EmptyState,
     FormModal,
     GlAlert,
-    GlBadge,
     GlButton,
     GlLoadingIcon,
     GlTableLite,
@@ -205,6 +196,16 @@ export default {
         this.setError(error, this.$options.i18n.setDefaultError);
       }
     },
+    frameworkTestId(framework) {
+      return framework.default
+        ? 'compliance-framework-default-label'
+        : 'compliance-framework-label';
+    },
+    frameworkName(framework) {
+      return framework.default
+        ? `${framework.name} (${this.$options.i18n.default})`
+        : framework.name;
+    },
   },
   i18n: {
     deleteMessage: s__('ComplianceFrameworks|Compliance framework deleted successfully'),
@@ -245,17 +246,10 @@ export default {
         <gl-label
           :background-color="framework.color"
           :description="$options.i18n.editFramework"
-          :title="framework.name"
+          :title="frameworkName(framework)"
           :target="framework.editPath"
+          :data-testid="frameworkTestId(framework)"
         />
-        <gl-badge
-          v-if="framework.default"
-          size="md"
-          variant="info"
-          :aria-label="$options.i18n.default"
-          data-testid="compliance-framework-default-badge"
-          >{{ $options.i18n.default }}</gl-badge
-        >
       </template>
       <template #cell(description)="{ item: framework }">
         <p data-testid="compliance-framework-description" class="gl-mb-0">
