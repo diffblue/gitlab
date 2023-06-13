@@ -21,6 +21,8 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
 
   let(:mutation_response) { graphql_mutation_response(:instance_external_audit_event_destination_update) }
 
+  let_it_be(:current_user) { admin }
+
   shared_examples 'a mutation that does not update destination' do
     it 'does not update the destination' do
       expect { post_graphql_mutation(mutation, current_user: current_user) }
@@ -48,6 +50,27 @@ RSpec.describe 'Update an instance external audit event destination', feature_ca
           expect(mutation_response['instanceExternalAuditEventDestination']['destinationUrl']).to eq(destination_url)
           expect(mutation_response['instanceExternalAuditEventDestination']['id']).not_to be_empty
           expect(mutation_response['instanceExternalAuditEventDestination']['verificationToken']).not_to be_empty
+        end
+
+        context 'when the destination id is invalid' do
+          let_it_be(:invalid_destination_input) do
+            {
+              id: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/-1",
+              destinationUrl: destination_url
+            }
+          end
+
+          let(:mutation) do
+            graphql_mutation(:instance_external_audit_event_destination_update, invalid_destination_input)
+          end
+
+          it 'does not update destination' do
+            expect { post_graphql_mutation(mutation, current_user: admin) }
+              .not_to change { destination.reload.destination_url }
+          end
+
+          it_behaves_like 'a mutation that returns top-level errors',
+            errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
         end
       end
 
