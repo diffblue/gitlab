@@ -41,13 +41,9 @@ RSpec.describe AuditEvents::Streaming::Headers::UpdateService do
       end
     end
 
-    context 'when the header is updated successfully' do
-      it 'updates the header' do
-        expect(response).to be_success
-        expect(header.reload.key).to eq 'new'
-        expect(header.value).to eq 'new'
-      end
+    it_behaves_like 'header updation'
 
+    context 'when the header is updated successfully' do
       it 'sends the audit streaming event' do
         audit_context = {
           name: 'audit_events_streaming_headers_update',
