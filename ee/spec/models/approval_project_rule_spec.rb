@@ -221,28 +221,39 @@ RSpec.describe ApprovalProjectRule, feature_category: :compliance_management do
 
       before do
         rule.update!(applies_to_all_protected_branches: true)
-        project.protected_branches << protected_branch
-        project.protected_branches << wildcard_protected_branch
       end
 
-      it 'returns true when the branch name is a protected branch' do
-        expect(rule.reload.applies_to_branch?(protected_branch.name)).to be true
+      context 'and project has protected branches' do
+        before do
+          project.protected_branches << protected_branch
+          project.protected_branches << wildcard_protected_branch
+        end
+
+        it 'returns true when the branch name is a protected branch' do
+          expect(rule.reload.applies_to_branch?(protected_branch.name)).to be true
+        end
+
+        it 'returns true when the branch name is a wildcard protected branch' do
+          expect(rule.reload.applies_to_branch?('stable-12')).to be true
+        end
+
+        it 'returns false when the branch name does not match a wildcard protected branch' do
+          expect(rule.reload.applies_to_branch?('unstable1-12')).to be false
+        end
+
+        it 'returns false when the branch name is an unprotected branch' do
+          expect(rule.applies_to_branch?('add-balsamiq-file')).to be false
+        end
+
+        it 'returns false when the branch name does not exist' do
+          expect(rule.applies_to_branch?('this-is-not-a-real-branch')).to be false
+        end
       end
 
-      it 'returns true when the branch name is a wildcard protected branch' do
-        expect(rule.reload.applies_to_branch?('stable-12')).to be true
-      end
-
-      it 'returns false when the branch name does not match a wildcard protected branch' do
-        expect(rule.reload.applies_to_branch?('unstable1-12')).to be false
-      end
-
-      it 'returns false when the branch name is an unprotected branch' do
-        expect(rule.applies_to_branch?('add-balsamiq-file')).to be false
-      end
-
-      it 'returns false when the branch name does not exist' do
-        expect(rule.applies_to_branch?('this-is-not-a-real-branch')).to be false
+      context 'and project has no protected branches' do
+        it 'returns false for the passed branches' do
+          expect(rule.applies_to_branch?('add-balsamiq-file')).to be false
+        end
       end
     end
   end
