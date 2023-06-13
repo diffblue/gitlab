@@ -346,8 +346,8 @@ RSpec.describe Notes::QuickActionsService do
 
     let(:multiline_assign_reviewer_text) do
       <<~HEREDOC
-      /assign_reviewer #{user.to_reference}
-      /assign_reviewer #{reviewer.to_reference}
+        /assign_reviewer #{user.to_reference}
+        /assign_reviewer #{reviewer.to_reference}
       HEREDOC
     end
 
@@ -455,8 +455,8 @@ RSpec.describe Notes::QuickActionsService do
 
     let(:multiline_unassign_reviewer_note_text) do
       <<~HEREDOC
-      /unassign_reviewer @#{reviewer.username}
-      /unassign_reviewer @#{user.username}
+        /unassign_reviewer @#{reviewer.username}
+        /unassign_reviewer @#{user.username}
       HEREDOC
     end
 
@@ -557,6 +557,50 @@ RSpec.describe Notes::QuickActionsService do
         group.add_developer(user)
 
         expect { execute(note) }.not_to change { Epic.count }
+      end
+    end
+  end
+
+  context '/promote_to' do
+    context 'with key result' do
+      let_it_be_with_reload(:noteable) { create(:work_item, :key_result, project: project) }
+      let_it_be(:note_text) { '/promote_to Objective' }
+      let_it_be(:note) { create(:note_on_issue, noteable: noteable, project: project, note: note_text) }
+
+      before do
+        group.add_developer(user)
+        stub_licensed_features(okrs: okrs_enabled)
+      end
+
+      context 'when okrs feature is available' do
+        let(:okrs_enabled) { true }
+
+        it 'promotes key result to objective' do
+          expect { execute(note) }
+            .to change { noteable.work_item_type.base_type }.from('key_result').to('objective')
+        end
+
+        it 'does not promote a key result to an objective when okrs_mvc FF is disabled' do
+          stub_feature_flags(okrs_mvc: false)
+          expect { execute(note) }.not_to change { noteable.work_item_type.base_type }
+        end
+
+        context 'when the type name is lower case' do
+          let_it_be(:note_text) { '/promote_to objective' }
+
+          it 'promotes key result to objective' do
+            expect { execute(note) }
+              .to change { noteable.work_item_type.base_type }.from('key_result').to('objective')
+          end
+        end
+      end
+
+      context 'when okrs feature is not available' do
+        let(:okrs_enabled) { false }
+
+        it 'does not promote a key result to an objective' do
+          expect { execute(note) }.not_to change { noteable.work_item_type.base_type }
+        end
       end
     end
   end

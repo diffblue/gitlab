@@ -4,7 +4,7 @@ class WorkItem < Issue
   include Gitlab::Utils::StrongMemoize
 
   COMMON_QUICK_ACTIONS_COMMANDS = [
-    :title, :reopen, :close, :cc, :tableflip, :shrug, :type
+    :title, :reopen, :close, :cc, :tableflip, :shrug, :type, :promote_to
   ].freeze
 
   self.table_name = 'issues'

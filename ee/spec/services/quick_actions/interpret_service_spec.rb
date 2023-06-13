@@ -1678,6 +1678,8 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
         end
       end
     end
+
+    it_behaves_like 'quick actions that change work item type ee'
   end
 
   describe '#explain' do
@@ -2043,6 +2045,28 @@ RSpec.describe QuickActions::InterpretService, feature_category: :team_planning 
           let(:current_user) { guest }
 
           it_behaves_like 'quick action is unavailable', :blocked_by
+        end
+      end
+    end
+
+    describe 'promote_to command' do
+      let(:content) { '/promote_to objective' }
+
+      context 'when work item supports promotion' do
+        let_it_be(:key_result) { build(:work_item, :key_result, project: project) }
+
+        it 'includes the value' do
+          _, explanations = service.explain(content, key_result)
+          expect(explanations).to eq(['Promotes work item to objective.'])
+        end
+      end
+
+      context 'when work item does not support promotion' do
+        let_it_be(:requirement) { build(:work_item, :requirement, project: project) }
+
+        it 'does not include the value' do
+          _, explanations = service.explain(content, requirement)
+          expect(explanations).to be_empty
         end
       end
     end
