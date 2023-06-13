@@ -115,6 +115,8 @@ module QA
           end
 
           def click_vulnerability(name)
+            # To fix the flakiness, click on the MR title after widget is expanded
+            click_element(:title_content)
             within_element :vulnerability_report_grouped do
               click_on name
             end
