@@ -248,6 +248,46 @@ RSpec.describe Notes::QuickActionsService, feature_category: :team_planning do
         end
       end
     end
+
+    describe '/promote_to' do
+      shared_examples 'promotes work item' do |from:, to:|
+        it 'leaves the note empty' do
+          expect(execute(note)).to be_empty
+        end
+
+        it 'promotes to provided type' do
+          expect { execute(note) }.to change { noteable.work_item_type.base_type }.from(from).to(to)
+        end
+      end
+
+      context 'on a task' do
+        let_it_be_with_reload(:noteable) { create(:work_item, :task, project: project) }
+        let_it_be(:note_text) { '/promote_to Issue' }
+        let_it_be(:note) { create(:note, noteable: noteable, project: project, note: note_text) }
+
+        it_behaves_like 'promotes work item', from: 'task', to: 'issue'
+
+        context 'when type name is lower case' do
+          let_it_be(:note_text) { '/promote_to issue' }
+
+          it_behaves_like 'promotes work item', from: 'task', to: 'issue'
+        end
+      end
+
+      context 'on an issue' do
+        let_it_be_with_reload(:noteable) { create(:work_item, :issue, project: project) }
+        let_it_be(:note_text) { '/promote_to Incident' }
+        let_it_be(:note) { create(:note, noteable: noteable, project: project, note: note_text) }
+
+        it_behaves_like 'promotes work item', from: 'issue', to: 'incident'
+
+        context 'when type name is lower case' do
+          let_it_be(:note_text) { '/promote_to incident' }
+
+          it_behaves_like 'promotes work item', from: 'issue', to: 'incident'
+        end
+      end
+    end
   end
 
   describe '.supported?' do

@@ -18561,6 +18561,9 @@ msgstr[1] ""
 msgid "Failed on"
 msgstr ""
 
+msgid "Failed to %{action} this work item: %{reason}."
+msgstr ""
+
 msgid "Failed to add a Zoom meeting"
 msgstr ""
 
@@ -18603,9 +18606,6 @@ msgid "Failed to clone this issue because target project doesn't exist."
 msgstr ""
 
 msgid "Failed to clone this issue: wrong parameters."
-msgstr ""
-
-msgid "Failed to convert this work item: %{reason}."
 msgstr ""
 
 msgid "Failed to create a branch for this issue. Please try again."
@@ -36730,6 +36730,9 @@ msgstr ""
 msgid "Promote to objective"
 msgstr ""
 
+msgid "Promote work item"
+msgstr ""
+
 msgid "PromoteMilestone|Only project milestones can be promoted."
 msgstr ""
 
@@ -36743,6 +36746,9 @@ msgid "Promoted issue to an epic."
 msgstr ""
 
 msgid "Promotes issue to incident"
+msgstr ""
+
+msgid "Promotes work item to %{type}."
 msgstr ""
 
 msgid "Promotion is not supported."
@@ -51561,6 +51567,9 @@ msgid "Withdraw Access Request"
 msgstr ""
 
 msgid "Won't fix / Accept risk"
+msgstr ""
+
+msgid "Work Item promoted successfully."
 msgstr ""
 
 msgid "Work Item type with id %{id} was not found"

@@ -13,6 +13,7 @@ module EE
         include EE::Gitlab::QuickActions::IssueAndMergeRequestActions
         include EE::Gitlab::QuickActions::MergeRequestActions
         include EE::Gitlab::QuickActions::RelateActions
+        include EE::Gitlab::QuickActions::WorkItemActions
         # rubocop: enable Cop/InjectEnterpriseEditionModule
       end
     end
