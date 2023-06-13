@@ -11,11 +11,12 @@ module BundlerChecksum
         $stderr.puts 'A command must be given [init,update,verify]'
       end
 
-      if args.first == 'init'
+      case args.first
+      when 'init'
         Init.execute
-      elsif args.first == 'update'
+      when 'update'
         $stderr.puts 'Not implemented, please use init'
-      elsif args.first == 'verify'
+      when 'verify'
         verified = Verify.execute
 
         unless verified
