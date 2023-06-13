@@ -267,16 +267,6 @@ RSpec.shared_examples 'service with approval rules' do
           ]
         )
       end
-
-      context 'when inherit_approval_rules_on_creation is disabled' do
-        before do
-          stub_feature_flags(inherit_approval_rules_on_creation: false)
-        end
-
-        it 'does not create approval rules' do
-          expect(execute.approval_rules).to be_empty
-        end
-      end
     end
 
     context 'when approval rules attributes are provided' do
