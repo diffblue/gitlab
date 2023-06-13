@@ -1317,6 +1317,16 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         active_scan_actions
       end
+
+      context "with `branch_type` rules" do
+        let(:scan_execution_policies) do
+          [build(:scan_result_policy, rules: [{ type: 'pipeline', branch_type: 'protected' }])]
+        end
+
+        it "is empty" do
+          expect(active_scan_actions).to be_empty
+        end
+      end
     end
   end
 end
