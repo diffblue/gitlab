@@ -177,6 +177,7 @@ export default {
       v-if="resourceId"
       v-gl-modal="$options.convertDescriptionModalId"
       v-gl-tooltip
+      icon="tanuki-ai"
       :title="$options.i18n.buttonTitle"
       @click="hideTooltip"
       >{{ $options.i18n.autocompleteButtonText }}</gl-button

@@ -83,6 +83,7 @@ export default {
 <template>
   <gl-button
     v-gl-tooltip.focus.hover
+    icon="tanuki-ai"
     :disabled="loading"
     :loading="loading"
     :title="$options.i18n.tooltip"
