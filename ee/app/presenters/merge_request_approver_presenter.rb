@@ -59,10 +59,15 @@ class MergeRequestApproverPresenter < Gitlab::View::Presenter::Simple
   end
 
   def code_owner_loader
-    @code_owner_loader ||= Gitlab::CodeOwners::Loader.new(
-      merge_request.target_project,
-      merge_request.target_branch,
-      merge_request.modified_paths
-    )
+    strong_memoize_with :code_owner_loader do
+      loader = Gitlab::CodeOwners::Loader.new(
+        merge_request.target_project,
+        merge_request.target_branch,
+        merge_request.modified_paths
+      )
+
+      loader.track_file_validation
+      loader
+    end
   end
 end
