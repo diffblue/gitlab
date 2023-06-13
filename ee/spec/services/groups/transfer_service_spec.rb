@@ -137,7 +137,7 @@ RSpec.describe Groups::TransferService, '#execute', feature_category: :groups_an
 
         transfer_service.execute(new_group)
 
-        expect(transfer_service.error).not_to be
+        expect(transfer_service.error).not_to be_present
         expect(group.parent).to eq(new_group)
       end
     end
