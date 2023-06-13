@@ -211,6 +211,12 @@ module EE
       validates :allow_account_deletion,
         inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
+      validates :unconfirmed_users_delete_after_days,
+        numericality: { only_integer: true, greater_than: 0 }
+
+      validates :delete_unconfirmed_users,
+        inclusion: { in: [true, false], message: N_('must be a boolean value') }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?

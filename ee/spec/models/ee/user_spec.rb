@@ -137,6 +137,21 @@ RSpec.describe User, feature_category: :system_access do
         expect(described_class.managed_by(group)).to match_array(managed_users)
       end
     end
+
+    describe '.unconfirmed_and_created_before' do
+      it 'returns unconfirmed, active, human users created before timestamp passed in' do
+        cut_off_datetime = 7.days.ago
+        _confirmed_user = create(:user, confirmed_at: Time.current)
+        _unconfirmed_user_created_after_cut_off = create(:user, :unconfirmed, created_at: cut_off_datetime + 1.day)
+        _unconfirmed_bot_user_created_before_cut_off = create(:user, :bot, :unconfirmed, created_at: cut_off_datetime - 1.day)
+        _deactivated_user = create(:user, :unconfirmed, :deactivated, created_at: cut_off_datetime - 1.day)
+        unconfirmed_user_created_before_cut_off = create(:user, :unconfirmed, created_at: cut_off_datetime - 1.day)
+
+        expect(described_class.unconfirmed_and_created_before(cut_off_datetime)).to match_array(
+          [unconfirmed_user_created_before_cut_off]
+        )
+      end
+    end
   end
 
   describe 'after_create' do
