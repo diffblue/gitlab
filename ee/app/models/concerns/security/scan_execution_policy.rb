@@ -78,7 +78,7 @@ module Security
 
       ref_name = Gitlab::Git.ref_name(ref)
 
-      if Feature.enabled?(:security_policies_branch_type, project)
+      if Feature.enabled?(:security_policies_branch_type, service.project)
         applicable_for_ref_by_branches_and_branch_type?(policy, ref_name, service)
       else
         applicable_for_ref_by_branches?(policy, ref_name)
@@ -94,7 +94,7 @@ module Security
 
     def applicable_for_ref_by_branches?(policy, ref_name)
       policy[:rules].any? do |rule|
-        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches].any? { |branch| RefMatcher.new(branch).matches?(ref_name) }
+        rule[:type] == RULE_TYPES[:pipeline] && rule[:branches]&.any? { |branch| RefMatcher.new(branch).matches?(ref_name) }
       end
     end
   end
