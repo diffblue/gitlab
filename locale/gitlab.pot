@@ -53441,7 +53441,7 @@ msgstr ""
 msgid "cannot be changed since member is associated with a custom role"
 msgstr ""
 
-msgid "cannot be changed to %{new_type} with %{parent_type} as parent type."
+msgid "cannot be changed to %{new_type} when linked to a parent %{parent_type}."
 msgstr ""
 
 msgid "cannot be changed to %{new_type} with these child item types."
