@@ -7,6 +7,7 @@ import { TYPE_EPIC, TYPE_ISSUE } from '~/issues/constants';
 import { s__ } from '~/locale';
 
 import toggleListCollapsedMutation from '~/boards/graphql/client/board_toggle_collapsed.mutation.graphql';
+import issueMoveListMutation from './graphql/issue_move_list.mutation.graphql';
 import boardListsQuery from './graphql/board_lists.query.graphql';
 import destroyEpicBoardListMutation from './graphql/epic_board_list_destroy.mutation.graphql';
 import updateEpicBoardListMutation from './graphql/epic_board_list_update.mutation.graphql';
@@ -17,6 +18,7 @@ import listDeferredQuery from './graphql/board_lists_deferred.query.graphql';
 import epicListDeferredQuery from './graphql/epic_board_lists_deferred.query.graphql';
 import createBoardListMutation from './graphql/board_list_create.mutation.graphql';
 import createEpicBoardListMutation from './graphql/epic_board_list_create.mutation.graphql';
+import epicMoveListMutation from './graphql/epic_move_list.mutation.graphql';
 import toggleEpicListCollapsedMutation from './graphql/client/epic_board_toggle_collapsed.mutation.graphql';
 
 export * from '~/boards/constants';
@@ -203,9 +205,11 @@ export const deleteListQueries = {
 export const listIssuablesQueries = {
   [TYPE_ISSUE]: {
     query: listIssuesQuery,
+    moveMutation: issueMoveListMutation,
   },
   [TYPE_EPIC]: {
     query: gon?.features?.epicColorHighlight ? listEpicsWithColorQuery : listEpicsQuery,
+    moveMutation: epicMoveListMutation,
   },
 };
 

@@ -11,7 +11,7 @@ mutation issueMoveListEE(
   $positionInList: Int
   $epicId: EpicID
 ) {
-  issueMoveList(
+  issuableMoveList: issueMoveList(
     input: {
       projectPath: $projectPath
       iid: $iid
@@ -24,7 +24,7 @@ mutation issueMoveListEE(
       epicId: $epicId
     }
   ) {
-    issue {
+    issuable: issue {
       ...Issue
     }
     errors

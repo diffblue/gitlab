@@ -253,7 +253,7 @@ export const color = {
 export const rawIssue = {
   title: 'Issue 1',
   id: 'gid://gitlab/Issue/436',
-  iid: 27,
+  iid: '27',
   dueDate: null,
   timeEstimate: 0,
   totalTimeSpent: 0,
@@ -316,8 +316,8 @@ export const mockIssue = {
 };
 
 export const mockIssue2 = {
-  id: '437',
-  iid: 28,
+  id: 'gid://gitlab/Issue/437',
+  iid: '28',
   title: 'Issue 2',
   referencePath: '#28',
   dueDate: null,
@@ -403,24 +403,26 @@ export const mockIssueInListWithIteration = {
 
 export const mockIssues = [mockIssue, mockIssue2];
 
-export const mockGroupIssuesResponse = {
+export const mockGroupIssuesResponse = (listId = 'gid://gitlab/List/1', issues = [rawIssue]) => ({
   data: {
     group: {
       id: 'gid://gitlab/Group/1',
       board: {
+        __typename: 'Board',
         id: 'gid://gitlab/Board/1',
         lists: {
           nodes: [
             {
-              id: 'gid://gitlab/List/1',
+              id: listId,
               listType: 'backlog',
               issues: {
-                nodes: [rawIssue],
+                nodes: issues,
                 pageInfo: {
                   endCursor: null,
                   hasNextPage: false,
                 },
               },
+              __typename: 'BoardList',
             },
           ],
         },
@@ -428,7 +430,7 @@ export const mockGroupIssuesResponse = {
       __typename: 'Group',
     },
   },
-};
+});
 
 export const mockProjectIssuesResponse = {
   data: {
@@ -537,7 +539,7 @@ export const mockFormattedBoardEpic = {
 export const mockEpics = [
   {
     id: 'gid://gitlab/Epic/41',
-    iid: 2,
+    iid: '2',
     description: null,
     title: 'Another marketing',
     group_id: 56,
@@ -559,7 +561,7 @@ export const mockEpics = [
   },
   {
     id: 'gid://gitlab/Epic/40',
-    iid: 1,
+    iid: '1',
     description: null,
     title: 'Marketing epic',
     group_id: 56,
@@ -578,7 +580,7 @@ export const mockEpics = [
   },
   {
     id: 'gid://gitlab/Epic/39',
-    iid: 12,
+    iid: '12',
     description: null,
     title: 'Epic with end in first timeframe month',
     group_id: 2,
@@ -597,7 +599,7 @@ export const mockEpics = [
   },
   {
     id: 'gid://gitlab/Epic/38',
-    iid: 11,
+    iid: '11',
     description: null,
     title: 'Epic with end date out of range',
     group_id: 2,
@@ -616,7 +618,7 @@ export const mockEpics = [
   },
   {
     id: 'gid://gitlab/Epic/37',
-    iid: 10,
+    iid: '10',
     description: null,
     title: 'Epic with timeline in same month',
     group_id: 2,
@@ -916,6 +918,26 @@ export const iterationsQueryResponse = {
         nodes: mockIterations,
       },
       __typename: 'Project',
+    },
+  },
+};
+
+export const moveIssueMutationResponse = {
+  data: {
+    issuableMoveList: {
+      issuable: rawIssue,
+      errors: [],
+      __typename: 'IssueMoveListPayload',
+    },
+  },
+};
+
+export const moveEpicMutationResponse = {
+  data: {
+    issuableMoveList: {
+      issuable: rawEpic,
+      errors: [],
+      __typename: 'EpicMoveListPayload',
     },
   },
 };

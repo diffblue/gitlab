@@ -19,7 +19,7 @@ describe('IssuesLaneList', () => {
   let store;
   let mockApollo;
 
-  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse);
+  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
 
   const createComponent = ({
     listType = ListType.backlog,

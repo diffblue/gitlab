@@ -49,7 +49,7 @@ describe('EpicLane', () => {
     });
   };
 
-  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse);
+  const listIssuesQueryHandlerSuccess = jest.fn().mockResolvedValue(mockGroupIssuesResponse());
 
   const createComponent = ({
     props = {},

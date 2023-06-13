@@ -1,3 +1,6 @@
+#import "ee/graphql_shared/fragments/epic.fragment.graphql"
+#import "~/graphql_shared/fragments/label.fragment.graphql"
+
 mutation EpicMoveList(
   $epicId: EpicID!
   $boardId: BoardsEpicBoardID!
@@ -6,8 +9,9 @@ mutation EpicMoveList(
   $moveAfterId: EpicID
   $moveBeforeId: EpicID
   $positionInList: Int
+  $withColor: Boolean = false
 ) {
-  epicMoveList(
+  issuableMoveList: epicMoveList(
     input: {
       epicId: $epicId
       boardId: $boardId
@@ -18,6 +22,32 @@ mutation EpicMoveList(
       positionInList: $positionInList
     }
   ) {
+    issuable: epic {
+      ...EpicNode
+      relativePosition
+      referencePath: reference(full: true)
+      confidential
+      subscribed
+      blocked
+      blockedByCount
+      labels {
+        nodes {
+          ...Label
+        }
+      }
+      hasIssues
+      descendantCounts {
+        closedEpics
+        closedIssues
+        openedEpics
+        openedIssues
+      }
+      descendantWeightSum {
+        closedIssues
+        openedIssues
+      }
+      color @include(if: $withColor)
+    }
     errors
   }
 }
