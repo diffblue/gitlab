@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequestDiff do
+RSpec.describe MergeRequestDiff, feature_category: :geo_replication do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
@@ -38,6 +38,10 @@ RSpec.describe MergeRequestDiff do
       end
 
       it 'creates verification details' do
+        # This stub has to be set for the whole '#after_save' block but due to the bug
+        # https://gitlab.com/gitlab-org/gitlab/-/issues/413852
+        # this specs will fail in that case. Move it up when the bug is fixed
+        stub_primary_node
         mr_diff[:state] = :collected
 
         expect { mr_diff.save! }.to change { MergeRequestDiffDetail.count }.by(1)

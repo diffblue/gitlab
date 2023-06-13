@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :geo_job_artifact_state, class: 'Geo::JobArtifactState' do
-    job_artifact
+    job_artifact factory: :ci_job_artifact
 
     trait(:checksummed) do
       verification_checksum { 'abc' }

@@ -446,6 +446,7 @@ RSpec.describe Geo::VerificationState, feature_category: :geo_replication do
       end
 
       before do
+        stub_primary_node
         stub_dummy_replicator_class(model_class: 'TestDummyModelWithSeparateState')
         stub_dummy_model_with_separate_state_class
       end

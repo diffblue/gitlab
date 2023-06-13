@@ -10,6 +10,10 @@ RSpec.describe ::LfsObject do
   let_it_be(:project) { create(:project, :repository, group: group) }
   let_it_be(:another_project) { create(:project, :repository) }
 
+  before do
+    stub_primary_node
+  end
+
   it { is_expected.to respond_to(:log_geo_deleted_event) }
 
   context 'when model_record is part of available_verifiables scope' do
