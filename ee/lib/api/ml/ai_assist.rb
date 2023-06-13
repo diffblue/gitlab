@@ -22,6 +22,13 @@ module API
           success EE::API::Entities::Ml::AiAssist
         end
         get 'ai-assist' do
+          Gitlab::Tracking.event(
+            'API::Ml::AiAssist',
+            :authenticate,
+            user: current_user,
+            label: 'code_suggestions'
+          )
+
           response = {
             user_is_allowed: true,
             third_party_ai_features_enabled: current_user.third_party_ai_features_enabled?

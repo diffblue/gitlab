@@ -42,6 +42,13 @@ module API
         end
         post do
           with_proxy_ai_request do
+            Gitlab::Tracking.event(
+              'API::CodeSuggestions',
+              :authenticate,
+              user: current_user,
+              label: 'code_suggestions'
+            )
+
             token = Gitlab::CodeSuggestions::AccessToken.new(current_user)
             present token, with: Entities::CodeSuggestionsAccessToken
           end

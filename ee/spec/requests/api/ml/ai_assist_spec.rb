@@ -15,14 +15,31 @@ RSpec.describe API::Ml::AiAssist, feature_category: :code_suggestions do
   end
 
   shared_examples 'a response' do |result, body = nil|
-    it "returns #{result} response", :aggregate_failures do
+    before do
       allowed_group
+    end
 
+    it "returns #{result} response", :aggregate_failures do
       get_api
 
       expect(response).to have_gitlab_http_status(result)
 
       expect(json_response).to eq(body) if body
+    end
+
+    it "records Snowplow events" do
+      get_api
+
+      if result == :ok
+        expect_snowplow_event(
+          category: described_class.name,
+          action: :authenticate,
+          user: current_user,
+          label: 'code_suggestions'
+        )
+      else
+        expect_no_snowplow_event
+      end
     end
   end
 
