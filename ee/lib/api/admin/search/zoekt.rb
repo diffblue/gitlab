@@ -3,7 +3,7 @@
 module API
   module Admin
     module Search
-      class Zoekt < ::API::Base # rubocop:disable Search/NamespacedClass
+      class Zoekt < ::API::Base
         MAX_RESULTS = 20
 
         feature_category :global_search
