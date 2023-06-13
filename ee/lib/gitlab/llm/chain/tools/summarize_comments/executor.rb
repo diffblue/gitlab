@@ -15,7 +15,7 @@ module Gitlab
 
               content = if resource.is_a?(Noteable) && resource.notes.by_humans.exists?
                           service_response = ::Llm::GenerateSummaryService.new(
-                            context.current_user, resource, { sync: true }
+                            context.current_user, resource, { sync: true, skip_cache: true }
                           ).execute
 
                           build_answer(resource, service_response)

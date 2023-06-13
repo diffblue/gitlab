@@ -12,6 +12,10 @@ module Gitlab
         private
 
         attr_reader :ai_prompt_class, :params
+
+        def response_options
+          params.slice(:request_id, :skip_cache)
+        end
       end
     end
   end
