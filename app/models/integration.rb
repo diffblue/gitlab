@@ -302,7 +302,7 @@ class Integration < ApplicationRecord
 
   def self.project_specific_integration_names
     names = PROJECT_SPECIFIC_INTEGRATION_NAMES.dup
-    names.delete('gitlab_slack_application') unless Gitlab::CurrentSettings.slack_app_enabled || Rails.env.test?
+    names.delete('gitlab_slack_application') unless Gitlab::CurrentSettings.slack_app_enabled || Gitlab.dev_or_test_env?
     names
   end
 
