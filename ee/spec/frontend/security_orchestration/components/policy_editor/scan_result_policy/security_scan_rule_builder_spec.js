@@ -7,7 +7,7 @@ import PolicyRuleBranchSelection from 'ee/security_orchestration/components/poli
 import SeverityFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/severity_filter.vue';
 import StatusFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/status_filter.vue';
 import ScanTypeSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/scan_type_select.vue';
-import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/scan_filter_selector.vue';
+import ScanFilterSelector from 'ee/security_orchestration/components/policy_editor/scan_filter_selector.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   securityScanBuildRule,
@@ -175,6 +175,15 @@ describe('SecurityScanRuleBuilder', () => {
     expect(currentComponent().exists()).toBe(true);
   });
 
+  it('selects the correct filters', () => {
+    factory({ initRule: UPDATED_RULE });
+    expect(findScanFilterSelector().props('selected')).toEqual({
+      newly_detected: ['new_needs_triage', 'new_dismissed'],
+      severity: ['high'],
+      status: null,
+    });
+  });
+
   it('can add second status filter', async () => {
     factory({ initRule: UPDATED_RULE });
 
@@ -185,6 +194,12 @@ describe('SecurityScanRuleBuilder', () => {
     expect(statusFilters).toHaveLength(2);
     expect(statusFilters.at(0).props('filter')).toEqual(NEWLY_DETECTED);
     expect(statusFilters.at(1).props('filter')).toEqual(PREVIOUSLY_EXISTING);
+    expect(findScanFilterSelector().props('selected')).toEqual({
+      newly_detected: ['new_needs_triage', 'new_dismissed'],
+      previously_existing: [],
+      severity: ['high'],
+      status: [],
+    });
   });
 
   it('renders filters for exiting rule', () => {

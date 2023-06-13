@@ -7,6 +7,11 @@ export default {
     GlButton,
   },
   props: {
+    contentClasses: {
+      type: String,
+      required: false,
+      default: '',
+    },
     ruleLabel: {
       type: String,
       required: false,
@@ -19,6 +24,9 @@ export default {
     },
   },
   computed: {
+    contentClass() {
+      return `gl-flex-grow-1 gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap ${this.contentClasses}`;
+    },
     showLabel() {
       return Boolean(this.ruleLabel);
     },
@@ -38,10 +46,7 @@ export default {
       </label>
     </div>
 
-    <div
-      id="content"
-      class="gl-flex-grow-1 gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap"
-    >
+    <div data-testid="content" :class="contentClass">
       <slot name="selector"> </slot>
       <slot name="content"></slot>
     </div>

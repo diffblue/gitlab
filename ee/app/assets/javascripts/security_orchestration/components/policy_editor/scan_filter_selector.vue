@@ -1,19 +1,9 @@
 <script>
 import { GlCollapsibleListbox, GlBadge, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
-import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
-import {
-  FILTERS,
-  TOOLTIPS,
-  STATUS,
-  NEWLY_DETECTED,
-  PREVIOUSLY_EXISTING,
-  SEVERITY,
-} from './constants';
+import GenericBaseLayoutComponent from './generic_base_layout_component.vue';
 
 export default {
-  FILTERS,
-  TOOLTIPS,
   i18n: {
     buttonText: s__('ScanResultPolicy|Add new criteria'),
     disabledLabel: __('disabled'),
@@ -24,7 +14,7 @@ export default {
     GlTooltip: GlTooltipDirective,
   },
   components: {
-    BaseLayoutComponent,
+    GenericBaseLayoutComponent,
     GlCollapsibleListbox,
     GlBadge,
   },
@@ -34,15 +24,15 @@ export default {
       required: false,
       default: false,
     },
+    filters: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     selected: {
       type: Object,
       required: false,
       default: () => ({}),
-    },
-    items: {
-      type: Array,
-      required: false,
-      default: undefined,
     },
     tooltipTitle: {
       type: String,
@@ -50,18 +40,9 @@ export default {
       default: '',
     },
   },
-  computed: {
-    listBoxItems() {
-      return this.items || this.$options.FILTERS;
-    },
-  },
   methods: {
-    filterSelected(filter) {
-      if (filter === STATUS) {
-        return Boolean(this.selected[NEWLY_DETECTED] && this.selected[PREVIOUSLY_EXISTING]);
-      }
-
-      return Boolean(this.selected[SEVERITY]);
+    filterSelected(value) {
+      return Boolean(this.selected[value]);
     },
     selectFilter(filter) {
       if (this.filterSelected(filter)) {
@@ -75,16 +56,15 @@ export default {
 </script>
 
 <template>
-  <base-layout-component :show-label="false" :show-remove-button="false">
+  <generic-base-layout-component :show-remove-button="false">
     <template #content>
       <gl-collapsible-listbox
         v-gl-tooltip.right.viewport
         :disabled="disabled"
         :header-text="$options.i18n.headerText"
-        :items="listBoxItems"
+        :items="filters"
         :toggle-text="$options.i18n.buttonText"
         :title="tooltipTitle"
-        data-testid="add-rule"
         selected="selected"
         variant="link"
         @select="selectFilter"
@@ -100,7 +80,7 @@ export default {
               class="gl-ml-auto"
               size="sm"
               variant="neutral"
-              :title="$options.TOOLTIPS[item.value]"
+              :title="item.tooltip"
             >
               {{ $options.i18n.disabledLabel }}
             </gl-badge>
@@ -108,5 +88,5 @@ export default {
         </template>
       </gl-collapsible-listbox>
     </template>
-  </base-layout-component>
+  </generic-base-layout-component>
 </template>

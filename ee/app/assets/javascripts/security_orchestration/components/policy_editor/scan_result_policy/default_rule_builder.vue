@@ -1,8 +1,8 @@
 <script>
 import { GlSprintf } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import ScanFilterSelector from '../scan_filter_selector.vue';
 import { getDefaultRule } from './lib';
-import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';

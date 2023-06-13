@@ -46,13 +46,7 @@ export default {
 </script>
 
 <template>
-  <base-layout-component
-    class="gl-w-full"
-    content-class="gl-bg-white gl-rounded-base gl-p-5"
-    :show-label="false"
-    :show-remove-button="showRemoveButton"
-    @remove="remove"
-  >
+  <base-layout-component class="gl-w-full" :show-remove-button="showRemoveButton" @remove="remove">
     <template #selector>
       <label class="gl-mb-0" :title="$options.i18n.label">{{ $options.i18n.label }}</label>
       <policy-rule-multi-select
