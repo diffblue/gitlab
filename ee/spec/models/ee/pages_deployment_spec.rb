@@ -13,6 +13,10 @@ RSpec.describe PagesDeployment do
     let(:verifiable_model_record) { build(:pages_deployment) }
     let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
 
+    before do
+      stub_primary_node
+    end
+
     context 'when model_record is part of available_verifiables scope' do
       it 'creates verification details' do
         expect { verifiable_model_record.save! }.to change { verification_state_table_class.count }.by(1)

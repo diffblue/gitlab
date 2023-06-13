@@ -76,6 +76,10 @@ RSpec.shared_examples 'a verifiable replicator' do
   end
 
   describe '.checksummed_count' do
+    before do
+      stub_primary_node
+    end
+
     context 'when verification is enabled' do
       let(:verifiable) { model_record }
 
@@ -182,6 +186,10 @@ RSpec.shared_examples 'a verifiable replicator' do
   end
 
   describe '.checksum_failed_count' do
+    before do
+      stub_primary_node
+    end
+
     context 'when verification is enabled' do
       let(:verifiable) { model_record }
 

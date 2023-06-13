@@ -43,23 +43,13 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     # EE
     [:dast_profile, :with_dast_site_validation],
     [:dependency_proxy_manifest, :remote_store],
-    [:geo_dependency_proxy_manifest_state, any],
     [:ee_ci_build, :dependency_scanning_report],
     [:ee_ci_build, :license_scan_v1],
     [:ee_ci_job_artifact, :v1],
     [:ee_ci_job_artifact, :v1_1],
     [:ee_ci_job_artifact, :v2],
     [:ee_ci_job_artifact, :v2_1],
-    [:geo_ci_secure_file_state, any],
-    [:geo_dependency_proxy_blob_state, any],
     [:geo_event_log, :geo_event],
-    [:geo_job_artifact_state, any],
-    [:geo_lfs_object_state, any],
-    [:geo_pages_deployment_state, any],
-    [:geo_upload_state, any],
-    [:geo_ci_secure_file_state, any],
-    [:geo_container_repository_state, any],
-    [:geo_wiki_repository_state, any],
     [:lfs_object, :checksum_failure],
     [:lfs_object, :checksummed],
     [:merge_request, :blocked],
@@ -72,8 +62,7 @@ RSpec.describe 'factories', :saas, :with_license, feature_category: :tooling do
     [:vulnerability, :with_cluster_image_scanning_finding],
     [:vulnerability, :with_findings],
     [:vulnerability_export, :finished],
-    [:container_repository, :remote_store],
-    [:geo_design_management_repository_state, any]
+    [:container_repository, :remote_store]
   ].freeze
 
   geo_configured = Gitlab.ee? && Gitlab::Geo.geo_database_configured?

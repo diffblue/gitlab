@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobArtifact do
+RSpec.describe Ci::JobArtifact, feature_category: :geo_replication do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
@@ -11,6 +11,10 @@ RSpec.describe Ci::JobArtifact do
   describe '#save_verification_details' do
     let(:verifiable_model_record) { build(:ci_job_artifact, :trace, job: job) }
     let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
+
+    before do
+      stub_primary_node
+    end
 
     context 'when direct upload is enabled for trace artifacts' do
       before do
@@ -27,7 +31,7 @@ RSpec.describe Ci::JobArtifact do
         stub_artifacts_object_storage(JobArtifactUploader, direct_upload: false)
       end
 
-      it 'does not create verification details' do
+      it 'creates verification details' do
         expect { verifiable_model_record.save! }.to change { verification_state_table_class.count }.by(1)
       end
     end
