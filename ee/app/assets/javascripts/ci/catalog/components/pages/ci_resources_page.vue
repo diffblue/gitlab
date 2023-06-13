@@ -67,6 +67,7 @@ export default {
 
         this.currentPage -= 1;
       } catch (e) {
+        // Ensure that the current query is properly stoped if an error occurs.
         this.$apollo.queries.catalogResources.stop();
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
       }
@@ -81,6 +82,7 @@ export default {
 
         this.currentPage += 1;
       } catch (e) {
+        // Ensure that the current query is properly stoped if an error occurs.
         this.$apollo.queries.catalogResources.stop();
 
         createAlert({ message: e?.message || this.$options.i18n.fetchError, variant: 'danger' });
