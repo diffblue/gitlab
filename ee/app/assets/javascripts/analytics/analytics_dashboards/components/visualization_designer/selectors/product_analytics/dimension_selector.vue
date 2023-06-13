@@ -11,6 +11,9 @@ import {
   ANALYTICS_FIELDS,
 } from 'ee/analytics/analytics_dashboards/constants';
 
+const eventsMeasure = EVENTS_TABLE_NAME.toLowerCase();
+const sessionsMeasure = SESSIONS_TABLE_NAME.toLowerCase();
+
 export default {
   name: 'ProductAnalyticsDimensionSelector',
   GRANULARITIES,
@@ -83,9 +86,6 @@ export default {
       this.selectedDimensionMode = false;
     },
     setGranularity(selectedGranularity) {
-      const eventsMeasure = EVENTS_TABLE_NAME.toLowerCase();
-      const sessionsMeasure = SESSIONS_TABLE_NAME.toLowerCase();
-
       const dimensionFieldName =
         DATE_RANGE_FILTER_DIMENSIONS[
           this.measureType === sessionsMeasure ? this.measureType : eventsMeasure
