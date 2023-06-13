@@ -561,6 +561,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:users_unconfirmed_users_deletion_cron
+  :worker_name: Users::UnconfirmedUsersDeletionCronWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:vulnerabilities_historical_statistics_deletion
   :worker_name: Vulnerabilities::HistoricalStatistics::DeletionWorker
   :feature_category: :vulnerability_management

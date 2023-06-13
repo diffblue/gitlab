@@ -483,6 +483,12 @@ RSpec.describe ApplicationSetting do
       it { is_expected.not_to allow_value(13).for(:package_metadata_purl_types) }
       it { is_expected.not_to allow_value(0).for(:package_metadata_purl_types) }
     end
+
+    context "unconfirmed user deletion" do
+      it { is_expected.to allow_value(true, false).for(:delete_unconfirmed_users) }
+
+      it { is_expected.to validate_numericality_of(:unconfirmed_users_delete_after_days).is_greater_than(0) }
+    end
   end
 
   describe 'search curation settings after .create_from_defaults', feature_category: :global_search do
