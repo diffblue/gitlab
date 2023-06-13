@@ -4,6 +4,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import ModalCreate from 'ee/status_checks/components/modal_create.vue';
 import SharedModal from 'ee/status_checks/components/shared_modal.vue';
+import { stubComponent } from 'helpers/stub_component';
 
 Vue.use(Vuex);
 
@@ -19,7 +20,7 @@ describe('Modal create', () => {
     postStatusCheck: jest.fn(),
   };
 
-  const createWrapper = () => {
+  const createWrapper = ({ stubs = {} } = {}) => {
     store = new Vuex.Store({
       actions,
       state: {
@@ -33,10 +34,9 @@ describe('Modal create', () => {
       store,
       stubs: {
         GlButton,
+        ...stubs,
       },
     });
-
-    wrapper.vm.$refs.modal.show = jest.fn();
   };
 
   beforeEach(() => {
@@ -52,8 +52,18 @@ describe('Modal create', () => {
     });
 
     it('opens the modal', () => {
+      const mockDeleteModalShow = jest.fn();
+      createWrapper({
+        stubs: {
+          SharedModal: stubComponent(SharedModal, {
+            methods: {
+              show: mockDeleteModalShow,
+            },
+          }),
+        },
+      });
       findAddBtn().trigger('click');
-      expect(wrapper.vm.$refs.modal.show).toHaveBeenCalled();
+      expect(mockDeleteModalShow).toHaveBeenCalled();
     });
   });
 
