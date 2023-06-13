@@ -13,6 +13,21 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
 
       expect(json_response).to include(**body)
     end
+
+    it "records Snowplow events" do
+      post_api
+
+      if case_name == 'successful'
+        expect_snowplow_event(
+          category: described_class.name,
+          action: :authenticate,
+          user: current_user,
+          label: 'code_suggestions'
+        )
+      else
+        expect_no_snowplow_event
+      end
+    end
   end
 
   shared_examples 'a successful response' do
