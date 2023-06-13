@@ -52,7 +52,7 @@ module QA
 
             def change_state(status, dismissal_reason = "not_applicable")
               click_element(:vulnerability_card_status_dropdown)
-              click_element(:"listbox_item_#{status}")
+              click_element(:"listbox-item-#{status}")
 
               if status.include?("dismissed")
                 click_element(:dismissal_reason_listbox)
@@ -64,7 +64,7 @@ module QA
             end
 
             def select_dismissal_reason(reason)
-              click_element(:"listbox_item_#{reason}")
+              click_element(:"listbox-item-#{reason}")
             end
 
             def has_remediated_badge?(vulnerability_name)
