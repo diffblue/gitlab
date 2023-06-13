@@ -112,7 +112,6 @@
                     "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
                       "description": "Specifies the name of the Kubernetes cluster configured for your project in GitLab.",
-                      "additionalProperties": false,
                       "properties": {
                         "namespaces": {
                           "type": "array",
@@ -129,7 +128,6 @@
                   "type": "object",
                   "minProperties": 1,
                   "maxProperties": 1,
-                  "additionalProperties": false,
                   "patternProperties": {
                     "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$": {
                       "type": "object",
@@ -174,8 +172,7 @@
                 "required": [
                   "cadence"
                 ]
-              },
-              "additionalProperties": false
+              }
             }
           },
           "actions": {
@@ -296,8 +293,7 @@
                     "maxProperties": 3
                   }
                 }
-              ],
-              "additionalProperties": false
+              ]
             }
           }
         }
@@ -472,8 +468,7 @@
                     ]
                   }
                 }
-              ],
-              "additionalProperties": false
+              ]
             }
           },
           "actions": {
@@ -591,10 +586,8 @@
               }
             }
           }
-        },
-        "additionalProperties": false
+        }
       }
     }
-  },
-  "additionalProperties": false
+  }
 }
