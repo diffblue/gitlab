@@ -123,7 +123,6 @@ export default {
 <template>
   <base-layout-component
     class="gl-py-0 gl-rounded-0"
-    :show-label="false"
     :show-remove-button="showRemoveButton"
     @remove="handleRemoveApprover"
   >

@@ -133,9 +133,9 @@ export default {
     >
       {{ $options.ACTION_AND_LABEL }}
     </div>
-    <generic-base-layout-component :show-remove-button="false" @changed="$emit('changed', $event)">
+    <generic-base-layout-component :show-remove-button="false">
       <template #content>
-        <generic-base-layout-component class="gl-w-full gl-bg-white!" @remove="$emit('remove')">
+        <generic-base-layout-component class="gl-w-full gl-bg-white" @remove="$emit('remove')">
           <template #content>
             <gl-sprintf :message="actionMessage">
               <template #scan>

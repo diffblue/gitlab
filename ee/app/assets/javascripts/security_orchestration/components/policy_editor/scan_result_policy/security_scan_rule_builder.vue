@@ -5,17 +5,24 @@ import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/sto
 import PolicyRuleMultiSelect from '../../policy_rule_multi_select.vue';
 import { ANY_OPERATOR, MORE_THAN_OPERATOR } from '../constants';
 import { enforceIntValue } from '../utils';
+import ScanFilterSelector from '../scan_filter_selector.vue';
 import { getDefaultRule, groupSelectedVulnerabilityStates } from './lib';
 import SeverityFilter from './scan_filters/severity_filter.vue';
 import StatusFilters from './scan_filters/status_filters.vue';
 import BaseLayoutComponent from './base_layout/base_layout_component.vue';
 import PolicyRuleBranchSelection from './policy_rule_branch_selection.vue';
-import ScanFilterSelector from './scan_filters/scan_filter_selector.vue';
-import { SEVERITY, STATUS, NEWLY_DETECTED, PREVIOUSLY_EXISTING } from './scan_filters/constants';
+import {
+  FILTERS,
+  NEWLY_DETECTED,
+  PREVIOUSLY_EXISTING,
+  SEVERITY,
+  STATUS,
+} from './scan_filters/constants';
 import NumberRangeSelect from './number_range_select.vue';
 import ScanTypeSelect from './base_layout/scan_type_select.vue';
 
 export default {
+  FILTERS,
   SEVERITY,
   STATUS,
   NEWLY_DETECTED,
@@ -44,12 +51,16 @@ export default {
     const vulnerabilityStateGroups = groupSelectedVulnerabilityStates(
       this.initRule.vulnerability_states,
     );
+
+    const filters = {
+      [SEVERITY]: this.initRule.severity_levels.length ? this.initRule.severity_levels : null,
+      [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
+      [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
+    };
+    filters[STATUS] = filters[NEWLY_DETECTED] && filters[PREVIOUSLY_EXISTING] ? [] : null;
+
     return {
-      filters: {
-        [SEVERITY]: this.initRule.severity_levels.length ? this.initRule.severity_levels : null,
-        [NEWLY_DETECTED]: vulnerabilityStateGroups[NEWLY_DETECTED],
-        [PREVIOUSLY_EXISTING]: vulnerabilityStateGroups[PREVIOUSLY_EXISTING],
-      },
+      filters,
     };
   },
   computed: {
@@ -103,6 +114,8 @@ export default {
       if (filter === STATUS) {
         const statusKey = this.filters[NEWLY_DETECTED] ? PREVIOUSLY_EXISTING : NEWLY_DETECTED;
         this.filters[statusKey] = [];
+        this.filters[STATUS] =
+          this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
       } else {
         this.filters[filter] = [];
       }
@@ -227,6 +240,7 @@ export default {
 
         <scan-filter-selector
           class="gl-bg-white! gl-w-full"
+          :filters="$options.FILTERS"
           :selected="filters"
           @select="selectFilter"
         />

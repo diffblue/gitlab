@@ -81,7 +81,6 @@ export default {
   <base-layout-component
     :key="filter"
     class="gl-w-full gl-bg-white"
-    :show-label="false"
     :show-remove-button="showRemoveButton"
     @remove="remove"
   >
