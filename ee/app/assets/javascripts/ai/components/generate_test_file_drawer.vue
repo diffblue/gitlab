@@ -117,7 +117,7 @@ export default {
   >
     <template #title>
       <div class="gl-display-flex gl-align-items-center">
-        <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
+        <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />
         <h2 class="gl-my-0 gl-font-size-h2 gl-line-height-24">
           {{ __('Test cases') }}
         </h2>

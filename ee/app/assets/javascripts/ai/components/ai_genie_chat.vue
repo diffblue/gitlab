@@ -128,7 +128,7 @@ export default {
       <div
         class="drawer-title gl-display-flex gl-justify-content-start gl-align-items-center gl-p-5"
       >
-        <gl-icon name="tanuki" class="gl-text-orange-500 gl-mr-3" />
+        <gl-icon name="tanuki-ai" class="gl-text-purple-600 gl-mr-3" />
         <h3 class="gl-my-0 gl-font-size-h2">
           <slot name="title"></slot>
         </h3>

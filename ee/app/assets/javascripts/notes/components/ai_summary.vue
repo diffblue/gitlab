@@ -100,7 +100,7 @@ export default {
   <div v-if="markdown" class="ai-summary-card gl-rounded-base gl-border gl-bg-gray-10">
     <div class="gl-px-5 gl-py-4 gl-bg-white gl-rounded-top-base gl-border-b">
       <div class="gl-display-flex gl-align-items-center gl-gap-3">
-        <gl-icon name="tanuki" class="gl-text-orange-500" />
+        <gl-icon name="tanuki-ai" class="gl-text-purple-600" />
         <h5 class="gl-my-0">{{ __('AI-generated summary') }}</h5>
         <gl-badge variant="neutral">{{ __('Experiment') }}</gl-badge>
       </div>

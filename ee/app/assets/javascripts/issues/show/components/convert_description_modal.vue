@@ -192,7 +192,7 @@ export default {
     >
       <template #modal-title>
         <div class="gl-display-flex gl-align-items-center">
-          <gl-icon name="tanuki" class="gl-text-orange-500" />
+          <gl-icon name="tanuki-ai" class="gl-text-purple-600" />
           <span class="gl-mx-3">{{ $options.i18n.modalTitle }}</span>
           <gl-badge variant="neutral">{{ $options.i18n.experiment }}</gl-badge>
         </div>
