@@ -368,6 +368,12 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
             expect(json_response).to include('plan' => nil, 'trial' => false)
           end
         end
+
+        it "contains scim_identities parameter" do
+          get api("/users/#{user.id}", admin, admin_mode: true)
+
+          expect(json_response).to have_key('scim_identities')
+        end
       end
 
       context 'as a user' do
@@ -388,6 +394,12 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
           get api("/users/#{user.id}", user)
 
           expect(json_response).not_to have_key('provisioned_by_group_id')
+        end
+
+        it "does not contain scim_identities parameter" do
+          get api("/users/#{user.id}", user)
+
+          expect(json_response).not_to have_key('scim_identities')
         end
       end
     end
