@@ -45159,6 +45159,21 @@ msgstr ""
 msgid "TeamcityIntegration|Trigger TeamCity CI after every push to the repository, except branch delete"
 msgstr ""
 
+msgid "TelegramIntegration|Leave blank to use your current token."
+msgstr ""
+
+msgid "TelegramIntegration|New token"
+msgstr ""
+
+msgid "TelegramIntegration|Send notifications about project events to Telegram."
+msgstr ""
+
+msgid "TelegramIntegration|Send notifications about project events to Telegram. %{docs_link}"
+msgstr ""
+
+msgid "TelegramIntegration|Unique authentication token."
+msgstr ""
+
 msgid "Telephone number"
 msgstr ""
 
