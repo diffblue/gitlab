@@ -13,6 +13,7 @@ import { runnerFormData } from 'jest/ci/runner/mock_data';
 import { saveAlertToLocalStorage } from '~/ci/runner/local_storage_alert/save_alert_to_local_storage';
 import RunnerUpdateForm from '~/ci/runner/components/runner_update_form.vue';
 import runnerUpdateMutation from '~/ci/runner/graphql/edit/runner_update.mutation.graphql';
+import { INSTANCE_TYPE } from '~/ci/runner/constants';
 
 jest.mock('~/ci/runner/local_storage_alert/save_alert_to_local_storage');
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -97,9 +98,12 @@ describe('RunnerUpdateForm', () => {
         createComponent();
 
         await wrapper.setProps({
+          runnerType: INSTANCE_TYPE,
           loading: false,
           runner: mockRunner,
         });
+
+        await waitForPromises();
       });
 
       it('the form contains CI minute cost factors', () => {
