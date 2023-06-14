@@ -11,6 +11,7 @@ module EE
 
       scope :searchable, -> { where(system: false).includes(:noteable) }
       scope :by_humans, -> { user.joins(:author).merge(::User.human) }
+      scope :note_starting_with, ->(prefix) { where('note LIKE ?', "#{prefix}%") }
       scope :count_for_vulnerability_id, ->(vulnerability_id) do
         where(noteable_type: ::Vulnerability.name, noteable_id: vulnerability_id)
           .group(:noteable_id)
