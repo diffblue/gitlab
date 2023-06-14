@@ -1,4 +1,4 @@
-import { GlLabel, GlButton, GlBadge, GlPopover } from '@gitlab/ui';
+import { GlLabel, GlButton, GlPopover } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import FrameworkBadge from 'ee/compliance_dashboard/components/shared/framework_badge.vue';
@@ -10,7 +10,6 @@ describe('FrameworkBadge component', () => {
 
   const findLabel = () => wrapper.findComponent(GlLabel);
   const findTooltip = () => wrapper.findComponent(GlPopover);
-  const findDefaultBadge = () => wrapper.findComponent(GlBadge);
   const findEditButton = () => wrapper.findComponent(GlPopover).findComponent(GlButton);
 
   const createComponent = (props = {}) => {
@@ -45,26 +44,25 @@ describe('FrameworkBadge component', () => {
       expect(findTooltip().text()).toContain(complianceFramework.description);
     });
 
-    it('renders the default badge when the framework is default', () => {
+    it('renders the default addition when the framework is default', () => {
       wrapper = createComponent({ framework: { ...complianceFramework, default: true } });
 
-      expect(findDefaultBadge().exists()).toBe(true);
-      expect(findDefaultBadge().text()).toBe('default');
+      expect(findLabel().props('title')).toEqual(`${complianceFramework.name} (default)`);
     });
 
-    it('does not render the default badge when the framework is default but component is configured to hide the badge', () => {
+    it('does not render the default addition when the framework is default but component is configured to hide the badge', () => {
       wrapper = createComponent({
         framework: { ...complianceFramework, default: true },
         showDefault: false,
       });
 
-      expect(findDefaultBadge().exists()).toBe(false);
+      expect(findLabel().props('title')).toEqual(complianceFramework.name);
     });
 
-    it('does not render the default badge when the framework is not default', () => {
+    it('does not render the default addition when the framework is not default', () => {
       wrapper = createComponent({ framework: complianceFramework });
 
-      expect(findDefaultBadge().exists()).toBe(false);
+      expect(findLabel().props('title')).toEqual(complianceFramework.name);
     });
 
     it('renders closeable label when closeable is true', () => {

@@ -18,7 +18,6 @@ module QA
 
             view 'ee/app/assets/javascripts/compliance_dashboard/components/shared/framework_badge.vue' do
               element :framework_label
-              element :framework_badge
             end
 
             view 'ee/app/assets/javascripts/compliance_dashboard/components/violations_report/report.vue' do
@@ -67,12 +66,6 @@ module QA
 
             def has_no_frameworks_tab?
               has_no_element?(:frameworks_tab)
-            end
-
-            def has_default_framework_badge?
-              verify_project_frameworks_row_scope!
-
-              has_element?(:framework_badge, text: 'default', wait: 0)
             end
 
             # Yields with the scope within the `:project_frameworks_row` element associated with the specified project.

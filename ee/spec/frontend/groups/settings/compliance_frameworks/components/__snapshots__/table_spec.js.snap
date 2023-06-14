@@ -2,11 +2,34 @@
 
 exports[`Table table content displays the default label 1`] = `
 <span
-  aria-label="default"
-  class="badge badge-info badge-pill gl-badge md"
-  data-testid="compliance-framework-default-badge"
+  class="gl-label gl-label-text-light"
+  data-testid="compliance-framework-default-label"
+  style="--label-background-color: #1aaa55; --label-inset-border: inset 0 0 0 2px #1aaa55;"
 >
+  <span
+    class="gl-label-link"
+    tabindex="0"
+  >
+    <span
+      class="gl-label-text"
+    >
+      
+      GDPR (default)
+    
+    </span>
+     
+    <!---->
+  </span>
+   
   <!---->
-   default
+   
+  <div
+    class="gl-tooltip"
+  >
+    <!---->
+    
+    Edit framework
+  
+  </div>
 </span>
 `;

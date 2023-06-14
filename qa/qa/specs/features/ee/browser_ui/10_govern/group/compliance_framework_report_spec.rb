@@ -74,14 +74,12 @@ module QA
               expect(project).to have_name(top_level_project.name)
               expect(project).to have_path(top_level_project.full_path)
               expect(project).to have_framework(default_compliance_framework.name)
-              expect(project).to have_default_framework_badge
             end
 
             report.project_row(subgroup_project) do |project|
               expect(project).to have_name(subgroup_project.name)
               expect(project).to have_path(subgroup_project.full_path)
               expect(project).to have_framework(another_framework.name)
-              expect(project).not_to have_default_framework_badge
             end
 
             report.project_row(project_without_framework) do |project|
