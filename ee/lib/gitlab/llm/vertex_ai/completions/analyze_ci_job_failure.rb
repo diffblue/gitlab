@@ -65,10 +65,11 @@ module Gitlab
           end
 
           def aprox_max_input_chars
-            # Guidance from google is that a token is approximatly 4 chars
-            # Use a slightly lower number since we don't currently
+            # Guidance from google is that a token is approximately 4 chars
+            # Here we use a lower Multiplier since we don't currently
             # have a way to calculate the token number accurately
-            MAX_INPUT_TOKENS * 3.8
+            # and we've found that real logs fail when using a 2.5 higher multiplier
+            MAX_INPUT_TOKENS * 2
           end
 
           def generate_delimiter
