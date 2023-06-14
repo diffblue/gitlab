@@ -108,7 +108,7 @@ module GitlabSubscriptions
 
         if trial_params[:namespace_id].present? && !create_new_group_selected
           existing_namespace_flow
-        elsif trial_params[:new_group_name].present?
+        elsif trial_params.key?(:new_group_name)
           create_group_flow
         else
           not_found
