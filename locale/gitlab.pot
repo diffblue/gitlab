@@ -22587,10 +22587,22 @@ msgstr ""
 msgid "Housekeeping successfully started"
 msgstr ""
 
+msgid "How do I change my password in GitLab?"
+msgstr ""
+
+msgid "How do I clone a repository?"
+msgstr ""
+
 msgid "How do I configure Akismet?"
 msgstr ""
 
 msgid "How do I configure this integration?"
+msgstr ""
+
+msgid "How do I create a template?"
+msgstr ""
+
+msgid "How do I fork a project?"
 msgstr ""
 
 msgid "How do I generate it?"

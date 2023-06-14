@@ -10,10 +10,12 @@ import {
   GlForm,
   GlIcon,
 } from '@gitlab/ui';
+import { throttle } from 'lodash';
 import { renderMarkdown } from '~/notes/utils';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { i18n, GENIE_CHAT_MODEL_ROLES } from '../constants';
 import AiGenieLoader from './ai_genie_loader.vue';
+import AiPredefinedPrompts from './ai_predefined_prompts.vue';
 
 export default {
   name: 'AiGenieChat',
@@ -27,6 +29,7 @@ export default {
     GlForm,
     GlIcon,
     AiGenieLoader,
+    AiPredefinedPrompts,
   },
   directives: {
     SafeHtml,
@@ -57,11 +60,17 @@ export default {
       required: false,
       default: false,
     },
+    predefinedPrompts: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
   },
   data() {
     return {
       isHidden: false,
       prompt: '',
+      scrolledToBottom: false,
     };
   },
   computed: {
@@ -96,6 +105,10 @@ export default {
         this.$emit('send-chat-prompt', this.prompt);
       }
     },
+    sendPredefinedPrompt(prompt) {
+      this.prompt = prompt;
+      this.sendChatPrompt();
+    },
     getPromptLocation(index) {
       return index ? 'after_content' : 'before_content';
     },
@@ -111,6 +124,11 @@ export default {
     getMessageContent(message) {
       return renderMarkdown(message.content || message.errors[0]);
     },
+    handleScrolling: throttle(function handleScrollingDebounce() {
+      const { scrollTop, offsetHeight, scrollHeight } = this.$refs.drawer;
+
+      this.scrolledToBottom = scrollTop + offsetHeight >= scrollHeight;
+    }),
     renderMarkdown,
   },
   i18n,
@@ -119,10 +137,12 @@ export default {
 <template>
   <aside
     v-if="!isHidden"
+    ref="drawer"
     class="markdown-code-block gl-drawer gl-drawer-default gl-max-h-full gl-bottom-0 gl-z-index-9999 gl-shadow-none gl-border-l gl-border-t ai-genie-chat"
     :class="{ 'gl-h-auto': !fullScreen }"
     role="complementary"
     data-testid="chat-component"
+    @scroll="handleScrolling"
   >
     <header class="gl-drawer-header gl-drawer-header-sticky gl-z-index-200 gl-p-0! gl-border-b-0">
       <div
@@ -161,7 +181,7 @@ export default {
       <slot name="subheader"></slot>
     </header>
 
-    <div class="gl-drawer-body gl-drawer-body gl-display-flex gl-flex-direction-column">
+    <div class="gl-drawer-body gl-display-flex gl-flex-direction-column">
       <slot name="hero"></slot>
 
       <section
@@ -203,15 +223,22 @@ export default {
               ></slot>
             </div>
           </template>
-          <div v-else key="empty-state" class="gl-display-flex gl-flex-grow-1">
-            <gl-empty-state
-              :svg-path="emptySvgPath"
-              :svg-height="145"
-              :title="$options.i18n.GENIE_CHAT_EMPTY_STATE_TITLE"
-              :description="$options.i18n.GENIE_CHAT_EMPTY_STATE_DESC"
-              class="gl-align-self-center"
+          <template v-else>
+            <div key="empty-state" class="gl-display-flex gl-flex-grow-1">
+              <gl-empty-state
+                :svg-path="emptySvgPath"
+                :svg-height="145"
+                :title="$options.i18n.GENIE_CHAT_EMPTY_STATE_TITLE"
+                :description="$options.i18n.GENIE_CHAT_EMPTY_STATE_DESC"
+                class="gl-align-self-center"
+              />
+            </div>
+            <ai-predefined-prompts
+              key="predefined-prompts"
+              :prompts="predefinedPrompts"
+              @click="sendPredefinedPrompt"
             />
-          </div>
+          </template>
           <gl-alert
             v-if="error"
             key="error"
@@ -230,7 +257,9 @@ export default {
     </div>
     <footer
       v-if="isChatAvailable"
-      class="gl-drawer-footer gl-drawer-footer-sticky gl-drawer-body-scrim-on-footer gl-p-5 gl-border-t gl-bg-white"
+      data-testid="chat-footer"
+      class="gl-drawer-footer gl-drawer-footer-sticky gl-p-5 gl-border-t gl-bg-white"
+      :class="{ 'gl-drawer-body-scrim-on-footer': !scrolledToBottom }"
     >
       <gl-form @submit.stop.prevent="sendChatPrompt">
         <gl-form-input-group>
@@ -259,7 +288,6 @@ export default {
             />
           </template>
         </gl-form-input-group>
-        <slot name="input-help"></slot>
       </gl-form>
     </footer>
   </aside>
