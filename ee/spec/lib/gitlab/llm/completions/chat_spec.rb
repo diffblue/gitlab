@@ -27,7 +27,8 @@ RSpec.describe Gitlab::Llm::Completions::Chat, feature_category: :shared do
         ::Gitlab::Llm::Chain::Tools::ExplainCode,
         ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
         ::Gitlab::Llm::Chain::Tools::JsonReader,
-        ::Gitlab::Llm::Chain::Tools::SummarizeComments
+        ::Gitlab::Llm::Chain::Tools::SummarizeComments,
+        ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
       ]
       expected_params = [
         user_input: content,

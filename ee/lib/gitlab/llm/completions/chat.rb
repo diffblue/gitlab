@@ -8,7 +8,8 @@ module Gitlab
           ::Gitlab::Llm::Chain::Tools::ExplainCode,
           ::Gitlab::Llm::Chain::Tools::IssueIdentifier,
           ::Gitlab::Llm::Chain::Tools::JsonReader,
-          ::Gitlab::Llm::Chain::Tools::SummarizeComments
+          ::Gitlab::Llm::Chain::Tools::SummarizeComments,
+          ::Gitlab::Llm::Chain::Tools::GitlabDocumentation
         ].freeze
 
         def execute(user, resource, options)
