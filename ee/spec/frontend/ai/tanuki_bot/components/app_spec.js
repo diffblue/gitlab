@@ -91,8 +91,10 @@ describe('GitLab Chat', () => {
       expect(findGeneratedByAI().exists()).toBe(true);
     });
 
-    it('renders the example question', () => {
-      expect(wrapper.findByText('what is a fork').exists()).toBe(true);
+    it('passes down the example prompts', () => {
+      expect(findGenieChat().props().predefinedPrompts).toEqual(
+        wrapper.vm.$options.i18n.predefinedPrompts,
+      );
     });
   });
 

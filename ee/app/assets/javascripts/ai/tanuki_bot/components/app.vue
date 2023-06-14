@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlIcon, GlLink } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__, n__ } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -24,12 +24,17 @@ export default {
     exampleQuestion: s__('TanukiBot|For example, %{linkStart}what is a fork%{linkEnd}?'),
     whatIsAForkQuestion: s__('TanukiBot|What is a fork?'),
     GENIE_CHAT_LEGAL_GENERATED_BY_AI: i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI,
+    predefinedPrompts: [
+      __('How do I change my password in GitLab?'),
+      __('How do I fork a project?'),
+      __('How do I clone a repository?'),
+      __('How do I create a template?'),
+    ],
   },
   trackingEventName: TANUKI_BOT_TRACKING_EVENT_NAME,
   components: {
     GlIcon,
     AiGenieChat,
-    GlSprintf,
     GlLink,
     UserFeedback,
   },
@@ -147,6 +152,7 @@ export default {
       :is-loading="loading"
       :messages="messages"
       :full-screen="true"
+      :predefined-prompts="$options.i18n.predefinedPrompts"
       is-chat-available
       @send-chat-prompt="sendMessage"
       @chat-hidden="closeDrawer"
@@ -182,20 +188,6 @@ export default {
             :event-name="$options.trackingEventName"
             :prompt-location="promptLocation"
           />
-        </div>
-      </template>
-
-      <template #input-help>
-        <div class="gl-text-gray-500 gl-my-3">
-          <gl-sprintf :message="$options.i18n.exampleQuestion">
-            <template #link="{ content }">
-              <gl-link
-                class="gl-text-gray-500 gl-text-decoration-underline"
-                @click="sendMessage($options.i18n.whatIsAForkQuestion)"
-                >{{ content }}</gl-link
-              >
-            </template>
-          </gl-sprintf>
         </div>
       </template>
     </ai-genie-chat>

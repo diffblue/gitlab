@@ -2,6 +2,7 @@ import { GlEmptyState, GlButton, GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import AiGenieLoader from 'ee/ai/components/ai_genie_loader.vue';
 import AiGenieChat from 'ee/ai/components/ai_genie_chat.vue';
+import AiPredefinedPrompts from 'ee/ai/components/ai_predefined_prompts.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { i18n, GENIE_CHAT_MODEL_ROLES } from 'ee/ai/constants';
 
@@ -29,9 +30,11 @@ describe('AiGenieChat', () => {
   const findCustomLoader = () => wrapper.findComponent(AiGenieLoader);
   const findChatMessages = () => wrapper.findAll('.ai-genie-chat-message');
   const findError = () => wrapper.findByTestId('chat-error');
+  const findFooter = () => wrapper.findByTestId('chat-footer');
   const findGeneratedByAI = () => wrapper.findByText(i18n.GENIE_CHAT_LEGAL_GENERATED_BY_AI);
   const findBadge = () => wrapper.findComponent(GlBadge);
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findPredefined = () => wrapper.findComponent(AiPredefinedPrompts);
   const findChatInput = () => wrapper.findByTestId('chat-prompt-input');
   const findCloseChatButton = () => wrapper.findByTestId('chat-close-button');
 
@@ -40,12 +43,13 @@ describe('AiGenieChat', () => {
   });
 
   describe('rendering', () => {
-    describe('default', () => {
+    describe('without messages', () => {
       it.each`
         desc                                  | component            | shouldRender
         ${'renders root component'}           | ${findChatComponent} | ${true}
         ${'renders experimental label'}       | ${findBadge}         | ${true}
-        ${'does render empty state'}          | ${findEmptyState}    | ${true}
+        ${'renders empty state'}              | ${findEmptyState}    | ${true}
+        ${'renders predefined prompts'}       | ${findPredefined}    | ${true}
         ${'does not render loading skeleton'} | ${findCustomLoader}  | ${false}
         ${'does not render chat error'}       | ${findError}         | ${false}
         ${'does not render chat input'}       | ${findChatInput}     | ${false}
@@ -106,13 +110,11 @@ describe('AiGenieChat', () => {
       });
 
       it.each`
-        desc                 | slot            | content        | isChatAvailable | shouldRenderSlotContent
-        ${'renders'}         | ${'hero'}       | ${slotContent} | ${true}         | ${true}
-        ${'renders'}         | ${'hero'}       | ${slotContent} | ${false}        | ${true}
-        ${'does not render'} | ${'input-help'} | ${slotContent} | ${false}        | ${false}
-        ${'renders'}         | ${'input-help'} | ${slotContent} | ${true}         | ${true}
-        ${'does not render'} | ${'subheader'}  | ${slotContent} | ${false}        | ${true}
-        ${'renders'}         | ${'subheader'}  | ${slotContent} | ${true}         | ${true}
+        desc                 | slot           | content        | isChatAvailable | shouldRenderSlotContent
+        ${'renders'}         | ${'hero'}      | ${slotContent} | ${true}         | ${true}
+        ${'renders'}         | ${'hero'}      | ${slotContent} | ${false}        | ${true}
+        ${'does not render'} | ${'subheader'} | ${slotContent} | ${false}        | ${true}
+        ${'renders'}         | ${'subheader'} | ${slotContent} | ${true}         | ${true}
       `(
         '$desc the $content passed to the $slot slot when isChatAvailable is $isChatAvailable',
         ({ slot, content, isChatAvailable, shouldRenderSlotContent }) => {
@@ -218,6 +220,59 @@ describe('AiGenieChat', () => {
       it('renders prompt input if `isChatAvailable` prop is `true`', () => {
         createComponent({ propsData: { messages, isChatAvailable: true } });
         expect(findChatInput().exists()).toBe(true);
+      });
+    });
+
+    describe('scrolling', () => {
+      let element;
+
+      beforeEach(() => {
+        createComponent({ propsData: { messages, isChatAvailable: true } });
+        element = findChatComponent().element;
+      });
+
+      it('when scrolling to the bottom it removes the scrim class', async () => {
+        jest.spyOn(element, 'scrollTop', 'get').mockReturnValue(100);
+        jest.spyOn(element, 'offsetHeight', 'get').mockReturnValue(100);
+        jest.spyOn(element, 'scrollHeight', 'get').mockReturnValue(200);
+
+        findChatComponent().trigger('scroll');
+
+        await nextTick();
+
+        expect(findFooter().classes()).not.toContain('gl-drawer-body-scrim-on-footer');
+      });
+
+      it('when scrolling up it adds the scrim class', async () => {
+        jest.spyOn(element, 'scrollTop', 'get').mockReturnValue(50);
+        jest.spyOn(element, 'offsetHeight', 'get').mockReturnValue(100);
+        jest.spyOn(element, 'scrollHeight', 'get').mockReturnValue(200);
+
+        findChatComponent().trigger('scroll');
+
+        await nextTick();
+
+        expect(findFooter().classes()).toContain('gl-drawer-body-scrim-on-footer');
+      });
+    });
+
+    describe('predefined prompts', () => {
+      const prompts = ['what is a fork'];
+
+      beforeEach(() => {
+        createComponent({ propsData: { predefinedPrompts: prompts } });
+      });
+
+      it('passes on predefined prompts', () => {
+        expect(findPredefined().props().prompts).toEqual(prompts);
+      });
+
+      it('listens to the click event and sends the predefined prompt', async () => {
+        findPredefined().vm.$emit('click', prompts[0]);
+
+        await nextTick();
+
+        expect(wrapper.emitted('send-chat-prompt')).toEqual([[prompts[0]]]);
       });
     });
   });
