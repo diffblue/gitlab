@@ -29,7 +29,7 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
   end
 
   describe '#execute' do
-    shared_examples 'can mark the user as an enterprise user of the group' do
+    shared_examples 'marks the user as an enterprise user of the group' do
       it 'returns a successful response', :aggregate_failures do
         response = service.execute
 
@@ -38,20 +38,26 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
         expect(response.payload[:user]).to eq(user)
       end
 
-      it 'sets user.provisioned_by_group_id to group.id' do
-        expect(user.provisioned_by_group_id).to eq(nil)
+      it 'sets user.user_detail.enterprise_group_id to group.id' do
+        previous_enterprise_group_id = user.user_detail.enterprise_group_id
 
         service.execute
 
-        expect(user.reload.provisioned_by_group_id).to eq(group.id)
+        user.user_detail.reload
+
+        expect(user.user_detail.enterprise_group_id).not_to eq(previous_enterprise_group_id)
+        expect(user.user_detail.enterprise_group_id).to eq(group.id)
       end
 
-      it 'sets user.provisioned_by_group_at to Time.current', :freeze_time do
-        expect(user.provisioned_by_group_at).to eq(nil)
+      it 'sets user.user_detail.enterprise_group_associated_at to Time.current', :freeze_time do
+        previous_enterprise_group_associated_at = user.user_detail.enterprise_group_associated_at
 
         service.execute
 
-        expect(user.reload.provisioned_by_group_at).to eq(Time.current)
+        user.user_detail.reload
+
+        expect(user.user_detail.enterprise_group_associated_at).not_to eq(previous_enterprise_group_associated_at)
+        expect(user.user_detail.enterprise_group_associated_at).to eq(Time.current)
       end
 
       it 'enqueues provisioned_member_access_granted_email email for later delivery to the user' do
@@ -83,6 +89,16 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
       end
     end
 
+    shared_examples 'marks the enterprise user of another group as an enterprise user of the group' do
+      context 'when the user is an enterprise user of another group' do
+        before do
+          user.user_detail.update!(enterprise_group_id: create(:group).id, enterprise_group_associated_at: 1.day.ago)
+        end
+
+        include_examples 'marks the user as an enterprise user of the group'
+      end
+    end
+
     shared_examples 'does not mark the user as an enterprise user of the group' do |error_message, reason = nil|
       it 'returns a failed response', :aggregate_failures do
         response = service.execute
@@ -94,20 +110,24 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
         expect(response.payload[:user]).to eq(user)
       end
 
-      it 'does not update user.provisioned_by_group_id' do
-        previous_user_provisioned_by_group_id = user.provisioned_by_group_id
+      it 'does not update user.user_detail.enterprise_group_id' do
+        previous_enterprise_group_id = user.user_detail.enterprise_group_id
 
         service.execute
 
-        expect(user.reload.provisioned_by_group_id).to eq(previous_user_provisioned_by_group_id)
+        user.user_detail.reload
+
+        expect(user.user_detail.enterprise_group_id).to eq(previous_enterprise_group_id)
       end
 
-      it 'does not update user.provisioned_by_group_at' do
-        previous_user_provisioned_by_group_at = user.provisioned_by_group_at
+      it 'does not update user.user_detail.enterprise_group_associated_at', :freeze_time do
+        previous_enterprise_group_associated_at = user.user_detail.enterprise_group_associated_at
 
         service.execute
 
-        expect(user.reload.provisioned_by_group_at).to eq(previous_user_provisioned_by_group_at)
+        user.user_detail.reload
+
+        expect(user.user_detail.enterprise_group_associated_at).to eq(previous_enterprise_group_associated_at)
       end
 
       it 'does not enqueue any email for later delivery' do
@@ -125,25 +145,12 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
     context 'when the user is already an enterprise user of the group' do
       before do
-        user.user_detail.update!(provisioned_by_group_id: group.id)
+        user.user_detail.update!(enterprise_group_id: group.id)
       end
 
       include_examples(
         'does not mark the user as an enterprise user of the group',
-        'The user is already an enterprise user'
-      )
-    end
-
-    context 'when the user is already an enterprise user of another group' do
-      let_it_be(:group1) { create(:group) }
-
-      before do
-        user.user_detail.update!(provisioned_by_group_id: group1.id)
-      end
-
-      include_examples(
-        'does not mark the user as an enterprise user of the group',
-        'The user is already an enterprise user'
+        'The user is already an enterprise user of the group'
       )
     end
 
@@ -198,13 +205,15 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
           context 'when at 2021-02-01' do
             let(:user_created_at) { Time.utc(2021, 2, 1) }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
           end
 
           context 'when after 2021-02-01' do
             let(:user_created_at) { Time.utc(2021, 2, 1) + 1.day }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
           end
         end
 
@@ -213,13 +222,39 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
             let_it_be(:saml_provider) { create(:saml_provider, group: group) }
             let!(:group_saml_identity) { create(:group_saml_identity, saml_provider: saml_provider, user: user) }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
           end
 
           context 'when SCIM identity' do
             let!(:scim_identity) { create(:scim_identity, group: group, user: user) }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+          end
+        end
+
+        context "when user has a 'provisioned_by_group_id' value" do
+          context "when the value is the same as the group's ID" do
+            before do
+              user.user_detail.update!(provisioned_by_group_id: group.id)
+            end
+
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
+          end
+
+          context "when the value is not the same as the group's ID" do
+            let_it_be(:group1) { create(:group) }
+
+            before do
+              user.user_detail.update!(provisioned_by_group_id: group1.id)
+            end
+
+            include_examples(
+              'does not mark the user as an enterprise user of the group',
+              'The user does not match the "Enterprise User" definition for the group'
+            )
           end
         end
 
@@ -236,13 +271,15 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
           context 'when at 2021-02-01' do
             let(:gitlab_subscription_start_date) { Time.utc(2021, 2, 1) }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
           end
 
           context 'when after 2021-02-01' do
             let(:gitlab_subscription_start_date) { Time.utc(2021, 2, 1) + 1.day }
 
-            include_examples 'can mark the user as an enterprise user of the group'
+            include_examples 'marks the user as an enterprise user of the group'
+            include_examples 'marks the enterprise user of another group as an enterprise user of the group'
           end
         end
       end
@@ -273,6 +310,19 @@ RSpec.describe Groups::EnterpriseUsers::CreateService, :saas, feature_category: 
 
             context 'when SCIM identity' do
               let!(:scim_identity) { create(:scim_identity, group: group, user: user) }
+
+              include_examples(
+                'does not mark the user as an enterprise user of the group',
+                'The user does not match the "Enterprise User" definition for the group'
+              )
+            end
+          end
+
+          context "when user has a 'provisioned_by_group_id' value" do
+            context "when the value is the same as the group's ID" do
+              before do
+                user.user_detail.update!(provisioned_by_group_id: group.id)
+              end
 
               include_examples(
                 'does not mark the user as an enterprise user of the group',

@@ -451,6 +451,10 @@ module EE
       user_authorized_by_provisioning_group? && provisioned_by_group == group
     end
 
+    def enterprise_user_of_group?(group)
+      user_detail.enterprise_group_id == group.id
+    end
+
     def gitlab_employee?
       gitlab_team_member?
     end

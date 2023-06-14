@@ -1091,6 +1091,40 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#enterprise_user_of_group?' do
+    let_it_be(:group) { create(:group) }
+
+    context 'when user is not an enterprise user' do
+      before do
+        user.user_detail.enterprise_group = nil
+      end
+
+      it 'returns false' do
+        expect(user.enterprise_user_of_group?(group)).to eq false
+      end
+    end
+
+    context 'when user is an enterprise user of the group' do
+      before do
+        user.user_detail.enterprise_group = group
+      end
+
+      it 'returns true' do
+        expect(user.enterprise_user_of_group?(group)).to eq true
+      end
+    end
+
+    context 'when user is an enterprise user of another group' do
+      before do
+        user.user_detail.enterprise_group = create(:group)
+      end
+
+      it 'returns false' do
+        expect(user.enterprise_user_of_group?(group)).to eq false
+      end
+    end
+  end
+
   describe '#password_based_login_forbidden?' do
     context 'when user is provisioned by group' do
       before do

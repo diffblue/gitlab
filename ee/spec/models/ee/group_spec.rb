@@ -887,6 +887,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
     let(:email_with_verified_domain) { "example@#{verified_domain.domain}" }
     let(:email_with_unverified_domain) { "example@#{unverified_domain.domain}" }
+    let(:email_with_unverified_subdomain) { "example@subdomain.#{verified_domain.domain}" }
 
     context 'when domain_verification feature is licensed' do
       before do
@@ -899,6 +900,10 @@ RSpec.describe Group, feature_category: :groups_and_projects do
 
       it 'returns false for email with unverified domain' do
         expect(group.owner_of_email?(email_with_unverified_domain)).to eq(false)
+      end
+
+      it 'returns false for email with unverified subdomain of verified domain' do
+        expect(group.owner_of_email?(email_with_unverified_subdomain)).to eq(false)
       end
 
       it 'ignores case sensitivity' do

@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe UserDetail, feature_category: :system_access do
   it { is_expected.to belong_to(:provisioned_by_group) }
+  it { is_expected.to belong_to(:enterprise_group) }
 
   describe '#provisioned_by_group?' do
     let(:user) { create(:user, provisioned_by_group: build(:group)) }
