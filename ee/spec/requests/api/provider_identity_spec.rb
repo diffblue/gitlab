@@ -6,6 +6,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
   include ApiHelpers
 
   let_it_be(:owner) { create(:user) }
+  let_it_be(:maintainer) { create(:user) }
   let_it_be(:guest_user_1) { create(:user) }
   let_it_be(:guest_user_2) { create(:user) }
   let(:current_user) { nil }
@@ -14,6 +15,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
     group = create(:group)
     group.add_guest(guest_user_1)
     group.add_guest(guest_user_2)
+    group.add_maintainer(maintainer)
     group.add_owner(owner)
     group
   end
@@ -61,7 +63,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
         subject(:get_identities) { get api("/groups/#{group.id}/#{provider_type}/identities", current_user) }
 
         context "when user is not a group owner" do
-          let(:current_user) { guest_user_1 }
+          let(:current_user) { maintainer }
 
           it "throws unauthorized error" do
             get_identities
@@ -101,6 +103,40 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
         end
       end
 
+      context "when GET identity" do
+        subject(:get_identity) do
+          get api("/groups/#{group.id}/#{provider_type}/#{provider_extern_uid_1}", current_user)
+        end
+
+        context "when user is not a group owner" do
+          let(:current_user) { maintainer }
+
+          it "throws unauthorized error" do
+            get_identity
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+
+        context "when user is group owner" do
+          let(:current_user) { owner }
+
+          it "returns the identity" do
+            get_identity
+
+            if identity_type == ScimIdentity
+              expect(json_response).to match(
+                a_hash_including("extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id, "active" => true)
+              )
+            else
+              expect(json_response).to match(
+                a_hash_including("extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id)
+              )
+            end
+          end
+        end
+      end
+
       context "when PATCH uid" do
         subject(:patch_identities) do
           patch api("/groups/#{group.id}/#{provider_type}/#{uid}", current_user),
@@ -109,7 +145,7 @@ RSpec.describe API::ProviderIdentity, api: true, feature_category: :system_acces
 
         context "when user is not a group owner" do
           let(:uid) { provider_extern_uid_1 }
-          let(:current_user) { guest_user_1 }
+          let(:current_user) { maintainer }
           let(:extern_uid) { 'updated_uid' }
 
           it "throws forbidden error" do

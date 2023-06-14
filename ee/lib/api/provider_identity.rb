@@ -31,6 +31,21 @@ module API
             end
           end
 
+          desc 'Get a single identity for a user' do
+            success EE::API::Entities::IdentityDetail
+          end
+          params do
+            requires :uid, type: String, desc: 'External UID of the user'
+          end
+          get ':uid', format: false, requirements: { uid: API::NO_SLASH_URL_PART_REGEX } do
+            group = find_group(params[:id])
+            identity = find_provider_identity(provider_type, params[:uid], group)
+
+            not_found!('Identity') unless identity
+
+            present identity, with: EE::API::Entities::IdentityDetail
+          end
+
           desc 'Update extern_uid for the user' do
             success EE::API::Entities::IdentityDetail
           end
