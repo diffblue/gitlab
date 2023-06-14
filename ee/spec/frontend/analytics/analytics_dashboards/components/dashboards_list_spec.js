@@ -108,9 +108,7 @@ describe('DashboardsList', () => {
     it('should render the help link', () => {
       expect(findHelpLink().text()).toBe(I18N_DASHBOARD_LIST_LEARN_MORE);
       expect(findHelpLink().attributes('href')).toBe(
-        helpPagePath('user/product_analytics/index', {
-          anchor: 'product-analytics-dashboards',
-        }),
+        helpPagePath('user/analytics/analytics_dashboards'),
       );
     });
 
