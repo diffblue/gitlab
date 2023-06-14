@@ -9,6 +9,7 @@ module Gitlab
 
           TEMPERATURE = 0.0
           STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
+          PROMPT_SIZE = 30_000
 
           def initialize(user)
             @ai_client = ::Gitlab::Llm::Anthropic::Client.new(user)

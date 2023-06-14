@@ -17,8 +17,6 @@ module Gitlab
       ROLE_ASSISTANT = 'assistant'
       ALLOWED_ROLES = [ROLE_USER, ROLE_ASSISTANT].freeze
 
-      RESET_MESSAGE = '/reset'
-
       def initialize(user)
         @user = user
       end
@@ -44,6 +42,15 @@ module Gitlab
             CachedMessage.new(data) if matches_filters?(data, filters)
           end
         end
+      end
+
+      def last_conversation
+        all = find_all
+        idx = all.rindex(&:conversation_reset?)
+        return all unless idx
+        return [] unless idx + 1 < all.size
+
+        all[idx + 1..]
       end
 
       private

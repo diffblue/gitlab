@@ -5,6 +5,8 @@ module Gitlab
     class CachedMessage
       attr_reader :id, :request_id, :content, :role, :timestamp, :error
 
+      RESET_MESSAGE = '/reset'
+
       def initialize(data)
         @id = data['id']
         @request_id = data['request_id']
@@ -20,6 +22,14 @@ module Gitlab
 
       def errors
         Array.wrap(error)
+      end
+
+      def conversation_reset?
+        content == RESET_MESSAGE
+      end
+
+      def size
+        content&.size.to_i
       end
     end
   end
