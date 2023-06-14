@@ -24,6 +24,11 @@ module Elastic
 
       return if legacy_lock_exists? # skip execution if legacy lease is still obtained
 
+      unless Gitlab::Elastic::Helper.default.healthy?
+        logger.warn(message: "Elasticsearch cluster is unhealthy or unreachable. #{self.class} execution is skipped.")
+        return false
+      end
+
       if shard_number
         process_shard(shard_number)
       else

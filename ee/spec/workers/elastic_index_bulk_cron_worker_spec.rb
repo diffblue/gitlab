@@ -56,6 +56,21 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
 
         worker.perform(shard_number)
       end
+
+      context 'when search cluster is unhealthy' do
+        let(:helper) { Gitlab::Elastic::Helper.default }
+
+        before do
+          allow(Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+          allow(helper).to receive(:healthy?).and_return(false)
+        end
+
+        it 'does nothing if cluster is not healthy' do
+          expect(::Elastic::ProcessBookkeepingService).not_to receive(:new)
+
+          expect(worker.perform).to eq(false)
+        end
+      end
     end
 
     context 'indexing is paused' do
