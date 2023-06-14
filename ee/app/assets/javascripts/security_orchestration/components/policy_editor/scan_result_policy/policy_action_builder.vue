@@ -8,6 +8,7 @@ import {
   APPROVER_TYPE_LIST_ITEMS,
   removeAvailableApproverType,
   createActionFromApprovers,
+  actionHasType,
 } from './lib/actions';
 
 export default {
@@ -34,11 +35,8 @@ export default {
   data() {
     const approverTypeTracker = [];
     let availableApproverTypes = [...APPROVER_TYPE_LIST_ITEMS];
-    const doesActionHaveType = (type) => {
-      return Object.keys(this.initAction).some((k) => APPROVER_TYPE_DICT[type].includes(k));
-    };
     [GROUP_TYPE, ROLE_TYPE, USER_TYPE].forEach((type) => {
-      if (doesActionHaveType(type)) {
+      if (actionHasType(this.initAction, type)) {
         availableApproverTypes = removeAvailableApproverType(availableApproverTypes, type);
         approverTypeTracker.push({ id: uniqueId(), type });
       }
@@ -48,6 +46,9 @@ export default {
       approverTypeTracker: approverTypeTracker.length ? approverTypeTracker : [{ id: uniqueId() }],
       availableApproverTypes,
     };
+  },
+  created() {
+    this.updateRoleApprovers();
   },
   methods: {
     handleAddApproverType() {
@@ -106,6 +107,16 @@ export default {
     updatePolicy(updatedAction) {
       this.$emit('changed', updatedAction);
     },
+    updateRoleApprovers() {
+      const newApprovers = { ...this.existingApprovers };
+      const roleApprovers = this.initAction[APPROVER_TYPE_DICT[ROLE_TYPE][0]];
+      if (roleApprovers) {
+        newApprovers[ROLE_TYPE] = roleApprovers;
+      } else {
+        delete newApprovers[ROLE_TYPE];
+      }
+      this.handleUpdateApprovers(newApprovers);
+    },
   },
 };
 </script>
@@ -136,6 +147,7 @@ export default {
         :approvals-required="initAction.approvals_required"
         :existing-approvers="existingApprovers"
         @addApproverType="handleAddApproverType"
+        @error="$emit('error')"
         @updateApprovers="handleUpdateApprovers"
         @updateApproverType="handleUpdateApproverType(i, $event)"
         @updateApprovalsRequired="handleUpdateApprovalsRequired"

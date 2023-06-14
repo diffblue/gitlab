@@ -1,4 +1,3 @@
-import { nextTick } from 'vue';
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import RoleSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/role_select.vue';
@@ -17,15 +16,15 @@ describe('RoleSelect component', () => {
   let wrapper;
   const namespacePath = 'path/to/namespace';
 
-  const createComponent = ({ provide = {} } = {}) => {
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = shallowMount(RoleSelect, {
       propsData: {
         existingApprovers: [],
+        ...props,
       },
       provide: {
         namespacePath,
         roleApproverTypes,
-        ...provide,
       },
     });
   };
@@ -39,16 +38,53 @@ describe('RoleSelect component', () => {
 
     it('emits when a role is selected', async () => {
       const role = 'owner';
-      findListbox().vm.$emit('select', [role]);
-      await nextTick();
+      await findListbox().vm.$emit('select', [role]);
       expect(wrapper.emitted('updateSelectedApprovers')).toEqual([[[role]]]);
     });
 
+    it('displays the correct toggle text', () => {
+      expect(findListbox().props('toggleText')).toBe('Choose specific role');
+    });
+
+    it('does not emit an error', () => {
+      expect(wrapper.emitted('error')).toEqual(undefined);
+    });
+  });
+
+  describe('with valid approvers', () => {
+    const role = { text: 'Developer', value: 'developer' };
+
+    beforeEach(() => {
+      createComponent({ props: { existingApprovers: [role.value] } });
+    });
+
+    it('displays the correct toggle text', () => {
+      expect(findListbox().props('toggleText')).toBe(role.text);
+    });
+
     it('emits when a user is deselected', () => {
-      const role = 'maintainer';
-      findListbox().vm.$emit('select', [role]);
       findListbox().vm.$emit('select', []);
-      expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+      expect(wrapper.emitted('updateSelectedApprovers')).toEqual([[[]]]);
+    });
+
+    it('does not emit an error', () => {
+      expect(wrapper.emitted('error')).toEqual(undefined);
+    });
+  });
+
+  describe('with invalid approvers', () => {
+    const validRole = 'developer';
+    const invalidRole = 'invalid';
+
+    it('displays the correct toggle text', () => {
+      createComponent({ props: { existingApprovers: [invalidRole] } });
+      expect(findListbox().props('toggleText')).toBe('Choose specific role');
+    });
+
+    it('emits an error when a user updates to an invalid role', async () => {
+      createComponent({ props: { existingApprovers: [validRole] } });
+      await wrapper.setProps({ existingApprovers: [invalidRole] });
+      expect(wrapper.emitted('error')).toEqual([[]]);
     });
   });
 });

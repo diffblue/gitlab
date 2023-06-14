@@ -235,13 +235,33 @@ describe('ScanResultPolicyEditor', () => {
     });
 
     describe('action builder', () => {
-      it('updates policy action when edited', async () => {
+      beforeEach(() => {
         factory();
+      });
 
+      it('updates policy action when edited', async () => {
         const UPDATED_ACTION = { type: 'required_approval', group_approvers_ids: [1] };
         await findPolicyActionBuilder().vm.$emit('changed', UPDATED_ACTION);
 
         expect(findPolicyActionBuilder().props('initAction')).toEqual(UPDATED_ACTION);
+      });
+
+      it('updates the policy approvers', async () => {
+        const newApprover = ['owner'];
+
+        await findPolicyActionBuilder().vm.$emit('updateApprovers', {
+          ...scanResultPolicyApprovers,
+          role: newApprover,
+        });
+
+        expect(findPolicyActionBuilder().props('existingApprovers')).toMatchObject({
+          role: newApprover,
+        });
+      });
+
+      it('creates an error when the action builder emits one', async () => {
+        await findPolicyActionBuilder().vm.$emit('error');
+        verifiesParsingError();
       });
     });
   });

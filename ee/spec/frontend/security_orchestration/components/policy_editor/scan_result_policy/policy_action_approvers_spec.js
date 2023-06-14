@@ -206,7 +206,4 @@ describe('PolicyActionApprovers', () => {
       expect(findMessage().attributes('message')).toBe(MULTIPLE_APPROVER_TYPES_HUMANIZED_TEMPLATE);
     });
   });
-
-  // TODO add tests back for existing users/groups as part of adding this feature back in as part of https://gitlab.com/gitlab-org/gitlab/-/issues/377865
-  // TODO create test for renders the group select with only the group approvers as part of https://gitlab.com/gitlab-org/gitlab/-/issues/377865
 });

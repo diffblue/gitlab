@@ -15,27 +15,30 @@ export default {
       default: () => [],
     },
   },
-  data() {
-    return {
-      selectedRoles: this.existingApprovers,
-    };
-  },
   computed: {
+    hasValidRoles() {
+      return this.existingApprovers.every((role) => this.roleApproverTypes.includes(role));
+    },
     roles() {
       return this.roleApproverTypes.map((r) => ({ text: convertToTitleCase(r), value: r }));
     },
     toggleText() {
-      return this.selectedRoles.length
-        ? this.selectedRoles
+      return this.existingApprovers.length && this.hasValidRoles
+        ? this.existingApprovers
             .map((r) => this.roles.find((roleValue) => roleValue.value === r).text)
             .join(', ')
         : s__('SecurityOrchestration|Choose specific role');
     },
   },
+  watch: {
+    hasValidRoles(value) {
+      if (!value) {
+        this.$emit('error');
+      }
+    },
+  },
   methods: {
     handleSelectedRoles(selectedRoles) {
-      this.selectedRoles = selectedRoles;
-
       this.$emit('updateSelectedApprovers', selectedRoles);
     },
   },
@@ -48,7 +51,7 @@ export default {
     is-check-centered
     multiple
     toggle-class="gl-max-w-26"
-    :selected="selectedRoles"
+    :selected="existingApprovers"
     :toggle-text="toggleText"
     @select="handleSelectedRoles"
   />

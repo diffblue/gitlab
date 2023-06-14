@@ -27,8 +27,8 @@ import {
   getInvalidBranches,
   fromYaml,
   toYaml,
-  emptyBuildRule,
   approversOutOfSync,
+  emptyBuildRule,
   invalidScanners,
   invalidVulnerabilitiesAllowed,
   invalidVulnerabilityStates,
@@ -174,6 +174,9 @@ export default {
       } else {
         this.$emit('error', error.message);
       }
+    },
+    handleParsingError() {
+      this.hasParsingError = true;
     },
     async getSecurityPolicyProject() {
       if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
@@ -331,6 +334,7 @@ export default {
           :init-action="action"
           :errors="errors.action"
           :existing-approvers="existingApprovers"
+          @error="handleParsingError"
           @updateApprovers="updatePolicyApprovers"
           @changed="updateAction(index, $event)"
         />

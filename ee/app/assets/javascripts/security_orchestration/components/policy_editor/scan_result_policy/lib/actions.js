@@ -50,6 +50,10 @@ export const createActionFromApprovers = ({ type, approvals_required }, approver
   return newAction;
 };
 
+export const actionHasType = (action, type) => {
+  return Object.keys(action).some((k) => APPROVER_TYPE_DICT[type].includes(k));
+};
+
 /*
   Check if users are present in approvers
 */
