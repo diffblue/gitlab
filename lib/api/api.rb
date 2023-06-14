@@ -327,7 +327,6 @@ module API
       mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::SecureFiles
       mount ::API::Discussions
-      mount ::API::ErrorTracking::Collector
       mount ::API::GroupBoards
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
