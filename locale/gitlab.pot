@@ -27188,7 +27188,7 @@ msgstr ""
 msgid "Loading snippet"
 msgstr ""
 
-msgid "Loading the GitLab IDE..."
+msgid "Loading the GitLab IDE"
 msgstr ""
 
 msgid "Loading, please wait."
