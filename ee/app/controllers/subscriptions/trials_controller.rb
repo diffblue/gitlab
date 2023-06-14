@@ -21,39 +21,39 @@ module Subscriptions
     urgency :low
 
     def new
-      render :select_namespace_form if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
+      if params[:step] == GitlabSubscriptions::Trials::CreateService::TRIAL
+        render :step_namespace
+      else
+        render :step_lead
+      end
     end
 
     def create
-      result = GitlabSubscriptions::Trials::CreateService.new(
+      @result = GitlabSubscriptions::Trials::CreateService.new(
         step: params[:step], lead_params: lead_params, trial_params: trial_params, user: current_user
       ).execute
 
-      if result.success?
+      if @result.success?
         # lead and trial created
-        redirect_to trial_success_path(result.payload[:namespace])
-      elsif result.reason == :no_single_namespace
+        redirect_to trial_success_path(@result.payload[:namespace])
+      elsif @result.reason == GitlabSubscriptions::Trials::CreateService::NO_SINGLE_NAMESPACE
         # lead created, but we now need to select namespace and then apply a trial
-        redirect_to new_trial_path(result.payload[:trial_selection_params])
-      elsif result.reason == :not_found
+        redirect_to new_trial_path(@result.payload[:trial_selection_params])
+      elsif @result.reason == GitlabSubscriptions::Trials::CreateService::NOT_FOUND
         # namespace not found/not permitted to create
         render_404
-      elsif result.reason == :lead_failed
-        @create_errors = result.errors.to_sentence
-        render :new
-      elsif result.reason == :namespace_create_failed
+      elsif @result.reason == GitlabSubscriptions::Trials::CreateService::LEAD_FAILED
+        render :step_lead_failed
+      elsif @result.reason == GitlabSubscriptions::Trials::CreateService::NAMESPACE_CREATE_FAILED
         # namespace creation failed
-        @create_errors = result.errors.to_sentence
-        @hide_namespace_selector = true
-        params[:namespace_id] = result.payload[:namespace_id]
+        params[:namespace_id] = @result.payload[:namespace_id]
 
-        render :select_namespace_form
+        render :step_namespace_failed
       else
-        # trial failed
-        @create_errors = result.errors.to_sentence
-        params[:namespace_id] = result.payload[:namespace_id]
+        # trial creation failed
+        params[:namespace_id] = @result.payload[:namespace_id]
 
-        render :select_namespace_form
+        render :trial_failed
       end
     end
 

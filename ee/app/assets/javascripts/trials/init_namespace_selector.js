@@ -16,7 +16,7 @@ export const initNamespaceSelector = () => {
     anyTrialEligibleNamespaces,
     newGroupName,
     initialValue,
-    hideNamespaceSelector,
+    namespaceCreateErrors,
   } = el.dataset;
 
   return new Vue({
@@ -28,7 +28,7 @@ export const initNamespaceSelector = () => {
           newGroupName,
           initialValue,
           items,
-          hideNamespaceSelector: parseBoolean(hideNamespaceSelector),
+          namespaceCreateErrors,
         },
       }),
   });

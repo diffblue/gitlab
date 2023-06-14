@@ -7,8 +7,10 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
   let(:glm_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
 
   describe 'GET new' do
+    let(:base_params) { glm_params }
+
     subject(:get_new) do
-      get new_trial_path, params: glm_params
+      get new_trial_path, params: base_params
       response
     end
 
@@ -39,6 +41,12 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
 
           expect(flash).to be_empty
         end
+      end
+
+      context 'when on the trial step' do
+        let(:base_params) { { step: 'trial' } }
+
+        it { is_expected.to render_select_namespace }
       end
     end
   end
@@ -184,7 +192,8 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
           it 'renders lead form' do
             expect(post_create).to have_gitlab_http_status(:ok)
 
-            expect(response.body).to include('Start your Free Ultimate Trial')
+            expect(response.body).to include(_('We have found the following errors:'))
+            expect(response.body).to include(_('Start your Free Ultimate Trial'))
             expect(response.body).to include(s_('Trial|Your GitLab Ultimate trial lasts for 30 days, ' \
                                                 'but you can keep your free GitLab account forever. ' \
                                                 'We just need some additional information to activate your trial.'))
@@ -210,18 +219,37 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
           end
         end
 
-        context 'with other failures' do
+        context 'with namespace creation failure' do
+          let(:failure_reason) { :namespace_create_failed }
           let(:namespace) { build_stubbed(:namespace) }
           let(:payload) { { namespace_id: namespace.id } }
 
-          where(
-            case_names: ->(failure_reason) { "with #{failure_reason} failure" },
-            failure_reason: %i[namespace_create_failed random_error trial_failed]
-          )
+          it 'renders the select namespace form again with namespace creation errors only' do
+            expect(post_create).to render_select_namespace
 
-          with_them do
-            it { is_expected.to render_select_namespace }
+            expect(response.body).to include('data-namespace-create-errors="_error_"')
+            expect(response.body).not_to include(_('We have found the following errors:'))
           end
+        end
+
+        context 'with trial failure' do
+          let(:failure_reason) { :trial_failed }
+          let(:namespace) { build_stubbed(:namespace) }
+          let(:payload) { { namespace_id: namespace.id } }
+
+          it 'renders the select namespace form again with trial creation errors only' do
+            expect(post_create).to render_select_namespace
+
+            expect(response.body).to include(_('We have found the following errors:'))
+          end
+        end
+
+        context 'with random failure' do
+          let(:failure_reason) { :random_error }
+          let(:namespace) { build_stubbed(:namespace) }
+          let(:payload) { { namespace_id: namespace.id } }
+
+          it { is_expected.to render_select_namespace }
         end
       end
 
@@ -259,8 +287,8 @@ RSpec.describe Subscriptions::TrialsController, :saas, feature_category: :purcha
   RSpec::Matchers.define :render_select_namespace do
     match do |response|
       expect(response).to have_gitlab_http_status(:ok)
-      expect(response.body).to include('Almost there')
-      expect(response.body).to include('Start your free trial')
+      expect(response.body).to include(_('Almost there'))
+      expect(response.body).to include(_('Start your free trial'))
     end
   end
 

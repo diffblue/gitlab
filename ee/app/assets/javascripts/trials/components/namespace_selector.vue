@@ -11,7 +11,6 @@ export default {
     defaultToggleText: __('Please select a group'),
     newGroupNameLabel: __('New group name'),
   },
-  inputSize: { md: 'lg' },
   components: { GlFormGroup, GlFormInput, ListboxInput },
   props: {
     anyTrialEligibleNamespaces: {
@@ -27,15 +26,15 @@ export default {
       required: false,
       default: null,
     },
-    newGroupName: {
+    namespaceCreateErrors: {
       type: String,
       required: false,
       default: null,
     },
-    hideNamespaceSelector: {
-      type: Boolean,
+    newGroupName: {
+      type: String,
       required: false,
-      default: false,
+      default: null,
     },
   },
   data() {
@@ -46,10 +45,13 @@ export default {
   },
   computed: {
     showNamespaceSelector() {
-      return this.anyTrialEligibleNamespaces && !this.hideNamespaceSelector;
+      return this.anyTrialEligibleNamespaces && this.hasValidGroup;
     },
     showNewGroupNameField() {
       return !this.anyTrialEligibleNamespaces || this.selectedGroup === CREATE_GROUP_OPTION_VALUE;
+    },
+    hasValidGroup() {
+      return !this.namespaceCreateErrors;
     },
   },
 };
@@ -69,16 +71,19 @@ export default {
     />
     <gl-form-group
       v-if="showNewGroupNameField"
+      class="gl-md-form-input-lg"
       :label="$options.i18n.newGroupNameLabel"
       label-for="new_group_name"
+      :state="hasValidGroup"
+      :invalid-feedback="namespaceCreateErrors"
     >
       <gl-form-input
         v-model="groupName"
-        :size="$options.inputSize"
         name="new_group_name"
         data-qa-selector="new_group_name"
         data-testid="new-group-name-input"
         required
+        :state="hasValidGroup"
       />
     </gl-form-group>
   </div>

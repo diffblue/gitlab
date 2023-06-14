@@ -12,11 +12,10 @@
     %p.gl-text-gray-700.gl-font-lg
       = trial_selection_intro_text
 
-    .js-error-alert{ data: { errors: @create_errors } }
+    = yield :before_form
 
     = form_tag trials_path(**glm_params, step: GitlabSubscriptions::Trials::CreateService::TRIAL), method: :post, class: 'js-saas-trial-group', data: { testid: 'trial-form' } do
-      .js-namespace-selector{ data: { any_trial_eligible_namespaces: any_trial_eligible_namespaces?.to_s, new_group_name: params[:new_group_name],
-        items: namespace_options_for_listbox.to_json, initial_value: params[:namespace_id], hide_namespace_selector: @hide_namespace_selector.to_s } }
+      .js-namespace-selector{ data: namespace_selector_data(local_assigns[:namespace_create_errors]) }
       - if should_ask_company_question?
         .form-group
           = label_tag :trial_entity, _('Who will be using GitLab?')

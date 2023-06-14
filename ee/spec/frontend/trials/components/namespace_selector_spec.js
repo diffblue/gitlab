@@ -1,3 +1,4 @@
+import { GlFormGroup } from '@gitlab/ui';
 import NamespaceSelector, {
   CREATE_GROUP_OPTION_VALUE,
 } from 'ee/trials/components/namespace_selector.vue';
@@ -12,6 +13,7 @@ describe('NamespaceSelector', () => {
 
   // Finders
   const findListboxInput = () => wrapper.findComponent(ListboxInput);
+  const findFormGroup = () => wrapper.findComponent(GlFormGroup);
   const findNewGroupNameInput = () => wrapper.findByTestId('new-group-name-input');
 
   const createComponent = (props = {}) => {
@@ -19,6 +21,7 @@ describe('NamespaceSelector', () => {
       propsData: {
         items,
         anyTrialEligibleNamespaces: true,
+        namespaceCreateErrors: '',
         ...props,
       },
     });
@@ -37,10 +40,16 @@ describe('NamespaceSelector', () => {
       expect(findListboxInput().exists()).toBe(false);
     });
 
-    it('is hidden if hideNamespaceSelector is true', () => {
-      createComponent({ hideNamespaceSelector: true });
+    it('is hidden if namespaceCreateErrors is true', () => {
+      createComponent({ namespaceCreateErrors: '_error_' });
 
       expect(findListboxInput().exists()).toBe(false);
+    });
+
+    it('handle namespaceCreateErrors being null and shows the listbox', () => {
+      createComponent({ namespaceCreateErrors: null });
+
+      expect(findListboxInput().exists()).toBe(true);
     });
   });
 
@@ -55,12 +64,14 @@ describe('NamespaceSelector', () => {
       createComponent({ initialValue: CREATE_GROUP_OPTION_VALUE });
 
       expect(findNewGroupNameInput().exists()).toBe(true);
+      expect(findFormGroup().attributes('invalid-feedback')).toBe('');
     });
 
     it('is visible and has value if the initially selected option is "Create group"', () => {
       createComponent({ newGroupName: '_name_', initialValue: CREATE_GROUP_OPTION_VALUE });
 
       expect(findNewGroupNameInput().attributes('value')).toEqual('_name_');
+      expect(findFormGroup().attributes('invalid-feedback')).toBe('');
     });
 
     it('is visible and has value if anyTrialEligibleNamespaces is false', () => {
@@ -74,6 +85,21 @@ describe('NamespaceSelector', () => {
       await findListboxInput().vm.$emit('select', CREATE_GROUP_OPTION_VALUE);
 
       expect(findNewGroupNameInput().exists()).toBe(true);
+    });
+
+    it('is invalid and shows the error on creating the group', () => {
+      const namespaceCreateErrors = 'Group is invalid';
+
+      createComponent({
+        newGroupName: '_name_',
+        namespaceCreateErrors,
+        initialValue: CREATE_GROUP_OPTION_VALUE,
+      });
+
+      expect(findNewGroupNameInput().attributes('value')).toEqual('_name_');
+      expect(findNewGroupNameInput().classes('is-valid')).toBe(false);
+      expect(findFormGroup().classes('is-valid')).toBe(false);
+      expect(findFormGroup().attributes('invalid-feedback')).toBe(namespaceCreateErrors);
     });
   });
 });

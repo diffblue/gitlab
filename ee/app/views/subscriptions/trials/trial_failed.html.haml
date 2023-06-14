@@ -1,0 +1,4 @@
+- content_for :before_form do
+  = render 'form_errors', errors: @result.errors.to_sentence
+
+= render 'select_namespace_form'
