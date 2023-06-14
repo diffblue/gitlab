@@ -35,6 +35,16 @@ module TrialsHelper
     end
   end
 
+  def namespace_selector_data(namespace_create_errors)
+    {
+      any_trial_eligible_namespaces: any_trial_eligible_namespaces?.to_s,
+      new_group_name: params[:new_group_name],
+      items: namespace_options_for_listbox.to_json,
+      initial_value: params[:namespace_id],
+      namespace_create_errors: namespace_create_errors
+    }
+  end
+
   def glm_source
     ::Gitlab.config.gitlab.host
   end

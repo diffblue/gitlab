@@ -5,6 +5,11 @@ module GitlabSubscriptions
     class CreateService
       LEAD = 'lead'
       TRIAL = 'trial'
+      LEAD_FAILED = :lead_failed
+      TRIAL_FAILED = :trial_failed
+      NOT_FOUND = :not_found
+      NAMESPACE_CREATE_FAILED = :namespace_create_failed
+      NO_SINGLE_NAMESPACE = :no_single_namespace
 
       def initialize(step:, lead_params:, trial_params:, user:)
         @step = step
@@ -47,12 +52,12 @@ module GitlabSubscriptions
 
             ServiceResponse.error(
               message: 'Lead created, but singular eligible namespace not present',
-              reason: :no_single_namespace,
+              reason: NO_SINGLE_NAMESPACE,
               payload: { trial_selection_params: trial_selection_params }
             )
           end
         else
-          ServiceResponse.error(message: result.message, reason: :lead_failed)
+          ServiceResponse.error(message: result.message, reason: LEAD_FAILED)
         end
       end
 
@@ -92,7 +97,7 @@ module GitlabSubscriptions
           ServiceResponse.success(message: 'Trial applied', payload: { namespace: namespace })
         else
           ServiceResponse.error(
-            message: result.message, payload: { namespace_id: trial_params[:namespace_id] }, reason: :trial_failed
+            message: result.message, payload: { namespace_id: trial_params[:namespace_id] }, reason: TRIAL_FAILED
           )
         end
       end
@@ -135,7 +140,7 @@ module GitlabSubscriptions
           ServiceResponse.error(
             message: namespace.errors.full_messages,
             payload: { namespace_id: trial_params[:namespace_id] },
-            reason: :namespace_create_failed
+            reason: NAMESPACE_CREATE_FAILED
           )
         end
       end
@@ -148,7 +153,7 @@ module GitlabSubscriptions
       end
 
       def not_found
-        ServiceResponse.error(message: 'Not found', reason: :not_found)
+        ServiceResponse.error(message: 'Not found', reason: NOT_FOUND)
       end
     end
   end

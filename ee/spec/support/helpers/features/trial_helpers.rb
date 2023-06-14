@@ -23,14 +23,10 @@ module Features
     end
 
     def expect_to_have_namespace_creation_errors(group_name: '_invalid group name_')
-      within('[data-testid="alert-danger"]') do
-        expect(page).to have_content('We have found the following errors')
-        expect(page).to have_content('Group URL must not start or end with a special character')
-      end
-
       within('[data-testid="trial-form"]') do
         expect(page).not_to have_content('This subscription is for')
         expect(page.find_field('new_group_name').value).to eq(group_name)
+        expect(page).to have_content('Group URL must not start or end with a special character')
       end
     end
 

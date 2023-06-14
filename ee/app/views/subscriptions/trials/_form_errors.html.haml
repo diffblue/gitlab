@@ -1,0 +1,4 @@
+= render Pajamas::AlertComponent.new(variant: :danger, dismissible: false, title: _('We have found the following errors:'),
+    alert_options: { class: 'gl-mt-3 gl-mb-5' }) do |c|
+  - c.with_body do
+    = errors
