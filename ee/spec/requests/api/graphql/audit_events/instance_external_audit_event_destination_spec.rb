@@ -50,6 +50,86 @@ RSpec.describe 'getting a list of external audit event destinations for the inst
               )
             )
           end
+
+          context 'when streaming headers are also present for the destination' do
+            let_it_be(:header_1) do
+              create(:instance_audit_events_streaming_header,
+                instance_external_audit_event_destination: destination_1)
+            end
+
+            let_it_be(:header_2) do
+              create(:instance_audit_events_streaming_header,
+                instance_external_audit_event_destination: destination_1)
+            end
+
+            let_it_be(:header_3) do
+              create(:instance_audit_events_streaming_header,
+                instance_external_audit_event_destination: destination_2)
+            end
+
+            let_it_be(:query_body) do
+              <<~QUERY
+              nodes {
+                id
+                destinationUrl
+                headers {
+                  nodes {
+                    id
+                    key
+                    value
+                  }
+                }
+              }
+              QUERY
+            end
+
+            let_it_be(:headers_query) do
+              graphql_query_for(
+                :instance_external_audit_event_destinations, {}, query_body
+              )
+            end
+
+            it 'returns the instance external audit event destinations with headers' do
+              post_graphql(headers_query, current_user: admin)
+
+              expected_response = [
+                {
+                  "id" => destination_2.to_gid.to_s,
+                  "destinationUrl" => destination_2.destination_url,
+                  "headers" => {
+                    "nodes" => [
+                      {
+                        "id" => header_3.to_gid.to_s,
+                        "key" => header_3.key,
+                        "value" => header_3.value
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id" => destination_1.to_gid.to_s,
+                  "destinationUrl" => destination_1.destination_url,
+                  "headers" => {
+                    "nodes" => [
+                      {
+                        "id" => header_1.to_gid.to_s,
+                        "key" => header_1.key,
+                        "value" => header_1.value
+                      },
+                      {
+                        "id" => header_2.to_gid.to_s,
+                        "key" => header_2.key,
+                        "value" => header_2.value
+                      }
+                    ]
+                  }
+                }
+              ]
+
+              expect(graphql_data_at(:instance_external_audit_event_destinations, :nodes))
+                .to match_array(expected_response)
+            end
+          end
         end
 
         context 'when feature flag ff_external_audit_events is disabled' do
