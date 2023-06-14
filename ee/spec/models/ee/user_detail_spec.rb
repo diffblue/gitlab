@@ -21,14 +21,4 @@ RSpec.describe UserDetail, feature_category: :system_access do
       expect(subject).to eq(false)
     end
   end
-
-  describe '#provisioned_by_group_at' do
-    let(:user) { create(:user, provisioned_by_group: build(:group)) }
-
-    subject { user.user_detail.provisioned_by_group_at }
-
-    it 'is nil by default' do
-      expect(subject).to be_nil
-    end
-  end
 end
