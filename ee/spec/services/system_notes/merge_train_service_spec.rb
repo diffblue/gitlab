@@ -64,7 +64,7 @@ RSpec.describe SystemNotes::MergeTrainService, feature_category: :merge_trains d
     end
 
     it "posts the 'merge train' system note" do
-      expect(subject.note).to eq('removed this merge request from the merge train because source branch was updated')
+      expect(subject.note).to eq('removed this merge request from the merge train because source branch was updated. [Learn more](http://localhost/help/ci/pipelines/merge_trains#merge-request-dropped-from-the-merge-train).')
     end
 
     it_behaves_like 'creates a removed merge train TODO'

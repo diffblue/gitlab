@@ -148,7 +148,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     it_behaves_like 'drops merge request 1 from the merge train' do
       let(:system_note) do
-        'removed this merge request from the merge train because pipeline did not succeed'
+        'removed this merge request from the merge train because pipeline did not succeed. [Learn more](http://localhost/help/ci/pipelines/merge_trains#merge-request-dropped-from-the-merge-train).'
       end
     end
 
@@ -190,7 +190,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     it_behaves_like 'drops merge request 1 from the merge train' do
       let(:system_note) do
-        'removed this merge request from the merge train because source branch was updated'
+        'removed this merge request from the merge train because source branch was updated. [Learn more](http://localhost/help/ci/pipelines/merge_trains#merge-request-dropped-from-the-merge-train).'
       end
     end
 
@@ -210,7 +210,7 @@ RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_t
 
     it_behaves_like 'drops merge request 1 from the merge train' do
       let(:system_note) do
-        'removed this merge request from the merge train because merge request is not mergeable'
+        'removed this merge request from the merge train because merge request is not mergeable. [Learn more](http://localhost/help/ci/pipelines/merge_trains#merge-request-dropped-from-the-merge-train).'
       end
     end
 
