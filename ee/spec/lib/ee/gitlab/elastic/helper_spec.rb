@@ -709,4 +709,32 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store, feature_category: :globa
       expect(described_class.build_es_id(es_type: 'project', target_id: 123)).to eq('project_123')
     end
   end
+
+  describe '#uncached_healthy?' do
+    subject(:uncached_healthy?) { helper.uncached_healthy? }
+
+    context 'when cluster is healthy' do
+      before do
+        allow(described_class.default.client.cluster).to receive(:health).and_return({ 'status' => 'green' })
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when cluster is not healthy' do
+      before do
+        allow(described_class.default.client.cluster).to receive(:health).and_return({ 'status' => 'red' })
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when an error is raised from client' do
+      before do
+        allow(described_class.default.client.cluster).to receive(:health).and_raise(StandardError)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end
