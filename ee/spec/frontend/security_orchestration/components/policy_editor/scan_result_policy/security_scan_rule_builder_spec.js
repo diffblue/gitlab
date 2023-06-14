@@ -184,7 +184,7 @@ describe('SecurityScanRuleBuilder', () => {
     });
   });
 
-  it('can add second status filter', async () => {
+  it('can add and remove second status filter', async () => {
     factory({ initRule: UPDATED_RULE });
 
     await findScanFilterSelector().vm.$emit('select', STATUS);
@@ -199,6 +199,15 @@ describe('SecurityScanRuleBuilder', () => {
       previously_existing: [],
       severity: ['high'],
       status: [],
+    });
+
+    await statusFilters.at(1).vm.$emit('remove', PREVIOUSLY_EXISTING);
+
+    expect(findScanFilterSelector().props('selected')).toEqual({
+      newly_detected: ['new_needs_triage', 'new_dismissed'],
+      previously_existing: null,
+      severity: ['high'],
+      status: null,
     });
   });
 
