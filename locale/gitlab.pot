@@ -25930,6 +25930,9 @@ msgstr ""
 msgid "Job Failed #%{build_id}"
 msgstr ""
 
+msgid "Job ID"
+msgstr ""
+
 msgid "Job artifacts"
 msgstr ""
 
@@ -25946,6 +25949,9 @@ msgid "Job is stuck. Check runners."
 msgstr ""
 
 msgid "Job logs and artifacts"
+msgstr ""
+
+msgid "Job name"
 msgstr ""
 
 msgid "Job was retried"
@@ -46311,6 +46317,9 @@ msgid "There was a problem fetching emojis."
 msgstr ""
 
 msgid "There was a problem fetching epics."
+msgstr ""
+
+msgid "There was a problem fetching failed jobs"
 msgstr ""
 
 msgid "There was a problem fetching groups."
