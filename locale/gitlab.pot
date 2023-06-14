@@ -775,7 +775,10 @@ msgstr ""
 msgid "%{integrations_link_start}Integrations%{link_end} enable you to make third-party applications part of your GitLab workflow. If the available integrations don't meet your needs, consider using a %{webhooks_link_start}webhook%{link_end}."
 msgstr ""
 
-msgid "%{issuableDisplayName} %{lockStatus}."
+msgid "%{issuableDisplayName} locked."
+msgstr ""
+
+msgid "%{issuableDisplayName} unlocked."
 msgstr ""
 
 msgid "%{issuableType} will be removed! Are you sure?"
@@ -10003,6 +10006,9 @@ msgstr ""
 msgid "Close"
 msgstr ""
 
+msgid "Close %{issuableType}"
+msgstr ""
+
 msgid "Close %{issueType}"
 msgstr ""
 
@@ -10058,6 +10064,9 @@ msgid "Closes this %{quick_action_target}."
 msgstr ""
 
 msgid "Closes this issue. Marks as related to, and a duplicate of, %{duplicate_reference}."
+msgstr ""
+
+msgid "Closing %{issuableType}..."
 msgstr ""
 
 msgid "Cloud Run"
@@ -27385,6 +27394,9 @@ msgstr ""
 msgid "Locked the discussion."
 msgstr ""
 
+msgid "Locking %{issuableDisplayName}"
+msgstr ""
+
 msgid "Locks the discussion."
 msgstr ""
 
@@ -38322,6 +38334,9 @@ msgstr ""
 msgid "Reopen"
 msgstr ""
 
+msgid "Reopen %{issuableType}"
+msgstr ""
+
 msgid "Reopen %{issueType}"
 msgstr ""
 
@@ -38344,6 +38359,9 @@ msgid "Reopen this %{quick_action_target}"
 msgstr ""
 
 msgid "Reopened this %{quick_action_target}."
+msgstr ""
+
+msgid "Reopening %{issuableType}..."
 msgstr ""
 
 msgid "Reopening..."
@@ -48669,7 +48687,7 @@ msgstr ""
 msgid "Unlock"
 msgstr ""
 
-msgid "Unlock %{issuableType}"
+msgid "Unlock %{issuableDisplayName}"
 msgstr ""
 
 msgid "Unlock account"
@@ -48688,6 +48706,9 @@ msgid "Unlocked"
 msgstr ""
 
 msgid "Unlocked the discussion."
+msgstr ""
+
+msgid "Unlocking %{issuableDisplayName}"
 msgstr ""
 
 msgid "Unlocks the discussion."
@@ -54399,9 +54420,6 @@ msgstr ""
 msgid "loading"
 msgstr ""
 
-msgid "locked"
-msgstr ""
-
 msgid "locked by %{path_lock_user_name} %{created_at}"
 msgstr ""
 
@@ -55316,9 +55334,6 @@ msgid "type parameter is missing and is required"
 msgstr ""
 
 msgid "unicode domains should use IDNA encoding"
-msgstr ""
-
-msgid "unlocked"
 msgstr ""
 
 msgid "updated"
