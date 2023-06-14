@@ -47,6 +47,22 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
 
       expect_to_see_welcome_page
     end
+
+    context 'and the user has a phone verification exemption' do
+      it 'verifies the user' do
+        user.create_phone_number_exemption!
+
+        expect_to_see_identity_verification_page
+
+        verify_credit_card
+
+        verify_email unless skip_email_validation
+
+        expect_to_see_verification_successful_page
+
+        expect_to_see_welcome_page
+      end
+    end
   end
 
   shared_examples 'registering a high risk user with identity verification' do |skip_email_validation: false|
@@ -64,6 +80,22 @@ RSpec.describe 'Identity Verification', :js, feature_category: :instance_resilie
       expect_to_see_verification_successful_page
 
       expect_to_see_welcome_page
+    end
+
+    context 'and the user has a phone verification exemption' do
+      it 'verifies the user' do
+        user.create_phone_number_exemption!
+
+        expect_to_see_identity_verification_page
+
+        verify_credit_card
+
+        verify_email unless skip_email_validation
+
+        expect_to_see_verification_successful_page
+
+        expect_to_see_welcome_page
+      end
     end
   end
 

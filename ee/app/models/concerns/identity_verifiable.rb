@@ -60,6 +60,12 @@ module IdentityVerifiable
   def required_identity_verification_methods
     methods = [VERIFICATION_METHODS[:EMAIL]]
 
+    if exempt_from_phone_number_verification?
+      methods.prepend VERIFICATION_METHODS[:CREDIT_CARD] if credit_card_verification_enabled?
+
+      return methods
+    end
+
     case arkose_risk_band
     when Arkose::VerifyResponse::RISK_BAND_HIGH.downcase
       methods.prepend VERIFICATION_METHODS[:PHONE_NUMBER] if phone_number_verification_enabled?
@@ -86,6 +92,23 @@ module IdentityVerifiable
     return unless risk_band_attr.present?
 
     risk_band_attr.value.downcase
+  end
+
+  def create_phone_number_exemption!
+    custom_attributes.create!(
+      key: UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT,
+      value: true.to_s,
+      user_id: id
+    )
+  end
+
+  def destroy_phone_number_exemption
+    !!phone_number_exemption_attribute && phone_number_exemption_attribute.destroy
+  end
+
+  def exempt_from_phone_number_verification?
+    phone_number_exemption_attribute.present? &&
+      ActiveModel::Type::Boolean.new.cast(phone_number_exemption_attribute.value)
   end
 
   private
@@ -117,4 +140,9 @@ module IdentityVerifiable
 
     Feature.enabled?(:identity_verification_phone_number, self)
   end
+
+  def phone_number_exemption_attribute
+    custom_attributes.by_key(UserCustomAttribute::IDENTITY_VERIFICATION_PHONE_EXEMPT).first
+  end
+  strong_memoize_attr :phone_number_exemption_attribute
 end

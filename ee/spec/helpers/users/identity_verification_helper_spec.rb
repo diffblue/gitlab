@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::IdentityVerificationHelper, feature_category: :system_access do
+RSpec.describe Users::IdentityVerificationHelper, feature_category: :instance_resiliency do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be_with_reload(:user) { create(:user) }
@@ -42,6 +42,25 @@ RSpec.describe Users::IdentityVerificationHelper, feature_category: :system_acce
         })
 
         expect(data[:data]).to eq(expected_data.merge({ phone_number: phone_number_data }).to_json)
+      end
+    end
+
+    describe 'has_medium_or_high_risk_band?' do
+      subject(:has_medium_or_high_risk_band?) { helper.has_medium_or_high_risk_band?(user) }
+
+      where(:risk, :expectation) do
+        Arkose::VerifyResponse::RISK_BAND_HIGH   | true
+        Arkose::VerifyResponse::RISK_BAND_MEDIUM | true
+        Arkose::VerifyResponse::RISK_BAND_LOW    | false
+      end
+
+      with_them do
+        before do
+          create(:user_custom_attribute, key: UserCustomAttribute::ARKOSE_RISK_BAND, value: risk.downcase,
+            user_id: user.id)
+        end
+
+        it { is_expected.to be expectation }
       end
     end
 

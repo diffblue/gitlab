@@ -6,6 +6,22 @@ module EE
     module UsersController
       extend ::Gitlab::Utils::Override
 
+      def identity_verification_phone_exemption
+        @user.create_phone_number_exemption!
+
+        redirect_to [:admin, @user], notice: _('Phone verification exemption has been created.')
+      rescue StandardError
+        redirect_to [:admin, @user], alert: _('Something went wrong. Unable to create phone exemption.')
+      end
+
+      def destroy_identity_verification_phone_exemption
+        if @user.destroy_phone_number_exemption
+          redirect_to [:admin, @user], notice: _('Phone verification exemption has been removed.')
+        else
+          redirect_to [:admin, @user], alert: _('Something went wrong. Unable to remove phone exemption.')
+        end
+      end
+
       def reset_runners_minutes
         user
 
