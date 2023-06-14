@@ -1,6 +1,6 @@
 import { GlTable } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import Actions from 'ee/status_checks/components/actions.vue';
 import Branch from 'ee/status_checks/components/branch.vue';
@@ -10,6 +10,7 @@ import ModalUpdate from 'ee/status_checks/components/modal_update.vue';
 import StatusChecks, { i18n } from 'ee/status_checks/components/status_checks.vue';
 import createStore from 'ee/status_checks/store';
 import { SET_STATUS_CHECKS } from 'ee/status_checks/store/mutation_types';
+import { stubComponent } from 'helpers/stub_component';
 
 Vue.use(Vuex);
 
@@ -22,12 +23,12 @@ describe('Status checks', () => {
   let store;
   let wrapper;
 
-  const createWrapper = (mountFn = mount) => {
+  const createWrapper = (mountFn = mount, { stubs = {} } = {}) => {
     store = createStore();
-    wrapper = mountFn(StatusChecks, { store });
-
-    wrapper.vm.$refs.deleteModal.show = jest.fn();
-    wrapper.vm.$refs.updateModal.show = jest.fn();
+    wrapper = mountFn(StatusChecks, {
+      store,
+      stubs,
+    });
   };
 
   const findCreateModal = () => wrapper.findComponent(ModalCreate);
@@ -114,7 +115,6 @@ describe('Status checks', () => {
       await findActions(0, 1).vm.$emit('open-delete-modal', statusCheck);
 
       expect(findDeleteModal().props('statusCheck')).toStrictEqual(statusCheck);
-      expect(wrapper.vm.$refs.deleteModal.show).toHaveBeenCalled();
     });
 
     it('updates the status check prop for the delete modal when another remove button is clicked', async () => {
@@ -125,11 +125,34 @@ describe('Status checks', () => {
 
       expect(findDeleteModal().props('statusCheck')).toStrictEqual(statusCheck);
     });
+
+    it('shows modal when clicked', async () => {
+      const mockDeleteModalShow = jest.fn();
+
+      createWrapper(mount, {
+        stubs: {
+          ModalDelete: stubComponent(ModalDelete, {
+            props: {
+              modalId: 'some-modal-id',
+            },
+            methods: {
+              show: mockDeleteModalShow,
+            },
+          }),
+        },
+      });
+      store.commit(SET_STATUS_CHECKS, statusChecks);
+
+      await nextTick();
+      await findActions(0, 1).vm.$emit('open-delete-modal');
+
+      expect(mockDeleteModalShow).toHaveBeenCalled();
+    });
   });
 
   describe('Update modal filling', () => {
     beforeEach(() => {
-      createWrapper();
+      createWrapper(mount, { stubs: { StatusCheckForm: true } });
       store.commit(SET_STATUS_CHECKS, statusChecks);
     });
 
@@ -139,7 +162,6 @@ describe('Status checks', () => {
       await findActions(0, 1).vm.$emit('open-update-modal', statusCheck);
 
       expect(findUpdateModal().props('statusCheck')).toStrictEqual(statusCheck);
-      expect(wrapper.vm.$refs.updateModal.show).toHaveBeenCalled();
     });
 
     it('updates the status check prop for the update modal when another edit button is clicked', async () => {
@@ -152,6 +174,28 @@ describe('Status checks', () => {
       await findActions(1, 1).vm.$emit('open-update-modal', statusCheck);
 
       expect(findUpdateModal().props('statusCheck')).toStrictEqual(statusCheck);
+    });
+
+    it('shows modal when clicked', async () => {
+      const mockUpdateModalShow = jest.fn();
+      createWrapper(mount, {
+        stubs: {
+          ModalUpdate: stubComponent(ModalUpdate, {
+            props: {
+              modalId: 'modal-update',
+            },
+            methods: {
+              show: mockUpdateModalShow,
+            },
+          }),
+        },
+      });
+      store.commit(SET_STATUS_CHECKS, statusChecks);
+
+      await nextTick();
+      await findActions(0, 1).vm.$emit('open-update-modal');
+
+      expect(mockUpdateModalShow).toHaveBeenCalled();
     });
   });
 });
