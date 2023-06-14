@@ -130,7 +130,12 @@ export default {
     },
     removeStatusFilter(filter) {
       this.filters[filter] = null;
+      this.updateCombinedFilters();
       this.emitStatusFilterChanges();
+    },
+    updateCombinedFilters() {
+      this.filters[STATUS] =
+        this.filters[NEWLY_DETECTED] && this.filters[PREVIOUSLY_EXISTING] ? [] : null;
     },
     handleVulnerabilitiesAllowedOperatorChange(value) {
       if (value === ANY_OPERATOR) {
