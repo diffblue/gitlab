@@ -31,6 +31,12 @@ RSpec.describe Elastic::IndexingControl, feature_category: :global_search do
         expect(klass.ancestors.first).to eq(described_class)
       end
     end
+
+    it 'includes all workers with Elastic::IndexingControl enabled' do
+      workers = ObjectSpace.each_object(::Class).select { |klass| klass < described_class }
+
+      expect(described_class::WORKERS).to match_array(workers)
+    end
   end
 
   context 'with stub_const' do
