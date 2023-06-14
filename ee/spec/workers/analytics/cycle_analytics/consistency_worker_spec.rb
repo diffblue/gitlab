@@ -133,6 +133,26 @@ RSpec.describe Analytics::CycleAnalytics::ConsistencyWorker, feature_category: :
     end
   end
 
+  context 'when the end_event_timestamp is nil' do
+    it 'does not raise missing cursor value error' do
+      stub_licensed_features(cycle_analytics_for_groups: true)
+
+      create(:cycle_analytics_aggregation, {
+        last_consistency_check_updated_at: 30.minutes.ago,
+        last_consistency_check_issues_stage_event_hash_id: -1,
+        last_consistency_check_issues_start_event_timestamp: 1.year.ago,
+        last_consistency_check_issues_end_event_timestamp: nil, # we allow nil-s here
+        last_consistency_check_issues_issuable_id: -1,
+        last_consistency_check_merge_requests_stage_event_hash_id: -1,
+        last_consistency_check_merge_requests_start_event_timestamp: 1.year.ago,
+        last_consistency_check_merge_requests_end_event_timestamp: nil, # we allow nil-s here
+        last_consistency_check_merge_requests_issuable_id: -1
+      })
+
+      expect { worker.perform }.not_to raise_error
+    end
+  end
+
   it 'invokes the consistency check service for merge requests' do
     stub_licensed_features(cycle_analytics_for_groups: true)
 

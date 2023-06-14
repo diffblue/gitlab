@@ -114,8 +114,8 @@ module Analytics
         {
           issues_stage_event_hash_id: aggregation.last_consistency_check_issues_stage_event_hash_id,
           merge_requests_stage_event_hash_id: aggregation.last_consistency_check_merge_requests_stage_event_hash_id,
-          issues_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::IssueStageEvent).compact,
-          merge_requests_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::MergeRequestStageEvent).compact
+          issues_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::IssueStageEvent),
+          merge_requests_cursor: aggregation.consistency_check_cursor_for(Analytics::CycleAnalytics::MergeRequestStageEvent)
         }
       end
     end
