@@ -15,6 +15,7 @@ export default () => {
     basePath,
     canAddEdit,
     mergeCommitsCsvExportPath,
+    violationsCsvExportPath,
     frameworksCsvExportPath,
     groupPath,
     rootAncestorPath,
@@ -53,6 +54,7 @@ export default () => {
       createElement(ReportsApp, {
         props: {
           mergeCommitsCsvExportPath,
+          violationsCsvExportPath,
           frameworksCsvExportPath,
         },
       }),

@@ -149,7 +149,7 @@ RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_manage
     end
 
     it 'shows an export action' do
-      expect(page).to have_content('Export as CSV')
+      expect(page).to have_content('Export full report as CSV')
     end
   end
 
