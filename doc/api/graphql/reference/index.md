@@ -21756,6 +21756,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="repositoryblobspaths"></a>`paths` | [`[String!]!`](#string) | Array of desired blob paths. |
 | <a id="repositoryblobsref"></a>`ref` | [`String`](#string) | Commit ref to get the blobs from. Default value is HEAD. |
+| <a id="repositoryblobsreftype"></a>`refType` | [`RefType`](#reftype) | Type of ref. |
 
 ##### `Repository.branchNames`
 
@@ -21800,6 +21801,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="repositorypaginatedtreepath"></a>`path` | [`String`](#string) | Path to get the tree for. Default value is the root of the repository. |
 | <a id="repositorypaginatedtreerecursive"></a>`recursive` | [`Boolean`](#boolean) | Used to get a recursive tree. Default is false. |
 | <a id="repositorypaginatedtreeref"></a>`ref` | [`String`](#string) | Commit ref to get the tree for. Default value is HEAD. |
+| <a id="repositorypaginatedtreereftype"></a>`refType` | [`RefType`](#reftype) | Type of ref. |
 
 ##### `Repository.tree`
 
@@ -21814,6 +21816,7 @@ Returns [`Tree`](#tree).
 | <a id="repositorytreepath"></a>`path` | [`String`](#string) | Path to get the tree for. Default value is the root of the repository. |
 | <a id="repositorytreerecursive"></a>`recursive` | [`Boolean`](#boolean) | Used to get a recursive tree. Default is false. |
 | <a id="repositorytreeref"></a>`ref` | [`String`](#string) | Commit ref to get the tree for. Default value is HEAD. |
+| <a id="repositorytreereftype"></a>`refType` | [`RefType`](#reftype) | Type of ref. |
 
 ### `RepositoryBlob`
 
@@ -26066,6 +26069,15 @@ Project member relation.
 | <a id="projectmemberrelationinherited"></a>`INHERITED` | Inherited members. |
 | <a id="projectmemberrelationinvited_groups"></a>`INVITED_GROUPS` | Invited Groups members. |
 | <a id="projectmemberrelationshared_into_ancestors"></a>`SHARED_INTO_ANCESTORS` | Shared Into Ancestors members. |
+
+### `RefType`
+
+Type of ref.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="reftypeheads"></a>`HEADS` | Ref type for branches. |
+| <a id="reftypetags"></a>`TAGS` | Ref type for tags. |
 
 ### `RegistryState`
 
