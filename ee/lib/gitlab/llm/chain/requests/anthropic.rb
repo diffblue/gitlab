@@ -7,7 +7,7 @@ module Gitlab
         class Anthropic
           attr_reader :ai_client
 
-          TEMPERATURE = 0.0
+          TEMPERATURE = 0.2
           STOP_WORDS = ["\n\nHuman", "Observation:"].freeze
           PROMPT_SIZE = 30_000
 
