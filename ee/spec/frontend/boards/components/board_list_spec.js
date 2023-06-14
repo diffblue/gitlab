@@ -75,6 +75,13 @@ describe('BoardList Component', () => {
     const moveIssueMutationHandlerSuccess = jest.fn().mockResolvedValue(moveIssueMutationResponse);
     const moveEpicMutationHandlerSuccess = jest.fn().mockResolvedValue(moveEpicMutationResponse);
 
+    const apolloQueryHandlers = [
+      [listIssuesQuery, groupIssuesQueryHandlerSuccess],
+      [listEpicsQuery, groupEpicsQueryHandlerSuccess],
+      [issueMoveListMutation, moveIssueMutationHandlerSuccess],
+      [epicMoveListMutation, moveEpicMutationHandlerSuccess],
+    ];
+
     const endDragIssueVariables = {
       oldIndex: 1,
       newIndex: 0,
@@ -157,12 +164,7 @@ describe('BoardList Component', () => {
             isApolloBoard: true,
             glFeatures: { epicColorHighlight: false },
           },
-          apolloQueryHandlers: [
-            [listIssuesQuery, groupIssuesQueryHandlerSuccess],
-            [listEpicsQuery, groupEpicsQueryHandlerSuccess],
-            [issueMoveListMutation, moveIssueMutationHandlerSuccess],
-            [epicMoveListMutation, moveEpicMutationHandlerSuccess],
-          ],
+          apolloQueryHandlers,
           stubs: {
             BoardCardMoveToPosition,
           },
@@ -171,6 +173,37 @@ describe('BoardList Component', () => {
         await waitForPromises();
 
         endDrag(endDragVariables);
+
+        await waitForPromises();
+
+        expect(queryHandler).toHaveBeenCalled();
+        expect(notCalledHandler).not.toHaveBeenCalled();
+      },
+    );
+
+    it.each`
+      issuableType  | isEpicBoard | positionInList | queryHandler                       | notCalledHandler
+      ${TYPE_ISSUE} | ${false}    | ${-1}          | ${moveIssueMutationHandlerSuccess} | ${moveEpicMutationHandlerSuccess}
+      ${TYPE_EPIC}  | ${true}     | ${-1}          | ${moveEpicMutationHandlerSuccess}  | ${moveIssueMutationHandlerSuccess}
+    `(
+      'moves $issuableType at bottom of list',
+      async ({ issuableType, isEpicBoard, queryHandler, notCalledHandler, positionInList }) => {
+        wrapper = createComponent({
+          provide: {
+            boardType: WORKSPACE_GROUP,
+            issuableType,
+            isProjectBoard: false,
+            isGroupBoard: true,
+            isEpicBoard,
+            isApolloBoard: true,
+            glFeatures: { epicColorHighlight: false },
+          },
+          apolloQueryHandlers,
+        });
+
+        await waitForPromises();
+
+        wrapper.findComponent(BoardCardMoveToPosition).vm.$emit('moveToPosition', positionInList);
 
         await waitForPromises();
 
