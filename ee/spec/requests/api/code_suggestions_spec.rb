@@ -98,6 +98,14 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
         context 'when on .org or .com' do
           include_examples 'a successful response'
 
+          it 'sets the access token realm to SaaS' do
+            expect(Gitlab::CodeSuggestions::AccessToken).to receive(:new).with(
+              current_user, gitlab_realm: Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS
+            )
+
+            post_api
+          end
+
           context 'when request was proxied from self managed instance' do
             let(:headers) { { 'User-Agent' => 'gitlab-workhorse' } }
 
@@ -109,6 +117,14 @@ RSpec.describe API::CodeSuggestions, feature_category: :code_suggestions do
               end
 
               include_examples 'an unauthorized response'
+            end
+
+            it 'sets the access token realm to self-managed' do
+              expect(Gitlab::CodeSuggestions::AccessToken).to receive(:new).with(
+                current_user, gitlab_realm: Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED
+              )
+
+              post_api
             end
           end
         end

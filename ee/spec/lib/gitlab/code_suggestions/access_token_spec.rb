@@ -35,7 +35,7 @@ RSpec.describe Gitlab::CodeSuggestions::AccessToken, feature_category: :code_sug
 
         expect(headers).to eq("alg" => "RS256", "typ" => "JWT")
         expect(payload.keys).to contain_exactly("jti", "aud", "iss", "iat", "nbf", "exp",
-          "third_party_ai_features_enabled")
+          "third_party_ai_features_enabled", "gitlab_realm")
       end
     end
 
