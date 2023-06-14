@@ -174,9 +174,7 @@ export default {
   I18N_ALERT_NO_POINTER_TITLE,
   I18N_ALERT_NO_POINTER_BUTTON,
   I18N_ALERT_NO_POINTER_DESCRIPTION,
-  helpPageUrl: helpPagePath('user/product_analytics/index', {
-    anchor: 'product-analytics-dashboards',
-  }),
+  helpPageUrl: helpPagePath('user/analytics/analytics_dashboards'),
 };
 </script>
 
