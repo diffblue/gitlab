@@ -8,6 +8,7 @@ module GitlabSubscriptions
     belongs_to :namespace
 
     validates :add_on, :namespace, :expires_on, presence: true
+    validates :subscription_add_on_id, uniqueness: { scope: :namespace_id }
     validates :quantity,
       presence: true,
       numericality: { only_integer: true, greater_than_or_equal_to: 1 }
