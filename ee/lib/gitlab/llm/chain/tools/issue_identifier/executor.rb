@@ -14,8 +14,7 @@ module Gitlab
             RESOURCE_NAME = 'issue'
             NAME = "IssueIdentifier"
             DESCRIPTION = "Useful tool for when you need to identify and fetch information or ask questions " \
-                          "about a specific issue. Do not use this tool if you already have the information " \
-                          "about the issue."
+                          "about a specific issue. Always start with this tool if you don't have the issue identified."
 
             PROVIDER_PROMPT_CLASSES = {
               anthropic: ::Gitlab::Llm::Chain::Tools::IssueIdentifier::Prompts::Anthropic,

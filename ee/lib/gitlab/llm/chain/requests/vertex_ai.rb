@@ -7,7 +7,7 @@ module Gitlab
         class VertexAi
           attr_reader :ai_client
 
-          TEMPERATURE = 0.0
+          TEMPERATURE = 0.2
 
           def initialize(user)
             @ai_client = ::Gitlab::Llm::VertexAi::Client.new(user)
