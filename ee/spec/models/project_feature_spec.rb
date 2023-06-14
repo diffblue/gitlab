@@ -35,10 +35,10 @@ RSpec.describe ProjectFeature do
     end
 
     where(:feature, :worker_expected, :associations) do
-      'issues'                      | true        | %w[issues notes]
+      'issues'                      | true        | %w[issues notes milestones]
       'wiki'                        | false       | nil
       'builds'                      | false       | nil
-      'merge_requests'              | true        | %w[merge_requests notes]
+      'merge_requests'              | true        | %w[merge_requests notes milestones]
       'repository'                  | true        | %w[notes]
       'snippets'                    | true        | %w[notes]
       'operations'                  | false       | nil

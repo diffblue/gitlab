@@ -6,15 +6,15 @@ module Elastic
 
     def migrate
       if completed?
-        log "Skipping adding #{field_name} field to #{index_name} documents migration since it is already applied"
+        log "Skipping adding #{field_names} field to #{index_name} documents migration since it is already applied"
         return
       end
 
-      log "Adding #{field_name} field to #{index_name} documents for batch of #{query_batch_size} documents"
+      log "Adding #{field_names} field to #{index_name} documents for batch of #{query_batch_size} documents"
 
       document_references = process_batch!
 
-      log "Adding #{field_name} field to #{index_name} documents is completed for batch of #{document_references.size} documents"
+      log "Adding #{field_names} field to #{index_name} documents is completed for batch of #{document_references.size} documents"
     rescue StandardError => e
       log_raise "migrate failed with error: #{e.class}:#{e.message}"
     end
@@ -34,7 +34,7 @@ module Elastic
       results = client.search(index: index_name, body: query)
       doc_count = results.dig('aggregations', 'documents', 'doc_count')
 
-      log "Checking if there are documents without #{field_name} field: #{doc_count} documents left"
+      log "Checking if there are documents without #{field_names} field: #{doc_count} documents left"
 
       doc_count == 0
     end
@@ -45,18 +45,33 @@ module Elastic
       raise NotImplementedError
     end
 
+    def field_names
+      Array.wrap(field_name)
+    end
+
     def field_name
       raise NotImplementedError
+    end
+
+    def fields_exist_query
+      field_names.map do |field|
+        {
+          bool: {
+            must_not: {
+              exists: {
+                field: field
+              }
+            }
+          }
+        }
+      end
     end
 
     def missing_field_filter
       {
         bool: {
-          must_not: {
-            exists: {
-              field: field_name
-            }
-          },
+          minimum_should_match: 1,
+          should: fields_exist_query,
           must: {
             term: {
               type: {

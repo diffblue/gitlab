@@ -139,6 +139,7 @@ module EE
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
       elastic_index_dependant_association :notes, on_change: :visibility_level
+      elastic_index_dependant_association :milestones, on_change: :visibility_level
 
       scope :mirror, -> { where(mirror: true) }
 

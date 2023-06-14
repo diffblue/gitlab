@@ -49,6 +49,9 @@ RSpec.describe Milestone, :elastic do
       'updated_at'
     ).merge({
       'type' => milestone.es_type,
+      'issues_access_level' => milestone.project.issues_access_level,
+      'merge_requests_access_level' => milestone.project.merge_requests_access_level,
+      'visibility_level' => milestone.project.visibility_level,
       'join_field' => {
         'name' => milestone.es_type,
         'parent' => milestone.es_parent

@@ -3460,7 +3460,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       context 'when updating the visibility_level' do
         it 'triggers ElasticAssociationIndexerWorker to update issues, merge_requests and notes' do
-          expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project.id, %w[issues merge_requests notes])
+          expect(ElasticAssociationIndexerWorker).to receive(:perform_async).with('Project', project.id, %w[issues merge_requests notes milestones])
 
           project.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
         end
