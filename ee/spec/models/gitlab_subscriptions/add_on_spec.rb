@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::AddOn, feature_category: :subscription_management do
-  subject { build(:add_on) }
+  subject { build(:gitlab_subscription_add_on) }
 
   describe 'associations' do
     it { is_expected.to have_many(:add_on_purchases).with_foreign_key(:subscription_add_on_id).inverse_of(:add_on) }
