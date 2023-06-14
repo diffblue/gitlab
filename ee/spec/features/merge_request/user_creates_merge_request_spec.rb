@@ -29,6 +29,59 @@ RSpec.describe "User creates a merge request", :js, feature_category: :code_revi
     visit(project_new_merge_request_path(project))
   end
 
+  context 'when the user has branches in an SSO enforced group' do
+    let_it_be(:saml_provider) { create(:saml_provider, enabled: true, enforced_sso: true) }
+    let_it_be(:restricted_group) { create(:group, saml_provider: saml_provider) }
+    let_it_be(:canonical_project) { create(:project, :public, :repository, group: restricted_group) }
+    let_it_be(:user) { create(:user) }
+
+    let(:source_project) do
+      fork_project(canonical_project, user,
+        repository: true,
+        namespace: user.namespace)
+    end
+
+    let(:message) do
+      "GroupSAML|Some branches are inaccessible because your SAML session has expired. " \
+        "To access the branches, select the group’s path to reauthenticate."
+    end
+
+    before do
+      stub_licensed_features(group_saml: true)
+
+      create(:group_saml_identity, user: user, saml_provider: saml_provider)
+
+      restricted_group.add_owner(user)
+
+      sign_in(user)
+    end
+
+    context 'and the session is not active' do
+      it 'shows the user an alert', :aggregate_failures do
+        visit project_new_merge_request_path(source_project)
+
+        expect(page).to have_content(s_(message))
+      end
+
+      it 'lets the user click the alert to sign in', :aggregate_failures, :js do
+        visit project_new_merge_request_path(source_project)
+
+        expect(page).to have_link(href: %r{/groups/#{restricted_group.name}/-/saml})
+      end
+    end
+
+    context 'and the session is active' do
+      it 'does not show the user an alert', :aggregate_failures do
+        dummy_session = { active_group_sso_sign_ins: { saml_provider.id => DateTime.now } }
+        allow(Gitlab::Session).to receive(:current).and_return(dummy_session)
+
+        visit project_new_merge_request_path(source_project)
+
+        expect(page).not_to have_content(s_(message))
+      end
+    end
+  end
+
   it "creates a merge request" do
     allow_next_instance_of(Gitlab::AuthorityAnalyzer) do |instance|
       allow(instance).to receive(:calculate).and_return([user2])
