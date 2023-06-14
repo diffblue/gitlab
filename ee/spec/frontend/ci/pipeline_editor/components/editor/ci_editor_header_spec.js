@@ -2,7 +2,6 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import CiEditorHeader from 'ee/ci/pipeline_editor/components/editor/ci_editor_header.vue';
 import CiEditorHeaderCE from '~/ci/pipeline_editor/components/editor/ci_editor_header.vue';
-
 import { pipelineEditorTrackingOptions } from '~/ci/pipeline_editor/constants';
 
 describe('CI Editor Header', () => {
@@ -10,7 +9,7 @@ describe('CI Editor Header', () => {
   let trackingSpy = null;
 
   const defaultProps = {
-    showDrawer: false,
+    showHelpDrawer: false,
     showJobAssistantDrawer: false,
     showAiAssistantDrawer: false,
   };

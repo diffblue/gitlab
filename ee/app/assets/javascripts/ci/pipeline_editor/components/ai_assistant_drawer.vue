@@ -5,6 +5,7 @@ import getPipelineEditorAiChat from 'ee/ci/pipeline_editor/graphql/queries/pipel
 import sendChatMessage from 'ee/ci/pipeline_editor/graphql/mutations/pipeline_editor_send_chat.mutation.graphql';
 import { s__ } from '~/locale';
 import UserFeedback from 'ee/ai/components/user_feedback.vue';
+import { EDITOR_APP_DRAWER_NONE } from '~/ci/pipeline_editor/constants';
 import AiChat from './pipeline_editor_chat.vue';
 
 export default {
@@ -85,7 +86,7 @@ export default {
   },
   methods: {
     closeDrawer() {
-      this.$emit('close-ai-assistant-drawer');
+      this.$emit('switch-drawer', EDITOR_APP_DRAWER_NONE);
     },
     submitPrompt(value) {
       this.$apollo.mutate({
