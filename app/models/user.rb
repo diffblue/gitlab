@@ -2301,6 +2301,12 @@ class User < ApplicationRecord
     }
   end
 
+  def namespace_commit_email_for_namespace(namespace)
+    return if namespace.nil?
+
+    namespace_commit_emails.find_by(namespace: namespace)
+  end
+
   protected
 
   # override, from Devise::Validatable

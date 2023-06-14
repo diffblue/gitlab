@@ -6773,6 +6773,26 @@ Input type: `UserPreferencesUpdateInput`
 | <a id="mutationuserpreferencesupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationuserpreferencesupdateuserpreferences"></a>`userPreferences` | [`UserPreferences`](#userpreferences) | User preferences after mutation. |
 
+### `Mutation.userSetNamespaceCommitEmail`
+
+Input type: `UserSetNamespaceCommitEmailInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationusersetnamespacecommitemailclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationusersetnamespacecommitemailemailid"></a>`emailId` | [`EmailID`](#emailid) | ID of the email to set. |
+| <a id="mutationusersetnamespacecommitemailnamespaceid"></a>`namespaceId` | [`NamespaceID!`](#namespaceid) | ID of the namespace to set the namespace commit email for. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationusersetnamespacecommitemailclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationusersetnamespacecommitemailerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationusersetnamespacecommitemailnamespacecommitemail"></a>`namespaceCommitEmail` | [`NamespaceCommitEmail`](#namespacecommitemail) | User namespace commit email after mutation. |
+
 ### `Mutation.vulnerabilityConfirm`
 
 Input type: `VulnerabilityConfirmInput`
@@ -26973,6 +26993,12 @@ An example `DiscussionID` is: `"gid://gitlab/Discussion/1"`.
 Duration between two instants, represented as a fractional number of seconds.
 
 For example: 12.3334.
+
+### `EmailID`
+
+A `EmailID` is a global ID. It is encoded as a string.
+
+An example `EmailID` is: `"gid://gitlab/Email/1"`.
 
 ### `EnvironmentID`
 
