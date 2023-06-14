@@ -102,6 +102,10 @@
                   "type": "string",
                   "pattern": "(@(yearly|annually|monthly|weekly|daily|midnight|noon|hourly))|(((\\*|(\\-?\\d+\\,?)+)(\\/\\d+)?|last|L|(sun|mon|tue|wed|thu|fri|sat|SUN|MON|TUE|WED|THU|FRI|SAT\\-|\\,)+|(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC|\\-|\\,)+)\\s?){5,6}"
                 },
+                "timezone": {
+                  "type": "string",
+                  "description": "Timezone to apply to the cadence."
+                },
                 "agents": {
                   "type": "object",
                   "description": "Specifies names of the GitLab agents where cluster image scanning will run.",

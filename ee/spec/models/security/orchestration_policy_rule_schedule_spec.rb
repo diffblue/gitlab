@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::OrchestrationPolicyRuleSchedule do
+RSpec.describe Security::OrchestrationPolicyRuleSchedule, feature_category: :security_policy_management do
   describe 'associations' do
     it { is_expected.to belong_to(:owner).class_name('User') }
     it { is_expected.to belong_to(:security_orchestration_policy_configuration).class_name('Security::OrchestrationPolicyConfiguration') }
@@ -296,6 +296,48 @@ RSpec.describe Security::OrchestrationPolicyRuleSchedule do
 
       let(:ideal_next_run_at) { schedule.send(:ideal_next_run_from, Time.zone.now) }
       let(:cron_worker_next_run_at) { schedule.send(:cron_worker_next_run_from, Time.zone.now) }
+    end
+  end
+
+  describe '#cron_timezone' do
+    let_it_be(:project) { create(:project, :repository) }
+    let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
+    let_it_be(:rule_schedule) do
+      create(:security_orchestration_policy_rule_schedule, security_orchestration_policy_configuration: policy_configuration)
+    end
+
+    let(:policy) do
+      {
+        name: 'Scheduled DAST 1',
+        description: 'This policy runs DAST every 20 mins',
+        enabled: true,
+        rules: rules,
+        actions: [
+          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' }
+        ]
+      }
+    end
+
+    subject { rule_schedule.cron_timezone }
+
+    before do
+      allow(rule_schedule).to receive(:policy).and_return(policy)
+    end
+
+    context 'when timezone is not defined in the rule' do
+      let(:rules) do
+        [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *' }]
+      end
+
+      it { is_expected.to eq(Time.zone.name) }
+    end
+
+    context 'when timezone is defined in the rule' do
+      let(:rules) do
+        [{ type: 'schedule', branches: %w[production], cadence: '*/20 * * * *', timezone: 'Europe/Amsterdam' }]
+      end
+
+      it { is_expected.to eq('Europe/Amsterdam') }
     end
   end
 
