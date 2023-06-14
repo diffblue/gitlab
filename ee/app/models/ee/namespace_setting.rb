@@ -123,7 +123,7 @@ module EE
 
       def third_party_ai_settings_allowed
         return unless third_party_ai_features_enabled_changed?
-        return if ai_settings_allowed?
+        return if ai_settings_allowed? || ai_assist_ui_enabled?
 
         errors.add(:third_party_ai_features_enabled, _('Third party AI settings not allowed.'))
       end

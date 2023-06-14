@@ -99,7 +99,7 @@ module EE
         params_ee << :code_suggestions if ai_assist_ui_enabled?
         params_ee << { value_stream_dashboard_aggregation_attributes: [:enabled] } if can?(current_user, :modify_value_stream_dashboard_settings, current_group)
 
-        if experimental_and_third_party_ai_settings_enabled?
+        if experimental_and_third_party_ai_settings_enabled? || ai_assist_ui_enabled?
           params_ee.push(:experiment_features_enabled, :third_party_ai_features_enabled)
         end
       end

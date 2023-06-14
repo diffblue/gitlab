@@ -845,9 +845,18 @@ RSpec.describe GroupsController, feature_category: :groups_and_projects do
       expect(group.reload.third_party_ai_features_enabled).to eq(false)
     end
 
-    context 'when ai licensed features are not available for the group' do
+    it 'updates the third party attribute when ai settings are not available, but ai assisted are' do
+      stub_licensed_features(ai_features: false)
+
+      put :update, params: { id: group.to_param, group: { third_party_ai_features_enabled: false } }
+
+      expect(group.reload.third_party_ai_features_enabled).to eq(false)
+    end
+
+    context 'when ai licensed and ai assisted features are not available for the group' do
       before do
         stub_licensed_features(ai_features: false)
+        stub_feature_flags(ai_assist_flag: false)
       end
 
       it 'does not update attributes' do
