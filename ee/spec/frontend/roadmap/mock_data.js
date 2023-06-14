@@ -330,7 +330,7 @@ export const mockFormattedEpic2 = {
 
 export const rawEpics = [
   {
-    id: 41,
+    id: 'gid://gitlab/Epic/41',
     iid: 2,
     description: null,
     title: 'Another marketing',
@@ -340,12 +340,19 @@ export const rawEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: true,
     parent: {
-      id: '40',
+      id: 'gid://gitlab/Epic/40',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab/Epic/40',
+        },
+      ],
     },
     group: mockGroup2,
   },
   {
-    id: 40,
+    id: 'gid://gitlab/Epic/40',
     iid: 1,
     description: null,
     title: 'Marketing epic',
@@ -355,9 +362,12 @@ export const rawEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
     group: mockGroup2,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 39,
+    id: 'gid://gitlab/Epic/39',
     iid: 12,
     description: null,
     title: 'Epic with end in first timeframe month',
@@ -367,9 +377,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/12',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 38,
+    id: 'gid://gitlab/Epic/38',
     iid: 11,
     description: null,
     title: 'Epic with end date out of range',
@@ -379,9 +392,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/11',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 37,
+    id: 'gid://gitlab/Epic/37',
     iid: 10,
     description: null,
     title: 'Epic with timeline in same month',
@@ -391,9 +407,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/10',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 35,
+    id: 'gid://gitlab/Epic/35',
     iid: 8,
     description: null,
     title: 'Epic with out of range start & null end',
@@ -403,9 +422,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/8',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 33,
+    id: 'gid://gitlab/Epic/33',
     iid: 6,
     description: null,
     title: 'Epic with only start date',
@@ -415,9 +437,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/6',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 4,
+    id: 'gid://gitlab/Epic/4',
     iid: 4,
     description:
       'Animi dolorem error ipsam assumenda. Dolor reprehenderit sit soluta molestias id. Explicabo vel dolores numquam earum ut aliquid. Quisquam aliquam a totam laborum quia.\n\nEt voluptatem reiciendis qui cum. Labore ratione delectus minus et voluptates. Dolor voluptatem nisi neque fugiat ut ullam dicta odit. Aut quaerat provident ducimus aut molestiae hic esse.\n\nSuscipit non repellat laudantium quaerat. Voluptatum dolor explicabo vel illo earum. Laborum vero occaecati qui autem cumque dolorem autem. Enim voluptatibus a dolorem et.',
@@ -428,9 +453,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/4',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 3,
+    id: 'gid://gitlab/Epic/3',
     iid: 3,
     description:
       'Magnam placeat ut esse aut vel. Et sit ab soluta ut eos et et. Nesciunt expedita sit et optio maiores quas facilis. Provident ut aut et nihil. Nesciunt ipsum fuga labore dolor quia.\n\nSit suscipit impedit aut dolore non provident. Nesciunt nemo excepturi voluptatem natus veritatis. Vel ut possimus reiciendis dolorem et. Recusandae voluptatem voluptatum aut iure. Sapiente quia est iste similique quidem quia omnis et.\n\nId aut assumenda beatae iusto est dicta consequatur. Tempora voluptatem pariatur ab velit vero ut reprehenderit fuga. Dolor modi aspernatur eos atque eveniet harum sed voluptatem. Dolore iusto voluptas dolor enim labore dolorum consequatur dolores.',
@@ -442,11 +470,18 @@ export const rawEpics = [
     descendantCounts: defaultDescendantCounts,
     hasParent: true,
     parent: {
-      id: '40',
+      id: 'gid://gitlab/Epic/40',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab/Epic/40',
+        },
+      ],
     },
   },
   {
-    id: 2,
+    id: 'gid://gitlab/Epic/2',
     iid: 2,
     description:
       'Deleniti id facere numquam cum consectetur sint ipsum consequatur. Odit nihil harum consequuntur est nemo adipisci. Incidunt suscipit voluptatem et culpa at voluptatem consequuntur. Rerum aliquam earum quia consequatur ipsam quae ut.\n\nQuod molestias ducimus quia ratione nostrum ut adipisci. Fugiat officiis reiciendis repellendus quia ut ipsa. Voluptatum ut dolor perferendis nostrum. Porro a ducimus sequi qui quos ea. Earum velit architecto necessitatibus at dicta.\n\nModi aut non fugiat autem doloribus nobis ea. Sit quam corrupti blanditiis nihil tempora ratione enim ex. Aliquam quia ut impedit ut velit reprehenderit quae amet. Unde quod at dolorum eligendi in ducimus perspiciatis accusamus.',
@@ -457,9 +492,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/2',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 1,
+    id: 'gid://gitlab/Epic/1',
     iid: 1,
     description:
       'Explicabo et soluta minus praesentium minima ab et voluptatem. Quas architecto vero corrupti voluptatibus labore accusantium consectetur. Aliquam aut impedit voluptates illum molestias aut harum. Aut non odio praesentium aut.\n\nQuo asperiores aliquid sed nobis. Omnis sint iste provident numquam. Qui voluptatem tempore aut aut voluptas dolorem qui.\n\nEst est nemo quod est. Odit modi eos natus cum illo aut. Expedita nostrum ea est omnis magnam ut eveniet maxime. Itaque ipsam provident minima et occaecati ut. Dicta est perferendis sequi perspiciatis rerum voluptatum deserunt.',
@@ -471,9 +509,12 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/-/epics/1',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
   {
-    id: 22,
+    id: 'gid://gitlab/Epic/22',
     iid: 2,
     description: null,
     title: 'Epic with invalid dates',
@@ -483,6 +524,9 @@ export const rawEpics = [
     webUrl: '/groups/gitlab-org/marketing/-/epics/22',
     descendantCounts: defaultDescendantCounts,
     hasParent: false,
+    ancestors: {
+      nodes: [],
+    },
   },
 ];
 
@@ -533,6 +577,37 @@ export const mockUnsortedEpics = [
   },
 ];
 
+export const mockAncestorEpicNode = {
+  __typename: 'Epic',
+  parent: null,
+  id: 'gid://gitlab/Epic/1',
+  iid: '4',
+  title: 'Ancestor epic',
+  description: 'Mock epic description',
+  state: 'opened',
+  startDate: '2017-12-25',
+  dueDate: '2018-02-15',
+  webUrl: 'http://gdk.test:3000/groups/gitlab-org/marketing/-/epics/3',
+  hasChildren: true,
+  hasParent: false,
+  confidential: false,
+  descendantWeightSum: {
+    closedIssues: 3,
+    openedIssues: 2,
+    __typename: 'EpicDescendantWeights',
+  },
+  descendantCounts: {
+    openedEpics: 3,
+    closedEpics: 2,
+    __typename: 'EpicDescendantCount',
+  },
+  ancestors: {
+    edges: [],
+    __typename: 'EpicConnection',
+  },
+  group: mockGroup1,
+};
+
 export const mockEpicNode1 = {
   __typename: 'Epic',
   parent: null,
@@ -557,6 +632,17 @@ export const mockEpicNode1 = {
     closedEpics: 2,
     __typename: 'EpicDescendantCount',
   },
+  ancestors: {
+    edges: [
+      {
+        node: {
+          ...mockAncestorEpicNode,
+        },
+        __typename: 'EpicEdge',
+      },
+    ],
+    __typename: 'EpicConnection',
+  },
   group: mockGroup1,
 };
 
@@ -579,6 +665,17 @@ export const mockEpicNode2 = {
     openedEpics: 0,
     closedEpics: 0,
     __typename: 'EpicDescendantCount',
+  },
+  ancestors: {
+    edges: [
+      {
+        node: {
+          ...mockAncestorEpicNode,
+        },
+        __typename: 'EpicEdge',
+      },
+    ],
+    __typename: 'EpicConnection',
   },
   group: mockGroup1,
 };
@@ -825,12 +922,29 @@ export const mockEpicsWithParents = [
     parent: {
       id: 'gid://gitlab-org/Epic/1',
     },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/Epic/1',
+        },
+      ],
+      __typename: 'EpicConnection',
+    },
   },
   {
     id: 'gid://gitlab-org/subgroup/Epic/2',
     hasParent: true,
     parent: {
       id: 'gid://gitlab-org/subgroup/Epic/1',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/subgroup/Epic/1',
+          __typename: 'EpicEdge',
+        },
+      ],
+      __typename: 'EpicConnection',
     },
   },
   {
@@ -839,12 +953,30 @@ export const mockEpicsWithParents = [
     parent: {
       id: 'gid://gitlab-org/subgroup/Epic/1',
     },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/subgroup/Epic/1',
+          __typename: 'EpicEdge',
+        },
+      ],
+      __typename: 'EpicConnection',
+    },
   },
   {
     id: 'gid://gitlab-org/subgroup/Epic/4',
     hasParent: true,
     parent: {
       id: 'gid://gitlab-org/subgroup/Epic/1',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/subgroup/Epic/1',
+          __typename: 'EpicEdge',
+        },
+      ],
+      __typename: 'EpicConnection',
     },
   },
 ];

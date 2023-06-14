@@ -110,7 +110,11 @@ describe('EpicsListSectionComponent', () => {
 
     describe('epicsWithAssociatedParents', () => {
       it('should return epics which contain parent associations', async () => {
-        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(mockEpics.length);
+        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(
+          // Only top-level epics are visible by default, any child
+          // epics are shown only when the parent is expanded.
+          mockEpics.filter((epic) => !epic.hasParent).length,
+        );
 
         wrapper.setProps({
           epics: mockEpicsWithParents,

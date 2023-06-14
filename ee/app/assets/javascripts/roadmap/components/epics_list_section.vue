@@ -73,9 +73,12 @@ export default {
       };
     },
     epicsWithAssociatedParents() {
-      return this.epics.filter(
-        (epic) => !epic.hasParent || (epic.hasParent && this.epicIds.indexOf(epic.parent.id) < 0),
-      );
+      return this.epics.filter((epic) => {
+        if (epic.hasParent) {
+          return epic.ancestors.nodes.every((ancestor) => this.epicIds.indexOf(ancestor.id) < 0);
+        }
+        return !epic.hasParent;
+      });
     },
     displayedEpics() {
       // If roadmap is accessed from epic, return all epics

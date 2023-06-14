@@ -45,12 +45,10 @@ const fetchGroupEpics = (
       ...variables,
       ...transformedFilterParams,
       first: ROADMAP_PAGE_SIZE,
-      topLevelHierarchyOnly: true,
     };
 
     if (transformedFilterParams?.epicIid) {
       variables.iid = transformedFilterParams.epicIid.split('::&').pop();
-      variables.topLevelHierarchyOnly = false;
     }
     if (transformedFilterParams?.groupPath) {
       variables.fullPath = transformedFilterParams.groupPath;

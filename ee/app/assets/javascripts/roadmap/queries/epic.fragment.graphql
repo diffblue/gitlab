@@ -36,4 +36,9 @@ fragment BaseEpic on Epic {
       textColor
     }
   }
+  ancestors {
+    nodes {
+      id
+    }
+  }
 }
