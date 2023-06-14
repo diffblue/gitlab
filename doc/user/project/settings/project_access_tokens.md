@@ -110,7 +110,7 @@ Even when creation is disabled, you can still use and revoke existing project ac
 
 Bot users for projects are [GitLab-created service accounts](../../../subscriptions/self_managed/index.md#billable-users).
 Each time you create a project access token, a bot user is created and added to the project.
-These bot users do not count as licensed seats.
+This user is not a billable user, so it does not count toward the license limit.
 
 The bot users for projects have [permissions](../../permissions.md#project-members-permissions) that correspond with the
 selected role and [scope](#scopes-for-a-project-access-token) of the project access token.
