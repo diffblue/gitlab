@@ -111,4 +111,43 @@ RSpec.describe Gitlab::Llm::Cache, :clean_gitlab_redis_chat, feature_category: :
       end
     end
   end
+
+  describe '#last_conversation' do
+    context 'when there is no /reset message' do
+      before do
+        subject.add(payload.merge(content: 'msg1', role: 'user', request_id: '1'))
+        subject.add(payload.merge(content: 'msg2', role: 'user', request_id: '3'))
+      end
+
+      it 'returns all records for this user' do
+        expect(subject.last_conversation.map(&:content)).to eq(%w[msg1 msg2])
+      end
+    end
+
+    context 'when there is /reset message' do
+      before do
+        subject.add(payload.merge(content: 'msg1', role: 'user', request_id: '1'))
+        subject.add(payload.merge(content: '/reset', role: 'user', request_id: '3'))
+        subject.add(payload.merge(content: 'msg3', role: 'user', request_id: '3'))
+        subject.add(payload.merge(content: '/reset', role: 'user', request_id: '3'))
+        subject.add(payload.merge(content: 'msg5', role: 'user', request_id: '3'))
+        subject.add(payload.merge(content: 'msg6', role: 'user', request_id: '3'))
+      end
+
+      it 'returns all records for this user since last /reset message' do
+        expect(subject.last_conversation.map(&:content)).to eq(%w[msg5 msg6])
+      end
+    end
+
+    context 'when there is /reset message as the last message' do
+      before do
+        subject.add(payload.merge(content: 'msg1', role: 'user', request_id: '1'))
+        subject.add(payload.merge(content: '/reset', role: 'user', request_id: '3'))
+      end
+
+      it 'returns all records for this user since last /reset message' do
+        expect(subject.last_conversation.map(&:content)).to be_empty
+      end
+    end
+  end
 end

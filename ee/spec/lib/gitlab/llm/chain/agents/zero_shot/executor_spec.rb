@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, feature_category: :shared do
+RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, :clean_gitlab_redis_chat, feature_category: :shared do
   let(:input) { 'foo' }
-  let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext) }
+  let(:user) { create(:user) }
+  let(:context) { instance_double(Gitlab::Llm::Chain::GitlabContext, current_user: user) }
   let(:ai_request_double) { instance_double(Gitlab::Llm::Chain::Requests::Anthropic) }
   let(:tool_answer) { instance_double(Gitlab::Llm::Chain::Answer, is_final?: false, content: 'Bar') }
   let(:tool_double) { instance_double(Gitlab::Llm::Chain::Tools::IssueIdentifier::Executor) }
@@ -65,6 +66,50 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Executor, feature_category:
         answer = agent.execute
 
         expect(answer.is_final?).to eq(true)
+      end
+    end
+  end
+
+  describe '#prompt' do
+    before do
+      allow(agent).to receive(:provider_prompt_class)
+        .and_return(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'user', content: 'question 1')
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid1', role: 'assistant', content: 'response 1')
+      # this should be ignored because response contains an error
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid2', role: 'user', content: 'question 2')
+      Gitlab::Llm::Cache.new(user)
+        .add(request_id: 'uuid2', role: 'assistant', content: 'response 2', errors: ['error'])
+      # this should be ignored because it doesn't contain response
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid3', role: 'user', content: 'question 3')
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'user', content: 'question 4')
+      Gitlab::Llm::Cache.new(user).add(request_id: 'uuid4', role: 'assistant', content: 'response 4')
+    end
+
+    it 'includes cleaned chat in prompt options' do
+      expected_chat = [
+        an_object_having_attributes(content: 'question 1'),
+        an_object_having_attributes(content: 'response 1'),
+        an_object_having_attributes(content: 'question 4'),
+        an_object_having_attributes(content: 'response 4')
+      ]
+      expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+        .to receive(:prompt).once.with(a_hash_including(conversation: expected_chat))
+
+      agent.prompt
+    end
+
+    context 'when ai_chat_history_context is disabled' do
+      before do
+        stub_feature_flags(ai_chat_history_context: false)
+      end
+
+      it 'includes an ampty chat' do
+        expect(Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic)
+          .to receive(:prompt).once.with(a_hash_including(conversation: []))
+
+        agent.prompt
       end
     end
   end

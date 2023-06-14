@@ -28,4 +28,28 @@ RSpec.describe Gitlab::Llm::CachedMessage, feature_category: :shared do
       expect(subject.errors).to eq([data['error']])
     end
   end
+
+  describe '#conversation_reset?' do
+    it 'returns true for reset message' do
+      data['content'] = '/reset'
+
+      expect(subject.conversation_reset?).to be_truthy
+    end
+
+    it 'returns false for regular message' do
+      expect(subject.conversation_reset?).to be_falsey
+    end
+  end
+
+  describe '#size' do
+    it 'returns 0 if content is missing' do
+      data['content'] = nil
+
+      expect(subject.size).to eq(0)
+    end
+
+    it 'returns size of the content if present' do
+      expect(subject.size).to eq(data['content'].size)
+    end
+  end
 end

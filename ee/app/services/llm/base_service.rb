@@ -96,7 +96,7 @@ module Llm
     end
 
     def no_worker_message?(content)
-      content == ::Gitlab::Llm::Cache::RESET_MESSAGE
+      content == ::Gitlab::Llm::CachedMessage::RESET_MESSAGE
     end
   end
 end

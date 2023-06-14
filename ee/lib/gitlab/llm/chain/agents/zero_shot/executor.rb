@@ -6,6 +6,7 @@ module Gitlab
       module Agents
         module ZeroShot
           class Executor
+            include Gitlab::Utils::StrongMemoize
             include Concerns::AiDependent
 
             attr_reader :tools, :user_input, :context
@@ -76,8 +77,26 @@ module Gitlab
                   "- #{tool_class::Executor::NAME}: #{tool_class::Executor::DESCRIPTION}"
                 end.join("\n"),
                 user_input: user_input,
-                agent_scratchpad: +""
+                agent_scratchpad: +"",
+                conversation: conversation
               }
+            end
+
+            def last_conversation
+              Cache.new(context.current_user).last_conversation
+            end
+            strong_memoize_attr :last_conversation
+
+            def conversation
+              return [] unless Feature.enabled?(:ai_chat_history_context, context.current_user)
+
+              # include only messages with successful response
+              by_request = last_conversation
+                .reject { |message| message.error.present? }
+                .group_by(&:request_id)
+                .select { |_uuid, messages| messages.size > 1 }
+              # TODO: we could consider also reorder messages so each request is followed by its response
+              by_request.values.flatten.sort_by(&:timestamp)
             end
 
             PROMPT_TEMPLATE = [
