@@ -468,6 +468,7 @@ export const pipelineSecurityReportFinding = {
     name: 'project name',
     webUrl: 'project fullName',
     nameWithNamespace: 'Secure Ex / Security Reports',
+    fullPath: 'project fullPath',
   },
   scanner: {
     id: '1',

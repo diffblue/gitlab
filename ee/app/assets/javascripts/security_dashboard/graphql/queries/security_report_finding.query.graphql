@@ -35,6 +35,7 @@ query getSecurityReportFinding($projectFullPath: ID!, $pipelineIid: ID!, $findin
           name
           webUrl
           nameWithNamespace
+          fullPath
         }
         evidence {
           summary
