@@ -59,3 +59,5 @@ module Gitlab
     end
   end
 end
+
+::Gitlab::Llm::CompletionsFactory.prepend_mod
