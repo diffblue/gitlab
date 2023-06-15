@@ -27997,7 +27997,10 @@ msgstr ""
 msgid "Maximum number of %{name} (%{count}) exceeded"
 msgstr ""
 
-msgid "Maximum number of changes (branches or tags) in a single push for which webhooks and services trigger (default is 3)."
+msgid "Maximum number of changes (branches or tags) in a single push above which a bulk push event is created (default is `3`). Setting to `0` does not disable throttling."
+msgstr ""
+
+msgid "Maximum number of changes (branches or tags) in a single push above which webhooks and integrations are not triggered (default is `3`). Setting to `0` does not disable throttling."
 msgstr ""
 
 msgid "Maximum number of comments exceeded"
@@ -28018,7 +28021,7 @@ msgstr ""
 msgid "Maximum number of requests per minute for an unauthenticated IP address"
 msgstr ""
 
-msgid "Maximum number of requests per minute for each raw path (default is 300). Set to 0 to disable throttling."
+msgid "Maximum number of requests per minute for each raw path (default is `300`). Set to `0` to disable throttling."
 msgstr ""
 
 msgid "Maximum number of unique IP addresses per user."
@@ -47259,9 +47262,6 @@ msgid "Threshold in bytes at which to compress Sidekiq job arguments."
 msgstr ""
 
 msgid "Threshold in bytes at which to reject Sidekiq jobs. Set this to 0 to if you don't want to limit Sidekiq jobs."
-msgstr ""
-
-msgid "Threshold number of changes (branches or tags) in a single push above which a bulk push event is created (default is 3)."
 msgstr ""
 
 msgid "Throughput"
