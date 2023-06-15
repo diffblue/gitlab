@@ -25,8 +25,6 @@ export default {
     MrWidgetJiraAssociationMissing,
     BlockingMergeRequestsReport: () =>
       import('./components/blocking_merge_requests/blocking_merge_requests_report.vue'),
-    GroupedSecurityReportsApp: () =>
-      import('ee/vue_shared/security_reports/grouped_security_reports_app.vue'),
     GroupedMetricsReportsApp: () =>
       import('ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue'),
   },
@@ -87,17 +85,6 @@ export default {
       const loadPerformance = this.mr?.loadPerformance || {};
 
       return Boolean(loadPerformance.head_path && loadPerformance.base_path);
-    },
-    shouldRenderBaseSecurityReport() {
-      return !this.mr.canReadVulnerabilities && this.shouldRenderSecurityReport;
-    },
-    shouldRenderExtendedSecurityReport() {
-      const { enabledReports } = this.mr;
-      return (
-        this.mr.canReadVulnerabilities &&
-        enabledReports &&
-        this.$options.securityReportTypes.some((reportType) => enabledReports[reportType])
-      );
     },
     shouldRenderStatusReport() {
       return this.mr?.apiStatusChecksPath && !this.mr?.isNothingToMergeState;
@@ -272,17 +259,6 @@ export default {
       };
     },
   },
-  // TODO: Use the snake_case report types rather than the camelCased versions
-  // of them. See https://gitlab.com/gitlab-org/gitlab/-/issues/282430
-  securityReportTypes: [
-    'dast',
-    'sast',
-    'dependencyScanning',
-    'containerScanning',
-    'coverageFuzzing',
-    'apiFuzzing',
-    'secretDetection',
-  ],
 };
 </script>
 <template>
@@ -309,59 +285,7 @@ export default {
     <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
     <report-widget-container>
       <extensions-container v-if="hasExtensions" :mr="mr" />
-      <widget-container v-if="mr && shouldShowSecurityExtension" :mr="mr" />
-      <security-reports-app
-        v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
-        :pipeline-id="mr.pipeline.id"
-        :project-id="mr.sourceProjectId"
-        :security-reports-docs-path="mr.securityReportsDocsPath"
-        :sast-comparison-path="mr.sastComparisonPath"
-        :secret-detection-comparison-path="mr.secretDetectionComparisonPath"
-        :target-project-full-path="mr.targetProjectFullPath"
-        :mr-iid="mr.iid"
-        :discover-project-security-path="mr.discoverProjectSecurityPath"
-      />
-      <grouped-security-reports-app
-        v-else-if="shouldRenderExtendedSecurityReport && !shouldShowSecurityExtension"
-        :head-blob-path="mr.headBlobPath"
-        :source-branch="mr.sourceBranch"
-        :target-branch="mr.targetBranch"
-        :base-blob-path="mr.baseBlobPath"
-        :enabled-reports="mr.enabledReports"
-        :sast-help-path="mr.sastHelp"
-        :dast-help-path="mr.dastHelp"
-        :api-fuzzing-help-path="mr.apiFuzzingHelp"
-        :coverage-fuzzing-help-path="mr.coverageFuzzingHelp"
-        :container-scanning-help-path="mr.containerScanningHelp"
-        :dependency-scanning-help-path="mr.dependencyScanningHelp"
-        :secret-detection-help-path="mr.secretDetectionHelp"
-        :can-read-vulnerability-feedback="mr.canReadVulnerabilityFeedback"
-        :vulnerability-feedback-path="mr.vulnerabilityFeedbackPath"
-        :create-vulnerability-feedback-issue-path="mr.createVulnerabilityFeedbackIssuePath"
-        :create-vulnerability-feedback-merge-request-path="
-          mr.createVulnerabilityFeedbackMergeRequestPath
-        "
-        :create-vulnerability-feedback-dismissal-path="mr.createVulnerabilityFeedbackDismissalPath"
-        :pipeline-path="mr.pipeline.path"
-        :pipeline-id="mr.securityReportsPipelineId"
-        :pipeline-iid="mr.securityReportsPipelineIid"
-        :project-id="mr.targetProjectId"
-        :project-full-path="mr.sourceProjectFullPath"
-        :diverged-commits-count="mr.divergedCommitsCount"
-        :mr-state="mr.state"
-        :target-branch-tree-path="mr.targetBranchTreePath"
-        :new-pipeline-path="mr.newPipelinePath"
-        :container-scanning-comparison-path="mr.containerScanningComparisonPath"
-        :api-fuzzing-comparison-path="mr.apiFuzzingComparisonPath"
-        :coverage-fuzzing-comparison-path="mr.coverageFuzzingComparisonPath"
-        :dast-comparison-path="mr.dastComparisonPath"
-        :dependency-scanning-comparison-path="mr.dependencyScanningComparisonPath"
-        :sast-comparison-path="mr.sastComparisonPath"
-        :secret-detection-comparison-path="mr.secretDetectionComparisonPath"
-        :target-project-full-path="mr.targetProjectFullPath"
-        :mr-iid="mr.iid"
-        class="js-security-widget"
-      />
+      <widget-container v-if="mr" :mr="mr" />
     </report-widget-container>
     <div class="mr-section-container mr-widget-workflow">
       <div v-if="hasAlerts" class="gl-overflow-hidden mr-widget-alert-container">

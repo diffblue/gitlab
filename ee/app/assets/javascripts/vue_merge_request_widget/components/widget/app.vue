@@ -29,10 +29,6 @@ export default {
     securityReportsWidget() {
       const { enabledReports } = this.mr;
 
-      if (!window.gon?.features?.refactorSecurityExtension) {
-        return false;
-      }
-
       return enabledReports &&
         this.mr.canReadVulnerabilities &&
         this.$options.securityReportTypes.some((reportType) => enabledReports[reportType])

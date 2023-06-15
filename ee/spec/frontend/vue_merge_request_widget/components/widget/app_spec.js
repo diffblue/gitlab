@@ -22,16 +22,7 @@ describe('MR Widget App', () => {
     });
   };
 
-  it('does not mount if widgets array is empty', () => {
-    createComponent();
-    expect(wrapper.findByTestId('mr-widget-app').exists()).toBe(false);
-  });
-
   describe('MRSecurityWidget', () => {
-    beforeEach(() => {
-      window.gon = { features: { refactorSecurityExtension: true } };
-    });
-
     it('mounts MrSecurityWidgetEE when user has necessary permissions and reports are enabled', async () => {
       createComponent({
         mr: {
@@ -66,14 +57,6 @@ describe('MR Widget App', () => {
       });
       await waitForPromises();
       expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(true);
-    });
-
-    it('does not mount security reports when feature flag is not enabled', async () => {
-      window.gon = { features: { refactorSecurityExtension: false } };
-      createComponent();
-      await waitForPromises();
-      expect(wrapper.findComponent(MrSecurityWidgetEE).exists()).toBe(false);
-      expect(wrapper.findComponent(MrSecurityWidgetCE).exists()).toBe(false);
     });
   });
 });
