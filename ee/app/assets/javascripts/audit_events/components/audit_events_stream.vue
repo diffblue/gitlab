@@ -142,7 +142,7 @@ export default {
     >
       {{ successMessage }}
     </gl-alert>
-    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-4">
+    <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center gl-mb-6">
       <label class="gl-m-0">
         {{ $options.i18n.streamsLabel(destinationsCount) }}
       </label>
@@ -158,7 +158,7 @@ export default {
         @cancel="setEditorVisibility(false)"
       />
     </div>
-    <ul class="content-list gl-border gl-rounded-base gl-bg-white">
+    <ul class="content-list">
       <stream-item
         v-for="item in externalAuditEventDestinations"
         :key="item.id"

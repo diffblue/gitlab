@@ -66,6 +66,7 @@ describe('StreamItem', () => {
     });
   };
 
+  const findToggleButton = () => wrapper.findByTestId('toggle-btn');
   const findEditButton = () => wrapper.findByTestId('edit-btn');
   const findDeleteButton = () => wrapper.findByTestId('delete-btn');
   const findViewButton = () => wrapper.findByTestId('view-btn');
@@ -83,7 +84,7 @@ describe('StreamItem', () => {
         createComponent();
       });
 
-      it('should not show the editor', () => {
+      it('should not render the editor', () => {
         expect(findEditor().exists()).toBe(false);
       });
     });
@@ -149,7 +150,7 @@ describe('StreamItem', () => {
     describe('editing', () => {
       beforeEach(async () => {
         createComponent();
-        await findEditButton().trigger('click');
+        await findToggleButton().vm.$emit('click');
       });
 
       it('should pass the item to the editor', () => {
@@ -162,6 +163,7 @@ describe('StreamItem', () => {
         await waitForPromises();
 
         expect(wrapper.emitted('updated')).toBeDefined();
+
         expect(findEditor().exists()).toBe(false);
       });
 
@@ -178,6 +180,14 @@ describe('StreamItem', () => {
 
         expect(findEditor().exists()).toBe(false);
       });
+    });
+
+    it('renders editor when clicking Edit button', async () => {
+      createComponent();
+
+      await findEditButton().trigger('click');
+
+      expect(findEditor().exists()).toBe(true);
     });
 
     it('should show modal when viewing token', async () => {
@@ -229,7 +239,7 @@ describe('StreamItem', () => {
         createComponent({}, defaultInstanceDeleteSpy);
       });
 
-      it('should not show the editor', () => {
+      it('should not render the editor', () => {
         expect(findEditor().exists()).toBe(false);
       });
     });
@@ -295,7 +305,7 @@ describe('StreamItem', () => {
     describe('editing', () => {
       beforeEach(async () => {
         createComponent({}, defaultInstanceDeleteSpy);
-        await findEditButton().trigger('click');
+        await findToggleButton().vm.$emit('click');
       });
 
       it('should pass the item to the editor', () => {
@@ -324,6 +334,14 @@ describe('StreamItem', () => {
 
         expect(findEditor().exists()).toBe(false);
       });
+    });
+
+    it('renders editor when clicking Edit button', async () => {
+      createComponent();
+
+      await findEditButton().trigger('click');
+
+      expect(findEditor().exists()).toBe(true);
     });
 
     it('should show modal when viewing token', async () => {

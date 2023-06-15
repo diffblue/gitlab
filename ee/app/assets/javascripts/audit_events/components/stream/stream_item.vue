@@ -7,9 +7,12 @@ import {
   GlModal,
   GlPopover,
   GlSprintf,
+  GlCollapse,
+  GlIcon,
+  GlButton,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import { __, sprintf } from '~/locale';
+import { __ } from '~/locale';
 import { createAlert } from '~/alert';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import deleteExternalDestination from '../../graphql/mutations/delete_external_destination.mutation.graphql';
@@ -27,6 +30,9 @@ export default {
     GlModal,
     GlPopover,
     GlSprintf,
+    GlCollapse,
+    GlButton,
+    GlIcon,
     StreamDestinationEditor,
   },
   directives: {
@@ -59,7 +65,7 @@ export default {
           text: __('Edit'),
           extraAttrs: { 'data-testid': 'edit-btn' },
           action: () => {
-            this.setEditMode(true);
+            this.toggleEditMode();
           },
         },
         {
@@ -76,21 +82,12 @@ export default {
         },
       ];
     },
-    itemClasses() {
-      return this.isEditing ? 'gl-py-5' : 'gl-py-3';
-    },
     verificationTokenClasses() {
       if (this.isEditing) {
         return '';
       }
 
       return 'gl-mr-3';
-    },
-    editButtonLabel() {
-      return sprintf(STREAM_ITEMS_I18N.EDIT_BUTTON_LABEL, { link: this.item.destinationUrl });
-    },
-    deleteButtonLabel() {
-      return sprintf(STREAM_ITEMS_I18N.DELETE_BUTTON_LABEL, { link: this.item.destinationUrl });
     },
     isItemFiltered() {
       return Boolean(this.item?.eventTypeFilters?.length);
@@ -103,11 +100,11 @@ export default {
     },
   },
   methods: {
-    setEditMode(state) {
-      this.isEditing = state;
+    toggleEditMode() {
+      this.isEditing = !this.isEditing;
     },
     onUpdated(event) {
-      this.setEditMode(false);
+      this.toggleEditMode();
       this.$emit('updated', event);
     },
     onEditorError() {
@@ -162,11 +159,21 @@ export default {
 
 <template>
   <li class="list-item py-0">
-    <div
-      class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-px-4 gl-rounded-base"
-      :class="itemClasses"
-    >
-      <span class="gl-display-block" tabindex="0">{{ item.destinationUrl }}</span>
+    <div class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-py-5">
+      <gl-button
+        variant="link"
+        class="gl-text-body! gl-font-weight-bold gl-min-w-0"
+        :aria-expanded="isEditing"
+        data-testid="toggle-btn"
+        @click="toggleEditMode"
+      >
+        <gl-icon
+          name="chevron-right"
+          class="gl-transition-medium"
+          :class="{ 'gl-rotate-90': isEditing }"
+        /><span class="gl-font-lg gl-ml-2">{{ item.destinationUrl }}</span>
+      </gl-button>
+
       <template v-if="isItemFiltered">
         <gl-popover :target="item.id" data-testid="filter-popover">
           <gl-sprintf :message="$options.i18n.FILTER_TOOLTIP_LABEL">
@@ -180,9 +187,10 @@ export default {
         <gl-badge
           :id="item.id"
           icon="filter"
-          variant="info"
+          variant="neutral"
           data-testid="filter-badge"
-          class="gl-ml-auto"
+          size="sm"
+          class="gl-ml-3 gl-mr-auto"
         >
           {{ $options.i18n.FILTER_BADGE_LABEL }}
         </gl-badge>
@@ -213,14 +221,16 @@ export default {
         </gl-form-input-group>
       </gl-modal>
     </div>
-    <div v-if="isEditing" class="gl-p-4">
+    <gl-collapse :visible="isEditing">
       <stream-destination-editor
+        v-if="isEditing"
         :item="item"
         :group-event-filters="groupEventFilters"
+        class="gl-pr-4 gl-pl-6 gl-pb-5"
         @updated="onUpdated"
         @error="onEditorError"
-        @cancel="setEditMode(false)"
+        @cancel="toggleEditMode"
       />
-    </div>
+    </gl-collapse>
   </li>
 </template>
