@@ -16,5 +16,12 @@ module GitlabSubscriptions
     enum name: {
       code_suggestions: 1
     }
+
+    # Note: If a new enum is added, make sure to update this method to reflect that as well.
+    def self.descriptions
+      {
+        code_suggestions: 'Add-on for code suggestions.'
+      }
+    end
   end
 end
