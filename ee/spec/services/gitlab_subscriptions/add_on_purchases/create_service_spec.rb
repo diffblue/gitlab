@@ -5,9 +5,10 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_failures, feature_category: :purchase do
   describe '#execute' do
     let_it_be(:admin) { build(:user, :admin) }
-    let_it_be(:namespace) { create(:namespace) }
+    let_it_be(:root_namespace) { create(:group) }
     let_it_be(:add_on) { create(:gitlab_subscription_add_on) }
 
+    let(:namespace) { root_namespace }
     let(:params) do
       {
         quantity: 10,
@@ -29,6 +30,15 @@ RSpec.describe GitlabSubscriptions::AddOnPurchases::CreateService, :aggregate_fa
 
     context 'with an admin user' do
       let(:user) { admin }
+
+      context 'when namespace is not a root namespace' do
+        let(:namespace) { create(:group, parent: root_namespace) }
+
+        it 'returns an error' do
+          expect(result[:status]).to eq(:error)
+          expect(result[:message]).to eq("Namespace #{namespace.id} is not a root namespace")
+        end
+      end
 
       context 'when a record exists' do
         let!(:existing_add_on_purchase) do

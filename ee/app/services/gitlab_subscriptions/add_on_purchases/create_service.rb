@@ -6,10 +6,16 @@ module GitlabSubscriptions
       def execute
         super
 
+        return root_namespace_error unless namespace.root?
+
         add_on_purchase.save ? successful_response : error_response
       end
 
       private
+
+      def root_namespace_error
+        ServiceResponse.error(message: "Namespace #{namespace.id} is not a root namespace")
+      end
 
       def add_on_purchase
         @add_on_purchase ||= GitlabSubscriptions::AddOnPurchase.new(
