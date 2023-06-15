@@ -401,4 +401,77 @@ RSpec.describe API::Users, :aggregate_failures, feature_category: :user_profile 
       end
     end
   end
+
+  describe 'POST /users/:user_id/personal_access_tokens' do
+    context 'when the user is a service account' do
+      let(:service_account) { create(:user, :service_account) }
+      let(:path) { "/users/#{service_account.id}/personal_access_tokens" }
+      let(:admin_mode) { false }
+      let(:valid_params) do
+        { user_id: service_account.id, name: 'test_token', scopes: %w[read_repository], expires_at: 2.weeks.from_now }
+      end
+
+      subject(:call_api) { post api(path, user, admin_mode: admin_mode), params: params }
+
+      context 'when the feature is licensed' do
+        before do
+          stub_licensed_features(service_accounts: true)
+
+          call_api
+        end
+
+        context 'when the user is an admin' do
+          let(:user) { create(:admin) }
+
+          context 'with required params' do
+            let(:params) { valid_params }
+
+            it 'does not allow PAT creation' do
+              expect(response).to have_gitlab_http_status(:forbidden)
+            end
+
+            context 'when admin mode enabled' do
+              let(:admin_mode) { true }
+
+              it 'allows PAT creation' do
+                expect(response).to have_gitlab_http_status(:created)
+                expect(json_response['user_id']).to eq(service_account.id)
+                expect(json_response['name']).to eq('test_token')
+                expect(json_response['scopes']).to match_array(%w[read_repository])
+              end
+            end
+          end
+
+          context 'when missing params' do
+            let(:params) { {} }
+
+            it 'does not allow PAT creation' do
+              expect(response).to have_gitlab_http_status(:forbidden)
+            end
+          end
+        end
+
+        context 'when the user is not an admin' do
+          let(:user) { create(:user) }
+          let(:params) { valid_params }
+
+          it 'does not allow PAT creation' do
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'when the feature is not licensed', :enable_admin_mode do
+        let(:user) { create(:admin) }
+        let(:params) { valid_params }
+
+        it 'does not allow PAT creation' do
+          call_api
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+          expect(json_response['message']).to eq('Not permitted to create')
+        end
+      end
+    end
+  end
 end
