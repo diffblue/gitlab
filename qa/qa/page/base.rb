@@ -506,8 +506,8 @@ module QA
         return element_when_flag_disabled if has_element?(element_when_flag_disabled, visible: visibility)
 
         raise ElementNotFound,
-              "Could not find the expected element as #{element_when_flag_enabled} or #{element_when_flag_disabled}." \
-              "The relevant feature flag is #{feature_flag}"
+          "Could not find the expected element as #{element_when_flag_enabled} or #{element_when_flag_disabled}." \
+          "The relevant feature flag is #{feature_flag}"
       end
     end
   end
