@@ -14,10 +14,17 @@ export default {
     },
   },
   computed: {
+    hasVersion() {
+      return this.versions.length > 0;
+    },
     lastReleaseText() {
-      return sprintf(this.$options.i18n.lastRelease, {
-        date: this.releasedAt,
-      });
+      if (this.hasVersion) {
+        return sprintf(this.$options.i18n.lastRelease, {
+          date: this.releasedAt,
+        });
+      }
+
+      return this.$options.i18n.lastReleaseMissing;
     },
     openedIssuesText() {
       return n__('%d opened Issue', '%d opened Issues', this.statistics.issues);
@@ -30,13 +37,14 @@ export default {
       );
     },
     releasedAt() {
-      return formatDate(this.versions[0].releasedAt, 'yyyy-mm-dd');
+      return this.hasVersion && formatDate(this.versions[0].releasedAt, 'yyyy-mm-dd');
     },
   },
   i18n: {
     title: s__('CiCatalog|About this project'),
     projectLink: s__('CiCatalog|Go to the project'),
     lastRelease: s__('CiCatalog|Last release at %{date}'),
+    lastReleaseMissing: s__('CiCatalog|No release available'),
   },
 };
 </script>
