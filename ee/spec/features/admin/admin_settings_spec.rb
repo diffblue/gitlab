@@ -301,7 +301,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'with free user cap settings', :saas, feature_category: :experimentation_expansion do
+  context 'with free user cap settings', :saas, feature_category: :measurement_and_locking do
     before do
       visit general_admin_application_settings_path
     end

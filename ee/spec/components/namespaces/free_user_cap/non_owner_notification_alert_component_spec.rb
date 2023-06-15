@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent, :saas, :aggregate_failures, type: :component, feature_category: :experimentation_conversion do
+RSpec.describe Namespaces::FreeUserCap::NonOwnerNotificationAlertComponent, :saas, :aggregate_failures, type: :component, feature_category: :measurement_and_locking do
   let_it_be(:namespace) { create(:group, :private) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let_it_be(:user, refind: true) { create(:user) } # rubocop:disable RSpec/FactoryBot/AvoidCreate
   let(:content_class) { '_content_class_' }

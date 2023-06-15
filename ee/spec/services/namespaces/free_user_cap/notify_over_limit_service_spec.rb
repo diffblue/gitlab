@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # Interim feature category experimentation_activation used here while waiting for
 # https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_requests/113300 to merge
-RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, :saas, feature_category: :experimentation_activation do
+RSpec.describe Namespaces::FreeUserCap::NotifyOverLimitService, :saas, feature_category: :measurement_and_locking do
   let(:frozen_time) { Time.zone.parse '2022-09-22T00:00+0' }
   let_it_be(:lower_limit) { 2 }
   let_it_be(:namespace) do

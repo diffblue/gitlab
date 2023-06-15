@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :experimentation_conversion do
+RSpec.describe Namespaces::FreeUserCap::RootSize, :saas, feature_category: :measurement_and_locking do
   let_it_be(:namespace, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   let(:model) { described_class.new(namespace) }

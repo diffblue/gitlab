@@ -4,7 +4,7 @@ require 'spec_helper'
 
 # Interim feature category experimentation_conversion used here while waiting for
 # https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_requests/113300 to merge
-RSpec.describe Namespaces::FreeUserCap::EnforceableGroupsFinder, feature_category: :experimentation_activation do
+RSpec.describe Namespaces::FreeUserCap::EnforceableGroupsFinder, feature_category: :measurement_and_locking do
   subject(:finder) { described_class.new.execute }
 
   before do
