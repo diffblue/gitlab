@@ -8,6 +8,7 @@ module Sidebars
 
         override :configure_menu_items
         def configure_menu_items
+          add_item(dashboards_menu_item)
           add_item(dashboards_analytics_menu_item)
           add_item(cycle_analytics_menu_item)
           add_item(ci_cd_analytics_menu_item)
@@ -185,6 +186,26 @@ module Sidebars
               item_id: :cycle_analytics
             )
           end
+        end
+
+        def show_dashboards_menu_item?
+          can?(context.current_user, :read_group_analytics_dashboards, context.group)
+        end
+
+        def dashboards_menu_item
+          menu_item_id = :analytics_dashboards
+
+          unless show_dashboards_menu_item?
+            return ::Sidebars::NilMenuItem.new(item_id: menu_item_id)
+          end
+
+          ::Sidebars::MenuItem.new(
+            title: _('Analytics dashboards'),
+            link: value_streams_dashboard_group_analytics_dashboards_path(context.group),
+            super_sidebar_parent: ::Sidebars::Groups::SuperSidebarMenus::AnalyzeMenu,
+            active_routes: { path: 'groups/analytics/dashboards#value_streams_dashboard' },
+            item_id: menu_item_id
+          )
         end
 
         def show_analytics_dashboards?

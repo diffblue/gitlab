@@ -5226,6 +5226,9 @@ msgstr ""
 msgid "Analytics"
 msgstr ""
 
+msgid "Analytics dashboards"
+msgstr ""
+
 msgid "Analytics|A visualization with that name already exists."
 msgstr ""
 
@@ -13996,6 +13999,9 @@ msgid "DORA4Metrics|Accept testing terms of use?"
 msgstr ""
 
 msgid "DORA4Metrics|All labels"
+msgstr ""
+
+msgid "DORA4Metrics|Analytics Dashboards"
 msgstr ""
 
 msgid "DORA4Metrics|Average (last %{days}d)"
