@@ -12,12 +12,6 @@ RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_ac
   describe '#execute' do
     subject(:create_token) { service.execute }
 
-    let(:current_user) { create(:user) }
-    let(:group) { create(:group) }
-    let(:params) do
-      { name: 'Test token', impersonation: false, scopes: [:api], expires_at: Date.today + 1.month, group: group }
-    end
-
     let(:token) { create_token.payload[:personal_access_token] }
 
     context 'when target user is a service account' do
@@ -27,48 +21,82 @@ RSpec.describe PersonalAccessTokens::CreateService, feature_category: :system_ac
           params: params, concatenate_errors: false)
       end
 
-      context 'when current user is a group owner' do
-        before do
-          group.add_owner(current_user)
+      let(:valid_params) do
+        { name: 'Test token', impersonation: false, scopes: [:api], expires_at: Date.today + 1.month }
+      end
+
+      context 'for instance level' do
+        let(:params) { valid_params }
+
+        context 'when the current user is an admin' do
+          let(:current_user) { create(:admin) }
+
+          it_behaves_like 'an unsuccessfully created token'
+
+          context 'when admin mode enabled', :enable_admin_mode do
+            it_behaves_like 'an unsuccessfully created token'
+
+            context 'when the feature is licensed' do
+              before do
+                stub_licensed_features(service_accounts: true)
+              end
+
+              it 'creates a token successfully' do
+                expect(create_token.success?).to be true
+              end
+            end
+          end
         end
+      end
 
-        context 'when the feature is licensed' do
+      context 'for a group' do
+        let(:params) { valid_params.merge(group: group) }
+        let(:group) { create(:group) }
+        let(:current_user) { create(:user) }
+
+        context 'when current user is a group owner' do
           before do
-            stub_licensed_features(service_accounts: true)
+            group.add_owner(current_user)
           end
 
-          context 'when provisioned by group' do
+          context 'when the feature is licensed' do
             before do
-              target_user.provisioned_by_group_id = group.id
-              target_user.save!
+              stub_licensed_features(service_accounts: true)
             end
 
-            it 'creates a token succesfully' do
-              expect(create_token.success?).to be true
+            context 'when provisioned by group' do
+              before do
+                target_user.provisioned_by_group_id = group.id
+                target_user.save!
+              end
+
+              it 'creates a token successfully' do
+                expect(create_token.success?).to be true
+              end
+            end
+
+            context 'when not provisioned by group' do
+              it_behaves_like 'an unsuccessfully created token'
             end
           end
 
-          context 'when not provisioned by group' do
+          context 'when feature is not licensed' do
+            before do
+              stub_licensed_features(service_accounts: false)
+            end
+
             it_behaves_like 'an unsuccessfully created token'
           end
         end
 
-        context 'when feature is not licensed' do
+        context 'when current user is not a group owner' do
           before do
-            stub_licensed_features(service_accounts: false)
+            group.add_guest(current_user)
+            stub_licensed_features(service_accounts: true)
           end
 
           it_behaves_like 'an unsuccessfully created token'
         end
-      end
-
-      context 'when current user is not a group owner' do
-        before do
-          group.add_guest(current_user)
-          stub_licensed_features(service_accounts: true)
-        end
-
-        it_behaves_like 'an unsuccessfully created token'
       end
     end
   end

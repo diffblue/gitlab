@@ -33,11 +33,13 @@ module EE
 
       override :creation_permitted?
       def creation_permitted?
-        return true if super
+        return super unless target_user.service_account?
 
-        return false unless target_user.service_account?
+        can_admin_service_accounts?
+      end
 
-        return false unless params[:group]
+      def can_admin_service_accounts?
+        return Ability.allowed?(current_user, :admin_service_accounts) unless params[:group]
 
         Ability.allowed?(current_user, :admin_service_accounts, params[:group]) &&
           target_user.provisioned_by_group_id == params[:group].id
