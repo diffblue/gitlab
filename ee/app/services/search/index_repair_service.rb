@@ -4,6 +4,8 @@ module Search
   class IndexRepairService < BaseProjectService
     include ::Gitlab::Loggable
 
+    DELAY_INTERVAL = 5.minutes
+
     def self.execute(project)
       new(project: project).execute
     end
@@ -12,7 +14,7 @@ module Search
       return unless Feature.enabled?(:search_index_integrity)
       return unless project.should_check_index_integrity?
 
-      check_index_for_blobs
+      repair_index_for_blobs if should_repair_index_for_blobs?
 
       repair_index_for_project if project_missing?
     end
@@ -48,7 +50,11 @@ module Search
       ::Elastic::ProcessBookkeepingService.track!(project)
     end
 
-    def check_index_for_blobs
+    def repair_index_for_blobs
+      ElasticCommitIndexerWorker.perform_in(rand(DELAY_INTERVAL), project.id, false, { force: true })
+    end
+
+    def blobs_missing?
       query = {
         query: {
           bool: {
@@ -59,22 +65,30 @@ module Search
           }
         }
       }
-
       blob_count = client.count(index: index_name, routing: project.es_id, body: query)['count']
-      return if blob_count > 0
+      (blob_count == 0).tap do |result|
+        if result
+          logger.warn(
+            build_structured_payload(
+              message: 'blob documents missing from index for project',
+              namespace_id: project.namespace_id,
+              root_namespace_id: project.root_namespace.id,
+              project_id: project.id,
+              project_last_repository_updated_at: project.last_repository_updated_at,
+              index_status_last_commit: project.index_status&.last_commit,
+              index_status_indexed_at: project.index_status&.indexed_at,
+              repository_size: project.statistics&.repository_size
+            )
+          )
+        end
+      end
+    end
 
-      logger.warn(
-        build_structured_payload(
-          message: 'blob documents missing from index for project',
-          namespace_id: project.namespace_id,
-          root_namespace_id: project.root_namespace.id,
-          project_id: project.id,
-          project_last_repository_updated_at: project.last_repository_updated_at,
-          index_status_last_commit: project.index_status&.last_commit,
-          index_status_indexed_at: project.index_status&.indexed_at,
-          repository_size: project.statistics&.repository_size
-        )
-      )
+    def should_repair_index_for_blobs?
+      return false unless blobs_missing?
+      return true if project.index_status.blank?
+
+      project.index_status.last_commit != project.commit.sha
     end
 
     def client

@@ -13,6 +13,9 @@ class ElasticCommitIndexerWorker
   idempotent!
   loggable_arguments 1, 2
 
+  LOCK_RETRIES = 2
+  LOCK_SLEEP_SEC = 1
+
   # Performs the commits and blobs indexation
   #
   # project_id - The ID of the project to index
@@ -31,7 +34,7 @@ class ElasticCommitIndexerWorker
 
     force = !!options['force']
     search_indexing_duration_s = Benchmark.realtime do
-      @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0) do
+      @ret = in_lock("#{self.class.name}/#{project_id}/#{wiki}", ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: LOCK_RETRIES, sleep_sec: LOCK_SLEEP_SEC) do
         Gitlab::Elastic::Indexer.new(@project, wiki: wiki, force: force).run
       end
     end
