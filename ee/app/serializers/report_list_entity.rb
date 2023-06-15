@@ -32,7 +32,7 @@ class ReportListEntity < Grape::Entity
   end
 
   def status(dependencies, build)
-    if build&.success?
+    if build&.success? || project.nil?
       if dependencies.any?
         :ok
       else
