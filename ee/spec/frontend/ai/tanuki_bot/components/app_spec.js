@@ -18,6 +18,7 @@ import {
   MOCK_USER_MESSAGE,
   MOCK_TANUKI_MESSAGE,
   MOCK_USER_ID,
+  MOCK_RESOURCE_ID,
   MOCK_TANUKI_SUCCESS_RES,
   MOCK_TANUKI_BOT_MUTATATION_RES,
   MOCK_CHAT_CACHED_MESSAGES_RES,
@@ -41,7 +42,11 @@ describe('GitLab Chat', () => {
   let chatMutationHandlerMock = jest.fn().mockResolvedValue(MOCK_TANUKI_BOT_MUTATATION_RES);
   const queryHandlerMock = jest.fn().mockResolvedValue(MOCK_CHAT_CACHED_MESSAGES_RES);
 
-  const createComponent = (initialState = {}, glFeatures = { gitlabDuo: true }) => {
+  const createComponent = (
+    initialState = {},
+    glFeatures = { gitlabDuo: true },
+    propsData = { userId: MOCK_USER_ID, resourceId: MOCK_RESOURCE_ID },
+  ) => {
     const store = new Vuex.Store({
       actions: actionSpies,
       state: {
@@ -59,9 +64,7 @@ describe('GitLab Chat', () => {
     wrapper = shallowMountExtended(TanukiBotChatApp, {
       store,
       apolloProvider,
-      propsData: {
-        userId: MOCK_USER_ID,
-      },
+      propsData,
       stubs: {
         AiGenieChat,
         GlSprintf,
@@ -180,53 +183,70 @@ describe('GitLab Chat', () => {
         );
       });
 
-      it.each`
-        isFlagEnabled | expectedMutation
-        ${true}       | ${chatMutationHandlerMock}
-        ${false}      | ${tanukiMutationHandlerMock}
-      `(
-        'calls correct GraphQL mutation when input is submitted and feature flag is $isFlagEnabled',
-        async ({ isFlagEnabled, expectedMutation } = {}) => {
-          createComponent({}, { gitlabDuo: isFlagEnabled });
-          findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
-          await nextTick();
-          expect(expectedMutation).toHaveBeenCalledWith({
-            resourceId: MOCK_USER_ID,
-            question: MOCK_USER_MESSAGE.msg,
-          });
-        },
-      );
+      describe.each`
+        resourceId          | expectedResourceId
+        ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
+        ${null}             | ${MOCK_USER_ID}
+      `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
+        it.each`
+          isFlagEnabled | expectedMutation
+          ${true}       | ${chatMutationHandlerMock}
+          ${false}      | ${tanukiMutationHandlerMock}
+        `(
+          'calls correct GraphQL mutation with fallback to userId when input is submitted and feature flag is $isFlagEnabled',
+          async ({ isFlagEnabled, expectedMutation } = {}) => {
+            createComponent({}, { gitlabDuo: isFlagEnabled }, { userId: MOCK_USER_ID, resourceId });
+            findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
 
-      it('once response arrives via GraphQL subscription calls receiveTanukiBotMessage', () => {
-        expect(subscriptionHandlerMock).toHaveBeenCalledWith({
-          resourceId: MOCK_USER_ID,
-          userId: MOCK_USER_ID,
-        });
-        expect(actionSpies.receiveTanukiBotMessage).toHaveBeenCalledWith(
-          expect.any(Object),
-          MOCK_TANUKI_SUCCESS_RES.data,
+            await nextTick();
+
+            expect(expectedMutation).toHaveBeenCalledWith({
+              resourceId: expectedResourceId,
+              question: MOCK_USER_MESSAGE.msg,
+            });
+          },
         );
+
+        it('once response arrives via GraphQL subscription with userId fallback calls receiveTanukiBotMessage', () => {
+          createComponent({}, {}, { userId: MOCK_USER_ID, resourceId });
+
+          expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+            resourceId: expectedResourceId,
+            userId: MOCK_USER_ID,
+          });
+          expect(actionSpies.receiveTanukiBotMessage).toHaveBeenCalledWith(
+            expect.any(Object),
+            MOCK_TANUKI_SUCCESS_RES.data,
+          );
+        });
       });
     });
   });
 
   describe('Error conditions', () => {
     describe('when subscription fails', () => {
-      beforeEach(async () => {
-        subscriptionHandlerMock = jest.fn().mockRejectedValue({ errors: [] });
-        createComponent();
+      describe.each`
+        resourceId          | expectedResourceId
+        ${MOCK_RESOURCE_ID} | ${MOCK_RESOURCE_ID}
+        ${null}             | ${MOCK_USER_ID}
+      `(`with resourceId = $resourceId`, ({ resourceId, expectedResourceId }) => {
+        beforeEach(async () => {
+          subscriptionHandlerMock = jest.fn().mockRejectedValue({ errors: [] });
+          createComponent({}, { gitlabDuo: true }, { userId: MOCK_USER_ID, resourceId });
 
-        helpCenterState.showTanukiBotChatDrawer = true;
-        await nextTick();
-        findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
-      });
+          helpCenterState.showTanukiBotChatDrawer = true;
+          await nextTick();
 
-      it('once error arrives via GraphQL subscription calls tanukiBotMessageError', () => {
-        expect(subscriptionHandlerMock).toHaveBeenCalledWith({
-          resourceId: MOCK_USER_ID,
-          userId: MOCK_USER_ID,
+          findGenieChat().vm.$emit('send-chat-prompt', MOCK_USER_MESSAGE.msg);
         });
-        expect(actionSpies.tanukiBotMessageError).toHaveBeenCalled();
+
+        it('once error arrives via GraphQL subscription calls tanukiBotMessageError', () => {
+          expect(subscriptionHandlerMock).toHaveBeenCalledWith({
+            resourceId: expectedResourceId,
+            userId: MOCK_USER_ID,
+          });
+          expect(actionSpies.tanukiBotMessageError).toHaveBeenCalled();
+        });
       });
     });
 

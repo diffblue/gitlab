@@ -44,6 +44,11 @@ export default {
       type: String,
       required: true,
     },
+    resourceId: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   apollo: {
     // https://apollo.vuejs.org/guide/apollo/subscriptions.html#simple-subscription
@@ -52,7 +57,7 @@ export default {
         query: aiResponseSubscription,
         variables() {
           return {
-            resourceId: this.userId,
+            resourceId: this.resourceId || this.userId,
             userId: this.userId,
           };
         },
@@ -99,7 +104,7 @@ export default {
           mutation,
           variables: {
             question,
-            resourceId: this.userId,
+            resourceId: this.resourceId || this.userId,
           },
         })
         .catch(() => {
