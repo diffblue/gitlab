@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::WelcomeHelper do
+RSpec.describe WelcomeHelper, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
   describe '#in_subscription_flow?' do
@@ -79,66 +79,6 @@ RSpec.describe EE::WelcomeHelper do
     end
   end
 
-  describe '#show_signup_flow_progress_bar?' do
-    include_context 'with the various user flows'
-    include_context 'with signup onboarding'
-
-    subject { helper.show_signup_flow_progress_bar? }
-
-    context 'when in the subscription flow, regardless of all other flows' do
-      let(:in_subscription_flow) { true }
-
-      where(:user_has_memberships, :in_oauth_flow, :trial_selected) do
-        true  | false | false
-        false | true  | false
-        false | false | true
-      end
-
-      with_them do
-        context 'and regardless of signup onboarding' do
-          where(signup_onboarding_enabled: [true, false])
-
-          with_them do
-            it { is_expected.to be_truthy }
-          end
-        end
-      end
-    end
-
-    context 'when not in the subscription flow' do
-      context 'and in the invitation, oauth, or trial flow' do
-        where(:user_has_memberships, :in_oauth_flow, :trial_selected) do
-          true  | false | false
-          false | true  | false
-          false | false | true
-        end
-
-        with_them do
-          context 'and regardless of signup onboarding' do
-            where(signup_onboarding_enabled: [true, false])
-
-            with_them do
-              it { is_expected.to be_falsey }
-            end
-          end
-        end
-      end
-
-      context 'and not in the invitation, oauth, or trial flow' do
-        where(:signup_onboarding_enabled, :result) do
-          true  | true
-          false | false
-        end
-
-        with_them do
-          it 'depends on whether or not signup onboarding is enabled' do
-            is_expected.to eq(result)
-          end
-        end
-      end
-    end
-  end
-
   describe '#welcome_submit_button_text' do
     include_context 'with the various user flows'
     include_context 'with signup onboarding'
@@ -187,26 +127,6 @@ RSpec.describe EE::WelcomeHelper do
             is_expected.to eq(result)
           end
         end
-      end
-    end
-  end
-
-  describe '#data_attributes_for_progress_bar_js_component' do
-    before do
-      allow(helper).to receive(:in_subscription_flow?).and_return(options_enabled)
-      allow(helper).to receive(:signup_onboarding_enabled?).and_return(options_enabled)
-    end
-
-    subject { helper.data_attributes_for_progress_bar_js_component }
-
-    where(:options_enabled, :attr_values) do
-      true  | 'true'
-      false | 'false'
-    end
-
-    with_them do
-      it 'always includes both attributes with stringified boolean values' do
-        is_expected.to eq({ is_in_subscription_flow: attr_values, is_signup_onboarding_enabled: attr_values })
       end
     end
   end
