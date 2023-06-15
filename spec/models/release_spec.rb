@@ -54,9 +54,9 @@ RSpec.describe Release do
       it 'creates a validation error' do
         milestone = build(:milestone, project: create(:project))
 
-        expect { release.milestones << milestone }
-          .to raise_error(ActiveRecord::RecordInvalid,
-                          'Validation failed: Release does not have the same project as the milestone')
+        expect { release.milestones << milestone }.to raise_error(
+          ActiveRecord::RecordInvalid, 'Validation failed: Release does not have the same project as the milestone'
+        )
       end
     end
 
