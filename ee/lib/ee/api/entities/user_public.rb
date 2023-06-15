@@ -9,6 +9,7 @@ module EE
         prepended do
           expose :shared_runners_minutes_limit
           expose :extra_shared_runners_minutes_limit
+          expose :scim_identities, using: ::API::Entities::ScimIdentity
         end
       end
     end
