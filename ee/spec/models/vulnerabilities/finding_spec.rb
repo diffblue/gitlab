@@ -947,11 +947,13 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       let(:identifier) { build(:vulnerabilities_identifier, fingerprint: identifier_fingerprint) }
       let(:expected_uuid) { 'this-is-supposed-to-a-uuid' }
       let(:finding) do
-        build(:vulnerabilities_finding, report_type,
-              uuid: uuid,
-              project: project,
-              primary_identifier: identifier,
-              location_fingerprint: location_fingerprint)
+        build(
+          :vulnerabilities_finding, report_type,
+          uuid: uuid,
+          project: project,
+          primary_identifier: identifier,
+          location_fingerprint: location_fingerprint
+        )
       end
 
       subject(:uuid_v5) { finding.uuid_v5 }
@@ -988,17 +990,21 @@ RSpec.describe Vulnerabilities::Finding, feature_category: :vulnerability_manage
       let(:location_fingerprint1) { 'fingerprint1' }
       let(:location_fingerprint2) { 'fingerprint2' }
       let(:finding1) do
-        build(:vulnerabilities_finding, report_type,
-              project: project,
-              primary_identifier: identifier,
-              location_fingerprint: location_fingerprint1)
+        build(
+          :vulnerabilities_finding, report_type,
+          project: project,
+          primary_identifier: identifier,
+          location_fingerprint: location_fingerprint1
+        )
       end
 
       let(:finding2) do
-        build(:vulnerabilities_finding, report_type,
-              project: project,
-              primary_identifier: identifier,
-              location_fingerprint: location_fingerprint2)
+        build(
+          :vulnerabilities_finding, report_type,
+          project: project,
+          primary_identifier: identifier,
+          location_fingerprint: location_fingerprint2
+        )
       end
 
       it 'matches the finding based on enabled tracking methods (if feature flag enabled)' do

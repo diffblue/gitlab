@@ -225,18 +225,22 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:apache) { build(:software_license, :apache_2_0) }
 
     let!(:head_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_license_scanning_feature_branch,
-             project: project,
-             ref: merge_request.source_branch,
-             sha: merge_request.diff_head_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_license_scanning_feature_branch,
+        project: project,
+        ref: merge_request.source_branch,
+        sha: merge_request.diff_head_sha
+      )
     end
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -357,8 +361,10 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
                 context 'when querying compressed package metadata' do
                   before do
-                    create(:pm_package, name: "nokogiri", purl_type: "gem",
-                           other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }])
+                    create(
+                      :pm_package, name: "nokogiri", purl_type: "gem",
+                      other_licenses: [{ license_names: ["Apache-2.0"], versions: ["1.8.0"] }]
+                    )
                   end
 
                   it { is_expected.to be_truthy }
@@ -618,11 +624,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_container_scanning_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_container_scanning_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -631,11 +639,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has container scanning reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_container_scanning_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_container_scanning_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -677,11 +687,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_secret_detection_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_secret_detection_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -690,11 +702,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has secret detection reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_secret_detection_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_secret_detection_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -736,11 +750,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_sast_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_sast_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -749,11 +765,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has sast reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_sast_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_sast_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -795,11 +813,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_license_scanning_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_license_scanning_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -809,11 +829,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has license scanning reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_license_scanning_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_license_scanning_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -861,10 +883,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline does not have license scanning reports' do
       let!(:head_pipeline) do
-        create(:ci_pipeline,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ci_pipeline,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       it 'returns status and error message' do
@@ -914,18 +938,22 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:current_user) { project.users.first }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_license_scanning_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_license_scanning_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     let!(:head_pipeline) do
-      create(:ci_pipeline,
-             project: project,
-             ref: merge_request.source_branch,
-             sha: merge_request.diff_head_sha)
+      create(
+        :ci_pipeline,
+        project: project,
+        ref: merge_request.source_branch,
+        sha: merge_request.diff_head_sha
+      )
     end
 
     context 'when service can be executed' do
@@ -959,11 +987,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_metrics_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_metrics_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -972,11 +1002,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has metrics reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_metrics_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_metrics_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -1012,10 +1044,12 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline does not have metrics reports' do
       let!(:head_pipeline) do
-        create(:ci_pipeline,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ci_pipeline,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       it 'returns status and error message' do
@@ -1032,11 +1066,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_coverage_fuzzing_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_coverage_fuzzing_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -1045,11 +1081,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has coverage fuzzing reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_coverage_fuzzing_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_coverage_fuzzing_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -1091,11 +1129,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
     let(:merge_request) { create(:merge_request, source_project: project) }
 
     let!(:base_pipeline) do
-      create(:ee_ci_pipeline,
-             :with_api_fuzzing_report,
-             project: project,
-             ref: merge_request.target_branch,
-             sha: merge_request.diff_base_sha)
+      create(
+        :ee_ci_pipeline,
+        :with_api_fuzzing_report,
+        project: project,
+        ref: merge_request.target_branch,
+        sha: merge_request.diff_base_sha
+      )
     end
 
     before do
@@ -1104,11 +1144,13 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
     context 'when head pipeline has api fuzzing reports' do
       let!(:head_pipeline) do
-        create(:ee_ci_pipeline,
-               :with_api_fuzzing_report,
-               project: project,
-               ref: merge_request.source_branch,
-               sha: merge_request.diff_head_sha)
+        create(
+          :ee_ci_pipeline,
+          :with_api_fuzzing_report,
+          project: project,
+          ref: merge_request.source_branch,
+          sha: merge_request.diff_head_sha
+        )
       end
 
       context 'when reactive cache worker is parsing asynchronously' do
@@ -1353,17 +1395,21 @@ RSpec.describe MergeRequest, feature_category: :code_review_workflow do
 
   describe '#security_reports_up_to_date?' do
     let(:merge_request) do
-      create(:ee_merge_request,
-             source_project: project,
-             source_branch: 'feature1',
-             target_branch: project.default_branch)
+      create(
+        :ee_merge_request,
+        source_project: project,
+        source_branch: 'feature1',
+        target_branch: project.default_branch
+      )
     end
 
     before do
-      create(:ee_ci_pipeline,
-             :with_sast_report,
-             project: project,
-             ref: merge_request.target_branch)
+      create(
+        :ee_ci_pipeline,
+        :with_sast_report,
+        project: project,
+        ref: merge_request.target_branch
+      )
     end
 
     subject { merge_request.security_reports_up_to_date? }

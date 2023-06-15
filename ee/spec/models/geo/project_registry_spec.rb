@@ -621,14 +621,16 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
 
       before do
         subject.start_sync!(type)
-        subject.update!(repository_retry_at: 1.day.from_now,
-                        repository_retry_count: 1,
-                        force_to_redownload_repository: true,
-                        last_repository_sync_failure: 'foo',
-                        repository_verification_checksum_sha: 'abc123',
-                        repository_checksum_mismatch: true,
-                        last_repository_verification_failure: 'bar',
-                        repository_verification_retry_count: 1)
+        subject.update!(
+          repository_retry_at: 1.day.from_now,
+          repository_retry_count: 1,
+          force_to_redownload_repository: true,
+          last_repository_sync_failure: 'foo',
+          repository_verification_checksum_sha: 'abc123',
+          repository_checksum_mismatch: true,
+          last_repository_verification_failure: 'bar',
+          repository_verification_retry_count: 1
+        )
       end
 
       it 'sets last_repository_successful_sync_at to now' do
@@ -716,14 +718,16 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
 
       before do
         subject.start_sync!(type)
-        subject.update!(wiki_retry_at: 1.day.from_now,
-                        wiki_retry_count: 1,
-                        force_to_redownload_wiki: true,
-                        last_wiki_sync_failure: 'foo',
-                        wiki_verification_checksum_sha: 'abc123',
-                        wiki_checksum_mismatch: true,
-                        last_wiki_verification_failure: 'bar',
-                        wiki_verification_retry_count: 1)
+        subject.update!(
+          wiki_retry_at: 1.day.from_now,
+          wiki_retry_count: 1,
+          force_to_redownload_wiki: true,
+          last_wiki_sync_failure: 'foo',
+          wiki_verification_checksum_sha: 'abc123',
+          wiki_checksum_mismatch: true,
+          last_wiki_verification_failure: 'bar',
+          wiki_verification_retry_count: 1
+        )
       end
 
       it 'sets last_wiki_successful_sync_at to now' do
@@ -815,8 +819,10 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
 
       before do
         subject.start_sync!(type)
-        subject.update!(resync_repository: false,
-                        last_repository_sync_failure: 'foo')
+        subject.update!(
+          resync_repository: false,
+          last_repository_sync_failure: 'foo'
+        )
       end
 
       it 'sets repository_retry_at to a future time' do
@@ -900,8 +906,7 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
 
       before do
         subject.start_sync!(type)
-        subject.update!(resync_wiki: false,
-                        last_wiki_sync_failure: 'foo')
+        subject.update!(resync_wiki: false, last_wiki_sync_failure: 'foo')
       end
 
       it 'sets wiki_retry_at to a future time' do
@@ -1010,14 +1015,16 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
       let(:event) { double(:event, source: 'repository') }
 
       before do
-        subject.update!(resync_repository: false,
-                        repository_verification_checksum_sha: 'abc123',
-                        repository_checksum_mismatch: true,
-                        last_repository_verification_failure: 'foo',
-                        resync_repository_was_scheduled_at: nil,
-                        repository_retry_at: 1.hour.from_now,
-                        repository_retry_count: 1,
-                        repository_verification_retry_count: 1)
+        subject.update!(
+          resync_repository: false,
+          repository_verification_checksum_sha: 'abc123',
+          repository_checksum_mismatch: true,
+          last_repository_verification_failure: 'foo',
+          resync_repository_was_scheduled_at: nil,
+          repository_retry_at: 1.hour.from_now,
+          repository_retry_count: 1,
+          repository_verification_retry_count: 1
+        )
 
         subject.repository_updated!(event.source, Time.current)
       end
@@ -1048,14 +1055,16 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
       let(:event) { double(:event, source: 'wiki') }
 
       before do
-        subject.update!(resync_wiki: false,
-                        wiki_verification_checksum_sha: 'abc123',
-                        wiki_checksum_mismatch: true,
-                        last_wiki_verification_failure: 'foo',
-                        resync_wiki_was_scheduled_at: nil,
-                        wiki_retry_at: 1.hour.from_now,
-                        wiki_retry_count: 1,
-                        wiki_verification_retry_count: 1)
+        subject.update!(
+          resync_wiki: false,
+          wiki_verification_checksum_sha: 'abc123',
+          wiki_checksum_mismatch: true,
+          last_wiki_verification_failure: 'foo',
+          resync_wiki_was_scheduled_at: nil,
+          wiki_retry_at: 1.hour.from_now,
+          wiki_retry_count: 1,
+          wiki_verification_retry_count: 1
+        )
 
         subject.repository_updated!(event.source, Time.current)
       end

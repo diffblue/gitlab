@@ -59,10 +59,14 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
 
     context 'with project-level protected environments' do
       before(:all) do
-        create(:protected_environment,
-               project: project, name: production.name, authorize_user_to_deploy: production_operator)
-        create(:protected_environment,
-               project: project, name: staging.name, authorize_user_to_deploy: staging_operator)
+        create(
+          :protected_environment,
+          project: project, name: production.name, authorize_user_to_deploy: production_operator
+        )
+        create(
+          :protected_environment,
+          project: project, name: staging.name, authorize_user_to_deploy: staging_operator
+        )
       end
 
       include_examples 'preloads and associates environments'
@@ -70,10 +74,14 @@ RSpec.describe Preloaders::Environments::ProtectedEnvironmentPreloader, :aggrega
 
     context 'with group-level protected environments' do
       before(:all) do
-        create(:protected_environment, :group_level,
-               group: root_group, name: production.name, authorize_user_to_deploy: production_operator)
-        create(:protected_environment, :group_level,
-               group: subgroup, name: staging.name, authorize_user_to_deploy: staging_operator)
+        create(
+          :protected_environment, :group_level,
+          group: root_group, name: production.name, authorize_user_to_deploy: production_operator
+        )
+        create(
+          :protected_environment, :group_level,
+          group: subgroup, name: staging.name, authorize_user_to_deploy: staging_operator
+        )
       end
 
       include_examples 'preloads and associates environments'

@@ -75,17 +75,21 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model, feature_category:
 
   describe '.by_to_states' do
     let!(:dismissed_state_transition) do
-      create(:vulnerability_state_transition,
-             vulnerability: vulnerability,
-             from_state: :detected,
-             to_state: :dismissed)
+      create(
+        :vulnerability_state_transition,
+        vulnerability: vulnerability,
+        from_state: :detected,
+        to_state: :dismissed
+      )
     end
 
     let!(:resolved_state_transition) do
-      create(:vulnerability_state_transition,
-             vulnerability: vulnerability,
-             from_state: :detected,
-             to_state: :resolved)
+      create(
+        :vulnerability_state_transition,
+        vulnerability: vulnerability,
+        from_state: :detected,
+        to_state: :resolved
+      )
     end
 
     let(:states) { %w[dismissed] }

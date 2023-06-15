@@ -819,21 +819,25 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     let(:project) { create(:project) }
 
     let!(:default_cluster) do
-      create(:cluster,
-              :not_managed,
-              platform_type: :kubernetes,
-              projects: [project],
-              environment_scope: '*',
-              platform_kubernetes: default_cluster_kubernetes)
+      create(
+        :cluster,
+        :not_managed,
+        platform_type: :kubernetes,
+        projects: [project],
+        environment_scope: '*',
+        platform_kubernetes: default_cluster_kubernetes
+      )
     end
 
     let!(:review_env_cluster) do
-      create(:cluster,
-              :not_managed,
-              platform_type: :kubernetes,
-              projects: [project],
-              environment_scope: 'review/*',
-              platform_kubernetes: review_env_cluster_kubernetes)
+      create(
+        :cluster,
+        :not_managed,
+        platform_type: :kubernetes,
+        projects: [project],
+        environment_scope: 'review/*',
+        platform_kubernetes: review_env_cluster_kubernetes
+      )
     end
 
     let(:default_cluster_kubernetes) { create(:cluster_platform_kubernetes, token: 'default-AAA') }
@@ -999,9 +1003,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns false when the resolver returns true' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: true,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.disable_overriding_approvers_per_merge_request).to be false
@@ -1010,9 +1016,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns true when the resolver returns false' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_overrides_to_approver_list_per_merge_request)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: false,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.disable_overriding_approvers_per_merge_request).to be true
@@ -1047,9 +1055,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns false when the resolver returns true' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_committer_approval)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: true,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.merge_requests_disable_committers_approval).to be false
@@ -1058,9 +1068,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns true when the resolver returns false' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_committer_approval)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: false,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.merge_requests_disable_committers_approval).to be true
@@ -1086,9 +1098,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:require_password_to_approve)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: true,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.require_password_to_approve).to be true
@@ -1099,9 +1113,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:require_password_to_approve)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: false,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.require_password_to_approve).to be false
@@ -1115,9 +1131,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns true when the resolver returns true' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_author_approval)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: true,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.merge_requests_author_approval).to be true
@@ -1126,9 +1144,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
       it 'returns false when the resolver returns false' do
         allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
           allow(resolver).to receive(:allow_author_approval)
-                               .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                           locked: false,
-                                                                                                           inherited_from: nil))
+            .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+              value: false,
+              locked: false,
+              inherited_from: nil
+            ))
         end
 
         expect(project.merge_requests_author_approval).to be false
@@ -1592,9 +1612,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     context 'with used pipeline minutes' do
       let(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
       let(:project) do
-        create(:project,
-               namespace: namespace,
-               shared_runners_enabled: true)
+        create(:project, namespace: namespace, shared_runners_enabled: true)
       end
 
       it 'does not have any online runners' do
@@ -1609,9 +1627,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     context 'with used pipeline minutes' do
       let(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
       let(:project) do
-        create(:project,
-          namespace: namespace,
-          shared_runners_enabled: true)
+        create(:project, namespace: namespace, shared_runners_enabled: true)
       end
 
       it 'shared runners are not available' do
@@ -1622,9 +1638,7 @@ RSpec.describe Project, feature_category: :groups_and_projects do
     context 'without used pipeline minutes' do
       let(:namespace) { create(:namespace, :with_not_used_build_minutes_limit) }
       let(:project) do
-        create(:project,
-          namespace: namespace,
-          shared_runners_enabled: true)
+        create(:project, namespace: namespace, shared_runners_enabled: true)
       end
 
       it 'shared runners are not available' do
@@ -1752,9 +1766,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
         allow(resolver).to receive(:retain_approvals_on_push)
-                             .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: true,
-                                                                                                         locked: false,
-                                                                                                         inherited_from: nil))
+          .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+            value: true,
+            locked: false,
+            inherited_from: nil
+          ))
       end
 
       expect(project.reset_approvals_on_push).to be false
@@ -1765,9 +1781,11 @@ RSpec.describe Project, feature_category: :groups_and_projects do
 
       allow_next_instance_of(ComplianceManagement::MergeRequestApprovalSettings::Resolver) do |resolver|
         allow(resolver).to receive(:retain_approvals_on_push)
-                             .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(value: false,
-                                                                                                         locked: false,
-                                                                                                         inherited_from: nil))
+          .and_return(ComplianceManagement::MergeRequestApprovalSettings::Setting.new(
+            value: false,
+            locked: false,
+            inherited_from: nil
+          ))
       end
 
       expect(project.reset_approvals_on_push).to be true
@@ -2284,17 +2302,21 @@ RSpec.describe Project, feature_category: :groups_and_projects do
   describe '#security_reports_up_to_date_for_ref?' do
     let_it_be(:project) { create(:project, :repository) }
     let_it_be(:merge_request) do
-      create(:ee_merge_request,
-             source_project: project,
-             source_branch: 'feature1',
-             target_branch: project.default_branch)
+      create(
+        :ee_merge_request,
+        source_project: project,
+        source_branch: 'feature1',
+        target_branch: project.default_branch
+      )
     end
 
     let_it_be(:pipeline) do
-      create(:ee_ci_pipeline,
-             :with_sast_report,
-             project: project,
-             ref: merge_request.target_branch)
+      create(
+        :ee_ci_pipeline,
+        :with_sast_report,
+        project: project,
+        ref: merge_request.target_branch
+      )
     end
 
     subject { project.security_reports_up_to_date_for_ref?(merge_request.target_branch) }
@@ -3803,9 +3825,10 @@ RSpec.describe Project, feature_category: :groups_and_projects do
         end
 
       expect(described_class.inactive).to contain_exactly(free_large_inactive_project)
-      expect(described_class.inactive)
-        .not_to include(free_small_active_project, free_small_inactive_project, free_large_active_project,
-                        paid_small_active_project, paid_small_inactive_project, paid_large_inactive_project)
+      expect(described_class.inactive).not_to include(
+        free_small_active_project, free_small_inactive_project, free_large_active_project,
+        paid_small_active_project, paid_small_inactive_project, paid_large_inactive_project
+      )
     end
   end
 

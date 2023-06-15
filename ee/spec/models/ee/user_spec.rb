@@ -195,9 +195,9 @@ RSpec.describe User, feature_category: :system_access do
     let!(:smartcard_identity) { create(:smartcard_identity, user: user) }
 
     it 'returns the user' do
-      expect(described_class.find_by_smartcard_identity(smartcard_identity.subject,
-                                                        smartcard_identity.issuer))
-        .to eq(user)
+      expect(described_class.find_by_smartcard_identity(
+        smartcard_identity.subject, smartcard_identity.issuer
+      )).to eq(user)
     end
   end
 

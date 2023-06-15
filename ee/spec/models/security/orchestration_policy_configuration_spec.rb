@@ -218,9 +218,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
       context 'with license_scanning policy' do
         let(:policy_yaml) do
-          build(:orchestration_policy_yaml,
-                scan_execution_policy: [],
-                scan_result_policy: [build(:scan_result_policy, :license_finding)])
+          build(
+            :orchestration_policy_yaml,
+            scan_execution_policy: [],
+            scan_result_policy: [build(:scan_result_policy, :license_finding)]
+          )
         end
 
         it { is_expected.to eq(true) }
@@ -918,13 +920,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   describe '#active_policy_names_with_dast_site_profile' do
     let(:policy_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy: [
-              build(:scan_execution_policy,
-                    name: 'Run DAST in every pipeline',
-                    actions: [
-                      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-                      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile 2' }
-                    ])
-            ])
+        build(
+          :scan_execution_policy,
+          name: 'Run DAST in every pipeline',
+          actions: [
+            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile 2' }
+          ])
+      ])
     end
 
     it 'returns list of policy names where site profile is referenced' do
@@ -935,13 +938,14 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
   describe '#active_policy_names_with_dast_scanner_profile' do
     let(:enforce_dast_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy: [
-              build(:scan_execution_policy,
-                    name: 'Run DAST in every pipeline',
-                    actions: [
-                      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-                      { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile' }
-                    ])
-            ])
+        build(
+          :scan_execution_policy,
+          name: 'Run DAST in every pipeline',
+          actions: [
+            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+            { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile' }
+          ])
+      ])
     end
 
     before do
@@ -1295,9 +1299,11 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
       end
 
       let(:container_scanning_policy) do
-        build(:scan_execution_policy,
-              actions: [{ scan: 'container_scanning' }],
-              rules: [{ type: 'pipeline', branches: [default_branch.reverse] }])
+        build(
+          :scan_execution_policy,
+          actions: [{ scan: 'container_scanning' }],
+          rules: [{ type: 'pipeline', branches: [default_branch.reverse] }]
+        )
       end
 
       it "filters" do

@@ -405,11 +405,13 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
   describe '#mirror_update_due?' do
     context 'when mirror is expected to run soon' do
       it 'returns true' do
-        import_state = create(:import_state,
-                              :finished,
-                              :mirror,
-                              :repository,
-                              next_execution_timestamp: Time.current - 2.minutes)
+        import_state = create(
+          :import_state,
+          :finished,
+          :mirror,
+          :repository,
+          next_execution_timestamp: Time.current - 2.minutes
+        )
 
         expect(import_state.mirror_update_due?).to be true
       end
@@ -417,11 +419,13 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
     context 'when the project is archived' do
       let(:import_state) do
-        create(:import_state,
-               :finished,
-               :mirror,
-               :repository,
-               next_execution_timestamp: Time.current - 2.minutes)
+        create(
+          :import_state,
+          :finished,
+          :mirror,
+          :repository,
+          next_execution_timestamp: Time.current - 2.minutes
+        )
       end
 
       before do
@@ -435,11 +439,13 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
     context 'when the project pending_delete' do
       let(:import_state) do
-        create(:import_state,
-               :finished,
-               :mirror,
-               :repository,
-               next_execution_timestamp: Time.current - 2.minutes)
+        create(
+          :import_state,
+          :finished,
+          :mirror,
+          :repository,
+          next_execution_timestamp: Time.current - 2.minutes
+        )
       end
 
       it 'returns false' do
@@ -657,10 +663,12 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
   describe '#force_import_job!' do
     it 'returns nil if mirror is about to update' do
-      import_state = create(:import_state,
-                            :repository,
-                            :mirror,
-                            next_execution_timestamp: Time.current - 2.minutes)
+      import_state = create(
+        :import_state,
+        :repository,
+        :mirror,
+        next_execution_timestamp: Time.current - 2.minutes
+      )
 
       expect(import_state.force_import_job!).to be_nil
     end

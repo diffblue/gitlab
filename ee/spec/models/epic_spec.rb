@@ -1299,9 +1299,11 @@ RSpec.describe Epic, feature_category: :portfolio_management do
     let_it_be(:epic_issue2) { create(:epic_issue, epic: epic, issue: issue2) }
 
     let_it_be(:subepic) do
-      create(:epic, parent: epic, group: group, total_opened_issue_weight: 10,
-                    total_closed_issue_weight: 20, total_opened_issue_count: 2,
-                    total_closed_issue_count: 3)
+      create(
+        :epic, parent: epic, group: group, total_opened_issue_weight: 10,
+        total_closed_issue_weight: 20, total_opened_issue_count: 2,
+        total_closed_issue_count: 3
+      )
     end
 
     it 'returns hash of total issue weight and count including its subepics' do

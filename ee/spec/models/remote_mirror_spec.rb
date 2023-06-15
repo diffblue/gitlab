@@ -59,10 +59,12 @@ RSpec.describe RemoteMirror do
     context 'when mirror_branch_regex is set' do
       let(:user) { build(:user) }
       let(:mirror) do
-        build(:remote_mirror,
-              project: project,
-              only_protected_branches: false,
-              mirror_branch_regex: '^matched*')
+        build(
+          :remote_mirror,
+          project: project,
+          only_protected_branches: false,
+          mirror_branch_regex: '^matched*'
+        )
       end
 
       before do

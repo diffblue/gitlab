@@ -9,9 +9,12 @@ RSpec.describe ProtectedEnvironments::ApprovalRule do
   let!(:protected_environment) { create(:protected_environment, project: project, name: environment.name) }
 
   let!(:approval_rule) do
-    create(:protected_environment_approval_rule, protected_environment: protected_environment,
-                                                 user: approver,
-                                                 required_approvals: 1)
+    create(
+      :protected_environment_approval_rule,
+      protected_environment: protected_environment,
+      user: approver,
+      required_approvals: 1
+    )
   end
 
   describe 'associations' do
@@ -29,9 +32,9 @@ RSpec.describe ProtectedEnvironments::ApprovalRule do
         .only_integer.is_greater_than_or_equal_to(1).is_less_than_or_equal_to(5)
     end
 
-    it {
+    it do
       is_expected.to validate_inclusion_of(:group_inheritance_type)
-                          .in_array(ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values)
-    }
+        .in_array(ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE.values)
+    end
   end
 end

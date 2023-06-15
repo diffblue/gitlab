@@ -163,9 +163,11 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
   def stub_signin_failure
     stub_request(:post, "http://jitsu.dev/api/v1/users/signin")
       .with(body: "{\"email\":\"test@test.com\",\"password\":\"testtest\"}")
-      .to_return(status: 401,
-                 body: { error: 'invalid password', message: 'Authorization failed: invalid password' }.to_json,
-                 headers: {})
+      .to_return(
+        status: 401,
+        body: { error: 'invalid password', message: 'Authorization failed: invalid password' }.to_json,
+        headers: {}
+      )
   end
 
   def stub_signin_exception
@@ -176,16 +178,20 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
 
   def stub_api_key_success
     stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/api_keys")
-      .to_return(status: 200,
-                 body: "{\"jsAuth\":\"Mp1N4PYvRXNk1KIh2MLDE7BYghnSwdnt\",\"uid\":\"yijlmncqjot0xy9h6rv54p.s7zz20\"}",
-                 headers: {})
+      .to_return(
+        status: 200,
+        body: "{\"jsAuth\":\"Mp1N4PYvRXNk1KIh2MLDE7BYghnSwdnt\",\"uid\":\"yijlmncqjot0xy9h6rv54p.s7zz20\"}",
+        headers: {}
+      )
   end
 
   def stub_api_key_failure
     stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/api_keys")
-      .to_return(status: 401,
-                 body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
-                 headers: {})
+      .to_return(
+        status: 401,
+        body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
+        headers: {}
+      )
   end
 
   def stub_api_key_exception
@@ -200,9 +206,11 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
 
   def stub_clickhouse_failure
     stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/destinations")
-      .to_return(status: 401,
-                 body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
-                 headers: {})
+      .to_return(
+        status: 401,
+        body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
+        headers: {}
+      )
   end
 
   def stub_clickhouse_exception
