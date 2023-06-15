@@ -3,7 +3,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggregate_failures, type: :component,
-  feature_category: :experimentation_conversion do
+  feature_category: :measurement_and_locking do
   let_it_be(:namespace, refind: true) { create(:group, :private) }
   let_it_be(:user, refind: true) { create(:user) }
   let(:content_class) { '_content_class_' }

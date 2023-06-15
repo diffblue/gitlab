@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Emails::FreeUserCap, feature_category: :experimentation_conversion do
+RSpec.describe Emails::FreeUserCap, feature_category: :measurement_and_locking do
   include EmailSpec::Matchers
 
   let_it_be(:user) { create :user }

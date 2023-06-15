@@ -5,7 +5,7 @@ require 'spec_helper'
 # https://gitlab.com/gitlab-com/www-gitlab-com/-/merge_requests/113300 to merge
 RSpec.describe Namespaces::FreeUserCap::BackfillNotificationJobsWorker,
   type: :worker,
-  feature_category: :experimentation_activation do
+  feature_category: :measurement_and_locking do
   let(:worker) { described_class.new }
 
   describe '#perform' do

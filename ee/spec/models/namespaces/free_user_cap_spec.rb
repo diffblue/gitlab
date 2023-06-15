@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap, feature_category: :experimentation_conversion do
+RSpec.describe Namespaces::FreeUserCap, feature_category: :measurement_and_locking do
   using RSpec::Parameterized::TableSyntax
 
   describe '.notification_or_enforcement_enabled?' do
