@@ -18,6 +18,7 @@ module Security
         return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled without branch information'), field: :branches) if blank_branch_for_rule?
         return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }, field: :branches) if missing_branch_for_rule?
         return error_with_title(s_('SecurityOrchestration|Branch types don\'t match any existing branches.'), field: :branches) if invalid_branch_types?
+        return error_with_title(s_('SecurityOrchestration|Timezone is invalid'), field: :timezone) if invalid_timezone?
 
         return error_with_title(s_('SecurityOrchestration|Required approvals exceed eligible approvers'), title: s_('SecurityOrchestration|Logic error'), field: :approvers_ids) if required_approvals_exceed_eligible_approvers?
 
@@ -154,6 +155,18 @@ module Security
           else
             service.scan_execution_branches([rule]).empty?
           end
+        end
+      end
+
+      def invalid_timezone?
+        return false if scan_result_policy?
+
+        policy[:rules].select { |rule| rule[:timezone] }
+                      .any? do |rule|
+          TZInfo::Timezone.get(rule[:timezone])
+          false
+        rescue TZInfo::InvalidTimezoneIdentifier
+          true
         end
       end
 
