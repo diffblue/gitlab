@@ -685,13 +685,13 @@ RSpec.describe BillingPlansHelper, :saas, feature_category: :subscription_manage
       it 'instructs to move the project to a group' do
         create(:group).add_owner current_user
 
-        expect(helper.add_namespace_plan_to_group_instructions).to eq 'You&#39;ll have to <a href="/help/user/project/settings/index#transfer-a-project-to-another-namespace" target="_blank" rel="noopener noreferrer">move this project</a> to one of your groups.'
+        expect(helper.add_namespace_plan_to_group_instructions).to eq 'Then <a href="/help/user/project/settings/index#transfer-a-project-to-another-namespace" target="_blank" rel="noopener noreferrer">move any projects</a> you wish to use with your subscription to that group.'
       end
     end
 
     context 'without a group' do
       it 'instructs to create a group then move the project to a group' do
-        expect(helper.add_namespace_plan_to_group_instructions).to eq 'You don&#39;t have any groups. You&#39;ll need to <a href="/groups/new#create-group-pane">create one</a> and <a href="/help/user/project/settings/index#transfer-a-project-to-another-namespace" target="_blank" rel="noopener noreferrer">move this project to it</a>.'
+        expect(helper.add_namespace_plan_to_group_instructions).to eq 'You don&#39;t have any groups. You&#39;ll need to <a href="/groups/new#create-group-pane">create one</a> and <a href="/help/user/project/settings/index#transfer-a-project-to-another-namespace" target="_blank" rel="noopener noreferrer">move your projects to it</a>.'
       end
     end
   end

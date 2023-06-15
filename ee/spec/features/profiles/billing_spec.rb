@@ -65,7 +65,7 @@ RSpec.describe 'Profiles > Billing', :js, feature_category: :purchase do
           visit profile_billings_path
 
           expect(page).not_to have_content "You don't have any groups"
-          expect(page).to have_content "You'll have to move this project"
+          expect(page).to have_content "Then move any projects"
         end
       end
     end
