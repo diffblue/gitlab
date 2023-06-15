@@ -4,18 +4,19 @@ require 'spec_helper'
 
 RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
   include ExclusiveLeaseHelpers
+
+  let(:worker) { described_class.new }
+  let(:lease_key) { 'elastic_index_bulk_cron_worker' }
+
+  let(:shards) { [0, 1] }
+  let(:shard_number) { shards.first }
+
+  before do
+    stub_const("Elastic::ProcessBookkeepingService::SHARDS", shards)
+    stub_ee_application_setting(elasticsearch_indexing: true)
+  end
+
   describe '.perform' do
-    let(:worker) { described_class.new }
-    let(:lease_key) { 'elastic_index_bulk_cron_worker' }
-
-    let(:shards) { [0, 1] }
-    let(:shard_number) { shards.first }
-
-    before do
-      stub_const("Elastic::ProcessBookkeepingService::SHARDS", shards)
-      stub_ee_application_setting(elasticsearch_indexing: true)
-    end
-
     context 'indexing is not paused' do
       before do
         expect(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
@@ -145,4 +146,33 @@ RSpec.describe ElasticIndexBulkCronWorker, feature_category: :global_search do
   end
 
   it_behaves_like 'worker with data consistency', described_class, data_consistency: :sticky
+  it_behaves_like 'an idempotent worker' do
+    before do
+      allow(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
+    end
+
+    context 'when executed without arguments' do
+      it 'queues all shards for execution' do
+        shards.each do |shard_number|
+          expect(described_class).to receive(:perform_async).with(shard_number)
+        end
+
+        worker.perform
+      end
+    end
+
+    context 'when executed with a shard number argument' do
+      let(:job_args) { shards.first }
+
+      it 'executes the service under an exclusive lease' do
+        expect_to_obtain_exclusive_lease("#{lease_key}/shard/#{job_args}")
+
+        expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
+          expect(service).to receive(:execute).with(shards: [job_args])
+        end
+
+        worker.perform(job_args)
+      end
+    end
+  end
 end
