@@ -79,15 +79,16 @@ export default {
   >
     <gl-avatar-link :href="resource.webPath">
       <gl-avatar
-        :entity-id="entityId"
-        :entity-name="resource.icon"
-        :size="48"
-        shape="rect"
         class="gl-mr-4"
+        :entity-id="entityId"
+        :entity-name="resource.name"
+        shape="rect"
+        :size="48"
+        :src="resource.icon"
       />
     </gl-avatar-link>
     <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1">
-      <div class="gl-display-flex gl-flex-wrap gl-flex-grow-1 gl-gap-2">
+      <div class="gl-display-flex gl-flex-wrap gl-gap-2 gl-mb-2">
         <gl-button variant="link" :href="resource.webPath" class="gl-text-gray-900! gl-mr-1">
           {{ resourcePath }} <b> {{ resource.name }}</b>
         </gl-button>
@@ -106,7 +107,9 @@ export default {
         </div>
       </div>
       <div class="gl-display-flex gl-sm-flex-direction-column gl-justify-content-space-between">
-        <span class="gl-display-flex gl-flex-basis-two-thirds">{{ resource.description }}</span>
+        <span class="gl-display-flex gl-flex-basis-two-thirds gl-font-sm">{{
+          resource.description
+        }}</span>
         <div class="gl-display-flex gl-justify-content-end">
           <span v-if="hasReleasedVersion">
             <gl-sprintf :message="$options.i18n.releasedMessage">

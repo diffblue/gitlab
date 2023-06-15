@@ -30,7 +30,7 @@ export const initNamespaceCatalog = (selector = '#js-ci-namespace-catalog') => {
     router: createRouter(ciCatalogPath),
     provide: {
       projectFullPath,
-      pageTitle: s__('CiCatalog|CI/CD catalog'),
+      pageTitle: s__('CiCatalog|CI/CD Catalog'),
       pageDescription: s__(
         'CiCatalog|Repositories of pipeline components available in this namespace.',
       ),
