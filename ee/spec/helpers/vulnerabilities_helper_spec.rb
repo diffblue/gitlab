@@ -21,7 +21,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
         :title,
         :state,
         :severity,
-        :confidence,
         :report_type,
         :resolved_on_default_branch,
         :project_default_branch,
@@ -224,7 +223,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
             Description of My vulnerability
 
             * Severity: high
-            * Confidence: medium
             * Location: [maven/src/main/java/com/gitlab/security_products/tests/App.java:29|http://localhost/#{project.full_path}/-/blob/b83d6e391c22777fca1ed3012fce84f633d7fed0/maven/src/main/java/com/gitlab/security_products/tests/App.java#L29]
 
             #### Evidence
@@ -288,7 +286,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
             The cipher does not provide data integrity update 1
 
             * Severity: high
-            * Confidence: medium
 
 
             h3. Links:
@@ -320,7 +317,6 @@ RSpec.describe VulnerabilitiesHelper, feature_category: :vulnerability_managemen
             The cipher does not provide data integrity update 1
 
             * Severity: critical
-            * Confidence: high
 
 
             h3. Links:

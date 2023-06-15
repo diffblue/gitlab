@@ -11795,9 +11795,6 @@ msgstr ""
 msgid "Compute quota:"
 msgstr ""
 
-msgid "Confidence"
-msgstr ""
-
 msgid "Confidential"
 msgstr ""
 
