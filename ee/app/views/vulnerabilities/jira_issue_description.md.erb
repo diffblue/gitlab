@@ -9,9 +9,6 @@ h3. <%= _("Description") %>:
 <% if vulnerability.severity.present? %>
 * <%= _("Severity") %>: <%= vulnerability.severity %>
 <% end %>
-<% if vulnerability.confidence.present? %>
-* <%= _("Confidence") %>: <%= vulnerability.confidence %>
-<% end %>
 <% if vulnerability.try(:location_text) && vulnerability.try(:location_link) %>
 * <%= _("Location") %>: [<%= vulnerability.try(:location_text) %>|<%= vulnerability.try(:location_link) %>]
 <% end %>

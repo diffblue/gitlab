@@ -9,9 +9,6 @@
 <% if vulnerability.severity.present? %>
 * <%= _("Severity") %>: <%= vulnerability.severity %>
 <% end %>
-<% if vulnerability.confidence.present? %>
-* <%= _("Confidence") %>: <%= vulnerability.confidence %>
-<% end %>
 <% if vulnerability.try(:file) %>
 * <%= _("Location") %>: [<%= vulnerability.location_text %>](<%= vulnerability.location_link %>)
 <% end %>

@@ -13,14 +13,12 @@ RSpec.describe "vulnerabilities/issue_description.md.erb", type: :view, feature_
       project: project,
       findings: [finding],
       description: vulnerability_description,
-      severity: severity,
-      confidence: confidence
+      severity: severity
     )
   end
 
   let(:vulnerability_description) { "Vulnerability Description" }
   let(:severity) { :high }
-  let(:confidence) { :medium }
   let(:identifiers) { [identifier] }
   let(:scan) do
     { type: 'sast', status: 'success', start_time: 'placeholder', end_time: 'placeholder' }
@@ -45,7 +43,6 @@ RSpec.describe "vulnerabilities/issue_description.md.erb", type: :view, feature_
         Vulnerability Description
 
         * Severity: high
-        * Confidence: medium
         * Location: [#{vulnerability_presenter.location_text}](#{vulnerability_presenter.location_link})
 
         #### Evidence
@@ -103,14 +100,6 @@ RSpec.describe "vulnerabilities/issue_description.md.erb", type: :view, feature_
 
     it 'does not render the Severity section' do
       expect(rendered).not_to include('* Severity')
-    end
-  end
-
-  context 'when confidence is absent' do
-    let(:confidence) { nil }
-
-    it 'does not render the Confidence section' do
-      expect(rendered).not_to include('* Confidence')
     end
   end
 
