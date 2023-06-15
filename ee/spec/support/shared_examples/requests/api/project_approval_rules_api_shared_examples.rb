@@ -182,6 +182,72 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       end
     end
 
+    context 'with users or groups params' do
+      before do
+        post api(url, current_user), params: params.merge!(extra_params)
+      end
+
+      context 'with a user' do
+        let(:extra_params) { { users: [user.id] } }
+
+        it 'returns a user' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['users'].size).to be 1
+          expect(json_response.dig('users', 0, 'id')).to eq(user.id)
+        end
+      end
+
+      context 'with users_ids' do
+        let(:extra_params) { { user_ids: [user.id] } }
+
+        it 'returns a user' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['users'].size).to be 1
+          expect(json_response.dig('users', 0, 'id')).to eq(user.id)
+        end
+      end
+
+      context 'when both users and user_ids are set' do
+        let(:extra_params) { { users: [user2.id], user_ids: [user.id] } }
+
+        it 'returns a user from user_ids' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['users'].size).to be 1
+          expect(json_response.dig('users', 0, 'id')).to eq(user.id)
+        end
+      end
+
+      context 'with a group' do
+        let(:extra_params) { { groups: [group.id] } }
+
+        it 'returns a group' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['groups'].size).to be 1
+          expect(json_response.dig('groups', 0, 'id')).to eq(group.id)
+        end
+      end
+
+      context 'with group_ids' do
+        let(:extra_params) { { group_ids: [group.id] } }
+
+        it 'returns a group' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['groups'].size).to be 1
+          expect(json_response.dig('groups', 0, 'id')).to eq(group.id)
+        end
+      end
+
+      context 'when both groups and group_ids are set' do
+        let(:extra_params) { { groups: [group2.id], group_ids: [group.id] } }
+
+        it 'returns a group from group_ids' do
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['groups'].size).to be 1
+          expect(json_response.dig('groups', 0, 'id')).to eq(group.id)
+        end
+      end
+    end
+
     context 'with valid scanners' do
       let(:scanners) { ['sast'] }
 
@@ -275,6 +341,66 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
           a_hash_including('id' => protected_branches.first.id),
           a_hash_including('id' => protected_branches.last.id)
         )
+      end
+    end
+
+    context 'with users or groups params' do
+      before do
+        put api(url, current_user, admin_mode: current_user.admin?), params: params.to_json, headers: { CONTENT_TYPE: 'application/json' }
+      end
+
+      context 'with a user' do
+        let(:params) { { users: [user.id] } }
+
+        it 'sets a user' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.users).to contain_exactly(user)
+        end
+      end
+
+      context 'with users_ids' do
+        let(:params) { { user_ids: [user.id] } }
+
+        it 'sets a user' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.users).to contain_exactly(user)
+        end
+      end
+
+      context 'when both users and user_ids are set' do
+        let(:params) { { users: [user2.id], user_ids: [user.id] } }
+
+        it 'sets a user from user_ids' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.users).to contain_exactly(user)
+        end
+      end
+
+      context 'with a group' do
+        let(:params) { { groups: [group.id] } }
+
+        it 'sets a group' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.groups).to contain_exactly(group)
+        end
+      end
+
+      context 'with group_ids' do
+        let(:params) { { group_ids: [group.id] } }
+
+        it 'sets a group' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.groups).to contain_exactly(group)
+        end
+      end
+
+      context 'when both groups and group_ids are set' do
+        let(:params) { { groups: [group2.id], group_ids: [group.id] } }
+
+        it 'sets a group from group_ids' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(approval_rule.groups).to contain_exactly(group)
+        end
       end
     end
 

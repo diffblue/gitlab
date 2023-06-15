@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe API::ProjectApprovalRules, :aggregate_failures, feature_category: :source_code_management do
   let_it_be(:group) { create(:group_with_members) }
+  let_it_be(:group2) { create(:group_with_members) }
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be(:admin) { create(:user, :admin) }
