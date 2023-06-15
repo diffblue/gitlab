@@ -4,12 +4,14 @@ import { DEFAULT_PAGE_SIZE } from '../constants';
 const createState = ({
   replicableType,
   graphqlFieldName,
+  graphqlMutationRegistryClass,
   verificationEnabled,
   geoCurrentSiteId,
   geoTargetSiteId,
 }) => ({
   replicableType,
   graphqlFieldName,
+  graphqlMutationRegistryClass,
   verificationEnabled: parseBoolean(verificationEnabled),
   geoCurrentSiteId,
   geoTargetSiteId,

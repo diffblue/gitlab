@@ -45,6 +45,9 @@ export default {
     buildName(item) {
       return item.name ? item.name : item.id;
     },
+    buildRegistryId(item) {
+      return this.useGraphQl ? item.id : item.projectId;
+    },
   },
 };
 </script>
@@ -53,9 +56,9 @@ export default {
   <section>
     <geo-replicable-item
       v-for="item in replicableItems"
-      :key="item.id"
+      :key="buildRegistryId(item)"
       :name="buildName(item)"
-      :project-id="item.projectId"
+      :registry-id="buildRegistryId(item)"
       :sync-status="item.state.toLowerCase()"
       :last-synced="item.lastSyncedAt"
       :last-verified="item.verifiedAt"

@@ -9,6 +9,7 @@ import { __, sprintf } from '~/locale';
 import toast from '~/vue_shared/plugins/global_toast';
 import { FILTER_STATES, PREV, NEXT, DEFAULT_PAGE_SIZE } from '../constants';
 import buildReplicableTypeQuery from '../graphql/replicable_type_query_builder';
+import replicableTypeUpdateMutation from '../graphql/replicable_type_update_mutation.graphql';
 import { getGraphqlClient } from '../utils';
 import * as types from './mutation_types';
 
@@ -151,10 +152,40 @@ export const receiveInitiateReplicableSyncError = ({ commit }, { name }) => {
   commit(types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR);
 };
 
-export const initiateReplicableSync = ({ state, dispatch }, { projectId, name, action }) => {
+export const initiateReplicableSync = ({ state, dispatch }, { registryId, name, action }) => {
   dispatch('requestInitiateReplicableSync');
 
-  Api.initiateGeoReplicableSync(state.replicableType, { projectId, action })
+  return state.useGraphQl
+    ? dispatch('initiateReplicableSyncGraphQl', { registryId, name, action })
+    : dispatch('initiateReplicableSyncRestful', { registryId, name, action });
+};
+
+export const initiateReplicableSyncGraphQl = (
+  { state, dispatch },
+  { registryId, name, action },
+) => {
+  const client = getGraphqlClient(state.geoCurrentSiteId, state.geoTargetSiteId);
+
+  client
+    .mutate({
+      mutation: replicableTypeUpdateMutation,
+      variables: {
+        action: action.toUpperCase(),
+        registryId,
+        registryClass: state.graphqlMutationRegistryClass,
+      },
+    })
+    .then(() => dispatch('receiveInitiateReplicableSyncSuccess', { name, action }))
+    .catch(() => {
+      dispatch('receiveInitiateReplicableSyncError', { name });
+    });
+};
+
+export const initiateReplicableSyncRestful = (
+  { state, dispatch },
+  { registryId, name, action },
+) => {
+  Api.initiateGeoReplicableSync(state.replicableType, { projectId: registryId, action })
     .then(() => dispatch('receiveInitiateReplicableSyncSuccess', { name, action }))
     .catch(() => {
       dispatch('receiveInitiateReplicableSyncError', { name });

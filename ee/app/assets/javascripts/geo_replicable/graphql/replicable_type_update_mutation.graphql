@@ -1,0 +1,11 @@
+mutation replicableTypeUpdate(
+  $action: GeoRegistryAction!
+  $registryId: GeoBaseRegistryID!
+  $registryClass: GeoRegistryClass!
+) {
+  geoRegistriesUpdate(
+    input: { action: $action, registryId: $registryId, registryClass: $registryClass }
+  ) {
+    errors
+  }
+}

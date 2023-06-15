@@ -7,6 +7,7 @@ import {
   FILTER_OPTIONS,
 } from 'ee/geo_replicable/constants';
 import buildReplicableTypeQuery from 'ee/geo_replicable/graphql/replicable_type_query_builder';
+import replicableTypeUpdateMutation from 'ee/geo_replicable/graphql/replicable_type_update_mutation.graphql';
 import * as actions from 'ee/geo_replicable/store/actions';
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import createState from 'ee/geo_replicable/store/state';
@@ -24,12 +25,13 @@ import {
   MOCK_BASIC_GRAPHQL_QUERY_RESPONSE,
   MOCK_GRAPHQL_PAGINATION_DATA,
   MOCK_GRAPHQL_REGISTRY,
+  MOCK_GRAPHQL_REGISTRY_CLASS,
 } from '../mock_data';
 
 jest.mock('~/alert');
 jest.mock('~/vue_shared/plugins/global_toast');
 
-const mockGeoGqClient = { query: jest.fn() };
+const mockGeoGqClient = { query: jest.fn(), mutate: jest.fn() };
 jest.mock('ee/geo_replicable/utils', () => ({
   ...jest.requireActual('ee/geo_replicable/utils'),
   getGraphqlClient: jest.fn().mockImplementation(() => mockGeoGqClient),
@@ -42,6 +44,7 @@ describe('GeoReplicable Store Actions', () => {
     state = createState({
       replicableType: MOCK_REPLICABLE_TYPE,
       graphqlFieldName: null,
+      graphqlMutationRegistryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
       geoCurrentSiteId: null,
       geoTargetSiteId: null,
       verificationEnabled: 'true',
@@ -535,7 +538,7 @@ describe('GeoReplicable Store Actions', () => {
     it('should commit mutation RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS and call fetchReplicableItems and toast', async () => {
       await testAction(
         actions.receiveInitiateReplicableSyncSuccess,
-        { action: ACTION_TYPES.RESYNC, projectName: 'test' },
+        { action: ACTION_TYPES.RESYNC, name: 'test' },
         state,
         [{ type: types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS }],
         [{ type: 'fetchReplicableItems' }],
@@ -549,7 +552,7 @@ describe('GeoReplicable Store Actions', () => {
     it('should commit mutation RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR', async () => {
       await testAction(
         actions.receiveInitiateReplicableSyncError,
-        { action: ACTION_TYPES.RESYNC, projectId: 1, projectName: 'test' },
+        { action: ACTION_TYPES.RESYNC, registryId: 1, name: 'test' },
         state,
         [{ type: types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR }],
         [],
@@ -558,61 +561,157 @@ describe('GeoReplicable Store Actions', () => {
     });
   });
 
-  describe('initiateReplicableSync', () => {
-    let action;
-    let projectId;
-    let name;
+  describe('Replicable Sync', () => {
+    const action = ACTION_TYPES.RESYNC;
+    const registryId = 1;
+    const name = 'test';
 
-    describe('on success', () => {
-      beforeEach(() => {
-        action = ACTION_TYPES.RESYNC;
-        projectId = 1;
-        name = 'test';
-        jest.spyOn(Api, 'initiateGeoReplicableSync').mockResolvedValue(MOCK_BASIC_POST_RESPONSE);
+    describe('initiateReplicableSync', () => {
+      describe('with graphql', () => {
+        beforeEach(() => {
+          state.useGraphQl = true;
+        });
+
+        it('calls initiateReplicableSyncGraphQl', async () => {
+          await testAction(
+            actions.initiateReplicableSync,
+            { registryId, name, action },
+            state,
+            [],
+            [
+              { type: 'requestInitiateReplicableSync' },
+              { type: 'initiateReplicableSyncGraphQl', payload: { registryId, name, action } },
+            ],
+          );
+        });
       });
 
-      it('should dispatch the request with correct replicable param and success actions', () => {
-        testAction(
-          actions.initiateReplicableSync,
-          { projectId, name, action },
-          state,
-          [],
-          [
-            { type: 'requestInitiateReplicableSync' },
-            { type: 'receiveInitiateReplicableSyncSuccess', payload: { name, action } },
-          ],
-        );
-        expect(Api.initiateGeoReplicableSync).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
-          projectId,
-          action,
+      describe('without graphql', () => {
+        beforeEach(() => {
+          state.useGraphQl = false;
+        });
+
+        it('calls initiateReplicableSyncRestful', async () => {
+          await testAction(
+            actions.initiateReplicableSync,
+            { registryId, name, action },
+            state,
+            [],
+            [
+              { type: 'requestInitiateReplicableSync' },
+              { type: 'initiateReplicableSyncRestful', payload: { registryId, name, action } },
+            ],
+          );
         });
       });
     });
 
-    describe('on error', () => {
-      beforeEach(() => {
-        action = ACTION_TYPES.RESYNC;
-        projectId = 1;
-        name = 'test';
-        jest
-          .spyOn(Api, 'initiateGeoReplicableSync')
-          .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
+    describe('initiateReplicableSyncGraphQl', () => {
+      describe('on success', () => {
+        beforeEach(() => {
+          jest.spyOn(mockGeoGqClient, 'mutate').mockResolvedValue({});
+        });
+
+        it('should call mockGeoClient with correct parameters and success actions', () => {
+          testAction(
+            actions.initiateReplicableSyncGraphQl,
+            { registryId, name, action },
+            state,
+            [],
+            [
+              {
+                type: 'receiveInitiateReplicableSyncSuccess',
+                payload: { name, action },
+              },
+            ],
+            () => {
+              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+                mutate: replicableTypeUpdateMutation,
+                variables: {
+                  action: action.toUpperCase(),
+                  registryId,
+                  registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
+                },
+              });
+            },
+          );
+        });
       });
 
-      it('should dispatch the request and error actions', async () => {
-        await testAction(
-          actions.initiateReplicableSync,
-          { projectId, name, action },
-          state,
-          [],
-          [
-            { type: 'requestInitiateReplicableSync' },
-            {
-              type: 'receiveInitiateReplicableSyncError',
-              payload: { name: 'test' },
+      describe('on error', () => {
+        beforeEach(() => {
+          jest.spyOn(mockGeoGqClient, 'mutate').mockRejectedValue({});
+        });
+
+        it('should call mockGeoClient with correct parameters and error actions', () => {
+          testAction(
+            actions.initiateReplicableSyncGraphQl,
+            { registryId, name, action },
+            state,
+            [],
+            [
+              {
+                type: 'receiveInitiateReplicableSyncError',
+                payload: { name },
+              },
+            ],
+            () => {
+              expect(mockGeoGqClient.query).toHaveBeenCalledWith({
+                mutate: replicableTypeUpdateMutation,
+                variables: {
+                  action: action.toUpperCase(),
+                  registryId,
+                  registryClass: MOCK_GRAPHQL_REGISTRY_CLASS,
+                },
+              });
             },
-          ],
-        );
+          );
+        });
+      });
+    });
+
+    describe('initiateReplicableSyncRestful', () => {
+      describe('on success', () => {
+        beforeEach(() => {
+          jest.spyOn(Api, 'initiateGeoReplicableSync').mockResolvedValue(MOCK_BASIC_POST_RESPONSE);
+        });
+
+        it('should dispatch the request with correct replicable param and success actions', () => {
+          testAction(
+            actions.initiateReplicableSyncRestful,
+            { registryId, name, action },
+            state,
+            [],
+            [{ type: 'receiveInitiateReplicableSyncSuccess', payload: { name, action } }],
+          );
+          expect(Api.initiateGeoReplicableSync).toHaveBeenCalledWith(MOCK_REPLICABLE_TYPE, {
+            projectId: registryId,
+            action,
+          });
+        });
+      });
+
+      describe('on error', () => {
+        beforeEach(() => {
+          jest
+            .spyOn(Api, 'initiateGeoReplicableSync')
+            .mockRejectedValue(new Error(HTTP_STATUS_INTERNAL_SERVER_ERROR));
+        });
+
+        it('should dispatch the request and error actions', async () => {
+          await testAction(
+            actions.initiateReplicableSyncRestful,
+            { registryId, name, action },
+            state,
+            [],
+            [
+              {
+                type: 'receiveInitiateReplicableSyncError',
+                payload: { name: 'test' },
+              },
+            ],
+          );
+        });
       });
     });
   });
