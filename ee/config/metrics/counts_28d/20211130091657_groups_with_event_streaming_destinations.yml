@@ -1,9 +1,9 @@
 ---
 key_path: usage_activity_by_stage_monthly.manage.groups_with_event_streaming_destinations
 description: "Distinct count of groups with any event streaming destinations"
-product_section: "dev"
-product_stage: "manage"
-product_group: "compliance"
+product_section: sec
+product_stage: govern
+product_group: compliance
 value_type: number
 status: broken
 repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/369871
