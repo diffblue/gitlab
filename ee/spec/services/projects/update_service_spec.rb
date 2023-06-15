@@ -379,7 +379,7 @@ RSpec.describe Projects::UpdateService, '#execute', feature_category: :groups_an
 
           it 'calls replicator to update Geo' do
             expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator) do |instance|
-              expect(instance).to receive(:handle_after_update)
+              expect(instance).to receive(:geo_handle_after_update)
             end
 
             result = update_project(project, user, project_feature_attributes: { wiki_access_level: ProjectFeature::ENABLED })

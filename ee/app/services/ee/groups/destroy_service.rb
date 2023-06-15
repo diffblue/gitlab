@@ -26,7 +26,7 @@ module EE
 
         return unless ::Gitlab::Geo.primary? && group.group_wiki_repository
 
-        group.group_wiki_repository.replicator.handle_after_destroy
+        group.group_wiki_repository.geo_handle_after_destroy
       end
 
       # rubocop:disable Scalability/BulkPerformWithContext

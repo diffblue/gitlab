@@ -91,7 +91,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
           # Run Sidekiq immediately to check that renamed repository will be removed
           Sidekiq::Testing.inline! do
             expect(subject).to receive(:log_destroy_events).and_call_original
-            expect(project.wiki_repository.replicator).to receive(:handle_after_destroy)
+            expect(project.wiki_repository.replicator).to receive(:geo_handle_after_destroy)
 
             subject.execute
           end
@@ -119,7 +119,7 @@ RSpec.describe Projects::DestroyService, feature_category: :groups_and_projects 
         # Run Sidekiq immediately to check that renamed repository will be removed
         Sidekiq::Testing.inline! do
           expect(subject).to receive(:log_destroy_events).and_call_original
-          expect(project.design_management_repository.replicator).to receive(:handle_after_destroy)
+          expect(project.design_management_repository.replicator).to receive(:geo_handle_after_destroy)
 
           subject.execute
         end

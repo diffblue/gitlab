@@ -123,7 +123,7 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
 
                 expect(project.wiki_repository).to be_present
                 expect(repository_updated_service).to receive(:execute).once
-                expect(project.wiki_repository.replicator).to receive(:handle_after_update)
+                expect(project.wiki_repository.replicator).to receive(:geo_handle_after_update)
 
                 import_state.finish
               end

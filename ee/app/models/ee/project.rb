@@ -856,13 +856,13 @@ module EE
       repository.log_geo_updated_event
 
       if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-        wiki_repository.replicator.handle_after_update if wiki_repository
+        wiki_repository.geo_handle_after_update if wiki_repository
       else
         wiki.repository.log_geo_updated_event
       end
 
       if ::Geo::DesignManagementRepositoryReplicator.enabled?
-        design_management_repository.replicator.handle_after_update if design_management_repository
+        design_management_repository.geo_handle_after_update if design_management_repository
       else
         design_repository.log_geo_updated_event
       end

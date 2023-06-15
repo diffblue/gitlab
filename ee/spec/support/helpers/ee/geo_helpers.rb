@@ -99,7 +99,7 @@ module EE
           true
         end
 
-        def handle_after_destroy
+        def geo_handle_after_destroy
           true
         end
 

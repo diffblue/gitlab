@@ -68,7 +68,7 @@ module EE
 
       def log_geo_event(project)
         if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          project.wiki_repository.replicator.handle_after_destroy if project.wiki_repository
+          project.wiki_repository.geo_handle_after_destroy if project.wiki_repository
         else
           ::Geo::RepositoryDeletedEventStore.new(
             project,
@@ -77,9 +77,7 @@ module EE
           ).create!
         end
 
-        return unless ::Geo::DesignManagementRepositoryReplicator.enabled?
-
-        project.design_management_repository.replicator.handle_after_destroy if project.design_management_repository
+        project.design_management_repository.geo_handle_after_destroy if project.design_management_repository
       end
 
       def log_audit_event(project)

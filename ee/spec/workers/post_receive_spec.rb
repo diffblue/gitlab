@@ -121,7 +121,7 @@ RSpec.describe PostReceive, feature_category: :shared do
 
               expect(project.wiki_repository).to be_present
               expect_next_instance_of(Geo::ProjectWikiRepositoryReplicator) do |instance|
-                expect(instance).to receive(:handle_after_update)
+                expect(instance).to receive(:geo_handle_after_update)
               end
 
               described_class.new.perform(gl_repository, key_id, base64_changes)
@@ -211,7 +211,7 @@ RSpec.describe PostReceive, feature_category: :shared do
 
             expect(group.group_wiki_repository).to be_present
             expect_next_instance_of(Geo::GroupWikiRepositoryReplicator) do |instance|
-              expect(instance).to receive(:handle_after_update)
+              expect(instance).to receive(:geo_handle_after_update)
             end
 
             described_class.new.perform(gl_repository, key_id, base64_changes)
@@ -242,7 +242,7 @@ RSpec.describe PostReceive, feature_category: :shared do
 
         it 'calls replicator to update Geo' do
           expect_next_instance_of(Geo::DesignManagementRepositoryReplicator) do |instance|
-            expect(instance).to receive(:handle_after_update)
+            expect(instance).to receive(:geo_handle_after_update)
           end
 
           described_class.new.perform(gl_repository, key_id, base64_changes)
