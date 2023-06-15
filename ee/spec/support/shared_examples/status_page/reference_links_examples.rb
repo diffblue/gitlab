@@ -102,7 +102,44 @@ RSpec.shared_examples 'reference links for status page' do
         double(:reference, name: 'All Project and Group Members', to_reference: '@all')
       end
 
-      include_examples 'mention anonymization'
+      before do
+        # Note: since we're testing the same reference (@all), we need to reset `field`.
+        #
+        # 1. `_html` attributes are only updated if the target attribute changes
+        #     e.g., `description` must change to trigger an update in `description_html`
+        # 2. `field`` could be an attribute that cannot be blank so use a random placeholder `:tada:`.
+        object.update!(field => ":tada:")
+      end
+
+      context 'when `disable_all_mention` FF is disabled' do
+        before do
+          stub_feature_flags(disable_all_mention: false)
+
+          object.update!(field => gfm_reference)
+        end
+
+        let(:anonymized_name) { 'Incident Responder' }
+
+        it 'anonymizes mention' do
+          aggregate_failures do
+            expect(value).to include(anonymized_name)
+            expect(value).not_to include('<a ')
+            expect(value).not_to include(reference.name)
+          end
+        end
+      end
+
+      context 'when `disable_all_mention` FF is enabled' do
+        before do
+          stub_feature_flags(disable_all_mention: true)
+
+          object.update!(field => gfm_reference)
+        end
+
+        it 'shows the mention text' do
+          expect(value).to include('@all')
+        end
+      end
     end
 
     context 'with groups' do
