@@ -13,6 +13,7 @@ RSpec.describe Types::Ci::Catalog::ResourceType, feature_category: :pipeline_com
       icon
       web_path
       versions
+      latest_version
       star_count
       forks_count
       root_namespace

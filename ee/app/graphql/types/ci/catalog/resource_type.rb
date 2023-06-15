@@ -27,6 +27,13 @@ module Types
         field :versions, Types::ReleaseType.connection_type, null: true,
           description: 'Versions of the catalog resource.',
           resolver: Resolvers::Ci::Catalog::VersionsResolver,
+          deprecated: {
+            reason: 'Causes performance degradation',
+            replacement: 'latest_version',
+            milestone: '16.1'
+          }
+
+        field :latest_version, Types::ReleaseType, null: true, description: 'Latest version of the catalog resource.',
           alpha: { milestone: '16.1' }
 
         field :star_count, GraphQL::Types::Int, null: false,
@@ -45,6 +52,16 @@ module Types
 
         def web_path
           ::Gitlab::Routing.url_helpers.project_path(object.project)
+        end
+
+        def latest_version
+          BatchLoader::GraphQL.for(object.project).batch do |projects, loader|
+            latest_releases = ReleasesFinder.new(projects, current_user, latest: true).execute
+
+            latest_releases.index_by(&:project).each do |project, latest_release|
+              loader.call(project, latest_release)
+            end
+          end
         end
 
         def forks_count

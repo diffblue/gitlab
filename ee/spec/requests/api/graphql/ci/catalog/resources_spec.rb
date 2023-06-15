@@ -271,6 +271,124 @@ RSpec.describe 'Query.ciCatalogResources', feature_category: :pipeline_compositi
     end
   end
 
+  describe 'latestVersion' do
+    before do
+      stub_licensed_features(ci_namespace_catalog: true)
+      namespace.add_developer(user)
+    end
+
+    let(:query) do
+      <<~GQL
+        query {
+          ciCatalogResources(projectPath: "#{project1.full_path}") {
+            nodes {
+              id
+              latestVersion {
+                id
+                tagName
+                releasedAt
+                author {
+                  id
+                  name
+                  webUrl
+                }
+              }
+            }
+          }
+        }
+      GQL
+    end
+
+    context 'when the resource has versions' do
+      let_it_be(:author1) { create(:user, name: 'author1') }
+      let_it_be(:author2) { create(:user, name: 'author2') }
+
+      # Latest versions of the projects
+      let_it_be(:version1) { create(:release, project: project1, released_at: '2023-02-01T00:00:00Z', author: author1) }
+      let_it_be(:version2) { create(:release, project: project2, released_at: '2023-02-01T00:00:00Z', author: author2) }
+
+      before(:all) do
+        # Previous versions of the projects
+        create(:release, project: project1, released_at: '2023-01-01T00:00:00Z', author: author1)
+        create(:release, project: project2, released_at: '2023-01-01T00:00:00Z', author: author2)
+      end
+
+      it 'returns the resource with the latest version data' do
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(
+            resource1,
+            latestVersion: a_graphql_entity_for(
+              version1,
+              tagName: version1.tag,
+              releasedAt: version1.released_at,
+              author: a_graphql_entity_for(author1, :name)
+            )
+          )
+        )
+      end
+
+      context 'when there are multiple resources visible to the current user in the namespace' do
+        let_it_be(:project0) { create(:project, namespace: namespace) }
+        let_it_be(:resource0) { create(:catalog_resource, project: project0) }
+        let_it_be(:author0) { create(:user, name: 'author0') }
+
+        let_it_be(:version0) do
+          create(:release, project: project0, released_at: '2023-01-01T00:00:00Z', author: author0)
+        end
+
+        it 'returns all resources with the latest version data' do
+          resource2 = create(:catalog_resource, project: project2)
+
+          post_query
+
+          expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+            a_graphql_entity_for(
+              resource0,
+              latestVersion: a_graphql_entity_for(
+                version0,
+                tagName: version0.tag,
+                releasedAt: version0.released_at,
+                author: a_graphql_entity_for(author0, :name)
+              )
+            ),
+            a_graphql_entity_for(
+              resource1,
+              latestVersion: a_graphql_entity_for(
+                version1,
+                tagName: version1.tag,
+                releasedAt: version1.released_at,
+                author: a_graphql_entity_for(author1, :name)
+              )
+            ),
+            a_graphql_entity_for(
+              resource2,
+              latestVersion: a_graphql_entity_for(
+                version2,
+                tagName: version2.tag,
+                releasedAt: version2.released_at,
+                author: a_graphql_entity_for(author2, :name)
+              )
+            )
+          )
+        end
+
+        it_behaves_like 'avoids N+1 queries'
+      end
+    end
+
+    context 'when the resource does not have a version' do
+      it 'returns nil' do
+        post_query
+
+        expect(graphql_data_at(:ciCatalogResources, :nodes)).to contain_exactly(
+          a_graphql_entity_for(resource1, latestVersion: nil)
+        )
+      end
+    end
+  end
+
   describe 'rootNamespace' do
     before do
       stub_licensed_features(ci_namespace_catalog: true)
