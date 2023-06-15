@@ -2,9 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'subscriptions/groups/edit' do
-  let(:group) { Group.new }
-  let(:user) { User.new }
+RSpec.describe 'subscriptions/groups/edit', feature_category: :purchase do
+  let(:group) { build_stubbed(:group) }
+  let(:user) { build_stubbed(:user) }
+  let(:quantity) { '1' }
 
   before do
     assign(:group, group)
@@ -16,7 +17,11 @@ RSpec.describe 'subscriptions/groups/edit' do
     allow(view).to receive(:current_user).and_return(user)
   end
 
-  let(:quantity) { '1' }
+  it 'renders the desired page header content' do
+    render
+
+    expect(rendered).to have_text(_('Create your group'))
+  end
 
   it 'tracks purchase banner', :snowplow do
     render
@@ -30,7 +35,7 @@ RSpec.describe 'subscriptions/groups/edit' do
     )
   end
 
-  context 'a single user' do
+  context 'for a single user' do
     it 'displays the correct notification for 1 user' do
       render
 
@@ -40,7 +45,7 @@ RSpec.describe 'subscriptions/groups/edit' do
     end
   end
 
-  context 'multiple users' do
+  context 'for multiple users' do
     let(:quantity) { '2' }
 
     it 'displays the correct notification for 2 users' do
@@ -49,26 +54,6 @@ RSpec.describe 'subscriptions/groups/edit' do
       expect(rendered).to have_text('You\'ve successfully purchased the Bronze plan subscription for 2 users and ' \
                                     'you\'ll receive a receipt by email. Your purchase may take a minute to sync, ' \
                                     'refresh the page if your subscription details haven\'t displayed yet.')
-    end
-  end
-
-  context 'with new_user in the params' do
-    before do
-      allow(view).to receive(:params).and_return(new_user: 'true')
-    end
-
-    it 'displays the progress bar' do
-      render
-
-      expect(rendered).to have_selector('#progress-bar')
-    end
-  end
-
-  context 'without new_user in the params' do
-    it 'does not display the progress bar' do
-      render
-
-      expect(rendered).not_to have_selector('#progress-bar')
     end
   end
 end

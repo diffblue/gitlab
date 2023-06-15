@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'registrations/welcome/show', :saas, feature_category: :user_management do
+RSpec.describe 'registrations/welcome/show', :saas, feature_category: :onboarding do
   using RSpec::Parameterized::TableSyntax
 
   before do
@@ -23,13 +23,13 @@ RSpec.describe 'registrations/welcome/show', :saas, feature_category: :user_mana
 
     subject { rendered }
 
-    where(:redirect_path, :signup_onboarding_enabled, :show_progress_bar, :flow, :continue?, :show_joining_question) do
-      '/-/subscriptions/new'    | false | true  | :subscription | true  | true
-      '/-/subscriptions/new'    | true  | true  | :subscription | true  | true
-      '/oauth/authorize/abc123' | false | false | nil           | false | true
-      '/oauth/authorize/abc123' | true  | false | nil           | false | true
-      nil                       | false | false | nil           | false | true
-      nil                       | true  | true  | nil           | true  | true
+    where(:redirect_path, :signup_onboarding_enabled, :flow, :continue?, :show_joining_question) do
+      '/-/subscriptions/new'    | false | :subscription | true  | true
+      '/-/subscriptions/new'    | true  | :subscription | true  | true
+      '/oauth/authorize/abc123' | false | nil           | false | true
+      '/oauth/authorize/abc123' | true  | nil           | false | true
+      nil                       | false | nil           | false | true
+      nil                       | true  | nil           | true  | true
     end
 
     with_them do
@@ -45,23 +45,12 @@ RSpec.describe 'registrations/welcome/show', :saas, feature_category: :user_mana
         is_expected.to have_button(expected_text)
       end
 
-      it { is_expected_to_have_progress_bar(status: show_progress_bar) }
       it { is_expected_to_show_joining_question(show_joining_question) }
 
       it 'renders a select and text field for additional information' do
         is_expected.to have_selector('select[name="user[registration_objective]"]')
         is_expected.to have_selector('input[name="jobs_to_be_done_other"]', visible: false)
       end
-    end
-  end
-
-  def is_expected_to_have_progress_bar(status: true)
-    allow(view).to receive(:show_signup_flow_progress_bar?).and_return(status)
-
-    if status
-      is_expected.to have_selector('#progress-bar')
-    else
-      is_expected.not_to have_selector('#progress-bar')
     end
   end
 
