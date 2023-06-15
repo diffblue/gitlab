@@ -12,6 +12,9 @@ class ElasticWikiIndexerWorker
   idempotent!
   loggable_arguments 1, 2
 
+  LOCK_RETRIES = 2
+  LOCK_SLEEP_SEC = 1
+
   # Performs the wiki indexation
   # container_id - The ID of the container(project/group) to index
   # container_type - The class of the container(project/group) to index
@@ -45,7 +48,7 @@ class ElasticWikiIndexerWorker
     force = !!options[:force]
     search_indexing_duration_s = Benchmark.realtime do
       @ret = in_lock("#{self.class.name}/#{container_type}/#{container_id}",
-        ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: 0) do
+        ttl: (Gitlab::Elastic::Indexer.timeout + 1.minute), retries: LOCK_RETRIES, sleep_sec: LOCK_SLEEP_SEC) do
         Gitlab::Elastic::Indexer.new(container, wiki: true, force: force).run
       end
     end
