@@ -17,7 +17,7 @@ export const initTanukiBotChatDrawer = () => {
     return false;
   }
 
-  const { userId } = el.dataset;
+  const { userId, resourceId } = el.dataset;
 
   return new Vue({
     el,
@@ -27,6 +27,7 @@ export const initTanukiBotChatDrawer = () => {
       return createElement(TanukiBotChatApp, {
         props: {
           userId,
+          resourceId,
         },
       });
     },

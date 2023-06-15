@@ -115,6 +115,12 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
         end
       end
     end
+
+    it 'assigns ai_resource_id' do
+      get_show
+
+      expect(assigns(:ai_resource_id)).to eq(issue.to_global_id)
+    end
   end
 
   describe 'GET #index' do

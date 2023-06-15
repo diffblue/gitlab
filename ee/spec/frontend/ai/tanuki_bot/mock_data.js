@@ -66,3 +66,4 @@ export const MOCK_CHAT_CACHED_MESSAGES_RES = {
 export const MOCK_TANUKI_BOT_MUTATATION_RES = { data: { aiAction: { errors: [] } } };
 
 export const MOCK_USER_ID = 'gid://gitlab/User/1';
+export const MOCK_RESOURCE_ID = 'gid://gitlab/Issue/1';
