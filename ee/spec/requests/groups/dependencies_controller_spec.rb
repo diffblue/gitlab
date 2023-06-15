@@ -40,6 +40,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             expect(response.body).to include('data-empty-state-svg-path')
             expect(response.body).to include('data-endpoint')
             expect(response.body).to include('data-support-documentation-path')
+            expect(response.body).to include('data-export-endpoint')
           end
 
           context 'when feature flag group_level_dependencies is disabled' do
