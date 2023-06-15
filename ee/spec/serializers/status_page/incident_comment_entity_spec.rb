@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe StatusPage::IncidentCommentEntity do
+RSpec.describe StatusPage::IncidentCommentEntity, feature_category: :incident_management do
   let_it_be(:note, reload: true) { create(:note, note: ':ok:') }
 
   let(:json) { subject.as_json }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Mentionable do
+RSpec.describe EE::Mentionable, feature_category: :team_planning do
   context Epic do
     describe '#store_mentions!' do
       it_behaves_like 'mentions in description', :epic
