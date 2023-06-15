@@ -33,6 +33,7 @@ import StatusIcon from '~/vue_merge_request_widget/components/extensions/status_
 import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
 import getStateSubscription from '~/vue_merge_request_widget/queries/get_state.subscription.graphql';
+import readyToMergeSubscription from '~/vue_merge_request_widget/queries/states/ready_to_merge.subscription.graphql';
 import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/states/ready_to_merge.query.graphql';
 import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
 import approvedBySubscription from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.subscription.graphql';
@@ -72,6 +73,7 @@ describe('MrWidgetOptions', () => {
   let queryResponse;
   let wrapper;
   let mock;
+  let stateSubscription;
 
   const COLLABORATION_MESSAGE = 'Members who can merge are allowed to add commits';
   const findApprovalsWidget = () => wrapper.findComponent(Approvals);
@@ -117,6 +119,7 @@ describe('MrWidgetOptions', () => {
       },
     };
     stateQueryHandler = jest.fn().mockResolvedValue(queryResponse);
+    stateSubscription = createMockApolloSubscription();
 
     const mounting = fullMount ? mount : shallowMount;
     const queryHandlers = [
@@ -137,6 +140,8 @@ describe('MrWidgetOptions', () => {
     ];
     const subscriptionHandlers = [
       [approvedBySubscription, () => mockedApprovalsSubscription],
+      [getStateSubscription, () => stateSubscription],
+      [readyToMergeSubscription, () => createMockApolloSubscription()],
       ...(options.apolloSubscriptions || []),
     ];
     const apolloProvider = createMockApollo(queryHandlers);
@@ -1312,11 +1317,8 @@ describe('MrWidgetOptions', () => {
     });
 
     describe('when the MR is updated by observing its status', () => {
-      let stateSubscription;
-
       beforeEach(() => {
         window.gon.features.realtimeMrStatusChange = true;
-        stateSubscription = createMockApolloSubscription();
       });
 
       it("shows the Preparing widget when the MR reports it's not ready yet", async () => {
@@ -1326,9 +1328,7 @@ describe('MrWidgetOptions', () => {
             state: 'opened',
             detailedMergeStatus: 'PREPARING',
           },
-          {
-            apolloSubscriptions: [[getStateSubscription, () => stateSubscription]],
-          },
+          {},
           {},
           false,
         );
@@ -1343,9 +1343,7 @@ describe('MrWidgetOptions', () => {
             state: 'opened',
             detailedMergeStatus: 'PREPARING',
           },
-          {
-            apolloSubscriptions: [[getStateSubscription, () => stateSubscription]],
-          },
+          {},
           {},
           false,
         );
