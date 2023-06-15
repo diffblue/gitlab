@@ -130,4 +130,91 @@ RSpec.describe EE::API::Helpers do
       end
     end
   end
+
+  describe '#find_subscription_add_on!' do
+    subject(:find_or_create_subscription_add_on!) { helper.find_or_create_subscription_add_on!(name) }
+
+    let(:helper) do
+      klass = Class.new do
+        include API::Helpers
+        include EE::API::Helpers
+      end
+
+      klass.new
+    end
+
+    let(:name) { GitlabSubscriptions::AddOn.names.each_key.first }
+
+    context 'when add-on name is not a defined one' do
+      let(:name) { 'non-existing-add-on' }
+
+      it 'returns not found' do
+        allow(helper).to receive(:not_found!).and_raise(ActiveRecord::RecordNotFound)
+
+        expect { find_or_create_subscription_add_on! }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when add-on does not exist' do
+      it 'creates the add-on' do
+        expect { find_or_create_subscription_add_on! }.to change { GitlabSubscriptions::AddOn.count }
+        expect(GitlabSubscriptions::AddOn.last).to have_attributes(
+          name: name,
+          description: GitlabSubscriptions::AddOn.descriptions[name.to_sym]
+        )
+      end
+    end
+
+    context 'when add-on exists' do
+      it 'returns found add-on' do
+        subscription_add_on = create(:gitlab_subscription_add_on, name: name)
+
+        expect(find_or_create_subscription_add_on!).to eq(subscription_add_on)
+      end
+    end
+  end
+
+  describe '#find_subscription_add_on_purchase!' do
+    subject(:find_subscription_add_on_purchase!) do
+      helper = Class.new.include(described_class).new
+      helper.find_subscription_add_on_purchase!(namespace, subscription_add_on)
+    end
+
+    let(:namespace) { create(:group) }
+    let(:subscription_add_on) { create(:gitlab_subscription_add_on) }
+
+    shared_examples 'not found' do
+      it 'returns not found' do
+        expect { find_subscription_add_on_purchase! }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
+
+    context 'when namespace does not exist' do
+      let(:add_on) { nil }
+
+      include_examples 'not found'
+    end
+
+    context 'when add-on does not exist' do
+      let(:namespace) { nil }
+
+      include_examples 'not found'
+    end
+
+    context 'when namespace and add-on exist' do
+      context 'when add-on purchase exists' do
+        let!(:subscription_add_on_purchase) do
+          create(:gitlab_subscription_add_on_purchase, namespace: namespace, add_on: subscription_add_on)
+        end
+
+        it 'returns found add-on purchase' do
+          expect(find_subscription_add_on_purchase!).to eq(subscription_add_on_purchase)
+        end
+      end
+
+      context 'when add-on purchase does not exist' do
+        include_examples 'not found'
+      end
+    end
+  end
 end

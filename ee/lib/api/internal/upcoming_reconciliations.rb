@@ -38,7 +38,7 @@ module API
           end
 
           delete '/' do
-            upcoming_reconciliation = GitlabSubscriptions::UpcomingReconciliation.next(params[:namespace_id])
+            upcoming_reconciliation = ::GitlabSubscriptions::UpcomingReconciliation.next(params[:namespace_id])
 
             not_found! if upcoming_reconciliation.blank?
 
