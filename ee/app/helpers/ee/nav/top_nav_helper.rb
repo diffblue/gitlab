@@ -51,7 +51,7 @@ module EE
             id: 'geo',
             title: title,
             icon: 'location-dot',
-            data: { qa_selector: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
+            data: { testid: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
             href: ::Gitlab::Geo.primary_node_url
           )
         end
