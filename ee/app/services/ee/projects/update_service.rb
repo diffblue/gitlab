@@ -187,7 +187,7 @@ module EE
 
       def sync_wiki_on_enable
         if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          project.wiki_repository.replicator.handle_after_update if project.wiki_repository
+          project.wiki_repository.geo_handle_after_update if project.wiki_repository
         else
           ::Geo::RepositoryUpdatedService.new(project.wiki.repository).execute
         end

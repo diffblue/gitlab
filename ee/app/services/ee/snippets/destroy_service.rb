@@ -8,7 +8,7 @@ module EE
       def attempt_destroy!
         super
 
-        snippet.snippet_repository.replicator.handle_after_destroy if snippet.snippet_repository
+        snippet.snippet_repository.geo_handle_after_destroy if snippet.snippet_repository
       end
     end
   end

@@ -293,14 +293,14 @@ module Gitlab
         { replicable_name: replicable_name, replicable_id: model_record_id }
       end
 
-      def handle_after_destroy
+      def geo_handle_after_destroy
         return false unless Gitlab::Geo.primary?
         return unless self.class.enabled?
 
         publish(:deleted, **deleted_params)
       end
 
-      def handle_after_update
+      def geo_handle_after_update
         return false unless Gitlab::Geo.primary?
         return unless self.class.enabled?
 

@@ -88,7 +88,7 @@ RSpec.describe Groups::DestroyService, feature_category: :groups_and_projects do
     it 'calls replicator to update Geo' do
       group.wiki.create_wiki_repository
 
-      expect(group.group_wiki_repository.replicator).to receive(:handle_after_destroy)
+      expect(group.group_wiki_repository.replicator).to receive(:geo_handle_after_destroy)
 
       subject.execute
     end
@@ -98,7 +98,7 @@ RSpec.describe Groups::DestroyService, feature_category: :groups_and_projects do
     it 'does not call replicator to update Geo' do
       group.wiki.create_wiki_repository
 
-      expect(group.group_wiki_repository.replicator).not_to receive(:handle_after_destroy)
+      expect(group.group_wiki_repository.replicator).not_to receive(:geo_handle_after_destroy)
 
       subject.execute
     end

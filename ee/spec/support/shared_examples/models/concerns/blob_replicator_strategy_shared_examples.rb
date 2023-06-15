@@ -67,12 +67,12 @@ RSpec.shared_examples 'a blob replicator' do
     end
   end
 
-  describe '#handle_after_destroy' do
+  describe '#geo_handle_after_destroy' do
     it 'creates a Geo::Event' do
       model_record
 
       expect do
-        replicator.handle_after_destroy
+        replicator.geo_handle_after_destroy
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(

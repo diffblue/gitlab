@@ -30,7 +30,7 @@ module EE
         return unless container.is_a?(Project)
 
         if ::Geo::ProjectWikiRepositoryReplicator.enabled?
-          container.wiki_repository.replicator.handle_after_update if container.wiki_repository
+          container.wiki_repository.geo_handle_after_update if container.wiki_repository
         else
           ::Geo::RepositoryUpdatedService.new(container.wiki.repository).execute
         end

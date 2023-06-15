@@ -11,10 +11,13 @@ module Geo
       # If this hook turns out not to apply to all Models, perhaps we should extract a `ReplicableBlobModel`
       after_create_commit :geo_create_event!
       after_destroy -> do
-        replicator.handle_after_destroy if replicator.respond_to?(:handle_after_destroy)
+        replicator.geo_handle_after_destroy if replicator.respond_to?(:geo_handle_after_destroy)
       rescue StandardError => err
         log_error("Geo replicator after_destroy failed", err)
       end
+
+      delegate :geo_handle_after_destroy, to: :replicator
+      delegate :geo_handle_after_update, to: :replicator
 
       # Temporarily defining `verification_succeeded` and
       # `verification_failed` for unverified models while verification is

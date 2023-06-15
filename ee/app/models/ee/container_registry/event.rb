@@ -8,17 +8,17 @@ module EE
       override :handle!
       def handle!
         super
-        handle_after_update!
+        geo_handle_after_update!
       end
 
       private
 
-      def handle_after_update!
+      def geo_handle_after_update!
         return unless media_type_manifest? || target_tag?
         return unless container_repository_exists?
 
         container_repository = find_container_repository!
-        container_repository.replicator.handle_after_update
+        container_repository.geo_handle_after_update
       end
 
       def media_type_manifest?

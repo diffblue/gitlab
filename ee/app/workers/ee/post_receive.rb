@@ -34,7 +34,7 @@ module EE
     def process_project_wiki_changes(wiki)
       if ::Geo::ProjectWikiRepositoryReplicator.enabled?
         project_wiki_repository = wiki.project.wiki_repository
-        project_wiki_repository.replicator.handle_after_update if project_wiki_repository
+        project_wiki_repository.geo_handle_after_update if project_wiki_repository
       else
         ::Geo::RepositoryUpdatedService.new(wiki.repository).execute
       end
@@ -43,7 +43,7 @@ module EE
     def process_group_wiki_changes(wiki)
       return unless wiki.group.group_wiki_repository
 
-      wiki.group.group_wiki_repository.replicator.handle_after_update
+      wiki.group.group_wiki_repository.geo_handle_after_update
     end
 
     override :replicate_snippet_changes
@@ -51,7 +51,7 @@ module EE
       if ::Gitlab::Geo.primary?
         # We don't use Geo::RepositoryUpdatedService anymore as
         # it's already deprecated. See https://gitlab.com/groups/gitlab-org/-/epics/2809
-        snippet.snippet_repository.replicator.handle_after_update if snippet.snippet_repository
+        snippet.snippet_repository.geo_handle_after_update if snippet.snippet_repository
       end
     end
 
@@ -60,7 +60,7 @@ module EE
       return unless ::Gitlab::Geo.primary?
       return unless ::Geo::DesignManagementRepositoryReplicator.enabled?
 
-      design_management_repository.replicator.handle_after_update if design_management_repository
+      design_management_repository.geo_handle_after_update if design_management_repository
     end
   end
 end

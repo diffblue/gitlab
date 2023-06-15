@@ -73,7 +73,7 @@ RSpec.describe WikiPages::UpdateService, feature_category: :wiki do
           it 'calls replicator to update Geo' do
             create(:project_wiki_repository, project: container)
 
-            expect(container.wiki_repository.replicator).to receive(:handle_after_update)
+            expect(container.wiki_repository.replicator).to receive(:geo_handle_after_update)
 
             service.execute(page)
           end

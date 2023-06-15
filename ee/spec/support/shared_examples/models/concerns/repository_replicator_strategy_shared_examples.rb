@@ -32,10 +32,10 @@ RSpec.shared_examples 'a repository replicator' do
     let(:replicator_class) { described_class }
   end
 
-  describe '#handle_after_update' do
+  describe '#geo_handle_after_update' do
     it 'creates a Geo::Event' do
       expect do
-        replicator.handle_after_update
+        replicator.geo_handle_after_update
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
@@ -50,15 +50,15 @@ RSpec.shared_examples 'a repository replicator' do
       it 'does not publish' do
         expect(replicator).not_to receive(:publish)
 
-        replicator.handle_after_update
+        replicator.geo_handle_after_update
       end
     end
   end
 
-  describe '#handle_after_destroy' do
+  describe '#geo_handle_after_destroy' do
     it 'creates a Geo::Event' do
       expect do
-        replicator.handle_after_destroy
+        replicator.geo_handle_after_destroy
       end.to change { ::Geo::Event.count }.by(1)
 
       expect(::Geo::Event.last.attributes).to include(
@@ -74,7 +74,7 @@ RSpec.shared_examples 'a repository replicator' do
       it 'does not publish' do
         expect(replicator).not_to receive(:publish)
 
-        replicator.handle_after_destroy
+        replicator.geo_handle_after_destroy
       end
     end
   end
