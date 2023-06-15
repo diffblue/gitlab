@@ -9,7 +9,7 @@ module EE
         include ::Geo::ReplicableModel
         include ::Geo::VerifiableModel
 
-        delegate :repository_storage, :wiki, to: :project
+        delegate :create_wiki, :repository_storage, :wiki, :wiki_repository_exists?, to: :project
         delegate :repository, to: :wiki
 
         delegate(*::Geo::VerificationState::VERIFICATION_METHODS, to: :wiki_repository_state)

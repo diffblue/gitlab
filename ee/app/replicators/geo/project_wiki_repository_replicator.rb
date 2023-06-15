@@ -44,6 +44,16 @@ module Geo
       ::Gitlab::Geo.primary_node.api_url("projects/#{model_record.project.id}/snapshot?wiki=1")
     end
 
+    override :verify
+    def verify
+      # Historically some projects never had their wiki repos initialized;
+      # this happens on project creation now. Let's initialize an empty repo
+      # if it is not already there to allow them to be checksummed.
+      model_record.create_wiki unless repository.exists?
+
+      super
+    end
+
     def repository
       model_record.repository
     end
