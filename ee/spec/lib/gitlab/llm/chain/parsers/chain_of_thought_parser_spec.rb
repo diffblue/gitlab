@@ -49,6 +49,18 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
     end
 
     context 'when input has multiline instructions' do
+      shared_examples 'parses instructions' do
+        it 'parses multiline instructions' do
+          parser.parse
+
+          expect(parser.thought).to include('This is a multi')
+          expect(parser.thought).to include('line thought')
+          expect(parser.final_answer).to include('This is a final')
+          expect(parser.final_answer).to include('multi line')
+          expect(parser.final_answer).to include('answer')
+        end
+      end
+
       let(:output) do
         <<-OUTPUT
           Thought: This is a multi
@@ -61,14 +73,39 @@ RSpec.describe Gitlab::Llm::Chain::Parsers::ChainOfThoughtParser, feature_catego
         OUTPUT
       end
 
-      it 'parses multiline instructions' do
-        parser.parse
+      it_behaves_like 'parses instructions'
 
-        expect(parser.thought).to include('This is a multi')
-        expect(parser.thought).to include('line thought')
-        expect(parser.final_answer).to include('This is a final')
-        expect(parser.final_answer).to include('multi line')
-        expect(parser.final_answer).to include('answer')
+      context 'when instructions start without whitespaces' do
+        let(:output) do
+          <<-OUTPUT
+          Thought:This is a multi
+                   line thought
+          Action:This is an action
+          Action Input:This is an action input
+          Final Answer:This is a final
+                        multi line
+                        answer
+          OUTPUT
+        end
+
+        it_behaves_like 'parses instructions'
+      end
+
+      context 'when final answer starts on new line and without whitespace' do
+        let(:output) do
+          <<-OUTPUT
+          Thought: This is a multi
+                   line thought
+          Action: This is an action
+          Action Input: This is an action input
+          Final Answer:
+                        This is a final
+                        multi line
+                        answer
+          OUTPUT
+        end
+
+        it_behaves_like 'parses instructions'
       end
     end
 

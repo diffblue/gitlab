@@ -20,7 +20,7 @@ module Gitlab
 
           # Match the first occurrence of "Action: " and capture everything until "Action Input"
           def parse_action
-            /Action: (?<action>.+?)(?=Action Input)/m =~ output
+            /Action:(?<action>.+?)(?=Action Input)/m =~ output
 
             @action = action&.strip
           end
@@ -30,7 +30,7 @@ module Gitlab
           # - "Final Answer" if it's present
           # - End of string
           def parse_action_input
-            /(?<=Action Input: )(?<action_input>.*?)(?=Observation|Final Answer|\z)/m =~ output
+            /(?<=Action Input:)(?<action_input>.*?)(?=Observation|Final Answer|\z)/m =~ output
 
             @action_input = action_input&.strip
           end
@@ -45,7 +45,7 @@ module Gitlab
 
           # Match the first occurrence of "Final Answer: " and capture everything
           def parse_final_answer
-            /Final Answer: (?<final_answer>.+)/m =~ output
+            /Final Answer:(?<final_answer>.+)/m =~ output
 
             @final_answer = final_answer&.strip
           end
