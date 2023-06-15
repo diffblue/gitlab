@@ -71,8 +71,7 @@ module EE
         next false unless ::Gitlab.org_or_com?
         next false unless @user
 
-        accessible_root_groups = @user.groups.by_parent(nil)
-        accessible_root_groups.reject(&:code_suggestions_enabled?).any?
+        @user.code_suggestions_disabled_by_group?
       end
 
       condition(:user_has_paid_namespace) do
