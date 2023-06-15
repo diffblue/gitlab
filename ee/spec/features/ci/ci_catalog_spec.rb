@@ -21,7 +21,7 @@ RSpec.describe 'Ci Catalog', :js, feature_category: :pipeline_composition do
     end
 
     it 'shows CI Catalog title and description', :aggregate_failures do
-      expect(page).to have_content('CI/CD catalog')
+      expect(page).to have_content('CI/CD Catalog')
       expect(page).to have_content('Repositories of pipeline components available in this namespace.')
     end
   end

@@ -4,7 +4,7 @@ import { s__ } from '~/locale';
 
 export default {
   i18n: {
-    title: s__('CiCatalog|Get started with the CI/CD catalog'),
+    title: s__('CiCatalog|Get started with the CI/CD Catalog'),
     description: s__(
       'CiCatalog|Create a pipeline component repository and make reusing pipeline configurations faster and easier.',
     ),

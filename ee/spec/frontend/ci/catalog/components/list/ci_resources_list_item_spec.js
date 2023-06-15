@@ -1,6 +1,7 @@
 import { GlAvatar, GlAvatarLink, GlBadge, GlButton, GlSprintf } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CiResourcesListItem from 'ee/ci/catalog/components/list/ci_resources_list_item.vue';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { mockCatalogResourceItem } from '../../mock';
 
 describe('CiResourcesListItem', () => {
@@ -39,8 +40,14 @@ describe('CiResourcesListItem', () => {
       createComponent();
     });
 
-    it('renders the resource avatar', () => {
+    it('renders the resource avatar and passes the right props', () => {
+      const { icon, id, name } = defaultProps.resource;
       expect(findAvatar().exists()).toBe(true);
+      expect(findAvatar().props()).toMatchObject({
+        entityId: getIdFromGraphQLId(id),
+        entityName: name,
+        src: icon,
+      });
     });
 
     it('renders the resource avatar link', () => {

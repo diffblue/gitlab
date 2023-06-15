@@ -31,7 +31,7 @@ export default {
     },
     learnMore: __('Learn more'),
   },
-  learnMorePath: helpPagePath('architecture/blueprints/ci_pipeline_components/index'),
+  learnMorePath: helpPagePath('ci/components/index'),
 };
 </script>
 <template>
