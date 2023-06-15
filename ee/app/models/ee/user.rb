@@ -570,6 +570,10 @@ module EE
       !disabled_by_any_group
     end
 
+    def code_suggestions_disabled_by_group?
+      groups.roots.joins(:namespace_settings).where(namespace_settings: { code_suggestions: false }).any?
+    end
+
     protected
 
     override :password_required?

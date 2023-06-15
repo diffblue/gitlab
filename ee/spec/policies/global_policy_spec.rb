@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GlobalPolicy, feature_category: :shared do
   include ExternalAuthorizationServiceHelpers
+  using RSpec::Parameterized::TableSyntax
 
   let_it_be(:admin) { create(:admin) }
   let_it_be(:current_user) { create(:user) }
@@ -273,8 +274,6 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   end
 
   describe ':export_user_permissions', :enable_admin_mode do
-    using RSpec::Parameterized::TableSyntax
-
     let(:policy) { :export_user_permissions }
 
     let_it_be(:admin) { build_stubbed(:admin) }
@@ -504,7 +503,7 @@ RSpec.describe GlobalPolicy, feature_category: :shared do
   end
 
   describe 'access_code_suggestions' do
-    using RSpec::Parameterized::TableSyntax
+    let(:policy) { :access_code_suggestions }
 
     let_it_be_with_reload(:current_user) { create(:user) }
     let_it_be_with_reload(:first_group) { create(:group) }

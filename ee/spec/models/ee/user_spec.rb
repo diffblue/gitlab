@@ -2255,6 +2255,46 @@ RSpec.describe User, feature_category: :system_access do
     end
   end
 
+  describe '#code_suggestions_disabled_by_group?' do
+    let_it_be_with_refind(:user) { create(:user) }
+    let_it_be(:allowed_subgroup) do
+      allowed_ancestor = create(:group).tap do |record|
+        record.update_attribute(:code_suggestions, true)
+      end
+      create(:group, parent: allowed_ancestor)
+    end
+
+    let_it_be(:disallowed_subgroup) do
+      disallowed_ancestor = create(:group).tap do |record|
+        record.update_attribute(:code_suggestions, false)
+      end
+      create(:group, parent: disallowed_ancestor)
+    end
+
+    subject(:code_suggestions_disabled_by_group?) { user.code_suggestions_disabled_by_group? }
+
+    context 'when code_suggestions setting is false for one group, true for another group' do
+      before do
+        allowed_subgroup.add_owner(user)
+        disallowed_subgroup.add_owner(user)
+      end
+
+      it { is_expected.to eq(true) }
+
+      it 'avoids N+1 queries' do
+        expect { user.code_suggestions_disabled_by_group? }.to match_query_count(1)
+      end
+    end
+
+    context 'when code_suggestions setting is true for all groups' do
+      before do
+        allowed_subgroup.add_owner(user)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
+
   describe '#preloaded_member_roles_for_projects' do
     let_it_be(:project) { create(:project, :private, :in_group) }
     let_it_be(:user) { create(:user) }
