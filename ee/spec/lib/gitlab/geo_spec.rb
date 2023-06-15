@@ -96,10 +96,8 @@ RSpec.describe Gitlab::Geo, :geo, :request_store, feature_category: :geo_replica
         expect(decoded_extra_data).to eq({})
       end
 
-      it 'sets the expected expiration time' do
-        freeze_time do
-          expect(jwt.first['exp']).to eq((Time.zone.now + Gitlab::Geo::PROXY_JWT_VALIDITY_PERIOD).to_i)
-        end
+      it 'sets the expected expiration time', :freeze_time do
+        expect(jwt.first['exp']).to eq((Time.zone.now + Gitlab::Geo::PROXY_JWT_VALIDITY_PERIOD).to_i)
       end
     end
 

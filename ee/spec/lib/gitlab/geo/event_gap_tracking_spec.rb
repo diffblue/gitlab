@@ -78,12 +78,10 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state, 
   end
 
   describe '#fill_gaps' do
-    it 'ignore gaps that are less than 10 minutes old' do
-      freeze_time do
-        gap_tracking.check!(event_id_with_gap)
+    it 'ignore gaps that are less than 10 minutes old', :freeze_time do
+      gap_tracking.check!(event_id_with_gap)
 
-        expect { |blk| gap_tracking.fill_gaps(&blk) }.not_to yield_with_args(anything)
-      end
+      expect { |blk| gap_tracking.fill_gaps(&blk) }.not_to yield_with_args(anything)
     end
 
     it 'handles gaps that are more than 10 minutes old' do
@@ -144,22 +142,18 @@ RSpec.describe Gitlab::Geo::EventGapTracking, :clean_gitlab_redis_shared_state, 
       gap_tracking.send(:track_gaps, event_id_with_gap)
     end
 
-    it 'saves the gap id in redis' do
-      freeze_time do
-        gap_tracking.send(:track_gaps, event_id_with_gap)
+    it 'saves the gap id in redis', :freeze_time do
+      gap_tracking.send(:track_gaps, event_id_with_gap)
 
-        expect(read_gaps).to contain_exactly([gap_id.to_s, Time.now.to_i])
-      end
+      expect(read_gaps).to contain_exactly([gap_id.to_s, Time.now.to_i])
     end
 
-    it 'saves a range of gaps id in redis' do
-      freeze_time do
-        gap_tracking.send(:track_gaps, event_id_with_gap + 3)
+    it 'saves a range of gaps id in redis', :freeze_time do
+      gap_tracking.send(:track_gaps, event_id_with_gap + 3)
 
-        expected_gaps = ((previous_event_id + 1)..(event_id_with_gap + 2)).collect { |id| [id.to_s, Time.now.to_i] }
+      expected_gaps = ((previous_event_id + 1)..(event_id_with_gap + 2)).collect { |id| [id.to_s, Time.now.to_i] }
 
-        expect(read_gaps).to match_array(expected_gaps)
-      end
+      expect(read_gaps).to match_array(expected_gaps)
     end
 
     it 'saves the gaps in order' do

@@ -14,15 +14,13 @@ RSpec.describe Deployment do
         allow(deployment).to receive(:allow_pipeline_trigger_approve_deployment).and_return(true)
       end
 
-      it 'schedules Deployments::ApprovalWorker' do
-        freeze_time do
-          expect(::Deployments::ApprovalWorker).to receive(:perform_async).with(
-            deployment.id,
-            user_id: deployment.user_id,
-            status: 'approved'
-          )
-          deployment.block!
-        end
+      it 'schedules Deployments::ApprovalWorker', :freeze_time do
+        expect(::Deployments::ApprovalWorker).to receive(:perform_async).with(
+          deployment.id,
+          user_id: deployment.user_id,
+          status: 'approved'
+        )
+        deployment.block!
       end
     end
   end

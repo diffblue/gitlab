@@ -571,13 +571,7 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
     end
   end
 
-  describe '#start_sync!' do
-    around do |example|
-      freeze_time do
-        example.run
-      end
-    end
-
+  describe '#start_sync!', :freeze_time do
     context 'for a repository' do
       let(:type) { 'repository' }
 
@@ -631,12 +625,10 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
                         repository_verification_retry_count: 1)
       end
 
-      it 'sets last_repository_successful_sync_at to now' do
-        freeze_time do
-          subject.finish_sync!(type)
+      it 'sets last_repository_successful_sync_at to now', :freeze_time do
+        subject.finish_sync!(type)
 
-          expect(subject.reload.last_repository_successful_sync_at).to be_within(1).of(Time.current)
-        end
+        expect(subject.reload.last_repository_successful_sync_at).to be_within(1).of(Time.current)
       end
 
       it 'resets sync state' do
@@ -726,12 +718,10 @@ RSpec.describe Geo::ProjectRegistry, :geo, feature_category: :geo_replication do
                         wiki_verification_retry_count: 1)
       end
 
-      it 'sets last_wiki_successful_sync_at to now' do
-        freeze_time do
-          subject.finish_sync!(type)
+      it 'sets last_wiki_successful_sync_at to now', :freeze_time do
+        subject.finish_sync!(type)
 
-          expect(subject.reload.last_wiki_successful_sync_at).to be_within(1).of(Time.current)
-        end
+        expect(subject.reload.last_wiki_successful_sync_at).to be_within(1).of(Time.current)
       end
 
       it 'resets sync state' do

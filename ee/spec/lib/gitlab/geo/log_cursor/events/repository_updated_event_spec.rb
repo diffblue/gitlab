@@ -70,13 +70,11 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::RepositoryUpdatedEvent,
           )
         end
 
-        it 'sets resync_repository_was_scheduled_at to the scheduled time' do
-          freeze_time do
-            subject.process
-            reloaded_registry = registry.reload
+        it 'sets resync_repository_was_scheduled_at to the scheduled time', :freeze_time do
+          subject.process
+          reloaded_registry = registry.reload
 
-            expect(reloaded_registry.resync_repository_was_scheduled_at).to be_within(1.second).of(Time.now)
-          end
+          expect(reloaded_registry.resync_repository_was_scheduled_at).to be_within(1.second).of(Time.now)
         end
       end
 
@@ -102,13 +100,11 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::RepositoryUpdatedEvent,
           )
         end
 
-        it 'sets resync_wiki_was_scheduled_at to the scheduled time' do
-          freeze_time do
-            subject.process
-            reloaded_registry = registry.reload
+        it 'sets resync_wiki_was_scheduled_at to the scheduled time', :freeze_time do
+          subject.process
+          reloaded_registry = registry.reload
 
-            expect(reloaded_registry.resync_wiki_was_scheduled_at).to be_within(1.second).of(Time.now)
-          end
+          expect(reloaded_registry.resync_wiki_was_scheduled_at).to be_within(1.second).of(Time.now)
         end
       end
     end

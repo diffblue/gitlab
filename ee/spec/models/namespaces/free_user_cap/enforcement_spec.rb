@@ -114,12 +114,10 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
           end
 
           context 'when over the limit' do
-            it 'updates the database for enforcement' do
-              freeze_time do
-                expect do
-                  expect(over_limit?).to be(true)
-                end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
-              end
+            it 'updates the database for enforcement', :freeze_time do
+              expect do
+                expect(over_limit?).to be(true)
+              end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
             end
 
             it 'blanks out dashboard_notification_at' do

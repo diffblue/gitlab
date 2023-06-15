@@ -139,16 +139,10 @@ RSpec.describe Dora::DailyMetrics, type: :model, feature_category: :value_stream
     end
   end
 
-  describe '.aggregate_for!' do
+  describe '.aggregate_for!', :freeze_time do
     subject { described_class.aggregate_for!([metric], interval) }
 
     let_it_be(:environment) { create :environment }
-
-    around do |example|
-      freeze_time do
-        example.run
-      end
-    end
 
     context 'when metric is deployment frequency' do
       before_all do

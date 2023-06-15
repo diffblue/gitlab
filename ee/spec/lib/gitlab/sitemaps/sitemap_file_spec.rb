@@ -16,21 +16,19 @@ RSpec.describe Gitlab::Sitemaps::SitemapFile do
       described_class.new.save # rubocop: disable Rails/SaveBang
     end
 
-    it 'generates a valid sitemap file' do
-      freeze_time do
-        content = subject.render
-        expected_content = <<~EOS
-        <?xml version="1.0" encoding="UTF-8"?>
-        <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-          <url>
-            <loc>https://gitlab.com</loc>
-            <lastmod>#{Date.today.iso8601}</lastmod>
-          </url>
-        </urlset>
-        EOS
+    it 'generates a valid sitemap file', :freeze_time do
+      content = subject.render
+      expected_content = <<~EOS
+      <?xml version="1.0" encoding="UTF-8"?>
+      <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+        <url>
+          <loc>https://gitlab.com</loc>
+          <lastmod>#{Date.today.iso8601}</lastmod>
+        </url>
+      </urlset>
+      EOS
 
-        expect(content).to eq expected_content
-      end
+      expect(content).to eq expected_content
     end
   end
 

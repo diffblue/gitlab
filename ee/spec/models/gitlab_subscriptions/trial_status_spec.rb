@@ -10,11 +10,9 @@ RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :experimentat
   end
 
   describe '#percentage_complete' do
-    context 'for the beginning of a trial' do
+    context 'for the beginning of a trial', :freeze_time do
       specify do
-        freeze_time do
-          expect(percentage_complete(0, 30)).to eq(3.33)
-        end
+        expect(percentage_complete(0, 30)).to eq(3.33)
       end
     end
 
@@ -48,11 +46,9 @@ RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :experimentat
   end
 
   describe '#days_remaining' do
-    context 'for the beginning of a trial' do
+    context 'for the beginning of a trial', :freeze_time do
       specify do
-        freeze_time do
-          expect(days_remaining(0, 30)).to eq(30)
-        end
+        expect(days_remaining(0, 30)).to eq(30)
       end
     end
 
@@ -77,20 +73,16 @@ RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :experimentat
     end
   end
 
-  describe '#duration' do
+  describe '#duration', :freeze_time do
     context 'for default trial length' do
       specify do
-        freeze_time do
-          expect(duration(0, 30)).to eq(30)
-        end
+        expect(duration(0, 30)).to eq(30)
       end
     end
 
     context 'for custom trial length' do
       specify do
-        freeze_time do
-          expect(duration(-5, 5)).to eq(10)
-        end
+        expect(duration(-5, 5)).to eq(10)
       end
     end
 
@@ -100,11 +92,9 @@ RSpec.describe GitlabSubscriptions::TrialStatus, feature_category: :experimentat
   end
 
   describe '#days_used' do
-    context 'for the beginning of a trial' do
+    context 'for the beginning of a trial', :freeze_time do
       specify do
-        freeze_time do
-          expect(days_used(0, 30)).to eq(1)
-        end
+        expect(days_used(0, 30)).to eq(1)
       end
     end
 

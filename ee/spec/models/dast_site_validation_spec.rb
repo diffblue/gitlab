@@ -108,12 +108,10 @@ RSpec.describe DastSiteValidation, type: :model do
       end
     end
 
-    it 'records a timestamp' do
-      freeze_time do
-        subject.start
+    it 'records a timestamp', :freeze_time do
+      subject.start
 
-        expect(subject.reload.validation_started_at).to eq(Time.now.utc)
-      end
+      expect(subject.reload.validation_started_at).to eq(Time.now.utc)
     end
 
     it 'transitions to the correct state' do
@@ -131,12 +129,10 @@ RSpec.describe DastSiteValidation, type: :model do
         expect(subject.retry).to eq(true)
       end
 
-      it 'records a timestamp' do
-        freeze_time do
-          subject.retry
+      it 'records a timestamp', :freeze_time do
+        subject.retry
 
-          expect(subject.reload.validation_last_retried_at).to eq(Time.now.utc)
-        end
+        expect(subject.reload.validation_last_retried_at).to eq(Time.now.utc)
       end
 
       it 'transitions to the correct state' do
@@ -167,12 +163,10 @@ RSpec.describe DastSiteValidation, type: :model do
         expect(subject.fail_op).to eq(true)
       end
 
-      it 'records a timestamp' do
-        freeze_time do
-          subject.fail_op
+      it 'records a timestamp', :freeze_time do
+        subject.fail_op
 
-          expect(subject.reload.validation_failed_at).to eq(Time.now.utc)
-        end
+        expect(subject.reload.validation_failed_at).to eq(Time.now.utc)
       end
 
       it 'transitions to the correct state' do

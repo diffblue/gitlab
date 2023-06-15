@@ -30,20 +30,16 @@ RSpec.describe Gitlab::Audit::Auditor do
       audit!
     end
 
-    it 'does not log audit events to file' do
-      freeze_time do
-        expect(::Gitlab::AuditJsonLogger).not_to receive(:build)
+    it 'does not log audit events to file', :freeze_time do
+      expect(::Gitlab::AuditJsonLogger).not_to receive(:build)
 
-        audit!
-      end
+      audit!
     end
 
-    it 'does not log audit events to database' do
-      freeze_time do
-        expect(AuditEvent).not_to receive(:bulk_insert!)
+    it 'does not log audit events to database', :freeze_time do
+      expect(AuditEvent).not_to receive(:bulk_insert!)
 
-        audit!
-      end
+      audit!
     end
   end
 
@@ -139,38 +135,34 @@ RSpec.describe Gitlab::Audit::Auditor do
         context 'when overriding the create datetime' do
           let(:context) { { name: name, author: author, scope: scope, target: target, created_at: 3.weeks.ago } }
 
-          it 'logs audit events to database', :aggregate_failures do
-            freeze_time do
-              audit!
+          it 'logs audit events to database', :freeze_time, :aggregate_failures do
+            audit!
 
-              audit_event = AuditEvent.last
+            audit_event = AuditEvent.last
 
-              expect(audit_event.author_id).to eq(author.id)
-              expect(audit_event.entity_id).to eq(scope.id)
-              expect(audit_event.entity_type).to eq(scope.class.name)
-              expect(audit_event.created_at).to eq(3.weeks.ago)
-              expect(audit_event.details[:target_id]).to eq(target.id)
-              expect(audit_event.details[:target_type]).to eq(target.class.name)
-            end
+            expect(audit_event.author_id).to eq(author.id)
+            expect(audit_event.entity_id).to eq(scope.id)
+            expect(audit_event.entity_type).to eq(scope.class.name)
+            expect(audit_event.created_at).to eq(3.weeks.ago)
+            expect(audit_event.details[:target_id]).to eq(target.id)
+            expect(audit_event.details[:target_type]).to eq(target.class.name)
           end
 
-          it 'logs audit events to file' do
-            freeze_time do
-              expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+          it 'logs audit events to file', :freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
-              audit!
+            audit!
 
-              expect(logger).to have_received(:info).exactly(2).times.with(
-                hash_including(
-                  'author_id' => author.id,
-                  'author_name' => author.name,
-                  'entity_id' => scope.id,
-                  'entity_type' => scope.class.name,
-                  'details' => kind_of(Hash),
-                  'created_at' => 3.weeks.ago.iso8601(3)
-                )
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'author_id' => author.id,
+                'author_name' => author.name,
+                'entity_id' => scope.id,
+                'entity_type' => scope.class.name,
+                'details' => kind_of(Hash),
+                'created_at' => 3.weeks.ago.iso8601(3)
               )
-            end
+            )
           end
         end
 
@@ -193,21 +185,19 @@ RSpec.describe Gitlab::Audit::Auditor do
             end
           end
 
-          it 'logs audit events to file' do
-            freeze_time do
-              expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+          it 'logs audit events to file', :freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
-              audit!
+            audit!
 
-              expect(logger).to have_received(:info).exactly(2).times.with(
-                hash_including(
-                  'details' => hash_including('action' => 'custom', 'from' => 'false', 'to' => 'true'),
-                  'action' => 'custom',
-                  'from' => 'false',
-                  'to' => 'true'
-                )
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'details' => hash_including('action' => 'custom', 'from' => 'false', 'to' => 'true'),
+                'action' => 'custom',
+                'from' => 'false',
+                'to' => 'true'
               )
-            end
+            )
           end
         end
 
@@ -232,19 +222,17 @@ RSpec.describe Gitlab::Audit::Auditor do
             end
           end
 
-          it 'logs audit events to file' do
-            freeze_time do
-              expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+          it 'logs audit events to file', :freeze_time do
+            expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
-              audit!
+            audit!
 
-              expect(logger).to have_received(:info).exactly(2).times.with(
-                hash_including(
-                  'details' => hash_including('target_details' => target_details),
-                  'target_details' => target_details
-                )
+            expect(logger).to have_received(:info).exactly(2).times.with(
+              hash_including(
+                'details' => hash_including('target_details' => target_details),
+                'target_details' => target_details
               )
-            end
+            )
           end
         end
 
@@ -272,30 +260,27 @@ RSpec.describe Gitlab::Audit::Auditor do
               )
             end
 
-            context 'when :admin_audit_log feature is not available it does not log ip address' do
+            context 'when :admin_audit_log feature is not available it does not log ip address', :freeze_time do
               before do
                 stub_licensed_features(admin_audit_log: false)
               end
-              it 'does not log audit event to database' do
-                freeze_time do
-                  audit!
 
-                  expect(AuditEvent.last.ip_address).to be(nil)
-                end
+              it 'does not log audit event to database' do
+                audit!
+
+                expect(AuditEvent.last.ip_address).to be(nil)
               end
 
               it 'does not log audit events to file' do
-                freeze_time do
-                  expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
+                expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
-                  audit!
+                audit!
 
-                  expect(logger).to have_received(:info).exactly(2).times.with(
-                    hash_excluding(
-                      'ip_address' => ip_address
-                    )
+                expect(logger).to have_received(:info).exactly(2).times.with(
+                  hash_excluding(
+                    'ip_address' => ip_address
                   )
-                end
+                )
               end
             end
           end

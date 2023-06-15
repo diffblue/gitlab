@@ -32,16 +32,14 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
     subject { described_class.find_or_create_current(namespace_id: namespace.id) }
 
     shared_examples 'creates usage record' do
-      it 'creates new record and resets minutes consumption' do
-        freeze_time do
-          expect { subject }.to change { described_class.count }.by(1)
+      it 'creates new record and resets minutes consumption', :freeze_time do
+        expect { subject }.to change { described_class.count }.by(1)
 
-          expect(subject.amount_used).to eq(0)
-          expect(subject.namespace).to eq(namespace)
-          expect(subject.date).to eq(described_class.beginning_of_month)
-          expect(subject.notification_level).to eq(::Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
-          expect(subject.created_at).to eq(Time.current)
-        end
+        expect(subject.amount_used).to eq(0)
+        expect(subject.namespace).to eq(namespace)
+        expect(subject.date).to eq(described_class.beginning_of_month)
+        expect(subject.notification_level).to eq(::Ci::Minutes::Notification::PERCENTAGES.fetch(:not_set))
+        expect(subject.created_at).to eq(Time.current)
       end
 
       it 'kicks off Ci::Minutes::RefreshCachedDataWorker' do
@@ -198,10 +196,8 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
     end
 
     context 'when namespace usage exists for the current month' do
-      it 'returns the existing usage' do
-        freeze_time do
-          expect(subject).to eq(current_usage)
-        end
+      it 'returns the existing usage', :freeze_time do
+        expect(subject).to eq(current_usage)
       end
 
       it_behaves_like 'does not update the additional minutes'
