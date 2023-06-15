@@ -33,6 +33,14 @@ RSpec.describe 'Trial lead submission, group and trial creation', :saas, :js, fe
       expect_to_be_on_namespace_creation
       expect_to_have_namespace_creation_errors
 
+      # namespace filled out with blank spaces
+      fill_in_trial_form_for_new_group(name: '  ')
+
+      click_button 'Start your free trial'
+
+      expect_to_be_on_namespace_creation
+      expect_to_have_namespace_creation_errors(group_name: '  ', error_message: "Name can't be blank")
+
       # success
       fill_in_trial_form_for_new_group
 

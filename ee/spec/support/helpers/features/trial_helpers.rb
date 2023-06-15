@@ -22,11 +22,11 @@ module Features
       expect(page).to have_content('Who will be using GitLab?')
     end
 
-    def expect_to_have_namespace_creation_errors(group_name: '_invalid group name_')
+    def expect_to_have_namespace_creation_errors(group_name: '_invalid group name_', error_message: 'Group URL must')
       within('[data-testid="trial-form"]') do
         expect(page).not_to have_content('This subscription is for')
         expect(page.find_field('new_group_name').value).to eq(group_name)
-        expect(page).to have_content('Group URL must not start or end with a special character')
+        expect(page).to have_content(error_message)
       end
     end
 

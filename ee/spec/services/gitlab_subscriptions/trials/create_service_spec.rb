@@ -260,16 +260,32 @@ RSpec.describe GitlabSubscriptions::Trials::CreateService, feature_category: :pu
         end
 
         context 'when group creation had an error' do
-          let(:trial_params) { { new_group_name: ' _invalid_ ', namespace_id: '0' } }
+          context 'when there are invalid characters used' do
+            let(:trial_params) { { new_group_name: ' _invalid_ ', namespace_id: '0' } }
 
-          it 'returns not_found' do
-            expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
+            it 'returns namespace_create_failed' do
+              expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
 
-            expect { execute }.not_to change { Group.count }
-            expect(execute).to be_error
-            expect(execute.reason).to eq(:namespace_create_failed)
-            expect(execute.message.to_sentence).to match(/^Group URL must not start or end with a special character/)
-            expect(execute.payload[:namespace_id]).to eq('0')
+              expect { execute }.not_to change { Group.count }
+              expect(execute).to be_error
+              expect(execute.reason).to eq(:namespace_create_failed)
+              expect(execute.message.to_sentence).to match(/^Group URL must not start or end with a special character/)
+              expect(execute.payload[:namespace_id]).to eq('0')
+            end
+          end
+
+          context 'when name is entered with blank spaces' do
+            let(:trial_params) { { new_group_name: '  ', namespace_id: '0' } }
+
+            it 'returns namespace_create_failed' do
+              expect(GitlabSubscriptions::Trials::ApplyTrialService).not_to receive(:new)
+
+              expect { execute }.not_to change { Group.count }
+              expect(execute).to be_error
+              expect(execute.reason).to eq(:namespace_create_failed)
+              expect(execute.message.to_sentence).to match(/^Name can't be blank/)
+              expect(execute.payload[:namespace_id]).to eq('0')
+            end
           end
         end
       end
