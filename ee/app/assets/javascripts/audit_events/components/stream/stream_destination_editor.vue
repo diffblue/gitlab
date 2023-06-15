@@ -687,7 +687,7 @@ export default {
           $options.i18n.HEADER_FILTERING
         }}</strong>
 
-        <gl-accordion :header-level="1">
+        <gl-accordion :header-level="3">
           <gl-accordion-item :title="$options.i18n.HEADER_FILTERING_ITEM">
             <div v-if="groupEventFilters.length">
               <p data-testid="filtering-subheader">{{ $options.i18n.SUBHEADER_FILTERING }}</p>
