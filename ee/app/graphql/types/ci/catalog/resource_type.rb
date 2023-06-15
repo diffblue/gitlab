@@ -48,7 +48,8 @@ module Types
           description: 'Root namespace of the catalog resource.',
           alpha: { milestone: '16.1' }
 
-        markdown_field :readme_html, null: false
+        markdown_field :readme_html, null: false,
+          alpha: { milestone: '16.1' }
 
         def web_path
           ::Gitlab::Routing.url_helpers.project_path(object.project)
