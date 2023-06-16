@@ -22,11 +22,21 @@ module API
       # we have an extra check on Gitlab.com if FF is enabled for self-managed admin.
       # The FF is used for gradual rollout for handpicked self-managed customers interested to use code suggestions.
       def access_code_suggestions_when_proxied_to_saas?
-        proxied = !!request.headers['User-Agent']&.starts_with?('gitlab-workhorse')
+        proxied = proxied?
 
         raise 'Proxying is only supported under .org or .com' if proxied && !Gitlab.org_or_com?
 
         !proxied || Feature.enabled?(:code_suggestions_for_instance_admin_enabled, current_user)
+      end
+
+      def proxied?
+        !!request.headers['User-Agent']&.starts_with?('gitlab-workhorse')
+      end
+
+      def gitlab_realm
+        return Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SELF_MANAGED if proxied?
+
+        Gitlab::CodeSuggestions::AccessToken::GITLAB_REALM_SAAS
       end
     end
 
@@ -49,7 +59,7 @@ module API
               label: 'code_suggestions'
             )
 
-            token = Gitlab::CodeSuggestions::AccessToken.new(current_user)
+            token = Gitlab::CodeSuggestions::AccessToken.new(current_user, gitlab_realm: gitlab_realm)
             present token, with: Entities::CodeSuggestionsAccessToken
           end
         end
