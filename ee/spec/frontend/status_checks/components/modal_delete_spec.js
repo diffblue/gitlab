@@ -2,6 +2,7 @@ import { GlModal, GlSprintf } from '@gitlab/ui';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import ModalDelete from 'ee/status_checks/components/modal_delete.vue';
+import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/alert';
@@ -24,6 +25,7 @@ describe('Modal delete', () => {
   let wrapper;
   let store;
   const glModalDirective = jest.fn();
+  const modalHideSpy = jest.fn();
   const actions = {
     deleteStatusCheck: jest.fn(),
   };
@@ -50,10 +52,15 @@ describe('Modal delete', () => {
         statusCheck,
       },
       store,
-      stubs: { GlSprintf },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: modalHideSpy,
+          },
+        }),
+        GlSprintf,
+      },
     });
-
-    wrapper.vm.$refs.modal.hide = jest.fn();
   };
 
   beforeEach(() => {
@@ -93,7 +100,7 @@ describe('Modal delete', () => {
 
       expect(actions.deleteStatusCheck).toHaveBeenCalledWith(expect.any(Object), statusCheck.id);
 
-      expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
+      expect(modalHideSpy).toHaveBeenCalled();
     });
 
     it('submits, hides the modal and shows the error', async () => {
@@ -105,7 +112,7 @@ describe('Modal delete', () => {
 
       expect(actions.deleteStatusCheck).toHaveBeenCalledWith(expect.any(Object), statusCheck.id);
 
-      expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
+      expect(modalHideSpy).toHaveBeenCalled();
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred deleting the Foo status check.',

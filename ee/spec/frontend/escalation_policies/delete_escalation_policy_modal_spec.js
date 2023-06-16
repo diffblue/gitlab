@@ -10,6 +10,7 @@ import { deleteEscalationPolicyModalId } from 'ee/escalation_policies/constants'
 import destroyEscalationPolicyMutation from 'ee/escalation_policies/graphql/mutations/destroy_escalatiion_policy.mutation.graphql';
 import getEscalationPoliciesQuery from 'ee/escalation_policies/graphql/queries/get_escalation_policies.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { stubComponent } from 'helpers/stub_component';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
   destroyPolicyResponse,
@@ -20,7 +21,7 @@ import mockPolicies from './mocks/mockPolicies.json';
 
 const projectPath = 'group/project';
 const mutate = jest.fn();
-const mockHideModal = jest.fn();
+const modalHideSpy = jest.fn();
 
 describe('DeleteEscalationPolicyModal', () => {
   let wrapper;
@@ -51,9 +52,15 @@ describe('DeleteEscalationPolicyModal', () => {
           mutate,
         },
       },
-      stubs: { GlSprintf },
+      stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            hide: modalHideSpy,
+          },
+        }),
+        GlSprintf,
+      },
     });
-    wrapper.vm.$refs.deleteEscalationPolicyModal.hide = mockHideModal;
   };
 
   function createComponentWithApollo({
@@ -134,7 +141,7 @@ describe('DeleteEscalationPolicyModal', () => {
       mutate.mockResolvedValueOnce({ data: { escalationPolicyDestroy: { errors: [] } } });
       findModal().vm.$emit('primary', { preventDefault: jest.fn() });
       await waitForPromises();
-      expect(mockHideModal).toHaveBeenCalled();
+      expect(modalHideSpy).toHaveBeenCalled();
     });
 
     it("doesn't hide the modal and shows an error alert on deletion fail", async () => {
@@ -143,7 +150,7 @@ describe('DeleteEscalationPolicyModal', () => {
       deleteEscalationPolicy(wrapper);
       await waitForPromises();
       const alert = findAlert();
-      expect(mockHideModal).not.toHaveBeenCalled();
+      expect(modalHideSpy).not.toHaveBeenCalled();
       expect(alert.exists()).toBe(true);
       expect(alert.text()).toContain(error);
     });

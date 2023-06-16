@@ -1,21 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Modal delete Modal the modal text matches the snapshot 1`] = `
-<gl-modal-stub
-  actioncancel="[object Object]"
-  actionprimary="[object Object]"
-  arialabel=""
-  dismisslabel="Close"
-  modalclass=""
-  modalid="status-checks-delete-modal"
-  size="sm"
-  title="Remove status check?"
-  titletag="h4"
->
+<div>
   You are about to remove the 
   <strong>
     Foo
   </strong>
    status check.
-</gl-modal-stub>
+</div>
 `;

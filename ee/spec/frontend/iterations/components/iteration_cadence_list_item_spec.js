@@ -10,6 +10,7 @@ import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import { stubComponent } from 'helpers/stub_component';
 import { mountExtended as mount } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -31,6 +32,8 @@ function createMockApolloProvider(requestHandlers) {
 describe('Iteration cadence list item', () => {
   let wrapper;
   let apolloProvider;
+
+  const modalShowSpy = jest.fn();
 
   const fullPath = 'gitlab-org';
   const iterations = [
@@ -113,6 +116,11 @@ describe('Iteration cadence list item', () => {
         },
       },
       stubs: {
+        GlModal: stubComponent(GlModal, {
+          methods: {
+            show: modalShowSpy,
+          },
+        }),
         RouterLink: RouterLinkStub,
       },
       provide: {
@@ -357,8 +365,6 @@ describe('Iteration cadence list item', () => {
         createComponent({
           canEditCadence: true,
         });
-
-        wrapper.vm.$refs.modal.show = jest.fn();
       });
 
       it('shows delete button', () => {
@@ -368,7 +374,7 @@ describe('Iteration cadence list item', () => {
       it('opens confirmation modal to delete cadence', () => {
         wrapper.findByTestId('delete-cadence').trigger('click');
 
-        expect(wrapper.vm.$refs.modal.show).toHaveBeenCalled();
+        expect(modalShowSpy).toHaveBeenCalled();
       });
 
       it('emits delete-cadence event with cadence ID', () => {
