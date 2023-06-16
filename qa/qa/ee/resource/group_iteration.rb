@@ -13,15 +13,15 @@ module QA
         end
 
         attributes :id,
-                   :iid,
-                   :description,
-                   :title,
-                   :state,
-                   :start_date,
-                   :due_date,
-                   :created_at,
-                   :updated_at,
-                   :cadence
+          :iid,
+          :description,
+          :title,
+          :state,
+          :start_date,
+          :due_date,
+          :created_at,
+          :updated_at,
+          :cadence
 
         def initialize
           @start_date = current_date_yyyy_mm_dd

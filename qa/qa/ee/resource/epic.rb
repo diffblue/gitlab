@@ -5,21 +5,21 @@ module QA
     module Resource
       class Epic < QA::Resource::Base
         attributes :id,
-                   :iid,
-                   :title,
-                   :description,
-                   :labels,
-                   :parent_id,
-                   :start_date_is_fixed,
-                   :start_date_fixed,
-                   :due_date_is_fixed,
-                   :due_date_fixed,
-                   :confidential,
-                   :author,
-                   :start_date,
-                   :due_date,
-                   :start_date_from_milestones,
-                   :due_date_from_milestones
+          :iid,
+          :title,
+          :description,
+          :labels,
+          :parent_id,
+          :start_date_is_fixed,
+          :start_date_fixed,
+          :due_date_is_fixed,
+          :due_date_fixed,
+          :confidential,
+          :author,
+          :start_date,
+          :due_date,
+          :start_date_from_milestones,
+          :due_date_from_milestones
 
         attribute :group do
           QA::Resource::Group.fabricate!

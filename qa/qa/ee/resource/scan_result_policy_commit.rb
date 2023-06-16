@@ -5,9 +5,9 @@ module QA
     module Resource
       class ScanResultPolicyCommit < QA::Resource::Base
         attributes :policy_yaml,
-                   :mode,
-                   :policy_name,
-                   :project_path
+          :mode,
+          :policy_name,
+          :project_path
 
         MAX_MUTATION_RETRY_ATTEMPTS = 3
 

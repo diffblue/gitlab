@@ -113,8 +113,11 @@ module QA
           def has_status?(status, vulnerability_name)
             retry_until(reload: true, sleep_interval: 3, raise_on_failure: false) do
               # Capitalizing first letter in each word to account for "Needs Triage" state
-              has_element?(:vulnerability_status_content,
-                           status_description: vulnerability_name, text: "#{status.split.map(&:capitalize).join(' ')}")
+              has_element?(
+                :vulnerability_status_content,
+                status_description: vulnerability_name,
+                text: "#{status.split.map(&:capitalize).join(' ')}"
+              )
             end
           end
         end
