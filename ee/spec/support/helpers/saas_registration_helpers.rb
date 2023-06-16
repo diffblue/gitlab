@@ -402,11 +402,17 @@ module SaasRegistrationHelpers
       ).and_call_original
   end
 
-  def fill_in_company_form(trial: true, glm: true)
+  def fill_in_company_form(trial: true, glm: true, success: true)
+    result = if success
+               ServiceResponse.success
+             else
+               ServiceResponse.error(message: '_company_lead_fail_')
+             end
+
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
       params: company_params(trial: trial, glm: glm)
-    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
+    ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: result))
 
     fill_in 'company_name', with: 'Test Company'
     select '1 - 99', from: 'company_size'
@@ -558,6 +564,12 @@ module SaasRegistrationHelpers
     page.within('[data-testid="subscription-group-edit-form"]') do
       expect(page).to have_content("Name can contain only")
       expect(page).to have_content("It must start with")
+    end
+  end
+
+  def expect_to_see_company_form_failure
+    page.within('[data-testid="alert-danger"]') do
+      expect(page).to have_content('_company_lead_fail_')
     end
   end
 end

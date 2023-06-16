@@ -14,7 +14,8 @@ module GitlabSubscriptions
       if response[:success]
         ServiceResponse.success
       else
-        ServiceResponse.error(message: response.dig(:data, :errors), http_status: :unprocessable_entity)
+        error_message = response.dig(:data, :errors) || 'Submission failed'
+        ServiceResponse.error(message: error_message, http_status: :unprocessable_entity)
       end
     end
 

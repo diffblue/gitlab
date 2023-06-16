@@ -21,7 +21,14 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
 
       ensure_onboarding { expect_to_see_company_form }
 
-      fill_in_company_form
+      # failure
+      fill_in_company_form(success: false)
+      click_on 'Continue'
+
+      expect_to_see_company_form_failure
+
+      # success
+      fill_in_company_form(success: true)
       click_on 'Continue'
 
       ensure_onboarding { expect_to_see_group_and_project_creation_form }
