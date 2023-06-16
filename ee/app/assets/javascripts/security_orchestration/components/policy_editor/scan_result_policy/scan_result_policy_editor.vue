@@ -93,6 +93,7 @@ export default {
     const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
 
     return {
+      errors: { action: [] },
       invalidBranches: [],
       isCreatingMR: false,
       isRemovingPolicy: false,
@@ -136,6 +137,7 @@ export default {
   methods: {
     updateAction(actionIndex, values) {
       this.policy.actions.splice(actionIndex, 1, values);
+      this.$set(this.errors, 'action', []);
       this.updateYamlEditorValue(this.policy);
     },
     addRule() {
@@ -151,7 +153,20 @@ export default {
       this.updateYamlEditorValue(this.policy);
     },
     handleError(error) {
-      if (error.message.toLowerCase().includes('graphql')) {
+      if (error.cause?.length) {
+        const updatedErrors = error.cause.reduce(
+          (acc, cause) => {
+            switch (cause.field) {
+              case 'approver_ids':
+              default:
+                acc.action.push(cause);
+            }
+            return acc;
+          },
+          { action: [] },
+        );
+        this.errors = updatedErrors;
+      } else if (error.message.toLowerCase().includes('graphql')) {
         this.$emit('error', GRAPHQL_ERROR_MESSAGE);
       } else {
         this.$emit('error', error.message);
@@ -311,6 +326,7 @@ export default {
           :key="index"
           class="gl-mb-4"
           :init-action="action"
+          :errors="errors.action"
           :existing-approvers="existingApprovers"
           @updateApprovers="updatePolicyApprovers"
           @changed="updateAction(index, $event)"

@@ -39,6 +39,11 @@ export default {
       type: Number,
       required: true,
     },
+    errors: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     existingApprovers: {
       type: Object,
       required: true,
@@ -73,6 +78,9 @@ export default {
     },
     humanizedTemplate() {
       return getDefaultHumanizedTemplate(this.approvalsRequired);
+    },
+    isApproversErrored() {
+      return this.errors.some((error) => error.field === 'approvers_ids');
     },
     actionText() {
       return this.approverIndex === 0
@@ -136,6 +144,7 @@ export default {
 
             <template #approvalsRequired>
               <gl-form-input
+                :state="!isApproversErrored"
                 :value="approvalsRequired"
                 type="number"
                 class="gl-w-11! gl-mx-3"

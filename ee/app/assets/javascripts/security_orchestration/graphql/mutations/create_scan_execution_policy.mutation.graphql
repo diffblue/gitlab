@@ -9,5 +9,10 @@ mutation updatePolicy(
   ) {
     branch
     errors
+    validationErrors {
+      field
+      message
+      title
+    }
   }
 }

@@ -64,6 +64,12 @@ describe('PolicyActionApprovers', () => {
       });
     });
 
+    it('renders the number of approvers input with a valid state', () => {
+      const approvalsRequiredInput = findApprovalsRequiredInput();
+      expect(approvalsRequiredInput.exists()).toBe(true);
+      expect(approvalsRequiredInput.attributes('state')).toBe('true');
+    });
+
     it('renders the add button', () => {
       expect(findAddButton().exists()).toBe(true);
     });
@@ -101,6 +107,15 @@ describe('PolicyActionApprovers', () => {
       expect(wrapper.emitted()).toEqual({
         updateApproverType: [[{ newApproverType: GROUP_TYPE, oldApproverType: '' }]],
       });
+    });
+  });
+
+  describe('errors', () => {
+    it('renders the number of approvers input with an invalid state', () => {
+      factory({ propsData: { errors: [{ field: 'approvers_ids' }] } });
+      const approvalsRequiredInput = findApprovalsRequiredInput();
+      expect(approvalsRequiredInput.exists()).toBe(true);
+      expect(approvalsRequiredInput.attributes('state')).toBe(undefined);
     });
   });
 

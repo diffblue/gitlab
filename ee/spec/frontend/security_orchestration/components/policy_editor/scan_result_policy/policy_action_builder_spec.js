@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import { GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { GROUP_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder.vue';
@@ -71,6 +72,7 @@ describe('PolicyActionBuilder', () => {
 
   const findActionApprover = () => wrapper.findComponent(PolicyActionApprovers);
   const findAllActionApprovers = () => wrapper.findAllComponents(PolicyActionApprovers);
+  const findAllAlerts = () => wrapper.findAllComponents(GlAlert);
 
   const emit = async (event, value) => {
     findActionApprover().vm.$emit(event, value);
@@ -85,6 +87,7 @@ describe('PolicyActionBuilder', () => {
         approverIndex: 0,
         availableTypes: APPROVER_TYPE_LIST_ITEMS,
         approvalsRequired: 1,
+        errors: [],
         existingApprovers: {},
         numOfApproverTypes: 1,
         approverType: '',
@@ -95,6 +98,10 @@ describe('PolicyActionBuilder', () => {
       expect(findAllActionApprovers()).toHaveLength(1);
       await emit('addApproverType');
       expect(findAllActionApprovers()).toHaveLength(2);
+    });
+
+    it('does not render alert', () => {
+      expect(findAllAlerts()).toHaveLength(0);
     });
 
     it('emits "updateApprovers" with the appropriate values on "updateApprover"', async () => {
@@ -127,6 +134,20 @@ describe('PolicyActionBuilder', () => {
           type: 'require_approval',
         },
       ]);
+    });
+  });
+
+  describe('errors', () => {
+    it('renders the alert when there is an error', () => {
+      const error = { title: 'Error', message: 'Something went wrong' };
+      createWrapper({ errors: [error] });
+      const allAlerts = findAllAlerts();
+      expect(allAlerts).toHaveLength(1);
+      expect(allAlerts.at(0).props()).toMatchObject({
+        title: error.title,
+        dismissible: false,
+      });
+      expect(allAlerts.at(0).text()).toBe(error.message);
     });
   });
 

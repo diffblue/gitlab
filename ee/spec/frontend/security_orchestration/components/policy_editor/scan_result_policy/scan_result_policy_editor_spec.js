@@ -277,7 +277,6 @@ describe('ScanResultPolicyEditor', () => {
         factoryFn();
 
         findPolicyEditorLayout().vm.$emit(event);
-
         await waitForPromises();
 
         expect(modifyPolicy).toHaveBeenCalledWith({
@@ -295,6 +294,18 @@ describe('ScanResultPolicyEditor', () => {
         );
       },
     );
+
+    it('passes errors with the cause of `approver_ids` to the action builder', async () => {
+      const error = {
+        message: 'There was an error',
+        cause: [{ field: 'approver_ids' }, { field: 'approver_ids' }],
+      };
+      modifyPolicy.mockRejectedValue(error);
+      factory();
+      await findPolicyEditorLayout().vm.$emit('save-policy');
+      await waitForPromises();
+      expect(findPolicyActionBuilder().props('errors')).toEqual(error.cause);
+    });
   });
 
   describe('errors', () => {
