@@ -11250,13 +11250,16 @@ msgstr ""
 msgid "CommandPalette|Pages"
 msgstr ""
 
-msgid "CommandPalette|Type %{commandHandle} for command, %{userHandle} for user or perform generic search..."
-msgstr ""
-
-msgid "CommandPalette|Users"
+msgid "CommandPalette|Type %{commandHandle} for command, %{userHandle} for user, %{projectHandle} for project, %{issueHandle} for issue or perform generic search..."
 msgstr ""
 
 msgid "CommandPalette|command"
+msgstr ""
+
+msgid "CommandPalette|issue (enter at least 3 chars)"
+msgstr ""
+
+msgid "CommandPalette|project (enter at least 3 chars)"
 msgstr ""
 
 msgid "CommandPalette|user (enter at least 3 chars)"
