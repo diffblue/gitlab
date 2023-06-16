@@ -14,9 +14,9 @@ import {
  * Checks if an error exists and throws it if it does
  * @param {Object} payload contains the errors if they exist
  */
-const checkForErrors = ({ errors }) => {
+const checkForErrors = ({ errors, validationErrors }) => {
   if (errors?.length) {
-    throw new Error(errors.join('\n'));
+    throw new Error(errors.join('\n'), { cause: validationErrors });
   }
 };
 
@@ -61,7 +61,7 @@ const updatePolicy = async ({
 }) => {
   const {
     data: {
-      scanExecutionPolicyCommit: { branch, errors },
+      scanExecutionPolicyCommit: { branch, errors, validationErrors },
     },
   } = await gqClient.mutate({
     mutation: createScanExecutionPolicy,
@@ -73,7 +73,7 @@ const updatePolicy = async ({
     },
   });
 
-  return { branch, errors };
+  return { branch, errors, validationErrors };
 };
 
 /**

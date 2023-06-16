@@ -80,7 +80,9 @@ describe('assignSecurityPolicyProject', () => {
   it('throws when an error is detected', async () => {
     gqClient.mutate.mockImplementation(mockApolloResponses(true));
 
-    await expect(assignSecurityPolicyProject(projectPath)).rejects.toThrow(error);
+    await expect(async () => {
+      await assignSecurityPolicyProject(projectPath);
+    }).rejects.toThrow(error);
   });
 });
 
@@ -104,7 +106,9 @@ describe('modifyPolicy', () => {
   it('throws when an error is detected', async () => {
     gqClient.mutate.mockImplementation(mockApolloResponses(true));
 
-    await expect(modifyPolicy(createSavePolicyInput())).rejects.toThrow(error);
+    await expect(async () => {
+      await modifyPolicy(createSavePolicyInput());
+    }).rejects.toThrow(error);
   });
 });
 

@@ -1,4 +1,5 @@
 <script>
+import { GlAlert } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import { GROUP_TYPE, ROLE_TYPE, USER_TYPE } from 'ee/security_orchestration/constants';
 import PolicyActionApprovers from './policy_action_approvers.vue';
@@ -11,10 +12,16 @@ import {
 
 export default {
   components: {
+    GlAlert,
     PolicyActionApprovers,
   },
   inject: ['namespaceId'],
   props: {
+    errors: {
+      type: Array,
+      required: false,
+      default: () => [],
+    },
     initAction: {
       type: Object,
       required: true,
@@ -104,23 +111,36 @@ export default {
 </script>
 
 <template>
-  <div
-    class="security-policies-bg-gray-10 gl-display-flex gl-flex-direction-column gl-gap-3 gl-rounded-base gl-py-5"
-  >
-    <policy-action-approvers
-      v-for="({ id, type }, i) in approverTypeTracker"
-      :key="id"
-      :approver-index="i"
-      :available-types="availableApproverTypes"
-      :approver-type="type"
-      :num-of-approver-types="approverTypeTracker.length"
-      :approvals-required="initAction.approvals_required"
-      :existing-approvers="existingApprovers"
-      @addApproverType="handleAddApproverType"
-      @updateApprovers="handleUpdateApprovers"
-      @updateApproverType="handleUpdateApproverType(i, $event)"
-      @updateApprovalsRequired="handleUpdateApprovalsRequired"
-      @removeApproverType="handleRemoveApproverType(i, $event)"
-    />
+  <div>
+    <gl-alert
+      v-for="(error, index) in errors"
+      :key="error.message"
+      :class="{ 'gl-mb-3': index === errors.length - 1 }"
+      :dismissible="false"
+      :title="error.title"
+      variant="danger"
+    >
+      {{ error.message }}
+    </gl-alert>
+    <div
+      class="security-policies-bg-gray-10 gl-display-flex gl-flex-direction-column gl-gap-3 gl-rounded-base gl-py-5"
+    >
+      <policy-action-approvers
+        v-for="({ id, type }, i) in approverTypeTracker"
+        :key="id"
+        :approver-index="i"
+        :available-types="availableApproverTypes"
+        :approver-type="type"
+        :errors="errors"
+        :num-of-approver-types="approverTypeTracker.length"
+        :approvals-required="initAction.approvals_required"
+        :existing-approvers="existingApprovers"
+        @addApproverType="handleAddApproverType"
+        @updateApprovers="handleUpdateApprovers"
+        @updateApproverType="handleUpdateApproverType(i, $event)"
+        @updateApprovalsRequired="handleUpdateApprovalsRequired"
+        @removeApproverType="handleRemoveApproverType(i, $event)"
+      />
+    </div>
   </div>
 </template>
