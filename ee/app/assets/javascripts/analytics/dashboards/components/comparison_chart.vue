@@ -31,10 +31,11 @@ import {
   mergeSparklineCharts,
   generateDateRanges,
   generateChartTimePeriods,
+  generateValueStreamDashboardStartDate,
 } from '../utils';
 import ComparisonTable from './comparison_table.vue';
 
-const now = new Date();
+const now = generateValueStreamDashboardStartDate();
 const DASHBOARD_TIME_PERIODS = generateDateRanges(now);
 const CHART_TIME_PERIODS = generateChartTimePeriods(now);
 

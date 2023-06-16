@@ -1,6 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import axios from '~/lib/utils/axios_utils';
 import { UNITS } from 'ee/analytics/dashboards/constants';
+import { useFakeDate } from 'helpers/fake_date';
 import {
   percentChange,
   formatMetric,
@@ -12,6 +13,7 @@ import {
   generateDateRanges,
   generateChartTimePeriods,
   generateDashboardTableFields,
+  generateValueStreamDashboardStartDate,
 } from 'ee/analytics/dashboards/utils';
 import { CHANGE_FAILURE_RATE, LEAD_TIME_FOR_CHANGES } from 'ee/api/dora_api';
 import { LEAD_TIME_METRIC_TYPE, CYCLE_TIME_METRIC_TYPE } from '~/api/analytics_api';
@@ -219,6 +221,32 @@ describe('Analytics Dashboards utils', () => {
     it('return incorrect value', () => {
       const now = MOCK_TABLE_TIME_PERIODS[2].start;
       expect(generateDashboardTableFields(now)).not.toEqual(MOCK_DASHBOARD_TABLE_FIELDS);
+    });
+  });
+
+  describe('generateValueStreamDashboardStartDate', () => {
+    it('will return a date', () => {
+      expect(generateValueStreamDashboardStartDate()).toBeInstanceOf(Date);
+    });
+
+    describe('default', () => {
+      useFakeDate(2020, 4, 4);
+
+      it('will return the correct day', () => {
+        expect(generateValueStreamDashboardStartDate().toISOString()).toEqual(
+          '2020-05-04T00:00:00.000Z',
+        );
+      });
+    });
+
+    describe('on the first day of a month', () => {
+      useFakeDate(2023, 6, 1);
+
+      it('will return the previous day', () => {
+        expect(generateValueStreamDashboardStartDate().toISOString()).toEqual(
+          '2023-06-30T00:00:00.000Z',
+        );
+      });
     });
   });
 });

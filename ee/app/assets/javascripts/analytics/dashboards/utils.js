@@ -7,6 +7,7 @@ import {
   nMonthsBefore,
   monthInWords,
   nSecondsBefore,
+  nDaysBefore,
 } from '~/lib/utils/datetime_utility';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { days, percentHundred } from '~/lib/utils/unit_format';
@@ -301,4 +302,18 @@ export const generateDashboardTableFields = (now) => {
       tdClass: 'gl-py-2!',
     },
   ];
+};
+
+/**
+ * For the `DoraMetric` query endpoint, we need to supply YMD dates,
+ * but the query will fail if we send the same date twice, this occurs on
+ * the first of the month, so in those cases we should continue to show
+ * date for the last month.
+ *
+ * See: https://gitlab.com/gitlab-org/gitlab/-/issues/413872
+ * @returns {Date} the start date to use for queries
+ */
+export const generateValueStreamDashboardStartDate = () => {
+  const now = new Date();
+  return now.getDate() === 1 ? nDaysBefore(now, 1) : now;
 };
