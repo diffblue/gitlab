@@ -1,5 +1,6 @@
-import { GlDaterangePicker, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlDaterangePicker, GlDropdown, GlDropdownItem, GlIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import DateRangeFilter from 'ee/vue_shared/components/customizable_dashboard/filters/date_range_filter.vue';
 import {
   DATE_RANGE_OPTIONS,
@@ -8,6 +9,7 @@ import {
   I18N_DATE_RANGE_FILTER_TOOLTIP,
   I18N_DATE_RANGE_FILTER_TO,
   I18N_DATE_RANGE_FILTER_FROM,
+  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
 } from 'ee/vue_shared/components/customizable_dashboard/filters/constants';
 import { dateRangeOptionToFilter } from 'ee/vue_shared/components/customizable_dashboard/utils';
 
@@ -23,6 +25,9 @@ describe('DateRangeFilter', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(DateRangeFilter, {
+      directives: {
+        GlTooltip: createMockDirective('gl-tooltip'),
+      },
       propsData: {
         ...props,
       },
@@ -32,6 +37,7 @@ describe('DateRangeFilter', () => {
   const findDateRangePicker = () => wrapper.findComponent(GlDaterangePicker);
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findHelpIcon = () => wrapper.findComponent(GlIcon);
 
   describe('default behaviour', () => {
     beforeEach(() => {
@@ -56,6 +62,15 @@ describe('DateRangeFilter', () => {
       expect(wrapper.emitted('change')).toStrictEqual([
         [dateRangeOptionToFilter(DATE_RANGE_OPTIONS[dateRangeOptionIndex])],
       ]);
+    });
+
+    it('should show an icon with a tooltip explaining dates are in UTC', () => {
+      const helpIcon = findHelpIcon();
+      const tooltip = getBinding(helpIcon.element, 'gl-tooltip');
+
+      expect(helpIcon.props('name')).toBe('information-o');
+      expect(helpIcon.attributes('title')).toBe(I18N_DATE_RANGE_TIMEZONE_TOOLTIP);
+      expect(tooltip).toBeDefined();
     });
   });
 

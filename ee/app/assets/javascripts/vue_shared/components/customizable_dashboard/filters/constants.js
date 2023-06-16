@@ -1,7 +1,7 @@
-import { __, n__, sprintf } from '~/locale';
-import { getDateInPast } from '~/lib/utils/datetime_utility';
+import { __, n__, s__, sprintf } from '~/locale';
+import { getDateInPast, getCurrentUtcDate } from '~/lib/utils/datetime_utility';
 
-export const TODAY = new Date();
+export const TODAY = getCurrentUtcDate();
 
 export const CUSTOM_DATE_RANGE_KEY = 'custom';
 
@@ -47,5 +47,8 @@ export const I18N_DATE_RANGE_FILTER_TOOLTIP = (dateRangeLimit = 0) =>
   n__('Date range limited to %d day', 'Date range limited to %d days', dateRangeLimit);
 export const I18N_DATE_RANGE_FILTER_TO = __('To');
 export const I18N_DATE_RANGE_FILTER_FROM = __('From');
+export const I18N_DATE_RANGE_TIMEZONE_TOOLTIP = s__(
+  'Analytics|Dates and times are displayed in the UTC timezone',
+);
 
 export const DEFAULT_SELECTED_OPTION_INDEX = 1;

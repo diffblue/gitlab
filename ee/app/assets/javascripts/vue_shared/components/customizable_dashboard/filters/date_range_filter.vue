@@ -1,5 +1,11 @@
 <script>
-import { GlDaterangePicker, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import {
+  GlDaterangePicker,
+  GlDropdown,
+  GlDropdownItem,
+  GlIcon,
+  GlTooltipDirective,
+} from '@gitlab/ui';
 import { dateRangeOptionToFilter, getDateRangeOption } from '../utils';
 import {
   TODAY,
@@ -8,6 +14,7 @@ import {
   I18N_DATE_RANGE_FILTER_TOOLTIP,
   I18N_DATE_RANGE_FILTER_TO,
   I18N_DATE_RANGE_FILTER_FROM,
+  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
 } from './constants';
 
 export default {
@@ -16,6 +23,10 @@ export default {
     GlDaterangePicker,
     GlDropdown,
     GlDropdownItem,
+    GlIcon,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   props: {
     defaultOption: {
@@ -83,6 +94,7 @@ export default {
   },
   I18N_DATE_RANGE_FILTER_TO,
   I18N_DATE_RANGE_FILTER_FROM,
+  I18N_DATE_RANGE_TIMEZONE_TOOLTIP,
   DATE_RANGE_OPTIONS,
   TODAY,
 };
@@ -112,6 +124,12 @@ export default {
       :from-label="$options.I18N_DATE_RANGE_FILTER_FROM"
       :tooltip="dateRangeTooltip"
       same-day-selection
+    />
+    <gl-icon
+      v-gl-tooltip
+      :title="$options.I18N_DATE_RANGE_TIMEZONE_TOOLTIP"
+      name="information-o"
+      class="gl-align-self-center gl-text-gray-500"
     />
   </div>
 </template>
