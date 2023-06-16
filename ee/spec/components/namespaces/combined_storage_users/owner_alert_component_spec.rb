@@ -49,7 +49,7 @@ RSpec.describe Namespaces::CombinedStorageUsers::OwnerAlertComponent, :saas, typ
                                  '[data-track-label="explore_paid_plans"]')
       end
 
-      context 'when the user dismissed the banner under 14 days ago', :freeze_time do
+      context 'when the user dismissed the alert under 14 days ago', :freeze_time do
         let(:user) do
           build_stubbed(
             :user,
@@ -62,14 +62,14 @@ RSpec.describe Namespaces::CombinedStorageUsers::OwnerAlertComponent, :saas, typ
           )
         end
 
-        it 'does not render the banner' do
+        it 'does not render the alert' do
           render_inline(component)
 
           expect(page).not_to have_content(alert_title)
         end
       end
 
-      context 'when the user dismissed the banner 14 or more days ago', :freeze_time do
+      context 'when the user dismissed the alert 14 or more days ago', :freeze_time do
         let(:user) do
           build_stubbed(
             :user,
@@ -82,7 +82,7 @@ RSpec.describe Namespaces::CombinedStorageUsers::OwnerAlertComponent, :saas, typ
           )
         end
 
-        it 'does render the banner' do
+        it 'does render the alert' do
           render_inline(component)
 
           expect(page).to have_content(alert_title)

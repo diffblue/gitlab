@@ -23,7 +23,7 @@ RSpec.describe Namespaces::Storage::SubgroupPreEnforcementAlertComponent, :saas,
       create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
     end
 
-    it 'includes the correct subgroup info in the banner text' do
+    it 'includes the correct subgroup info in the alert text' do
       render_inline(component)
 
       expect(page).to have_text "The #{subgroup.name} group will be affected by this."

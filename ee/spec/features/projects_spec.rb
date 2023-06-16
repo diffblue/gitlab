@@ -76,7 +76,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     end
   end
 
-  describe 'storage pre-enforcement banner', :js do
+  describe 'storage pre_enforcement alert', :js do
     include NamespaceStorageHelpers
 
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
@@ -97,7 +97,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     end
 
     context 'when storage is over the notification limit' do
-      it 'displays the banner in the project page' do
+      it 'displays the alert in the project page' do
         visit project_path(project)
 
         expect(page).to have_text storage_banner_text
@@ -107,7 +107,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
         let_it_be(:subgroup) { create(:group, parent: group) }
         let_it_be(:project) { create(:project, namespace: subgroup) }
 
-        it 'displays the banner' do
+        it 'displays the alert' do
           visit project_path(project)
 
           expect(page).to have_text storage_banner_text
@@ -125,14 +125,14 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
           )
         end
 
-        it 'displays the banner' do
+        it 'displays the alert' do
           visit project_path(project)
 
           expect(page).to have_text storage_banner_text
         end
       end
 
-      it 'does not display the banner in a paid group project page' do
+      it 'does not display the alert in a paid group project page' do
         allow_next_found_instance_of(Group) do |group|
           allow(group).to receive(:paid?).and_return(true)
         end
@@ -148,7 +148,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
         set_notification_limit(group, megabytes: 10_000)
       end
 
-      it 'does not display the banner in the group page' do
+      it 'does not display the alert in the group page' do
         visit project_path(project)
 
         expect(page).not_to have_text storage_banner_text

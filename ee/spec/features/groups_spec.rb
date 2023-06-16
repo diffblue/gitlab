@@ -52,7 +52,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     end
   end
 
-  describe 'storage pre-enforcement banner', :js do
+  describe 'storage pre-enforcement alert', :js do
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
     let_it_be_with_refind(:user) { create(:user) }
     let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
@@ -66,17 +66,17 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     end
 
     context 'when the group is over the notification_limit' do
-      it 'displays the banner in the group page' do
+      it 'displays the alert in the group page' do
         visit group_path(group)
         expect(page).to have_text storage_banner_text
       end
 
-      it 'does not display the dismissed banner if the group is still over notification_limit' do
+      it 'does not display the dismissed alert if the group is still over notification_limit' do
         visit group_path(group)
 
         expect(page).to have_text storage_banner_text
 
-        find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
+        find('.js-storage-pre-enforcement-alert [data-testid="close-icon"]').click
         page.refresh
 
         expect(page).not_to have_text storage_banner_text
@@ -87,7 +87,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
           set_notification_limit(group, megabytes: 13)
         end
 
-        it 'does not display the banner' do
+        it 'does not display the alert' do
           visit group_path(group)
           expect(page).not_to have_text storage_banner_text
         end

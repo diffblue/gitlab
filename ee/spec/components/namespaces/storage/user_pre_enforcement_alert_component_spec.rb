@@ -27,7 +27,7 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
     end
 
     context 'when a notification limit has not been set' do
-      it 'does not include used storage in the banner text' do
+      it 'does not include used storage in the alert text' do
         render_inline(component)
 
         expect(page).not_to have_text storage_counter(5.gigabytes)
@@ -39,19 +39,19 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
         create(:plan_limits, plan: user.namespace.root_ancestor.actual_plan, notification_limit: 500)
       end
 
-      it 'includes used storage in the banner text' do
+      it 'includes used storage in the alert text' do
         render_inline(component)
 
         expect(page).to have_text storage_counter(5.gigabytes)
       end
 
-      it 'includes the correct navigation instruction in the banner text' do
+      it 'includes the correct navigation instruction in the alert text' do
         render_inline(component)
 
         expect(page).to have_text 'View and manage your usage from User settings > Usage quotas'
       end
 
-      context 'when the user dismissed the banner under 14 days ago', :freeze_time do
+      context 'when the user dismissed the alert under 14 days ago', :freeze_time do
         before do
           create(
             :callout,
@@ -61,14 +61,14 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
           )
         end
 
-        it 'does not render the banner' do
+        it 'does not render the alert' do
           render_inline(component)
 
           expect(page).not_to have_text "A namespace storage limit will soon be enforced"
         end
       end
 
-      context 'when the user dismissed the banner over 14 days ago', :freeze_time do
+      context 'when the user dismissed the alert over 14 days ago', :freeze_time do
         before do
           create(
             :callout,
@@ -78,7 +78,7 @@ RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, fea
           )
         end
 
-        it 'does render the banner' do
+        it 'does render the alert' do
           render_inline(component)
 
           expect(page).to have_text "A namespace storage limit will soon be enforced"
