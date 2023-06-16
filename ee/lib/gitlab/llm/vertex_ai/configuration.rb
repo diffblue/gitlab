@@ -5,7 +5,7 @@ module Gitlab
     module VertexAi
       class Configuration
         DEFAULT_SCOPE = 'https://www.googleapis.com/auth/cloud-platform'
-        DEFAULT_TEMPERATURE = 0.5
+        DEFAULT_TEMPERATURE = 0.2
         DEFAULT_MAX_TOKENS = 1024
         DEFAULT_TOP_K = 40
         DEFAULT_TOP_P = 0.95

@@ -8,7 +8,7 @@ module Gitlab
 
         URL = 'https://api.anthropic.com'
         DEFAULT_MODEL = 'claude-v1.3'
-        DEFAULT_TEMPERATURE = 0.3
+        DEFAULT_TEMPERATURE = 0.2
         DEFAULT_MAX_TOKENS = 2048
 
         def initialize(user)

@@ -12,7 +12,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Options, feature_category: :no_category do #
       expect(result).to eq({
         model: 'gpt-3.5-turbo',
         messages: [{ role: 'user', content: 'hello' }],
-        temperature: 0.7
+        temperature: described_class::DEFAULT_TEMPERATURE
       })
     end
   end
@@ -35,7 +35,7 @@ RSpec.describe Gitlab::Llm::OpenAi::Options, feature_category: :no_category do #
             role: 'assistant',
             content: 'hello assistant'
           }],
-          temperature: 0.7
+          temperature: described_class::DEFAULT_TEMPERATURE
         })
       end
     end
