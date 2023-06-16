@@ -42,6 +42,8 @@ query roadmapGroupEpics(
           ...BaseEpic
           parent {
             id
+            startDate
+            dueDate
           }
         }
       }
