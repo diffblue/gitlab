@@ -39,7 +39,11 @@ export default {
   computed: {
     toggleText() {
       const options = this.clusterAgents?.filter(({ value }) => this.selected.includes(value));
-      return getSelectedOptionsText({ options, selected: this.selected });
+      return getSelectedOptionsText({
+        options,
+        selected: this.selected,
+        placeholder: this.$options.i18n.allItemsText,
+      });
     },
     isLoading() {
       return this.$apollo.queries.clusterAgents.loading;

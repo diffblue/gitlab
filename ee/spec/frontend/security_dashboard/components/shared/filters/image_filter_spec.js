@@ -108,6 +108,10 @@ describe('ImageFilter component', () => {
 
         expect(findListbox().props('toggleText')).toBe(`${mockImages[0]} +1 more`);
       });
+
+      it(`passes "${ImageFilter.i18n.allItemsText}" when no option is selected`, () => {
+        expect(findListbox().props('toggleText')).toBe(ImageFilter.i18n.allItemsText);
+      });
     });
 
     describe('filter-changed event', () => {
