@@ -39,6 +39,8 @@ import _Deployment from '~/vue_merge_request_widget/components/deployment/deploy
 import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 
 import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
+import getStateSubscription from '~/vue_merge_request_widget/queries/get_state.subscription.graphql';
+import readyToMergeSubscription from '~/vue_merge_request_widget/queries/states/ready_to_merge.subscription.graphql';
 import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/states/ready_to_merge.query.graphql';
 import mergeQuery from '~/vue_merge_request_widget/queries/states/new_ready_to_merge.query.graphql';
 import approvalsQuery from 'ee_else_ce/vue_merge_request_widget/components/approvals/queries/approvals.query.graphql';
@@ -96,6 +98,8 @@ describe('ee merge request widget options', () => {
           return newSub;
         },
       ],
+      [getStateSubscription, () => createMockApolloSubscription()],
+      [readyToMergeSubscription, () => createMockApolloSubscription()],
     ];
     const apolloProvider = createMockApollo(queryHandlers);
 
