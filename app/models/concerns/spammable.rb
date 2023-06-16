@@ -105,6 +105,8 @@ module Spammable
       _('issue')
     when MergeRequest
       _('merge request')
+    when Note
+      _('comment')
     when Snippet
       _('snippet')
     when Note
