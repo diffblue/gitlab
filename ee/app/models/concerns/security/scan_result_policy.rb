@@ -33,6 +33,10 @@ module Security
         delete_in_batches(approval_project_rules)
       end
 
+      def delete_scan_result_policy_reads(project_id)
+        scan_result_policy_reads.where(project_id: project_id).delete_all
+      end
+
       def delete_scan_finding_rules_for_project(project_id)
         delete_in_batches(approval_project_rules.where(project_id: project_id))
         delete_in_batches(

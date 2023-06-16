@@ -1278,6 +1278,37 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
     end
   end
 
+  describe '#delete_scan_result_policy_reads' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:other_project) { create(:project) }
+
+    let_it_be(:configuration) { create(:security_orchestration_policy_configuration) }
+    let_it_be(:other_configuration) { create(:security_orchestration_policy_configuration) }
+
+    let!(:read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project) }
+    let_it_be(:other_read) { create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: other_project) }
+
+    subject(:delete) { configuration.delete_scan_result_policy_reads(project) }
+
+    it "deletes a project's scan_result_policy_reads" do
+      expect { delete }.to change { project.scan_result_policy_reads.count }.by(-1)
+    end
+
+    it "does not delete other projects' scan_result_policy_reads" do
+      expect { delete }.not_to change { other_project.scan_result_policy_reads.count }
+    end
+
+    context "when scan_result_policy_read belongs to other configuration" do
+      let!(:read) do
+        create(:scan_result_policy_read, security_orchestration_policy_configuration: other_configuration, project: project)
+      end
+
+      it "does not delete it" do
+        expect { delete }.not_to change { project.scan_result_policy_reads.count }
+      end
+    end
+  end
+
   describe "#active_policies_scan_actions_for_project" do
     before do
       allow(Gitlab::Git).to receive(:branch_ref?).with(default_branch).and_return(true)

@@ -118,7 +118,7 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
 
     shared_context 'with scan_result_policy_reads' do
       let(:scan_result_policy_read) do
-        create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration)
+        create(:scan_result_policy_read, security_orchestration_policy_configuration: configuration, project: project)
       end
 
       let!(:software_license_without_scan_result_policy) do
@@ -130,6 +130,8 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
           scan_result_policy_read: scan_result_policy_read)
       end
 
+      subject(:perform) { worker.perform(project.id, configuration.id) }
+
       it 'deletes software_license_policies associated to the project' do
         worker.perform(project.id, configuration.id)
 
@@ -137,25 +139,48 @@ RSpec.describe Security::ProcessScanResultPolicyWorker, feature_category: :secur
         expect(software_license_policies).to match_array([software_license_without_scan_result_policy])
       end
 
-      it 'does not delete scan_result_policy_reads' do
-        worker.perform(project.id, configuration.id)
+      context 'with existing scan_result_policy_reads' do
+        def scan_result_policy_read_exists?
+          Security::ScanResultPolicyRead.exists?(scan_result_policy_read.id)
+        end
 
-        expect(scan_result_policy_read.reload.id).to eq(scan_result_policy_read.id)
+        context 'with matching project_id' do
+          it 're-creates scan_result_policy_reads' do
+            expect { perform }.to change { scan_result_policy_read_exists? }.to(false)
+          end
+        end
+
+        context 'with mismatching project_id' do
+          before do
+            scan_result_policy_read.update_attribute(:project_id, create(:project).id)
+          end
+
+          it 'does not delete scan_result_policy_reads' do
+            expect { perform }.not_to change { scan_result_policy_read_exists? }.from(true)
+          end
+        end
       end
     end
 
     context 'when policies are inactive' do
       let_it_be(:project) { configuration.project }
+
+      let_it_be(:scan_result_policy_read) do
+        create(:scan_result_policy_read, project: project, security_orchestration_policy_configuration: configuration)
+      end
+
       let_it_be(:approval_rule) do
         create(:approval_project_rule, :scan_finding,
-          project: project, security_orchestration_policy_configuration_id: configuration.id
+          project: project, security_orchestration_policy_configuration_id: configuration.id,
+          scan_result_policy_read: scan_result_policy_read
         )
       end
 
       let_it_be(:mr_approval_rule) do
         create(:report_approver_rule, :scan_finding,
           merge_request: create(:merge_request, source_project: project),
-          security_orchestration_policy_configuration_id: configuration.id
+          security_orchestration_policy_configuration_id: configuration.id,
+          scan_result_policy_read: scan_result_policy_read
         )
       end
 

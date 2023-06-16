@@ -109,6 +109,12 @@ module EE
       accepts_nested_attributes_for :software_license_policies, allow_destroy: true
       has_many :merge_train_cars, class_name: 'MergeTrains::Car', foreign_key: 'target_project_id', inverse_of: :target_project
 
+      has_many :scan_result_policy_reads,
+        class_name: 'Security::ScanResultPolicyRead',
+        foreign_key: 'project_id',
+        inverse_of: :project,
+        dependent: :delete_all
+
       has_many :project_aliases
 
       has_many :upstream_project_subscriptions, class_name: 'Ci::Subscriptions::Project', foreign_key: :downstream_project_id, inverse_of: :downstream_project
