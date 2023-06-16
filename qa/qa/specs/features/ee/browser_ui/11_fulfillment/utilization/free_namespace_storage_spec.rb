@@ -70,7 +70,7 @@ module QA
               end
                 .to eventually_match(%r{\d+\.\d+ Ki?B / \d+.\d+ Gi?B Namespace storage used}i)
                       .within(max_attempts: 10, reload_page: page, sleep_interval: 1)
-              expect(usage_quota.purchased_usage_total.squish).to match(%r{\d+ Gi?B \D+ Purchased storage}i)
+              expect(usage_quota.storage_purchased.squish).to match(%r{Total purchased storage \d+.\d Gi?B}i)
               expect(usage_quota.dependency_proxy_size).to match(%r{0 bytes}i)
               expect(usage_quota.container_registry_size).to match(%r{0 bytes}i)
               expect(usage_quota.group_usage_message)
