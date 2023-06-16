@@ -67,7 +67,7 @@ module QA
             end
 
             def set_ip_address_restriction(ip_address)
-              QA::Runtime::Logger.debug(%Q[Setting ip address restriction to: #{ip_address}])
+              QA::Runtime::Logger.debug(%[Setting ip address restriction to: #{ip_address}])
               expand_content(:permission_lfs_2fa_content)
 
               # GitLab UI Token Selector (https://gitlab-org.gitlab.io/gitlab-ui/?path=/story/base-token-selector--default)

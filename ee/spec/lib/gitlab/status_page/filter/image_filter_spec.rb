@@ -13,7 +13,7 @@ RSpec.describe Gitlab::StatusPage::Filter::ImageFilter do
     let(:filename) { 'tanuki.png' }
     let(:original_source_path) { "/uploads/#{secret}/#{filename}" }
     let(:expected_source_path) { Gitlab::StatusPage::Storage.upload_path(issue_iid, secret, filename) }
-    let(:original_html) { %Q{<a class="no-attachment-icon gfm" href="#{original_source_path}" target="_blank" rel="noopener noreferrer"><img class="lazy" data-src="#{original_source_path}"></a>} }
+    let(:original_html) { %{<a class="no-attachment-icon gfm" href="#{original_source_path}" target="_blank" rel="noopener noreferrer"><img class="lazy" data-src="#{original_source_path}"></a>} }
     let(:context_options) { { post_process_pipeline: Gitlab::StatusPage::Pipeline::PostProcessPipeline, issue_iid: issue_iid } }
     let(:img_tag) { Nokogiri::HTML(subject).css('img')[0] }
     let(:link_tag) { img_tag.parent }

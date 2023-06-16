@@ -27,7 +27,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
   end
 
   let(:manifest_list) do
-    %Q(
+    %(
       {
         "schemaVersion":2,
         "mediaType":"application/vnd.docker.distribution.manifest.list.v2+json",
@@ -141,7 +141,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
 
     context 'image without mediaType parameter' do
       let(:manifest_no_media_type) do
-        %Q(
+        %(
           {
             "schemaVersion":2,
             "layers":[
@@ -167,7 +167,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
 
     context 'oci manifest list' do
       let(:oci_manifest) do
-        %Q(
+        %(
           {
             "schemaVersion":2,
             "mediaType":"application/vnd.oci.image.manifest.v1+json",
@@ -181,7 +181,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
       end
 
       let(:oci_manifest_list) do
-        %Q(
+        %(
           {
             "schemaVersion":2,
             "mediaType":"application/vnd.oci.image.index.v1+json",
@@ -217,7 +217,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
 
     context 'buildkit cache images' do
       let(:buildcache_manifest_list) do
-        %Q(
+        %(
           {
             "schemaVersion":2,
             "mediaType":"application/vnd.oci.image.index.v1+json",
@@ -256,7 +256,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
 
     context 'OCI image with artifact' do
       let(:artifact_manifest) do
-        %Q(
+        %(
           {
             "mediaType": "application/vnd.oci.artifact.manifest.v1+json",
             "artifactType": "application/vnd.example.sbom.v1",
@@ -281,7 +281,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo, feature_category: :geo_replic
       end
 
       let(:manifest_list_with_artifacts) do
-        %Q(
+        %(
           {
             "schemaVersion":2,
             "mediaType":"application/vnd.oci.image.index.v1+json",

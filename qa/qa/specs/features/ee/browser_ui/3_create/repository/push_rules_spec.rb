@@ -54,7 +54,7 @@ module QA
             error: 'File "file" is larger than the allowed size of 1 MiB')
           expect_error_on_push(
             file: wrongly_named_file,
-            error: Regexp.escape(%Q{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
+            error: Regexp.escape(%{File name #{@file_name_limitation} was prohibited by the pattern "#{@file_name_limitation}"}))
         end
 
         it 'restricts users by email format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347783' do

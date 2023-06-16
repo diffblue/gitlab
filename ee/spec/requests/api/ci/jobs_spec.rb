@@ -18,7 +18,7 @@ RSpec.describe API::Ci::Jobs, feature_category: :continuous_integration do
   let(:download_headers) do
     { 'Content-Transfer-Encoding' => 'binary',
       'Content-Disposition' =>
-    %Q(attachment; filename="#{job.artifacts_file.filename}"; filename*=UTF-8''#{job.artifacts_file.filename}) }
+    %(attachment; filename="#{job.artifacts_file.filename}"; filename*=UTF-8''#{job.artifacts_file.filename}) }
   end
 
   before do

@@ -133,7 +133,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
   shared_examples 'referencing a iteration in a link href' do
     let(:unquoted_reference) { "#{Iteration.reference_prefix}#{iteration.name}" }
-    let(:link_reference) { %Q{<a href="#{unquoted_reference}">Iteration</a>} }
+    let(:link_reference) { %{<a href="#{unquoted_reference}">Iteration</a>} }
 
     before do
       iteration.update!(name: 'gfm')
