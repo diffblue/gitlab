@@ -10,19 +10,23 @@ module Elastic
       MAX_LANGUAGES = 100
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
-        options[:scope] = type
         results = { blobs: [], commits: [] }
+
+        commit_options = options.merge(features: 'repository', scope: 'commit')
+        blob_options = options.merge(features: 'repository', scope: 'blob')
+        wiki_blob_options = options.merge(features: 'wiki', scope: 'wiki_blob')
+
         case type
         when 'all'
-          results[:commits] = search_commit(query, page: page, per: per, options: options.merge(features: 'repository'))
-          results[:blobs] = search_blob(query, type: 'blob', page: page, per: per, options: options.merge(features: 'repository'))
-          results[:wiki_blobs] = search_blob(query, type: 'wiki_blob', page: page, per: per, options: options.merge(features: 'wiki'))
+          results[:commits] = search_commit(query, page: page, per: per, options: commit_options)
+          results[:blobs] = search_blob(query, type: 'blob', page: page, per: per, options: blob_options)
+          results[:wiki_blobs] = search_blob(query, type: 'wiki_blob', page: page, per: per, options: wiki_blob_options)
         when 'commit'
-          results[:commits] = search_commit(query, page: page, per: per, options: options.merge(features: 'repository'))
+          results[:commits] = search_commit(query, page: page, per: per, options: commit_options)
         when 'blob'
-          results[:blobs] = search_blob(query, type: type, page: page, per: per, options: options.merge(features: 'repository'))
+          results[:blobs] = search_blob(query, type: type, page: page, per: per, options: blob_options)
         when 'wiki_blob'
-          results[:wiki_blobs] = search_blob(query, type: type, page: page, per: per, options: options.merge(features: 'wiki'))
+          results[:wiki_blobs] = search_blob(query, type: type, page: page, per: per, options: wiki_blob_options)
         end
 
         results
@@ -33,13 +37,15 @@ module Elastic
         # Highlight is required for parse_search_result to locate relevant line
         options = options.merge(highlight: true)
 
-        elastic_search_and_wrap(query, type: es_type, page: page, per: per, options: options, preload_method: preload_method) do |result, project|
+        elastic_search_and_wrap(query, type: es_type, page: page, per: per, options: options,
+          preload_method: preload_method) do |result, project|
           ::Gitlab::Elastic::SearchResults.parse_search_result(result, project)
         end
       end
 
       def blob_aggregations(query, options)
-        query_hash, options = blob_query(query, options: options.merge(features: 'repository', aggregation: true, scope: 'blob'))
+        blob_options = options.merge(features: 'repository', aggregation: true, scope: 'blob')
+        query_hash, options = blob_query(query, options: blob_options)
         results = search(query_hash, options)
 
         ::Gitlab::Search::AggregationParser.call(results.response.aggregations)
@@ -54,7 +60,7 @@ module Elastic
         filters = []
 
         if repository_ids.any?
-          if options[:features].eql?('wiki') && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+          if options[:features].eql?('wiki') && replace_wiki_project_with_wiki_in_rid?
             repository_ids = repository_ids.flat_map do |rid|
               rid =~ /wiki_project_\d+/ ? [rid, rid.gsub(/wiki_project/, 'wiki')] : rid
             end.uniq
@@ -84,7 +90,7 @@ module Elastic
 
       # rubocop:disable Metrics/AbcSize
       def search_commit(query, page: 1, per: 20, options: {})
-        fields = %w(message^10 sha^5 author.name^2 author.email^2 committer.name committer.email)
+        fields = %w[message^10 sha^5 author.name^2 author.email^2 committer.name committer.email]
         query_with_prefix = query.split(/\s+/).map { |s| s.gsub(SHA_REGEX) { |sha| "#{sha}*" } }.join(' ')
 
         bool_expr = ::Gitlab::Elastic::BoolExpr.new
@@ -104,7 +110,9 @@ module Elastic
         # we need to do a project visibility check.
         #
         # Note that `:current_user` might be `nil` for a anonymous user
-        query_hash = context.name(:commit, :authorized) { project_ids_filter(query_hash, options) } if options.key?(:current_user)
+        if options.key?(:current_user)
+          query_hash = context.name(:commit, :authorized) { project_ids_filter(query_hash, options) }
+        end
 
         bool_expr = apply_simple_query_string(
           name: context.name(:commit, :match, :search_terms),
@@ -131,8 +139,8 @@ module Elastic
         options[:order] = :default if options[:order].blank?
 
         if options[:highlight] && !options[:count_only]
-          es_fields = fields.map { |field| field.split('^').first }.each_with_object({}) do |field, memo|
-            memo[field.to_sym] = {}
+          es_fields = fields.map { |field| field.split('^').first }.each_with_object({}) do |f, memo|
+            memo[f.to_sym] = {}
           end
 
           query_hash[:highlight] = {
@@ -242,9 +250,14 @@ module Elastic
           filter :path, parser: ->(input) { "#{input.downcase}*" }
 
           if Feature.enabled?(:elastic_file_name_reverse_optimization)
-            filter :extension, field: 'file_name.reverse', type: :prefix, parser: ->(input) { input.downcase.reverse + '.' }
+            filter :extension,
+              field: 'file_name.reverse',
+              type: :prefix,
+              parser: ->(input) { "#{input.downcase.reverse}." }
           else
-            filter :extension, field: :path, parser: ->(input) { '*.' + input.downcase }
+            filter :extension,
+              field: :path,
+              parser: ->(input) { "*.#{input.downcase}" }
           end
 
           filter :blob, field: :oid
@@ -262,17 +275,16 @@ module Elastic
           query_hash[:sort] = [:_score]
         end
 
-        if options[:features].eql?('wiki')
-          options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
-        end
+        options[:no_join_project] = disable_project_joins_for_wiki? if options[:features].eql?('wiki')
 
-        if options[:scope] == 'blob'
-          options[:no_join_project] = Elastic::DataMigrationService.migration_has_finished?(:backfill_project_permissions_in_blobs)
-        end
+        options[:no_join_project] = disable_project_joins_for_blob? if options[:scope].eql?('blob')
 
         if options[:features].eql?('wiki') && use_separate_wiki_index?
           fields = %w[content file_name path]
-          options[:index_name] = Elastic::Latest::WikiConfig.index_name if Feature.disabled?(:use_base_class_in_proxy_util)
+
+          if Feature.disabled?(:use_base_class_in_proxy_util)
+            options[:index_name] = Elastic::Latest::WikiConfig.index_name
+          end
         else
           fields = %w[blob.content blob.file_name blob.path]
         end
@@ -290,7 +302,9 @@ module Elastic
         #
         # Note that `:current_user` might be `nil` for a anonymous user
         if options.key?(:current_user)
-          query_hash = context.name(:blob, :authorized) { authorization_filter(query_hash, options.merge(traversal_ids_prefix: :traversal_ids)) }
+          query_hash = context.name(:blob, :authorized) do
+            authorization_filter(query_hash, options.merge(traversal_ids_prefix: :traversal_ids))
+          end
         end
 
         # add the document type filter
@@ -315,10 +329,13 @@ module Elastic
         options[:order] = :default if options[:order].blank? && !aggregation
 
         if options[:highlight] && !count_or_aggregation_query
+          # Highlighted text fragments do not work well for code as we want to show a few whole lines of code.
+          # Set number_of_fragments to 0 to get the whole content to determine the exact line number that was
+          # highlighted.
           query_hash[:highlight] = {
             pre_tags: [HIGHLIGHT_START_TAG],
             post_tags: [HIGHLIGHT_END_TAG],
-            number_of_fragments: 0, # highlighted text fragments do not work well for code as we want to show a few whole lines of code. We need to get the whole content to determine the exact line number that was highlighted.
+            number_of_fragments: 0,
             fields: {
               "blob.content" => {},
               "blob.file_name" => {}
@@ -337,9 +354,12 @@ module Elastic
           }
         end
 
-        # inject the `id` part of repository as project id
+        # inject the `id` part of repository as project_ids
         repository_ids = [options[:repository_id]].flatten
-        options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i } if type == 'wiki_blob' && repository_ids.any?
+        if type == 'wiki_blob' && repository_ids.any?
+          options[:project_ids] = repository_ids.map { |id| id.to_s[/\d+/].to_i }
+        end
+
         [query_hash, options]
       end
       # rubocop:enable Metrics/AbcSize
@@ -348,6 +368,18 @@ module Elastic
 
       def use_separate_wiki_index?
         Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)
+      end
+
+      def disable_project_joins_for_wiki?
+        Elastic::DataMigrationService.migration_has_finished?(:backfill_wiki_permissions_in_main_index)
+      end
+
+      def disable_project_joins_for_blob?
+        Elastic::DataMigrationService.migration_has_finished?(:backfill_project_permissions_in_blobs)
+      end
+
+      def replace_wiki_project_with_wiki_in_rid?
+        !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
       end
     end
   end

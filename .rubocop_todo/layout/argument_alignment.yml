@@ -1143,7 +1143,6 @@ Layout/ArgumentAlignment:
     - 'ee/spec/lib/ee/gitlab/scim/provisioning_service_spec.rb'
     - 'ee/spec/lib/ee/gitlab/usage/service_ping_report_spec.rb'
     - 'ee/spec/lib/ee/gitlab/usage_data_spec.rb'
-    - 'ee/spec/lib/elastic/latest/git_class_proxy_spec.rb'
     - 'ee/spec/lib/elastic/latest/project_wiki_class_proxy_spec.rb'
     - 'ee/spec/lib/gitlab/analytics/cycle_analytics/data_collector_spec.rb'
     - 'ee/spec/lib/gitlab/analytics/cycle_analytics/distinct_stage_loader_spec.rb'
