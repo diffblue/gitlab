@@ -6,15 +6,20 @@ namespace :gitlab do
   namespace :llm do
     namespace :zero_shot do
       namespace :test do
+        # to run this using own issue example, please use syntax below:
+        # rake "gitlab:llm:zero_shot:test:questions[<issue_url>]"
+        # please note usage of quotes to pass argument
+        # if run without quotes and argument, it will use predefined issue
         desc 'Synchronously run predefined AI questions'
-        task questions: :environment do
-          issue_identifier = "http://127.0.0.1:3001/jashkenas/Underscore/-/issues/41"
+        task :questions, [:issue] => [:environment] do |_t, args|
+          args.with_defaults(issue: 'http://127.0.0.1:3001/jashkenas/Underscore/-/issues/41')
+
           zero_shot_prompt_action = "the action to take, should be one from this list"
 
           ::CSV.read(FILENAME).each do |row|
             next if row[0].blank?
 
-            question = format(row[0], { issue_identifier: issue_identifier })
+            question = format(row[0], { issue_identifier: args.issue })
             logger.info("question: #{question}")
             logger.info("expected tool(s): #{row[1]}")
 
