@@ -75,6 +75,9 @@ export default {
     epicsWithAssociatedParents() {
       return this.epics.filter((epic) => {
         if (epic.hasParent) {
+          if (epic.parent.startDate && epic.parent.dueDate) {
+            return this.epicIds.indexOf(epic.parent.id) < 0;
+          }
           return epic.ancestors.nodes.every((ancestor) => this.epicIds.indexOf(ancestor.id) < 0);
         }
         return !epic.hasParent;

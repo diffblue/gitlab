@@ -340,12 +340,13 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
     end
 
     describe 'roadmap page with filter applied' do
-      let_it_be(:subepic_with_bug) do
-        create(
-          :labeled_epic, group: group, parent: epic_with_critical,
-          start_date: end_of_quarter - 10.days, end_date: end_of_quarter - 1.day, labels: [bug_label]
-        )
-      end
+      let_it_be(:start_date) { end_of_quarter - 10.days }
+      let_it_be(:end_date) { end_of_quarter - 1.day }
+      let_it_be(:subepic_with_bug) { create(:labeled_epic, group: group, parent: epic_with_critical, start_date: start_date, end_date: end_date, labels: [bug_label]) }
+      let_it_be(:level_1) { create(:epic, group: group, start_date: start_date, end_date: end_date) }
+      let_it_be(:level_2) { create(:labeled_epic, parent: level_1, group: group, start_date: start_date, end_date: end_date, labels: [bug_label]) }
+      let_it_be(:level_3) { create(:epic, group: group, parent: level_2, start_date: start_date, end_date: end_date) }
+      let_it_be(:level_4) { create(:labeled_epic, group: group, parent: level_3, start_date: start_date, end_date: end_date, labels: [bug_label]) }
 
       before do
         search_for_label(bug_label)
@@ -357,9 +358,11 @@ RSpec.describe 'group epic roadmap', :js, feature_category: :portfolio_managemen
 
       it 'renders roadmap view with matching epic' do
         page.within('.roadmap-container .epics-list-section') do
-          expect(page).to have_selector('.epics-list-item .epic-title', count: 2)
+          expect(page).to have_selector('.epics-list-item .epic-title', count: 4)
           expect(page).to have_content(epic_with_bug.title)
           expect(page).to have_content(subepic_with_bug.title)
+          expect(page).to have_content(level_2.title)
+          expect(page).to have_content(level_4.title)
         end
       end
     end

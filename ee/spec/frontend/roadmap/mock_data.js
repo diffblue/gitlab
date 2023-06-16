@@ -341,6 +341,8 @@ export const rawEpics = [
     hasParent: true,
     parent: {
       id: 'gid://gitlab/Epic/40',
+      startDate: '2017-12-26',
+      endDate: '2018-03-10',
     },
     ancestors: {
       nodes: [
@@ -471,6 +473,8 @@ export const rawEpics = [
     hasParent: true,
     parent: {
       id: 'gid://gitlab/Epic/40',
+      startDate: null,
+      endDate: null,
     },
     ancestors: {
       nodes: [
@@ -974,6 +978,49 @@ export const mockEpicsWithParents = [
         {
           id: 'gid://gitlab-org/subgroup/Epic/1',
           __typename: 'EpicEdge',
+        },
+      ],
+      __typename: 'EpicConnection',
+    },
+  },
+];
+
+export const mockEpicsWithSkippedParents = [
+  {
+    id: 'gid://gitlab-org/subgroup/Epic/1',
+    hasParent: true,
+    parent: {
+      id: 'gid://gitlab-org/Epic/1',
+      startDate: '2017-07-10',
+      dueDate: '2018-06-02',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/Epic/1',
+        },
+      ],
+      __typename: 'EpicConnection',
+    },
+  },
+  {
+    id: 'gid://gitlab-org/subgroup/Epic/2',
+    hasParent: true,
+    parent: {
+      id: 'gid://gitlab-org/Epic/2',
+      startDate: '2017-07-10',
+      dueDate: '2018-06-02',
+    },
+    ancestors: {
+      nodes: [
+        {
+          id: 'gid://gitlab-org/subgroup/Epic/1',
+        },
+        {
+          id: 'gid://gitlab-org/Epic/2',
+        },
+        {
+          id: 'gid://gitlab-org/Epic/1',
         },
       ],
       __typename: 'EpicConnection',

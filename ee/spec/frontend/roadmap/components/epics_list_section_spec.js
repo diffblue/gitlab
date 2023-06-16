@@ -19,6 +19,7 @@ import {
   mockGroupId,
   rawEpics,
   mockEpicsWithParents,
+  mockEpicsWithSkippedParents,
   mockSortedBy,
   mockPageInfo,
   basePath,
@@ -123,6 +124,17 @@ describe('EpicsListSectionComponent', () => {
         await nextTick();
 
         expect(wrapper.findAllComponents(EpicItem)).toHaveLength(mockEpicsWithParents.length);
+      });
+
+      it('should return epics which match the applied filter when one of the epic in hierarchy is not matching the filter', async () => {
+        wrapper = createComponent({ epics: mockEpicsWithSkippedParents });
+        store.state.epicIds = mockEpicsWithSkippedParents.map((epic) => epic.id);
+
+        await nextTick();
+
+        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(
+          mockEpicsWithSkippedParents.length,
+        );
       });
     });
 
