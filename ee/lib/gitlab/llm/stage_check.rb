@@ -31,7 +31,7 @@ module Gitlab
         def available_on_experimental_stage?(group, feature)
           return true unless EXPERIMENTAL_FEATURES.include?(feature)
 
-          group.experiment_features_enabled
+          group&.root_ancestor&.experiment_features_enabled
         end
 
         # There is no beta setting yet.
@@ -39,13 +39,13 @@ module Gitlab
         def available_on_beta_stage?(group, feature)
           return true unless BETA_FEATURES.include?(feature)
 
-          group.experiment_features_enabled
+          group&.root_ancestor&.experiment_features_enabled
         end
 
         def available_as_third_party_feature?(group, feature)
           return true unless THIRD_PARTY_FEATURES.include?(feature)
 
-          group.third_party_ai_features_enabled
+          group&.root_ancestor&.third_party_ai_features_enabled
         end
       end
     end

@@ -134,9 +134,7 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
 
   describe '.container_authorized?' do
     it "calls Gitlab::Llm::StageCheck.available? with the appropriate arguments" do
-      root_ancestor = instance_double(Group)
-      expect(container).to receive(:root_ancestor).and_return(root_ancestor)
-      expect(Gitlab::Llm::StageCheck).to receive(:available?).with(root_ancestor, :chat)
+      expect(Gitlab::Llm::StageCheck).to receive(:available?).with(container, :chat)
 
       described_class.container_authorized?(container: container)
     end
@@ -157,7 +155,6 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
 
     it 'returns false if resource parent is not authorized' do
       expect(resource).to receive_message_chain(:resource_parent, :root_ancestor).and_return(root_ancestor)
-      expect(root_ancestor).to receive(:root_ancestor).and_return(root_ancestor)
       expect(Gitlab::Llm::StageCheck).to receive(:available?).with(root_ancestor, :chat).and_return(false)
 
       expect(subject).to be(false)
@@ -165,7 +162,6 @@ RSpec.describe Gitlab::Llm::Chain::Utils::Authorizer, feature_category: :shared 
 
     it 'calls user.can? with the appropriate arguments' do
       expect(resource).to receive_message_chain(:resource_parent, :root_ancestor).and_return(root_ancestor)
-      expect(root_ancestor).to receive(:root_ancestor).and_return(root_ancestor)
       expect(Gitlab::Llm::StageCheck).to receive(:available?).with(root_ancestor, :chat).and_return(true)
       expect(resource).to receive(:to_ability_name).and_return('ability_name')
       expect(user).to receive(:can?).with('read_ability_name', resource)
