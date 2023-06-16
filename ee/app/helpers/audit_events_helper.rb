@@ -56,7 +56,7 @@ module AuditEventsHelper
       filter_token_options: admin_audit_event_tokens.to_json,
       export_url: export_url
     }.tap do |data|
-      break data unless Feature.enabled?(:instance_streaming_audit_events)
+      break data unless Feature.enabled?(:ff_external_audit_events)
 
       data.merge!({
         empty_state_svg_path: image_path('illustrations/cloud.svg'),

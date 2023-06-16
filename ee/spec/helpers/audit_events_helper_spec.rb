@@ -164,7 +164,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
 
     context 'when compliance_pipeline_configuration is off' do
       before do
-        stub_feature_flags(instance_streaming_audit_events: false)
+        stub_feature_flags(ff_external_audit_events: false)
       end
 
       it 'returns the correct data' do
@@ -180,7 +180,7 @@ RSpec.describe AuditEventsHelper, feature_category: :audit_events do
 
     context 'when compliance_pipeline_configuration is on' do
       before do
-        stub_feature_flags(instance_streaming_audit_events: true)
+        stub_feature_flags(ff_external_audit_events: true)
       end
 
       it 'returns the correct data' do
