@@ -67,8 +67,10 @@ module EE
         end
 
         after_transition started: :finished do |state, _|
-          # Create a Geo event so changes will be replicated to secondary node(s).
-          state.project.log_geo_updated_events
+          state.run_after_commit do
+            # Create a Geo event so changes will be replicated to secondary node(s).
+            state.project.log_geo_updated_events
+          end
 
           if state.project.use_elasticsearch?
             state.run_after_commit do

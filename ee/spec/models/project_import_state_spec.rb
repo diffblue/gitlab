@@ -118,9 +118,10 @@ RSpec.describe ProjectImportState, type: :model, feature_category: :importers do
             end
 
             context 'when wiki_repository exists' do
-              it 'calls replicator to update Geo', :aggregate_failures do
+              it 'calls replicator to update Geo after record is saved', :aggregate_failures do
                 create(:project_wiki_repository, project: project)
 
+                expect(import_state).to receive(:run_after_commit).once.and_call_original
                 expect(project.wiki_repository).to be_present
                 expect(repository_updated_service).to receive(:execute).once
                 expect(project.wiki_repository.replicator).to receive(:geo_handle_after_update)
