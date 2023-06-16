@@ -34,6 +34,7 @@ class SearchController < ApplicationController
   before_action only: :show do
     update_scope_for_code_search
   end
+
   rescue_from ActiveRecord::QueryCanceled, with: :render_timeout
 
   layout 'search'
