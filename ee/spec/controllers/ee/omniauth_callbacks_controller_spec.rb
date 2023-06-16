@@ -100,6 +100,30 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
         end
       end
     end
+
+    context 'when linking to existing profile' do
+      let(:user) { create(:user) }
+      let(:connect_config) do
+        ActiveSupport::InheritableOptions.new({
+          'name' => provider,
+          'args' => {
+            'name' => provider,
+            'client_options' => {
+              'identifier' => 'gitlab-test-client'
+            }
+          }
+        })
+      end
+
+      before do
+        sign_in user
+        stub_licensed_features(oidc_client_groups_claim: true)
+      end
+
+      it 'links identity' do
+        expect { post provider }.to change { user.identities.count }.by(1)
+      end
+    end
   end
 
   describe 'identity verification', feature_category: :insider_threat do
