@@ -48,13 +48,7 @@ module Namespaces
       def git_check_over_limit!(error_class)
         return unless over_limit?
 
-        over_storage_limit = if block_given?
-                               yield
-                             else
-                               root_namespace.over_storage_limit?
-                             end
-
-        raise error_class, git_read_only_message(over_storage_limit)
+        raise error_class, git_read_only_message
       end
 
       private
@@ -102,12 +96,8 @@ module Namespaces
         ::Feature.enabled?(:free_user_cap, root_namespace) || new_namespace_enforcement?
       end
 
-      def git_read_only_message(over_storage_limit)
-        if over_storage_limit
-          _('Your top-level group is over the user and storage limits and has been placed in a read-only state.')
-        else
-          _('Your top-level group is over the user limit and has been placed in a read-only state.')
-        end
+      def git_read_only_message
+        _('Your top-level group is over the user limit and has been placed in a read-only state.')
       end
     end
   end

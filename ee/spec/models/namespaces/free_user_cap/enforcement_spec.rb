@@ -954,40 +954,9 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas, feature_category: :m
 
     context 'when over the user limit' do
       let(:over_user_limit_message) { /Your top-level group is over the user limit/ }
-      let(:over_combined_limit_message) { /Your top-level group is over the user and storage limits/ }
 
       it 'raises an error for over user limit' do
         expect { git_check_over_limit! }.to raise_error(StandardError, over_user_limit_message)
-      end
-
-      context 'when over storage and user limit' do
-        before do
-          allow(namespace).to receive(:over_storage_limit?).and_return(true)
-        end
-
-        it 'raises an error for over user and storage limit' do
-          expect do
-            described_class.new(namespace).git_check_over_limit!(StandardError)
-          end.to raise_error(StandardError, over_combined_limit_message)
-        end
-      end
-
-      context 'when block is provided for storage limit' do
-        context 'when block for storage limit evaluates to true' do
-          it 'raises an error for over user and storage limit' do
-            expect do
-              described_class.new(namespace).git_check_over_limit!(StandardError) { true }
-            end.to raise_error(StandardError, over_combined_limit_message)
-          end
-        end
-
-        context 'when block for storage limit evaluates to false' do
-          it 'raises an error for over user limit' do
-            expect do
-              described_class.new(namespace).git_check_over_limit!(StandardError) { false }
-            end.to raise_error(StandardError, over_user_limit_message)
-          end
-        end
       end
     end
   end

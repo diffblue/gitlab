@@ -53231,9 +53231,6 @@ msgstr ""
 msgid "Your top-level group %{namespace_name} will move to a read-only state soon"
 msgstr ""
 
-msgid "Your top-level group is over the user and storage limits and has been placed in a read-only state."
-msgstr ""
-
 msgid "Your top-level group is over the user limit and has been placed in a read-only state."
 msgstr ""
 
