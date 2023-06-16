@@ -4,13 +4,15 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Auth::Saml::Config do
   describe '.group_sync_enabled?' do
-    subject { described_class.group_sync_enabled? }
+    let(:config) { described_class.new }
+
+    subject { config.group_sync_enabled? }
 
     it { is_expected.to eq(false) }
 
     context 'when SAML is enabled' do
       before do
-        allow(described_class).to receive_messages({ options: { name: 'saml', args: {} } })
+        allow(config).to receive_messages({ options: { name: 'saml', args: {} } })
         allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
       end
 
@@ -18,7 +20,7 @@ RSpec.describe Gitlab::Auth::Saml::Config do
 
       context 'when the group attribute is configured' do
         before do
-          allow(described_class).to receive(:groups).and_return(['Groups'])
+          allow(config).to receive(:groups).and_return(['Groups'])
         end
 
         it { is_expected.to eq(false) }

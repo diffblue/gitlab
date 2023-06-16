@@ -54,7 +54,7 @@ module Gitlab
         end
 
         def sync_enabled?
-          Gitlab::Auth::Saml::Config.group_sync_enabled?
+          Gitlab::Auth::Saml::Config.new(auth_hash.provider).group_sync_enabled?
         end
       end
     end
