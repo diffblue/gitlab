@@ -3,6 +3,11 @@ import { s__ } from '~/locale';
 export const SEVERITY = 'severity';
 export const STATUS = 'status';
 
+export const UNKNOWN_LICENSE = {
+  value: 'unknown',
+  text: s__('ScanResultPolicy|Unknown'),
+};
+
 export const FILTERS = [
   {
     text: s__('ScanResultPolicy|New severity'),

@@ -4,6 +4,7 @@ import { sprintf, s__ } from '~/locale';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import BaseLayoutComponent from '../base_layout/base_layout_component.vue';
 import { EXCEPT, MATCHING } from '../lib/rules';
+import { UNKNOWN_LICENSE } from './constants';
 
 export default {
   i18n: {
@@ -42,14 +43,17 @@ export default {
     };
   },
   computed: {
+    allLicenses() {
+      return [...this.parsedSoftwareLicenses, UNKNOWN_LICENSE];
+    },
     filteredLicenses() {
       if (this.searchTerm) {
-        return this.parsedSoftwareLicenses.filter(({ value }) => {
+        return this.allLicenses.filter(({ value }) => {
           return value.toLowerCase().includes(this.searchTerm.toLowerCase());
         });
       }
 
-      return this.parsedSoftwareLicenses;
+      return this.allLicenses;
     },
     licenseTypes: {
       get() {
@@ -75,8 +79,7 @@ export default {
       const selectedValues = [this.licenseTypes].flat();
 
       if (selectedValues.length === 1) {
-        toggleText = this.parsedSoftwareLicenses.find(({ value }) => value === selectedValues[0])
-          .text;
+        toggleText = this.allLicenses.find(({ value }) => value === selectedValues[0]).text;
       }
 
       if (selectedValues.length > 1) {

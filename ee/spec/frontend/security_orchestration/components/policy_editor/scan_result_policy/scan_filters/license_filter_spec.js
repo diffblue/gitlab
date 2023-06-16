@@ -1,5 +1,6 @@
 import BaseLayoutComponent from 'ee/security_orchestration/components/policy_editor/scan_result_policy/base_layout/base_layout_component.vue';
 import LicenseFilter from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/license_filter.vue';
+import { UNKNOWN_LICENSE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_filters/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { licenseScanBuildRule } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/rules';
 
@@ -17,6 +18,7 @@ describe('LicenseFilter', () => {
     license_states: ['newly_detected', 'detected'],
   });
   const parsedSoftwareLicenses = [APACHE_LICENSE, MIT_LICENSE].map((l) => ({ text: l, value: l }));
+  const allLicenses = [...parsedSoftwareLicenses, UNKNOWN_LICENSE];
 
   const createComponent = (props = DEFAULT_PROPS) => {
     wrapper = shallowMountExtended(LicenseFilter, {
@@ -57,9 +59,12 @@ describe('LicenseFilter', () => {
         expect(wrapper.emitted('changed')).toStrictEqual([[{ license_types: MIT_LICENSE }]]);
       });
 
+      it('displays all licenses', () => {
+        expect(findLicenseTypeListBox().props('items')).toStrictEqual(allLicenses);
+      });
+
       it('filters the licenses when searching', async () => {
         const listBox = findLicenseTypeListBox();
-        expect(listBox.props('items')).toStrictEqual(parsedSoftwareLicenses);
         await listBox.vm.$emit('search', APACHE_LICENSE);
         expect(listBox.props('items')).toStrictEqual([
           { value: APACHE_LICENSE, text: APACHE_LICENSE },
@@ -96,7 +101,7 @@ describe('LicenseFilter', () => {
       it('can select single all licence types', () => {
         findLicenseTypeListBox().vm.$emit('select-all');
         expect(wrapper.emitted('changed')).toEqual([
-          [expect.objectContaining({ license_types: parsedSoftwareLicenses })],
+          [expect.objectContaining({ license_types: allLicenses })],
         ]);
       });
 
