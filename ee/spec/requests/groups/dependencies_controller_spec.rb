@@ -88,7 +88,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
           let(:expected_response) do
             {
               'report' => {
-                'status' => 'job_not_set_up'
+                'status' => 'no_dependencies'
               },
               'dependencies' => []
             }
@@ -118,7 +118,7 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
             let(:expected_response) do
               {
                 'report' => {
-                  'status' => 'job_not_set_up'
+                  'status' => 'ok'
                 },
                 'dependencies' => [
                   {
@@ -135,6 +135,12 @@ RSpec.describe Groups::DependenciesController, feature_category: :dependency_man
                   }
                 ]
               }
+            end
+
+            it 'returns the expected data' do
+              subject
+
+              expect(json_response).to eq(expected_response)
             end
 
             context 'with sorting params' do

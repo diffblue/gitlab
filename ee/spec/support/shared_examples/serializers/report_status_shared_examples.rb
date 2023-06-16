@@ -84,6 +84,24 @@ RSpec.shared_examples 'report list' do
         expect(subject[:report][:job_path]).not_to be_present
         expect(subject[:report][:generated_at]).not_to be_present
       end
+
+      context 'without an associated project' do
+        before do
+          allow(request).to receive(:project).and_return(nil)
+        end
+
+        it 'returns a no_items status' do
+          expect(subject[:report][:status]).to eq(no_items_status)
+        end
+
+        context 'with items are present' do
+          let(:items) { collection }
+
+          it 'returns a ok status' do
+            expect(subject[:report][:status]).to eq(:ok)
+          end
+        end
+      end
     end
   end
 end
