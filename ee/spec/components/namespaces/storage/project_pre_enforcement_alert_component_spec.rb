@@ -16,25 +16,25 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
     create(:plan_limits, plan: group.root_ancestor.actual_plan, notification_limit: 500)
   end
 
-  shared_examples 'dismissible banner' do
-    context 'when the user dismissed the banner under 14 days ago', :freeze_time do
+  shared_examples 'dismissible alert' do
+    context 'when the user dismissed the alert under 14 days ago', :freeze_time do
       before do
         create_callout_for_context(dismissed_at: 1.day.ago, user: user, context: context)
       end
 
-      it 'does not render the banner' do
+      it 'does not render the alert' do
         render_inline(component)
 
         expect(page).not_to have_text "A namespace storage limit will soon be enforced"
       end
     end
 
-    context 'when the user dismissed the banner over 14 days ago', :freeze_time do
+    context 'when the user dismissed the alert over 14 days ago', :freeze_time do
       before do
         create_callout_for_context(dismissed_at: 14.days.ago, user: user, context: context)
       end
 
-      it 'does render the banner' do
+      it 'does render the alert' do
         render_inline(component)
 
         expect(page).to have_text "A namespace storage limit will soon be enforced"
@@ -65,7 +65,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       )
     end
 
-    it 'includes the correct project info in the banner text' do
+    it 'includes the correct project info in the alert text' do
       render_inline(component)
 
       expect(page).to have_text "The #{project.name} project will be affected by this."
@@ -74,7 +74,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       expect(page).to have_css("[data-group-id='#{group.root_ancestor.id}']")
     end
 
-    it_behaves_like 'dismissible banner'
+    it_behaves_like 'dismissible alert'
   end
 
   context 'with project belonging to user' do
@@ -94,7 +94,7 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
         .and_return(storage)
     end
 
-    it 'includes the correct project info in the banner text' do
+    it 'includes the correct project info in the alert text' do
       render_inline(component)
 
       expect(page).to have_text "The #{project.name} project will be affected by this."
@@ -103,6 +103,6 @@ RSpec.describe Namespaces::Storage::ProjectPreEnforcementAlertComponent, :saas, 
       expect(page).to have_css("[data-project-id='#{project.id}']")
     end
 
-    it_behaves_like 'dismissible banner'
+    it_behaves_like 'dismissible alert'
   end
 end

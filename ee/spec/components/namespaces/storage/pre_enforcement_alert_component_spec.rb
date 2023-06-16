@@ -28,7 +28,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     end
   end
 
-  describe 'when qualifies for combined users and storage banner' do
+  describe 'when qalifies for combnined users and storage alert' do
     let_it_be(:group) do
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_users_and_storage')
@@ -42,7 +42,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       enforce_free_user_caps
     end
 
-    it 'does not render the banner' do
+    it 'does not render the alert' do
       render_inline(component)
 
       expect(page).not_to have_text "A namespace storage limit will soon be enforced"
@@ -54,19 +54,19 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       group.add_guest(user)
     end
 
-    it 'indicates the storage limit will be enforced soon in the banner text' do
+    it 'indicates the storage limit will be enforced soon in the alert text' do
       render_inline(component)
 
       expect(page).to have_text "A namespace storage limit will soon be enforced"
     end
 
-    it 'includes the namespace name in the banner text' do
+    it 'includes the namespace name in the alert text' do
       render_inline(component)
 
       expect(page).to have_text group.name
     end
 
-    it 'includes used_storage in the banner text' do
+    it 'includes used_storage in the alert text' do
       render_inline(component)
 
       storage_size = 5.gigabytes / 1.gigabyte
@@ -82,7 +82,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       expect(page).not_to have_css(".gl-alert-not-dismissible")
     end
 
-    context 'when the user dismissed the banner under 14 days ago', :freeze_time do
+    context 'when the user dismissed the alert under 14 days ago', :freeze_time do
       before do
         create(
           :group_callout,
@@ -93,14 +93,14 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         )
       end
 
-      it 'does not render the banner' do
+      it 'does not render the alert' do
         render_inline(component)
 
         expect(page).not_to have_text "A namespace storage limit will soon be enforced"
       end
     end
 
-    context 'when the user dismissed the banner over 14 days ago', :freeze_time do
+    context 'when the user dismissed the alert over 14 days ago', :freeze_time do
       before do
         create(
           :group_callout,
@@ -111,7 +111,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         )
       end
 
-      it 'does render the banner' do
+      it 'does render the alert' do
         render_inline(component)
 
         expect(page).to have_text "A namespace storage limit will soon be enforced"
@@ -119,7 +119,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     end
 
     describe 'alert links' do
-      it 'includes the rollout_docs_link in the banner text' do
+      it 'includes the rollout_docs_link in the alert text' do
         render_inline(component)
 
         expect(page).to have_link(
@@ -131,7 +131,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         )
       end
 
-      it 'includes the learn_more_link in the banner text' do
+      it 'includes the learn_more_link in the alert text' do
         render_inline(component)
 
         expect(page).to have_link(
@@ -143,7 +143,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         )
       end
 
-      it 'includes the faq_link in the banner text' do
+      it 'includes the faq_link in the alert text' do
         render_inline(component)
 
         expect(page).to have_link(
@@ -168,7 +168,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
       it 'does not render' do
         render_inline(component)
 
-        expect(page).not_to have_css('.js-storage-enforcement-banner')
+        expect(page).not_to have_css('.js-storage-pre-enforcement-alert')
       end
     end
 
@@ -195,7 +195,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
         render_inline(component)
 
-        expect(page).not_to have_css('.js-storage-enforcement-banner')
+        expect(page).not_to have_css('.js-storage-pre-enforcement-alert')
       end
     end
   end
@@ -204,7 +204,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     it 'does not render' do
       render_inline(component)
 
-      expect(page).not_to have_css('.js-storage-enforcement-banner')
+      expect(page).not_to have_css('.js-storage-pre-enforcement-alert')
     end
   end
 end
