@@ -770,7 +770,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
         specify { expect(errors).to be_empty }
 
         it_behaves_like "scan result policy",
-          %i[branches scanners vulnerabilities_allowed severity_levels vulnerability_states]
+          %i[scanners vulnerabilities_allowed severity_levels vulnerability_states]
 
         describe "scanners" do
           before do
@@ -820,7 +820,52 @@ RSpec.describe Security::OrchestrationPolicyConfiguration, feature_category: :se
 
         specify { expect(errors).to be_empty }
 
-        it_behaves_like "scan result policy", %i[branches match_on_inclusion license_types license_states]
+        it_behaves_like "scan result policy", %i[match_on_inclusion license_types license_states]
+
+        context "with branches" do
+          specify { expect(errors).to be_empty }
+
+          context "with branch_type" do
+            before do
+              rule[:branch_type] = "protected"
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+            end
+          end
+        end
+
+        context "with branch_type" do
+          before do
+            rule.delete(:branches)
+            rule[:branch_type] = "protected"
+          end
+
+          specify { expect(errors).to be_empty }
+
+          context "with branches" do
+            before do
+              rule[:branches] = %w[main]
+            end
+
+            specify do
+              expect(errors).to contain_exactly("property '/scan_result_policy/0/rules/0' is invalid: error_type=oneOf")
+            end
+          end
+        end
+
+        context "without branches and branch_type" do
+          before do
+            rule.delete(:branches)
+          end
+
+          specify do
+            expect(errors).to contain_exactly(
+              "property '/scan_result_policy/0/rules/0' is missing required keys: branch_type",
+              "property '/scan_result_policy/0/rules/0' is missing required keys: branches")
+          end
+        end
 
         describe "license_types" do
           before do

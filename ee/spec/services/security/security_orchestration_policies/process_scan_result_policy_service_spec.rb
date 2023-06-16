@@ -4,18 +4,42 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService, feature_category: :security_policy_management do
   describe '#execute' do
-    let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
-    let(:project) { create(:project, namespace: group) }
+    let_it_be_with_refind(:group) { create(:group, :public) }
+    let_it_be_with_refind(:project) { create(:project, :empty_repo, namespace: group) }
 
-    let(:group) { create(:group, :public) }
+    let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
-    let(:approver) { create(:user) }
+    let_it_be(:approver) { create(:user) }
     let(:service) { described_class.new(project: project, policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
 
-    before do
+    RSpec.shared_context 'with existing branch' do
+      let(:branch_name) { name }
+
+      before do
+        project.repository.add_branch(project.creator, branch_name, project.repository.head_commit.sha)
+      end
+
+      after do
+        project.repository.delete_branch(branch_name)
+      end
+    end
+
+    before(:all) do
       group.add_maintainer(approver)
+
+      sha = project.repository.create_file(
+        project.creator,
+        "README.md",
+        "",
+        message: "initial commit",
+        branch_name: 'master')
+
       create(:protected_branch, name: 'master', project: project)
+      project.repository.add_branch(project.creator, 'master', sha)
+    end
+
+    before do
       allow(project).to receive(:multiple_approval_rules_available?).and_return(true)
       allow(policy_configuration).to receive(:policy_last_updated_by).and_return(approver)
     end
@@ -310,6 +334,32 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with branch_type' do
+      let(:rules) do
+        [{
+          type: 'scan_finding',
+          branch_type: branch_type,
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }]
+      end
+
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: rules) }
+
+      context 'when protected' do
+        let(:branch_type) { 'protected' }
+
+        it 'sets applies_to_all_protected_branches to true' do
+          subject
+
+          expect(project.approval_rules.first.applies_to_all_protected_branches).to be_truthy
+          expect(project.approval_rules.first.applies_to_branch?('random-branch')).to be_falsey
+        end
+      end
+    end
+
     describe 'rule params `protected_branch_ids`' do
       let(:protected_branch_name) { 'protected-branch-name' }
       let(:rule) do
@@ -339,6 +389,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
 
       context 'when feature flag `group_protected_branches` enabled' do
+        include_context 'with existing branch' do
+          let(:name) { protected_branch_name }
+        end
+
         before do
           stub_feature_flags(group_protected_branches: true)
           stub_feature_flags(allow_protected_branches_for_group: true)
@@ -358,6 +412,10 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
         before do
           stub_feature_flags(group_protected_branches: false)
           stub_feature_flags(allow_protected_branches_for_group: false)
+        end
+
+        include_context 'with existing branch' do
+          let(:name) { protected_branch_name }
         end
 
         it 'set `protected_branch_ids` from only the project level' do
