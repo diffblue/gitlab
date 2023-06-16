@@ -22,11 +22,13 @@ export default (el, namespaceType) => {
     scanPolicyDocumentationPath,
     scanResultApprovers,
     softwareLicenses,
+    timezones,
   } = el.dataset;
 
   const policyProject = JSON.parse(assignedPolicyProject);
 
   let parsedSoftwareLicenses;
+  let parsedTimezones;
 
   try {
     parsedSoftwareLicenses = JSON.parse(softwareLicenses).map((license) => {
@@ -48,6 +50,12 @@ export default (el, namespaceType) => {
     scanResultPolicyApprovers = {};
   }
 
+  try {
+    parsedTimezones = JSON.parse(timezones);
+  } catch {
+    parsedTimezones = [];
+  }
+
   return new Vue({
     el,
     apolloProvider,
@@ -66,6 +74,7 @@ export default (el, namespaceType) => {
       scanPolicyDocumentationPath,
       scanResultPolicyApprovers,
       parsedSoftwareLicenses,
+      timezones: parsedTimezones,
       existingPolicy: policy ? { type: policyType, ...JSON.parse(policy) } : undefined,
       assignedPolicyProject: policyProject
         ? convertObjectPropsToCamelCase(policyProject)

@@ -1,9 +1,11 @@
 import { GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import { s__ } from '~/locale';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import ScheduleRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/schedule_rule_component.vue';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown/timezone_dropdown.vue';
 import {
   DEFAULT_AGENT_NAME,
   SCAN_EXECUTION_SCHEDULE_RULE,
@@ -29,6 +31,9 @@ describe('ScheduleRuleComponent', () => {
         ruleLabel,
         ...options,
       },
+      provide: {
+        timezones: mockTimezones,
+      },
       stubs: {
         BaseRuleComponent,
         GlSprintf,
@@ -43,6 +48,8 @@ describe('ScheduleRuleComponent', () => {
   const findScheduleRuleNamespacesInput = () => wrapper.findByTestId('pipeline-rule-namespaces');
   const findScheduleRuleTimeDropDown = () => wrapper.findByTestId('rule-component-time');
   const findScheduleRuleDayDropDown = () => wrapper.findByTestId('rule-component-day');
+  const findTimezoneDropdown = () => wrapper.findComponent(TimezoneDropdown);
+  const findTimezoneLabel = () => wrapper.findByTestId('timezone-label');
 
   describe('select branch scope', () => {
     beforeEach(() => {
@@ -134,6 +141,24 @@ describe('ScheduleRuleComponent', () => {
         cadence: '0 2 * * 2',
       });
     });
+
+    it('should select correct timezone', () => {
+      findTimezoneDropdown().vm.$emit('input', {
+        identifier: mockTimezones[1].identifier,
+        formattedTimezone: mockTimezones[0].identifier,
+      });
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [
+          {
+            type: SCAN_EXECUTION_SCHEDULE_RULE,
+            branches: [],
+            cadence: '0 0 * * *',
+            timezone: mockTimezones[1].identifier,
+          },
+        ],
+      ]);
+    });
   });
 
   describe('parse existing rules', () => {
@@ -143,6 +168,7 @@ describe('ScheduleRuleComponent', () => {
           type: SCAN_EXECUTION_SCHEDULE_RULE,
           cadence: '0 9 * * 4',
           branches: ['branch1,branch2'],
+          timezone: mockTimezones[0].identifier,
         },
       });
 
@@ -152,11 +178,41 @@ describe('ScheduleRuleComponent', () => {
         SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY,
       );
 
+      expect(findTimezoneDropdown().props('value')).toBe(mockTimezones[0].identifier);
+
       expect(findScheduleRuleTimeDropDown().props('selected')).toBe('9');
       expect(findScheduleRuleDayDropDown().props('selected')).toBe('4');
       expect(findScheduleRulePeriodDropDown().props('selected')).toBe(
         SCAN_EXECUTION_RULE_PERIOD_WEEKLY_KEY,
       );
+    });
+  });
+
+  describe('timezone dropdown', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('should display label for branch scope with host name', () => {
+      expect(findTimezoneLabel().text()).toBe(`on ${window.location.host}`);
+    });
+
+    it('should display specific label for agent scope', async () => {
+      findScheduleRuleScopeDropDown().vm.$emit('select', SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY);
+      await nextTick();
+
+      expect(findTimezoneLabel().text()).toBe(`on the Kubernetes agent pod`);
+    });
+
+    it('should display correct tooltip for branch scope with host name', () => {
+      expect(findTimezoneDropdown().attributes('title')).toBe(`${window.location.host}'s timezone`);
+    });
+
+    it('should display specific tooltip for agent scope', async () => {
+      findScheduleRuleScopeDropDown().vm.$emit('select', SCAN_EXECUTION_RULE_SCOPE_AGENT_KEY);
+      await nextTick();
+
+      expect(findTimezoneDropdown().attributes('title')).toBe("Kubernetes agent's timezone");
     });
   });
 });

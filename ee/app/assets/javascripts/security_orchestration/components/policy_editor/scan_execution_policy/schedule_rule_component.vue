@@ -1,6 +1,12 @@
 <script>
-import { GlFormInput, GlSprintf, GlCollapsibleListbox } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import {
+  GlFormInput,
+  GlSprintf,
+  GlCollapsibleListbox,
+  GlTooltipDirective as GlTooltip,
+} from '@gitlab/ui';
+import { s__, sprintf } from '~/locale';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown/timezone_dropdown.vue';
 import { slugify, slugifyToArray } from '../utils';
 import {
   DAYS,
@@ -33,10 +39,18 @@ export default {
   HOUR_MINUTE_LIST,
   DAYS,
   i18n: {
-    schedulePeriod: s__('ScanExecutionPolicy|%{period} %{days} at %{time}'),
+    schedulePeriod: s__(
+      'ScanExecutionPolicy|%{period} %{days} at %{time} %{timezoneLabel} %{timezone}',
+    ),
     selectedAgentsPlaceholder: s__('ScanExecutionPolicy|Select agent'),
     selectedNamespacesPlaceholder: s__('ScanExecutionPolicy|Select namespaces'),
     namespaceLabel: s__('ScanExecutionPolicy|in namespaces'),
+    branchTimezoneHeader: s__('ScanExecutionPolicy|Select timezone'),
+    kubernetesTimezoneHeader: s__("ScanExecutionPolicy|Kubernetes agent's timezone"),
+    kubernetesTimezoneLabel: s__('ScanExecutionPolicy|on the Kubernetes agent pod'),
+    branchTimezoneLabel: s__('ScanExecutionPolicy|on %{hostname}'),
+    agentTimezoneTooltipText: s__("ScanExecutionPolicy|Kubernetes agent's timezone"),
+    branchTimezoneTooltipText: s__("ScanExecutionPolicy|%{hostname}'s timezone"),
   },
   name: 'ScheduleRuleComponent',
   components: {
@@ -44,7 +58,12 @@ export default {
     GlFormInput,
     GlCollapsibleListbox,
     GlSprintf,
+    TimezoneDropdown,
   },
+  directives: {
+    GlTooltip,
+  },
+  inject: ['timezones'],
   props: {
     initRule: {
       type: Object,
@@ -69,6 +88,9 @@ export default {
     };
   },
   computed: {
+    getHostname() {
+      return window?.location?.host;
+    },
     isBranchScope() {
       return this.selectedScope === SCAN_EXECUTION_RULE_SCOPE_BRANCH_KEY;
     },
@@ -78,16 +100,41 @@ export default {
     nameSpacesToAdd() {
       return (this.initRule.agents?.[this.agent]?.namespaces || []).join(',') || '';
     },
+    timezone() {
+      return this.initRule.timezone || '';
+    },
     selectedScopeText() {
       return SCAN_EXECUTION_RULE_SCOPE_TYPE[this.selectedScope];
     },
     selectedPeriodText() {
       return SCAN_EXECUTION_RULE_PERIOD_TYPE[this.selectedPeriod];
     },
+    timezoneHeader() {
+      return this.isBranchScope
+        ? this.$options.i18n.branchTimezoneHeader
+        : this.$options.i18n.kubernetesTimezoneHeader;
+    },
+    timezoneLabel() {
+      return this.isBranchScope
+        ? sprintf(this.$options.i18n.branchTimezoneLabel, {
+            hostname: this.getHostname,
+          })
+        : this.$options.i18n.kubernetesTimezoneLabel;
+    },
+    timezoneTooltipText() {
+      return this.isBranchScope
+        ? sprintf(this.$options.i18n.branchTimezoneTooltipText, {
+            hostname: this.getHostname,
+          })
+        : this.$options.i18n.agentTimezoneTooltipText;
+    },
   },
   methods: {
     convertToListboxItems(items) {
       return Object.entries(items).map(([value, text]) => ({ value, text }));
+    },
+    handleTimeZoneInput({ identifier }) {
+      this.triggerChanged({ timezone: identifier });
     },
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
@@ -204,11 +251,10 @@ export default {
     </template>
 
     <template #period>
-      <span class="gl-display-flex gl-align-items-center gl-flex-wrap">
+      <span class="gl-display-flex gl-align-items-center gl-flex-wrap gl-gap-3">
         <gl-sprintf :message="$options.i18n.schedulePeriod">
           <template #period>
             <gl-collapsible-listbox
-              class="gl-mr-3"
               data-testid="rule-component-period"
               :items="convertToListboxItems($options.SCAN_EXECUTION_RULE_PERIOD_TYPE)"
               :toggle-text="selectedPeriodText"
@@ -221,7 +267,6 @@ export default {
             <gl-collapsible-listbox
               v-if="!isCronDaily"
               data-testid="rule-component-day"
-              class="gl-ml-3 gl-mr-3"
               :items="convertToListboxItems($options.DAYS)"
               :selected="selectedDayIndex"
               :toggle-text="selectedDay"
@@ -231,12 +276,27 @@ export default {
 
           <template #time>
             <gl-collapsible-listbox
-              class="gl-ml-3"
               data-testid="rule-component-time"
               :items="convertToListboxItems($options.HOUR_MINUTE_LIST)"
               :toggle-text="selectedTime"
               :selected="selectedTimeIndex"
               @select="setTimeSelected"
+            />
+          </template>
+
+          <template #timezoneLabel>
+            <span data-testid="timezone-label">{{ timezoneLabel }}</span>
+          </template>
+
+          <template #timezone>
+            <timezone-dropdown
+              v-gl-tooltip.right.viewport
+              class="gl-max-w-26"
+              :header-text="timezoneHeader"
+              :value="timezone"
+              :timezone-data="timezones"
+              :title="timezoneTooltipText"
+              @input="handleTimeZoneInput"
             />
           </template>
         </gl-sprintf>

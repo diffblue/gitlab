@@ -35,7 +35,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
        * schema. These values should not be retrieved from the backend schema because
        * the UI for new attributes may not be available.
        */
-      const rulesKeys = ['type', 'agents', 'branches', 'cadence'];
+      const rulesKeys = ['type', 'agents', 'branches', 'cadence', 'timezone'];
       const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables', 'tags'];
 
       return isValidPolicy({ policy, rulesKeys, actionsKeys }) &&
