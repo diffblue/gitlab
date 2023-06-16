@@ -12,4 +12,18 @@ RSpec.describe Geo::DesignManagementRepositoryReplicator, feature_category: :geo
       model_record.repository.create_if_not_exists
     end
   end
+
+  context 'when design git repository does not exist' do
+    before do
+      model_record.save!
+    end
+
+    it 'creates a new git repo' do
+      expect { model_record.replicator.verify }.to change {
+                                                     model_record.repository.raw_repository.exists?
+                                                   }.from(false).to(true)
+
+      expect(replicator.primary_checksum).to be_present
+    end
+  end
 end
