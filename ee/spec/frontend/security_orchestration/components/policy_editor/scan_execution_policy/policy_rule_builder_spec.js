@@ -1,4 +1,5 @@
 import { nextTick } from 'vue';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
@@ -18,11 +19,14 @@ describe('PolicyRuleBuilder', () => {
     branches: [],
   };
 
-  const createComponent = (options = {}) => {
+  const createComponent = ({ propsData = {}, provide = {} } = {}) => {
     wrapper = mountExtended(PolicyRuleBuilder, {
       propsData: {
         initRule,
-        ...options,
+        ...propsData,
+      },
+      provide: {
+        ...provide,
       },
     });
   };
@@ -36,7 +40,9 @@ describe('PolicyRuleBuilder', () => {
     ${0}      | ${false}
     ${1}      | ${true}
   `('displays correct label based on rule order', ({ ruleIndex, expectedResult }) => {
-    createComponent({ ruleIndex });
+    createComponent({
+      propsData: { ruleIndex },
+    });
 
     expect(findRuleSeperator().exists()).toBe(expectedResult);
   });
@@ -59,10 +65,15 @@ describe('PolicyRuleBuilder', () => {
 
   it('selects correct schedule rule', async () => {
     createComponent({
-      initRule: {
-        type: SCAN_EXECUTION_SCHEDULE_RULE,
-        branches: [],
-        cadence: CRON_DEFAULT_TIME,
+      propsData: {
+        initRule: {
+          type: SCAN_EXECUTION_SCHEDULE_RULE,
+          branches: [],
+          cadence: CRON_DEFAULT_TIME,
+        },
+      },
+      provide: {
+        timezones: mockTimezones,
       },
     });
 

@@ -40333,10 +40333,13 @@ msgstr ""
 msgid "Saving project."
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{period} %{days} at %{time}"
+msgid "ScanExecutionPolicy|%{hostname}'s timezone"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{rules} %{period} for %{scopes} %{branches} %{agents} %{namespaces}"
+msgid "ScanExecutionPolicy|%{period} %{days} at %{time} %{timezoneLabel} %{timezone}"
+msgstr ""
+
+msgid "ScanExecutionPolicy|%{rules} actions for %{scopes} %{branches} %{agents} %{namespaces} %{period}"
 msgstr ""
 
 msgid "ScanExecutionPolicy|%{rules} every time a pipeline runs for %{scopes} %{branches} %{agents} %{namespaces}"
@@ -40349,6 +40352,9 @@ msgid "ScanExecutionPolicy|Conditions"
 msgstr ""
 
 msgid "ScanExecutionPolicy|If the field is empty, the runner will be automatically selected"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Kubernetes agent's timezone"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Run a %{scan} scan on runner that %{tags}"
@@ -40384,6 +40390,9 @@ msgstr ""
 msgid "ScanExecutionPolicy|Select site profile"
 msgstr ""
 
+msgid "ScanExecutionPolicy|Select timezone"
+msgstr ""
+
 msgid "ScanExecutionPolicy|Site profile"
 msgstr ""
 
@@ -40403,6 +40412,12 @@ msgid "ScanExecutionPolicy|has specific tag"
 msgstr ""
 
 msgid "ScanExecutionPolicy|in namespaces"
+msgstr ""
+
+msgid "ScanExecutionPolicy|on %{hostname}"
+msgstr ""
+
+msgid "ScanExecutionPolicy|on the Kubernetes agent pod"
 msgstr ""
 
 msgid "ScanExecutionPolicy|scanner profile %{scannerProfile} and site profile %{siteProfile}"
