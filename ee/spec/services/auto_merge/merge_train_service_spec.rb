@@ -153,6 +153,10 @@ RSpec.describe AutoMerge::MergeTrainService, feature_category: :merge_trains do
       subject
     end
 
+    it 'does not generate any todos' do
+      expect { subject }.not_to change { user.reload.todos.count }
+    end
+
     context 'when pipeline exists' do
       before do
         merge_request.merge_train_car.update!(pipeline: pipeline)
