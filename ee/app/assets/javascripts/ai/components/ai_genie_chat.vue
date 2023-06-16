@@ -70,7 +70,7 @@ export default {
     return {
       isHidden: false,
       prompt: '',
-      scrolledToBottom: false,
+      scrolledToBottom: true,
     };
   },
   computed: {
@@ -94,6 +94,13 @@ export default {
     messages() {
       this.prompt = '';
     },
+  },
+  async mounted() {
+    await this.$nextTick();
+
+    if (this.$refs.drawer) {
+      this.$refs.drawer.scrollTop = this.$refs.drawer.scrollHeight;
+    }
   },
   methods: {
     hideChat() {
