@@ -64,6 +64,9 @@ export default {
         })
         .catch(this.handleError);
     },
+    hideTooltips() {
+      this.$root.$emit(BV_HIDE_TOOLTIP);
+    },
     handleError(error) {
       const alertOptions = error ? { captureError: true, error } : {};
       this.errorAlert = createAlert({
@@ -89,6 +92,7 @@ export default {
     :title="$options.i18n.tooltip"
     :aria-label="$options.i18n.tooltip"
     @click="onClick"
+    @mouseout="hideTooltips"
   >
     {{ $options.i18n.button }}
   </gl-button>
