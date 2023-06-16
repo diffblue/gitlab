@@ -43,12 +43,10 @@ RSpec.describe Namespaces::CombinedStorageUsers::OwnerAlertComponent, :saas, typ
 
         expect(page).to have_css('[data-track-action="render"]' \
                                  '[data-track-label="storage_users_limit_banner"]')
-        expect(page).to have_css(
-          '[data-track-action="click_button"]' \
-          '[data-track-label="manage_users_storage_limits"]')
-        expect(page).to have_css(
-          '[data-track-action="click_button"]' \
-          '[data-track-label="explore_paid_plans"]')
+        expect(page).to have_css('[data-track-action="click_button"]' \
+                                 '[data-track-label="manage_users_storage_limits"]')
+        expect(page).to have_css('[data-track-action="click_button"]' \
+                                 '[data-track-label="explore_paid_plans"]')
       end
 
       context 'when the user dismissed the banner under 14 days ago', :freeze_time do

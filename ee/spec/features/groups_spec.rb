@@ -95,7 +95,7 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     end
   end
 
-  describe 'combined_storage_users_alert', :saas do
+  describe 'combined storage and users alert', :saas do
     let_it_be_with_refind(:group) do
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_storage_and_users')

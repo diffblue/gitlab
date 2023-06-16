@@ -28,7 +28,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
     end
   end
 
-  describe 'when qalifies for combnined users and storage banner' do
+  describe 'when qualifies for combined users and storage banner' do
     let_it_be(:group) do
       create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
         name: 'over_users_and_storage')
