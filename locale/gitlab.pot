@@ -5278,6 +5278,9 @@ msgstr ""
 msgid "Analytics|Data Table"
 msgstr ""
 
+msgid "Analytics|Dates and times are displayed in the UTC timezone"
+msgstr ""
+
 msgid "Analytics|Edit"
 msgstr ""
 
