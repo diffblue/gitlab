@@ -64,6 +64,10 @@ describe('Activity Filter component', () => {
 
       expect(findListbox().props('toggleText')).toBe(`${ITEMS.NO_LONGER_DETECTED.text} +1 more`);
     });
+
+    it(`passes "${ActivityFilter.i18n.allItemsText}" when no option is selected`, () => {
+      expect(findListbox().props('toggleText')).toBe(ActivityFilter.i18n.allItemsText);
+    });
   });
 
   it('renders the header text for each non default group', () => {

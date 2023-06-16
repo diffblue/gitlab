@@ -53,7 +53,11 @@ export default {
       return this.dashboardType === DASHBOARD_TYPES.PROJECT && Boolean(this.agentName);
     },
     toggleText() {
-      return getSelectedOptionsText({ options: this.images, selected: this.selected });
+      return getSelectedOptionsText({
+        options: this.images,
+        selected: this.selected,
+        placeholder: this.$options.i18n.allItemsText,
+      });
     },
     isLoading() {
       return this.$apollo.queries.images.loading;

@@ -87,6 +87,10 @@ describe('ClusterFilter component', () => {
 
         expect(findListbox().props('toggleText')).toBe(`${firstMockClusterName} +1 more`);
       });
+
+      it(`passes "${ClusterFilter.i18n.allItemsText}" when no option is selected`, () => {
+        expect(findListbox().props('toggleText')).toBe(ClusterFilter.i18n.allItemsText);
+      });
     });
 
     describe('filter-changed event', () => {

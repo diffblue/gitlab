@@ -63,6 +63,7 @@ export default {
       return getSelectedOptionsText({
         options: Object.values(ITEMS),
         selected: this.selected,
+        placeholder: this.$options.i18n.allItemsText,
       });
     },
     selectedItems() {
