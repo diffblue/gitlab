@@ -7,7 +7,6 @@ module EE
 
       override :set_default_attributes!
       def set_default_attributes!
-        return unless ::Feature.enabled?(:inherit_approval_rules_on_creation, project)
         return if params[:approval_rules_attributes].present?
 
         # Pick only regular or any_approver to match frontend behavior:
