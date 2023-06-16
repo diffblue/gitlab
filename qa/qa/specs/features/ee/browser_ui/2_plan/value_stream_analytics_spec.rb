@@ -38,6 +38,29 @@ module QA
           expect(vsa_page).to have_text("'#{vsa_name}' is collecting the data. This can take a few minutes.")
         end
       end
+
+      it(
+        "can create custom value stream analytics",
+        testcase: "https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/415068"
+      ) do
+        EE::Page::Group::ValueStreamAnalytics.perform do |vsa_page|
+          vsa_page.create_new_custom_value_stream(vsa_name, [
+            {
+              name: "issues closed stage",
+              start_event: "Issue created",
+              end_event: "Issue closed"
+            },
+            {
+              name: "mrs closed stage",
+              start_event: "Merge request created",
+              end_event: "Merge request closed"
+            }
+          ])
+
+          expect(vsa_page).to have_element(:vsa_path_navigation)
+          expect(vsa_page).to have_text("'#{vsa_name}' is collecting the data. This can take a few minutes.")
+        end
+      end
     end
   end
 end
