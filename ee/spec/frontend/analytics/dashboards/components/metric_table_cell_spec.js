@@ -7,7 +7,9 @@ describe('Metric table cell', () => {
 
   const identifier = 'deployment_frequency';
   const groupRequestPath = 'groups/test';
+  const groupMetricPath = '-/analytics/ci_cd?tab=deployment-frequency';
   const projectRequestPath = 'test/project';
+  const projectMetricPath = '-/pipelines/charts?chart=deployment-frequency';
 
   const createWrapper = (props = {}) => {
     wrapper = mountExtended(MetricTableCell, {
@@ -25,21 +27,24 @@ describe('Metric table cell', () => {
   const findPopover = () => wrapper.findComponent(GlPopover);
   const findPopoverLink = () => wrapper.findComponent(GlPopover).findComponent(GlLink);
 
-  it('generates the drilldown link for groups', () => {
-    createWrapper();
-    expect(findMetricLabel().text()).toBe('Deployment Frequency');
-    expect(findMetricLabel().attributes('href')).toBe(
-      `/${groupRequestPath}/-/analytics/ci_cd?tab=deployment-frequency`,
-    );
-  });
+  it.each`
+    isProject | relativeUrlRoot | requestPath           | metricPath
+    ${false}  | ${'/'}          | ${groupRequestPath}   | ${groupMetricPath}
+    ${true}   | ${'/'}          | ${projectRequestPath} | ${projectMetricPath}
+    ${false}  | ${'/path'}      | ${groupRequestPath}   | ${groupMetricPath}
+    ${true}   | ${'/path'}      | ${projectRequestPath} | ${projectMetricPath}
+  `(
+    'generates the correct drilldown link',
+    ({ isProject, relativeUrlRoot, requestPath, metricPath }) => {
+      const rootPath = relativeUrlRoot === '/' ? '' : relativeUrlRoot;
 
-  it('generates the drilldown link for projects', () => {
-    createWrapper({ requestPath: projectRequestPath, isProject: true });
-    expect(findMetricLabel().text()).toBe('Deployment Frequency');
-    expect(findMetricLabel().attributes('href')).toBe(
-      `/${projectRequestPath}/-/pipelines/charts?chart=deployment-frequency`,
-    );
-  });
+      gon.relative_url_root = relativeUrlRoot;
+      createWrapper({ requestPath, isProject });
+
+      expect(findMetricLabel().text()).toBe('Deployment Frequency');
+      expect(findMetricLabel().attributes('href')).toBe(`${rootPath}/${requestPath}/${metricPath}`);
+    },
+  );
 
   it('shows the popover when the info icon is clicked', () => {
     createWrapper();
