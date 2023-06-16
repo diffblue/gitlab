@@ -52,10 +52,6 @@ describe('Activity Filter component', () => {
   });
 
   describe('toggleText', () => {
-    it('passes the placeholder when no item is selected', () => {
-      expect(findListbox().props('toggleText')).toBe(ActivityFilter.i18n.allItemsText);
-    });
-
     it(`passes '${ITEMS.NO_LONGER_DETECTED.text}' when only '${ITEMS.NO_LONGER_DETECTED.text}' is selected`, async () => {
       await clickItem(ITEMS.NO_LONGER_DETECTED.value);
 

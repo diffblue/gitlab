@@ -181,10 +181,19 @@ export const destinationHeaderDeleteMutationPopulator = (errors = []) => ({
 
 export const mockSvgPath = 'mock/path';
 
-export const mockFiltersOptions = [
-  'repository_download_operation',
-  'update_merge_approval_rule',
-  'create_merge_approval_rule',
+export const mockAuditEventDefinitions = [
+  {
+    event_name: 'repository_download_operation',
+  },
+  {
+    event_name: 'update_merge_approval_rule',
+  },
+  {
+    event_name: 'create_merge_approval_rule',
+  },
+  {
+    event_name: 'project_unarchived',
+  },
 ];
 export const mockRemoveFilterSelect = ['repository_download_operation'];
 export const mockRemoveFilterRemaining = ['update_merge_approval_rule'];
@@ -194,6 +203,13 @@ export const mockAddFilterSelect = [
   'create_merge_approval_rule',
 ];
 export const mockAddFilterRemaining = ['create_merge_approval_rule'];
+
+export const mockStreamFiltersOptions = [
+  { value: 'repository_download_operation', text: 'Repository download operation' },
+  { value: 'update_merge_approval_rule', text: 'Update merge approval rule' },
+  { value: 'create_merge_approval_rule', text: 'Create merge approval rule' },
+  { value: 'project_unarchived', text: 'Project unarchived' },
+];
 
 export const destinationFilterRemoveMutationPopulator = (errors = []) => ({
   data: {

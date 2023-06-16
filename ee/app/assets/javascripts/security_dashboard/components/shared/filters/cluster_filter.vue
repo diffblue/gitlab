@@ -3,9 +3,9 @@ import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import { createAlert } from '~/alert';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
-import { getSelectedOptionsText } from './utils';
 
 export default {
   components: {
@@ -39,7 +39,7 @@ export default {
   computed: {
     toggleText() {
       const options = this.clusterAgents?.filter(({ value }) => this.selected.includes(value));
-      return getSelectedOptionsText(options, this.selected, this.$options.i18n.allItemsText);
+      return getSelectedOptionsText({ options, selected: this.selected });
     },
     isLoading() {
       return this.$apollo.queries.clusterAgents.loading;

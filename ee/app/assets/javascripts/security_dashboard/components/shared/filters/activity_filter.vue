@@ -2,9 +2,9 @@
 import { GlBadge, GlCollapsibleListbox } from '@gitlab/ui';
 import { without } from 'lodash';
 import { s__ } from '~/locale';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
-import { getSelectedOptionsText } from './utils';
 
 export const ITEMS = {
   STILL_DETECTED: {
@@ -60,11 +60,10 @@ export default {
   }),
   computed: {
     toggleText() {
-      return getSelectedOptionsText(
-        Object.values(ITEMS),
-        this.selected,
-        this.$options.i18n.allItemsText,
-      );
+      return getSelectedOptionsText({
+        options: Object.values(ITEMS),
+        selected: this.selected,
+      });
     },
     selectedItems() {
       return this.selected.length ? this.selected : [ALL_ID];

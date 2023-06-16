@@ -25,6 +25,7 @@ export default (selector) => {
     emptyStateSvgPath,
     filterViewOnly,
     filterTokenValues,
+    auditEventDefinitions,
   } = el.dataset;
 
   const store = createStore();
@@ -53,6 +54,7 @@ export default (selector) => {
       emptyStateSvgPath,
       filterViewOnly: parseBoolean(filterViewOnly) || false,
       filterTokenValues: filterTokenValues ? JSON.parse(filterTokenValues) : [],
+      auditEventDefinitions: auditEventDefinitions ? JSON.parse(auditEventDefinitions) : [],
     },
     apolloProvider,
     render: (createElement) => createElement(AuditEventsApp),

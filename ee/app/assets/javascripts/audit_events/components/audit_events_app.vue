@@ -13,7 +13,14 @@ export default {
     AuditEventsStream,
   },
   mixins: [Tracking.mixin()],
-  inject: ['isProject', 'showStreams'],
+  inject: {
+    isProject: {
+      default: false,
+    },
+    showStreams: {
+      default: false,
+    },
+  },
   computed: {
     showTabs() {
       return !this.isProject && this.showStreams;

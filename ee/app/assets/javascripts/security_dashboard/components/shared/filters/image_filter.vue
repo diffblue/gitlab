@@ -2,12 +2,12 @@
 import { GlCollapsibleListbox, GlTruncate } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { createAlert } from '~/alert';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
-import { getSelectedOptionsText } from './utils';
 
 export default {
   components: {
@@ -53,7 +53,7 @@ export default {
       return this.dashboardType === DASHBOARD_TYPES.PROJECT && Boolean(this.agentName);
     },
     toggleText() {
-      return getSelectedOptionsText(this.images, this.selected, this.$options.i18n.allItemsText);
+      return getSelectedOptionsText({ options: this.images, selected: this.selected });
     },
     isLoading() {
       return this.$apollo.queries.images.loading;

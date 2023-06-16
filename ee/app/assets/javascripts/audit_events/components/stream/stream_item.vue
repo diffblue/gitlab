@@ -44,10 +44,6 @@ export default {
       type: Object,
       required: true,
     },
-    groupEventFilters: {
-      type: Array,
-      required: true,
-    },
   },
   data() {
     return {
@@ -225,7 +221,6 @@ export default {
       <stream-destination-editor
         v-if="isEditing"
         :item="item"
-        :group-event-filters="groupEventFilters"
         class="gl-pr-4 gl-pl-6 gl-pb-5"
         @updated="onUpdated"
         @error="onEditorError"

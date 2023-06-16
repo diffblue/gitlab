@@ -23,6 +23,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
   def index
     @is_last_page = events.last_page?
     @events = AuditEventSerializer.new.represent(events)
+    @audit_event_definitions = Gitlab::Audit::Type::Definition.names_with_category
 
     Gitlab::Tracking.event(self.class.name, 'search_audit_event', user: current_user, namespace: group)
   end
