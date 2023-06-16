@@ -34,8 +34,7 @@ RSpec.describe LdapGroupLink do
       it 'validates uniqueness based on group_id and provider' do
         create(:ldap_group_link, filter: '(a=b)', group_id: 1, provider: 'ldapmain', cn: nil)
 
-        group_link = build(:ldap_group_link,
-                           filter: '(a=b)', group_id: 1, provider: 'ldapmain', cn: nil)
+        group_link = build(:ldap_group_link, filter: '(a=b)', group_id: 1, provider: 'ldapmain', cn: nil)
         expect(group_link).not_to be_valid
 
         group_link.group_id = 2

@@ -234,10 +234,12 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
     describe '#audit_creation external status check after :create' do
       context 'when protected branches are added' do
         let_it_be(:external_status_check) do
-          described_class.new(name: 'QAv2',
-                              project: project,
-                              external_url: 'https://www.example.com',
-                              protected_branch_ids: [main_branch.id, master_branch.id])
+          described_class.new(
+            name: 'QAv2',
+            project: project,
+            external_url: 'https://www.example.com',
+            protected_branch_ids: [main_branch.id, master_branch.id]
+          )
         end
 
         let(:action!) { external_status_check.save! }
@@ -248,10 +250,12 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
 
       context 'when all branches are added' do
         let_it_be(:external_status_check) do
-          described_class.new(name: 'QAv2',
-                              project: project,
-                              external_url: 'https://www.example.com',
-                              protected_branch_ids: [])
+          described_class.new(
+            name: 'QAv2',
+            project: project,
+            external_url: 'https://www.example.com',
+            protected_branch_ids: []
+          )
         end
 
         let(:action!) { external_status_check.save! }

@@ -28,13 +28,14 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas, feature_category: :
       it { is_expected.to be true }
 
       it 'logs a message with counts' do
-        expect(Gitlab::AppLogger)
-          .to receive(:info)
-                .with(a_hash_including(message: 'Namespace qualifies for counting users',
-                                       class: described_class.name,
-                                       namespace_id: namespace.id,
-                                       user_ids: free_user_count))
-                .and_call_original
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          a_hash_including(
+            message: 'Namespace qualifies for counting users',
+            class: described_class.name,
+            namespace_id: namespace.id,
+            user_ids: free_user_count
+          )
+        ).and_call_original
 
         over_limit?
       end

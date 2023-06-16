@@ -849,9 +849,7 @@ RSpec.describe Namespace do
 
     context 'with project and disabled shared runners' do
       let!(:project) do
-        create(:project,
-               namespace: namespace,
-               shared_runners_enabled: false)
+        create(:project, namespace: namespace, shared_runners_enabled: false)
       end
 
       it { is_expected.to be_falsey }
@@ -863,9 +861,7 @@ RSpec.describe Namespace do
 
     context 'with project' do
       let!(:project) do
-        create(:project,
-          namespace: namespace,
-          shared_runners_enabled: true)
+        create(:project, namespace: namespace, shared_runners_enabled: true)
       end
 
       context 'when no limit defined' do

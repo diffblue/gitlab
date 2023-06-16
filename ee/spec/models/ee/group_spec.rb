@@ -87,19 +87,29 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'only includes groups that are marked for deletion on or before the specified date' do
         group_not_marked_for_deletion = create(:group)
 
-        group_marked_for_deletion_after_specified_date = create(:group_with_deletion_schedule,
-                                                                marked_for_deletion_on: date + 2.days)
+        group_marked_for_deletion_after_specified_date = create(
+          :group_with_deletion_schedule,
+          marked_for_deletion_on: date + 2.days
+        )
 
-        group_marked_for_deletion_before_specified_date = create(:group_with_deletion_schedule,
-                                                                 marked_for_deletion_on: date - 2.days)
+        group_marked_for_deletion_before_specified_date = create(
+          :group_with_deletion_schedule,
+          marked_for_deletion_on: date - 2.days
+        )
 
-        group_marked_for_deletion_on_specified_date = create(:group_with_deletion_schedule,
-                                                             marked_for_deletion_on: date)
+        group_marked_for_deletion_on_specified_date = create(
+          :group_with_deletion_schedule,
+          marked_for_deletion_on: date
+        )
 
-        expect(relation).to include(group_marked_for_deletion_before_specified_date,
-                                    group_marked_for_deletion_on_specified_date)
-        expect(relation).not_to include(group_marked_for_deletion_after_specified_date,
-                                        group_not_marked_for_deletion)
+        expect(relation).to include(
+          group_marked_for_deletion_before_specified_date,
+          group_marked_for_deletion_on_specified_date
+        )
+        expect(relation).not_to include(
+          group_marked_for_deletion_after_specified_date,
+          group_not_marked_for_deletion
+        )
       end
     end
 
@@ -225,13 +235,17 @@ RSpec.describe Group, feature_category: :groups_and_projects do
       it 'returns correct group' do
         create(:group)
 
-        create(:gitlab_subscription, :active_trial,
-               namespace: create(:group),
-               trial_starts_on: 1.day.ago)
+        create(
+          :gitlab_subscription, :active_trial,
+          namespace: create(:group),
+          trial_starts_on: 1.day.ago
+        )
 
-        create(:gitlab_subscription, :active_trial,
-               namespace: group,
-               trial_starts_on: ten_days_ago)
+        create(
+          :gitlab_subscription, :active_trial,
+          namespace: group,
+          trial_starts_on: ten_days_ago
+        )
 
         expect(described_class.with_trial_started_on(ten_days_ago)).to match_array([group])
       end

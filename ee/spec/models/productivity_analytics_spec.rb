@@ -26,11 +26,13 @@ RSpec.describe ProductivityAnalytics do
         diff_size: 310,
         modified_paths_size: 15
       }
-      create(:labeled_merge_request, :merged, :with_productivity_metrics,
-             labels: [label_a, label_b],
-             source_project: project,
-             created_at: 31.days.ago,
-             metrics_data: metrics_data)
+      create(
+        :labeled_merge_request, :merged, :with_productivity_metrics,
+        labels: [label_a, label_b],
+        source_project: project,
+        created_at: 31.days.ago,
+        metrics_data: metrics_data
+      )
     end
 
     let(:medium_mr) do
@@ -43,10 +45,12 @@ RSpec.describe ProductivityAnalytics do
         modified_paths_size: 3
       }
 
-      create(:labeled_merge_request, :merged, :with_productivity_metrics,
-             source_project: project,
-             created_at: 15.days.ago,
-             metrics_data: metrics_data)
+      create(
+        :labeled_merge_request, :merged, :with_productivity_metrics,
+        source_project: project,
+        created_at: 15.days.ago,
+        metrics_data: metrics_data
+      )
     end
 
     let(:short_mr) do
@@ -59,11 +63,13 @@ RSpec.describe ProductivityAnalytics do
         modified_paths_size: 3
       }
 
-      create(:labeled_merge_request, :merged, :with_productivity_metrics,
-             labels: [label_a, label_b],
-             source_project: project,
-             created_at: 31.days.ago,
-             metrics_data: metrics_data)
+      create(
+        :labeled_merge_request, :merged, :with_productivity_metrics,
+        labels: [label_a, label_b],
+        source_project: project,
+        created_at: 31.days.ago,
+        metrics_data: metrics_data
+      )
     end
 
     let(:short_mr_2) do
@@ -76,11 +82,13 @@ RSpec.describe ProductivityAnalytics do
         modified_paths_size: 1
       }
 
-      create(:labeled_merge_request, :merged, :with_productivity_metrics,
-             labels: [label_a, label_b],
-             source_project: project,
-             created_at: 31.days.ago,
-             metrics_data: metrics_data)
+      create(
+        :labeled_merge_request, :merged, :with_productivity_metrics,
+        labels: [label_a, label_b],
+        source_project: project,
+        created_at: 31.days.ago,
+        metrics_data: metrics_data
+      )
     end
 
     let(:expected_mr_data) do

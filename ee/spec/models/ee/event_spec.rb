@@ -261,11 +261,13 @@ RSpec.describe Event do
     def create_push_event(project, user)
       event = create(:push_event, project: project, author: user)
 
-      create(:push_event_payload,
-            event: event,
-            commit_to: '1cf19a015df3523caf0a1f9d40c98a267d6a2fc2',
-            commit_count: 0,
-            ref: 'master')
+      create(
+        :push_event_payload,
+        event: event,
+        commit_to: '1cf19a015df3523caf0a1f9d40c98a267d6a2fc2',
+        commit_count: 0,
+        ref: 'master'
+      )
 
       event
     end

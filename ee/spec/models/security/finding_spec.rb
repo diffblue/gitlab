@@ -168,9 +168,7 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     subject { described_class.undismissed_by_vulnerability }
 
     before do
-      create(:vulnerabilities_finding,
-             :dismissed,
-             uuid: finding_1.uuid)
+      create(:vulnerabilities_finding, :dismissed, uuid: finding_1.uuid)
     end
 
     it { is_expected.to match_array(expected_findings) }
@@ -184,17 +182,21 @@ RSpec.describe Security::Finding, feature_category: :vulnerability_management do
     before do
       finding_2.update! scan: scan_1
 
-      create(:vulnerability_feedback,
-             :dismissal,
-             project: scan_1.project,
-             category: scan_1.scan_type,
-             finding_uuid: finding_1.uuid)
+      create(
+        :vulnerability_feedback,
+        :dismissal,
+        project: scan_1.project,
+        category: scan_1.scan_type,
+        finding_uuid: finding_1.uuid
+      )
 
-      create(:vulnerability_feedback,
-             :dismissal,
-             project: scan_2.project,
-             category: scan_2.scan_type,
-             finding_uuid: finding_2.uuid)
+      create(
+        :vulnerability_feedback,
+        :dismissal,
+        project: scan_2.project,
+        category: scan_2.scan_type,
+        finding_uuid: finding_2.uuid
+      )
     end
 
     it { is_expected.to match_array(expected_findings) }

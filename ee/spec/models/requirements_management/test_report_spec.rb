@@ -104,12 +104,16 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
             requirement_type_id = WorkItems::Type.requirement.first.id
             expect(reports).to match_array(
               [
-                have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
-                                author: build.user,
-                                state: 'passed', uses_legacy_iid: false),
-                have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
-                                author: build.user,
-                                state: 'failed', uses_legacy_iid: false)
+                have_attributes(
+                  requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                  author: build.user,
+                  state: 'passed', uses_legacy_iid: false
+                ),
+                have_attributes(
+                  requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                  author: build.user,
+                  state: 'failed', uses_legacy_iid: false
+                )
               ])
           end
 
@@ -128,12 +132,16 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
               requirement_type_id = WorkItems::Type.requirement.first.id
               expect(reports).to match_array(
                 [
-                  have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
-                                  author: build.user,
-                                  state: 'passed', uses_legacy_iid: false),
-                  have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
-                                  author: build.user,
-                                  state: 'passed', uses_legacy_iid: false)
+                  have_attributes(
+                    requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                    author: build.user,
+                    state: 'passed', uses_legacy_iid: false
+                  ),
+                  have_attributes(
+                    requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                    author: build.user,
+                    state: 'passed', uses_legacy_iid: false
+                  )
                 ])
             end
           end
@@ -165,12 +173,16 @@ RSpec.describe RequirementsManagement::TestReport, feature_category: :requiremen
             requirement_type_id = WorkItems::Type.requirement.first.id
             expect(reports).to match_array(
               [
-                have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
-                                author: build.user,
-                                state: 'passed', uses_legacy_iid: true),
-                have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
-                                author: build.user,
-                                state: 'failed', uses_legacy_iid: true)
+                have_attributes(
+                  requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
+                  author: build.user,
+                  state: 'passed', uses_legacy_iid: true
+                ),
+                have_attributes(
+                  requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
+                  author: build.user,
+                  state: 'failed', uses_legacy_iid: true
+                )
               ])
           end
         end

@@ -48,11 +48,13 @@ RSpec.describe Upload do
 
       let(:model) { create(*model_factory) } # rubocop:disable Rails/SaveBang
       let(:node) do
-        create(:geo_node_with_selective_sync_for,
-               model: model,
-               namespaces: selective_sync_namespaces,
-               shards: selective_sync_shards,
-               sync_object_storage: sync_object_storage)
+        create(
+          :geo_node_with_selective_sync_for,
+          model: model,
+          namespaces: selective_sync_namespaces,
+          shards: selective_sync_shards,
+          sync_object_storage: sync_object_storage
+        )
       end
 
       before do
