@@ -2,13 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, feature_category: :global_search do
-  let(:project) { create(:project, :public, :repository) }
+RSpec.describe Elastic::Latest::GitClassProxy, :elastic, :sidekiq_inline, feature_category: :global_search do
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :public, :repository, group: group) }
+
   let(:included_class) { Elastic::Latest::RepositoryClassProxy }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
+    ::Elastic::ProcessBookkeepingService.track!(project)
     project.repository.index_commits_and_blobs
     ensure_elasticsearch_index!
   end
@@ -16,11 +19,76 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
   subject { included_class.new(project.repository.class) }
 
   describe '#elastic_search' do
-    context 'if type is wiki_blob' do
-      let_it_be(:wiki_project) { create(:project, :wiki_repo, visibility_level: 0, wiki_access_level: 0) }
+    let_it_be(:user) { create(:user) }
+
+    context 'when type is wiki_blob' do
+      let_it_be(:wiki_project) { create(:project, :wiki_repo, :private, :wiki_private) }
       let(:included_class) { Elastic::Latest::WikiClassProxy }
 
       subject { included_class.new(project.wiki.class, use_separate_indices: ProjectWiki.use_separate_indices?) }
+
+      context 'when performing a global search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            public_and_internal_projects: true,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+          assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms')
+        end
+      end
+
+      context 'when performing a group search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            group_ids: [project.namespace.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+          assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms')
+        end
+
+        context 'when user is authorized for the namespace' do
+          it 'uses the correct elasticsearch query' do
+            group.add_reporter(user)
+
+            subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+            assert_named_queries('doc:is_a:wiki_blob', 'blob:match:search_terms', 'blob:authorized:reject_projects',
+              'blob:authorized:namespace:ancestry_filter:descendants')
+          end
+        end
+
+        context 'when performing a project search' do
+          let(:search_options) do
+            {
+              current_user: user,
+              project_ids: [project.id],
+              public_and_internal_projects: false,
+              order_by: nil,
+              sort: nil,
+              repository_id: project.id
+            }
+          end
+
+          it 'uses the correct elasticsearch query' do
+            subject.elastic_search('*', type: 'wiki_blob', options: search_options)
+            assert_named_queries('doc:is_a:wiki_blob', 'blob:authorized:project', 'blob:match:search_terms',
+              'blob:related:repositories')
+          end
+        end
+      end
 
       context 'if migrate_wikis_to_separate_index is not finished' do
         before do
@@ -55,70 +123,222 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
       end
     end
 
-    context 'if type is blob' do
-      let_it_be(:user) { create(:user) }
+    context 'when type is blob' do
+      context 'when performing a global search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            public_and_internal_projects: true,
+            order_by: nil,
+            sort: nil
+          }
+        end
 
-      it 'global blob search and migration not completed' do
-        search_options = {
-          current_user: user,
-          public_and_internal_projects: true,
-          order_by: nil,
-          sort: nil,
-          type: 'blob'
-        }
-        allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).with(
-          :backfill_project_permissions_in_blobs).and_return(false)
-        subject.elastic_search('*', type: 'blob', options: search_options)
-        assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
-                             'blob:match:search_terms')
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'blob', options: search_options)
+          assert_named_queries('doc:is_a:blob', 'blob:authorized:project', 'blob:match:search_terms')
+        end
+
+        context 'when backfill_project_permissions_in_blobs migration is not finished' do
+          before do
+            set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs, including: false)
+          end
+
+          it 'uses the correct elasticsearch query' do
+            subject.elastic_search('*', type: 'blob', options: search_options)
+            assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent', 'blob:match:search_terms')
+          end
+        end
       end
 
-      it 'global blob search and migration completed' do
-        search_options = {
-          current_user: user,
-          public_and_internal_projects: true,
-          order_by: nil,
-          sort: nil,
-          type: 'blob'
-        }
-        subject.elastic_search('*', type: 'blob', options: search_options)
-        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                             'blob:match:search_terms')
+      context 'when performing a group search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            group_ids: [project.namespace.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'blob', options: search_options)
+          assert_named_queries('doc:is_a:blob', 'blob:authorized:project', 'blob:match:search_terms')
+        end
+
+        context 'when user is authorized for the namespace' do
+          it 'uses the correct elasticsearch query' do
+            group.add_reporter(user)
+
+            subject.elastic_search('*', type: 'blob', options: search_options)
+            assert_named_queries('doc:is_a:blob', 'blob:match:search_terms', 'blob:authorized:reject_projects',
+              'blob:authorized:namespace:ancestry_filter:descendants')
+          end
+        end
+
+        context 'when performing a project search' do
+          let(:search_options) do
+            {
+              current_user: user,
+              project_ids: [project.id],
+              public_and_internal_projects: false,
+              order_by: nil,
+              sort: nil,
+              repository_id: project.id
+            }
+          end
+
+          it 'uses the correct elasticsearch query' do
+            subject.elastic_search('*', type: 'blob', options: search_options)
+            assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
+              'blob:match:search_terms', 'blob:related:repositories')
+          end
+        end
+      end
+    end
+
+    context 'when type is commit' do
+      context 'when performing a global search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            public_and_internal_projects: true,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'commit', options: search_options)
+          assert_named_queries('doc:is_a:commit', 'commit:authorized:project', 'commit:match:search_terms')
+        end
       end
 
-      it 'group blob search' do
-        group_search_options = {
-          current_user: user,
-          project_ids: [project.id],
-          group_ids: [project.namespace.id],
-          public_and_internal_projects: false,
-          order_by: nil,
-          sort: nil,
-          type: 'blob'
-        }
-        subject.elastic_search('*', type: 'blob', options: group_search_options)
-        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                             'blob:match:search_terms')
+      context 'when performing a group search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            group_ids: [project.namespace.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'uses the correct elasticsearch query' do
+          subject.elastic_search('*', type: 'commit', options: search_options)
+          assert_named_queries('doc:is_a:commit', 'commit:authorized:project', 'commit:match:search_terms')
+        end
+
+        context 'when user is authorized for the namespace' do
+          it 'uses the correct elasticsearch query' do
+            group.add_reporter(user)
+
+            subject.elastic_search('*', type: 'commit', options: search_options)
+            assert_named_queries('doc:is_a:commit', 'commit:authorized:project', 'commit:match:search_terms')
+          end
+        end
+
+        context 'when performing a project search' do
+          let(:search_options) do
+            {
+              current_user: user,
+              project_ids: [project.id],
+              public_and_internal_projects: false,
+              order_by: nil,
+              sort: nil,
+              repository_id: project.id
+            }
+          end
+
+          it 'uses the correct elasticsearch query' do
+            subject.elastic_search('*', type: 'commit', options: search_options)
+            assert_named_queries('doc:is_a:commit', 'commit:authorized:project',
+              'commit:match:search_terms', 'commit:related:repositories')
+          end
+        end
+
+        context 'when requesting highlighting' do
+          let(:search_options) do
+            {
+              current_user: user,
+              project_ids: [project.id],
+              public_and_internal_projects: false,
+              order_by: nil,
+              sort: nil,
+              repository_id: project.id,
+              highlight: true
+            }
+          end
+
+          it 'returns highlight in the results' do
+            results = subject.elastic_search('Add', type: 'commit', options: search_options)
+            expect(results[:commits][:results].results.first.keys).to include('highlight')
+          end
+        end
+      end
+    end
+
+    context 'when type is all' do
+      context 'when performing a global search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            public_and_internal_projects: true,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'returns results for all three types' do
+          result = subject.elastic_search('*', type: 'all', options: search_options)
+          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
+        end
       end
 
-      it 'project blob search' do
-        project_search_options = {
-          current_user: user,
-          project_ids: [project.id],
-          public_and_internal_projects: false,
-          order_by: nil,
-          sort: nil,
-          type: 'blob'
-        }
-        subject.elastic_search('*', type: 'blob', options: project_search_options)
-        assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                             'blob:match:search_terms')
+      context 'when performing a group search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            group_ids: [project.namespace.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil
+          }
+        end
+
+        it 'returns results for all three types' do
+          result = subject.elastic_search('*', type: 'all', options: search_options)
+          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
+        end
+      end
+
+      context 'when performing a project search' do
+        let(:search_options) do
+          {
+            current_user: user,
+            project_ids: [project.id],
+            public_and_internal_projects: false,
+            order_by: nil,
+            sort: nil,
+            repository_id: project.id
+          }
+        end
+
+        it 'returns results for all three types' do
+          result = subject.elastic_search('*', type: 'all', options: search_options)
+          expect(result.keys).to match_array([:wiki_blobs, :blobs, :commits])
+        end
       end
     end
   end
 
-  describe '#elastic_search_as_found_blob' do
-    it 'returns FoundBlob', :sidekiq_inline do
+  describe '#elastic_search_as_found_blob', :aggregate_failures do
+    it 'returns FoundBlob' do
       results = subject.elastic_search_as_found_blob('def popen')
 
       expect(results).not_to be_empty
@@ -136,31 +356,37 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
     context 'with filters in the query' do
       let(:query) { 'def extension:rb path:files/ruby' }
 
-      it 'returns matching results', :sidekiq_inline do
+      it 'returns matching results' do
         results = subject.elastic_search_as_found_blob(query)
         paths = results.map(&:path)
 
-        expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+        expect(paths).to contain_exactly('files/ruby/regex.rb',
+          'files/ruby/popen.rb',
+          'files/ruby/version_info.rb')
       end
 
       context 'when part of the path is used ' do
         let(:query) { 'def extension:rb path:files' }
 
-        it 'returns the same results as when the full path is used', :sidekiq_inline do
+        it 'returns the same results as when the full path is used' do
           results = subject.elastic_search_as_found_blob(query)
           paths = results.map(&:path)
 
-          expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+          expect(paths).to contain_exactly('files/ruby/regex.rb',
+            'files/ruby/popen.rb',
+            'files/ruby/version_info.rb')
         end
 
         context 'when the path query is in the middle of the file path' do
           let(:query) { 'def extension:rb path:ruby' }
 
-          it 'returns the same results as when the full path is used', :sidekiq_inline do
+          it 'returns the same results as when the full path is used' do
             results = subject.elastic_search_as_found_blob(query)
             paths = results.map(&:path)
 
-            expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+            expect(paths).to contain_exactly('files/ruby/regex.rb',
+              'files/ruby/popen.rb',
+              'files/ruby/version_info.rb')
           end
         end
       end
@@ -168,7 +394,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
   end
 
   describe '#blob_aggregations' do
-    let(:user) { create(:user) }
+    let_it_be(:user) { create(:user) }
 
     let(:options) do
       {
@@ -184,7 +410,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
       project.add_developer(user)
     end
 
-    it 'returns aggregations', :sidekiq_inline do
+    it 'returns aggregations' do
       result = subject.blob_aggregations('This guide details how contribute to GitLab', options)
 
       expect(result.first.name).to eq('language')
@@ -201,7 +427,7 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
       }
       subject.blob_aggregations('*', search_options)
       assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                           'blob:match:search_terms')
+        'blob:match:search_terms')
     end
 
     it 'assert names queries for global blob search when migration is not complete' do
@@ -211,11 +437,11 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
         order_by: nil,
         sort: nil
       }
-      allow(::Elastic::DataMigrationService).to receive(:migration_has_finished?).with(
-        :backfill_project_permissions_in_blobs).and_return(false)
+      set_elasticsearch_migration_to(:backfill_project_permissions_in_blobs, including: false)
+
       subject.blob_aggregations('*', search_options)
       assert_named_queries('doc:is_a:blob', 'blob:authorized:project:parent',
-                           'blob:match:search_terms')
+        'blob:match:search_terms')
     end
 
     it 'assert names queries for group blob search' do
@@ -228,8 +454,8 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
         sort: nil
       }
       subject.blob_aggregations('*', group_search_options)
-      assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                           'blob:match:search_terms')
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:reject_projects', 'blob:match:search_terms',
+        'blob:authorized:namespace:ancestry_filter:descendants')
     end
 
     it 'assert names queries for project blob search' do
@@ -241,16 +467,14 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic_clean, :sidekiq_inline, 
         sort: nil
       }
       subject.blob_aggregations('*', project_search_options)
-      assert_named_queries('doc:is_a:blob', 'blob:authorized:project',
-                           'blob:match:search_terms')
+      assert_named_queries('doc:is_a:blob', 'blob:authorized:project', 'blob:match:search_terms')
     end
   end
 
   it "names elasticsearch queries" do
     subject.elastic_search_as_found_blob('*')
 
-    assert_named_queries('doc:is_a:blob',
-                         'blob:match:search_terms')
+    assert_named_queries('doc:is_a:blob', 'blob:match:search_terms')
   end
 
   context 'when use_base_class_in_proxy_util is disabled' do
