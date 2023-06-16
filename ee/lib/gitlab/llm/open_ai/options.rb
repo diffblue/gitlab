@@ -4,7 +4,7 @@ module Gitlab
   module Llm
     module OpenAi
       class Options
-        DEFAULT_TEMPERATURE = 0.7
+        DEFAULT_TEMPERATURE = 0.2
         DEFAULT_MAX_TOKENS = 16
 
         AI_ROLE = "assistant"

@@ -86,7 +86,7 @@ RSpec.describe Gitlab::Llm::VertexAi::Configuration, feature_category: :not_owne
     it 'returns the default payload parameters' do
       expect(described_class.default_payload_parameters).to eq(
         {
-          temperature: 0.5,
+          temperature: 0.2,
           maxOutputTokens: 1024,
           topK: 40,
           topP: 0.95
