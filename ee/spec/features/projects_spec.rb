@@ -76,7 +76,7 @@ RSpec.describe 'Project', :js, feature_category: :groups_and_projects do
     end
   end
 
-  describe 'storage pre_enforcement banner', :js do
+  describe 'storage pre-enforcement banner', :js do
     include NamespaceStorageHelpers
 
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }

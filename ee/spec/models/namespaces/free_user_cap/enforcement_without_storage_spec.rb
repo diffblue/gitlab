@@ -15,7 +15,7 @@ RSpec.describe Namespaces::FreeUserCap::EnforcementWithoutStorage, :saas, featur
       described_class.new(namespace).over_limit?
     end
 
-    context 'when the namespace is not users limit' do
+    context 'when the namespace is not over the users limit' do
       before do
         enforce_free_user_caps
       end

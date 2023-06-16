@@ -174,8 +174,6 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
     context 'with application settings set' do
       before do
         allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
-        allow(::Gitlab::CurrentSettings).to receive(:automatic_purchased_storage_allocation?).and_return(true)
-        allow(::Gitlab::CurrentSettings).to receive(:enforce_namespace_storage_limit?).and_return(false)
       end
 
       context 'when the namespace exceeds the notification limit' do
