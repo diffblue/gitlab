@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Group', feature_category: :groups_and_projects do
   include NamespaceStorageHelpers
+  include FreeUserCapHelpers
 
   describe 'group edit', :js do
     let_it_be(:user) { create(:user) }
@@ -51,15 +52,14 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
     end
   end
 
-  describe 'storage_enforcement_banner', :js do
+  describe 'storage pre-enforcement banner', :js do
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
     let_it_be_with_refind(:user) { create(:user) }
     let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_ee_application_setting(enforce_namespace_storage_limit: true)
-      set_used_storage(group, megabytes: 12)
+      set_used_storage(group, megabytes: 13)
       set_notification_limit(group, megabytes: 12)
       group.add_maintainer(user)
       sign_in(user)
@@ -90,6 +90,94 @@ RSpec.describe 'Group', feature_category: :groups_and_projects do
         it 'does not display the banner' do
           visit group_path(group)
           expect(page).not_to have_text storage_banner_text
+        end
+      end
+    end
+  end
+
+  describe 'combined_storage_users_alert', :saas do
+    let_it_be_with_refind(:group) do
+      create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
+        name: 'over_storage_and_users')
+    end
+
+    let_it_be_with_refind(:user) { create(:user) }
+    let(:alert) do
+      'Your top-level group, over_storage_and_users, has more than 5 users and uses more than 5 GiB of data'
+    end
+
+    before do
+      set_notification_limit(group, megabytes: 10_000)
+      set_dashboard_limit(group, megabytes: 5_000)
+      stub_ee_application_setting(should_check_namespace_plan: true)
+    end
+
+    context 'when owner' do
+      before do
+        group.add_owner(user)
+        sign_in(user)
+        exceed_user_cap(group)
+        enforce_free_user_caps
+      end
+
+      context 'when the group is over both storage/users limits' do
+        before do
+          set_used_storage(group, megabytes: 11_000)
+        end
+
+        it 'displays the alert with CTAs' do
+          visit group_path(group)
+
+          expect(page).to have_text alert
+          expect(page).to have_text 'Explore paid plans'
+          expect(page).to have_text 'Manage usage'
+        end
+      end
+
+      context 'when the group is not over one of the limits' do
+        before do
+          set_used_storage(group, megabytes: 9_000)
+        end
+
+        it 'does not display the alert' do
+          visit group_path(group)
+
+          expect(page).not_to have_text alert
+        end
+      end
+    end
+
+    context 'when non owner' do
+      before do
+        group.add_maintainer(user)
+        sign_in(user)
+        exceed_user_cap(group)
+        enforce_free_user_caps
+      end
+
+      context 'when the group is over both storage/users limits' do
+        before do
+          set_used_storage(group, megabytes: 11_000)
+        end
+
+        it 'displays the alert without CTAs' do
+          visit group_path(group)
+
+          expect(page).to have_text alert
+          expect(page).not_to have_text 'Explore paid plans'
+          expect(page).not_to have_text 'Manage usage'
+        end
+      end
+
+      context 'when the group is not over one of the limits' do
+        before do
+          set_used_storage(group, megabytes: 9_000)
+        end
+
+        it 'does not display the alert' do
+          visit group_path(group)
+
+          expect(page).not_to have_text alert
         end
       end
     end

@@ -1,0 +1,13 @@
+%div{ class: container_class }
+  = render Pajamas::AlertComponent.new(variant: variant,
+        dismissible: dismissible,
+        alert_options: { class: 'js-namespace-over-storage-users-combined-alert gl-mb-2 gl-mt-6', data: alert_options_data },
+        title: alert_title,
+        close_button_options: { data: close_button_options_data }) do |c|
+    = c.with_body do
+      = alert_body
+
+    - if show_cta
+      = c.with_actions do
+        = namespace_primary_cta
+        = namespace_secondary_cta

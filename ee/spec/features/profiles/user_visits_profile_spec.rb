@@ -10,11 +10,10 @@ RSpec.describe 'User visits their profile', feature_category: :user_profile do
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_ee_application_setting(enforce_namespace_storage_limit: true)
-
     sign_in(user)
   end
 
-  describe 'storage_enforcement_banner', :js do
+  describe 'storage pre_enforcement banner', :js do
     let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
 
     context 'when storage is over the notification limit' do

@@ -3,9 +3,21 @@
 module Namespaces
   module FreeUserCap
     class NotificationAlertComponent < BaseAlertComponent
+      include ::Namespaces::CombinedStorageUsers::PreEnforcement
+
       private
 
       PROMOTION_URL = 'https://about.gitlab.com/pricing/faq-efficient-free-tier/#transition-offer'
+
+      def render?
+        return false if qualifies_for_combined_alert?
+
+        super
+      end
+
+      def qualifies_for_combined_alert?
+        over_storage_limit?(namespace)
+      end
 
       def breached_cap_limit?
         ::Namespaces::FreeUserCap::Notification.new(namespace).over_limit?

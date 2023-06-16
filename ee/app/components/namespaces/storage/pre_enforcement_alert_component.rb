@@ -3,6 +3,8 @@
 module Namespaces
   module Storage
     class PreEnforcementAlertComponent < ViewComponent::Base
+      include ::Namespaces::CombinedStorageUsers::PreEnforcement
+
       # @param [UserNamespace, Group, SubGroup, Project] context
       # @param [User] user
       def initialize(context:, user:)
@@ -13,7 +15,8 @@ module Namespaces
 
       def render?
         return false unless user_allowed?
-        return false unless ::Namespaces::Storage::Enforcement.show_pre_enforcement_alert?(root_namespace)
+        return false if qualifies_for_combined_alert?
+        return false unless over_storage_limit?(root_namespace)
 
         !dismissed?
       end
@@ -22,6 +25,10 @@ module Namespaces
 
       delegate :storage_counter, to: :helpers
       attr_reader :context, :root_namespace, :user
+
+      def qualifies_for_combined_alert?
+        over_user_limit?(root_namespace)
+      end
 
       def dismissible?
         !root_namespace.over_storage_limit?
