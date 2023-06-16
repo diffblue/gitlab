@@ -20875,6 +20875,9 @@ msgstr ""
 msgid "GlobalSearch|Close"
 msgstr ""
 
+msgid "GlobalSearch|Fetching aggregations error."
+msgstr ""
+
 msgid "GlobalSearch|Group"
 msgstr ""
 
@@ -20891,6 +20894,9 @@ msgid "GlobalSearch|Issues I've created"
 msgstr ""
 
 msgid "GlobalSearch|Issues assigned to me"
+msgstr ""
+
+msgid "GlobalSearch|Label(s)"
 msgstr ""
 
 msgid "GlobalSearch|Language"
@@ -20939,6 +20945,9 @@ msgid "GlobalSearch|Search GitLab %{kbdOpen}/%{kbdClose}"
 msgstr ""
 
 msgid "GlobalSearch|Search for projects, issues, etc."
+msgstr ""
+
+msgid "GlobalSearch|Search labels"
 msgstr ""
 
 msgid "GlobalSearch|Search results are loading"
