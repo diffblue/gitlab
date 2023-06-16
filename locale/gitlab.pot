@@ -14919,6 +14919,9 @@ msgstr ""
 msgid "Delete video"
 msgstr ""
 
+msgid "DeleteProject|Failed to remove design repository. Please try again or contact administrator."
+msgstr ""
+
 msgid "DeleteProject|Failed to remove events. Please try again or contact administrator."
 msgstr ""
 
