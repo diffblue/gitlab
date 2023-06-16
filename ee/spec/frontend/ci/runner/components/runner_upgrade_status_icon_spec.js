@@ -17,13 +17,10 @@ describe('RunnerUpgradeStatusIcon', () => {
   const findIcon = () => wrapper.findComponent(GlIcon);
   const getTooltipValue = () => getBinding(wrapper.element, 'gl-tooltip').value;
 
-  const createComponent = ({ runner = {} } = {}) => {
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = mount(RunnerUpgradeStatusIcon, {
       propsData: {
-        runner: {
-          upgradeStatus: UPGRADE_STATUS_AVAILABLE,
-          ...runner,
-        },
+        ...props,
       },
       directives: {
         GlTooltip: createMockDirective('gl-tooltip'),
@@ -55,7 +52,7 @@ describe('RunnerUpgradeStatusIcon', () => {
 
       it('Displays upgrade available icon', () => {
         createComponent({
-          runner: {
+          props: {
             upgradeStatus: UPGRADE_STATUS_AVAILABLE,
           },
         });
@@ -66,7 +63,7 @@ describe('RunnerUpgradeStatusIcon', () => {
 
       it('Displays upgrade recommended icon', () => {
         createComponent({
-          runner: {
+          props: {
             upgradeStatus: UPGRADE_STATUS_RECOMMENDED,
           },
         });
@@ -77,7 +74,7 @@ describe('RunnerUpgradeStatusIcon', () => {
 
       it('Displays no icon', () => {
         createComponent({
-          runner: {
+          props: {
             upgradeStatus: UPGRADE_STATUS_NOT_AVAILABLE,
           },
         });
