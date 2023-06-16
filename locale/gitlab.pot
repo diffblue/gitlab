@@ -33763,6 +33763,9 @@ msgstr ""
 msgid "Pipelines|Rebasing creates a pipeline that runs code originating from a forked project merge request. Consequently there are potential security implications, such as the exposure of CI variables."
 msgstr ""
 
+msgid "Pipelines|Retry %{jobName} Job"
+msgstr ""
+
 msgid "Pipelines|Revoke trigger"
 msgstr ""
 
