@@ -1,10 +1,10 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
-import { getSelectedOptionsText } from './utils';
 
 const { detected, confirmed, dismissed, resolved } = VULNERABILITY_STATE_OBJECTS;
 // For backwards compatibility with existing bookmarks, the ID needs to be capitalized.
@@ -28,7 +28,7 @@ export default {
   }),
   computed: {
     toggleText() {
-      return getSelectedOptionsText(DROPDOWN_OPTIONS, this.selected);
+      return getSelectedOptionsText({ options: DROPDOWN_OPTIONS, selected: this.selected });
     },
   },
   watch: {

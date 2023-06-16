@@ -10,7 +10,6 @@ import {
   GlFormInput,
   GlFormInputGroup,
   GlInputGroupText,
-  GlLink,
   GlSprintf,
   GlTableLite,
 } from '@gitlab/ui';
@@ -23,7 +22,7 @@ import externalAuditEventDestinationHeaderCreate from '../../graphql/mutations/c
 import externalAuditEventDestinationHeaderUpdate from '../../graphql/mutations/update_external_destination_header.mutation.graphql';
 import externalAuditEventDestinationHeaderDelete from '../../graphql/mutations/delete_external_destination_header.mutation.graphql';
 import deleteExternalDestinationFilters from '../../graphql/mutations/delete_external_destination_filters.mutation.graphql';
-import updateExternalDestinationFilters from '../../graphql/mutations/update_external_destination_filters.mutation.graphql';
+import addExternalDestinationFilters from '../../graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from '../../graphql/mutations/create_instance_external_destination.mutation.graphql';
 import deleteInstanceExternalDestination from '../../graphql/mutations/delete_instance_external_destination.mutation.graphql';
 import {
@@ -59,7 +58,6 @@ export default {
     GlFormInput,
     GlFormInputGroup,
     GlInputGroupText,
-    GlLink,
     GlSprintf,
     GlTableLite,
     StreamFilters,
@@ -73,11 +71,6 @@ export default {
       type: Object,
       required: false,
       default: () => ({}),
-    },
-    groupEventFilters: {
-      type: Array,
-      required: false,
-      default: () => [],
     },
   },
   data() {
@@ -119,9 +112,6 @@ export default {
         ? ADD_STREAM_EDITOR_I18N.SAVE_BUTTON_TEXT
         : ADD_STREAM_EDITOR_I18N.ADD_BUTTON_TEXT;
     },
-    itemFilters() {
-      return this.item?.eventTypeFilters || [];
-    },
     isInstance() {
       return this.groupPath === 'instance';
     },
@@ -145,7 +135,7 @@ export default {
 
     this.destinationUrl = this.item.destinationUrl;
 
-    this.filters = this.item.eventTypeFilters;
+    this.filters = this.item.eventTypeFilters || [];
   },
   methods: {
     clearError(index) {
@@ -342,20 +332,21 @@ export default {
     },
     async addDestinationFilters(destinationId, filters) {
       const { data } = await this.$apollo.mutate({
-        mutation: updateExternalDestinationFilters,
+        mutation: addExternalDestinationFilters,
         variables: {
           destinationId,
           eventTypeFilters: filters,
         },
         update(cache, { data: updateData }) {
-          if (updateData.auditEventsStreamingDestinationEventsAdd.errors.length) {
+          const { errors, eventTypeFilters } = updateData.auditEventsStreamingDestinationEventsAdd;
+          if (errors.length) {
             return;
           }
 
           updateEventTypeFilters({
             store: cache,
             destinationId,
-            filters,
+            filters: eventTypeFilters,
           });
         },
       });
@@ -686,28 +677,9 @@ export default {
         <strong class="gl-display-block gl-mb-3" data-testid="filtering-header">{{
           $options.i18n.HEADER_FILTERING
         }}</strong>
-
         <gl-accordion :header-level="3">
-          <gl-accordion-item :title="$options.i18n.HEADER_FILTERING_ITEM">
-            <div v-if="groupEventFilters.length">
-              <p data-testid="filtering-subheader">{{ $options.i18n.SUBHEADER_FILTERING }}</p>
-              <stream-filters
-                :filter-options="groupEventFilters"
-                :filter-selected="itemFilters"
-                @updateFilters="updateEventTypeFilters"
-              />
-            </div>
-            <div v-else>
-              <gl-sprintf :message="$options.i18n.SUBHEADER_EMPTY_FILTERING">
-                <template #link="{ content }">
-                  <gl-link
-                    :href="$options.i18n.SUBHEADER_EMPTY_FILTERING_LINK"
-                    class="gl-text-blue-500!"
-                    >{{ content }}</gl-link
-                  >
-                </template>
-              </gl-sprintf>
-            </div>
+          <gl-accordion-item :title="$options.i18n.FILTER_BY_STREAM_EVENT">
+            <stream-filters v-model="filters" class="gl-mt-3" />
           </gl-accordion-item>
         </gl-accordion>
       </div>

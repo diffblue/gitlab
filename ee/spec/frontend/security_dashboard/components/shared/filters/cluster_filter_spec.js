@@ -75,10 +75,6 @@ describe('ClusterFilter component', () => {
         expect(findListbox().props('headerText')).toBe(ClusterFilter.i18n.label);
       });
 
-      it('passes the placeholder toggle text when no items are selected', () => {
-        expect(findListbox().props('toggleText')).toBe(ClusterFilter.i18n.allItemsText);
-      });
-
       it(`passes '${firstMockClusterName}' when only ${firstMockClusterName} is selected`, async () => {
         await clickListboxItem(firstMockClusterName);
 

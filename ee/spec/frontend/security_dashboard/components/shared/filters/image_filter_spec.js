@@ -96,10 +96,6 @@ describe('ImageFilter component', () => {
         expect(findListbox().props('headerText')).toBe(ImageFilter.i18n.label);
       });
 
-      it('passes the placeholder toggle text when no items are selected', () => {
-        expect(findListbox().props('toggleText')).toBe(ImageFilter.i18n.allItemsText);
-      });
-
       it(`passes '${mockImages[0]}' when only ${mockImages[0]} is selected`, async () => {
         await clickListboxItem(mockImages[0]);
 

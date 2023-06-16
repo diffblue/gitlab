@@ -1,8 +1,8 @@
 <script>
 import { GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { getSelectedOptionsText } from '~/lib/utils/listbox_helpers';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
-import { getSelectedOptionsText } from 'ee/security_dashboard/components/shared/filters/utils';
 import QuerystringSync from './querystring_sync.vue';
 import { ALL_ID } from './constants';
 
@@ -29,7 +29,7 @@ export default {
   }),
   computed: {
     toggleText() {
-      return getSelectedOptionsText(FILTER_ITEMS, this.selectedIds);
+      return getSelectedOptionsText({ options: FILTER_ITEMS, selected: this.selectedIds });
     },
   },
   watch: {

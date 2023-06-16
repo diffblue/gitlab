@@ -14,5 +14,6 @@
   empty_state_svg_path: image_path('illustrations/cloud.svg'),
   filter_token_options: group_audit_event_tokens(@group.id).to_json,
   filter_token_values: filter_view_only_own_events_token_values(view_only).to_json,
-  filter_view_only: view_only.to_s } }
+  filter_view_only: view_only.to_s,
+  audit_event_definitions: @audit_event_definitions.to_json } }
   = gl_loading_icon(size: 'lg', css_class: 'gl-my-7')

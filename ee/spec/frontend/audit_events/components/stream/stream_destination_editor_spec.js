@@ -23,7 +23,7 @@ import externalAuditEventDestinationHeaderUpdate from 'ee/audit_events/graphql/m
 import externalAuditEventDestinationHeaderDelete from 'ee/audit_events/graphql/mutations/delete_external_destination_header.mutation.graphql';
 import deleteExternalDestination from 'ee/audit_events/graphql/mutations/delete_external_destination.mutation.graphql';
 import deleteExternalDestinationFilters from 'ee/audit_events/graphql/mutations/delete_external_destination_filters.mutation.graphql';
-import updateExternalDestinationFilters from 'ee/audit_events/graphql/mutations/update_external_destination_filters.mutation.graphql';
+import addExternalDestinationFilters from 'ee/audit_events/graphql/mutations/add_external_destination_filters.mutation.graphql';
 import instanceExternalAuditEventDestinationCreate from 'ee/audit_events/graphql/mutations/create_instance_external_destination.mutation.graphql';
 import StreamDestinationEditor from 'ee/audit_events/components/stream/stream_destination_editor.vue';
 import StreamFilters from 'ee/audit_events/components/stream/stream_filters.vue';
@@ -39,7 +39,7 @@ import {
   mockExternalDestinationHeader,
   destinationFilterRemoveMutationPopulator,
   destinationFilterUpdateMutationPopulator,
-  mockFiltersOptions,
+  mockAuditEventDefinitions,
   mockRemoveFilterSelect,
   mockRemoveFilterRemaining,
   mockAddFilterSelect,
@@ -71,9 +71,9 @@ describe('StreamDestinationEditor', () => {
       provide: {
         groupPath: groupPathProvide,
         maxHeaders,
+        auditEventDefinitions: mockAuditEventDefinitions,
       },
       propsData: {
-        groupEventFilters: mockFiltersOptions,
         ...props,
       },
       apolloProvider: mockApollo,
@@ -93,7 +93,6 @@ describe('StreamDestinationEditor', () => {
   const findDestinationUrl = () => wrapper.findByTestId('destination-url');
 
   const findFilteringHeader = () => wrapper.findByTestId('filtering-header');
-  const findFilteringSubheader = () => wrapper.findByTestId('filtering-subheader');
   const findAccordion = () => wrapper.findComponent(GlAccordion);
   const findAllAccordionItems = () => wrapper.findAllComponents(GlAccordionItem);
   const findFilters = () => wrapper.findComponent(StreamFilters);
@@ -590,34 +589,17 @@ describe('StreamDestinationEditor', () => {
 
         it('displays the correct text', () => {
           expect(findFilteringHeader().text()).toBe(ADD_STREAM_EDITOR_I18N.HEADER_FILTERING);
-          expect(findFilteringSubheader().text()).toBe(ADD_STREAM_EDITOR_I18N.SUBHEADER_FILTERING);
+          expect(findAllAccordionItems().at(0).props('title')).toBe(
+            ADD_STREAM_EDITOR_I18N.FILTER_BY_STREAM_EVENT,
+          );
         });
 
         it('shows an accordion containing a list of event filters', () => {
           expect(findAccordion().exists()).toBe(true);
           expect(findAllAccordionItems()).toHaveLength(1);
           expect(findFilters().props()).toStrictEqual({
-            filterOptions: mockFiltersOptions,
-            filterSelected: mockExternalDestinations[1].eventTypeFilters,
+            value: mockExternalDestinations[1].eventTypeFilters,
           });
-        });
-
-        it('shows an empty state for a list of event filters when no options are available', () => {
-          createComponent({
-            mountFn: mountExtended,
-            props: {
-              item: mockExternalDestinations[0],
-              groupEventFilters: [],
-            },
-          });
-
-          expect(findAccordion().text()).toContain(
-            sprintf(ADD_STREAM_EDITOR_I18N.SUBHEADER_EMPTY_FILTERING, {
-              linkStart: '',
-              linkEnd: '',
-            }),
-          );
-          expect(findFilters().exists()).toBe(false);
         });
       });
 
@@ -633,7 +615,7 @@ describe('StreamDestinationEditor', () => {
             apolloHandlers: [[deleteExternalDestinationFilters, filterRemoveSpy]],
           });
 
-          findFilters().vm.$emit('updateFilters', mockRemoveFilterSelect);
+          findFilters().vm.$emit('input', mockRemoveFilterSelect);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();
@@ -656,10 +638,10 @@ describe('StreamDestinationEditor', () => {
           createComponent({
             mountFn: mountExtended,
             props: { item: mockExternalDestinations[1] },
-            apolloHandlers: [[updateExternalDestinationFilters, filterAddSpy]],
+            apolloHandlers: [[addExternalDestinationFilters, filterAddSpy]],
           });
 
-          findFilters().vm.$emit('updateFilters', mockAddFilterSelect);
+          findFilters().vm.$emit('input', mockAddFilterSelect);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();
@@ -685,7 +667,7 @@ describe('StreamDestinationEditor', () => {
             apolloHandlers: [[deleteExternalDestinationFilters, filterRemoveSpy]],
           });
 
-          findFilters().vm.$emit('updateFilters', mockRemoveFilterSelect);
+          findFilters().vm.$emit('input', mockRemoveFilterSelect);
 
           findDestinationForm().vm.$emit('submit', { preventDefault: () => {} });
           await waitForPromises();

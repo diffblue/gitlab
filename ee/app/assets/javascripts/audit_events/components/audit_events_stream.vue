@@ -32,7 +32,6 @@ export default {
       externalAuditEventDestinations: null,
       showEditor: false,
       successMessage: null,
-      groupEventFilters: [],
     };
   },
   computed: {
@@ -81,13 +80,6 @@ export default {
         this.successMessage = DELETE_STREAM_MESSAGE;
       }
     },
-    setGroupEventFilters(nodes) {
-      const filters = [];
-      nodes.forEach((node) => {
-        if (node?.eventTypeFilters) filters.push(...node.eventTypeFilters);
-      });
-      this.groupEventFilters = [...new Set(filters)];
-    },
   },
   apollo: {
     externalAuditEventDestinations: {
@@ -109,7 +101,6 @@ export default {
         const destinations = this.isInstance
           ? data.instanceExternalAuditEventDestinations.nodes
           : data.group.externalAuditEventDestinations.nodes;
-        this.setGroupEventFilters(destinations);
         return destinations;
       },
       error() {
@@ -152,7 +143,6 @@ export default {
     </div>
     <div v-if="showEditor" class="gl-mb-4 gl-p-4 gl-border gl-rounded-base">
       <stream-destination-editor
-        :group-event-filters="groupEventFilters"
         @added="onAddedDestination"
         @error="clearSuccessMessage"
         @cancel="setEditorVisibility(false)"
@@ -163,7 +153,6 @@ export default {
         v-for="item in externalAuditEventDestinations"
         :key="item.id"
         :item="item"
-        :group-event-filters="groupEventFilters"
         @deleted="onDeletedDestination(item.id)"
         @updated="onUpdatedDestination"
         @error="clearSuccessMessage"

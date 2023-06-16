@@ -1,4 +1,4 @@
-mutation updateExternalDestinationFilters(
+mutation addExternalDestinationFilters(
   $destinationId: AuditEventsExternalAuditEventDestinationID!
   $eventTypeFilters: [String!]!
 ) {

@@ -14,7 +14,6 @@ import {
   groupPath,
   destinationDeleteMutationPopulator,
   mockExternalDestinations,
-  mockFiltersOptions,
   instanceGroupPath,
   destinationInstanceDeleteMutationPopulator,
   mockInstanceExternalDestinations,
@@ -48,7 +47,6 @@ describe('StreamItem', () => {
       apolloProvider: mockApollo,
       propsData: {
         item: itemProvide,
-        groupEventFilters: mockFiltersOptions,
         ...props,
       },
       provide: {
