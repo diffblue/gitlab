@@ -104,7 +104,7 @@ RSpec.describe Auth::SamlGroupSyncWorker, feature_category: :system_access do
     end
 
     def stub_saml_group_sync_enabled(enabled)
-      allow(::Gitlab::Auth::Saml::Config).to receive(:group_sync_enabled?).and_return(enabled)
+      allow(worker).to receive(:sync_enabled?).and_return(enabled)
     end
   end
 end

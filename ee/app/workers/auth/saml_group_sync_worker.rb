@@ -30,7 +30,7 @@ module Auth
     attr_reader :group_link_ids, :user
 
     def sync_enabled?
-      Gitlab::Auth::Saml::Config.group_sync_enabled?
+      Gitlab::Auth::Saml::Config.new.group_sync_enabled?
     end
 
     def groups_to_sync?

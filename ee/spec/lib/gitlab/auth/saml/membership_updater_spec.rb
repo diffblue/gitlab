@@ -10,16 +10,19 @@ RSpec.describe Gitlab::Auth::Saml::MembershipUpdater do
   let(:auth_hash) do
     Gitlab::Auth::GroupSaml::AuthHash.new(
       OmniAuth::AuthHash.new(extra: {
-        raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners))
+        raw_info: OneLogin::RubySaml::Attributes.new('groups' => %w(Developers Owners)),
+        provider: 'saml'
       })
     )
   end
 
-  subject(:update_membership) { described_class.new(user, auth_hash).execute }
+  let(:membership_updater) { described_class.new(user, auth_hash) }
+
+  subject(:update_membership) { membership_updater.execute }
 
   context 'when SAML group links exist' do
     def stub_saml_group_sync_enabled(enabled)
-      allow(::Gitlab::Auth::Saml::Config).to receive(:group_sync_enabled?).and_return(enabled)
+      allow(membership_updater).to receive(:sync_enabled?).and_return(enabled)
     end
 
     let!(:group_link) { create(:saml_group_link, saml_group_name: 'Owners', group: group1) }

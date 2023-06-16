@@ -62,7 +62,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
     context 'when auth hash is missing required groups' do
       let(:connect_config) do
-        {
+        ActiveSupport::InheritableOptions.new({
           'name' => provider,
           'args' => {
             'name' => provider,
@@ -73,7 +73,7 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
               }
             }
           }
-        }
+        })
       end
 
       before do
@@ -122,6 +122,39 @@ RSpec.describe OmniauthCallbacksController, type: :controller, feature_category:
 
       it 'links identity' do
         expect { post provider }.to change { user.identities.count }.by(1)
+      end
+    end
+  end
+
+  describe '#saml' do
+    let(:mock_saml_response) { File.read('spec/fixtures/authentication/saml_response.xml') }
+    let(:provider) { 'saml_okta' }
+
+    controller(described_class) do
+      alias_method :saml_okta, :handle_omniauth
+    end
+
+    context "with required_groups on saml config" do
+      before do
+        allow(routes).to receive(:generate_extras).and_return(['/users/auth/saml_okta/callback', []])
+
+        saml_config = GitlabSettings::Options.new(name: 'saml_okta',
+          required_groups: ['Freelancers'],
+          groups_attribute: 'groups',
+          label: 'saml_okta',
+          args: {
+            'strategy_class' => 'OmniAuth::Strategies::SAML'
+          })
+        stub_omniauth_saml_config(
+          enabled: true,
+          auto_link_saml_user: true,
+          providers: [saml_config]
+        )
+      end
+
+      it 'fails to authenticate' do
+        post :saml_okta, params: { SAMLResponse: mock_saml_response }
+        expect(request.env['warden']).not_to be_authenticated
       end
     end
   end

@@ -108,7 +108,9 @@ module EE
       end
 
       condition(:global_saml_group_sync_enabled, scope: :global) do
-        ::Gitlab::Auth::Saml::Config.group_sync_enabled?
+        ::AuthHelper.saml_providers.any? do |provider|
+          ::Gitlab::Auth::Saml::Config.new(provider).group_sync_enabled?
+        end
       end
 
       condition(:group_saml_globally_enabled, scope: :global) do

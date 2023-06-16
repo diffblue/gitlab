@@ -923,7 +923,9 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
     context 'when global SAML is enabled' do
       before do
-        allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', args: {} } })
+        allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
+          allow(instance).to receive_messages({ options: { name: 'saml', args: {} } })
+        end
         allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
       end
 
@@ -931,7 +933,9 @@ RSpec.describe GroupPolicy, feature_category: :groups_and_projects do
 
       context 'when the groups attribute is configured' do
         before do
-          allow(Gitlab::Auth::Saml::Config).to receive(:groups).and_return(['Groups'])
+          allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
+            allow(instance).to receive(:groups).and_return(['Groups'])
+          end
         end
 
         it { is_expected.to be_disallowed(:admin_saml_group_links) }

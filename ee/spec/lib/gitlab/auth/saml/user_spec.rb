@@ -26,15 +26,21 @@ RSpec.describe Gitlab::Auth::Saml::User do
     end
 
     def stub_basic_saml_config
-      allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', args: {} } })
+      allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
+        allow(instance).to receive_messages({ options: { name: 'saml', args: {} } })
+      end
     end
 
     def stub_saml_required_group_config(groups)
-      allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', groups_attribute: 'groups', required_groups: groups, args: {} } })
+      allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
+        allow(instance).to receive_messages({ options: { name: 'saml', groups_attribute: 'groups', required_groups: groups, args: {} } })
+      end
     end
 
     def stub_saml_group_config(type, groups)
-      allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', groups_attribute: 'groups', "#{type}_groups": groups, args: {} } })
+      allow_next_instance_of(Gitlab::Auth::Saml::Config) do |instance|
+        allow(instance).to receive_messages({ options: { name: 'saml', groups_attribute: 'groups', "#{type}_groups": groups, args: {} } })
+      end
     end
 
     before do
