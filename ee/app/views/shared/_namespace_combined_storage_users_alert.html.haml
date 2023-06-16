@@ -1,0 +1,10 @@
+- return unless current_user
+- context = local_assigns.fetch(:context)
+- return unless context
+= render Namespaces::CombinedStorageUsers::OwnerAlertComponent.new(root_namespace: context.root_ancestor,
+  user: current_user,
+  content_class: full_content_class)
+
+= render Namespaces::CombinedStorageUsers::NonOwnerAlertComponent.new(root_namespace: context.root_ancestor,
+  user: current_user,
+  content_class: full_content_class)

@@ -171,14 +171,16 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
       end
     end
 
-    context 'with application settings set to true' do
+    context 'with application settings set' do
       before do
         allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
+        allow(::Gitlab::CurrentSettings).to receive(:automatic_purchased_storage_allocation?).and_return(true)
+        allow(::Gitlab::CurrentSettings).to receive(:enforce_namespace_storage_limit?).and_return(false)
       end
 
-      context 'when the namespace reaches the notification limit' do
+      context 'when the namespace exceeds the notification limit' do
         before do
-          allow(described_class).to receive(:reached_pre_enforcement_notification_limit?).and_return(true)
+          allow(described_class).to receive(:over_pre_enforcement_notification_limit?).and_return(true)
         end
 
         it 'returns true' do
@@ -188,31 +190,31 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
     end
   end
 
-  describe '.reached_pre_enforcement_notification_limit?' do
+  describe '.over_pre_enforcement_notification_limit?' do
     let(:root_namespace) { create(:group_with_plan, :with_root_storage_statistics, plan: :free_plan) }
 
-    subject(:reached_pre_enforcement_notification_limit?) do
-      described_class.reached_pre_enforcement_notification_limit?(root_namespace)
+    subject(:over_pre_enforcement_notification_limit?) do
+      described_class.over_pre_enforcement_notification_limit?(root_namespace)
     end
 
     context 'when storage limit exclusion is present' do
       let!(:excluded_namespace) { create(:namespace_storage_limit_exclusion, namespace: root_namespace) }
 
       it 'returns false' do
-        expect(reached_pre_enforcement_notification_limit?).to be false
+        expect(over_pre_enforcement_notification_limit?).to be false
       end
     end
 
     context 'when storage limit exclusion is not present' do
       where(:total_storage, :notification_limit, :additional_purchased_storage_size, :expected_result) do
-        12 | 0  | 0     | false
-        12 | 13 | 0     | false
-        12 | 12 | 0     | true
-        13 | 12 | 0     | true
-        12 | 13 | 1024  | false
-        13 | 12 | 1024  | true
-        15 | 13 | 1024  | true
-        12 | 12 | 1024  | false
+        12 | 0  | 0 | false
+        12 | 13 | 0 | false
+        12 | 12 | 0 | false
+        13 | 12 | 0 | true
+        12 | 13 | 1 | false
+        13 | 12 | 1 | false
+        15 | 13 | 1 | true
+        12 | 12 | 1 | false
       end
 
       with_them do
@@ -223,7 +225,7 @@ RSpec.describe Namespaces::Storage::Enforcement, :saas, feature_category: :consu
         end
 
         it 'returns expected_result' do
-          expect(reached_pre_enforcement_notification_limit?).to eq(expected_result)
+          expect(over_pre_enforcement_notification_limit?).to eq(expected_result)
         end
       end
     end

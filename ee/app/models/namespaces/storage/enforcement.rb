@@ -17,26 +17,25 @@ module Namespaces
       def show_pre_enforcement_alert?(namespace)
         root_namespace = namespace.root_ancestor
 
-        if ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
-            !root_namespace.paid? &&
-            reached_pre_enforcement_notification_limit?(root_namespace)
-
-          return ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
-        end
-
-        false
+        ::Gitlab::CurrentSettings.should_check_namespace_plan? &&
+          !root_namespace.paid? &&
+          over_pre_enforcement_notification_limit?(root_namespace) &&
+          ::Feature.enabled?(:namespace_storage_limit_show_preenforcement_banner, root_namespace)
       end
 
-      def reached_pre_enforcement_notification_limit?(root_namespace)
+      def over_pre_enforcement_notification_limit?(root_namespace)
         return false if root_namespace.storage_limit_exclusion.present?
 
+        # The storage usage limit used for comparing whether to display the phased notification or not.
+        # It should not be confused with the dashboard limit called storage_size_limit.
+        # This particular setting is saved in megabytes, so we should utilize the '.megabytes' method.
         notification_limit = root_namespace.actual_plan.actual_limits.notification_limit.megabytes
         return false unless notification_limit > 0
 
         total_storage = ::Namespaces::Storage::RootSize.new(root_namespace).current_size
-        purchased_storage = (root_namespace.additional_purchased_storage_size || 0)
+        purchased_storage = (root_namespace.additional_purchased_storage_size || 0).megabytes
 
-        total_storage >= (notification_limit + purchased_storage)
+        total_storage > (notification_limit + purchased_storage)
       end
 
       def enforceable_storage_limit(root_namespace)

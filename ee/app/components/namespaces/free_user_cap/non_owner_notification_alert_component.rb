@@ -7,6 +7,7 @@ module Namespaces
 
       def render?
         return false unless ::Namespaces::FreeUserCap.non_owner_access?(user: user, namespace: namespace)
+        return false if qualifies_for_combined_alert?
 
         breached_cap_limit?
       end

@@ -6,6 +6,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
   feature_category: :consumables_cost_management do
   using RSpec::Parameterized::TableSyntax
   include NamespaceStorageHelpers
+  include FreeUserCapHelpers
 
   let(:over_storage_limit) { false }
 
@@ -24,6 +25,27 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
 
     allow_next_instance_of(::Namespaces::Storage::RootSize) do |group|
       allow(group).to receive(:above_size_limit?).and_return(over_storage_limit)
+    end
+  end
+
+  describe 'when qalifies for combnined users and storage banner' do
+    let_it_be(:group) do
+      create(:group_with_plan, :with_root_storage_statistics, :private, plan: :free_plan,
+        name: 'over_users_and_storage')
+    end
+
+    let(:over_storage_limit) { true }
+
+    before do
+      group.add_guest(user)
+      exceed_user_cap(group)
+      enforce_free_user_caps
+    end
+
+    it 'does not render the banner' do
+      render_inline(component)
+
+      expect(page).not_to have_text "A namespace storage limit will soon be enforced"
     end
   end
 

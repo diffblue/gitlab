@@ -58,6 +58,21 @@ RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggr
                                  '[data-track-action="click_button"]' \
                                  '[data-track-label="explore_paid_plans"]')
       end
+
+      context 'when it qualifies for combined banner' do
+        before do
+          allow_next_instance_of(::Namespaces::FreeUserCap::EnforcementWithoutStorage, namespace) do |instance|
+            allow(instance).to receive(:over_limit?).with(update_database: false).and_return(true)
+          end
+          allow(::Namespaces::Storage::Enforcement).to receive(:show_pre_enforcement_alert?).and_return(true)
+        end
+
+        it 'does not render the alert' do
+          render_inline(component)
+
+          expect(page).not_to have_content(title)
+        end
+      end
     end
 
     context 'when not over the limit' do
