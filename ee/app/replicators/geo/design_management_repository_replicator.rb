@@ -26,6 +26,11 @@ module Geo
       true
     end
 
+    override :housekeeping_enabled?
+    def self.housekeeping_enabled?
+      false
+    end
+
     def repository
       model_record.repository
     end
