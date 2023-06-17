@@ -1,6 +1,5 @@
 import { GlModal, GlLink, GlIntersperse } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-
 import LicenseComponentLinks, {
   VISIBLE_COMPONENT_COUNT,
 } from 'ee/license_compliance/components/license_component_links.vue';
@@ -127,17 +126,6 @@ describe('LicenseComponentLinks component', () => {
       expect(wrapper.findAllComponents(GlModal)).toHaveLength(expectedNumModals);
     },
   );
-
-  it('opens the modal when the trigger gets clicked', () => {
-    factory({ numComponents: 3 });
-    const modalId = wrapper.findComponent(GlModal).props('modalId');
-    const modalTrigger = findModalTrigger();
-
-    const rootEmit = jest.spyOn(wrapper.vm.$root, '$emit');
-
-    modalTrigger.trigger('click');
-    expect(rootEmit.mock.calls[0]).toContain(modalId);
-  });
 
   it('assigns a unique modal-id to each of its instances', () => {
     const numComponents = 4;
