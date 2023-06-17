@@ -1,6 +1,7 @@
 import { __, s__, sprintf } from '~/locale';
 
 export const NAME_MAX_LENGTH = 100;
+export const NAME_MIN_LENGTH = 3;
 
 export const i18n = {
   FORM_TITLE: s__('CreateValueStreamForm|Create value stream'),
@@ -43,7 +44,13 @@ export const i18n = {
 };
 
 export const ERRORS = {
-  VALUE_STREAM_NAME_MIN_LENGTH: s__('CreateValueStreamForm|Name is required'),
+  VALUE_STREAM_NAME_REQUIRED: s__('CreateValueStreamForm|Name is required'),
+  VALUE_STREAM_NAME_MIN_LENGTH: sprintf(
+    s__('CreateValueStreamForm|Minimum length %{minLength} characters'),
+    {
+      minLength: NAME_MIN_LENGTH,
+    },
+  ),
   STAGE_NAME_MIN_LENGTH: s__('CreateValueStreamForm|Stage name is required'),
   MAX_LENGTH: sprintf(s__('CreateValueStreamForm|Maximum length %{maxLength} characters'), {
     maxLength: NAME_MAX_LENGTH,

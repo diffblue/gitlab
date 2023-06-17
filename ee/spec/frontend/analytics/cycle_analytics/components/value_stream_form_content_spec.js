@@ -39,12 +39,20 @@ describe('ValueStreamFormContent', () => {
   const mockEvent = { preventDefault: jest.fn() };
   const mockToastShow = jest.fn();
   const streamName = 'Cool stream';
-  const initialFormErrors = { name: ['Name field required'] };
+  const initialFormNameErrors = { name: ['Name field required'] };
   const initialFormStageErrors = {
     stages: [
       {
         name: ['Name field is required'],
         endEventIdentifier: ['Please select a start event first'],
+      },
+    ],
+  };
+  const formSubmissionErrors = {
+    name: ['has already been taken'],
+    stages: [
+      {
+        name: ['has already been taken'],
       },
     ],
   };
@@ -182,7 +190,7 @@ describe('ValueStreamFormContent', () => {
       });
 
       it('does not display any hidden stages', () => {
-        expect(findHiddenStages().length).toBe(0);
+        expect(findHiddenStages()).toHaveLength(0);
       });
 
       it('will fetch group labels', () => {
@@ -204,13 +212,13 @@ describe('ValueStreamFormContent', () => {
       });
 
       it('adds a blank custom stage when clicked', async () => {
-        expect(findDefaultStages().length).toBe(defaultStageConfig.length);
-        expect(findCustomStages().length).toBe(0);
+        expect(findDefaultStages()).toHaveLength(defaultStageConfig.length);
+        expect(findCustomStages()).toHaveLength(0);
 
         await clickAddStage();
 
-        expect(findDefaultStages().length).toBe(defaultStageConfig.length);
-        expect(findCustomStages().length).toBe(1);
+        expect(findDefaultStages()).toHaveLength(defaultStageConfig.length);
+        expect(findCustomStages()).toHaveLength(1);
       });
 
       it('validates existing fields when clicked', async () => {
@@ -227,7 +235,7 @@ describe('ValueStreamFormContent', () => {
       });
     });
 
-    describe('form errors', () => {
+    describe('initial form stage errors', () => {
       const commonExtendedData = {
         props: {
           initialFormErrors: initialFormStageErrors,
@@ -265,23 +273,203 @@ describe('ValueStreamFormContent', () => {
       });
     });
 
-    describe('isFetchingGroupLabels=true', () => {
+    describe('initial form name errors', () => {
       beforeEach(() => {
         wrapper = createComponent({
-          state: {
-            defaultGroupLabels: [],
-            isFetchingGroupLabels: true,
+          props: {
+            initialFormErrors: initialFormNameErrors,
           },
         });
       });
 
-      it('hides the modal footer buttons', () => {
-        expect(findModal().attributes('hide-footer')).toBe('true');
+      it('renders errors for the name field', () => {
+        expectFieldError('create-value-stream-name', initialFormNameErrors.name[0]);
       });
     });
 
-    describe('isEditing=true', () => {
-      const stageCount = initialData.stages.length;
+    describe('with valid fields', () => {
+      beforeEach(() => {
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+      });
+
+      afterEach(() => {
+        unmockTracking();
+      });
+
+      describe('form submitted successfully', () => {
+        beforeEach(async () => {
+          wrapper = createComponent();
+
+          await findNameInput().vm.$emit('input', streamName);
+          clickSubmit();
+        });
+
+        it('calls the "createValueStream" event when submitted', () => {
+          expect(createValueStreamMock).toHaveBeenCalledWith(expect.any(Object), {
+            name: streamName,
+            stages: [
+              {
+                custom: false,
+                name: 'issue',
+              },
+              {
+                custom: false,
+                name: 'plan',
+              },
+              {
+                custom: false,
+                name: 'code',
+              },
+            ],
+          });
+        });
+
+        it('clears the name field', () => {
+          expect(findNameInput().attributes('value')).toBe('');
+        });
+
+        it('displays a toast message', () => {
+          expect(mockToastShow).toHaveBeenCalledWith(`'${streamName}' Value Stream created`);
+        });
+
+        it('sends tracking information', () => {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'submit_form', {
+            label: 'create_value_stream',
+          });
+        });
+      });
+
+      describe('form submission fails', () => {
+        beforeEach(async () => {
+          wrapper = createComponent({
+            props: {
+              initialFormErrors: formSubmissionErrors,
+            },
+            stubs: {
+              CustomStageFields,
+            },
+          });
+
+          await findNameInput().vm.$emit('input', streamName);
+          clickSubmit();
+        });
+
+        it('calls the createValueStream action', () => {
+          expect(createValueStreamMock).toHaveBeenCalled();
+        });
+
+        it('does not clear the name field', () => {
+          expect(findNameInput().attributes('value')).toBe(streamName);
+        });
+
+        it('does not display a toast message', () => {
+          expect(mockToastShow).not.toHaveBeenCalled();
+        });
+
+        it('renders errors for the name field', () => {
+          expectFieldError('create-value-stream-name', formSubmissionErrors.name[0]);
+        });
+      });
+    });
+  });
+
+  describe('isEditing=true', () => {
+    const stageCount = initialData.stages.length;
+    beforeEach(() => {
+      wrapper = createComponent({
+        props: {
+          initialPreset,
+          initialData,
+          isEditing: true,
+        },
+      });
+    });
+
+    it('does not have the preset button', () => {
+      expect(findPresetSelector().exists()).toBe(false);
+    });
+
+    it('sets the submit action text to "Save value stream"', () => {
+      expect(findBtn('actionPrimary').text).toBe(i18n.EDIT_FORM_ACTION);
+    });
+
+    it('does not display any hidden stages', () => {
+      expect(findHiddenStages()).toHaveLength(0);
+    });
+
+    it('each stage has a transition key', () => {
+      expectStageTransitionKeys(wrapper.vm.stages);
+    });
+
+    describe('restore defaults button', () => {
+      it('restores the original name', async () => {
+        const newName = 'name';
+
+        await findNameInput().vm.$emit('input', newName);
+
+        expect(findNameInput().attributes('value')).toBe(newName);
+
+        await findRestoreButton().vm.$emit('click');
+
+        expect(findNameInput().attributes('value')).toBe(initialData.name);
+      });
+
+      it('will clear the form fields', async () => {
+        expect(findCustomStages()).toHaveLength(stageCount);
+
+        await clickAddStage();
+
+        expect(findCustomStages()).toHaveLength(stageCount + 1);
+
+        await findRestoreButton().vm.$emit('click');
+
+        expect(findCustomStages()).toHaveLength(stageCount);
+      });
+    });
+
+    describe('with hidden stages', () => {
+      const hiddenStages = defaultStageConfig.map((s) => ({ ...s, hidden: true }));
+
+      beforeEach(() => {
+        wrapper = createComponent({
+          props: {
+            initialPreset,
+            initialData: { ...initialData, stages: [...initialData.stages, ...hiddenStages] },
+            isEditing: true,
+          },
+        });
+      });
+
+      it('displays hidden each stage', () => {
+        expect(findHiddenStages()).toHaveLength(hiddenStages.length);
+
+        findHiddenStages().forEach((s) => {
+          expect(s.text()).toContain('Restore stage');
+        });
+      });
+
+      it('when `Restore stage` is clicked, the stage is restored', async () => {
+        expect(findHiddenStages()).toHaveLength(hiddenStages.length);
+        expect(findDefaultStages()).toHaveLength(0);
+        expect(findCustomStages()).toHaveLength(stageCount);
+
+        await clickRestoreStageAtIndex(1);
+
+        expect(findHiddenStages()).toHaveLength(hiddenStages.length - 1);
+        expect(findDefaultStages()).toHaveLength(1);
+        expect(findCustomStages()).toHaveLength(stageCount);
+      });
+
+      it('when a stage is restored it has a transition key', async () => {
+        await clickRestoreStageAtIndex(1);
+
+        expect(wrapper.vm.stages[stageCount].transitionKey).toContain(
+          `stage-${hiddenStages[1].name}-`,
+        );
+      });
+    });
+
+    describe('Add stage button', () => {
       beforeEach(() => {
         wrapper = createComponent({
           props: {
@@ -289,287 +477,131 @@ describe('ValueStreamFormContent', () => {
             initialData,
             isEditing: true,
           },
+          stubs: {
+            CustomStageFields,
+          },
         });
       });
 
-      it('does not have the preset button', () => {
-        expect(findPresetSelector().exists()).toBe(false);
+      it('has the add stage button', () => {
+        expect(findBtn('actionSecondary')).toMatchObject({ text: i18n.BTN_ADD_ANOTHER_STAGE });
       });
 
-      it('sets the submit action text to "Save value stream"', () => {
-        expect(findBtn('actionPrimary').text).toBe(i18n.EDIT_FORM_ACTION);
+      it('adds a blank custom stage when clicked', async () => {
+        expect(findCustomStages()).toHaveLength(stageCount);
+
+        await clickAddStage();
+
+        expect(findCustomStages()).toHaveLength(stageCount + 1);
       });
 
-      it('does not display any hidden stages', () => {
-        expect(findHiddenStages().length).toBe(0);
+      it('validates existing fields when clicked', async () => {
+        const fieldTestId = 'create-value-stream-name';
+        expect(findFieldErrors(fieldTestId)).toBeUndefined();
+
+        await findNameInput().vm.$emit('input', '');
+        await clickAddStage();
+
+        expectFieldError(fieldTestId, 'Name is required');
+      });
+    });
+
+    describe('with valid fields', () => {
+      beforeEach(() => {
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       });
 
-      it('each stage has a transition key', () => {
-        expectStageTransitionKeys(wrapper.vm.stages);
+      afterEach(() => {
+        unmockTracking();
       });
 
-      describe('restore defaults button', () => {
-        it('restores the original name', async () => {
-          const newName = 'name';
-
-          await findNameInput().vm.$emit('input', newName);
-
-          expect(findNameInput().attributes('value')).toBe(newName);
-
-          await findRestoreButton().vm.$emit('click');
-
-          expect(findNameInput().attributes('value')).toBe(initialData.name);
-        });
-
-        it('will clear the form fields', async () => {
-          expect(findCustomStages().length).toBe(stageCount);
-
-          await clickAddStage();
-
-          expect(findCustomStages().length).toBe(stageCount + 1);
-
-          await findRestoreButton().vm.$emit('click');
-
-          expect(findCustomStages().length).toBe(stageCount);
-        });
-      });
-
-      describe('with hidden stages', () => {
-        const hiddenStages = defaultStageConfig.map((s) => ({ ...s, hidden: true }));
-
-        beforeEach(() => {
-          wrapper = createComponent({
-            props: {
-              initialPreset,
-              initialData: { ...initialData, stages: [...initialData.stages, ...hiddenStages] },
-              isEditing: true,
-            },
-          });
-        });
-
-        it('displays hidden each stage', () => {
-          expect(findHiddenStages().length).toBe(hiddenStages.length);
-
-          findHiddenStages().forEach((s) => {
-            expect(s.text()).toContain('Restore stage');
-          });
-        });
-
-        it('when `Restore stage` is clicked, the stage is restored', async () => {
-          expect(findHiddenStages().length).toBe(hiddenStages.length);
-          expect(findDefaultStages().length).toBe(0);
-          expect(findCustomStages().length).toBe(stageCount);
-
-          await clickRestoreStageAtIndex(1);
-
-          expect(findHiddenStages().length).toBe(hiddenStages.length - 1);
-          expect(findDefaultStages().length).toBe(1);
-          expect(findCustomStages().length).toBe(stageCount);
-        });
-
-        it('when a stage is restored it has a transition key', async () => {
-          await clickRestoreStageAtIndex(1);
-
-          expect(wrapper.vm.stages[stageCount].transitionKey).toContain(
-            `stage-${hiddenStages[1].name}-`,
-          );
-        });
-      });
-
-      describe('Add stage button', () => {
+      describe('form submitted successfully', () => {
         beforeEach(() => {
           wrapper = createComponent({
             props: {
               initialPreset,
               initialData,
+              isEditing: true,
+            },
+          });
+
+          clickSubmit();
+        });
+
+        it('calls the "updateValueStreamMock" event when submitted', () => {
+          expect(updateValueStreamMock).toHaveBeenCalledWith(expect.any(Object), {
+            ...initialData,
+            stages: initialData.stages.map((stage) =>
+              convertObjectPropsToSnakeCase(stage, { deep: true }),
+            ),
+          });
+        });
+
+        it('displays a toast message', () => {
+          expect(mockToastShow).toHaveBeenCalledWith(`'${initialData.name}' Value Stream saved`);
+        });
+
+        it('sends tracking information', () => {
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'submit_form', {
+            label: 'edit_value_stream',
+          });
+        });
+      });
+
+      describe('form submission fails', () => {
+        beforeEach(() => {
+          wrapper = createComponent({
+            props: {
+              initialFormErrors: formSubmissionErrors,
+              initialData,
+              initialPreset,
               isEditing: true,
             },
             stubs: {
               CustomStageFields,
             },
           });
+
+          clickSubmit();
         });
 
-        it('has the add stage button', () => {
-          expect(findBtn('actionSecondary')).toMatchObject({ text: i18n.BTN_ADD_ANOTHER_STAGE });
+        it('calls the updateValueStreamMock action', () => {
+          expect(updateValueStreamMock).toHaveBeenCalled();
         });
 
-        it('adds a blank custom stage when clicked', async () => {
-          expect(findCustomStages().length).toBe(stageCount);
+        it('does not clear the name field', () => {
+          const { name } = initialData;
 
-          await clickAddStage();
-
-          expect(findCustomStages().length).toBe(stageCount + 1);
+          expect(findNameInput().attributes('value')).toBe(name);
         });
 
-        it('validates existing fields when clicked', async () => {
-          const fieldTestId = 'create-value-stream-name';
-          expect(findFieldErrors(fieldTestId)).toBeUndefined();
-
-          await findNameInput().vm.$emit('input', '');
-          await clickAddStage();
-
-          expectFieldError(fieldTestId, 'Name is required');
-        });
-      });
-
-      describe('with valid fields', () => {
-        beforeEach(() => {
-          trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-          wrapper = createComponent({
-            props: {
-              initialPreset,
-              initialData,
-              isEditing: true,
-            },
-          });
+        it('does not display a toast message', () => {
+          expect(mockToastShow).not.toHaveBeenCalled();
         });
 
-        afterEach(() => {
-          unmockTracking();
+        it('renders errors for the name field', () => {
+          expectFieldError('create-value-stream-name', formSubmissionErrors.name[0]);
         });
 
-        describe('form submitted successfully', () => {
-          beforeEach(() => {
-            clickSubmit();
-          });
-
-          it('calls the "updateValueStreamMock" event when submitted', () => {
-            expect(updateValueStreamMock).toHaveBeenCalledWith(expect.any(Object), {
-              ...initialData,
-              stages: initialData.stages.map((stage) =>
-                convertObjectPropsToSnakeCase(stage, { deep: true }),
-              ),
-            });
-          });
-
-          it('displays a toast message', () => {
-            expect(mockToastShow).toHaveBeenCalledWith(`'${initialData.name}' Value Stream saved`);
-          });
-
-          it('sends tracking information', () => {
-            expect(trackingSpy).toHaveBeenCalledWith(undefined, 'submit_form', {
-              label: 'edit_value_stream',
-            });
-          });
-        });
-
-        describe('form submission fails', () => {
-          beforeEach(() => {
-            wrapper = createComponent({
-              data: { name: streamName },
-              props: {
-                initialFormErrors,
-              },
-            });
-
-            clickSubmit();
-          });
-
-          it('does not call the updateValueStreamMock action', () => {
-            expect(updateValueStreamMock).not.toHaveBeenCalled();
-          });
-
-          it('does not clear the name field', () => {
-            expect(wrapper.vm.name).toBe(streamName);
-          });
-
-          it('does not display a toast message', () => {
-            expect(mockToastShow).not.toHaveBeenCalled();
-          });
+        it('renders errors for a custom stage field', () => {
+          expectFieldError('custom-stage-name-0', formSubmissionErrors.stages[0].name[0]);
         });
       });
     });
   });
 
-  describe('form errors', () => {
+  describe('isFetchingGroupLabels=true', () => {
     beforeEach(() => {
       wrapper = createComponent({
-        data: { name: '' },
-        props: {
-          initialFormErrors,
+        state: {
+          defaultGroupLabels: [],
+          isFetchingGroupLabels: true,
         },
       });
     });
 
-    it('renders errors for the name field', () => {
-      expectFieldError('create-value-stream-name', initialFormErrors.name[0]);
-    });
-  });
-
-  describe('with valid fields', () => {
-    beforeEach(() => {
-      wrapper = createComponent({ data: { name: streamName } });
-      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-    });
-
-    afterEach(() => {
-      unmockTracking();
-    });
-
-    describe('form submitted successfully', () => {
-      beforeEach(() => {
-        clickSubmit();
-      });
-
-      it('calls the "createValueStream" event when submitted', () => {
-        expect(createValueStreamMock).toHaveBeenCalledWith(expect.any(Object), {
-          name: streamName,
-          stages: [
-            {
-              custom: false,
-              name: 'issue',
-            },
-            {
-              custom: false,
-              name: 'plan',
-            },
-            {
-              custom: false,
-              name: 'code',
-            },
-          ],
-        });
-      });
-
-      it('clears the name field', () => {
-        expect(wrapper.vm.name).toBe('');
-      });
-
-      it('displays a toast message', () => {
-        expect(mockToastShow).toHaveBeenCalledWith(`'${streamName}' Value Stream created`);
-      });
-
-      it('sends tracking information', () => {
-        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'submit_form', {
-          label: 'create_value_stream',
-        });
-      });
-    });
-
-    describe('form submission fails', () => {
-      beforeEach(() => {
-        wrapper = createComponent({
-          data: { name: streamName },
-          props: {
-            initialFormErrors,
-          },
-        });
-
-        clickSubmit();
-      });
-
-      it('calls the createValueStream action', () => {
-        expect(createValueStreamMock).toHaveBeenCalled();
-      });
-
-      it('does not clear the name field', () => {
-        expect(wrapper.vm.name).toBe(streamName);
-      });
-
-      it('does not display a toast message', () => {
-        expect(mockToastShow).not.toHaveBeenCalled();
-      });
+    it('hides the modal footer buttons', () => {
+      expect(findModal().attributes('hide-footer')).toBe('true');
     });
   });
 });

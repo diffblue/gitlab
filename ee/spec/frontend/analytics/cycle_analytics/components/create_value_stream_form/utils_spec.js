@@ -123,7 +123,8 @@ describe('validateValueStreamName', () => {
   it.each`
     name                               | error                                  | msg
     ${'a'.repeat(NAME_MAX_LENGTH + 1)} | ${ERRORS.MAX_LENGTH}                   | ${'too long'}
-    ${''}                              | ${ERRORS.VALUE_STREAM_NAME_MIN_LENGTH} | ${'too short'}
+    ${''}                              | ${ERRORS.VALUE_STREAM_NAME_REQUIRED}   | ${'blank'}
+    ${'aa'}                            | ${ERRORS.VALUE_STREAM_NAME_MIN_LENGTH} | ${'too short'}
   `('returns "$error" if name is $msg', ({ name, error }) => {
     const result = validateValueStreamName({ name });
     expect(result).toEqual([error]);
