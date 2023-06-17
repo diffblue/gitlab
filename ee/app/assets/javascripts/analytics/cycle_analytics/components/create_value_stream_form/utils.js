@@ -7,6 +7,7 @@ import {
   defaultErrors,
   defaultFields,
   NAME_MAX_LENGTH,
+  NAME_MIN_LENGTH,
   formFieldKeys,
   editableFormFieldKeys,
 } from './constants';
@@ -128,8 +129,13 @@ export const validateValueStreamName = ({ name = '' }) => {
   if (name.length > NAME_MAX_LENGTH) {
     errors.push(ERRORS.MAX_LENGTH);
   }
-  if (!name.length) {
+
+  if (name && name.length < NAME_MIN_LENGTH) {
     errors.push(ERRORS.VALUE_STREAM_NAME_MIN_LENGTH);
+  }
+
+  if (!name.length) {
+    errors.push(ERRORS.VALUE_STREAM_NAME_REQUIRED);
   }
   return errors;
 };

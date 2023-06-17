@@ -96,7 +96,7 @@ export default {
       initialFormErrors,
       initialPreset,
     } = this;
-    const { name: nameError = [], stages: stageErrors = [{}] } = initialFormErrors;
+    const { name: nameErrors = [], stages: stageErrors = [{}] } = initialFormErrors;
     const additionalFields = {
       stages: this.isEditing
         ? initializeEditingStages(initialStages)
@@ -110,7 +110,7 @@ export default {
       selectedPreset: initialPreset,
       presetOptions: PRESET_OPTIONS,
       name: initialName,
-      nameError,
+      nameErrors,
       stageErrors,
       ...additionalFields,
     };
@@ -123,10 +123,10 @@ export default {
       defaultGroupLabels: 'defaultGroupLabels',
     }),
     isValueStreamNameValid() {
-      return !this.nameError?.length;
+      return !this.nameErrors?.length;
     },
     invalidNameFeedback() {
-      return this.nameError?.length ? this.nameError.join('\n\n') : null;
+      return this.nameErrors?.length ? this.nameErrors.join('\n\n') : null;
     },
     hasInitialFormErrors() {
       const { initialFormErrors } = this;
@@ -152,7 +152,7 @@ export default {
     },
     hasFormErrors() {
       return Boolean(
-        this.nameError.length || this.stageErrors.some((obj) => Object.keys(obj).length),
+        this.nameErrors.length || this.stageErrors.some((obj) => Object.keys(obj).length),
       );
     },
     isDirtyEditing() {
@@ -200,12 +200,17 @@ export default {
             : this.$options.i18n.FORM_CREATED;
           this.$toast.show(sprintf(msg, { name: this.name }));
           this.name = '';
-          this.nameError = [];
+          this.nameErrors = [];
           this.stages = initializeStages(this.defaultStageConfig, this.selectedPreset);
           this.stageErrors = initializeStageErrors(this.defaultStageConfig, this.selectedPreset);
           this.track('submit_form', {
             label: this.isEditing ? 'edit_value_stream' : 'create_value_stream',
           });
+        } else {
+          const { name: nameErrors = [], stages: stageErrors = [{}] } = this.initialFormErrors;
+
+          this.nameErrors = nameErrors;
+          this.stageErrors = stageErrors;
         }
       });
     },
@@ -223,7 +228,7 @@ export default {
     },
     validate() {
       const { name } = this;
-      Vue.set(this, 'nameError', validateValueStreamName({ name }));
+      Vue.set(this, 'nameErrors', validateValueStreamName({ name }));
       Vue.set(this, 'stageErrors', this.validateStages());
     },
     moveItem(arr, index, direction) {
@@ -305,7 +310,7 @@ export default {
           initialData: { name: initialName, stages: initialStages },
         } = this;
         Vue.set(this, 'name', initialName);
-        Vue.set(this, 'nameError', []);
+        Vue.set(this, 'nameErrors', []);
         Vue.set(this, 'stages', initializeStages(initialStages));
         Vue.set(this, 'stageErrors', [{}]);
       } else {
