@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::ImportService do
+RSpec.describe Projects::ImportService, feature_category: :importers do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { project.creator }
 
@@ -65,5 +65,13 @@ RSpec.describe Projects::ImportService do
         expect { subject.execute }.not_to change { AuditEvent.count }
       end
     end
+  end
+
+  it 'validates repository size' do
+    expect_next_instance_of(::Import::ValidateRepositorySizeService, project) do |service|
+      expect(service).to receive(:execute)
+    end
+
+    subject.execute
   end
 end
