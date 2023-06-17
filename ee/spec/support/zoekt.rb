@@ -24,10 +24,7 @@ module Zoekt
     def zoekt_ensure_project_indexed!(project)
       zoekt_ensure_namespace_indexed!(project.namespace)
 
-      # TODO: We shouldn't be referencing files on disk but I don't think we
-      # can git clone from rspec as Web/API is not running
-      allow(::Gitlab::GitalyClient::StorageSettings).to receive(:disk_access_denied?).and_return(false)
-      project.repository.update_zoekt_index!(use_local_disk_path: true)
+      project.repository.update_zoekt_index!
     end
   end
 end
