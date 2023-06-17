@@ -5,6 +5,11 @@ module EE
     module ImportService
       extend ::Gitlab::Utils::Override
 
+      override :validate_repository_size!
+      def validate_repository_size!
+        ::Import::ValidateRepositorySizeService.new(project).execute
+      end
+
       override :after_execute_hook
       def after_execute_hook
         super

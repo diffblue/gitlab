@@ -1623,6 +1623,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: projects_repository_destroy
+  :worker_name: Projects::RepositoryDestroyWorker
+  :feature_category: :importers
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: pull_mirrors_reenable_configuration
   :worker_name: PullMirrors::ReenableConfigurationWorker
   :feature_category: :source_code_management
