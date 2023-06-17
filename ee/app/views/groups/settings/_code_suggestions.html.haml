@@ -3,6 +3,8 @@
 - docs_link_url = help_page_path('user/project/repository/code_suggestions')
 - docs_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: docs_link_url }
 - terms_link_start = '<a href="https://about.gitlab.com/handbook/legal/testing-agreement/" target="_blank" rel="noopener noreferrer">'.html_safe
+- third_party_features_url = help_page_url('user/group/manage', anchor: 'enable-third-party-ai-features')
+- third_party_features_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: third_party_features_url }
 
 %h5
   = s_('CodeSuggestions|Code Suggestions')
@@ -13,5 +15,5 @@
 .form-group.gl-mb-3
   = f.gitlab_ui_checkbox_component :code_suggestions,
     s_('CodeSuggestions|Projects in this group can use Code Suggestions'),
-    help_text: s_('CodeSuggestions|Subject to the %{link_start}Testing Terms of Use%{link_end}.').html_safe % { link_start: terms_link_start, link_end: '</a>'.html_safe },
+    help_text: s_('CodeSuggestions|Subject to the %{terms_link_start}Testing Terms of Use%{link_end}. Code Suggestions currently uses third-party AI services unless those are %{third_party_features_link_start}disabled%{link_end}.').html_safe % { terms_link_start: terms_link_start, link_end: '</a>'.html_safe, third_party_features_link_start: third_party_features_link_start },
     checkbox_options: { data: { testid: 'code-suggestions-enable' } }
