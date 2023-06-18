@@ -1,5 +1,5 @@
 import { GlFormCheckbox, GlSkeletonLoader, GlIcon } from '@gitlab/ui';
-import { mount, shallowMount } from '@vue/test-utils';
+import { mount, shallowMount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { cloneDeep } from 'lodash';
@@ -116,8 +116,8 @@ describe('Security Dashboard Table Row', () => {
       });
 
       it('should fire the setModalData action and open the modal when clicked', () => {
+        const rootWrapper = createWrapper(wrapper.vm.$root);
         jest.spyOn(store, 'dispatch').mockImplementation();
-        jest.spyOn(wrapper.vm.$root, '$emit');
 
         const el = wrapper.findComponent({ ref: 'vulnerability-title' });
         el.trigger('click');
@@ -125,7 +125,8 @@ describe('Security Dashboard Table Row', () => {
         expect(store.dispatch).toHaveBeenCalledWith('vulnerabilities/setModalData', {
           vulnerability,
         });
-        expect(wrapper.vm.$root.$emit).toHaveBeenCalledWith(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
+
+        expect(rootWrapper.emitted(BV_SHOW_MODAL)[0]).toContain(VULNERABILITY_MODAL_ID);
       });
     });
 
