@@ -14,10 +14,12 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
   end
 
   let(:states) { %w[detected confirmed] }
+  let(:vulnerability_age) { {} }
   let(:allowed_count) { 10 }
 
   subject(:service_result) do
-    described_class.new(project: project, uuids: uuids, states: states, allowed_count: allowed_count).execute
+    described_class.new(project: project, uuids: uuids, states: states,
+      allowed_count: allowed_count, vulnerability_age: vulnerability_age).execute
   end
 
   describe '#execute' do
@@ -46,6 +48,109 @@ RSpec.describe Security::ScanResultPolicies::VulnerabilitiesCountService, featur
 
           service_result
         end
+      end
+    end
+
+    context 'when vulnerability_age is set' do
+      let(:age_value) { 1 }
+      let(:vulnerability_age) { { operator: operator, interval: interval, value: age_value } }
+
+      shared_examples 'vulnerabilities detected in the desired age' do
+        it 'returns a positive count' do
+          expect(service_result[:count]).to eq(5)
+        end
+      end
+
+      shared_examples 'vulnerabilities not detected in the desired age' do
+        it 'returns a count of 0 vulnerabilities' do
+          expect(service_result[:count]).to eq(0)
+        end
+      end
+
+      shared_examples 'counting vulnerabilities detected in the interval' do
+        context 'when counting vulnerabilities created after the desired age' do
+          let(:operator) { :greater_than }
+
+          context 'when the vulnerabilities were detected in the selected age' do
+            it_behaves_like 'vulnerabilities detected in the desired age'
+          end
+
+          context 'when the vulnerabilities were not detected in the selected age' do
+            before do
+              Vulnerability.update_all(detected_at: 2.years.ago)
+            end
+
+            it_behaves_like 'vulnerabilities not detected in the desired age'
+          end
+        end
+
+        context 'when counting vulnerabilities created before the desired age' do
+          let(:operator) { :less_than }
+
+          context 'when the vulnerabilities were not detected in the selected age' do
+            it_behaves_like 'vulnerabilities not detected in the desired age'
+          end
+
+          context 'when the vulnerabilities were detected in the selected age' do
+            before do
+              Vulnerability.update_all(detected_at: 2.years.ago)
+            end
+
+            it_behaves_like 'vulnerabilities detected in the desired age'
+          end
+        end
+      end
+
+      context 'when interval is in days' do
+        let(:interval) { :days }
+
+        it_behaves_like 'counting vulnerabilities detected in the interval'
+      end
+
+      context 'when interval is in weeks' do
+        let(:interval) { :weeks }
+
+        it_behaves_like 'counting vulnerabilities detected in the interval'
+      end
+
+      context 'when interval is in months' do
+        let(:interval) { :months }
+
+        it_behaves_like 'counting vulnerabilities detected in the interval'
+      end
+
+      context 'when interval is in years' do
+        let(:interval) { :years }
+
+        it_behaves_like 'counting vulnerabilities detected in the interval'
+      end
+
+      shared_examples 'ignores vulnerability age attributes' do
+        it 'returns vulnerabilities count' do
+          expect(service_result[:count]).to eq(5)
+        end
+      end
+
+      context 'when interval is invalid' do
+        let(:operator) { :greater_than }
+        let(:interval) { :invalid_interval }
+
+        it_behaves_like 'ignores vulnerability age attributes'
+      end
+
+      context 'when operator is invalid' do
+        let(:operator) { :invalid_operator }
+        let(:interval) { :years }
+
+        it_behaves_like 'ignores vulnerability age attributes'
+      end
+
+      context 'when age value is invalid' do
+        let(:operator) { :less_than }
+        let(:interval) { :years }
+        let(:age_value) { 'invalid age value' }
+
+        it_behaves_like 'ignores vulnerability age attributes'
       end
     end
   end
