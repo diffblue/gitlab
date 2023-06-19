@@ -24,7 +24,7 @@ module Security
         projects.each do |project|
           with_context(project: project, user: schedule.owner) do
             Security::SecurityOrchestrationPolicies::RuleScheduleService
-              .new(container: project, current_user: schedule.owner)
+              .new(project: project, current_user: schedule.owner)
               .execute(schedule)
           end
         end

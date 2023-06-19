@@ -36,7 +36,7 @@ module Security
       user = schedule.security_orchestration_policy_configuration.bot_user || schedule.owner
 
       service_result = Security::SecurityOrchestrationPolicies::RuleScheduleService
-        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: user)
+        .new(project: schedule.security_orchestration_policy_configuration.project, current_user: user)
         .execute(schedule)
 
       log_message(service_result.errors.join(". "), schedule, user) if service_result.error?

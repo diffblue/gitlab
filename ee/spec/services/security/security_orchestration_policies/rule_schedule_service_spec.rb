@@ -14,7 +14,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService, fea
     let(:rule) { { type: 'schedule', branches: branches, cadence: '*/20 * * * *' } }
     let(:branches) { %w[master production] }
 
-    subject(:service) { described_class.new(container: project, current_user: current_user) }
+    subject(:service) { described_class.new(project: project, current_user: current_user) }
 
     shared_examples 'does not execute scan' do
       it 'does not create scan pipeline' do

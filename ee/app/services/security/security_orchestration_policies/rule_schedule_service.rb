@@ -2,7 +2,7 @@
 
 module Security
   module SecurityOrchestrationPolicies
-    class RuleScheduleService < BaseContainerService
+    class RuleScheduleService < BaseProjectService
       def execute(schedule)
         return ServiceResponse.error(message: "No rules") unless rules = schedule&.policy&.fetch(:rules, nil)
 
@@ -34,7 +34,7 @@ module Security
       end
 
       def branches_for(schedule, rules)
-        return schedule.applicable_branches(container) unless Feature.enabled?(:security_policies_branch_type, project)
+        return schedule.applicable_branches(project) unless Feature.enabled?(:security_policies_branch_type, project)
 
         ::Security::SecurityOrchestrationPolicies::PolicyBranchesService
           .new(project: project)
@@ -46,7 +46,7 @@ module Security
 
         branches.map do |branch|
           ::Security::SecurityOrchestrationPolicies::CreatePipelineService
-            .new(project: container, current_user: current_user, params: { actions: actions, branch: branch })
+            .new(project: project, current_user: current_user, params: { actions: actions, branch: branch })
             .execute
         end
       end
