@@ -89,7 +89,7 @@ export const initializeFormData = ({ fields, errors }) => {
  * the name of the field.g
  *
  * @param {Object} fields key value pair of form field values
- * @param {Object} defaultStageNames array of lower case default value stream names
+ * @param {Object} defaultStageNames array of default value stream names
  * @returns {Object} key value pair of form fields with an array of errors
  */
 export const validateStage = (fields, defaultStageNames = []) => {
@@ -99,7 +99,15 @@ export const validateStage = (fields, defaultStageNames = []) => {
     if (fields.name.length > NAME_MAX_LENGTH) {
       newErrors.name = [ERRORS.MAX_LENGTH];
     }
-    if (fields?.custom && defaultStageNames.includes(fields.name.toLowerCase())) {
+
+    const formattedStageName = fields.name.toLowerCase();
+
+    if (
+      fields?.custom &&
+      defaultStageNames.some(
+        (defaultStageName) => defaultStageName.toLowerCase() === formattedStageName,
+      )
+    ) {
       newErrors.name = [ERRORS.STAGE_NAME_EXISTS];
     }
   } else {

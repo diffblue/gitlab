@@ -11,10 +11,7 @@ import {
   formatStageDataForSubmission,
   generateInitialStageData,
 } from 'ee/analytics/cycle_analytics/components/create_value_stream_form/utils';
-import { defaultStageConfig } from '../../mock_data';
 import { emptyErrorsState, emptyState, formInitialData } from './mock_data';
-
-const defaultStageNames = defaultStageConfig.map(({ name }) => name);
 
 describe('initializeFormData', () => {
   const checkInitializedData = (
@@ -97,6 +94,8 @@ describe('validateStage', () => {
     endEventIdentifier: '',
     custom: true,
   };
+
+  const defaultStageNames = ['issue', 'Plan', 'code', 'Test'];
 
   it.each`
     field                   | value                              | error                          | msg
