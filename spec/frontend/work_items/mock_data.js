@@ -214,6 +214,9 @@ export const updateWorkItemMutationResponse = {
           adminParentLink: false,
           __typename: 'WorkItemPermissions',
         },
+        reference: 'test-project-path#1',
+        createNoteEmail:
+          'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-1@gmail.com',
         widgets: [
           {
             type: 'HIERARCHY',
@@ -318,6 +321,9 @@ export const convertWorkItemMutationResponse = {
           adminParentLink: false,
           __typename: 'WorkItemPermissions',
         },
+        reference: 'gitlab-org/gitlab-test#1',
+        createNoteEmail:
+          'gitlab-incoming+gitlab-org-gitlab-test-2-ddpzuq0zd2wefzofcpcdr3dg7-issue-1@gmail.com',
         widgets: [
           {
             type: 'HIERARCHY',
@@ -465,6 +471,9 @@ export const workItemResponseFactory = ({
         adminParentLink,
         __typename: 'WorkItemPermissions',
       },
+      reference: 'test-project-path#1',
+      createNoteEmail:
+        'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-1@gmail.com',
       widgets: [
         {
           __typename: 'WorkItemWidgetDescription',
@@ -739,6 +748,9 @@ export const createWorkItemMutationResponse = {
           adminParentLink: false,
           __typename: 'WorkItemPermissions',
         },
+        reference: 'test-project-path#1',
+        createNoteEmail:
+          'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-1@gmail.com',
         widgets: [],
       },
       errors: [],
@@ -965,6 +977,9 @@ export const workItemHierarchyEmptyResponse = {
               __typename: 'WorkItemPermissions',
             },
             confidential: false,
+            reference: 'test-project-path#1',
+            createNoteEmail:
+              'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-1@gmail.com',
             widgets: [
               {
                 type: 'HIERARCHY',
@@ -1173,6 +1188,9 @@ export const workItemHierarchyResponse = {
             createdAt: '2022-08-03T12:41:54Z',
             updatedAt: null,
             closedAt: null,
+            reference: 'test-project-path#1',
+            createNoteEmail:
+              'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-1@gmail.com',
             widgets: [
               {
                 type: 'HIERARCHY',
@@ -1418,6 +1436,9 @@ export const changeIndirectWorkItemParentMutationResponse = {
           fullPath: 'test-project-path',
           archived: false,
         },
+        reference: 'test-project-path#13',
+        createNoteEmail:
+          'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-13@gmail.com',
         widgets: [
           {
             __typename: 'WorkItemWidgetHierarchy',
@@ -1481,6 +1502,9 @@ export const changeWorkItemParentMutationResponse = {
           fullPath: 'test-project-path',
           archived: false,
         },
+        reference: 'test-project-path#2',
+        createNoteEmail:
+          'gitlab-incoming+test-project-path-13fp7g6i9agekcv71s0jx9p58-issue-2@gmail.com',
         widgets: [
           {
             __typename: 'WorkItemWidgetHierarchy',

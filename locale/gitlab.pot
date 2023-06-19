@@ -51830,6 +51830,9 @@ msgstr ""
 msgid "WorkItem|Converted to task"
 msgstr ""
 
+msgid "WorkItem|Copy %{workItemType} email address"
+msgstr ""
+
 msgid "WorkItem|Create %{workItemType}"
 msgstr ""
 
@@ -51969,6 +51972,12 @@ msgid "WorkItem|Something went wrong when trying to add a child. Please try agai
 msgstr ""
 
 msgid "WorkItem|Something went wrong when trying to create a child. Please try again."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while copying the %{workItemType} email address. Please try again."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while copying the %{workItemType} reference. Please try again."
 msgstr ""
 
 msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
