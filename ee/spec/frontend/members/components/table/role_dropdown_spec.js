@@ -1,6 +1,6 @@
-import { GlDropdown } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
-import LdapDropdownItem from 'ee/members/components/action_dropdowns/ldap_dropdown_item.vue';
+import { GlCollapsibleListbox } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
+import LdapDropdownFooter from 'ee/members/components/action_dropdowns/ldap_dropdown_footer.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { member } from 'jest/members/mock_data';
 import RoleDropdown from '~/members/components/table/role_dropdown.vue';
@@ -10,7 +10,7 @@ describe('RoleDropdown', () => {
   let wrapper;
 
   const createComponent = (propsData = {}) => {
-    wrapper = shallowMount(RoleDropdown, {
+    wrapper = mount(RoleDropdown, {
       provide: {
         namespace: MEMBER_TYPES.user,
         group: {
@@ -28,11 +28,11 @@ describe('RoleDropdown', () => {
     return waitForPromises();
   };
 
-  const findDropdown = () => wrapper.findComponent(GlDropdown);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
   describe('when member has `canOverride` permissions', () => {
     describe('when member is overridden', () => {
-      it('renders LDAP dropdown item', async () => {
+      it('renders LDAP dropdown footer', async () => {
         await createComponent({
           permissions: {
             canOverride: true,
@@ -40,7 +40,7 @@ describe('RoleDropdown', () => {
           member: { ...member, isOverridden: true },
         });
 
-        expect(wrapper.findComponent(LdapDropdownItem).exists()).toBe(true);
+        expect(wrapper.findComponent(LdapDropdownFooter).exists()).toBe(true);
       });
     });
 
@@ -53,20 +53,20 @@ describe('RoleDropdown', () => {
           member: { ...member, isOverridden: false },
         });
 
-        expect(findDropdown().attributes('disabled')).toBeDefined();
+        expect(findListbox().props('disabled')).toBeDefined();
       });
     });
   });
 
   describe('when member does not have `canOverride` permissions', () => {
-    it('does not render LDAP dropdown item', async () => {
+    it('does not render LDAP dropdown footer', async () => {
       await createComponent({
         permissions: {
           canOverride: false,
         },
       });
 
-      expect(wrapper.findComponent(LdapDropdownItem).exists()).toBe(false);
+      expect(wrapper.findComponent(LdapDropdownFooter).exists()).toBe(false);
     });
   });
 });

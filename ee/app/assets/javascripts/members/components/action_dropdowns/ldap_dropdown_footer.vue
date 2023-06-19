@@ -1,11 +1,13 @@
 <script>
-import { GlDropdownItem, GlDropdownDivider } from '@gitlab/ui';
+import { GlListboxItem } from '@gitlab/ui';
 import { mapActions } from 'vuex';
 import { s__ } from '~/locale';
 
 export default {
-  name: 'LdapDropdownItem',
-  components: { GlDropdownItem, GlDropdownDivider },
+  name: 'LdapDropdownFooter',
+  components: {
+    GlListboxItem,
+  },
   inject: ['namespace'],
   props: {
     memberId: {
@@ -33,10 +35,9 @@ export default {
 </script>
 
 <template>
-  <span>
-    <gl-dropdown-divider />
-    <gl-dropdown-item is-check-item @click="handleClick">
+  <ul class="gl-border-t-1 gl-border-t-solid gl-border-t-gray-200 gl-new-dropdown-contents">
+    <gl-listbox-item @select="handleClick">
       {{ s__('Members|Revert to LDAP group sync settings') }}
-    </gl-dropdown-item>
-  </span>
+    </gl-listbox-item>
+  </ul>
 </template>
