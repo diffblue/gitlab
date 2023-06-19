@@ -13,6 +13,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 > - Custom HTTP headers API [enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/362941) in GitLab 15.2.
 > - Custom HTTP headers API [made generally available](https://gitlab.com/gitlab-org/gitlab/-/issues/366524) in GitLab 15.3. [Feature flag `streaming_audit_event_headers`](https://gitlab.com/gitlab-org/gitlab/-/issues/362941) removed.
 > - User-specified verification token API support [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/360813) in GitLab 15.4.
+> - APIs for custom HTTP headers for instance level streaming destinations [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/404560) in GitLab 16.1 [with a flag](../feature_flags.md) named `ff_external_audit_events`. Disabled by default.
 
 Audit event streaming destinations can be maintained using a GraphQL API.
 
@@ -48,7 +49,7 @@ mutation {
 ```
 
 You can optionally specify your own verification token (instead of the default GitLab-generated one) using the GraphQL
-`auditEventsStreamingHeadersCreate`
+`externalAuditEventDestinationCreate`
 mutation. Verification token length must be within 16 to 24 characters and trailing whitespace are not trimmed. You
 should set a cryptographically random and unique value. For example:
 
@@ -120,6 +121,29 @@ Event streaming is enabled if:
 - The returned `errors` object is empty.
 - The API responds with `200 OK`.
 
+Instance administrators can add an HTTP header using the GraphQL `auditEventsStreamingInstanceHeadersCreate` mutation. You can retrieve the destination ID
+by [listing all the streaming destinations](#list-streaming-destinations) for the instance or from the mutation above.
+
+```graphql
+mutation {
+  auditEventsStreamingInstanceHeadersCreate(input:
+    {
+      destinationId: "gid://gitlab/AuditEvents::InstanceExternalAuditEventDestination/42",
+      key: "foo",
+      value: "bar"
+    }) {
+    errors
+    header {
+      id
+      key
+      value
+    }
+  }
+}
+```
+
+The header is created if the returned `errors` object is empty.
+
 ## List streaming destinations
 
 List new streaming destinations for top-level groups or an entire instance.
@@ -180,6 +204,13 @@ query {
       id
       destinationUrl
       verificationToken
+      headers {
+        nodes {
+          id
+          key
+          value
+        }
+      }
     }
   }
 }
@@ -262,6 +293,25 @@ Streaming destination is updated if:
 
 - The returned `errors` object is empty.
 - The API responds with `200 OK`.
+
+Instance administrators can update streaming destinations custom HTTP headers using the
+`auditEventsStreamingInstanceHeadersUpdate` mutation type. You can retrieve the custom HTTP headers ID
+by [listing all the custom HTTP headers](#list-streaming-destinations) for the instance.
+
+```graphql
+mutation {
+  auditEventsStreamingInstanceHeadersUpdate(input: { headerId: "gid://gitlab/AuditEvents::Streaming::InstanceHeader/2", key: "new-key", value: "new-value" }) {
+    errors
+    header {
+      id
+      key
+      value
+    }
+  }
+}
+```
+
+The header is updated if the returned `errors` object is empty.
 
 ## Delete streaming destinations
 
