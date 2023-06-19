@@ -8,3 +8,6 @@ Style/Documentation:
 
 Migration/BackgroundMigrationBaseClass:
   Enabled: false
+
+BackgroundMigration/AvoidSilentRescueExceptions:
+  Enabled: false
