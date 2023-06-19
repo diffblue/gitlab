@@ -53,11 +53,7 @@ module Security
       end
 
       def target_pipeline
-        if Feature.enabled?(:scan_result_policy_latest_completed_pipeline, project)
-          merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
-        else
-          merge_request.latest_pipeline_for_target_branch
-        end
+        merge_request.latest_completed_target_branch_pipeline_for_scan_result_policy
       end
       strong_memoize_attr :target_pipeline
 
