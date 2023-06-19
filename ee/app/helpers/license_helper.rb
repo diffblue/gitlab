@@ -71,3 +71,5 @@ module LicenseHelper
 
   extend self
 end
+
+LicenseHelper.prepend_mod
