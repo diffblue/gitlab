@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events do
   include Features::MembersHelpers
+  include ListboxHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:pete) { create(:user, name: 'Pete') }
@@ -118,8 +119,7 @@ RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events d
       visit project_project_members_path(project)
 
       page.within find_member_row(pete) do
-        click_button 'Developer'
-        click_button 'Maintainer'
+        select_from_listbox 'Maintainer', from: 'Developer'
       end
 
       page.within('.sidebar-top-level-items') do

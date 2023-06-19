@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access levels', feature_category: :groups_and_projects do
+  include ListboxHelpers
   include WaitForRequests
   include Features::MembersHelpers
   include Spec::Support::Helpers::ModalHelpers
@@ -80,8 +81,7 @@ RSpec.describe 'Groups > Members > Maintainer/Owner can override LDAP access lev
       expect(page).not_to have_selector user_action_dropdown
       expect(page).to have_button 'Guest', disabled: false
 
-      click_button 'Guest'
-      click_button 'Revert to LDAP group sync settings'
+      select_from_listbox('Revert to LDAP group sync settings', from: 'Guest')
 
       wait_for_requests
 
