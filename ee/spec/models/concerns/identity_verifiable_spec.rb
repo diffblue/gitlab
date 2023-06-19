@@ -191,6 +191,73 @@ RSpec.describe IdentityVerifiable, feature_category: :instance_resiliency do
         end
       end
     end
+
+    describe 'phone_verification_for_low_risk_users experiment', :experiment do
+      before do
+        add_user_risk_band('Low')
+      end
+
+      let(:experiment_instance) { experiment(:phone_verification_for_low_risk_users) }
+
+      subject(:verification_methods) { user.required_identity_verification_methods }
+
+      context 'when the user is in the control group' do
+        before do
+          stub_experiments(phone_verification_for_low_risk_users: :control)
+        end
+
+        it { is_expected.to eq(%w[email]) }
+
+        it 'tracks control group assignment for the user' do
+          expect(experiment_instance).to track(:assignment).on_next_instance.with_context(user: user).for(:control)
+
+          verification_methods
+        end
+      end
+
+      context 'when the user is in the candidate group' do
+        before do
+          stub_experiments(phone_verification_for_low_risk_users: :candidate)
+        end
+
+        it { is_expected.to eq(%w[phone email]) }
+
+        it 'tracks candidate group assignment for the user' do
+          expect(experiment_instance).to track(:assignment).on_next_instance.with_context(user: user).for(:candidate)
+
+          verification_methods
+        end
+      end
+
+      context 'when the experiment is disabled' do
+        before do
+          stub_experiments(phone_verification_for_low_risk_users: false)
+        end
+
+        it { is_expected.to eq(%w[email]) }
+
+        it 'does not track assignment' do
+          expect(experiment_instance).not_to track(:assignment).on_next_instance
+
+          verification_methods
+        end
+      end
+
+      context 'when phone verification is disabled' do
+        before do
+          stub_experiments(phone_verification_for_low_risk_users: :candidate)
+          stub_feature_flags(identity_verification_phone_number: false)
+        end
+
+        it { is_expected.to eq(%w[email]) }
+
+        it 'does not track assignment' do
+          expect(experiment_instance).not_to track(:assignment).on_next_instance
+
+          verification_methods
+        end
+      end
+    end
   end
 
   describe('#identity_verification_state') do
