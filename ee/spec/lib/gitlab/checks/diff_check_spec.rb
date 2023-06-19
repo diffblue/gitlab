@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Checks::DiffCheck do
+RSpec.describe Gitlab::Checks::DiffCheck, feature_category: :source_code_management do
   include FakeBlobHelpers
 
   include_context 'push rules checks context'
@@ -67,7 +67,7 @@ RSpec.describe Gitlab::Checks::DiffCheck do
     describe "#validate_code_owners" do
       let!(:code_owner) { create(:user, username: "owner-1") }
       let(:project) { create(:project, :repository) }
-      let(:codeowner_content) { "*.rb @#{code_owner.username}\ndocs/CODEOWNERS @owner-1\n*.js.coffee @owner-1" }
+      let(:codeowner_content) { "*.rb @#{code_owner.username}\ndocs/CODEOWNERS @owner-1\n*.js.coffee @owner-1\nCHANGELOG @owner-1" }
       let(:codeowner_blob) { fake_blob(path: "CODEOWNERS", data: codeowner_content) }
       let(:codeowner_blob_ref) { fake_blob(path: "CODEOWNERS", data: codeowner_content) }
       let(:codeowner_lookup_ref) { merge_request.target_branch }
@@ -97,14 +97,14 @@ RSpec.describe Gitlab::Checks::DiffCheck do
 
           # This particular commit renames a file:
           allow(project.repository).to receive(:new_commits).and_return(
-            [project.repository.commit('6907208d755b60ebeacb2e9dfea74c92c3449a1f')]
+            [project.repository.commit('94bb47ca1297b7b3731ff2a36923640991e9236f')]
           )
         end
 
         it "returns an error message" do
           expect { diff_check.validate! }.to raise_error do |error|
             expect(error).to be_a(Gitlab::GitAccess::ForbiddenError)
-            expect(error.message).to include("CODEOWNERS` were matched:\n- *.js.coffee")
+            expect(error.message).to include("CODEOWNERS` were matched:\n- CHANGELOG")
           end
         end
       end
@@ -288,8 +288,8 @@ RSpec.describe Gitlab::Checks::DiffCheck do
       end
 
       context 'when file is renamed' do
-        let_it_be(:filename) { 'files/js/commit.js.coffee' }
-        let_it_be(:sha) { '6907208d755b60ebeacb2e9dfea74c92c3449a1f' }
+        let_it_be(:filename) { 'CHANGELOG' }
+        let_it_be(:sha) { '94bb47ca1297b7b3731ff2a36923640991e9236f' }
 
         it_behaves_like 'a locked file'
       end
