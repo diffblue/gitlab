@@ -17,6 +17,11 @@ module Types
         null: true,
         description: 'Description of the position and size of the panel.'
 
+      field :query_overrides,
+        type: GraphQL::Types::JSON,
+        null: true,
+        description: 'Overrides for the visualization query object.'
+
       field :visualization,
         type: Types::ProductAnalytics::VisualizationType,
         null: false,
