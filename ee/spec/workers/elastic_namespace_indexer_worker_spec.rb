@@ -13,6 +13,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
 
     it 'returns true' do
       expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
+      expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
 
       expect(subject.perform(1, "index")).to be_truthy
     end
@@ -28,6 +29,7 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
       stub_ee_application_setting(elasticsearch_limit_indexing: false)
 
       expect(Elastic::ProcessInitialBookkeepingService).not_to receive(:backfill_projects!)
+      expect(ElasticWikiIndexerWorker).not_to receive(:perform_async)
 
       expect(subject.perform(1, "index")).to be_truthy
     end
@@ -48,6 +50,29 @@ RSpec.describe ElasticNamespaceIndexerWorker, feature_category: :global_search d
         expect(ElasticDeleteProjectWorker).to receive(:bulk_perform_async).with(args)
 
         subject.perform(namespace.id, :delete)
+      end
+
+      context 'when namespace is group' do
+        let_it_be(:group_namespace) { create :group }
+        let_it_be(:sub_group) { create :group, parent: group_namespace }
+
+        it 'indexes all group wikis belonging to the namespace' do
+          [group_namespace, sub_group].each do |group|
+            expect(ElasticWikiIndexerWorker).to receive(:perform_in).with(
+              elastic_wiki_indexer_worker_random_delay_range, group.id, group.class.name, { force: true })
+          end
+
+          subject.perform(group_namespace.id, :index)
+        end
+
+        it 'deletes all group wikis belonging to the namespace' do
+          [group_namespace, sub_group].each do |group|
+            expect(Search::Wiki::ElasticDeleteGroupWikiWorker).to receive(:perform_in).with(
+              elastic_delete_group_wiki_worker_random_delay_range, group.id)
+          end
+
+          subject.perform(group_namespace.id, :delete)
+        end
       end
     end
   end

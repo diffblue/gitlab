@@ -37,6 +37,7 @@ RSpec.describe Group, feature_category: :groups_and_projects do
     it { is_expected.to have_one(:analytics_dashboards_pointer) }
     it { is_expected.to have_one(:analytics_dashboards_configuration_project) }
     it { is_expected.to have_one(:value_stream_dashboard_aggregation).with_foreign_key(:namespace_id) }
+    it { is_expected.to have_one(:index_status).class_name(Elastic::GroupIndexStatus).with_foreign_key(:namespace_id).dependent(:destroy) }
 
     it_behaves_like 'model with wiki' do
       let(:container) { create(:group, :nested, :wiki_repo) }
@@ -301,6 +302,8 @@ RSpec.describe Group, feature_category: :groups_and_projects do
   describe 'delegations' do
     it { is_expected.to delegate_method(:code_suggestions).to(:namespace_settings).allow_nil }
     it { is_expected.to delegate_method(:code_suggestions=).to(:namespace_settings).with_arguments(true).allow_nil }
+    it { is_expected.to delegate_method(:wiki_access_level).to(:group_feature) }
+    it { is_expected.to delegate_method(:wiki_access_level=).to(:group_feature).with_arguments(:args) }
   end
 
   describe 'states' do

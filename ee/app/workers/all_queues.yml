@@ -1695,6 +1695,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: search_wiki_elastic_delete_group_wiki
+  :worker_name: Search::Wiki::ElasticDeleteGroupWikiWorker
+  :feature_category: :global_search
+  :has_external_dependencies: false
+  :urgency: :throttled
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: search_zoekt_namespace_indexer
   :worker_name: Search::Zoekt::NamespaceIndexerWorker
   :feature_category: :global_search

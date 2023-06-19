@@ -41,18 +41,18 @@ RSpec.describe Git::WikiPushService, feature_category: :source_code_management d
         allow(wiki.repository.raw).to receive(:raw_changes_between).once.with('423423', '797823').and_return([])
       end
 
-      it 'triggers a wiki update' do
+      it 'triggers a wiki update for project' do
         expect(wiki).to receive(:index_wiki_blobs)
 
         described_class.new(wiki, current_user, changes: post_received.changes).execute
       end
 
-      context 'with a group wiki' do
+      context 'with a group wiki', :elastic do
         let_it_be(:group) { create(:group) }
         let_it_be(:wiki) { build(:group_wiki, group: group) }
 
-        it 'does not trigger a wiki update' do
-          expect(wiki).not_to receive(:index_wiki_blobs)
+        it 'triggers a wiki update' do
+          expect(wiki).to receive(:index_wiki_blobs)
 
           described_class.new(wiki, current_user, changes: post_received.changes).execute
         end

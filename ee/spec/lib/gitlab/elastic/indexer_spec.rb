@@ -465,6 +465,40 @@ RSpec.describe Gitlab::Elastic::Indexer, feature_category: :global_search do
     end
   end
 
+  context "when indexing a group's wiki", :elastic do
+    let_it_be(:wiki) { create(:group_wiki) }
+    let(:group) { wiki.container }
+
+    let(:indexer) { described_class.new(group, wiki: true) }
+    let(:to_sha) { group.wiki.repository.commit('master').sha }
+
+    before do
+      wiki.create_page('test.md', '# Test')
+    end
+
+    it 'runs the indexer with the right flags' do
+      expect_popen.with(
+        [
+          TestEnv.indexer_bin_path,
+          "--timeout=#{described_class.timeout}s",
+          "--visibility-level=#{group.visibility_level}",
+          "--group-id=#{group.id}",
+          '--search-curation',
+          "--from-sha=#{expected_from_sha}",
+          "--to-sha=#{to_sha}",
+          "--full-path=#{group.full_path}",
+          '--blob-type=wiki_blob',
+          '--skip-commits',
+          "--wiki-access-level=#{group.wiki_access_level}",
+          "--traversal-ids=#{group.elastic_namespace_ancestry}",
+          "#{group.wiki.repository.disk_path}.git"
+        ], nil, hash_including('ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json, 'RAILS_ENV' => Rails.env)
+      ).and_return(popen_success)
+
+      indexer.run
+    end
+  end
+
   context 'when SSL env vars are not set explicitly' do
     let(:ruby_cert_file) { OpenSSL::X509::DEFAULT_CERT_FILE }
     let(:ruby_cert_dir) { OpenSSL::X509::DEFAULT_CERT_DIR }

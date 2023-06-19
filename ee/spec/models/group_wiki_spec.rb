@@ -128,6 +128,13 @@ RSpec.describe GroupWiki, feature_category: :wiki do
         subject.send(:after_post_receive)
       end
     end
+
+    describe '.use_elasticsearch?' do
+      it 'group should receive use_elasticsearch?' do
+        expect(wiki_container).to receive(:use_elasticsearch?)
+        wiki.use_elasticsearch?
+      end
+    end
   end
 
   it_behaves_like 'EE wiki model' do
@@ -137,8 +144,8 @@ RSpec.describe GroupWiki, feature_category: :wiki do
       wiki_container.add_owner(user)
     end
 
-    it 'does not use Elasticsearch' do
-      expect(subject).not_to be_a(Elastic::WikiRepositoriesSearch)
+    it 'does use Elasticsearch' do
+      expect(subject).to be_a(Elastic::WikiRepositoriesSearch)
     end
   end
 

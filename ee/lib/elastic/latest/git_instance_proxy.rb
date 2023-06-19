@@ -12,7 +12,7 @@ module Elastic
       end
 
       def es_parent
-        "project_#{project_id}"
+        project_id ? "project_#{project_id}" : "group_#{group_id}"
       end
 
       def elastic_search(query, type: 'all', page: 1, per: 20, options: {})
@@ -32,41 +32,31 @@ module Elastic
         self.class.blob_aggregations(query, repository_specific_options(options))
       end
 
+      # If wiki is true and migrate_wikis_to_separate_index is finished then set
+      # index as (#{env}-wikis)
+      # rid as (wiki_project_#{id}) for ProjectWiki and (wiki_group_#{id}) for GroupWiki
+      # If add_suffix_project_in_wiki_rid has not finished then rid might not have prefix(project/group) then
+      # run delete_query_by_rid with sending rid as 'wiki_#{project_id}'
       def delete_index_for_commits_and_blobs(wiki: false)
         types = wiki ? %w[wiki_blob] : %w[commit blob]
+
         if (wiki && ::Elastic::DataMigrationService.migration_has_finished?(:migrate_wikis_to_separate_index)) || types.include?('commit')
           index, rid = if wiki
-                         output = [::Elastic::Latest::WikiConfig.index_name]
-                         output << if ::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
-                                     "wiki_project_#{project_id}"
-                                   else
-                                     "wiki_#{project_id}"
-                                   end
+                         [::Elastic::Latest::WikiConfig.index_name, "wiki_#{es_parent}"]
                        else
                          [::Elastic::Latest::CommitConfig.index_name, project_id]
                        end
 
-          response = client.delete_by_query(
-            index: index,
-            routing: es_parent,
-            conflicts: 'proceed',
-            body: {
-              query: {
-                bool: {
-                  filter: [
-                    {
-                      term: {
-                        rid: rid
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          )
-          return response if wiki
+          response = delete_query_by_rid(index, rid)
+          # Consider to delete wikis by older rid(without suffix _project) as well
+          if wiki && project_id && !::Elastic::DataMigrationService.migration_has_finished?(:add_suffix_project_in_wiki_rid)
+            response = delete_query_by_rid(index, "wiki_#{project_id}")
+          end
+
+          return response if wiki # if condition can be removed once the blob gets migrated to the separate index
         end
 
+        # This delete_by_query can be removed completely once the blob gets migrated to the separate index
         client.delete_by_query(
           index: index_name,
           routing: es_parent,
@@ -109,6 +99,27 @@ module Elastic
         end
 
         options
+      end
+
+      def delete_query_by_rid(index, rid)
+        client.delete_by_query(
+          index: index,
+          routing: es_parent,
+          conflicts: 'proceed',
+          body: {
+            query: {
+              bool: {
+                filter: [
+                  {
+                    term: {
+                      rid: rid
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        )
       end
     end
   end

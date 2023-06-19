@@ -25,18 +25,25 @@ module Gitlab
         end
       end
 
-      attr_reader :project, :group, :index_status, :wiki, :force
+      attr_reader :container, :project, :group, :index_status, :wiki, :force
       alias_method :index_wiki?, :wiki
       alias_method :force_reindexing?, :force
 
-      def initialize(project, wiki: false, force: false)
-        @project = project
-        @group = project.group
+      def initialize(container, wiki: false, force: false)
+        case container
+        when Project
+          @project = container
+          @group = container.group
+        when Group
+          @group = container
+        end
+
+        @container = container
         @wiki = wiki
         @force = force
 
         # Use the eager-loaded association if available.
-        @index_status = project.index_status
+        @index_status = container.index_status
       end
 
       # Runs the indexation process, which is the following:
@@ -54,7 +61,7 @@ module Gitlab
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           logger.debug(build_structured_payload(message: 'indexing_commit_range',
                                                 group_id: group&.id,
-                                                project_id: project.id,
+                                                project_id: project&.id,
                                                 from_sha: from_sha,
                                                 to_sha: commit_sha,
                                                 index_wiki: index_wiki?
@@ -92,7 +99,7 @@ module Gitlab
       private
 
       def repository
-        index_wiki? ? project.wiki.repository : project.repository
+        index_wiki? ? container.wiki.repository : container.repository
       end
 
       def run_indexer!(base_sha, to_sha, target)
@@ -107,7 +114,7 @@ module Gitlab
           message: output,
           status: status,
           group_id: group&.id,
-          project_id: project.id,
+          project_id: project&.id,
           from_sha: base_sha,
           to_sha: to_sha,
           index_wiki: index_wiki?
@@ -127,7 +134,7 @@ module Gitlab
       def purge_unreachable_commits_from_index!(target)
         target.delete_index_for_commits_and_blobs(wiki: index_wiki?)
       rescue ::Elasticsearch::Transport::Transport::Errors::BadRequest => e
-        Gitlab::ErrorTracking.track_exception(e, group_id: group&.id, project_id: project.id)
+        Gitlab::ErrorTracking.track_exception(e, group_id: group&.id, project_id: project&.id)
       end
 
       def build_envvars(target)
@@ -154,7 +161,7 @@ module Gitlab
       def build_command(base_sha, to_sha)
         path_to_indexer = Gitlab.config.elasticsearch.indexer_path
         timeout_argument = "--timeout=#{self.class.timeout}s"
-        visibility_level_argument = "--visibility-level=#{project.visibility_level}"
+        visibility_level_argument = "--visibility-level=#{container.visibility_level}"
 
         command = [path_to_indexer, timeout_argument, visibility_level_argument]
 
@@ -163,12 +170,12 @@ module Gitlab
         command << '--search-curation' if Feature.enabled?(:search_index_curation)
         command << "--from-sha=#{base_sha}"
         command << "--to-sha=#{to_sha}"
-        command << "--full-path=#{project.full_path}"
+        command << "--full-path=#{container.full_path}"
 
         command += if index_wiki?
-                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{project.wiki_access_level}]
+                     %W[--blob-type=wiki_blob --skip-commits --wiki-access-level=#{container.wiki_access_level}]
                    else
-                     %W[--repository-access-level=#{project.repository_access_level}].tap do |c|
+                     %W[--repository-access-level=#{container.repository_access_level}].tap do |c|
                        migration_name = :add_hashed_root_namespace_id_to_commits
                        migration_done = ::Elastic::DataMigrationService.migration_has_finished?(migration_name)
 
@@ -176,7 +183,12 @@ module Gitlab
                      end
                    end
 
-        command << "--traversal-ids=#{project.namespace_ancestry}"
+        command << case container
+                   when Project
+                     "--traversal-ids=#{project.namespace_ancestry}"
+                   when Group
+                     "--traversal-ids=#{group.elastic_namespace_ancestry}"
+                   end
 
         command << repository_path
       end
@@ -247,18 +259,17 @@ module Gitlab
 
       def gitaly_config
         {
-          storage: project.repository_storage,
+          storage: container.repository_storage,
           limit_file_size: Gitlab::CurrentSettings.elasticsearch_indexed_file_size_limit_kb.kilobytes
-        }.merge(Gitlab::GitalyClient.connection_data(project.repository_storage)).to_json
+        }.merge(Gitlab::GitalyClient.connection_data(container.repository_storage)).to_json
       end
 
-      # rubocop: disable CodeReuse/ActiveRecord
       def update_index_status(to_sha)
-        unless Project.exists?(id: project.id)
+        unless container.class.name.constantize.exists?(id: container.id) # rubocop: disable CodeReuse/ActiveRecord
           logger.debug(build_structured_payload(
-            message: "Index status not updated. The project does not exist.",
+            message: "Index status not updated. The #{container.class.name.downcase} does not exist.",
             group_id: group&.id,
-            project_id: project.id,
+            project_id: project&.id,
             index_wiki: index_wiki?
           ))
           return false
@@ -268,7 +279,12 @@ module Gitlab
 
         # An index_status should always be created,
         # even if the repository is empty, so we know it's been looked at.
-        @index_status ||= IndexStatus.safe_find_or_create_by!(project_id: project.id)
+        case container
+        when Project
+          @index_status ||= IndexStatus.safe_find_or_create_by!(project_id: project.id)
+        when Group
+          @index_status ||= ::Elastic::GroupIndexStatus.safe_find_or_create_by!(namespace_id: group.id)
+        end
 
         attributes = if index_wiki?
                        { last_wiki_commit: to_sha, wiki_indexed_at: Time.now }
@@ -278,14 +294,13 @@ module Gitlab
 
         @index_status.update!(attributes)
 
-        project.reload_index_status
+        container.reload_index_status
       rescue ActiveRecord::InvalidForeignKey
         logger.debug(
-          build_structured_payload(message: "Index status not created, project not found",
-                                   group_id: group&.id, project_id: project.id)
+          build_structured_payload(message: "Index status not created, #{container.class.name.downcase} not found",
+                                   group_id: group&.id, project_id: project&.id)
         )
       end
-      # rubocop: enable CodeReuse/ActiveRecord
 
       def logger
         @logger ||= ::Gitlab::Elasticsearch::Logger.build

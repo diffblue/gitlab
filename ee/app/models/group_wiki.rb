@@ -55,4 +55,9 @@ class GroupWiki < Wiki
   def git_garbage_collect_worker_klass
     GroupWikis::GitGarbageCollectWorker
   end
+
+  override :use_elasticsearch?
+  def use_elasticsearch?
+    group&.use_elasticsearch?
+  end
 end

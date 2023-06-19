@@ -18,8 +18,13 @@ RSpec.describe Elastic::Latest::GitInstanceProxy do
   end
 
   describe '#es_parent' do
-    it 'contains project id' do
-      expect(subject.es_parent).to eq("project_#{project.id}")
+    it 'contains project id for ProjectWiki repository' do
+      expect(included_class.new(project.wiki.repository).es_parent).to eq("project_#{project.id}")
+    end
+
+    it 'contains group id for GroupWiki repository' do
+      group = create(:group)
+      expect(included_class.new(group.wiki.repository).es_parent).to eq("group_#{group.id}")
     end
   end
 
