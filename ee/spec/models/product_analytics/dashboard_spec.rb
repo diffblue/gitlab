@@ -103,6 +103,14 @@ RSpec.describe ProductAnalytics::Dashboard, feature_category: :product_analytics
     it 'is expected to contain a panel with the correct grid attributes' do
       expect(subject.first.grid_attributes).to eq({ 'xPos' => 1, 'yPos' => 4, 'width' => 12, 'height' => 2 })
     end
+
+    it 'is expected to contain a panel with the correct query overrides' do
+      expect(subject.first.query_overrides).to eq({
+        'timeDimensions' => {
+          'dateRange' => ['2016-01-01', '2016-01-30'] # rubocop:disable Style/WordArray
+        }
+      })
+    end
   end
 
   describe '#==' do
