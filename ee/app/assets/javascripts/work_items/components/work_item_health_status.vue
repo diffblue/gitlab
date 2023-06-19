@@ -2,7 +2,6 @@
 import { GlDropdown, GlDropdownItem, GlFormGroup, GlBadge } from '@gitlab/ui';
 
 import * as Sentry from '@sentry/browser';
-import workItemHealthStatusSubscription from 'ee/work_items/graphql/work_item_health_status.subscription.graphql';
 import { s__ } from '~/locale';
 import {
   HEALTH_STATUS_I18N_NONE,
@@ -12,13 +11,11 @@ import {
 } from 'ee/sidebar/constants';
 import { issueHealthStatusVariantMapping } from 'ee/related_items_tree/constants';
 import {
-  i18n,
   sprintfWorkItem,
   I18N_WORK_ITEM_ERROR_UPDATING,
   TRACKING_CATEGORY_SHOW,
 } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import Tracking from '~/tracking';
 
 export default {
@@ -89,34 +86,6 @@ export default {
       return {
         'is-not-focused': !this.isFocused,
       };
-    },
-  },
-  apollo: {
-    workItem: {
-      query: workItemByIidQuery,
-      variables() {
-        return {
-          fullPath: this.fullPath,
-          iid: this.workItemIid,
-        };
-      },
-      update(data) {
-        return data.workspace.workItems.nodes[0];
-      },
-      skip() {
-        return !this.workItemIid;
-      },
-      error() {
-        this.$emit('error', i18n.fetchError);
-      },
-      subscribeToMore: {
-        document: workItemHealthStatusSubscription,
-        variables() {
-          return {
-            issuableId: this.workItemId,
-          };
-        },
-      },
     },
   },
   methods: {

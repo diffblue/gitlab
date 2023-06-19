@@ -17,15 +17,11 @@ import { getIterationPeriod } from 'ee/iterations/utils';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
-import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
 import {
   groupIterationsResponse,
   groupIterationsResponseWithNoIterations,
   mockIterationWidgetResponse,
   updateWorkItemMutationResponse,
-  workItemByIidResponseFactory,
-  workItemIterationSubscriptionResponse,
   updateWorkItemMutationErrorResponse,
 } from 'jest/work_items/mock_data';
 
@@ -49,14 +45,8 @@ describe('WorkItemIteration component', () => {
   const findDropdownTextAtIndex = (index) => findDropdownTexts().at(index);
   const findInputGroup = () => wrapper.findComponent(GlFormGroup);
 
-  const workItemQueryResponse = workItemByIidResponseFactory({ canUpdate: true, canDelete: true });
-  const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
-
   const networkResolvedValue = new Error();
 
-  const iterationSubscriptionHandler = jest
-    .fn()
-    .mockResolvedValue(workItemIterationSubscriptionResponse);
   const successSearchQueryHandler = jest.fn().mockResolvedValue(groupIterationsResponse);
   const successSearchWithNoMatchingIterations = jest
     .fn()
@@ -83,8 +73,6 @@ describe('WorkItemIteration component', () => {
   } = {}) => {
     wrapper = shallowMountExtended(WorkItemIteration, {
       apolloProvider: createMockApollo([
-        [workItemByIidQuery, workItemQueryHandler],
-        [workItemIterationSubscription, iterationSubscriptionHandler],
         [projectIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
       ]),
@@ -251,19 +239,5 @@ describe('WorkItemIteration component', () => {
         property: 'type_Task',
       });
     });
-  });
-
-  it('calls the work item query', async () => {
-    createComponent();
-    await waitForPromises();
-
-    expect(workItemQueryHandler).toHaveBeenCalled();
-  });
-
-  it('skips calling the work item query when missing workItemIid', async () => {
-    createComponent({ workItemIid: '' });
-    await waitForPromises();
-
-    expect(workItemQueryHandler).not.toHaveBeenCalled();
   });
 });
