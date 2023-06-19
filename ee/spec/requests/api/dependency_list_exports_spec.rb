@@ -4,17 +4,17 @@ require 'spec_helper'
 
 RSpec.describe API::DependencyListExports, feature_category: :dependency_management do
   let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
-  describe 'POST /projects/:id/dependency_list_exports' do
-    let(:request_path) { "/projects/#{project.id}/dependency_list_exports" }
-
+  shared_examples_for 'creating dependency list export' do
     subject(:create_dependency_list_export) { post api(request_path, user) }
 
     context 'with user without permission' do
       before do
-        stub_licensed_features(dependency_scanning: true)
-        project.add_guest(user)
+        stub_licensed_features(dependency_scanning: true, security_dashboard: true)
+
+        resource.add_guest(user)
       end
 
       it 'returns 403' do
@@ -28,12 +28,12 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
 
     context 'with user with enough permission' do
       before do
-        project.add_developer(user)
+        resource.add_developer(user)
       end
 
       context 'with license feature disabled' do
         before do
-          stub_licensed_features(dependency_scanning: false)
+          stub_licensed_features(dependency_scanning: false, security_dashboard: false)
         end
 
         it 'returns 403' do
@@ -47,11 +47,11 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
 
       context 'with license feature enabled' do
         before do
-          stub_licensed_features(dependency_scanning: true)
+          stub_licensed_features(dependency_scanning: true, security_dashboard: true)
         end
 
         it 'creates and returns a dependency_list_export' do
-          expect(::Dependencies::CreateExportService).to receive(:new).with(project, user).and_call_original
+          expect(::Dependencies::CreateExportService).to receive(:new).with(resource, user).and_call_original
 
           create_dependency_list_export
 
@@ -65,7 +65,33 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
     end
   end
 
-  describe 'GET /projects/:id/dependency_list_exports/:export_id' do
+  describe 'POST /projects/:id/dependency_list_exports' do
+    let(:request_path) { "/projects/#{project.id}/dependency_list_exports" }
+    let(:resource) { project }
+
+    it_behaves_like 'creating dependency list export'
+  end
+
+  describe 'POST /groups/:id/dependency_list_exports' do
+    let(:request_path) { "/groups/#{group.id}/dependency_list_exports" }
+    let(:resource) { group }
+
+    it_behaves_like 'creating dependency list export'
+
+    context 'when the `group_level_dependencies` feature flag is disabled' do
+      before do
+        stub_feature_flags(group_level_dependencies: false)
+      end
+
+      it 'returns 404' do
+        post api(request_path, user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'GET /dependency_list_exports/:export_id' do
     let(:dependency_list_export) { create(:dependency_list_export, :finished, author: user, project: project) }
     let(:request_path) { "/dependency_list_exports/#{dependency_list_export.id}" }
 
@@ -138,7 +164,7 @@ RSpec.describe API::DependencyListExports, feature_category: :dependency_managem
     end
   end
 
-  describe 'GET /projects/:id/dependency_list_exports/:export_id/download' do
+  describe 'GET /dependency_list_exports/:export_id/download' do
     let(:dependency_list_export) { create(:dependency_list_export, :finished, author: user, project: project) }
     let(:request_path) { "/dependency_list_exports/#{dependency_list_export.id}/download" }
 

@@ -2,6 +2,11 @@
 
 module Dependencies
   class ExportService
+    SERIALIZER_SERVICES = {
+      Project => ExportSerializers::ProjectDependenciesService,
+      Group => ExportSerializers::GroupDependenciesService
+    }.freeze
+
     def self.execute(dependency_list_export)
       new(dependency_list_export).execute
     end
@@ -49,7 +54,11 @@ module Dependencies
     end
 
     def dependencies
-      ExportSerializers::ProjectDependenciesService.execute(dependency_list_export)
+      serializer_service.execute(dependency_list_export)
+    end
+
+    def serializer_service
+      SERIALIZER_SERVICES.fetch(exportable.class)
     end
 
     def filename
