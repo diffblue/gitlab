@@ -150,7 +150,7 @@ module EE
 
     def allow_account_deletion?
       !License.feature_available?(:disable_deleting_account_for_users) ||
-        !::Feature.enabled?(:deleting_account_disabled_for_users) || ::Gitlab::CurrentSettings.allow_account_deletion?
+        ::Gitlab::CurrentSettings.allow_account_deletion?
     end
   end
 end

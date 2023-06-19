@@ -188,50 +188,26 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         stub_licensed_features(disable_deleting_account_for_users: true)
       end
 
-      context 'when FF enabled' do
-        context 'and allow_account_deletion is false' do
-          before do
-            stub_application_setting(allow_account_deletion: false)
-            stub_feature_flags(deleting_account_disabled_for_users: true)
-          end
-
-          it 'fails with message' do
-            post :destroy, params: { username: user.username }
-
-            expect(flash[:alert]).to eq 'Account deletion is not allowed.'
-            expect(response).to have_gitlab_http_status(:see_other)
-            expect(response).to redirect_to profile_account_path
-          end
+      context 'when allow_account_deletion is false' do
+        before do
+          stub_application_setting(allow_account_deletion: false)
         end
 
-        context 'and allow_account_deletion is true' do
-          before do
-            stub_application_setting(allow_account_deletion: true)
-            stub_feature_flags(deleting_account_disabled_for_users: true)
-          end
+        it 'fails with message' do
+          post :destroy, params: { username: user.username }
 
-          include_examples 'it succeeds'
+          expect(flash[:alert]).to eq 'Account deletion is not allowed.'
+          expect(response).to have_gitlab_http_status(:see_other)
+          expect(response).to redirect_to profile_account_path
         end
       end
 
-      context 'when FF disabled' do
-        context 'and allow_account_deletion is false' do
-          before do
-            stub_application_setting(allow_account_deletion: false)
-            stub_feature_flags(deleting_account_disabled_for_users: false)
-          end
-
-          include_examples 'it succeeds'
+      context 'when allow_account_deletion is true' do
+        before do
+          stub_application_setting(allow_account_deletion: true)
         end
 
-        context 'and allow_account_deletion is true' do
-          before do
-            stub_application_setting(allow_account_deletion: true)
-            stub_feature_flags(deleting_account_disabled_for_users: false)
-          end
-
-          include_examples 'it succeeds'
-        end
+        include_examples 'it succeeds'
       end
     end
 
@@ -240,44 +216,20 @@ RSpec.describe RegistrationsController, feature_category: :system_access do
         stub_licensed_features(disable_deleting_account_for_users: false)
       end
 
-      context 'when FF enabled' do
-        context 'and allow_account_deletion is false' do
-          before do
-            stub_application_setting(allow_account_deletion: false)
-            stub_feature_flags(deleting_account_disabled_for_users: true)
-          end
-
-          include_examples 'it succeeds'
+      context 'when allow_account_deletion is false' do
+        before do
+          stub_application_setting(allow_account_deletion: false)
         end
 
-        context 'and allow_account_deletion is true' do
-          before do
-            stub_application_setting(allow_account_deletion: true)
-            stub_feature_flags(deleting_account_disabled_for_users: true)
-          end
-
-          include_examples 'it succeeds'
-        end
+        include_examples 'it succeeds'
       end
 
-      context 'when FF disabled' do
-        context 'and allow_account_deletion is false' do
-          before do
-            stub_application_setting(allow_account_deletion: false)
-            stub_feature_flags(deleting_account_disabled_for_users: false)
-          end
-
-          include_examples 'it succeeds'
+      context 'when allow_account_deletion is true' do
+        before do
+          stub_application_setting(allow_account_deletion: true)
         end
 
-        context 'and allow_account_deletion is true' do
-          before do
-            stub_application_setting(allow_account_deletion: true)
-            stub_feature_flags(deleting_account_disabled_for_users: false)
-          end
-
-          include_examples 'it succeeds'
-        end
+        include_examples 'it succeeds'
       end
     end
   end
