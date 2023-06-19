@@ -35,7 +35,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
           it 'executes the rule schedule service for all projects in the group' do
             expect_next_instance_of(
               Security::SecurityOrchestrationPolicies::RuleScheduleService,
-              container: project_1,
+              project: project_1,
               current_user: schedule.owner
             ) do |service|
               expect(service).to receive(:execute)
@@ -43,7 +43,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
 
             expect_next_instance_of(
               Security::SecurityOrchestrationPolicies::RuleScheduleService,
-              container: project_2,
+              project: project_2,
               current_user: schedule.owner
             ) do |service|
               expect(service).to receive(:execute)
@@ -66,7 +66,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker, feature
             end
 
             it 'does not call RuleScheduleService for the project' do
-              expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new).with(container: project_pending_deletion, current_user: anything).and_call_original
+              expect(Security::SecurityOrchestrationPolicies::RuleScheduleService).not_to receive(:new).with(project: project_pending_deletion, current_user: anything).and_call_original
 
               worker.perform(schedule_id)
             end

@@ -19,7 +19,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
         it 'executes the rule schedule service' do
           expect_next_instance_of(
             Security::SecurityOrchestrationPolicies::RuleScheduleService,
-            container: schedule.security_orchestration_policy_configuration.project,
+            project: schedule.security_orchestration_policy_configuration.project,
             current_user: schedule.owner
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
@@ -97,7 +97,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker, feature_category
         it 'executes the rule schedule service with the bot user' do
           expect_next_instance_of(
             Security::SecurityOrchestrationPolicies::RuleScheduleService,
-            container: schedule.security_orchestration_policy_configuration.project,
+            project: schedule.security_orchestration_policy_configuration.project,
             current_user: security_policy_bot
           ) do |service|
             expect(service).to receive(:execute).and_return(ServiceResponse.success)
