@@ -23,6 +23,22 @@ module API
       end
     end
 
+    resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+      params do
+        requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
+      end
+      desc 'Generate a dependency list export on a group-level'
+      post ':id/dependency_list_exports' do
+        not_found! unless Feature.enabled?(:group_level_dependencies, user_group)
+
+        authorize! :read_dependencies, user_group
+
+        dependency_list_export = ::Dependencies::CreateExportService.new(user_group, current_user).execute
+
+        present dependency_list_export, with: EE::API::Entities::DependencyListExport
+      end
+    end
+
     params do
       requires :export_id, types: [Integer, String], desc: 'The ID of the dependency list export'
     end

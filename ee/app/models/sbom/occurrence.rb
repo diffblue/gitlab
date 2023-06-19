@@ -40,6 +40,10 @@ module Sbom
       joins(:component).where(sbom_components: { name: component_names })
     end
 
+    scope :with_component, -> { includes(:component) }
+    scope :with_source, -> { includes(:source) }
+    scope :with_version, -> { includes(:component_version) }
+
     def location
       {
         blob_path: input_file_blob_path,

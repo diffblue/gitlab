@@ -21,59 +21,73 @@ RSpec.describe Dependencies::ExportService, feature_category: :dependency_manage
     let(:created_status) { 0 }
     let(:running_status) { 1 }
     let(:finished_status) { 2 }
-    let(:dependency_list_export) { create(:dependency_list_export, status: status) }
     let(:service_class) { described_class.new(dependency_list_export) }
 
-    subject(:export) { service_class.execute }
+    shared_examples_for 'export service' do |serializer_service|
+      subject(:export) { service_class.execute }
 
-    context 'when the export is not in `created` status' do
-      let(:status) { running_status }
+      context 'when the export is not in `created` status' do
+        let(:status) { running_status }
 
-      it 'does not run the logic' do
-        expect { export }.not_to change { dependency_list_export.reload.file.file }.from(nil)
+        it 'does not run the logic' do
+          expect { export }.not_to change { dependency_list_export.reload.file.file }.from(nil)
+        end
+      end
+
+      context 'when the export is in `created` status' do
+        let(:status) { created_status }
+
+        before do
+          allow(Dependencies::DestroyExportWorker).to receive(:perform_in)
+        end
+
+        context 'when the export fails' do
+          before do
+            allow(serializer_service).to receive(:execute).and_raise('Foo')
+          end
+
+          it 'propagates the error, resets the status of the export, and does not schedule deletion job' do
+            expect { export }.to raise_error('Foo')
+                             .and not_change { dependency_list_export.status }
+
+            expect(Dependencies::DestroyExportWorker).not_to have_received(:perform_in)
+          end
+        end
+
+        context 'when the export succeeds' do
+          before do
+            allow(serializer_service).to receive(:execute).with(dependency_list_export).and_return('Foo')
+          end
+
+          it 'marks the export as finished' do
+            expect { export }.to change { dependency_list_export.status }.from(created_status).to(finished_status)
+          end
+
+          it 'attaches the file to export' do
+            expect { export }.to change { dependency_list_export.file.read }.from(nil).to('"Foo"')
+          end
+
+          it 'schedules the export deletion job' do
+            export
+
+            expect(Dependencies::DestroyExportWorker)
+              .to have_received(:perform_in).with(1.hour, dependency_list_export.id)
+          end
+        end
       end
     end
 
-    context 'when the export is in `created` status' do
-      let(:status) { created_status }
-
-      before do
-        allow(Dependencies::DestroyExportWorker).to receive(:perform_in)
+    context 'when the exportable is a project' do
+      it_behaves_like 'export service', Dependencies::ExportSerializers::ProjectDependenciesService do
+        let(:dependency_list_export) { create(:dependency_list_export, status: status) }
       end
+    end
 
-      context 'when the export fails' do
-        before do
-          allow(Dependencies::ExportSerializers::ProjectDependenciesService).to receive(:execute).and_raise('Foo')
-        end
+    context 'when the exportable is a group' do
+      let_it_be(:group) { create(:group) }
 
-        it 'propagates the error, resets the status of the export, and does not schedule deletion job' do
-          expect { export }.to raise_error('Foo')
-                           .and not_change { dependency_list_export.status }
-
-          expect(Dependencies::DestroyExportWorker).not_to have_received(:perform_in)
-        end
-      end
-
-      context 'when the export succeeds' do
-        before do
-          allow(Dependencies::ExportSerializers::ProjectDependenciesService)
-            .to receive(:execute).with(dependency_list_export).and_return('Foo')
-        end
-
-        it 'marks the export as finished' do
-          expect { export }.to change { dependency_list_export.status }.from(created_status).to(finished_status)
-        end
-
-        it 'attaches the file to export' do
-          expect { export }.to change { dependency_list_export.file.read }.from(nil).to('"Foo"')
-        end
-
-        it 'schedules the export deletion job' do
-          export
-
-          expect(Dependencies::DestroyExportWorker)
-            .to have_received(:perform_in).with(1.hour, dependency_list_export.id)
-        end
+      it_behaves_like 'export service', Dependencies::ExportSerializers::GroupDependenciesService do
+        let(:dependency_list_export) { create(:dependency_list_export, exportable: group, status: status) }
       end
     end
   end
