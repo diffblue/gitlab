@@ -10,6 +10,7 @@ module AuditEvents
     self.table_name = 'audit_events_instance_external_audit_event_destinations'
 
     has_many :headers, class_name: 'AuditEvents::Streaming::InstanceHeader'
+    has_many :event_type_filters, class_name: 'AuditEvents::Streaming::InstanceEventTypeFilter'
 
     attr_encrypted :verification_token,
       mode: :per_attribute_iv,
