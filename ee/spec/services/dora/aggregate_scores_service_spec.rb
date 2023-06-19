@@ -126,7 +126,7 @@ RSpec.describe Dora::AggregateScoresService, feature_category: :value_stream_man
 
     context 'when there are no authorized projects available to user' do
       it 'returns all empty data' do
-        expect_next_instance_of(ProjectsFinder) do |finder|
+        expect_next_instance_of(GroupProjectsFinder) do |finder|
           expect(finder).to receive(:execute).and_return []
         end
 

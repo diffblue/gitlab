@@ -52,8 +52,8 @@ module Dora
     end
 
     def authorized_projects
-      ProjectsFinder
-        .new(current_user: current_user, params: { namespace: group })
+      GroupProjectsFinder
+        .new(group: group, current_user: current_user, options: { include_subgroups: true })
         .execute
     end
     strong_memoize_attr :authorized_projects
