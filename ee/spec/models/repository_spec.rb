@@ -306,4 +306,27 @@ RSpec.describe Repository, feature_category: :source_code_management do
         .and_return(ref)
     end
   end
+
+  describe '.group' do
+    let_it_be(:group) { create(:group, :wiki_repo) }
+    let_it_be(:project_within_group) { create(:project, :repository, group: group) }
+    let_it_be(:project_not_within_group) { create(:project, :repository) }
+    let(:repository_of_group_wiki) { group.wiki.repository }
+    let(:repository_of_project_wiki) { project_not_within_group.wiki.repository }
+    let(:repository_of_project_within_group) { project_within_group.repository }
+    let(:repository_of_project_not_within_group) { project_not_within_group.repository }
+
+    using RSpec::Parameterized::TableSyntax
+
+    where(:repository, :expected_value) do
+      ref(:repository_of_group_wiki)                | ref(:group)
+      ref(:repository_of_project_wiki)              | nil
+      ref(:repository_of_project_within_group)      | ref(:group)
+      ref(:repository_of_project_not_within_group)  | nil
+    end
+
+    with_them do
+      it { expect(repository.group).to eq(expected_value) }
+    end
+  end
 end

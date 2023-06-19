@@ -107,6 +107,10 @@ module EE
       nil
     end
 
+    def group
+      container.try(:group)
+    end
+
     private
 
     def diverged?(branch_name, remote_ref)

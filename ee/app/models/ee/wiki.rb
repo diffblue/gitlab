@@ -3,6 +3,9 @@
 module EE
   module Wiki
     extend ActiveSupport::Concern
+    prepended do
+      include Elastic::WikiRepositoriesSearch
+    end
 
     # No need to have a Kerberos Web url. Kerberos URL will be used only to
     # clone

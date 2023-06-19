@@ -17,6 +17,7 @@ module EE
       include CanMoveRepositoryStorage
       include ReactiveCaching
       include IssueParent
+      include Elastic::MaintainElasticsearchOnGroupUpdate
 
       ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION = [:read_epic, :read_confidential_epic].freeze
       EPIC_BATCH_SIZE = 500
@@ -43,7 +44,7 @@ module EE
       accepts_nested_attributes_for :value_stream_dashboard_aggregation, update_only: true
       has_one :analytics_dashboards_configuration_project, through: :analytics_dashboards_pointer, source: :target_project
       has_one :scim_oauth_access_token
-      has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id
+      has_one :index_status, class_name: 'Elastic::GroupIndexStatus', foreign_key: :namespace_id, dependent: :destroy
       has_many :external_audit_event_destinations, class_name: "AuditEvents::ExternalAuditEventDestination", foreign_key: 'namespace_id'
       has_many :google_cloud_logging_configurations, class_name: "AuditEvents::GoogleCloudLoggingConfiguration",
         foreign_key: 'namespace_id',
@@ -86,7 +87,7 @@ module EE
 
       delegate :ai_settings_allowed?, to: :namespace_settings
 
-      delegate :wiki_access_level=, to: :group_feature, allow_nil: true
+      delegate :wiki_access_level, :wiki_access_level=, to: :group_feature, allow_nil: true
 
       # Use +checked_file_template_project+ instead, which implements important
       # visibility checks

@@ -72,4 +72,12 @@ module ElasticsearchHelpers
   def elasticsearch_hit_ids(result)
     result.response['hits']['hits'].map(&:_source).map(&:id)
   end
+
+  def elastic_wiki_indexer_worker_random_delay_range
+    a_value_between(0, ElasticWikiIndexerWorker::MAX_JOBS_PER_HOUR.pred)
+  end
+
+  def elastic_delete_group_wiki_worker_random_delay_range
+    a_value_between(0, Search::Wiki::ElasticDeleteGroupWikiWorker::MAX_JOBS_PER_HOUR.pred)
+  end
 end

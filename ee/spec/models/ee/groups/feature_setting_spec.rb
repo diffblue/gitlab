@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Groups::FeatureSetting do
+  let_it_be(:group) { create(:group) }
+
   # rubocop:disable Gitlab/FeatureAvailableUsage
   describe 'default values' do
     it { expect(subject.wiki_access_level).to eq(20) }
@@ -94,8 +96,6 @@ RSpec.describe Groups::FeatureSetting do
   # rubocop:enable Gitlab/FeatureAvailableUsage
 
   describe 'wiki_access_level=' do
-    let_it_be(:group) { create(:group) }
-
     before_all do
       group.update!(wiki_access_level: 'enabled')
     end
@@ -136,6 +136,30 @@ RSpec.describe Groups::FeatureSetting do
         it 'does not update the attribute' do
           expect { group.update!(wiki_access_level: access_level) }
             .to raise_error(ArgumentError, "Invalid wiki_access_level \"#{access_level}\"")
+        end
+      end
+    end
+  end
+
+  describe 'callbacks' do
+    describe '.after_update_commit', :elastic do
+      context 'if elasticsearch is enabled for group' do
+        before do
+          stub_ee_application_setting(elasticsearch_indexing: true)
+        end
+
+        it 'calls ElasticWikiIndexerWorker' do
+          expect(ElasticWikiIndexerWorker).to receive(:perform_async).with(group.id, group.class.name, force: true)
+          new_level = Featurable::STRING_OPTIONS.except('public').values.excluding(group.visibility_level).last
+          group.group_feature.update_attribute(:wiki_access_level, new_level)
+        end
+      end
+
+      context 'if elasticsearch is disabled for group' do
+        it 'does not call ElasticWikiIndexerWorker' do
+          expect(ElasticWikiIndexerWorker).not_to receive(:perform_async).with(group.id, group.class.name, force: true)
+          new_level = Featurable::STRING_OPTIONS.except('public').values.excluding(group.visibility_level).last
+          group.group_feature.update_attribute(:wiki_access_level, new_level)
         end
       end
     end

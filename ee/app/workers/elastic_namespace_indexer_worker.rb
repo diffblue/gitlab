@@ -19,8 +19,10 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
     case operation.to_s
     when /index/
       index_projects(namespace)
+      index_group_wikis(namespace) if should_maintain_group_wiki_index?(namespace)
     when /delete/
       delete_from_index(namespace)
+      delete_group_wikis(namespace) if should_maintain_group_wiki_index?(namespace)
     end
   end
 
@@ -32,10 +34,28 @@ class ElasticNamespaceIndexerWorker # rubocop:disable Scalability/IdempotentWork
     end
   end
 
+  def index_group_wikis(namespace)
+    namespace.self_and_descendants.find_each.with_index do |grp, idx|
+      interval = idx % ElasticWikiIndexerWorker::MAX_JOBS_PER_HOUR
+      ElasticWikiIndexerWorker.perform_in(interval, grp.id, grp.class.name, { force: true })
+    end
+  end
+
   def delete_from_index(namespace)
     namespace.all_projects.find_in_batches do |batch|
       args = batch.map { |project| [project.id, project.es_id] }
       ElasticDeleteProjectWorker.bulk_perform_async(args) # rubocop:disable Scalability/BulkPerformWithContext
     end
+  end
+
+  def delete_group_wikis(namespace)
+    namespace.self_and_descendants.find_each.with_index do |grp, idx|
+      interval = idx % Search::Wiki::ElasticDeleteGroupWikiWorker::MAX_JOBS_PER_HOUR
+      Search::Wiki::ElasticDeleteGroupWikiWorker.perform_in(interval, grp.id)
+    end
+  end
+
+  def should_maintain_group_wiki_index?(namespace)
+    namespace.group_namespace? && Wiki.use_separate_indices? && Feature.enabled?(:maintain_group_wiki_index, namespace)
   end
 end

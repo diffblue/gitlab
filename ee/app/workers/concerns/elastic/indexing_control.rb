@@ -3,7 +3,8 @@
 # Concern for pausing/unpausing elasticsearch indexing workers
 module Elastic
   module IndexingControl
-    WORKERS = [ElasticCommitIndexerWorker, ElasticDeleteProjectWorker, ElasticWikiIndexerWorker].freeze
+    WORKERS = [ElasticCommitIndexerWorker, ElasticDeleteProjectWorker, ElasticWikiIndexerWorker,
+      Search::Wiki::ElasticDeleteGroupWikiWorker].freeze
 
     def perform(*args)
       if Elastic::IndexingControl.non_cached_pause_indexing? && WORKERS.include?(self.class)

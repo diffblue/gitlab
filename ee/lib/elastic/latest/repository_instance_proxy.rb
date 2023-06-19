@@ -6,7 +6,9 @@ module Elastic
       include GitInstanceProxy
 
       delegate :project, to: :target
-      delegate :id, to: :project, prefix: true
+      delegate :group, to: :target
+      delegate :id, to: :project, prefix: true, allow_nil: true
+      delegate :id, to: :group, prefix: true, allow_nil: true
 
       def find_commits_by_message_with_elastic(query, page: 1, per_page: 20, options: {}, preload_method: nil)
         response = elastic_search(query, type: 'commit', options: options, page: page, per: per_page)[:commits][:results]

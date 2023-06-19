@@ -47,6 +47,13 @@ module EE
           project.invalidate_elasticsearch_indexes_cache! if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
         end
+
+        return unless ::Wiki.use_separate_indices? && ::Feature.enabled?(:maintain_group_wiki_index, group)
+
+        group.self_and_descendants.find_each.with_index do |grp, idx|
+          interval = idx % ElasticWikiIndexerWorker::MAX_JOBS_PER_HOUR
+          ElasticWikiIndexerWorker.perform_in(interval, grp.id, grp.class.name, { force: true })
+        end
       end
     end
   end

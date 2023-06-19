@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ElasticWikiIndexerWorker
+  MAX_JOBS_PER_HOUR = 3600
   include ApplicationWorker
 
   data_consistency :delayed
@@ -27,19 +28,17 @@ class ElasticWikiIndexerWorker
     end
 
     container_class = container_type.safe_constantize
-    unless container_class == Project
-      logger.error(message: 'ElasticWikiIndexerWorker only accepts Project',
+    unless container_class == Project || container_class == Group
+      logger.error(message: 'ElasticWikiIndexerWorker only accepts Project and Group',
         container_id: container_id, container_type: container_type)
       return true
     end
 
     return true unless Gitlab::CurrentSettings.elasticsearch_indexing?
 
-    container = container_class.find_by_id(container_id)
-    unless container&.use_elasticsearch?
-      es_id = Gitlab::Elastic::Helper.build_es_id(es_type: container_class.es_type, target_id: container_id)
-
-      ElasticDeleteProjectWorker.perform_async(container_id, es_id)
+    container = container_class.find(container_id)
+    unless container.use_elasticsearch?
+      cleanup_container_elastic_documents(container_id, container_type)
       return true
     end
 
@@ -61,6 +60,8 @@ class ElasticWikiIndexerWorker
       when 'Project'
         project_id = container_id
         group_id = container.group&.id
+      when 'Group'
+        group_id = container_id
       end
       logger.info(
         project_id: project_id,
@@ -73,5 +74,23 @@ class ElasticWikiIndexerWorker
     end
 
     @ret
+  rescue ActiveRecord::RecordNotFound
+    logger.warn(message: 'Container record not found', container_type: container_type, container_id: container_id)
+    cleanup_container_elastic_documents(container_id, container_type)
+    true
+  end
+
+  private
+
+  def cleanup_container_elastic_documents(container_id, container_type)
+    if container_type == 'Project'
+      ElasticDeleteProjectWorker.perform_async(container_id, es_id(container_id, container_type))
+    else
+      Search::Wiki::ElasticDeleteGroupWikiWorker.perform_async(container_id)
+    end
+  end
+
+  def es_id(container_id, container_type)
+    Gitlab::Elastic::Helper.build_es_id(es_type: container_type.safe_constantize&.es_type, target_id: container_id)
   end
 end
