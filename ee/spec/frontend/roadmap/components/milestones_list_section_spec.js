@@ -1,5 +1,4 @@
 import { GlButton } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import MilestoneTimeline from 'ee/roadmap/components/milestone_timeline.vue';
 import milestonesListSectionComponent from 'ee/roadmap/components/milestones_list_section.vue';
@@ -18,11 +17,9 @@ import {
   mockGroupMilestones,
 } from 'ee_jest/roadmap/mock_data';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
-jest.mock('ee/roadmap/utils/epic_utils', () => ({
-  ...jest.requireActual('ee/roadmap/utils/epic_utils'),
-  scrollToCurrentDay: jest.fn(),
-}));
+jest.mock('ee/roadmap/utils/epic_utils');
 
 const initializeStore = (mockTimeframeMonths) => {
   const store = createStore();
@@ -44,9 +41,9 @@ describe('MilestonesListSectionComponent', () => {
     presetType: PRESET_TYPES.MONTHS,
     initialDate: mockTimeframeInitialDate,
   });
-  const findMilestoneCount = () => wrapper.find('[data-testid="count"]');
+  const findMilestoneCount = () => wrapper.findByTestId('count');
   const findMilestoneCountTooltip = () => getBinding(findMilestoneCount().element, 'gl-tooltip');
-  const findExpandButtonContainer = () => wrapper.find('[data-testid="expandButton"]');
+  const findExpandButtonContainer = () => wrapper.findByTestId('expandButton');
   const findExpandButtonData = () => {
     const container = findExpandButtonContainer();
     return {
@@ -57,11 +54,8 @@ describe('MilestonesListSectionComponent', () => {
   };
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMount(milestonesListSectionComponent, {
+    wrapper = shallowMountExtended(milestonesListSectionComponent, {
       store,
-      stubs: {
-        MilestoneTimeline: false,
-      },
       propsData: {
         milestones: store.state.milestones,
         timeframe: mockTimeframeMonths,
@@ -110,11 +104,7 @@ describe('MilestonesListSectionComponent', () => {
         expect(wrapper.vm.roadmapShellEl instanceof HTMLElement).toBe(true);
       });
 
-      it('calls `scrollToCurrentDay` following the component render', async () => {
-        // Original method implementation waits for render cycle
-        // to complete at 2 levels before scrolling.
-        await nextTick(); // set offsetLeft value
-        await nextTick(); // Wait for nextTick before scroll
+      it('calls `scrollToCurrentDay` following the component render', () => {
         expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.vm.$el);
       });
     });
@@ -148,12 +138,10 @@ describe('MilestonesListSectionComponent', () => {
 
   describe('template', () => {
     it('renders component container element with class `milestones-list-section`', () => {
-      expect(wrapper.vm.$el.classList.contains('milestones-list-section')).toBe(true);
+      expect(wrapper.classes()).toContain('milestones-list-section');
     });
 
     it('renders element with class `milestones-list-title`', () => {
-      wrapper.vm.setBufferSize(50);
-
       expect(wrapper.find('.milestones-list-title').exists()).toBe(true);
     });
 
@@ -172,22 +160,18 @@ describe('MilestonesListSectionComponent', () => {
       expect(findMilestoneCountTooltip().value).toBe('2 milestones');
     });
 
-    describe('milestone expand/collapse button', () => {
-      it('is rendered', () => {
-        expect(findExpandButtonData()).toEqual({
-          icon: 'chevron-down',
-          iconLabel: 'Collapse milestones',
-          tooltip: 'Collapse',
-        });
+    it('renders milestone expand/collapse button', () => {
+      expect(findExpandButtonData()).toEqual({
+        icon: 'chevron-down',
+        iconLabel: 'Collapse milestones',
+        tooltip: 'Collapse',
       });
     });
   });
 
   describe('when the milestone list is expanded', () => {
-    beforeEach(async () => {
+    beforeEach(() => {
       findExpandButtonContainer().findComponent(GlButton).vm.$emit('click');
-
-      await nextTick();
     });
 
     it('shows "chevron-right" icon when the milestone toggle button is clicked', () => {

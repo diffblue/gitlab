@@ -27,10 +27,7 @@ import {
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import eventHub from 'ee/roadmap/event_hub';
 
-jest.mock('ee/roadmap/utils/epic_utils', () => ({
-  ...jest.requireActual('ee/roadmap/utils/epic_utils'),
-  scrollToCurrentDay: jest.fn(),
-}));
+jest.mock('ee/roadmap/utils/epic_utils');
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
@@ -66,10 +63,6 @@ const createComponent = ({
 } = {}) => {
   return shallowMountExtended(EpicsListSection, {
     store,
-    stubs: {
-      EpicItem: false,
-      VirtualList: false,
-    },
     propsData: {
       presetType,
       epics,
@@ -85,6 +78,7 @@ describe('EpicsListSectionComponent', () => {
 
   const findBottomShadow = () => wrapper.findByTestId('epic-scroll-bottom-shadow');
   const findEmptyRowEl = () => wrapper.find('.epics-list-item-empty');
+  const findAllEpicItems = () => wrapper.findAllComponents(EpicItem);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -111,7 +105,7 @@ describe('EpicsListSectionComponent', () => {
 
     describe('epicsWithAssociatedParents', () => {
       it('should return epics which contain parent associations', async () => {
-        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(
+        expect(findAllEpicItems()).toHaveLength(
           // Only top-level epics are visible by default, any child
           // epics are shown only when the parent is expanded.
           mockEpics.filter((epic) => !epic.hasParent).length,
@@ -123,7 +117,7 @@ describe('EpicsListSectionComponent', () => {
 
         await nextTick();
 
-        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(mockEpicsWithParents.length);
+        expect(findAllEpicItems()).toHaveLength(mockEpicsWithParents.length);
       });
 
       it('should return epics which match the applied filter when one of the epic in hierarchy is not matching the filter', async () => {
@@ -132,9 +126,7 @@ describe('EpicsListSectionComponent', () => {
 
         await nextTick();
 
-        expect(wrapper.findAllComponents(EpicItem)).toHaveLength(
-          mockEpicsWithSkippedParents.length,
-        );
+        expect(findAllEpicItems()).toHaveLength(mockEpicsWithSkippedParents.length);
       });
     });
 
@@ -146,7 +138,7 @@ describe('EpicsListSectionComponent', () => {
       it('returns all epics if epicIid is specified', () => {
         store.state.epicIid = '23';
         mockEpics.forEach((epic, index) => {
-          expect(wrapper.findAllComponents(EpicItem).at(index).props('epic')).toMatchObject(epic);
+          expect(findAllEpicItems().at(index).props('epic')).toMatchObject(epic);
         });
       });
     });
@@ -168,13 +160,11 @@ describe('EpicsListSectionComponent', () => {
         expect(store.state.bufferSize).toBe(16);
       });
 
-      it('calls `scrollToCurrentDay` following the component render', async () => {
-        await nextTick(); // Wait for nextTick before scroll
+      it('calls `scrollToCurrentDay` following the component render', () => {
         expect(scrollToCurrentDay).toHaveBeenCalledWith(wrapper.element);
       });
 
-      it('sets style attribute containing `height` on empty row', async () => {
-        await nextTick();
+      it('sets style attribute containing `height` on empty row', () => {
         expect(findEmptyRowEl().attributes('style')).toBe('height: calc(100vh - 0px);');
       });
     });
@@ -232,7 +222,7 @@ describe('EpicsListSectionComponent', () => {
     it('renders empty row element when `epics.length` is less than `bufferSize`', () => {
       store.dispatch('setBufferSize', 50);
 
-      expect(wrapper.find('.epics-list-item-empty').exists()).toBe(true);
+      expect(findEmptyRowEl().exists()).toBe(true);
     });
 
     it('renders gl-intersection-observer component', () => {
@@ -264,18 +254,17 @@ describe('EpicsListSectionComponent', () => {
         scrollHeight: 15,
       });
 
-      expect(wrapper.find('.epic-scroll-bottom-shadow').exists()).toBe(true);
+      expect(findBottomShadow().exists()).toBe(true);
     });
   });
 
-  it('expands to show child epics when epic is toggled', async () => {
+  it('expands to show child epics when epic is toggled', () => {
     const epic = mockEpics[0];
 
     expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(false);
 
     eventHub.$emit('toggleIsEpicExpanded', epic);
 
-    await nextTick();
     expect(store.state.childrenFlags[epic.id].itemExpanded).toBe(true);
   });
 });
