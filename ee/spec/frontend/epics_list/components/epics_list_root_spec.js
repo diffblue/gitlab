@@ -151,31 +151,6 @@ describe('EpicsListRoot', () => {
         });
       });
     });
-
-    describe('epicTimeframe', () => {
-      it.each`
-        startDate     | dueDate        | returnValue
-        ${'2021-1-1'} | ${'2021-2-28'} | ${'Jan 1 – Feb 28, 2021'}
-        ${'2021-1-1'} | ${'2022-2-28'} | ${'Jan 1, 2021 – Feb 28, 2022'}
-        ${'2021-1-1'} | ${null}        | ${'Jan 1, 2021 – No due date'}
-        ${null}       | ${'2021-2-28'} | ${'No start date – Feb 28, 2021'}
-      `(
-        'returns string "$returnValue" when startDate is $startDate and dueDate is $dueDate',
-        async ({ startDate, dueDate, returnValue }) => {
-          createComponent({
-            handler: groupEpicsQueryHandler({
-              nodes: [
-                { ...mockRawEpic, startDate, dueDate, id: 1, iid: 10 },
-                ...mockEpics.slice(1),
-              ],
-            }),
-          });
-
-          await waitForPromises();
-          expect(wrapper.findByText(returnValue).exists()).toBe(true);
-        },
-      );
-    });
   });
 
   describe('fetchEpicsBy', () => {

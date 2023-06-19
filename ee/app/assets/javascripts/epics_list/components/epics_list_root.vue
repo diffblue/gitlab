@@ -9,8 +9,8 @@ import { createAlert } from '~/alert';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
 import { issuableListTabs, DEFAULT_PAGE_SIZE } from '~/vue_shared/issuable/list/constants';
-import { parsePikadayDate, dateInWords } from '~/lib/utils/datetime_utility';
-import { s__, sprintf } from '~/locale';
+import { humanTimeframe } from '~/lib/utils/datetime_utility';
+import { s__ } from '~/locale';
 
 import { transformFetchEpicFilterParams } from '../../roadmap/utils/epic_utils';
 import { epicsSortOptions } from '../constants';
@@ -178,31 +178,7 @@ export default {
       return reference;
     },
     epicTimeframe({ startDate, dueDate }) {
-      const start = startDate ? parsePikadayDate(startDate) : null;
-      const due = dueDate ? parsePikadayDate(dueDate) : null;
-
-      if (startDate && dueDate) {
-        const startDateInWords = dateInWords(
-          start,
-          true,
-          start.getFullYear() === due.getFullYear(),
-        );
-        const dueDateInWords = dateInWords(due, true);
-
-        return sprintf(s__('Epics|%{startDate} – %{dueDate}'), {
-          startDate: startDateInWords,
-          dueDate: dueDateInWords,
-        });
-      } else if (startDate && !dueDate) {
-        return sprintf(s__('Epics|%{startDate} – No due date'), {
-          startDate: dateInWords(start, true, false),
-        });
-      } else if (!startDate && dueDate) {
-        return sprintf(s__('Epics|No start date – %{dueDate}'), {
-          dueDate: dateInWords(due, true, false),
-        });
-      }
-      return '';
+      return humanTimeframe(startDate, dueDate);
     },
     fetchEpicsBy(propsName, propValue) {
       if (propsName === 'currentPage') {
