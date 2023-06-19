@@ -36,14 +36,15 @@ RSpec.describe Gitlab::Llm::Chain::Tools::JsonReader::Executor, :aggregate_failu
 
   describe '#name' do
     it 'returns tool name' do
-      expect(described_class::NAME).to eq('JsonReader')
+      expect(described_class::NAME).to eq('Resource Reader')
     end
   end
 
   describe '#description' do
     it 'returns tool description' do
       expect(described_class::DESCRIPTION)
-        .to include('A tool useful to handle JSON data format. Action Input for this tools always starts with: `data`')
+        .to include('Useful tool when you need to get information or ask questions about specific resource. ' \
+                    'Action Input for this tools always starts with: `data`')
     end
   end
 

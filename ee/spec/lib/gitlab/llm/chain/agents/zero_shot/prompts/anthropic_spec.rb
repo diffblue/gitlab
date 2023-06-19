@@ -27,6 +27,8 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
       }
     end
 
+    let(:prompt_text) { "Answer the question as accurate as you can.\n\nStart with identifying the resource first." }
+
     subject { described_class.prompt(options) }
 
     it 'returns prompt' do
@@ -35,7 +37,7 @@ RSpec.describe Gitlab::Llm::Chain::Agents::ZeroShot::Prompts::Anthropic, feature
       expect(subject).to include('foo?')
       expect(subject).to include('tool definitions')
       expect(subject).to include('tool names')
-      expect(subject).to include('Answer the following questions as best you can. Start with identifying the resource')
+      expect(subject).to include(prompt_text)
       expect(subject).to include(Gitlab::Llm::Chain::Utils::Prompt.default_system_prompt)
     end
 

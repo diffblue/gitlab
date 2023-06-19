@@ -22,11 +22,20 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
   end
 
   describe '#execute', :saas do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:issue1) { create(:issue, project: project) }
+
+    before do
+      stub_application_setting(check_namespace_plan: true)
+      stub_licensed_features(summarize_notes: true, ai_features: true)
+
+      project.add_developer(user)
+      project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
+    end
+
     context 'when issue is identified' do
-      let_it_be(:user) { create(:user) }
-      let_it_be(:group) { create(:group_with_plan, plan: :ultimate_plan) }
-      let_it_be(:project) { create(:project, group: group) }
-      let_it_be(:issue1) { create(:issue, project: project) }
       let(:context) do
         Gitlab::Llm::Chain::GitlabContext.new(
           container: project,
@@ -37,14 +46,6 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
       end
 
       context 'when user has permission to read resource' do
-        before do
-          stub_application_setting(check_namespace_plan: true)
-          stub_licensed_features(summarize_notes: true, ai_features: true)
-
-          project.add_developer(user)
-          project.root_ancestor.update!(experiment_features_enabled: true, third_party_ai_features_enabled: true)
-        end
-
         context 'when resource has no comments to summarize' do
           it 'responds without making an AI call' do
             expect(tool).not_to receive(:request)
@@ -94,6 +95,24 @@ RSpec.describe Gitlab::Llm::Chain::Tools::SummarizeComments::Executor, feature_c
             expect(tool.execute.content).to include(response)
           end
         end
+      end
+    end
+
+    context 'when resource is not a noteable type' do
+      let(:context) do
+        Gitlab::Llm::Chain::GitlabContext.new(
+          container: project,
+          resource: project,
+          current_user: user,
+          ai_request: double
+        )
+      end
+
+      it 'responds with error' do
+        expect(tool).not_to receive(:request)
+
+        response = "I am sorry, I cannot proceed with this resource, it is Project."
+        expect(tool.execute.content).to eq(response)
       end
     end
   end

@@ -102,9 +102,16 @@ module Gitlab
             PROMPT_TEMPLATE = [
               Utils::Prompt.as_system(
                 <<~PROMPT
-                Answer the following questions as best you can. Start with identifying the resource first.
+                Answer the question as accurate as you can.
+
+                Start with identifying the resource first.
+
                 You have access to the following tools:
                 %<tools_definitions>s
+                Consider every tool before making decision.
+                Identifying resource mustn't be the last step.
+                Ensure that your answer is accurate and doesn’t contain any information not directly supported
+                by the information retrieved using provided tools.
                 Use the following format:
                 Question: the input question you must answer
                 Thought: you should always think about what to do
@@ -114,8 +121,8 @@ module Gitlab
 
                 ... (this Thought/Action/Action Input/Observation sequence can repeat N times)
 
-                Thought: I know the final answer
-                Final Answer: the final answer to the original input question
+                Thought: I know the final answer.
+                Final Answer: the final answer to the original input question.
                 REMEMBER to ALWAYS start a line with "Final Answer:" to give me the final answer.
 
                 Begin!
